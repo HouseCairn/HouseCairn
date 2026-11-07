@@ -1,0 +1,164 @@
+# Lint, types, tests and Django checks (docs/adr/0014). Job names are the
+# status checks required on `main`: rename them only together with the ruleset.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  UV_LOCKED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  lint:
+    name: Lint and types
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          python-version: "3.12"
+          enable-cache: true
+      - name: Install locked dependencies (uv sync --locked)
+        run: uv sync --locked
+      - name: Lint (ruff check)
+        run: uv run ruff check --output-format=github .
+      - name: Formatting (ruff format --check)
+        run: uv run ruff format --check .
+      - name: Types (mypy)
+        run: uv run mypy src scripts
+
+  tests-sqlite:
+    name: Tests (SQLite)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          python-version: "3.12"
+          enable-cache: true
+      - name: Install locked dependencies (uv sync --locked)
+        run: uv sync --locked
+      - name: Tests with coverage (SQLite)
+        run: uv run pytest --cov=housecairn --cov-fail-under=85
+
+  tests-postgresql:
+    name: Tests (PostgreSQL)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        # Pinned by digest; update tag and digest together (docs/adr/0014).
+        image: postgres:18.6-alpine3.24@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395
+        env:
+          POSTGRES_USER: housecairn
+          POSTGRES_PASSWORD: housecairn-ci-only
+          POSTGRES_DB: housecairn
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U housecairn -d housecairn"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Throwaway database of this job only, reachable from the runner alone.
+      DATABASE_URL: postgres://housecairn:housecairn-ci-only@localhost:5432/housecairn
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          python-version: "3.12"
+          enable-cache: true
+      - name: Install locked dependencies with the PostgreSQL driver (uv sync --locked)
+        run: uv sync --locked --extra postgres
+      - name: Tests run against PostgreSQL
+        env:
+          DJANGO_SETTINGS_MODULE: tests.settings
+          PYTHONPATH: src:.
+        run: |
+          uv run --extra postgres python -c 'from django.conf import settings
+          engine = settings.DATABASES["default"]["ENGINE"]
+          print(engine)
+          raise SystemExit(engine != "django.db.backends.postgresql")'
+      - name: Tests with coverage (PostgreSQL)
+        run: uv run --extra postgres pytest --cov=housecairn --cov-fail-under=85
+
+  django-checks:
+    name: Django and repository checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          python-version: "3.12"
+          enable-cache: true
+      - name: Install GNU gettext (translation scan)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q --no-install-recommends gettext
+      - name: Install locked dependencies (uv sync --locked)
+        run: uv sync --locked
+      - name: Migrations are up to date (makemigrations --check)
+        env:
+          DEBUG: "true"
+        run: |
+          # Local data directory (ignored by git), so the migration history
+          # check can open the default SQLite database.
+          mkdir -p data
+          uv run python manage.py makemigrations --check --dry-run
+      - name: OpenAPI schema is valid (spectacular --validate)
+        env:
+          DEBUG: "true"
+        run: uv run python manage.py spectacular --validate --fail-on-warn --file /dev/null
+      - name: Production settings pass the deployment checks (check --deploy)
+        run: |
+          set -a
+          . deploy/production.env.example
+          set +a
+          SECRET_KEY="$(uv run python -c 'import secrets; print(secrets.token_urlsafe(50))')"
+          export SECRET_KEY
+          export HOUSECAIRN_DATA_DIR="$RUNNER_TEMP/data"
+          uv run python manage.py check --deploy --fail-level WARNING
+      - name: Design tokens are built (build_design_tokens --check)
+        env:
+          DEBUG: "true"
+        run: uv run python manage.py build_design_tokens --check
+      - name: Every string is translated (check_translations --sources)
+        env:
+          DEBUG: "true"
+        run: uv run python manage.py check_translations --sources
+      - name: No external URL in templates and static files
+        run: uv run python scripts/check_external_urls.py

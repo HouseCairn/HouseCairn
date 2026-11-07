@@ -19,3 +19,4 @@ later record supersedes it.
 | [0011](0011-no-external-resources-and-csp.md) | No external resources, strict CSP | 2026-11-07 |
 | [0012](0012-configuration-and-security-defaults.md) | Configuration by environment, safe defaults | 2026-11-07 |
 | [0013](0013-internationalization.md) | English source, French shipped, no hard-coded strings | 2026-11-07 |
+| [0014](0014-continuous-integration-and-supply-chain.md) | Continuous integration and supply-chain security | 2026-11-07 |
