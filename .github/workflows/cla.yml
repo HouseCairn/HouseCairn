@@ -21,9 +21,11 @@ on:
 permissions: {}
 
 concurrency:
-  # One run at a time per pull request; runs are queued, never cancelled, so a
-  # signature is never lost. Writes from other pull requests are serialized by
-  # the script (the file update names the version it replaces).
+  # One run at a time per pull request, never cancelled while it runs. GitHub
+  # keeps at most one waiting run per group: a third event cancels the waiting
+  # one (docs/adr/0014, "Concurrent signatures"). Writes from other pull
+  # requests are not serialized here but by the script: the file update names
+  # the version it replaces, and a refused update is read and retried.
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number }}
   cancel-in-progress: false
 
