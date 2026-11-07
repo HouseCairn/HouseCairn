@@ -4,14 +4,19 @@ from django.urls import path
 from rest_framework.routers import SimpleRouter
 
 from housecairn.events.api import EventCreateView
-from housecairn.homes.api import HomeViewSet
+from housecairn.homes.api import AcceptInvitationView, HomeViewSet, InvitationViewSet, MemberViewSet
 
 app_name = "api-v1"
 
 router = SimpleRouter(trailing_slash=True)
 router.register("homes", HomeViewSet, basename="home")
+router.register(r"homes/(?P<home_id>[0-9a-f-]{36})/members", MemberViewSet, basename="home-member")
+router.register(
+    r"homes/(?P<home_id>[0-9a-f-]{36})/invitations", InvitationViewSet, basename="home-invitation"
+)
 
 urlpatterns = [
     *router.urls,
     path("homes/<uuid:home_id>/events/", EventCreateView.as_view(), name="home-events"),
+    path("invitations/accept/", AcceptInvitationView.as_view(), name="invitation-accept"),
 ]

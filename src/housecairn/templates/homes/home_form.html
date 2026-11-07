@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Add a home" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'homes:list' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Homes" %}</a>
+  <h1>{% translate "Add a home" %}</h1>
+  <p class="small">{% translate "Each home has its own rooms, tasks, budget and currency. You will be its owner, and can invite the rest of the household." %}</p>
+  <form method="post" class="card">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button-block">{% translate "Create the home" %}</button>
+  </form>
+{% endblock content %}

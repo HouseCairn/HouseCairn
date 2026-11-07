@@ -1,0 +1,1 @@
+{% load i18n %}{% autoescape off %}{% blocktranslate with home=home_name %}HouseCairn: you are invited to {{ home }}{% endblocktranslate %}{% endautoescape %}

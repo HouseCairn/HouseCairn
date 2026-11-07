@@ -1,0 +1,11 @@
+{% load i18n %}{% autoescape off %}{% blocktranslate with home=home_name role=role %}You are invited to join the home "{{ home }}" on HouseCairn, as {{ role }}.{% endblocktranslate %}
+
+{% translate "Open this link to accept, and to create your account if you have none:" %}
+{{ link }}
+
+{% blocktranslate with date=expires_at|date:"DATETIME_FORMAT" %}The link works once and expires on {{ date }}.{% endblocktranslate %}
+{% translate "If you did not expect this invitation, ignore this message." %}
+
+--
+HouseCairn
+{% endautoescape %}

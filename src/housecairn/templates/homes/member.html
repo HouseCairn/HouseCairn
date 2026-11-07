@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% firstof membership.user.get_full_name membership.user.email %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'homes:household' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Household and roles" %}</a>
+  <h1>{% firstof membership.user.get_full_name membership.user.email %}</h1>
+  <section class="card">
+    <dl class="facts">
+      <div><dt>{% translate "Email address" %}</dt><dd>{{ membership.user.email }}</dd></div>
+      <div><dt>{% translate "Role" %}</dt><dd>{% include "homes/_role_text.html" with role=membership.role %}</dd></div>
+      <div><dt>{% translate "Member since" %}</dt><dd>{{ membership.created_at|date:"SHORT_DATE_FORMAT" }}</dd></div>
+    </dl>
+  </section>
+  {% if is_owner %}
+    <h2>{% translate "Role" %}</h2>
+    <form method="post" action="{% url 'homes:member-role' home_id=home.id member_id=membership.id %}" class="card">
+      {% csrf_token %}
+      {{ role_form.as_p }}
+      <button type="submit" class="button-secondary button-block">{% translate "Change the role" %}</button>
+      <p class="small">{% translate "A home always keeps at least one owner." %}</p>
+    </form>
+    {% if not is_me %}
+      <div class="button-row">
+        {% if membership.role != "owner" %}
+          <form method="post" action="{% url 'homes:transfer' home_id=home.id member_id=membership.id %}">
+            {% csrf_token %}
+            <button type="submit" class="button-secondary">{% translate "Make owner, and become a member myself" %}</button>
+          </form>
+        {% endif %}
+        <form method="post" action="{% url 'homes:member-remove' home_id=home.id member_id=membership.id %}">
+          {% csrf_token %}
+          <button type="submit" class="button-danger">{% translate "Remove from the home" %}</button>
+        </form>
+      </div>
+    {% endif %}
+  {% endif %}
+  {% if is_me %}
+    <form method="post" action="{% url 'homes:leave' home_id=home.id %}">
+      {% csrf_token %}
+      <button type="submit" class="button-danger button-block">{% translate "Leave this home" %}</button>
+    </form>
+  {% endif %}
+{% endblock content %}

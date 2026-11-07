@@ -71,15 +71,25 @@ jobs:
           from housecairn.accounts.models import User
           from housecairn.homes import services
           user = User.objects.create_user(email='demo@example.com', password='correct-horse-battery-staple')
-          services.create_home(user, name='Main house')
+          home = services.create_home(user, name='Main house')
           services.create_home(user, name='Holiday flat')
+          # A second member and a pending invitation for the household screens.
+          from housecairn.homes.models import Membership, Role
+          other = User.objects.create_user(email='sam@example.com', password=None)
+          Membership.objects.create(home=home, user=other, role=Role.MEMBER)
+          _invitation, raw = services.invite(
+              user, home, email='guest@example.com', role=Role.READ_ONLY,
+              delivery=services.Delivery(),
+          )
+          open('$RUNNER_TEMP/invitation-token', 'w').write(raw)
           "
           nohup uv run gunicorn housecairn.wsgi --bind 127.0.0.1:8000 > "$RUNNER_TEMP/shots-server.log" 2>&1 &
           for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/healthz && break; sleep 1; done
       - name: Take the screenshots
         run: |
           uv run python tests/e2e/browser_checks.py capture \
-            --base http://localhost:8000 --out "$RUNNER_TEMP/screenshots"
+            --base http://localhost:8000 --out "$RUNNER_TEMP/screenshots" \
+            --invitation-file "$RUNNER_TEMP/invitation-token"
       - name: Start the instance for the passkey sign-in (development settings)
         env:
           # WebAuthn needs a secure origin: http://localhost is one for the browser, and the

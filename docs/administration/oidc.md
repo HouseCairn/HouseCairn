@@ -39,6 +39,31 @@ in the code. Single sign-on is off until `OIDC_SERVER_URL` is set
   identity without an account is refused, with a page that asks to contact the
   administrator. With `open`, anyone the provider accepts gets an account,
   without administration rights.
+- **Invited addresses**: an identity whose address has a pending invitation to
+  a home gets an account, without administration rights, if the provider
+  asserts the address as verified (`email_verified` is `true`).
 - An existing local account is never taken over by an identity that only
   shares its address: sign in with the local account, then link the identity
   from the account pages.
+
+## Requiring single sign-on for a home
+
+Providers are declared by the administrator of the instance only, with the
+variables above. Single sign-on is never required for the whole instance: the
+built-in sign-in (password, passkey, second factor) stays the default.
+
+An owner can require that the members of one home sign in through a declared
+provider, from **Household and roles**. The rule is checked each time the home
+is opened, by the web and by the API:
+
+- a session signed in with a password or a passkey sees the home in its list,
+  marked, and gets a page that offers to continue with the provider;
+- the API answers `403` with `"code": "sso_required"` and the provider's
+  identifier;
+- API tokens never open such a home, since a token is not a sign-in through
+  the provider.
+
+A member whose account is not yet linked to the provider links it from the
+account pages, signed in, then signs in through the provider. If a provider is
+removed from the instance, the homes that require it stay locked: the
+administrator clears the rule of the home in the administration site.

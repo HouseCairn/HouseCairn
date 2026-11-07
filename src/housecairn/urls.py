@@ -6,6 +6,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerSplitVie
 
 from housecairn.accounts import views as account_views
 from housecairn.core import views as core_views
+from housecairn.homes import views as home_views
 
 urlpatterns = [
     path("", core_views.IndexView.as_view(), name="index"),
@@ -14,6 +15,8 @@ urlpatterns = [
     path("more/", core_views.MoreView.as_view(), name="more"),
     path("about/", core_views.AboutView.as_view(), name="about"),
     path("h/", include("housecairn.homes.urls")),
+    # Invitation links, opened signed in or not (docs/adr/0020).
+    path("invitations/<str:token>/", home_views.InvitationView.as_view(), name="invitation"),
     # Password reset sends an email: no page without an outgoing mail server.
     # These patterns come first and carry no name, so allauth's own names still
     # reverse to the same addresses.

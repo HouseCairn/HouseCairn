@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 20:34+0000\n"
+"POT-Creation-Date: 2026-11-07 22:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -49,6 +49,30 @@ msgstr "**Première connexion d'une nouvelle instance** : tant que l'instance n'
 msgid "**Afterwards**, with `HOUSECAIRN_OIDC_SIGNUP=closed` (the default), an identity without an account is refused, with a page that asks to contact the administrator. With `open`, anyone the provider accepts gets an account, without administration rights."
 msgstr "**Ensuite**, avec `HOUSECAIRN_OIDC_SIGNUP=closed` (le défaut), une identité sans compte est refusée, avec une page qui invite à contacter l'administrateur. Avec `open`, toute personne que le fournisseur accepte obtient un compte, sans droits d'administration."
 
+msgid "**Invited addresses**: an identity whose address has a pending invitation to a home gets an account, without administration rights, if the provider asserts the address as verified (`email_verified` is `true`)."
+msgstr "**Adresses invitées** : une identité dont l'adresse a une invitation en attente pour un logement obtient un compte, sans droit d'administration, si le fournisseur atteste que l'adresse est vérifiée (`email_verified` vaut `true`)."
+
 msgid "An existing local account is never taken over by an identity that only shares its address: sign in with the local account, then link the identity from the account pages."
 msgstr "Un compte local existant n'est jamais repris par une identité qui en partage seulement l'adresse : connectez-vous avec le compte local, puis liez l'identité depuis les pages du compte."
+
+msgid "Requiring single sign-on for a home"
+msgstr "Exiger l'authentification unique pour un logement"
+
+msgid "Providers are declared by the administrator of the instance only, with the variables above. Single sign-on is never required for the whole instance: the built-in sign-in (password, passkey, second factor) stays the default."
+msgstr "Seul l'administrateur de l'instance déclare les fournisseurs, par les variables ci-dessus. L'authentification unique n'est jamais exigée pour toute l'instance : la connexion intégrée (mot de passe, passkey, deuxième facteur) reste le défaut."
+
+msgid "An owner can require that the members of one home sign in through a declared provider, from **Household and roles**. The rule is checked each time the home is opened, by the web and by the API:"
+msgstr "Un propriétaire peut exiger que les membres d'un logement se connectent par un fournisseur déclaré, depuis **Foyer et rôles**. La règle est contrôlée à chaque ouverture du logement, par le web comme par l'API :"
+
+msgid "a session signed in with a password or a passkey sees the home in its list, marked, and gets a page that offers to continue with the provider;"
+msgstr "une session connectée par mot de passe ou passkey voit le logement dans sa liste, signalé, et obtient une page qui propose de continuer avec le fournisseur ;"
+
+msgid "the API answers `403` with `\"code\": \"sso_required\"` and the provider's identifier;"
+msgstr "l'API répond `403` avec `\"code\": \"sso_required\"` et l'identifiant du fournisseur ;"
+
+msgid "API tokens never open such a home, since a token is not a sign-in through the provider."
+msgstr "les jetons d'API n'ouvrent jamais un tel logement : un jeton n'est pas une connexion par le fournisseur."
+
+msgid "A member whose account is not yet linked to the provider links it from the account pages, signed in, then signs in through the provider. If a provider is removed from the instance, the homes that require it stay locked: the administrator clears the rule of the home in the administration site."
+msgstr "Un membre dont le compte n'est pas encore lié au fournisseur le lie depuis les pages du compte, une fois connecté, puis se connecte par le fournisseur. Si un fournisseur est retiré de l'instance, les logements qui l'exigent restent verrouillés : l'administrateur efface la règle du logement dans le site d'administration."
 

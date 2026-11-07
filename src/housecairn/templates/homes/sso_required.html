@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{{ home.name }}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'homes:list' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Homes" %}</a>
+  <section class="card hero">
+    <h1>{{ home.name }}</h1>
+    <p class="lead">{% blocktranslate with provider=provider.name %}This home opens only after signing in through {{ provider }}.{% endblocktranslate %}</p>
+    {% if provider_declared %}
+      <a class="button" href="{% url 'openid_connect_login' provider_id=provider.id %}?process=login&amp;next={{ request.path|urlencode }}">{% blocktranslate with provider=provider.name %}Continue with {{ provider }}{% endblocktranslate %}</a>
+      <p class="small">{% translate "If your account is not linked to this provider yet, link it first from your linked accounts." %} <a href="{% url 'socialaccount_connections' %}">{% translate "Linked accounts" %}</a></p>
+    {% else %}
+      <p class="small">{% translate "This instance no longer offers this provider. Ask its administrator." %}</p>
+    {% endif %}
+  </section>
+{% endblock content %}

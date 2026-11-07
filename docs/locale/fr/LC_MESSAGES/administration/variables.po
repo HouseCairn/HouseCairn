@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 21:32+0000\n"
+"POT-Creation-Date: 2026-11-07 22:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -124,6 +124,21 @@ msgstr "`EMAIL_HOST`"
 msgid "Outgoing mail server (SMTP); email is off while it is empty. See Email below."
 msgstr "Serveur de courriel sortant (SMTP) ; le courriel est désactivé tant qu'il est vide. Voir Courriel ci-dessous."
 
+msgid "`HOUSECAIRN_SITE_URL`"
+msgstr "`HOUSECAIRN_SITE_URL`"
+
+msgid "Public address of the instance, such as `https://home.example.com`, used for links in emails. Empty: the address of the request, checked against `ALLOWED_HOSTS`."
+msgstr "Adresse publique de l'instance, par exemple `https://home.example.com`, utilisée pour les liens des courriels. Vide : l'adresse de la requête, contrôlée par `ALLOWED_HOSTS`."
+
+msgid "`HOUSECAIRN_INVITATION_LIFETIME_DAYS`"
+msgstr "`HOUSECAIRN_INVITATION_LIFETIME_DAYS`"
+
+msgid "`7`"
+msgstr "`7`"
+
+msgid "Days an invitation link stays valid, from 1 to 90."
+msgstr "Nombre de jours de validité d'un lien d'invitation, de 1 à 90."
+
 msgid "`HOUSECAIRN_DOCS_URL`"
 msgstr "`HOUSECAIRN_DOCS_URL`"
 
@@ -181,11 +196,14 @@ msgstr "Définies dans l'image, à ne pas modifier : `HOUSECAIRN_DATA_DIR=/data`
 msgid "Email"
 msgstr "Courriel"
 
-msgid "HouseCairn sends email only to reset a forgotten password. Set `EMAIL_HOST` to your SMTP server to turn it on, with `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`) and `DEFAULT_FROM_EMAIL` (`HouseCairn <noreply@localhost>`) as needed."
-msgstr "HouseCairn n'envoie de courriel que pour réinitialiser un mot de passe oublié. Renseignez `EMAIL_HOST` avec votre serveur SMTP pour l'activer, avec au besoin `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`) et `DEFAULT_FROM_EMAIL` (`HouseCairn <noreply@localhost>`)."
+msgid "HouseCairn sends email to reset a forgotten password and to deliver invitations to a home. Set `EMAIL_HOST` to your SMTP server to turn it on, with `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`) and `DEFAULT_FROM_EMAIL` (`HouseCairn <noreply@localhost>`) as needed."
+msgstr "HouseCairn envoie des courriels pour réinitialiser un mot de passe oublié et pour remettre les invitations à un logement. Renseignez `EMAIL_HOST` avec votre serveur SMTP pour l'activer, avec au besoin `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`) et `DEFAULT_FROM_EMAIL` (`HouseCairn <noreply@localhost>`)."
 
-msgid "Without `EMAIL_HOST`, or with a console or dummy email backend, nothing could be delivered: the *Forgot your password?* link is hidden and the reset page answers 404."
-msgstr "Sans `EMAIL_HOST`, ou avec un moteur de courriel console ou factice, rien ne pourrait être livré : le lien *Mot de passe oublié ?* est masqué et la page de réinitialisation répond 404."
+msgid "Without `EMAIL_HOST`, or with a console or dummy email backend, nothing could be delivered: the *Forgot your password?* link is hidden and the reset page answers 404, and inviting someone shows the invitation link once to the owner, who passes it on."
+msgstr "Sans `EMAIL_HOST`, ou avec un moteur de courriel console ou factice, rien ne pourrait être livré : le lien *Mot de passe oublié ?* est masqué, la page de réinitialisation répond 404, et une invitation affiche son lien une fois au propriétaire, qui le transmet."
+
+msgid "Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. Set it when `ALLOWED_HOSTS` lists several names, so that every email uses the public one."
+msgstr "Les liens des courriels pointent vers `HOUSECAIRN_SITE_URL` quand elle est renseignée. Renseignez-la quand `ALLOWED_HOSTS` liste plusieurs noms, pour que chaque courriel utilise le nom public."
 
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
@@ -204,3 +222,4 @@ msgstr "Décommentez `depends_on` dans le service `housecairn`, puis `docker com
 
 msgid "An existing PostgreSQL server works too: set `DATABASE_URL` to it."
 msgstr "Un serveur PostgreSQL existant convient aussi : pointez `DATABASE_URL` vers lui."
+

@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 22:45+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Household and roles"
+msgstr "Foyer et rôles"
+
+msgid "The people of a home and what each may do, at `/h/<home id>/household/`. Open it from the page of the home. Every member sees the list; only owners invite people, change roles and set the sign-in rule."
+msgstr "Les personnes d'un logement et ce que chacune peut faire, sur `/h/<home id>/household/`. Ouvrez-le depuis la page du logement. Chaque membre voit la liste ; seuls les propriétaires invitent, changent les rôles et règlent l'exigence de connexion."
+
+msgid "The household of a home, with its members and a pending invitation, on a computer."
+msgstr "Le foyer d'un logement, avec ses membres et une invitation en attente, sur ordinateur."
+
+msgid "Roles"
+msgstr "Rôles"
+
+msgid "Role"
+msgstr "Rôle"
+
+msgid "What it allows"
+msgstr "Ce qu'il permet"
+
+msgid "Owner"
+msgstr "Propriétaire"
+
+msgid "Everything, the household included: invite, change roles, remove members."
+msgstr "Tout, foyer compris : inviter, changer les rôles, retirer des membres."
+
+msgid "Member"
+msgstr "Membre"
+
+msgid "Tasks, projects, marking work done."
+msgstr "Tâches, projets, réalisation."
+
+msgid "Read only"
+msgstr "Lecture seule"
+
+msgid "Sees the home and changes nothing: for a tenant or a craftsperson."
+msgstr "Voit le logement et ne modifie rien : pour un locataire ou un artisan."
+
+msgid "A home always keeps at least one owner: the last owner can neither change their own role nor leave. Make someone else owner first."
+msgstr "Un logement garde toujours au moins un propriétaire : le dernier propriétaire ne peut ni changer son propre rôle ni partir. Nommez d'abord quelqu'un d'autre propriétaire."
+
+msgid "Invite someone"
+msgstr "Inviter quelqu'un"
+
+msgid "Enter the person's email address and the role they get, then **Invite**."
+msgstr "Saisissez l'adresse e-mail de la personne et le rôle qu'elle reçoit, puis **Inviter**."
+
+msgid "When the instance sends email, the invitation goes to that address, with a link that works once. The link is not shown to you."
+msgstr "Quand l'instance envoie des e-mails, l'invitation part à cette adresse, avec un lien qui ne sert qu'une fois. Le lien ne vous est pas montré."
+
+msgid "When it does not, the page shows the link once: pass it on yourself, by a channel you trust."
+msgstr "Sinon, la page affiche le lien une fois : transmettez-le vous-même, par un canal de confiance."
+
+msgid "The link expires after seven days by default. Under **Pending invitations**, **Send again** makes a new link and a new expiry (the previous link stops working) and **Revoke** cancels the invitation. An invitation does not say whether the address already has an account on the instance."
+msgstr "Le lien expire au bout de sept jours par défaut. Sous **Invitations en attente**, **Renvoyer** crée un nouveau lien et une nouvelle échéance (l'ancien lien cesse de fonctionner) et **Révoquer** annule l'invitation. Une invitation ne dit pas si l'adresse a déjà un compte sur l'instance."
+
+msgid "The invited person opens the link, then joins with their account, or creates one if they have none: an invitation is the way in when the instance does not let anyone sign up. Only an account with the invited address can accept it."
+msgstr "La personne invitée ouvre le lien, puis rejoint le logement avec son compte, ou en crée un si elle n'en a pas : l'invitation est le chemin d'entrée quand l'instance ne permet pas l'inscription libre. Seul un compte à l'adresse invitée peut l'accepter."
+
+msgid "Sign-in rule"
+msgstr "Exigence de connexion"
+
+msgid "When the instance offers single sign-on, an owner can require that members open this home only after signing in through one of its providers, such as Company SSO. A password, a passkey or an API token alone then no longer opens the home. Set the rule from a session signed in through that provider; the homes list marks the homes it locks."
+msgstr "Quand l'instance propose l'authentification unique, un propriétaire peut exiger que les membres n'ouvrent ce logement qu'après s'être connectés par l'un de ses fournisseurs, par exemple Company SSO. Un mot de passe, une passkey ou un jeton d'API seuls n'ouvrent alors plus le logement. Réglez cette exigence depuis une session connectée par ce fournisseur ; la liste des logements signale ceux qu'elle verrouille."
+

@@ -1,0 +1,8 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Invitation" %}{% endblock head_title %}
+{% block content %}
+  <h1>{% translate "This invitation link does not work" %}</h1>
+  <p>{% translate "It may have been used already, revoked, replaced by a newer link, or it may have expired. Ask the person who invited you to send it again." %}</p>
+  <p><a href="{% url 'account_login' %}">{% translate "Back to sign-in" %}</a></p>
+{% endblock content %}

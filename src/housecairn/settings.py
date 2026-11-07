@@ -229,6 +229,33 @@ ACCOUNT_ADAPTER = "housecairn.accounts.adapters.AccountAdapter"
 ACCOUNT_FORMS = {"login": "housecairn.accounts.forms.LoginForm"}
 SOCIALACCOUNT_ADAPTER = "housecairn.accounts.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_ONLY = False
+# An identity from a provider never signs in to, nor attaches itself to, an
+# existing account because it claims the same address: the account's owner
+# links it once signed in (docs/adr/0007, docs/adr/0021).
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = False
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = False
+# Rate limits of django-allauth, plus those of invitations (docs/adr/0020):
+# creating or sending again, per person; opening or accepting a link, per
+# client address (REMOTE_ADDR, see HOUSECAIRN_FORWARDED_ALLOW_IPS).
+ACCOUNT_RATE_LIMITS = {
+    "housecairn_invite": "10/m/user,50/d/user",
+    "housecairn_invitation": "30/m/ip",
+}
+# Days an invitation link stays valid.
+HOUSECAIRN_INVITATION_LIFETIME_DAYS: int = env.int("HOUSECAIRN_INVITATION_LIFETIME_DAYS", default=7)
+if not 1 <= HOUSECAIRN_INVITATION_LIFETIME_DAYS <= 90:
+    raise ImproperlyConfigured("HOUSECAIRN_INVITATION_LIFETIME_DAYS must be between 1 and 90.")
+# Public address of the instance (scheme and host, no path), used for links in
+# emails. Empty: the address of the request, which ALLOWED_HOSTS has checked.
+HOUSECAIRN_SITE_URL: str = env.str("HOUSECAIRN_SITE_URL", default="").strip().rstrip("/")
+if HOUSECAIRN_SITE_URL and (
+    urlsplit(HOUSECAIRN_SITE_URL).scheme not in {"http", "https"}
+    or not urlsplit(HOUSECAIRN_SITE_URL).netloc
+    or urlsplit(HOUSECAIRN_SITE_URL).path
+):
+    raise ImproperlyConfigured(
+        "HOUSECAIRN_SITE_URL must be an http:// or https:// address without a path."
+    )
 HOUSECAIRN_SIGNUP_OPEN: bool = env.bool("HOUSECAIRN_SIGNUP_OPEN", default=False)
 # Sign-up through OIDC: "closed" (default) refuses an identity without an
 # account, except the very first one, which becomes the instance
@@ -315,6 +342,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 50,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "EXCEPTION_HANDLER": "housecairn.homes.scoping.api_exception_handler",
 }
 
 SPECTACULAR_SETTINGS = {

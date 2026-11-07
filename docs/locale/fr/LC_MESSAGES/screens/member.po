@@ -1,0 +1,36 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 22:45+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Member"
+msgstr "Membre"
+
+msgid "One person of the household, at `/h/<home id>/household/members/<id>/`: their address, their role and since when they belong to the home."
+msgstr "Une personne du foyer, sur `/h/<home id>/household/members/<id>/` : son adresse, son rôle et depuis quand elle fait partie du logement."
+
+msgid "The page of a member, with the role to change, on a phone."
+msgstr "La page d'un membre, avec le rôle à changer, sur téléphone."
+
+msgid "An owner can change the role, remove the person from the home, or **make them owner**: they become owner and you become a member, in one step. On your own page, **Leave this home** removes you from it; the last owner cannot leave."
+msgstr "Un propriétaire peut changer le rôle, retirer la personne du logement, ou la **nommer propriétaire** : elle devient propriétaire et vous devenez membre, en une seule étape. Sur votre propre page, **Quitter ce logement** vous en retire ; le dernier propriétaire ne peut pas partir."
+
+msgid "Removing someone takes effect at once: their next request no longer sees the home, and their API tokens lose it too."
+msgstr "Le retrait prend effet immédiatement : sa requête suivante ne voit plus le logement, et ses jetons d'API le perdent aussi."
+

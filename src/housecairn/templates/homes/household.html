@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Household and roles" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  <h1>{% translate "Household and roles" %}</h1>
+  <ul class="card-list">
+    {% for membership in members %}
+      <li>
+        <a class="row" href="{% url 'homes:member' home_id=home.id member_id=membership.id %}">
+          <span class="row-body">
+            <span class="row-title">{% firstof membership.user.get_full_name membership.user.email %}{% if membership.user_id == me.pk %} ({% translate "you" %}){% endif %}</span>
+            <span class="row-text">{% include "homes/_role_text.html" with role=membership.role %}</span>
+          </span>
+          {% include "components/icon.html" with name="chevron" class="chevron" %}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  {% if is_owner %}
+    {% if shared_link %}
+      <section class="card">
+        <h2>{% translate "Invitation link" %}</h2>
+        <p class="small">{% translate "This instance does not send email. Give this link to the person you invite: it is shown only once and works once." %}</p>
+        <p class="code mono">{{ shared_link }}</p>
+      </section>
+    {% endif %}
+    <h2>{% translate "Invite someone" %}</h2>
+    <form method="post" action="{% url 'homes:invite' home_id=home.id %}" class="card">
+      {% csrf_token %}
+      {{ invite_form.as_p }}
+      <button type="submit" class="button-block">{% translate "Invite" %}</button>
+      <p class="small">{% if email_configured %}{% translate "The invitation is sent by email, with a link that works once." %}{% else %}{% translate "This instance does not send email: you will get a link to pass on, which works once." %}{% endif %} {% blocktranslate count days=invitation_days %}It expires after {{ days }} day.{% plural %}It expires after {{ days }} days.{% endblocktranslate %}</p>
+    </form>
+    {% if invitations %}
+      <h2>{% translate "Pending invitations" %}</h2>
+      {% for invitation in invitations %}
+        <section class="card">
+          <p class="row-title">{{ invitation.email }}</p>
+          <p class="row-text">{{ invitation.get_role_display }} · {% blocktranslate with date=invitation.expires_at|date:"SHORT_DATE_FORMAT" %}until {{ date }}{% endblocktranslate %}</p>
+          <div class="button-row">
+            <form method="post" action="{% url 'homes:invitation-resend' home_id=home.id invitation_id=invitation.id %}">
+              {% csrf_token %}
+              <button type="submit" class="button-secondary button-small">{% translate "Send again" %}</button>
+            </form>
+            <form method="post" action="{% url 'homes:invitation-revoke' home_id=home.id invitation_id=invitation.id %}">
+              {% csrf_token %}
+              <button type="submit" class="button-danger button-small">{% translate "Revoke" %}</button>
+            </form>
+          </div>
+        </section>
+      {% endfor %}
+    {% endif %}
+    {% if providers %}
+      <h2>{% translate "Sign-in" %}</h2>
+      <form method="post" action="{% url 'homes:required-provider' home_id=home.id %}" class="card">
+        {% csrf_token %}
+        {{ provider_form.as_p }}
+        <p class="small">{% translate "When a provider is required, members open this home only after signing in through it, not with a password or a passkey alone. Set it from a session signed in through that provider." %}</p>
+        <button type="submit" class="button-secondary button-block">{% translate "Save" %}</button>
+      </form>
+    {% endif %}
+  {% else %}
+    {% if required_provider %}<p class="small">{% blocktranslate with provider=required_provider.name %}Members open this home by signing in through {{ provider }}.{% endblocktranslate %}</p>{% endif %}
+    <p class="small">{% translate "Only owners invite people and change roles." %}</p>
+  {% endif %}
+{% endblock content %}
