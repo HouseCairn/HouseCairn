@@ -27,7 +27,7 @@ dependencies = [
   "python-dateutil>=2.9",
   # Lets classes such as ModelAdmin[Home] be written at runtime for the type
   # checker; companion of django-stubs (see docs/adr/0001).
-  "django-stubs-ext>=5.2,<5.3",
+  "django-stubs-ext>=5.2,<6.2",
 ]
 
 [project.optional-dependencies]
