@@ -34,8 +34,8 @@ msgstr "Le second `oidc` est `OIDC_PROVIDER_ID`, `oidc` par défaut."
 msgid "In `deploy/production.env`:"
 msgstr "Dans `deploy/production.env` :"
 
-msgid "`OIDC_SERVER_URL` is the issuer: HouseCairn reads `/.well-known/openid-configuration` below it. `OIDC_PROVIDER_NAME` sets the name of the sign-in button, for example `Zitadel` (`Single sign-on` by default); the sign-in page shows one button per provider, under the form."
-msgstr "`OIDC_SERVER_URL` est l'émetteur (issuer) : HouseCairn lit `/.well-known/openid-configuration` sous cette adresse. `OIDC_PROVIDER_NAME` donne le nom du bouton de connexion, par exemple `Zitadel` (`Single sign-on` par défaut) ; la page de connexion affiche un bouton par fournisseur, sous le formulaire."
+msgid "`OIDC_SERVER_URL` is the issuer: HouseCairn reads `/.well-known/openid-configuration` below it. `OIDC_PROVIDER_NAME` is the provider's name, for example `Company SSO` (`Single sign-on` by default); the sign-in page shows one button per provider, under the form, labelled \"Continue with\" and that name."
+msgstr "`OIDC_SERVER_URL` est l'émetteur (issuer) : HouseCairn lit `/.well-known/openid-configuration` sous cette adresse. `OIDC_PROVIDER_NAME` est le nom du fournisseur, par exemple `Company SSO` (`Single sign-on` par défaut) ; la page de connexion affiche un bouton par fournisseur, sous le formulaire, libellé « Continuer avec » suivi de ce nom."
 
 msgid "Restart the container, then sign in right away with the address set in `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, which the provider must have verified."
 msgstr "Redémarrez le conteneur, puis connectez-vous aussitôt avec l'adresse définie dans `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, que le fournisseur doit avoir vérifiée."

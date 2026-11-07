@@ -20,6 +20,8 @@ from housecairn.homes.models import Home
 from tests.htmlscan import inline_code_problems, script_tags
 
 SRC = Path(settings.BASE_DIR)
+SMTP_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+CONSOLE_BACKEND = "django.core.mail.backends.console.EmailBackend"
 LOGO = "img/brand/housecairn-logo.svg"
 
 
@@ -91,6 +93,13 @@ class TestBrand:
         assert data["lang"] == "fr"
         assert "dans la maison" in data["description"]
 
+    def test_manifest_varies_on_the_language_header(self, client: Client) -> None:
+        """A shared cache must keep one manifest per language."""
+        for language in ("en", "fr"):
+            response = client.get(reverse("manifest"), headers={"Accept-Language": language})
+            assert response["Content-Language"] == language
+            assert "Accept-Language" in response["Vary"]
+
 
 class TestScreens:
     """Every screen answers 200, carries the logo and the name, and respects the CSP."""
@@ -100,9 +109,9 @@ class TestScreens:
         "account_login",
         "about",
         "account_signup",
-        "account_reset_password",
-        "account_reset_password_done",
     )
+    # These two send mail: they exist only on an instance with a mail server.
+    NEEDS_EMAIL = ("account_reset_password", "account_reset_password_done")
     SIGNED_IN = (
         "index",
         "homes:list",
@@ -124,6 +133,14 @@ class TestScreens:
         assert response.status_code == 200, name
         self._check(response.text)
         assert 'class="nav"' not in response.text
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("name", NEEDS_EMAIL)
+    @override_settings(EMAIL_HOST="smtp.example.com", EMAIL_BACKEND=SMTP_BACKEND)
+    def test_signed_out_with_email(self, client: Client, name: str) -> None:
+        response = _page(client, name)
+        assert response.status_code == 200, name
+        self._check(response.text)
 
     @pytest.mark.django_db
     @pytest.mark.parametrize("name", SIGNED_IN)
@@ -289,6 +306,48 @@ class TestSignInPage:
         assert "third-party" not in html.lower()
         assert "sso-list" not in html
 
+    FORGOT = "Forgot your password?"
+    SMTP = {"EMAIL_HOST": "smtp.example.com", "EMAIL_BACKEND": SMTP_BACKEND}
+
+    @pytest.mark.django_db
+    def test_no_forgot_password_link_without_email(self, html: str) -> None:
+        assert self.FORGOT not in html
+        assert reverse("account_reset_password") not in html
+
+    @pytest.mark.django_db
+    def test_no_forgot_password_link_with_console_backend(self, client: Client) -> None:
+        with override_settings(EMAIL_HOST="smtp.example.com", EMAIL_BACKEND=CONSOLE_BACKEND):
+            html = _page(client, "account_login").text
+        assert self.FORGOT not in html
+
+    @pytest.mark.django_db
+    def test_no_forgot_password_link_without_host(self, client: Client) -> None:
+        with override_settings(EMAIL_HOST="", EMAIL_BACKEND=SMTP_BACKEND):
+            html = _page(client, "account_login").text
+        assert self.FORGOT not in html
+
+    @pytest.mark.django_db
+    def test_forgot_password_link_with_email(self, client: Client) -> None:
+        with override_settings(**self.SMTP):
+            html = _page(client, "account_login").text
+        assert self.FORGOT in html
+        assert f'href="{reverse("account_reset_password")}"' in html
+
+    @pytest.mark.django_db
+    def test_reset_page_is_not_found_without_email(self, client: Client) -> None:
+        assert _page(client, "account_reset_password").status_code == 404
+        assert _page(client, "account_reset_password_done").status_code == 404
+        assert (
+            client.post(reverse("account_reset_password"), {"email": "a@example.com"}).status_code
+            == 404
+        )
+
+    @pytest.mark.django_db
+    def test_reset_page_works_with_email(self, client: Client) -> None:
+        with override_settings(**self.SMTP):
+            assert _page(client, "account_reset_password").status_code == 200
+            assert _page(client, "account_reset_password_done").status_code == 200
+
     @pytest.mark.django_db
     def test_no_signup_link_when_closed(self, html: str) -> None:
         assert reverse("account_signup") not in html
@@ -298,31 +357,43 @@ class TestSignInPage:
     def test_signup_link_when_open(self, client: Client) -> None:
         assert reverse("account_signup") in _page(client, "account_login").text
 
-    @pytest.mark.django_db
-    def test_one_button_per_provider_labelled_with_its_name(self, client: Client) -> None:
-        providers = {
-            "openid_connect": {
-                "APPS": [
-                    {
-                        "provider_id": provider_id,
-                        "name": name,
-                        "client_id": "housecairn",
-                        "secret": "not-a-secret",
-                        "settings": {"server_url": "https://id.example.com"},
-                    }
-                    for provider_id, name in (("first", "Zitadel"), ("second", "Company SSO"))
-                ]
-            }
+    PROVIDERS = {
+        "openid_connect": {
+            "APPS": [
+                {
+                    "provider_id": provider_id,
+                    "name": name,
+                    "client_id": "housecairn",
+                    "secret": "not-a-secret",
+                    "settings": {"server_url": "https://id.example.com"},
+                }
+                for provider_id, name in (("first", "Company SSO"), ("second", "Team SSO"))
+            ]
         }
-        with override_settings(SOCIALACCOUNT_PROVIDERS=providers):
+    }
+    BUTTON = r'<a class="button button-secondary" href="([^"]+)">([^<]+)</a>'
+
+    @pytest.mark.django_db
+    def test_one_button_per_provider_labelled_continue_with_its_name(self, client: Client) -> None:
+        with override_settings(SOCIALACCOUNT_PROVIDERS=self.PROVIDERS):
             html = _page(client, "account_login").text
-        buttons = re.findall(r'<a class="button button-secondary" href="([^"]+)">([^<]+)</a>', html)
-        assert sorted(label for _href, label in buttons) == ["Company SSO", "Zitadel"]
+        buttons = re.findall(self.BUTTON, html)
+        assert sorted(label for _href, label in buttons) == [
+            "Continue with Company SSO",
+            "Continue with Team SSO",
+        ]
         assert all("/accounts/oidc/" in href for href, _label in buttons)
         assert "<hr" not in html
         assert "third-party" not in html.lower()
         # The buttons come after the sign-in form, not before.
-        assert html.index("</form>") < html.index("Zitadel")
+        assert html.index("</form>") < html.index("Continue with Company SSO")
+
+    @pytest.mark.django_db
+    def test_provider_button_is_translated(self, client: Client) -> None:
+        with override_settings(SOCIALACCOUNT_PROVIDERS=self.PROVIDERS):
+            html = client.get(reverse("account_login"), headers={"Accept-Language": "fr"}).text
+        labels = sorted(label for _href, label in re.findall(self.BUTTON, html))
+        assert labels == ["Continuer avec Company SSO", "Continuer avec Team SSO"]
 
 
 class TestTokens:

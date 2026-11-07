@@ -60,7 +60,9 @@ jobs:
           HOUSECAIRN_SIGNUP_OPEN: "true"
           OIDC_SERVER_URL: https://id.example.com
           OIDC_CLIENT_ID: housecairn
-          OIDC_PROVIDER_NAME: Zitadel
+          OIDC_PROVIDER_NAME: Company SSO
+          # The password reset page exists only with a mail server; nothing is sent.
+          EMAIL_HOST: smtp.example.com
         run: |
           mkdir -p "$HOUSECAIRN_DATA_DIR"
           uv run python manage.py migrate --noinput
