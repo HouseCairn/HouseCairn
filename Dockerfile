@@ -12,7 +12,7 @@ FROM ghcr.io/astral-sh/uv:0.13.7@sha256:96f40d3904aad8d0bd010539001d36c8e2188b98
 # ---------------------------------------------------------------------------
 # Build stage: dependencies, design tokens, translations, static files.
 # ---------------------------------------------------------------------------
-FROM python:3.12.16-slim-trixie@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54 AS build
+FROM python:3.15.0-slim-trixie@sha256:f5b92f2a669a4c347044f29367f31983280b648250ca94dea66f98c53bc87e58 AS build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -64,7 +64,7 @@ RUN DEBUG=true .venv/bin/python manage.py build_design_tokens \
 # ---------------------------------------------------------------------------
 # Final stage.
 # ---------------------------------------------------------------------------
-FROM python:3.12.16-slim-trixie@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54
+FROM python:3.15.0-slim-trixie@sha256:f5b92f2a669a4c347044f29367f31983280b648250ca94dea66f98c53bc87e58
 
 # The base image's pip is not used at run time (dependencies are in
 # /app/.venv): removed, with its advisories. Then a fixed, unprivileged
