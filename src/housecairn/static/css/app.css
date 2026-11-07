@@ -467,6 +467,7 @@ hr {
 
 .facts > div {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: var(--hc-space-4);
   padding: var(--hc-space-3) 0;
@@ -476,6 +477,10 @@ hr {
 .facts > div:first-child {
   border-top: 0;
   padding-top: 0;
+}
+
+.facts > div:last-child {
+  padding-bottom: 0;
 }
 
 .facts dt {
