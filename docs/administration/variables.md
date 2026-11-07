@@ -17,7 +17,7 @@ Set them in `deploy/production.env`. The full list, with defaults, is in
 | `OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` | (none) | Single sign-on through any OpenID Connect provider. |
 | `HOUSECAIRN_OIDC_SIGNUP`, `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL` | `closed`, (none) | Who may get an account through single sign-on. |
 | `EMAIL_HOST` | (none) | Outgoing mail server (SMTP); email is off while it is empty. See Email below. |
-| `HOUSECAIRN_SITE_URL` | (none) | Public address of the instance, such as `https://home.example.com`, used for links in emails. Empty: the address of the request, checked against `ALLOWED_HOSTS`. |
+| `HOUSECAIRN_SITE_URL` | (none: set it in production) | Public address of the instance, such as `https://home.example.com`, used for links in emails. Empty: the address of the request, checked against `ALLOWED_HOSTS`; `check --deploy` warns when `EMAIL_HOST` is set without it. |
 | `HOUSECAIRN_INVITATION_LIFETIME_DAYS` | `7` | Days an invitation link stays valid, from 1 to 90. |
 | `HOUSECAIRN_DOCS_URL` | `https://docs.housecairn.app` | Address of this documentation, used by the help link of each screen. |
 | `HOUSECAIRN_WEB_WORKERS` | `2` | Web server processes. |
@@ -42,8 +42,13 @@ be delivered: the *Forgot your password?* link is hidden and the reset page
 answers 404, and inviting someone shows the invitation link once to the owner,
 who passes it on.
 
-Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. Set it when
-`ALLOWED_HOSTS` lists several names, so that every email uses the public one.
+Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. **Set it in
+production.** Without it, a link takes the host of the request that triggered
+it: `ALLOWED_HOSTS` limits that to the names the instance answers to, but a
+proxy that lets a request choose its host, or several names in
+`ALLOWED_HOSTS`, can make a link point where you did not intend.
+`manage.py check --deploy` reports `EMAIL_HOST` set without
+`HOUSECAIRN_SITE_URL`.
 
 ## PostgreSQL
 
