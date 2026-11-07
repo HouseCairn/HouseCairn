@@ -1,0 +1,113 @@
+[project]
+name = "housecairn"
+version = "0.0.0"
+description = "Self-hosted planner for home maintenance and renovation projects."
+readme = "README.md"
+license = "AGPL-3.0-only"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.12,<3.13"
+authors = [{ name = "Robvred" }]
+classifiers = [
+  "Framework :: Django",
+  "Framework :: Django :: 5.2",
+  "Programming Language :: Python :: 3.12",
+  "Private :: Do Not Upload",
+]
+dependencies = [
+  "django>=5.2.8,<5.3",
+  "djangorestframework>=3.16",
+  "drf-spectacular>=0.28",
+  "drf-spectacular-sidecar>=2025.1.1",
+  # Extras of the same package: "mfa" brings fido2 (passkeys), "socialaccount"
+  # brings the OpenID Connect client (see docs/adr/0001).
+  "django-allauth[mfa,socialaccount]>=65.13",
+  "django-q2>=1.8",
+  "django-environ>=0.12",
+  "django-csp>=4.0",
+  "python-dateutil>=2.9",
+  # Lets classes such as ModelAdmin[Home] be written at runtime for the type
+  # checker; companion of django-stubs (see docs/adr/0001).
+  "django-stubs-ext>=5.2,<5.3",
+]
+
+[dependency-groups]
+dev = [
+  "ruff>=0.14",
+  "mypy>=1.18",
+  "django-stubs[compatible-mypy]>=5.2,<5.3",
+  "djangorestframework-stubs>=3.16",
+  "pytest>=8.4",
+  "pytest-django>=4.11",
+  "pytest-cov>=7.0",
+  "types-python-dateutil>=2.9",
+]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/housecairn"]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+extend-exclude = ["src/housecairn/*/migrations/*"]
+
+[tool.ruff.lint]
+select = [
+  "E", "W", "F", "I", "B", "UP", "S", "DJ", "C4", "SIM", "RUF", "PT", "N", "A", "T20",
+]
+ignore = [
+  "RUF012",  # Django and DRF class attributes (Meta, fields) are mutable by design.
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+strict = true
+warn_unreachable = true
+disallow_untyped_defs = true
+exclude = ["/migrations/"]
+
+[[tool.mypy.overrides]]
+module = [
+  "allauth.*",
+  "django_q.*",
+  "environ.*",
+  "csp.*",
+  "drf_spectacular.*",
+  "drf_spectacular_sidecar.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["housecairn.*.migrations.*"]
+ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "tests.settings"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+filterwarnings = ["error::RuntimeWarning"]
+
+[tool.coverage.run]
+source = ["housecairn"]
+branch = true
+omit = ["*/migrations/*", "src/housecairn/asgi.py", "src/housecairn/wsgi.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

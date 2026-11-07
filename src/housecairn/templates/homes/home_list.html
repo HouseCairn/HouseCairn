@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Homes" %}{% endblock head_title %}
+{% block content %}
+  <h1>{% translate "Homes" %}</h1>
+  {% if homes %}
+    <ul class="card-list">
+      {% for home in homes %}
+        <li class="card"><a href="{% url 'homes:detail' home_id=home.id %}">{{ home.name }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>{% translate "You are not a member of any home yet." %}</p>
+  {% endif %}
+{% endblock content %}

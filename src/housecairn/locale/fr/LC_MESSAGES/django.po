@@ -1,0 +1,238 @@
+# French translation of Housecairn.
+# This file is distributed under the same license as Housecairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: accounts/admin.py
+msgid "Personal info"
+msgstr "Informations personnelles"
+
+#: accounts/admin.py
+msgid "Permissions"
+msgstr "Permissions"
+
+#: accounts/admin.py
+msgid "Important dates"
+msgstr "Dates importantes"
+
+#: accounts/apps.py
+msgid "Accounts"
+msgstr "Comptes"
+
+#: accounts/models.py
+msgid "email address"
+msgstr "adresse e-mail"
+
+#: accounts/models.py core/models.py
+msgid "updated at"
+msgstr "modifié le"
+
+#: accounts/models.py
+msgid "user"
+msgstr "utilisateur"
+
+#: accounts/models.py
+msgid "users"
+msgstr "utilisateurs"
+
+#: apitokens/admin.py
+msgid "Revoke selected tokens"
+msgstr "Révoquer les jetons sélectionnés"
+
+#: apitokens/apps.py apitokens/models.py
+msgid "API tokens"
+msgstr "Jetons d'API"
+
+#: apitokens/authentication.py
+msgid "Invalid token header."
+msgstr "En-tête de jeton invalide."
+
+#: apitokens/authentication.py
+msgid "Invalid, expired or revoked token."
+msgstr "Jeton invalide, expiré ou révoqué."
+
+#: apitokens/models.py
+msgid "Read"
+msgstr "Lecture"
+
+#: apitokens/models.py
+msgid "Write"
+msgstr "Écriture"
+
+#: apitokens/models.py
+msgid "Post events"
+msgstr "Envoi d'événements"
+
+#: apitokens/models.py homes/models.py
+msgid "name"
+msgstr "nom"
+
+#: apitokens/models.py
+msgid "prefix"
+msgstr "préfixe"
+
+#: apitokens/models.py
+msgid "scopes"
+msgstr "portées"
+
+#: apitokens/models.py homes/models.py
+msgid "homes"
+msgstr "logements"
+
+#: apitokens/models.py
+msgid "expires at"
+msgstr "expire le"
+
+#: apitokens/models.py
+msgid "revoked at"
+msgstr "révoqué le"
+
+#: apitokens/models.py
+msgid "last used at"
+msgstr "dernière utilisation le"
+
+#: apitokens/models.py
+msgid "API token"
+msgstr "jeton d'API"
+
+#: apitokens/permissions.py
+msgid "This token does not have the scope this request needs."
+msgstr "Ce jeton n'a pas la portée nécessaire à cette requête."
+
+#: core/apps.py
+msgid "Core"
+msgstr "Cœur"
+
+#: core/models.py
+msgid "created at"
+msgstr "créé le"
+
+#: core/models.py
+msgid "deleted at"
+msgstr "supprimé le"
+
+#: events/apps.py
+msgid "Events"
+msgstr "Événements"
+
+#: events/models.py
+msgid "kind"
+msgstr "type"
+
+#: events/models.py
+msgid "payload"
+msgstr "contenu"
+
+#: events/models.py
+msgid "event"
+msgstr "événement"
+
+#: events/models.py
+msgid "events"
+msgstr "événements"
+
+#: homes/apps.py templates/base.html templates/homes/home_list.html
+msgid "Homes"
+msgstr "Logements"
+
+#: homes/models.py
+msgid "Owner"
+msgstr "Propriétaire"
+
+#: homes/models.py
+msgid "Member"
+msgstr "Membre"
+
+#: homes/models.py
+msgid "Read only"
+msgstr "Lecture seule"
+
+#: homes/models.py
+msgid "currency"
+msgstr "devise"
+
+#: homes/models.py
+msgid "Use an ISO 4217 code, such as EUR."
+msgstr "Utilisez un code ISO 4217, par exemple EUR."
+
+#: homes/models.py
+msgid "ISO 4217 code of the currency used for this home's budget."
+msgstr "Code ISO 4217 de la devise du budget de ce logement."
+
+#: homes/models.py
+msgid "home"
+msgstr "logement"
+
+#: homes/models.py
+msgid "role"
+msgstr "rôle"
+
+#: homes/models.py
+msgid "membership"
+msgstr "appartenance"
+
+#: homes/models.py
+msgid "memberships"
+msgstr "appartenances"
+
+#: settings.py
+msgid "English"
+msgstr "Anglais"
+
+#: settings.py
+msgid "French"
+msgstr "Français"
+
+#: templates/base.html
+msgid "Skip to content"
+msgstr "Aller au contenu"
+
+#: templates/base.html
+msgid "Main navigation"
+msgstr "Navigation principale"
+
+#: templates/base.html
+msgid "Sign out"
+msgstr "Se déconnecter"
+
+#: templates/base.html templates/core/index.html
+msgid "Sign in"
+msgstr "Se connecter"
+
+#: templates/core/index.html
+msgid "Welcome"
+msgstr "Bienvenue"
+
+#: templates/core/index.html
+msgctxt "product name"
+msgid "Housecairn"
+msgstr "Housecairn"
+
+#: templates/core/index.html
+msgid "What needs doing in the house, where, when, with what and for how much."
+msgstr "Ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
+
+#: templates/core/index.html
+msgid "Go to my homes"
+msgstr "Voir mes logements"
+
+#: templates/homes/home_detail.html
+msgid "Your role"
+msgstr "Votre rôle"
+
+#: templates/homes/home_detail.html
+msgid "Currency"
+msgstr "Devise"
+
+#: templates/homes/home_list.html
+msgid "You are not a member of any home yet."
+msgstr "Vous n'êtes membre d'aucun logement pour l'instant."
