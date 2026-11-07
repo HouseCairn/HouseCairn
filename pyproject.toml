@@ -60,6 +60,7 @@ docs = [
   "myst-parser>=5.1",
   "sphinx-intl>=2.4",
   "playwright>=1.64",
+  "sphinx-copybutton>=0.5.2",
 ]
 
 [build-system]

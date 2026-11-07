@@ -1,0 +1,46 @@
+{#- Furo's page, with breadcrumbs, the edit and issue links, the language of
+    the page and the HouseCairn footer (docs/adr/0016). Strings come from
+    housecairn_docs.UI_STRINGS, in the language of the build. -#}
+{% extends "!page.html" %}
+
+{%- block extrahead %}
+{{ super() }}
+<link rel="icon" type="image/png" sizes="32x32" href="{{ pathto('_static/favicon-32.png', 1) }}">
+<link rel="apple-touch-icon" href="{{ pathto('_static/apple-touch-icon.png', 1) }}">
+<meta name="theme-color" content="#1F3A3D">
+{%- endblock %}
+
+{% block content %}
+{%- if not hc_ui.is_root %}
+<nav class="hc-breadcrumbs" aria-label="{{ hc_ui.breadcrumbs }}">
+  <ol>
+    <li><a href="{{ pathto(master_doc) }}">{{ hc_ui.home }}</a></li>
+    {%- for parent in parents %}
+    <li><a href="{{ parent.link|e }}">{{ parent.title }}</a></li>
+    {%- endfor %}
+    <li><span aria-current="page">{{ title|striptags|e }}</span></li>
+  </ol>
+</nav>
+{%- endif %}
+{{ body }}
+<div class="hc-page-actions">
+  {%- if pagename and page_source_suffix %}
+  <a href="{{ hc_ui.repository }}/edit/main/docs/{{ pagename }}{{ page_source_suffix }}" rel="edit">
+    <svg aria-hidden="true" focusable="false"><use href="#svg-pencil"></use></svg>{{ hc_ui.edit }}</a>
+  {%- endif %}
+  <a href="{{ hc_ui.issue_url|e }}">
+    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><circle cx="12" cy="16.5" r="0.6"/></svg>{{ hc_ui.issue }}</a>
+</div>
+{% endblock %}
+
+{% block footer %}
+{{ super() }}
+<div class="hc-footer">
+  <p>{{ hc_ui.licence }} {{ hc_ui.ai }}</p>
+  <p class="hc-footer-links">
+    <a href="{{ hc_ui.licence_url }}">{{ hc_ui.licence_link }}</a>
+    <a href="{{ hc_ui.notice_url }}">{{ hc_ui.notice_link }}</a>
+    <a href="{{ hc_ui.repository }}">{{ hc_ui.source_link }}</a>
+  </p>
+</div>
+{% endblock %}

@@ -6,6 +6,11 @@
   rendered by the `openapi-reference` directive as static HTML.
 - Every page gets a language switcher to the same page in the other language,
   and a notice when the page is not entirely translated.
+- An image whose alternative text is translated counts as translated (Sphinx
+  translates the text but leaves the image marked as untranslated, so every
+  French page with a screenshot said it was not entirely translated).
+- The page template (`_templates/page.html`) gets its interface strings in the
+  language of the build: breadcrumbs, the edit and issue links, the footer.
 """
 
 import json
@@ -17,9 +22,11 @@ import sys
 from html import escape
 from pathlib import Path
 from typing import Any, ClassVar
+from urllib.parse import quote, urlencode
 
 from docutils import nodes
 from sphinx.application import Sphinx
+from sphinx.transforms import SphinxTransform
 from sphinx.util.docutils import SphinxDirective
 
 DOCS_DIR = Path(__file__).resolve().parents[1]
@@ -37,6 +44,41 @@ NOT_TRANSLATED = {
         "Cette page n'est pas encore entièrement traduite : les passages non "
         "traduits sont affichés en anglais.",
     ),
+}
+REPOSITORY = "https://github.com/HouseCairn/housecairn"
+# Interface strings of the templates, per language. Kept here rather than in a
+# Sphinx catalog so that the page catalogs stay one per page (build_docs.py).
+UI_STRINGS = {
+    "en": {
+        "breadcrumbs": "Breadcrumbs",
+        "home": "Home",
+        "edit": "Edit this page on GitHub",
+        "issue": "Report a problem with this page",
+        "logo": "HouseCairn, home of the documentation",
+        "licence": (
+            "HouseCairn is free software under the GNU Affero General Public License "
+            "v3.0 only. The name and the logo are not covered by the licence."
+        ),
+        "licence_link": "Licence",
+        "notice_link": "Notices",
+        "source_link": "Source code",
+        "ai": "Developed with an AI coding agent, under human review.",
+    },
+    "fr": {
+        "breadcrumbs": "Fil d'Ariane",
+        "home": "Accueil",
+        "edit": "Modifier cette page sur GitHub",
+        "issue": "Signaler un problème sur cette page",
+        "logo": "HouseCairn, accueil de la documentation",
+        "licence": (
+            "HouseCairn est un logiciel libre sous licence GNU Affero General Public "
+            "License v3.0 uniquement. Le nom et le logo ne sont pas couverts par la licence."
+        ),
+        "licence_link": "Licence",
+        "notice_link": "Mentions",
+        "source_link": "Code source",
+        "ai": "Développé avec un agent de programmation IA, sous revue humaine.",
+    },
 }
 HTTP_METHODS = ("get", "put", "post", "delete", "options", "head", "patch", "trace")
 
@@ -217,6 +259,35 @@ class OpenAPIReference(SphinxDirective):
         return box
 
 
+class RememberImageAlt(SphinxTransform):
+    """Keep the source alternative text of images, before Sphinx translates it."""
+
+    default_priority = 19  # Sphinx's Locale transform is 20.
+
+    def apply(self, **kwargs: Any) -> None:
+        for image in self.document.findall(nodes.image):
+            image["hc_source_alt"] = image.get("alt", "")
+
+
+class CountTranslatedImageAlt(SphinxTransform):
+    """Mark an image translated when its alternative text was translated."""
+
+    default_priority = 21  # after Locale (20), before the progress count (25).
+
+    def apply(self, **kwargs: Any) -> None:
+        for image in self.document.findall(nodes.image):
+            source = image.attributes.pop("hc_source_alt", None)
+            if image.get("translated") is False and source and image.get("alt") != source:
+                image["translated"] = True
+
+
+def issue_url(pagename: str, language: str) -> str:
+    """New issue about a page: the bug form, its title naming the page."""
+    title = f"bug: documentation page {pagename} ({language})"
+    query = urlencode({"template": "bug_report.yml", "title": title}, quote_via=quote)
+    return f"{REPOSITORY}/issues/new?{query}"
+
+
 def page_context(
     app: Sphinx,
     pagename: str,
@@ -231,6 +302,15 @@ def page_context(
     # Root of the whole site, relative to this page.
     to_root = "../" * (depth + (1 if LANGUAGES[language][1] else 0)) or "./"
     page = "" if target in ("", "index", "index/") else target
+    strings = UI_STRINGS[language]
+    context["hc_ui"] = {
+        **strings,
+        "repository": REPOSITORY,
+        "licence_url": f"{REPOSITORY}/blob/main/LICENSE",
+        "notice_url": f"{REPOSITORY}/blob/main/NOTICE",
+        "issue_url": issue_url(pagename, language),
+        "is_root": pagename == app.config.root_doc,
+    }
     context["hc_languages"] = [
         {
             "code": code,
@@ -257,4 +337,6 @@ def setup(app: Sphinx) -> dict[str, Any]:
     app.connect("builder-inited", generate_schema)
     app.connect("html-page-context", page_context)
     app.add_directive("openapi-reference", OpenAPIReference)
+    app.add_transform(RememberImageAlt)
+    app.add_transform(CountTranslatedImageAlt)
     return {"version": "1", "parallel_read_safe": True, "parallel_write_safe": True}

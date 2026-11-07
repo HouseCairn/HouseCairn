@@ -266,3 +266,92 @@ blocks every merge), add to the ruleset, in this order:
 - A new screen needs a page of the screen reference and an entry in
   `housecairn.core.help`, or the tests fail.
 - Zensical is to be reconsidered when stable and translatable.
+
+## Amendment, 2026-11-07: design of the site
+
+**Why.** The first site used Furo's default look. The maintainer decided to keep
+Sphinx, Furo, MyST and gettext, and to give the site the identity and the finish
+of the application ([ADR 0017](0017-visual-system-and-brand.md)) without forking
+the theme or loading anything from another host.
+
+**Theme.** Furo is customized only through its CSS variables and one stylesheet,
+`docs/_static/housecairn.css`, plus three small templates in `docs/_templates/`
+(the page, the sidebar brand, the language switcher). Nothing is duplicated from
+the application: `conf.py` copies into the site, at build time, the generated
+`tokens.css` (from `design/tokens.json`), the Manrope and JetBrains Mono WOFF2
+files with their SIL OFL 1.1 texts, the wordmark, the favicons and the
+wordmark for dark backgrounds of `design/brand/`. The stylesheet maps the tokens
+to Furo's variables: palette, Manrope for text and JetBrains Mono for code,
+radii (10 to 14 px), spacing, the application's white panels with a hairline
+border and a soft shadow on its warm background. Code blocks, admonitions,
+tables, screenshots (frame, radius, shadow, caption) and the API reference
+follow the same panels. The application is light only; **the site also has a
+dark theme**, Furo's automatic, light and dark switch, with the brand colours on
+slate (`slate-deep` page, `slate` sidebar, sand links). Its values are in the
+stylesheet, next to the light ones, and are checked like them (below). Code
+colours are Pygments' `a11y-light` and `a11y-dark` styles, built for AA contrast.
+
+**Home page.** `docs/index.md` is an entry page, not a table of contents: a
+short pitch, an honest status box, six cards (Getting started, Guides, Screen
+reference, API, Administration, Security), a screenshot of the application, and
+the table of contents hidden (the sidebar shows it). The cards are MyST
+`container` blocks and plain CSS, so their text stays in the gettext catalogs;
+`sphinx-design` was not needed for a grid of six links and is not added.
+
+**Navigation.** Breadcrumbs, then at the bottom of each page "Edit this page on
+GitHub" and "Report a problem with this page" (the bug form, titled with the
+page), a footer with the licence, the trademark reservation of `NOTICE` and the
+AI disclosure. The language switcher stays at the top of the sidebar, as a
+segmented control. These strings are in the language of the build, from
+`UI_STRINGS` in the extension, so the page catalogs stay one per page. Search is
+still Sphinx's own local index.
+
+A code block or a table wider than the page scrolls sideways; a small script,
+`docs/_static/housecairn.js`, gives it `tabindex="0"` so that it can be reached
+and scrolled with the keyboard (WCAG 2.1.1, found by axe-core's
+`scrollable-region-focusable` rule, see the cross-check below).
+
+**Translation notice.** Sphinx translates the alternative text of an image but
+leaves the image marked as untranslated, so every French page with a screenshot
+said it was not entirely translated. Two transforms of the extension (before
+and after Sphinx's `Locale`) count an image as translated when its alternative
+text was; an image whose text has no translation still counts as untranslated.
+
+**Dependency added: `sphinx-copybutton` 0.5.2 (MIT)**, a copy button on code
+blocks, with its French labels. Publisher: Executable Books, who also publish
+`myst-parser`. Its last release is 0.5.2 of 2023-04-14; its repository still
+receives changes (2025-04, 2026-06) and it works unchanged with Sphinx 9.2. It
+is small (one script, one stylesheet, the bundled `clipboard.min.js`, MIT) and
+loads nothing from another host (`check_docs_site.py` passes). It was preferred
+to an in-house script because it already handles prompts, line numbers and
+console output, which are excluded from the copy (`copybutton_exclude`). If it
+stops working with a future Sphinx, the replacement is a few lines of
+JavaScript with `navigator.clipboard`.
+
+**Accessibility, checked by a tool.** `scripts/check_docs_design.py` serves the
+built site on `127.0.0.1` and opens it in Playwright's Chromium (already used for
+the screenshots):
+
+- **contrast** (WCAG 2.2 AA, 1.4.3): every visible text element of every page, in
+  both languages and both themes, against the background it is drawn on (computed
+  colours, translucent layers blended): 4.5:1, 3:1 for large text. A text on a
+  background image would be reported as not measured; there is none;
+- **focus** (2.4.7 and 1.4.11): from the top of the home page, the Tab key reaches
+  the skip link first, and each focused element shows an outline of 2 px or more
+  with 3:1 against the page (3 px, slate in light, sand in dark);
+- **motion** (2.3.3): with `prefers-reduced-motion: reduce`, nothing on the home
+  page has a transition or an animation;
+- **screenshots** of the home page, a guide, the API reference and a screen page,
+  light and dark, computer and phone, English and French (32 images), written to
+  `docs/_build/site-screenshots/`, outside the published site, and attached to
+  the run as the `docs-site-screenshots` artifact for review.
+
+It runs in the `Documentation` job, after `check_docs_site.py`; the job keeps
+its name. Its arithmetic (contrast ratio, blending, large text, focus rule) is
+unit-tested in `tests/test_docs_scripts.py`.
+
+As a cross-check when this change was made, axe-core 4.14 (WCAG 2.0 to 2.2, A
+and AA rules) was run once outside the repository on all 102 pages, light and
+dark, computer and phone: no violation after the script above. axe-core is not
+added as a dependency: it would bring an npm toolchain into the job for a check
+the script above already makes on the criteria that the design can break.
