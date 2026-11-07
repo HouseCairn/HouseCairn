@@ -1,0 +1,36 @@
+Housecairn
+Copyright (C) 2026 Robvred
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, version 3 only (SPDX-License-Identifier: AGPL-3.0-only).
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along
+with this program, in the file LICENSE. If not, see
+<https://www.gnu.org/licenses/>.
+
+
+Additional terms under section 7 of the GNU Affero General Public License
+-------------------------------------------------------------------------
+
+1. Author attribution (section 7(b)). Modified versions of this program, and
+   works based on it, must preserve the author attribution "Housecairn, by
+   Robvred":
+   a) in their documentation, and
+   b) in the "About" screen, or equivalent, of their user interface, if they
+      have one.
+   A modified version may add its own attribution next to it.
+
+2. Trademark (section 7(e)). This license grants no right to use the name
+   "Housecairn", or its logo, as a trademark or service mark. A modified
+   version must not be presented as the original Housecairn, nor imply
+   endorsement by its author, without prior written permission. The
+   attribution required in term 1 is not trademark use.
+
+These additional terms apply to the whole program. They are terms permitted by
+section 7(b) and 7(e), not "further restrictions" within the meaning of
+section 7.
