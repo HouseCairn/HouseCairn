@@ -1,0 +1,30 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 22:45+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Add a home"
+msgstr "Ajouter un logement"
+
+msgid "The form at `/h/new/`, opened by **Add a home** under the list of homes: a name and the currency of the home's budget (an ISO 4217 code such as EUR). You become the owner of the new home, and can then invite the rest of the household."
+msgstr "Le formulaire sur `/h/new/`, ouvert par **Ajouter un logement** sous la liste des logements : un nom et la devise du budget du logement (un code ISO 4217, par exemple EUR). Vous devenez propriétaire du nouveau logement, et pouvez ensuite inviter le reste du foyer."
+
+msgid "The form to add a home, on a phone."
+msgstr "Le formulaire d'ajout d'un logement, sur téléphone."
+

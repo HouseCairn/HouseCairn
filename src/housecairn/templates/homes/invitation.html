@@ -20,7 +20,6 @@
       <h2>{% translate "Create your account" %}</h2>
       <form method="post">
         {% csrf_token %}
-        <p><label for="invited-email">{% translate "Email address" %}</label><input id="invited-email" type="email" value="{{ invitation.email }}" readonly autocomplete="username"></p>
         {{ form.as_p }}
         <button type="submit">{% translate "Create the account and join" %}</button>
       </form>

@@ -41,7 +41,31 @@ SCREENS = [
     ("api-docs", "/api/docs/", True),
     ("about", "/about/", True),
     ("not-found", "/no/such/page/", False),
+    # Homes and household (docs/adr/0020): addresses found once signed in.
+    ("new-home", "/h/new/", True),
+    ("home-page", "{home}", True),
+    ("household", "{home}household/", True),
+    ("member", "{member}", True),
+    ("invitation", "{invitation}", False),
+    ("invitation-invalid", "/invitations/hci_no-longer-valid/", False),
 ]
+NOT_FOUND = {"not-found", "invitation-invalid"}
+
+
+def resolve(page: Page, base: str, path: str, invitation: str) -> str:
+    """Fill in the addresses of the demonstration data, read through the API."""
+    if "{invitation}" in path:
+        return path.replace("{invitation}", f"/invitations/{invitation}/")
+    if "{home}" not in path and "{member}" not in path:
+        return path
+    homes = page.request.get(f"{base}/api/v1/homes/").json()["results"]
+    home = next(h for h in homes if h["name"] == "Main house")
+    home_path = f"/h/{home['id']}/"
+    if "{member}" in path:
+        members = page.request.get(f"{base}/api/v1/homes/{home['id']}/members/").json()
+        other = next(m for m in members["results"] if m["user"]["email"] != EMAIL)
+        return f"{home_path}household/members/{other['id']}/"
+    return path.replace("{home}", home_path)
 
 
 def sign_in(page: Page, base: str) -> None:
@@ -58,7 +82,7 @@ def sign_out(page: Page, base: str) -> None:
     page.wait_for_url(f"{base}/")
 
 
-def capture(browser: Browser, base: str, out: Path) -> None:
+def capture(browser: Browser, base: str, out: Path, invitation: str) -> None:
     out.mkdir(parents=True, exist_ok=True)
     for device, options in DEVICES.items():
         for language in ("en", "fr"):
@@ -74,9 +98,10 @@ def capture(browser: Browser, base: str, out: Path) -> None:
                 page = context.new_page()
                 if authenticated:
                     sign_in(page, base)
+                path = resolve(page, base, path, invitation)
                 response = page.goto(f"{base}{path}")
                 page.wait_for_load_state("networkidle")
-                expected = 404 if name == "not-found" else 200
+                expected = 404 if name in NOT_FOUND else 200
                 if response is None or response.status != expected:
                     raise SystemExit(f"{name}: unexpected status for {path}")
                 page.screenshot(path=str(out / f"{device}-{language}-{name}.png"), full_page=True)
@@ -164,12 +189,18 @@ def main() -> None:
     parser.add_argument("mode", choices=["capture", "passkey"])
     parser.add_argument("--base", required=True, help="address of the running instance")
     parser.add_argument("--out", type=Path, default=Path("shots"))
+    parser.add_argument(
+        "--invitation-file",
+        type=Path,
+        help="file holding the secret of a pending invitation of the demonstration data",
+    )
     args = parser.parse_args()
     base = args.base.rstrip("/")
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch()
         if args.mode == "capture":
-            capture(browser, base, args.out)
+            invitation = args.invitation_file.read_text().strip() if args.invitation_file else ""
+            capture(browser, base, args.out, invitation)
         else:
             passkey(browser, base)
         browser.close()

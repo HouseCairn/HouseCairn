@@ -65,10 +65,17 @@ def demo_environment(data_dir: Path, port: int) -> dict[str, str]:
 SEED = """
 from housecairn.accounts.models import User
 from housecairn.homes import services
+from housecairn.homes.models import Membership, Role
 import os, sys
 user = User.objects.create_user(email=sys.argv[1], password=os.environ["DEMO_PASSWORD"])
-for name in sys.argv[2:]:
-    services.create_home(user, name=name)
+homes = [services.create_home(user, name=name) for name in sys.argv[2:]]
+other = User.objects.create_user(email="sam@example.com", password=None)
+Membership.objects.create(home=homes[0], user=other, role=Role.MEMBER)
+_invitation, raw = services.invite(
+    user, homes[0], email="guest@example.com", role=Role.READ_ONLY,
+    delivery=services.Delivery(),
+)
+print(raw)
 """
 
 
@@ -77,13 +84,20 @@ def manage(env: dict[str, str], *args: str) -> None:
     subprocess.run(command, check=True, cwd=REPO_DIR, env=env, stdout=subprocess.DEVNULL)  # noqa: S603
 
 
-def seed(env: dict[str, str]) -> None:
-    """Create the demonstration account and homes (generated data only)."""
+def seed(env: dict[str, str]) -> str:
+    """Create the demonstration account, homes, a second member and an invitation.
+
+    Generated data only. Returns the secret of the pending invitation, whose
+    page is one of the screens.
+    """
     manage(env, "migrate", "--noinput")
     command = [sys.executable, "-c", f"import django; django.setup()\n{SEED}", DEMO_EMAIL]
     command += DEMO_HOMES
     seed_env = {**env, "DJANGO_SETTINGS_MODULE": "housecairn.settings"}
-    subprocess.run(command, check=True, cwd=REPO_DIR, env=seed_env)  # noqa: S603
+    result = subprocess.run(  # noqa: S603
+        command, check=True, cwd=REPO_DIR, env=seed_env, capture_output=True, text=True
+    )
+    return result.stdout.strip().splitlines()[-1]
 
 
 @contextmanager
@@ -116,7 +130,7 @@ def shoot(page: Any, name: str, language: str, device: str) -> None:
     print(f"Screenshot written: {path.relative_to(REPO_DIR)}")  # noqa: T201
 
 
-def take_all(base_url: str, password: str) -> int:
+def take_all(base_url: str, password: str, invitation: str) -> int:
     # Imported here: only the docs dependency group provides Playwright.
     from playwright.sync_api import sync_playwright
 
@@ -143,7 +157,23 @@ def take_all(base_url: str, password: str) -> int:
                 shoot(page, "more", language, device)
                 page.goto(f"{base_url}/about/")
                 shoot(page, "about", language, device)
-                taken += 6
+                page.goto(f"{base_url}/h/new/")
+                shoot(page, "new-home", language, device)
+                page.goto(f"{base_url}/h/")
+                page.click(f"text={DEMO_HOMES[0]}")
+                page.click("a[href$='/household/']")
+                page.wait_for_load_state()
+                shoot(page, "household", language, device)
+                page.locator("a[href*='/household/members/']").nth(1).click()
+                page.wait_for_load_state()
+                shoot(page, "member", language, device)
+                context.close()
+                # The invitation page, as the invited person sees it: signed out.
+                context = browser.new_context(locale=locale, color_scheme="light", **options)
+                page = context.new_page()
+                page.goto(f"{base_url}/invitations/{invitation}/")
+                shoot(page, "invitation", language, device)
+                taken += 10
                 context.close()
         browser.close()
     return taken
@@ -157,9 +187,9 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="housecairn-demo-") as directory:
         port = free_port()
         env = {**demo_environment(Path(directory), port), "DEMO_PASSWORD": password}
-        seed(env)
+        invitation = seed(env)
         with server(env, port) as base_url:
-            taken = take_all(base_url, password)
+            taken = take_all(base_url, password, invitation)
     print(f"{taken} screenshots in {OUTPUT_DIR.relative_to(REPO_DIR)}.")  # noqa: T201
     return 0
 

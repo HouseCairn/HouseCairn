@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"POT-Creation-Date: 2026-11-07 22:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -22,9 +22,12 @@ msgstr ""
 msgid "Home"
 msgstr "Logement"
 
-msgid "The page of one home, at `/h/<home id>/`: its name, your role in it and its currency. Its address stays the same as long as the home exists."
-msgstr "La page d'un logement, sur `/h/<home id>/` : son nom, votre rôle et sa devise. Son adresse ne change pas tant que le logement existe."
+msgid "The page of one home, at `/h/<home id>/`: its name, your role in it and its currency. Its address stays the same as long as the home exists. **Household and roles** lists its members."
+msgstr "La page d'un logement, sur `/h/<home id>/` : son nom, votre rôle et sa devise. Son adresse ne change pas tant que le logement existe. **Foyer et rôles** liste ses membres."
 
 msgid "The page of a home, on a phone."
 msgstr "La page d'un logement, sur téléphone."
+
+msgid "When the home requires signing in through a provider and your session did not, the page asks you to continue with that provider instead."
+msgstr "Quand le logement exige une connexion par un fournisseur que votre session n'a pas utilisé, la page vous propose de continuer avec ce fournisseur."
 

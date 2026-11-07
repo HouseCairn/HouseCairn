@@ -40,6 +40,13 @@ class ProviderForm(forms.Form):
 class InvitationSignupForm(forms.Form):
     """Password of the account created by accepting an invitation."""
 
+    # Shown, not editable: the account takes the invited address.
+    email = forms.EmailField(
+        label=_("Email address"),
+        disabled=True,
+        required=False,
+        widget=forms.EmailInput(attrs={"autocomplete": "username"}),
+    )
     password1 = forms.CharField(
         label=_("Password"),
         strip=False,
@@ -53,7 +60,7 @@ class InvitationSignupForm(forms.Form):
 
     def __init__(self, *args: Any, email: str, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.email = email
+        self.fields["email"].initial = email
 
     def clean(self) -> dict[str, Any]:
         data = super().clean() or {}

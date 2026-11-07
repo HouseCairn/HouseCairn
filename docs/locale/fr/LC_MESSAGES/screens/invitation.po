@@ -1,0 +1,39 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 22:45+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Invitation"
+msgstr "Invitation"
+
+msgid "The page an invitation link opens, at `/invitations/<link>/`. It names the home and the role you are invited with."
+msgstr "La page qu'ouvre un lien d'invitation, sur `/invitations/<link>/`. Elle nomme le logement et le rôle avec lequel vous êtes invité."
+
+msgid "The invitation page, with the form to create an account, on a phone."
+msgstr "La page d'invitation, avec le formulaire de création de compte, sur téléphone."
+
+msgid "**No account yet**: choose a password and **Create the account and join**. The account takes the invited address."
+msgstr "**Pas encore de compte** : choisissez un mot de passe, puis **Créer le compte et rejoindre**. Le compte prend l'adresse invitée."
+
+msgid "**An account already**: **Sign in**, then come back to the link and **Join the home**. You can also continue with the instance's single sign-on, if the provider confirms the invited address."
+msgstr "**Déjà un compte** : **Se connecter**, puis revenez au lien et **Rejoindre le logement**. Vous pouvez aussi continuer avec l'authentification unique de l'instance, si le fournisseur confirme l'adresse invitée."
+
+msgid "The link works once. A link that was used, revoked, replaced by a newer one or has expired opens a page saying it no longer works, without any detail: ask the person who invited you to send it again. Only the account with the invited address can accept; signed in with another one, sign out first."
+msgstr "Le lien ne sert qu'une fois. Un lien déjà utilisé, révoqué, remplacé par un plus récent ou expiré ouvre une page qui dit qu'il ne fonctionne plus, sans détail : demandez à la personne qui vous a invité de le renvoyer. Seul le compte à l'adresse invitée peut accepter ; connecté avec un autre, déconnectez-vous d'abord."
+

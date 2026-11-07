@@ -12,7 +12,11 @@ start-page
 sign-in
 account
 homes
+new-home
 home
+household
+member
+invitation
 more
 about
 ```
