@@ -31,4 +31,9 @@ jobs:
             BSD-2-Clause, BSD-3-Clause, CC0-1.0, GPL-3.0-only, GPL-3.0-or-later,
             ISC, LGPL-2.1-or-later, LGPL-3.0-only, LGPL-3.0-or-later, MIT, MIT-0,
             MPL-2.0, PSF-2.0, Python-2.0, Unlicense, Zlib
+          # docutils (documentation group, docs/adr/0016): its files are in the
+          # public domain or BSD-2-Clause; the license scan also finds the
+          # GPL texts shipped with files their author relicensed to BSD-2-Clause,
+          # so no SPDX expression of it can be in the list above.
+          allow-dependencies-licenses: pkg:pypi/docutils
           comment-summary-in-pr: never

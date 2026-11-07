@@ -99,6 +99,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "housecairn.accounts.context_processors.signup",
+                "housecairn.core.help.help_link",
             ],
         },
     },
@@ -308,6 +309,14 @@ HOUSECAIRN_API_TOKEN_DEFAULT_LIFETIME_DAYS: int = env.int(
     "HOUSECAIRN_API_TOKEN_DEFAULT_LIFETIME_DAYS", default=90
 )
 HOUSECAIRN_EVENT_PAYLOAD_MAX_BYTES = 16 * 1024
+
+# Documentation site opened by the help link of each screen (docs/adr/0016).
+# A link only: the interface loads nothing from this address.
+HOUSECAIRN_DOCS_URL: str = env.str(
+    "HOUSECAIRN_DOCS_URL", default="https://docs.housecairn.app"
+).rstrip("/")
+if urlsplit(HOUSECAIRN_DOCS_URL).scheme not in {"http", "https"}:
+    raise ImproperlyConfigured("HOUSECAIRN_DOCS_URL must be an http:// or https:// address.")
 
 LOGGING = {
     "version": 1,

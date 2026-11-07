@@ -1,0 +1,45 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the Housecairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Reverse proxy"
+msgstr "Reverse proxy"
+
+msgid "Housecairn listens on plain HTTP and expects a reverse proxy to terminate HTTPS in front of it. With the example `compose.yaml`, it listens on `127.0.0.1:8000` of the host."
+msgstr "Housecairn écoute en HTTP simple et attend d'un reverse proxy qu'il termine le HTTPS devant lui. Avec l'exemple `compose.yaml`, il écoute sur `127.0.0.1:8000` de l'hôte."
+
+msgid "In `deploy/production.env`, for an instance at `housecairn.example.com`:"
+msgstr "Dans `deploy/production.env`, pour une instance à l'adresse `housecairn.example.com` :"
+
+msgid "`HOUSECAIRN_BEHIND_TLS_PROXY=true` makes Housecairn trust the `X-Forwarded-Proto` header: set it only when the proxy sets that header itself and the container cannot be reached without the proxy. Without it, Housecairn sees plain HTTP and redirects every request to HTTPS."
+msgstr "`HOUSECAIRN_BEHIND_TLS_PROXY=true` fait que Housecairn se fie à l'en-tête `X-Forwarded-Proto` : ne l'activez que si le proxy pose lui-même cet en-tête et que le conteneur est inaccessible sans le proxy. Sans cela, Housecairn voit du HTTP simple et redirige chaque requête vers HTTPS."
+
+msgid "Caddy"
+msgstr "Caddy"
+
+msgid "Caddy obtains the certificate and sets `X-Forwarded-Proto` by default:"
+msgstr "Caddy obtient le certificat et pose `X-Forwarded-Proto` par défaut :"
+
+msgid "nginx"
+msgstr "nginx"
+
+msgid "Housecairn sets its own security headers (Content Security Policy, HSTS, `X-Frame-Options`); the proxy does not need to add them."
+msgstr "Housecairn pose ses propres en-têtes de sécurité (Content Security Policy, HSTS, `X-Frame-Options`) ; le proxy n'a pas besoin d'en ajouter."
+

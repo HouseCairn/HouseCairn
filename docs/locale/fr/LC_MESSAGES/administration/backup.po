@@ -1,0 +1,87 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the Housecairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Data and backups"
+msgstr "Données et sauvegardes"
+
+msgid "Everything Housecairn writes is in the `/data` volume:"
+msgstr "Tout ce que Housecairn écrit se trouve dans le volume `/data` :"
+
+msgid "Path"
+msgstr "Chemin"
+
+msgid "Content"
+msgstr "Contenu"
+
+msgid "`/data/db.sqlite3` (and `-wal`, `-shm`)"
+msgstr "`/data/db.sqlite3` (et `-wal`, `-shm`)"
+
+msgid "The SQLite database, unless `DATABASE_URL` points to PostgreSQL."
+msgstr "La base SQLite, sauf si `DATABASE_URL` pointe vers PostgreSQL."
+
+msgid "`/data/secret_key`"
+msgstr "`/data/secret_key`"
+
+msgid "The key that signs sessions and tokens, mode 600. Losing it signs everyone out; keep it secret."
+msgstr "La clé qui signe les sessions et les jetons, en mode 600. La perdre déconnecte tout le monde ; gardez-la secrète."
+
+msgid "`/data/media/`"
+msgstr "`/data/media/`"
+
+msgid "Uploaded files."
+msgstr "Fichiers téléversés."
+
+msgid "`/data/backups/`"
+msgstr "`/data/backups/`"
+
+msgid "Copies made by the `backup` command below."
+msgstr "Copies faites par la commande `backup` ci-dessous."
+
+msgid "Files are owned by `10001:10001` and readable by that user only. If you mount a host directory instead of a named volume, give it to that user first: `sudo chown -R 10001:10001 /srv/housecairn`."
+msgstr "Les fichiers appartiennent à `10001:10001` et ne sont lisibles que par cet utilisateur. Si vous montez un répertoire de l'hôte plutôt qu'un volume nommé, donnez-le d'abord à cet utilisateur : `sudo chown -R 10001:10001 /srv/housecairn`."
+
+msgid "Back up"
+msgstr "Sauvegarder"
+
+msgid "Back up `/data` in one of two ways:"
+msgstr "Sauvegardez `/data` de l'une de ces deux façons :"
+
+msgid "**Cold copy**, the simplest: stop the container, copy the volume, start it again."
+msgstr "**Copie à froid**, la plus simple : arrêtez le conteneur, copiez le volume, redémarrez-le."
+
+msgid "(The volume name is `<project>_housecairn-data`; `docker volume ls` shows it.)"
+msgstr "(Le nom du volume est `<project>_housecairn-data` ; `docker volume ls` l'affiche.)"
+
+msgid "**Online copy of the database**, while Housecairn runs, with SQLite's backup API (the same as `sqlite3 db.sqlite3 \".backup ...\"`):"
+msgstr "**Copie à chaud de la base**, pendant que Housecairn tourne, avec l'API de sauvegarde de SQLite (la même que `sqlite3 db.sqlite3 \".backup ...\"`) :"
+
+msgid "Then copy `/data/backups/`, `/data/secret_key` and `/data/media/` off the machine. Remove old copies from `/data/backups/` yourself."
+msgstr "Copiez ensuite `/data/backups/`, `/data/secret_key` et `/data/media/` hors de la machine. Supprimez vous-même les anciennes copies de `/data/backups/`."
+
+msgid "With PostgreSQL, back up the database with `pg_dump`, and `/data` for the key and the uploaded files."
+msgstr "Avec PostgreSQL, sauvegardez la base avec `pg_dump`, et `/data` pour la clé et les fichiers téléversés."
+
+msgid "Restore"
+msgstr "Restaurer"
+
+msgid "To restore, stop the container, put the files back in the volume (owned by `10001:10001`), and start it."
+msgstr "Pour restaurer, arrêtez le conteneur, remettez les fichiers dans le volume (propriété de `10001:10001`), puis démarrez-le."
+

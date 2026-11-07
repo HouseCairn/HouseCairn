@@ -1,0 +1,73 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the Housecairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Hardening"
+msgstr "Durcissement"
+
+msgid "`compose.yaml` runs the container the recommended way:"
+msgstr "`compose.yaml` fait tourner le conteneur de la façon recommandée :"
+
+msgid "Setting"
+msgstr "Réglage"
+
+msgid "Effect"
+msgstr "Effet"
+
+msgid "`read_only: true`"
+msgstr "`read_only: true`"
+
+msgid "The image's file system cannot be modified. Only `/data` and `/tmp` are writable."
+msgstr "Le système de fichiers de l'image ne peut pas être modifié. Seuls `/data` et `/tmp` sont inscriptibles."
+
+msgid "`tmpfs: /tmp`"
+msgstr "`tmpfs: /tmp`"
+
+msgid "Temporary files (large uploads in progress) stay in memory, 64 MB at most, and disappear at restart."
+msgstr "Les fichiers temporaires (gros téléversements en cours) restent en mémoire, 64 Mo au plus, et disparaissent au redémarrage."
+
+msgid "`cap_drop: [ALL]`"
+msgstr "`cap_drop: [ALL]`"
+
+msgid "No Linux capability: the application needs none."
+msgstr "Aucune capacité Linux : l'application n'en a besoin d'aucune."
+
+msgid "`security_opt: no-new-privileges:true`"
+msgstr "`security_opt: no-new-privileges:true`"
+
+msgid "No process can gain privileges, even through a set-user-ID binary."
+msgstr "Aucun processus ne peut gagner de privilèges, même par un binaire set-user-ID."
+
+msgid "user `10001:10001`"
+msgstr "utilisateur `10001:10001`"
+
+msgid "Set in the image; the application never runs as root."
+msgstr "Défini dans l'image ; l'application ne tourne jamais en root."
+
+msgid "The same settings with `docker run`:"
+msgstr "Les mêmes réglages avec `docker run` :"
+
+#, python-brace-format
+msgid "`/healthz` answers `{\"status\": \"ok\"}` without authentication and reveals nothing else; the image's `HEALTHCHECK` calls it."
+msgstr "`/healthz` répond `{\"status\": \"ok\"}` sans authentification et ne révèle rien d'autre ; le `HEALTHCHECK` de l'image l'appelle."
+
+msgid "Housecairn makes no outgoing connection unless you configure one (single sign-on, later the integrations), and sends no telemetry."
+msgstr "Housecairn n'établit aucune connexion sortante que vous n'ayez configurée (authentification unique, plus tard les intégrations) et n'envoie aucune télémétrie."
+

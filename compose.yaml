@@ -1,4 +1,4 @@
-# Example Docker Compose file for Housecairn (docs/install.md).
+# Example Docker Compose file for Housecairn (docs/getting-started/install.md).
 #
 #   cp deploy/production.env.example deploy/production.env   # then edit it
 #   docker compose up -d

@@ -1,4 +1,4 @@
-# Container image of Housecairn (docs/adr/0015, docs/install.md).
+# Container image of Housecairn (docs/adr/0015, docs/getting-started/install.md).
 #
 # One image for every instance: SQLite by default, PostgreSQL when DATABASE_URL
 # says so. Everything written at run time goes to the /data volume; the rest of
@@ -107,7 +107,7 @@ LABEL org.opencontainers.image.title="Housecairn" \
     org.opencontainers.image.description="Self-hosted planner for home maintenance and renovation projects." \
     org.opencontainers.image.source="https://github.com/HouseCairn/housecairn" \
     org.opencontainers.image.url="https://github.com/HouseCairn/housecairn" \
-    org.opencontainers.image.documentation="https://github.com/HouseCairn/housecairn/blob/main/docs/install.md" \
+    org.opencontainers.image.documentation="https://docs.housecairn.app/getting-started/install/" \
     org.opencontainers.image.licenses="AGPL-3.0-only" \
     org.opencontainers.image.version="${VERSION}" \
     org.opencontainers.image.revision="${REVISION}"

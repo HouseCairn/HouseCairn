@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the Housecairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Update"
+msgstr "Mise à jour"
+
+msgid "Read the [release notes](../release-notes.md) of the new version."
+msgstr "Lisez les [notes de version](../release-notes.md) de la nouvelle version."
+
+msgid "[Back up](backup.md) `/data`."
+msgstr "[Sauvegardez](backup.md) `/data`."
+
+msgid "Change the tag (and digest) in `compose.yaml`, [verify the new image](../security/verify-image.md), then:"
+msgstr "Changez l'étiquette (et le condensat) dans `compose.yaml`, [vérifiez la nouvelle image](../security/verify-image.md), puis :"
+
+msgid "Migrations run at start. Going back to an older version after its migrations have run needs the backup."
+msgstr "Les migrations s'exécutent au démarrage. Revenir à une version plus ancienne après l'exécution de ses migrations demande la sauvegarde."
+
+msgid "Tags"
+msgstr "Étiquettes"
+
+msgid "Tag"
+msgstr "Étiquette"
+
+msgid "Points to"
+msgstr "Désigne"
+
+msgid "`X.Y.Z`"
+msgstr "`X.Y.Z`"
+
+msgid "A release."
+msgstr "Une version."
+
+msgid "`X.Y`"
+msgstr "`X.Y`"
+
+msgid "The most recently published `X.Y.*` release."
+msgstr "La dernière version publiée de `X.Y.*`."
+
+msgid "`latest`"
+msgstr "`latest`"
+
+msgid "The most recently published release (never a pre-release)."
+msgstr "La dernière version publiée (jamais une préversion)."
+
+msgid "`X.Y.Z-rc.N`"
+msgstr "`X.Y.Z-rc.N`"
+
+msgid "A pre-release."
+msgstr "Une préversion."
+
+msgid "`edge`"
+msgstr "`edge`"
+
+msgid "The latest commit on `main`: for testing, not for production."
+msgstr "Le dernier commit de `main` : pour tester, pas pour la production."
+
+msgid "`sha-<commit>`"
+msgstr "`sha-<commit>`"
+
+msgid "The image built from that commit."
+msgstr "L'image construite à partir de ce commit."
+
+msgid "Pin a version and its digest in production; a tag can move, a digest cannot."
+msgstr "En production, fixez une version et son condensat ; une étiquette peut bouger, un condensat jamais."
+
