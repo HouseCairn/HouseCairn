@@ -215,6 +215,30 @@ class TestWebAcceptance:
         codes = [client.get(link(f"hci_guess{i}")).status_code for i in range(5)]
         assert codes == [404, 404, 404, 429, 429]
 
+    @override_settings(ACCOUNT_RATE_LIMITS={"housecairn_invitation": "3/m/ip"})
+    def test_a_forged_forwarding_header_does_not_dodge_the_limit(self) -> None:
+        # The peer is not a trusted proxy: the header is dropped, not believed.
+        client = Client(REMOTE_ADDR="203.0.113.5")
+        codes = [
+            client.get(link(f"hci_guess{i}"), headers={"X-Forwarded-For": f"198.51.100.{i}"})
+            for i in range(5)
+        ]
+        assert [r.status_code for r in codes] == [404, 404, 404, 429, 429]
+
+    @override_settings(ACCOUNT_RATE_LIMITS={"housecairn_invitation": "3/m/ip"})
+    def test_entries_the_client_wrote_do_not_dodge_the_limit_behind_a_proxy(self) -> None:
+        # From the trusted proxy (the loopback by default), only the entry the
+        # proxy appended counts: the client wrote everything to its left.
+        client = Client(REMOTE_ADDR="127.0.0.1")
+        codes = [
+            client.get(
+                link(f"hci_guess{i}"),
+                headers={"X-Forwarded-For": f"198.51.100.{i}, 203.0.113.9"},
+            ).status_code
+            for i in range(5)
+        ]
+        assert codes == [404, 404, 404, 429, 429]
+
 
 class TestWebOwner:
     def test_without_email_the_link_is_shown_once(

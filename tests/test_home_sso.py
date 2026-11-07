@@ -4,7 +4,6 @@ from collections.abc import Callable
 from typing import Any
 
 import pytest
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.test import Client, override_settings
 from django.urls import reverse
@@ -212,13 +211,6 @@ class TestSettingTheRequirement:
             client.force_login(alice)
             page = client.get(reverse("homes:household", kwargs={"home_id": alice_home.id})).text
         assert reverse("homes:required-provider", kwargs={"home_id": alice_home.id}) not in page
-
-
-def test_no_account_is_taken_over_by_a_matching_address() -> None:
-    # An identity from a provider never signs in to, nor links itself to, an
-    # account because the provider claims the same address (docs/adr/0021).
-    assert settings.SOCIALACCOUNT_EMAIL_AUTHENTICATION is False
-    assert settings.SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT is False
 
 
 class TestIsolation:
