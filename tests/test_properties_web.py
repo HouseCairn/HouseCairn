@@ -16,7 +16,7 @@ from allauth.socialaccount.models import SocialAccount, SocialLogin
 from django.test import Client
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
-from hypothesis import HealthCheck, given, settings
+from hypothesis import HealthCheck, example, given, settings
 from hypothesis import strategies as st
 from rest_framework.test import APIClient
 
@@ -152,19 +152,28 @@ next_values = st.text(max_size=40) | st.builds(
             "/homes/",
         ]
     ),
-    st.sampled_from(["evil.example", "testserver.evil.example", "testserver@evil.example"])
+    st.sampled_from(
+        ["evil.example", "testserver.evil.example", "testserver@evil.example", "[", "[::1"]
+    )
     | st.text(max_size=15),
 )
 
 
 @pytest.mark.django_db
 @shared_fixtures
-@given(target=next_values)
-def test_sign_in_never_redirects_to_another_host(client: Client, alice: User, target: str) -> None:
-    """Whatever `next` holds, the sign-in page redirects only within the instance."""
-    client.force_login(alice)
+@given(target=next_values, signed_in=st.booleans())
+# Found by the `dev` profile: allauth's urlparse raised ValueError (a 500).
+@example(target="//[", signed_in=False)
+def test_sign_in_never_redirects_to_another_host(
+    client: Client, alice: User, target: str, signed_in: bool
+) -> None:
+    """Whatever `next` holds, the sign-in page answers and redirects only within the instance."""
+    if signed_in:
+        client.force_login(alice)
+    else:
+        client.logout()
     response = client.get(reverse("account_login"), {"next": target})
-    assert response.status_code in {200, 302}
+    assert response.status_code == (302 if signed_in else 200)
     if response.status_code == 302:
         location = response["Location"]
         assert url_has_allowed_host_and_scheme(location, allowed_hosts={"testserver"}), location
