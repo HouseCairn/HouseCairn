@@ -4,8 +4,8 @@ Self-hosted planner for home maintenance and renovation projects: recurring
 tasks, schedules, budgets and supplies, room by room. Integrates with Home
 Assistant, Paperless-ngx and Sure.
 
-> **Status: early development, not usable yet.** There is no release and no
-> application code so far. Do not deploy it.
+> **Status: early development, not usable yet.** The application skeleton and
+> its architecture are in place, without any feature screen. Do not deploy it.
 
 ## What it is for
 

@@ -66,9 +66,9 @@ def test_no_external_url_in_templates_and_static() -> None:
     pattern = re.compile(r"(?:https?:)?//[a-z0-9.-]+\.[a-z]{2,}/", re.IGNORECASE)
     offenders = []
     for path in [*SRC.glob("templates/**/*"), *SRC.glob("static/**/*")]:
-        if path.is_file() and path.suffix in {".html", ".css", ".js"}:
-            if pattern.search(path.read_text(encoding="utf-8")):
-                offenders.append(str(path.relative_to(REPO)))
+        is_web_file = path.is_file() and path.suffix in {".html", ".css", ".js"}
+        if is_web_file and pattern.search(path.read_text(encoding="utf-8")):
+            offenders.append(str(path.relative_to(REPO)))
     assert offenders == []
 
 

@@ -19,9 +19,7 @@ def events_url(home: Home) -> str:
 def test_event_is_recorded_with_its_token(
     api_client: APIClient, alice: User, alice_home: Home
 ) -> None:
-    token, raw = token_services.issue_token(
-        alice, name="ha", scopes=["events"], homes=[alice_home]
-    )
+    token, raw = token_services.issue_token(alice, name="ha", scopes=["events"], homes=[alice_home])
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
     response = api_client.post(events_url(alice_home), {"kind": "leak"}, format="json")
     assert response.status_code == 202

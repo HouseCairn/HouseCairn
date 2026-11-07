@@ -29,9 +29,7 @@ def test_css_variables() -> None:
     assert "  --hc-color-slate: #1F3A3D;\n" in css
 
 
-def test_command_writes_and_detects_drift(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_command_writes_and_detects_drift(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     target = tmp_path / "css" / "tokens.css"
     monkeypatch.setattr(design, "CSS_PATH", target)
     with pytest.raises(CommandError):
