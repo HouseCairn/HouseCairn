@@ -129,6 +129,15 @@ class TestScopes:
         assert response.status_code == 202
         assert response.json()["kind"] == "battery-low"
 
+    def test_schema_needs_read_scope(
+        self, api_client: APIClient, issue: Callable[..., str]
+    ) -> None:
+        schema_url = reverse("api-schema")
+        bearer(api_client, issue(Scope.EVENTS))
+        assert api_client.get(schema_url).status_code == 403
+        bearer(api_client, issue(Scope.READ))
+        assert api_client.get(schema_url).status_code == 200
+
 
 class TestValidity:
     def test_expired_token_is_refused(

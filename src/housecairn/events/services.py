@@ -5,6 +5,7 @@ from typing import Any
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
 from housecairn.apitokens.models import ApiToken
@@ -25,7 +26,7 @@ def record_event(
         raise PermissionDenied
     size = len(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
     if size > settings.HOUSECAIRN_EVENT_PAYLOAD_MAX_BYTES:
-        raise ValidationError("Event payload is too large.")
+        raise ValidationError(_("Event payload is too large."))
     event: Event = Event.objects.create(
         home=home, kind=kind, payload=payload, received_by=actor, token=token
     )

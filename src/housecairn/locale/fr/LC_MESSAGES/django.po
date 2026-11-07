@@ -108,6 +108,14 @@ msgstr "jeton d'API"
 msgid "This token does not have the scope this request needs."
 msgstr "Ce jeton n'a pas la portée nécessaire à cette requête."
 
+#: apitokens/services.py
+msgid "A token needs at least one scope."
+msgstr "Un jeton a besoin d'au moins une portée."
+
+#: apitokens/services.py
+msgid "A token is bound to at least one home."
+msgstr "Un jeton est lié à au moins un logement."
+
 #: core/apps.py
 msgid "Core"
 msgstr "Cœur"
@@ -139,6 +147,10 @@ msgstr "événement"
 #: events/models.py
 msgid "events"
 msgstr "événements"
+
+#: events/services.py
+msgid "Event payload is too large."
+msgstr "Le contenu de l'événement est trop volumineux."
 
 #: homes/apps.py templates/base.html templates/homes/home_list.html
 msgid "Homes"
@@ -219,7 +231,8 @@ msgstr "Housecairn"
 
 #: templates/core/index.html
 msgid "What needs doing in the house, where, when, with what and for how much."
-msgstr "Ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
+msgstr ""
+"Ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
 
 #: templates/core/index.html
 msgid "Go to my homes"

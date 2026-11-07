@@ -1,7 +1,6 @@
 """Issuing, checking and revoking API tokens (docs/adr/0007)."""
 
 import hashlib
-import hmac
 import secrets
 from collections.abc import Iterable
 from datetime import timedelta
@@ -10,6 +9,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
 from housecairn.apitokens.models import ApiToken, Scope
@@ -41,10 +41,10 @@ def issue_token(
     """
     scope_values = sorted({Scope(s).value for s in scopes})
     if not scope_values:
-        raise ValidationError("A token needs at least one scope.")
+        raise ValidationError(_("A token needs at least one scope."))
     home_list = list(homes)
     if not home_list:
-        raise ValidationError("A token is bound to at least one home.")
+        raise ValidationError(_("A token is bound to at least one home."))
     visible = set(home_services.homes_for(user).values_list("id", flat=True))
     if any(home.id not in visible for home in home_list):
         raise PermissionDenied
@@ -71,9 +71,9 @@ def authenticate(raw: str) -> ApiToken | None:
         return None
     digest = hash_token(raw)
     token: ApiToken | None = ApiToken.objects.select_related("user").filter(digest=digest).first()
-    # The lookup compares digests, which reveal nothing about the secret; the
-    # constant-time comparison is a second guard, independent of the database.
-    if token is None or not hmac.compare_digest(token.digest, digest):
+    # The lookup is by digest: a timing difference could reveal at most part of
+    # a SHA-256 digest, which says nothing about a 256-bit secret.
+    if token is None:
         return None
     if not token.is_active or not token.user.is_active:
         return None

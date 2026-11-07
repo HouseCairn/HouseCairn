@@ -258,7 +258,11 @@ SPECTACULAR_SETTINGS = {
     "OAS_VERSION": "3.1.0",
     "SCHEMA_PATH_PREFIX": r"/api/v1",
     "SERVE_INCLUDE_SCHEMA": False,
-    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
+    # An `events` token posts events and reads nothing, the schema included.
+    "SERVE_PERMISSIONS": [
+        "rest_framework.permissions.IsAuthenticated",
+        "housecairn.apitokens.permissions.TokenScopePermission",
+    ],
     "COMPONENT_SPLIT_REQUEST": True,
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",

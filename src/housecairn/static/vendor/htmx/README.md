@@ -9,7 +9,8 @@
   `sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg`
 - License: Zero-Clause BSD, see `LICENSE`.
 
-The test `tests/test_static.py` checks the SHA-256 above. To upgrade: download
-the new tarball from the npm registry, check its integrity against the
+The test `test_vendored_htmx_matches_its_recorded_hash` in
+`tests/test_security.py` checks the SHA-256 above. To upgrade: download the new
+tarball from the npm registry, check its integrity against the
 registry, copy `dist/htmx.min.js`, then update this file, the template and the
 test in the same pull request.

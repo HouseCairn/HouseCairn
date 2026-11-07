@@ -29,8 +29,8 @@ in).
 - secret `hc_` + 32 random bytes (URL-safe base64), shown once at creation;
 - only its SHA-256 digest is stored, with a short prefix for display. A fast
   hash is enough because the secret has 256 bits of entropy (unlike a
-  password); lookup is by digest, then the digests are compared again in
-  constant time (`hmac.compare_digest`);
+  password); lookup is by digest, so a timing difference could reveal at most
+  part of a digest, which says nothing about the secret;
 - scopes `read` (safe methods), `write` (other methods), `events` (only the
   endpoints that declare `token_scope = Scope.EVENTS`, such as
   `POST /api/v1/homes/<home_id>/events/`; nothing else). Scopes do not imply
