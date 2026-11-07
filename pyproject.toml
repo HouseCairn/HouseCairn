@@ -28,6 +28,10 @@ dependencies = [
   # Lets classes such as ModelAdmin[Home] be written at runtime for the type
   # checker; companion of django-stubs (see docs/adr/0001).
   "django-stubs-ext>=5.2,<5.3",
+  # Production WSGI server and static files served by the application, used
+  # by the container image (see docs/adr/0015).
+  "gunicorn>=23",
+  "whitenoise>=6.9",
 ]
 
 [project.optional-dependencies]

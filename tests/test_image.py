@@ -1,0 +1,107 @@
+"""Container image files: tags script, Dockerfile and compose rules (docs/adr/0015).
+
+The image itself is built and started by the `Container image` job of
+`.github/workflows/image.yml`; these tests keep its source files honest.
+"""
+
+import re
+from pathlib import Path
+
+import pytest
+
+from scripts import image_tags
+
+REPO = Path(__file__).resolve().parents[1]
+SHA = "0123456789abcdef0123456789abcdef01234567"
+
+
+@pytest.mark.parametrize(
+    ("ref", "version", "tags"),
+    [
+        ("refs/heads/main", "edge-0123456", ["edge", "sha-0123456"]),
+        ("refs/tags/v1.2.3", "1.2.3", ["1.2.3", "1.2", "latest", "sha-0123456"]),
+        ("refs/tags/v0.10.0", "0.10.0", ["0.10.0", "0.10", "latest", "sha-0123456"]),
+        ("refs/tags/v1.0.0-rc.1", "1.0.0-rc.1", ["1.0.0-rc.1", "sha-0123456"]),
+    ],
+)
+def test_tags(ref: str, version: str, tags: list[str]) -> None:
+    assert image_tags.image_tags(ref, SHA) == (version, tags)
+
+
+@pytest.mark.parametrize(
+    "ref",
+    [
+        "refs/heads/feature",
+        "refs/pull/7/merge",
+        "refs/tags/1.2.3",
+        "refs/tags/v1.2",
+        "refs/tags/v01.2.3",
+        "refs/tags/v1.2.3-",
+        "refs/tags/v1.2.3;latest",
+    ],
+)
+def test_nothing_published_for_other_refs(ref: str) -> None:
+    with pytest.raises(ValueError, match="no image"):
+        image_tags.image_tags(ref, SHA)
+
+
+def test_short_sha_is_refused() -> None:
+    with pytest.raises(ValueError, match="full commit SHA"):
+        image_tags.image_tags("refs/heads/main", "0123456")
+
+
+def test_main_prints_github_outputs(capsys: pytest.CaptureFixture[str]) -> None:
+    assert image_tags.main(["refs/tags/v2.0.1", SHA]) == 0
+    assert capsys.readouterr().out == "version=2.0.1\ntags=2.0.1 2.0 latest sha-0123456\n"
+
+
+def test_main_errors(capsys: pytest.CaptureFixture[str]) -> None:
+    assert image_tags.main(["refs/heads/other", SHA]) == 1
+    assert image_tags.main([]) == 2
+    assert "usage" in capsys.readouterr().err
+
+
+def test_every_base_image_is_pinned_by_digest() -> None:
+    images = re.findall(r"^FROM\s+(\S+)", (REPO / "Dockerfile").read_text(), re.MULTILINE)
+    assert len(images) == 3
+    for image in images:
+        assert re.fullmatch(r"[a-z0-9./-]+:[\w.-]+@sha256:[0-9a-f]{64}", image), image
+
+
+def test_final_stage_is_unprivileged_and_healthchecked() -> None:
+    dockerfile = (REPO / "Dockerfile").read_text()
+    final = dockerfile.rsplit("\nFROM ", 1)[1]
+    assert "\nUSER 10001:10001\n" in final
+    assert 'CMD ["python", "-m", "housecairn.entrypoint", "healthcheck"]' in final
+    assert 'org.opencontainers.image.licenses="AGPL-3.0-only"' in final
+
+
+def test_build_context_lets_in_only_what_the_image_needs() -> None:
+    lines = [
+        line
+        for line in (REPO / ".dockerignore").read_text().splitlines()
+        if line and not line.startswith("#")
+    ]
+    assert lines[0] == "*"
+    allowed = {line[1:].rstrip("/") for line in lines if line.startswith("!")}
+    assert allowed == {
+        "pyproject.toml",
+        "uv.lock",
+        "LICENSE",
+        "NOTICE",
+        "manage.py",
+        "design",
+        "src",
+    }
+
+
+def test_compose_example_is_hardened() -> None:
+    compose = (REPO / "compose.yaml").read_text()
+    for setting in (
+        "read_only: true",
+        "cap_drop: [ALL]",
+        'security_opt: ["no-new-privileges:true"]',
+        "- /tmp:rw,noexec,nosuid",
+        "- housecairn-data:/data",
+    ):
+        assert setting in compose, setting

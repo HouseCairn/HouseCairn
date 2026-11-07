@@ -1,6 +1,7 @@
 # Housecairn
 
 [![CI](https://github.com/HouseCairn/HouseCairn/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/HouseCairn/HouseCairn/actions/workflows/ci.yml?query=branch%3Amain)
+[![Image](https://github.com/HouseCairn/HouseCairn/actions/workflows/image.yml/badge.svg?branch=main)](https://github.com/HouseCairn/HouseCairn/actions/workflows/image.yml?query=branch%3Amain)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/HouseCairn/HouseCairn/badge)](https://securityscorecards.dev/viewer/?uri=github.com/HouseCairn/HouseCairn)
 [![License: AGPL-3.0-only](docs/assets/license-badge.svg)](LICENSE)
 
@@ -29,6 +30,15 @@ same tool, with a planned budget, supplies and a history of what was done.
   possible, rather than Housecairn holding their tokens.
 - **No telemetry.** No data leaves your server, and no outgoing connection is
   made unless you configure it.
+
+## Install
+
+Housecairn runs as a single container,
+`ghcr.io/housecairn/housecairn`, for `linux/amd64` and `linux/arm64`, with
+SQLite by default and PostgreSQL as an option. Every published image carries a
+signed build provenance and SBOM. See [Installing with Docker
+Compose](docs/install.md) for the example `compose.yaml`, backups, updates,
+environment variables and how to verify an image.
 
 ## Cost
 

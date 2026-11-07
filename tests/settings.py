@@ -12,3 +12,10 @@ os.environ.setdefault("HOUSECAIRN_TASKS_SYNC", "true")
 from housecairn.settings import *  # noqa: F403
 
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
+# Tests render pages without running collectstatic first: plain storage, no
+# manifest of hashed names (the container image test covers the real one).
+STORAGES = {
+    **STORAGES,  # noqa: F405
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}

@@ -43,7 +43,7 @@ updates:
       prefix: chore(deps)
     open-pull-requests-limit: 5
 
-  # For the container image of lot J1-D; does nothing until a Dockerfile exists.
+  # Base images of the Dockerfile (docs/adr/0015): tag and digest together.
   - package-ecosystem: docker
     directory: /
     schedule:
@@ -53,6 +53,26 @@ updates:
       default-days: 7
     groups:
       docker-minor-and-patch:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: chore(deps)
+    open-pull-requests-limit: 5
+
+  # Images of the example compose.yaml (the PostgreSQL service). The PostgreSQL
+  # image of ci.yml and of .github/scripts/image-smoke.sh is the same one and
+  # is updated by hand in the same pull request.
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    ignore:
+      # Housecairn's own image: the example follows its releases by hand.
+      - dependency-name: ghcr.io/housecairn/housecairn
+    groups:
+      compose-minor-and-patch:
         update-types: [minor, patch]
     commit-message:
       prefix: chore(deps)

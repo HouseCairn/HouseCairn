@@ -1,0 +1,66 @@
+# Example Docker Compose file for Housecairn (docs/install.md).
+#
+#   cp deploy/production.env.example deploy/production.env   # then edit it
+#   docker compose up -d
+#
+# Housecairn listens on port 8000 without TLS: put it behind a reverse proxy
+# that terminates HTTPS (HOUSECAIRN_BEHIND_TLS_PROXY=true in production.env).
+name: housecairn
+
+services:
+  housecairn:
+    # Use a released version (X.Y.Z), ideally pinned by digest:
+    #   ghcr.io/housecairn/housecairn:X.Y.Z@sha256:<digest>
+    # `edge` follows the main branch and is for testing only.
+    image: ghcr.io/housecairn/housecairn:edge
+    restart: unless-stopped
+    env_file: deploy/production.env
+    ports:
+      # Reachable from this host only, for the reverse proxy.
+      - "127.0.0.1:8000:8000"
+    volumes:
+      # Database, uploaded files and the generated secret key: back this up.
+      - housecairn-data:/data
+    # Hardening: nothing but /data and /tmp is writable, no Linux capability,
+    # no privilege escalation.
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    # Time for the web server and the task worker to finish their work.
+    stop_grace_period: 30s
+    # PostgreSQL variant: uncomment, and see the `postgres` service below.
+    # depends_on:
+    #   postgres:
+    #     condition: service_healthy
+
+  # PostgreSQL variant (optional; SQLite in /data is the default and is enough
+  # for a household). This service only starts with the `postgres` profile:
+  #   1. cp deploy/postgres.env.example deploy/postgres.env, set a password;
+  #   2. in deploy/production.env, set
+  #      DATABASE_URL=postgres://housecairn:<password>@postgres:5432/housecairn
+  #   3. uncomment `depends_on` above, then: docker compose --profile postgres up -d
+  postgres:
+    profiles: [postgres]
+    # Same image as the CI tests; Dependabot updates tag and digest together.
+    image: postgres:18.6-alpine3.24@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395
+    restart: unless-stopped
+    env_file:
+      - path: deploy/postgres.env
+        required: false
+    environment:
+      POSTGRES_USER: housecairn
+      POSTGRES_DB: housecairn
+    volumes:
+      - housecairn-postgres:/var/lib/postgresql
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "housecairn", "-d", "housecairn"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  housecairn-data:
+  housecairn-postgres:
