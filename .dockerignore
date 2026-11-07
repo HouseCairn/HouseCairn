@@ -1,0 +1,17 @@
+# Build context of the container image (docs/adr/0015): everything is left out,
+# then only what the Dockerfile copies is let back in. No .git, no tests, no
+# local data, no .env file can reach the image.
+*
+!pyproject.toml
+!uv.lock
+!LICENSE
+!NOTICE
+!manage.py
+!design/
+!src/
+
+# Caches and editor files, even inside the directories let in above.
+**/__pycache__
+**/*.py[cod]
+**/.DS_Store
+**/*.swp

@@ -89,6 +89,15 @@ SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(50))')" \
   HOUSECAIRN_DATA_DIR=./data uv run python manage.py check --deploy --fail-level WARNING
 ```
 
+To build and try the container image locally (needs Docker; see
+[docs/install.md](docs/install.md) and
+[ADR 0015](docs/adr/0015-container-image-and-publication.md)):
+
+```sh
+docker build -t housecairn:dev .
+.github/scripts/image-smoke.sh housecairn:dev sqlite   # the CI smoke test
+```
+
 When you change `design/tokens.json`, run `manage.py build_design_tokens` and
 commit the generated `tokens.css`. When you add or change a user-facing string,
 update the French catalog as described in
@@ -109,6 +118,8 @@ maintainer merges it ([ADR 0014](docs/adr/0014-continuous-integration-and-supply
 | `Conventional Commits title` | The pull request title. |
 | `Signed-off-by` | The sign-off of every commit. |
 | `CLA` | Every commit author and the pull request author have signed the CLA. |
+| `Container image` | The image builds and passes its smoke test with SQLite and PostgreSQL (read-only, unprivileged, restart, clean stop), and has no fixable high or critical vulnerability. |
+| `Container image (multi-arch build)` | The image builds for `linux/amd64` and `linux/arm64`. |
 
 Workflows of a pull request from outside the project only start once the
 maintainer approves them.

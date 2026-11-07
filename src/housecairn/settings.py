@@ -70,6 +70,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Serves the collected static files, right after the security headers are
+    # set (docs/adr/0015).
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -149,6 +152,13 @@ STATIC_ROOT = Path(env.str("STATIC_ROOT", default=str(DATA_DIR / "static")))
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_ROOT = Path(env.str("MEDIA_ROOT", default=str(DATA_DIR / "media")))
 MEDIA_URL = "media/"
+# Static files are collected once, at image build time, with a content hash in
+# their names and a compressed copy, then served by WhiteNoise with long-lived
+# cache headers (docs/adr/0015). With DEBUG on, the hashed names are not used.
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
 
 LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "homes:list"

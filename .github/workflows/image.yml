@@ -1,0 +1,281 @@
+# Container image (docs/adr/0015): build and test on every pull request,
+# publish to GHCR with signed provenance and SBOM on `main` and release tags.
+# Job names are status checks: rename them only together with the ruleset.
+name: Image
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  IMAGE: ghcr.io/housecairn/housecairn
+  # Grype, the vulnerability scanner: release archive pinned by its SHA-256,
+  # from grype_<version>_checksums.txt of the release (docs/adr/0015).
+  GRYPE_VERSION: "0.121.0"
+  GRYPE_SHA256: 64e07133d3486115de647a66581461dccf5c732748a0a3119077395565f15519
+  # QEMU emulators (arm64 builds on amd64 runners) and BuildKit, pinned by digest.
+  BINFMT_IMAGE: tonistiigi/binfmt:qemu-v10.2.3-68@sha256:400a4873b838d1b89194d982c45e5fb3cda4593fbfd7e08a02e76b03b21166f0
+  BUILDKIT_IMAGE: moby/buildkit:v0.34.1@sha256:99368f3e46177c6405b9740e4461d91cee004128daeecca78d4ceac50ec1da5c
+  SBOM_SCANNER_IMAGE: docker/buildkit-syft-scanner:1.12.1@sha256:873a7458c3c8ac8e32c7b796c10e1600b07b963d2aa000a72a2d97aaaa2d6315
+
+jobs:
+  image:
+    name: Container image
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read # check out the repository
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: "Criterion 1: build the image"
+        env:
+          REVISION: ${{ github.sha }}
+        run: |
+          docker build --build-arg VERSION=ci --build-arg "REVISION=$REVISION" -t housecairn:ci .
+          size=$(docker image inspect -f '{{.Size}}' housecairn:ci)
+          mb=$((size / 1000 / 1000))
+          echo "Image size: ${mb} MB (${size} bytes)"
+          {
+            echo "### Build"
+            echo "- PASS: image built, ${mb} MB (${size} bytes)"
+          } >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Image metadata (user, labels)
+        run: |
+          user=$(docker image inspect -f '{{.Config.User}}' housecairn:ci)
+          license=$(docker image inspect -f '{{index .Config.Labels "org.opencontainers.image.licenses"}}' housecairn:ci)
+          source=$(docker image inspect -f '{{index .Config.Labels "org.opencontainers.image.source"}}' housecairn:ci)
+          echo "user=$user license=$license source=$source"
+          test "$user" = "10001:10001"
+          test "$license" = "AGPL-3.0-only"
+          test "$source" = "https://github.com/HouseCairn/HouseCairn"
+          echo "- PASS: user $user, license $license, source $source" >>"$GITHUB_STEP_SUMMARY"
+
+      - name: "Criterion 2: smoke test with SQLite"
+        run: .github/scripts/image-smoke.sh housecairn:ci sqlite
+
+      - name: "Criterion 3: smoke test with PostgreSQL"
+        run: .github/scripts/image-smoke.sh housecairn:ci postgresql
+
+      - name: Example compose file is valid
+        run: |
+          cp deploy/production.env.example deploy/production.env
+          docker compose -f compose.yaml config --quiet
+          docker compose -f compose.yaml --profile postgres config --quiet
+          echo "- PASS: compose.yaml is valid, with and without the postgres profile" >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Install Grype (checksum verified)
+        run: |
+          mkdir -p "$RUNNER_TEMP/grype"
+          archive="$RUNNER_TEMP/grype.tar.gz"
+          curl -sSfL -o "$archive" \
+            "https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_linux_amd64.tar.gz"
+          echo "${GRYPE_SHA256}  $archive" | sha256sum --check --strict
+          tar -xzf "$archive" -C "$RUNNER_TEMP/grype" grype
+          "$RUNNER_TEMP/grype/grype" version
+
+      - name: "Criterion 4: vulnerability scan (fails on fixable high or critical)"
+        env:
+          GRYPE_CHECK_FOR_APP_UPDATE: "false"
+        run: |
+          grype="$RUNNER_TEMP/grype/grype"
+          # Every finding goes to code scanning; the check fails only on a
+          # high or critical vulnerability that has a fix available.
+          "$grype" docker:housecairn:ci -o sarif --file grype.sarif
+          set +e
+          "$grype" docker:housecairn:ci --only-fixed --fail-on high -o table | tee grype.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          {
+            echo "### Vulnerability scan (Grype ${GRYPE_VERSION})"
+            if [ "$status" = 0 ]; then
+              echo "- PASS: no fixable vulnerability of high or critical severity"
+            else
+              echo "- **FAIL: fixable vulnerabilities of high or critical severity**"
+            fi
+            echo '```'
+            head -n 60 grype.txt
+            echo '```'
+          } >>"$GITHUB_STEP_SUMMARY"
+          exit "$status"
+
+      - name: Keep the scan results for code scanning
+        if: ${{ !cancelled() && hashFiles('grype.sarif') != '' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: grype-sarif
+          path: grype.sarif
+          retention-days: 7
+
+  code-scanning:
+    name: Container image (code scanning)
+    needs: image
+    # The token of a pull request from a fork, or of a Dependabot run, is
+    # read-only: it cannot upload results.
+    if: >-
+      ${{ !cancelled() && needs.image.result != 'skipped' &&
+      (github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]')) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      security-events: write # upload the SARIF results to code scanning
+    steps:
+      - name: Download the scan results
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: grype-sarif
+      - name: Upload to code scanning
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          sarif_file: grype.sarif
+          category: container-image
+
+  multiarch:
+    name: Container image (multi-arch build)
+    # Builds amd64 and arm64 exactly as the publication does, without pushing:
+    # a pull request that breaks one architecture fails here, before `main`.
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read # check out the repository
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up QEMU and a BuildKit builder
+        run: |
+          docker run --rm --privileged "$BINFMT_IMAGE" --install arm64
+          docker buildx create --name housecairn --driver docker-container \
+            --driver-opt "image=$BUILDKIT_IMAGE" --bootstrap --use
+      - name: Build linux/amd64 and linux/arm64
+        env:
+          REVISION: ${{ github.sha }}
+        run: |
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            --build-arg VERSION=ci --build-arg "REVISION=$REVISION" \
+            --provenance=mode=max \
+            --attest "type=sbom,generator=$SBOM_SCANNER_IMAGE" \
+            --output type=cacheonly .
+          echo "- PASS: linux/amd64 and linux/arm64 built, with provenance and SBOM" >>"$GITHUB_STEP_SUMMARY"
+
+  publish:
+    name: Publish image
+    needs: image
+    if: ${{ github.event_name == 'push' && github.repository == 'HouseCairn/HouseCairn' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read # check out the repository
+      packages: write # push the image to GHCR
+      id-token: write # sign the attestations with a Sigstore certificate
+      attestations: write # store the attestations
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Tags for this ref
+        id: tags
+        env:
+          REF: ${{ github.ref }}
+          SHA: ${{ github.sha }}
+        run: python3 scripts/image_tags.py "$REF" "$SHA" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU and a BuildKit builder
+        run: |
+          docker run --rm --privileged "$BINFMT_IMAGE" --install arm64
+          docker buildx create --name housecairn --driver docker-container \
+            --driver-opt "image=$BUILDKIT_IMAGE" --bootstrap --use
+
+      - name: Log in to GHCR
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTOR: ${{ github.actor }}
+        run: printf '%s' "$TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin
+
+      - name: Build and push linux/amd64 and linux/arm64
+        id: push
+        env:
+          VERSION: ${{ steps.tags.outputs.version }}
+          TAGS: ${{ steps.tags.outputs.tags }}
+          REVISION: ${{ github.sha }}
+        run: |
+          args=()
+          for tag in $TAGS; do args+=(-t "$IMAGE:$tag"); done
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            --build-arg "VERSION=$VERSION" --build-arg "REVISION=$REVISION" \
+            --provenance=mode=max \
+            --attest "type=sbom,generator=$SBOM_SCANNER_IMAGE" \
+            --metadata-file "$RUNNER_TEMP/metadata.json" \
+            "${args[@]}" --push .
+          digest=$(jq -r '."containerimage.digest"' "$RUNNER_TEMP/metadata.json")
+          [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          echo "digest=$digest" >>"$GITHUB_OUTPUT"
+          {
+            echo "### Published"
+            echo "- \`$IMAGE@$digest\`"
+            for tag in $TAGS; do echo "- \`$IMAGE:$tag\`"; done
+          } >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Extract the SBOM of each platform (SPDX)
+        id: sbom
+        env:
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          for arch in amd64 arm64; do
+            docker buildx imagetools inspect "$IMAGE@$DIGEST" \
+              --format "{{ json (index .SBOM \"linux/$arch\").SPDX }}" >"$RUNNER_TEMP/sbom-$arch.spdx.json"
+            platform_digest=$(docker buildx imagetools inspect --raw "$IMAGE@$DIGEST" \
+              | jq -r --arg arch "$arch" \
+                '.manifests[] | select(.platform.os == "linux" and .platform.architecture == $arch) | .digest')
+            [[ "$platform_digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+            jq -e '.spdxVersion' "$RUNNER_TEMP/sbom-$arch.spdx.json"
+            echo "digest-$arch=$platform_digest" >>"$GITHUB_OUTPUT"
+          done
+
+      - name: Attest build provenance (multi-platform index)
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+          create-storage-record: false
+
+      - name: Attest SBOM (linux/amd64)
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.sbom.outputs.digest-amd64 }}
+          sbom-path: ${{ runner.temp }}/sbom-amd64.spdx.json
+          push-to-registry: true
+          create-storage-record: false
+
+      - name: Attest SBOM (linux/arm64)
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.sbom.outputs.digest-arm64 }}
+          sbom-path: ${{ runner.temp }}/sbom-arm64.spdx.json
+          push-to-registry: true
+          create-storage-record: false
+
+      - name: Log out of GHCR
+        if: ${{ always() }}
+        run: docker logout ghcr.io
