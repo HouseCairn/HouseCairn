@@ -93,6 +93,13 @@ class TestBrand:
         assert data["lang"] == "fr"
         assert "dans la maison" in data["description"]
 
+    def test_manifest_varies_on_the_language_header(self, client: Client) -> None:
+        """A shared cache must keep one manifest per language."""
+        for language in ("en", "fr"):
+            response = client.get(reverse("manifest"), headers={"Accept-Language": language})
+            assert response["Content-Language"] == language
+            assert "Accept-Language" in response["Vary"]
+
 
 class TestScreens:
     """Every screen answers 200, carries the logo and the name, and respects the CSP."""
