@@ -1,0 +1,30 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the Housecairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Sign-in"
+msgstr "Connexion"
+
+msgid "Sign in with the email address and password of a local account, with a passkey, or through single sign-on when the instance has an OpenID Connect provider ([Single sign-on](../administration/oidc.md)). A link to sign up appears only when local sign-up is open (`HOUSECAIRN_SIGNUP_OPEN=true`)."
+msgstr "Connectez-vous avec l'adresse e-mail et le mot de passe d'un compte local, avec une passkey, ou par authentification unique quand l'instance a un fournisseur OpenID Connect ([Authentification unique](../administration/oidc.md)). Un lien d'inscription n'apparaît que lorsque l'inscription locale est ouverte (`HOUSECAIRN_SIGNUP_OPEN=true`)."
+
+msgid "The sign-in page, on a phone."
+msgstr "La page de connexion, sur téléphone."
+

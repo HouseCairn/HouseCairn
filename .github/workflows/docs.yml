@@ -1,0 +1,97 @@
+# Documentation site (docs/adr/0016): build and check it on every pull request,
+# publish it to GitHub Pages (https://docs.housecairn.app) on `main`.
+# Job names are status checks: rename them only together with the ruleset.
+name: Documentation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  UV_LOCKED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  docs:
+    name: Documentation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read # check out the repository
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install locked dependencies with the docs group (uv sync --locked)
+        run: uv sync --locked --group docs
+
+      - name: Install the browser (playwright install)
+        # Official command of the Playwright version in uv.lock; the browser
+        # is only used on a local demonstration server (docs/adr/0016).
+        run: uv run playwright install --with-deps --only-shell --no-progress chromium
+
+      - name: Screenshots of a demonstration instance
+        run: |
+          uv run python scripts/docs_screenshots.py
+          echo "Screenshots:"
+          ls -l docs/_generated/screenshots
+
+      - name: Strict build, English and French
+        run: uv run python scripts/build_docs.py
+
+      - name: No external resource, internal links, API coverage
+        run: uv run python scripts/check_docs_site.py docs/_build/site
+
+      - name: Tests of the site, of its help links and of its scripts
+        env:
+          HOUSECAIRN_DOCS_SITE: docs/_build/site
+        run: uv run pytest tests/test_help_links.py tests/test_docs_extension.py tests/test_docs_scripts.py
+
+      - name: External links (sphinx linkcheck)
+        run: uv run python scripts/build_docs.py --linkcheck
+
+      - name: Package the site for GitHub Pages
+        if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: docs/_build/site
+
+  publish:
+    name: Publish documentation
+    # Only the commits of `main`, after the site above was built and checked.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: docs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write # deploy to GitHub Pages
+      id-token: write # prove to Pages that the deployment comes from this workflow
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

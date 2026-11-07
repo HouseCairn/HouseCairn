@@ -1,0 +1,34 @@
+# The documentation changes with the code (docs/adr/0016, CONTRIBUTING.md): a
+# pull request that changes a screen, a setting or the API must change `docs/`,
+# or carry the `no-docs-needed` label. The job name is a status check.
+name: Documentation updated
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  docs-updated:
+    name: Documentation updated
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read # check out the repository
+    steps:
+      - name: Check out with the history of the pull request
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Check that user-facing changes come with documentation
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: python3 scripts/check_docs_updated.py "$BASE_SHA" "$HEAD_SHA"

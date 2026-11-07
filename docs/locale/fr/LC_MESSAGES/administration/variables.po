@@ -1,0 +1,183 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the Housecairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Environment variables"
+msgstr "Variables d'environnement"
+
+msgid "Set them in `deploy/production.env`. The full list, with defaults, is in [`deploy/production.env.example`](https://github.com/HouseCairn/housecairn/blob/main/deploy/production.env.example) and [`.env.example`](https://github.com/HouseCairn/housecairn/blob/main/.env.example)."
+msgstr "Définissez-les dans `deploy/production.env`. La liste complète, avec les valeurs par défaut, est dans [`deploy/production.env.example`](https://github.com/HouseCairn/housecairn/blob/main/deploy/production.env.example) et [`.env.example`](https://github.com/HouseCairn/housecairn/blob/main/.env.example)."
+
+msgid "Variable"
+msgstr "Variable"
+
+msgid "Default"
+msgstr "Défaut"
+
+msgid "Purpose"
+msgstr "Rôle"
+
+msgid "`ALLOWED_HOSTS`"
+msgstr "`ALLOWED_HOSTS`"
+
+msgid "(none: required)"
+msgstr "(aucun : obligatoire)"
+
+msgid "Host names Housecairn answers to, comma-separated."
+msgstr "Noms d'hôte auxquels Housecairn répond, séparés par des virgules."
+
+msgid "`CSRF_TRUSTED_ORIGINS`"
+msgstr "`CSRF_TRUSTED_ORIGINS`"
+
+msgid "(none)"
+msgstr "(aucun)"
+
+msgid "`https://` origins of those host names."
+msgstr "Origines `https://` de ces noms d'hôte."
+
+msgid "`HOUSECAIRN_BEHIND_TLS_PROXY`"
+msgstr "`HOUSECAIRN_BEHIND_TLS_PROXY`"
+
+msgid "`false`"
+msgstr "`false`"
+
+msgid "`true` behind a reverse proxy that sets `X-Forwarded-Proto`."
+msgstr "`true` derrière un reverse proxy qui pose `X-Forwarded-Proto`."
+
+msgid "`SECRET_KEY`"
+msgstr "`SECRET_KEY`"
+
+msgid "generated in `/data/secret_key`"
+msgstr "générée dans `/data/secret_key`"
+
+msgid "Set it only to manage the key yourself."
+msgstr "À définir seulement pour gérer la clé vous-même."
+
+msgid "`DATABASE_URL`"
+msgstr "`DATABASE_URL`"
+
+msgid "SQLite in `/data`"
+msgstr "SQLite dans `/data`"
+
+msgid "For example `postgres://housecairn:<password>@postgres:5432/housecairn`."
+msgstr "Par exemple `postgres://housecairn:<password>@postgres:5432/housecairn`."
+
+msgid "`TIME_ZONE`"
+msgstr "`TIME_ZONE`"
+
+msgid "`UTC`"
+msgstr "`UTC`"
+
+msgid "Time zone of the instance."
+msgstr "Fuseau horaire de l'instance."
+
+msgid "`HOUSECAIRN_SIGNUP_OPEN`"
+msgstr "`HOUSECAIRN_SIGNUP_OPEN`"
+
+msgid "Allow local sign-up from the web page."
+msgstr "Autorise l'inscription locale depuis la page web."
+
+msgid "`OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`"
+msgstr "`OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`"
+
+msgid "Single sign-on through any OpenID Connect provider."
+msgstr "Authentification unique auprès de n'importe quel fournisseur OpenID Connect."
+
+msgid "`HOUSECAIRN_OIDC_SIGNUP`, `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`"
+msgstr "`HOUSECAIRN_OIDC_SIGNUP`, `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`"
+
+msgid "`closed`, (none)"
+msgstr "`closed`, (aucun)"
+
+msgid "Who may get an account through single sign-on."
+msgstr "Qui peut obtenir un compte par l'authentification unique."
+
+msgid "`HOUSECAIRN_DOCS_URL`"
+msgstr "`HOUSECAIRN_DOCS_URL`"
+
+msgid "`https://docs.housecairn.app`"
+msgstr "`https://docs.housecairn.app`"
+
+msgid "Address of this documentation, used by the help link of each screen."
+msgstr "Adresse de cette documentation, utilisée par le lien d'aide de chaque écran."
+
+msgid "`HOUSECAIRN_WEB_WORKERS`"
+msgstr "`HOUSECAIRN_WEB_WORKERS`"
+
+msgid "`2`"
+msgstr "`2`"
+
+msgid "Web server processes."
+msgstr "Processus du serveur web."
+
+msgid "`HOUSECAIRN_TASK_WORKERS`"
+msgstr "`HOUSECAIRN_TASK_WORKERS`"
+
+msgid "Task worker processes."
+msgstr "Processus du worker de tâches."
+
+msgid "`HOUSECAIRN_STOP_TIMEOUT`"
+msgstr "`HOUSECAIRN_STOP_TIMEOUT`"
+
+msgid "`20`"
+msgstr "`20`"
+
+msgid "Seconds given to both to stop; keep it below Compose's `stop_grace_period`."
+msgstr "Secondes accordées aux deux pour s'arrêter ; gardez cette valeur sous le `stop_grace_period` de Compose."
+
+msgid "`HOUSECAIRN_PORT`"
+msgstr "`HOUSECAIRN_PORT`"
+
+msgid "`8000`"
+msgstr "`8000`"
+
+msgid "Port inside the container."
+msgstr "Port dans le conteneur."
+
+msgid "`LOG_LEVEL`"
+msgstr "`LOG_LEVEL`"
+
+msgid "`INFO`"
+msgstr "`INFO`"
+
+msgid "Application log level; logs go to the container output."
+msgstr "Niveau de journalisation de l'application ; les journaux vont vers la sortie du conteneur."
+
+msgid "Set inside the image, not to be changed: `HOUSECAIRN_DATA_DIR=/data`, `STATIC_ROOT=/app/static`, `DJANGO_SETTINGS_MODULE=housecairn.settings`."
+msgstr "Définies dans l'image, à ne pas modifier : `HOUSECAIRN_DATA_DIR=/data`, `STATIC_ROOT=/app/static`, `DJANGO_SETTINGS_MODULE=housecairn.settings`."
+
+msgid "PostgreSQL"
+msgstr "PostgreSQL"
+
+msgid "SQLite is the default and is enough for a household. To use PostgreSQL, the example `compose.yaml` has a `postgres` service, started only with the `postgres` profile:"
+msgstr "SQLite est le choix par défaut et suffit pour un foyer. Pour utiliser PostgreSQL, le `compose.yaml` d'exemple a un service `postgres`, lancé seulement avec le profil `postgres` :"
+
+msgid "`cp deploy/postgres.env.example deploy/postgres.env` and set a password."
+msgstr "`cp deploy/postgres.env.example deploy/postgres.env`, puis définissez un mot de passe."
+
+msgid "In `deploy/production.env`, set `DATABASE_URL=postgres://housecairn:<password>@postgres:5432/housecairn`."
+msgstr "Dans `deploy/production.env`, définissez `DATABASE_URL=postgres://housecairn:<password>@postgres:5432/housecairn`."
+
+msgid "Uncomment `depends_on` in the `housecairn` service, then `docker compose --profile postgres up -d`."
+msgstr "Décommentez `depends_on` dans le service `housecairn`, puis `docker compose --profile postgres up -d`."
+
+msgid "An existing PostgreSQL server works too: set `DATABASE_URL` to it."
+msgstr "Un serveur PostgreSQL existant convient aussi : pointez `DATABASE_URL` vers lui."
+

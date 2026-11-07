@@ -90,13 +90,16 @@ SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(50))')" \
 ```
 
 To build and try the container image locally (needs Docker; see
-[docs/install.md](docs/install.md) and
+[docs/getting-started/install.md](docs/getting-started/install.md) and
 [ADR 0015](docs/adr/0015-container-image-and-publication.md)):
 
 ```sh
 docker build -t housecairn:dev .
 .github/scripts/image-smoke.sh housecairn:dev sqlite   # the CI smoke test
 ```
+
+To build the documentation site locally (strict build, screenshots, checks),
+see [Documentation](#documentation) below.
 
 When you change `design/tokens.json`, run `manage.py build_design_tokens` and
 commit the generated `tokens.css`. When you add or change a user-facing string,
@@ -120,6 +123,8 @@ maintainer merges it ([ADR 0014](docs/adr/0014-continuous-integration-and-supply
 | `CLA` | Every commit author and the pull request author have signed the CLA. |
 | `Container image` | The image builds and passes its smoke test with SQLite and PostgreSQL (read-only, unprivileged, restart, clean stop), and has no fixable high or critical vulnerability. |
 | `Container image (multi-arch build)` | The image builds for `linux/amd64` and `linux/arm64`. |
+| `Documentation` | The documentation site builds without warning in English and French, loads no external resource, has no broken link (external links included) and documents every API operation ([ADR 0016](docs/adr/0016-documentation-site.md)). |
+| `Documentation updated` | A pull request that changes a screen, a setting or the API also changes `docs/` (see below). |
 
 Workflows of a pull request from outside the project only start once the
 maintainer approves them.
@@ -132,11 +137,46 @@ maintainer approves them.
   format**, for example `feat: add yearly recurrence` or
   `fix(schedule): skip archived rooms`. Pull requests are merged by squash: the
   title and description become the commit message on `main`.
-- **Documentation in the same pull request as the code** it describes.
+- **Documentation in the same pull request as the code** it describes (see
+  [Documentation](#documentation)).
 - **Fill in the pull request template**, including what you actually ran to
   verify the change.
 - All user-facing text is in English in the code and goes through translation
   functions; no hard-coded strings.
+
+## Documentation
+
+The documentation site (<https://docs.housecairn.app>) is built from
+[docs/](docs/index.md) with Sphinx, in Markdown, in English with a French
+translation ([ADR 0016](docs/adr/0016-documentation-site.md)).
+
+**It changes with the code.** A pull request that changes what users see or
+configure updates the documentation in the same pull request: a page of the
+screen reference for a new or changed screen, the environment variables page
+for a setting, and so on. The `Documentation updated` check fails a pull
+request that adds or changes a view, a template, a URL route, a setting or an
+API serializer without changing anything under `docs/`. If no page is
+concerned (a refactoring, an internal change), ask the maintainer to add the
+`no-docs-needed` label: the check then passes. Dependabot pull requests and
+pull requests that only change tests, workflows or documentation are never
+concerned.
+
+Build and check the site locally:
+
+```sh
+uv sync --locked --group docs
+uv run playwright install --only-shell chromium   # once: downloads the browser
+uv run python scripts/docs_screenshots.py         # screenshots of a demo instance
+uv run python scripts/build_docs.py               # strict build, English and French
+uv run python scripts/check_docs_site.py docs/_build/site
+```
+
+The site is in `docs/_build/site/`. After changing a page, refresh the French
+catalogs with `uv run python scripts/build_docs.py --update-catalogs`, then
+translate the new strings in `docs/locale/fr/LC_MESSAGES/`; the build fails
+while a catalog lags behind its page. When you add a screen, give it a page of
+the screen reference and register it in `src/housecairn/core/help.py`, which
+puts the **?** link in its top bar.
 
 ## AI-assisted contributions
 

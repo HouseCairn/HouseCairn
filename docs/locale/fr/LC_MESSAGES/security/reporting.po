@@ -1,0 +1,27 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the Housecairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Report a vulnerability"
+msgstr "Signaler une vulnérabilité"
+
+msgid "Report vulnerabilities **only** through GitHub Private Vulnerability Reporting, never in a public issue, pull request or discussion. The process, the supported versions and the response times are in the project's [security policy](https://github.com/HouseCairn/housecairn/blob/main/SECURITY.md)."
+msgstr "Signalez les vulnérabilités **uniquement** par le signalement privé de vulnérabilités de GitHub, jamais dans une issue, une pull request ou une discussion publique. La procédure, les versions prises en charge et les délais de réponse sont dans la [politique de sécurité](https://github.com/HouseCairn/housecairn/blob/main/SECURITY.md) du projet."
+

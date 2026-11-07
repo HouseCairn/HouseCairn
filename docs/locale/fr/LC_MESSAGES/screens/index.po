@@ -1,0 +1,27 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the Housecairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Screen reference"
+msgstr "Référence des écrans"
+
+msgid "Each screen of Housecairn has a help link, **?**, in its top bar, which opens its page here. The screens to plan maintenance and projects do not exist yet; this reference describes the screens that exist today and grows with each feature."
+msgstr "Chaque écran de Housecairn a un lien d'aide, **?**, dans sa barre du haut, qui ouvre sa page ici. Les écrans pour planifier l'entretien et les projets n'existent pas encore ; cette référence décrit les écrans qui existent aujourd'hui et s'étoffera avec chaque fonction."
+

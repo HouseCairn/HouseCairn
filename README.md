@@ -37,8 +37,15 @@ Housecairn runs as a single container,
 `ghcr.io/housecairn/housecairn`, for `linux/amd64` and `linux/arm64`, with
 SQLite by default and PostgreSQL as an option. Every published image carries a
 signed build provenance and SBOM. See [Installing with Docker
-Compose](docs/install.md) for the example `compose.yaml`, backups, updates,
-environment variables and how to verify an image.
+Compose](docs/getting-started/install.md) for the example `compose.yaml`, and
+the administration pages for backups, updates, environment variables and how
+to verify an image.
+
+## Documentation
+
+The documentation is at <https://docs.housecairn.app>, in English and French.
+Its sources are in [docs/](docs/index.md); how to build it locally is in
+[CONTRIBUTING.md](CONTRIBUTING.md#documentation).
 
 ## Cost
 

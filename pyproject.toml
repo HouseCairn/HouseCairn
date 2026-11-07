@@ -50,6 +50,16 @@ dev = [
   "pytest-cov>=7.0",
   "types-python-dateutil>=2.9",
 ]
+# Documentation site and its screenshots (docs/adr/0016):
+# uv sync --locked --group docs.
+docs = [
+  # Sphinx 9.2 needs Python 3.13; the project is on 3.12 (docs/adr/0016).
+  "sphinx>=9.1.1",
+  "furo>=2025.12.19",
+  "myst-parser>=5.1",
+  "sphinx-intl>=2.4",
+  "playwright>=1.64",
+]
 
 [build-system]
 requires = ["hatchling>=1.27"]

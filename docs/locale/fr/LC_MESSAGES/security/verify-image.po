@@ -1,0 +1,42 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the Housecairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Verify the image"
+msgstr "Vérifier l'image"
+
+msgid "Every image published by the project's workflow has two signed attestations, made with GitHub's artifact attestations (Sigstore):"
+msgstr "Chaque image publiée par le workflow du projet a deux attestations signées, produites avec les attestations d'artefacts de GitHub (Sigstore) :"
+
+msgid "**build provenance** (SLSA), on the multi-platform image: which workflow, commit and repository built it;"
+msgstr "**provenance de construction** (SLSA), sur l'image multi-plateforme : quel workflow, quel commit et quel dépôt l'ont construite ;"
+
+msgid "**SBOM** (SPDX), on each platform's image: every package it contains."
+msgstr "**SBOM** (SPDX), sur l'image de chaque plateforme : chaque paquet qu'elle contient."
+
+msgid "Verify them with the GitHub CLI before you deploy:"
+msgstr "Vérifiez-les avec la CLI GitHub avant de déployer :"
+
+msgid "Write the repository as `HouseCairn/housecairn`, the exact name recorded in the signing certificate. A successful verification ends with `✓ Verification succeeded!`. The attestations are also stored in the registry next to the image."
+msgstr "Écrivez le dépôt sous la forme `HouseCairn/housecairn`, le nom exact inscrit dans le certificat de signature. Une vérification réussie se termine par `✓ Verification succeeded!`. Les attestations sont aussi stockées dans le registre, à côté de l'image."
+
+msgid "How the image is built and signed is in [ADR 0015](../adr/0015-container-image-and-publication.md)."
+msgstr "La construction et la signature de l'image sont décrites dans l'[ADR 0015](../adr/0015-container-image-and-publication.md)."
+
