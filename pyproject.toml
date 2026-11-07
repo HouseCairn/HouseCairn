@@ -53,9 +53,8 @@ dev = [
 # Documentation site and its screenshots (docs/adr/0016):
 # uv sync --locked --group docs.
 docs = [
-  # Sphinx 9.2 needs Python 3.13, which is the project's Python since the image
-  # moved to it (docs/adr/0015); the floor stays 9.1.1 (docs/adr/0016).
-  "sphinx>=9.1.1",
+  # Sphinx 9.2 needs Python 3.13, the project's Python (docs/adr/0016).
+  "sphinx>=9.2",
   "furo>=2025.12.19",
   "myst-parser>=5.1",
   "sphinx-intl>=2.4",
@@ -75,7 +74,7 @@ default-groups = ["dev"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py312"
+target-version = "py313"
 src = ["src", "tests"]
 extend-exclude = ["src/housecairn/*/migrations/*"]
 

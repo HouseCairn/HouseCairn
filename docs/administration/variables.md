@@ -9,6 +9,7 @@ Set them in `deploy/production.env`. The full list, with defaults, is in
 | `ALLOWED_HOSTS` | (none: required) | Host names HouseCairn answers to, comma-separated. |
 | `CSRF_TRUSTED_ORIGINS` | (none) | `https://` origins of those host names. |
 | `HOUSECAIRN_BEHIND_TLS_PROXY` | `false` | `true` behind a reverse proxy that sets `X-Forwarded-Proto`. |
+| `HOUSECAIRN_FORWARDED_ALLOW_IPS` | `127.0.0.1,::1` | Addresses or networks of that proxy, comma-separated: only their forwarding headers count (see [Reverse proxy](reverse-proxy.md)). |
 | `SECRET_KEY` | generated in `/data/secret_key` | Set it only to manage the key yourself. |
 | `DATABASE_URL` | SQLite in `/data` | For example `postgres://housecairn:<password>@postgres:5432/housecairn`. |
 | `TIME_ZONE` | `UTC` | Time zone of the instance. |

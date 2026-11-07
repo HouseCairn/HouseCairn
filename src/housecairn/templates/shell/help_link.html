@@ -1,0 +1,6 @@
+{% load i18n %}{# Help link of the screen, to its page of the documentation site (housecairn.core.help). #}
+{% if help_url %}
+  <a class="help-link" href="{{ help_url }}" rel="help" title="{% translate 'Help for this page' %}" aria-label="{% translate 'Help for this page' %}">
+    {% include "components/icon.html" with name="help" %}
+  </a>
+{% endif %}

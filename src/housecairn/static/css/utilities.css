@@ -1,0 +1,10 @@
+/* Utilities layer (static/css/app.css): rules that apply over everything
+   else, last in the cascade. */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
