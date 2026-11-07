@@ -59,7 +59,9 @@ made the sign-in page fail (allauth parses it before Django checks it);
 
 ## Consequences
 
-- The `ci` profile adds about ten seconds to each test job; a run is
+- The `ci` profile costs a few seconds per test job: on the pull request that
+  adds it, the test step took 21 s instead of 24 s with SQLite and 29 s
+  instead of 25 s with PostgreSQL (runner noise included). A run is
   reproducible, so a failure in CI fails again locally with
   `HYPOTHESIS_PROFILE=ci`.
 - Being derandomized, CI explores the same 50 examples each time; the `dev`
