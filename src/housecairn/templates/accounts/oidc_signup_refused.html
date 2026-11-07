@@ -1,0 +1,18 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% load allauth %}
+{% block head_title %}
+  {% translate "Sign-in refused" %}
+{% endblock head_title %}
+{% block content %}
+  {% element h1 %}
+    {% translate "Sign-in refused" %}
+  {% endelement %}
+  {% element p %}
+    {% translate "No account on this instance matches this identity, and new accounts cannot be created through single sign-on. Ask the administrator of this instance for access." %}
+  {% endelement %}
+  {% url "account_login" as login_url %}
+  {% element p %}
+    <a href="{{ login_url }}">{% translate "Back to sign-in" %}</a>
+  {% endelement %}
+{% endblock content %}

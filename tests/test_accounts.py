@@ -62,15 +62,6 @@ class TestSignIn:
 
         assert set(settings.MFA_SUPPORTED_TYPES) == {"totp", "recovery_codes", "webauthn"}
 
-    def test_social_signup_follows_setting(self) -> None:
-        from housecairn.accounts.adapters import SocialAccountAdapter
-
-        adapter = SocialAccountAdapter()
-        with override_settings(HOUSECAIRN_OIDC_SIGNUP_OPEN=False):
-            assert adapter.is_open_for_signup(None, None) is False  # type: ignore[arg-type]
-        with override_settings(HOUSECAIRN_OIDC_SIGNUP_OPEN=True):
-            assert adapter.is_open_for_signup(None, None) is True  # type: ignore[arg-type]
-
 
 class TestAdmin:
     @pytest.mark.parametrize(

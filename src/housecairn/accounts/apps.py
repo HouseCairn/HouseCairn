@@ -6,3 +6,6 @@ class AccountsConfig(AppConfig):
     name = "housecairn.accounts"
     label = "accounts"
     verbose_name = _("Accounts")
+
+    def ready(self) -> None:
+        from housecairn.accounts import signals  # noqa: F401

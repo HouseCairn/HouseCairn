@@ -68,3 +68,45 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.email
+
+
+class SetupMethod(models.TextChoices):
+    OIDC = "oidc", _("first sign-in through OIDC")
+    OTHER = "other", _("created another way")
+
+
+class InstanceSetup(models.Model):
+    """Marks that the instance has had a first account (docs/adr/0007).
+
+    One row at most, created with the first user and never removed: once it
+    exists, no sign-in can make someone an administrator by being first. The
+    fixed primary key also settles two simultaneous first sign-ins, since only
+    one of them can insert the row. It is the audit record of how the first
+    account was created.
+    """
+
+    SINGLETON_ID = 1
+
+    id = models.PositiveSmallIntegerField(primary_key=True, default=SINGLETON_ID, editable=False)
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True)
+    method = models.CharField(_("method"), max_length=16, choices=SetupMethod.choices)
+    first_user = models.OneToOneField(
+        User,
+        verbose_name=_("first account"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+
+    class Meta:
+        verbose_name = _("instance setup")
+        verbose_name_plural = _("instance setup")
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(id=1), name="accounts_instancesetup_single_row"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return str(self.get_method_display())

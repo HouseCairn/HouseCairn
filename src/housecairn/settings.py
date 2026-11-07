@@ -95,6 +95,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "housecairn.accounts.context_processors.signup",
             ],
         },
     },
@@ -189,7 +190,17 @@ ACCOUNT_ADAPTER = "housecairn.accounts.adapters.AccountAdapter"
 SOCIALACCOUNT_ADAPTER = "housecairn.accounts.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_ONLY = False
 HOUSECAIRN_SIGNUP_OPEN: bool = env.bool("HOUSECAIRN_SIGNUP_OPEN", default=False)
-HOUSECAIRN_OIDC_SIGNUP_OPEN: bool = env.bool("HOUSECAIRN_OIDC_SIGNUP_OPEN", default=True)
+# Sign-up through OIDC: "closed" (default) refuses an identity without an
+# account, except the very first one, which becomes the instance
+# administrator; "open" lets anyone the provider accepts create an account.
+HOUSECAIRN_OIDC_SIGNUP: str = env.str("HOUSECAIRN_OIDC_SIGNUP", default="closed").strip().lower()
+if HOUSECAIRN_OIDC_SIGNUP not in {"closed", "open"}:
+    raise ImproperlyConfigured("HOUSECAIRN_OIDC_SIGNUP must be 'closed' or 'open'.")
+# If set, only this address, verified by the provider, can become the first
+# administrator through OIDC.
+HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL: str = env.str(
+    "HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL", default=""
+).strip()
 
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True

@@ -44,6 +44,30 @@ msgstr "utilisateur"
 msgid "users"
 msgstr "utilisateurs"
 
+#: accounts/models.py
+msgid "first sign-in through OIDC"
+msgstr "première connexion par OIDC"
+
+#: accounts/models.py
+msgid "created another way"
+msgstr "créé autrement"
+
+#: accounts/models.py core/models.py
+msgid "created at"
+msgstr "créé le"
+
+#: accounts/models.py
+msgid "method"
+msgstr "méthode"
+
+#: accounts/models.py
+msgid "first account"
+msgstr "premier compte"
+
+#: accounts/models.py
+msgid "instance setup"
+msgstr "initialisation de l'instance"
+
 #: apitokens/admin.py
 msgid "Revoke selected tokens"
 msgstr "Révoquer les jetons sélectionnés"
@@ -119,10 +143,6 @@ msgstr "Un jeton est lié à au moins un logement."
 #: core/apps.py
 msgid "Core"
 msgstr "Cœur"
-
-#: core/models.py
-msgid "created at"
-msgstr "créé le"
 
 #: core/models.py
 msgid "deleted at"
@@ -204,6 +224,40 @@ msgstr "Anglais"
 msgid "French"
 msgstr "Français"
 
+#: templates/account/login.html templates/base.html templates/core/index.html
+msgid "Sign in"
+msgstr "Se connecter"
+
+#: templates/account/login.html
+#, python-format
+msgid ""
+"If you have not created an account yet, then please %(link)ssign "
+"up%(end_link)s first."
+msgstr "Si vous n'avez pas encore créé de compte, %(link)sinscrivez-vous%(end_link)s d'abord."
+
+#: templates/account/login.html
+msgid "Sign in with a passkey"
+msgstr "Se connecter avec une clé d'accès"
+
+#: templates/account/login.html
+msgid "Send me a sign-in code"
+msgstr "Envoyez-moi un code de connexion"
+
+#: templates/accounts/oidc_signup_refused.html
+msgid "Sign-in refused"
+msgstr "Connexion refusée"
+
+#: templates/accounts/oidc_signup_refused.html
+msgid ""
+"No account on this instance matches this identity, and new accounts cannot "
+"be created through single sign-on. Ask the administrator of this instance "
+"for access."
+msgstr "Aucun compte de cette instance ne correspond à cette identité, et l'authentification unique ne permet pas de créer de nouveaux comptes. Demandez un accès à l'administrateur de cette instance."
+
+#: templates/accounts/oidc_signup_refused.html
+msgid "Back to sign-in"
+msgstr "Retour à la connexion"
+
 #: templates/base.html
 msgid "Skip to content"
 msgstr "Aller au contenu"
@@ -215,10 +269,6 @@ msgstr "Navigation principale"
 #: templates/base.html
 msgid "Sign out"
 msgstr "Se déconnecter"
-
-#: templates/base.html templates/core/index.html
-msgid "Sign in"
-msgstr "Se connecter"
 
 #: templates/core/index.html
 msgid "Welcome"
