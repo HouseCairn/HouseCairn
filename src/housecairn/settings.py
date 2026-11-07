@@ -420,6 +420,13 @@ HOUSECAIRN_API_TOKEN_DEFAULT_LIFETIME_DAYS: int = env.int(
 )
 HOUSECAIRN_EVENT_PAYLOAD_MAX_BYTES = 16 * 1024
 
+# Cache, which holds the counters of the rate limits (docs/adr/0025). The default is
+# in memory and per process: with several web processes each counts alone, so a limit
+# is up to HOUSECAIRN_WEB_WORKERS times looser. A shared cache makes it exact, for
+# example HOUSECAIRN_CACHE_URL=dbcache://housecairn_cache (the table is created at
+# start-up), or a Redis or Memcached URL.
+CACHES = {"default": env.cache("HOUSECAIRN_CACHE_URL", default="locmemcache://housecairn")}
+
 # Documentation site opened by the help link of each screen (docs/adr/0016).
 # A link only: the interface loads nothing from this address.
 HOUSECAIRN_DOCS_URL: str = env.str(
