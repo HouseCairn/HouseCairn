@@ -1,0 +1,16 @@
+/* Replaces the inline style block of drf-spectacular's Swagger UI page. */
+html {
+  box-sizing: border-box;
+  overflow-y: scroll;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+}
+
+body {
+  background: #fafafa;
+  margin: 0;
+}

@@ -1,0 +1,44 @@
+/* Generated from design/tokens.json by `manage.py build_design_tokens`. */
+/* Do not edit by hand. */
+:root {
+  --hc-color-slate: #1F3A3D;
+  --hc-color-sand: #C8A27C;
+  --hc-color-sage: #8FA39A;
+  --hc-color-stone: #5F726E;
+  --hc-color-background: #F7F5F1;
+  --hc-color-surface: #FFFFFF;
+  --hc-color-surface-muted: #EEF1EF;
+  --hc-color-border: #D5DCD9;
+  --hc-color-text: #1C2526;
+  --hc-color-text-muted: #4F605C;
+  --hc-color-text-inverse: #FFFFFF;
+  --hc-color-primary: #1F3A3D;
+  --hc-color-primary-hover: #2B4F53;
+  --hc-color-accent: #C8A27C;
+  --hc-color-focus: #1F3A3D;
+  --hc-color-success: #2E6B4F;
+  --hc-color-warning: #7A4F00;
+  --hc-color-danger: #A3322A;
+  --hc-color-info: #2F5D8A;
+  --hc-font-family-base: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  --hc-font-family-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --hc-font-size-sm: 0.875rem;
+  --hc-font-size-base: 1rem;
+  --hc-font-size-lg: 1.25rem;
+  --hc-font-size-xl: 1.5rem;
+  --hc-font-size-2xl: 2rem;
+  --hc-font-weight-regular: 400;
+  --hc-font-weight-bold: 650;
+  --hc-font-line-height: 1.5;
+  --hc-space-1: 0.25rem;
+  --hc-space-2: 0.5rem;
+  --hc-space-3: 0.75rem;
+  --hc-space-4: 1rem;
+  --hc-space-6: 1.5rem;
+  --hc-space-8: 2rem;
+  --hc-space-12: 3rem;
+  --hc-radius-sm: 4px;
+  --hc-radius-md: 8px;
+  --hc-radius-lg: 12px;
+  --hc-radius-pill: 999px;
+}

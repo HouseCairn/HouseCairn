@@ -1,0 +1,22 @@
+{% load static %}<!DOCTYPE html>
+{% comment %}
+  Same as drf-spectacular's swagger_ui.html, without the inline style block, so
+  the page works under the strict Content Security Policy. Swagger UI comes from
+  drf-spectacular-sidecar and the init script from this same view (?script=).
+{% endcomment %}
+<html>
+<head>
+  <title>{{ title|default:"Housecairn API" }}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if favicon_href %}<link rel="icon" href="{{ favicon_href }}">{% endif %}
+  <link rel="stylesheet" href="{{ swagger_ui_css }}">
+  <link rel="stylesheet" href="{% static 'css/swagger.css' %}">
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="{{ swagger_ui_bundle }}"></script>
+  <script src="{{ swagger_ui_standalone }}"></script>
+  <script src="{{ script_url }}"></script>
+</body>
+</html>

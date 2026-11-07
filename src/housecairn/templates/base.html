@@ -1,0 +1,44 @@
+{% load static i18n %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="htmx-config" content='{"includeIndicatorStyles": false, "allowEval": false, "allowScriptTags": false, "selfRequestsOnly": true}'>
+  <title>{% block head_title %}{% endblock head_title %} · Housecairn</title>
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script src="{% static 'vendor/htmx/htmx.min.js' %}" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" defer></script>
+  {% block extra_head %}{% endblock extra_head %}
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <a class="skip-link" href="#main">{% translate "Skip to content" %}</a>
+  <header class="site-header">
+    <a class="brand" href="{% url 'index' %}">Housecairn</a>
+    <nav aria-label="{% translate 'Main navigation' %}">
+      <ul class="nav-list">
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'homes:list' %}">{% translate "Homes" %}</a></li>
+          <li>
+            <form method="post" action="{% url 'account_logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="link-button">{% translate "Sign out" %}</button>
+            </form>
+          </li>
+        {% else %}
+          <li><a href="{% url 'account_login' %}">{% translate "Sign in" %}</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+  <main id="main" class="content {% block main_class %}{% endblock main_class %}" tabindex="-1">
+    {% if messages %}
+      <ul class="messages" role="status">
+        {% for message in messages %}<li class="message message-{{ message.tags }}">{{ message }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+    {% block content %}{% endblock content %}
+  </main>
+  {% block extra_body %}{% endblock extra_body %}
+</body>
+</html>

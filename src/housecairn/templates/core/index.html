@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Welcome" %}{% endblock head_title %}
+{% block content %}
+  <h1>{% translate "Housecairn" context "product name" %}</h1>
+  <p class="lead">{% translate "What needs doing in the house, where, when, with what and for how much." %}</p>
+  {% if user.is_authenticated %}
+    <p><a class="button" href="{% url 'homes:list' %}">{% translate "Go to my homes" %}</a></p>
+  {% else %}
+    <p><a class="button" href="{% url 'account_login' %}">{% translate "Sign in" %}</a></p>
+  {% endif %}
+{% endblock content %}

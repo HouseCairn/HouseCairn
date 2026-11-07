@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% comment %}
+  Every allauth page (sign-in, sign-up, MFA, passkeys, single sign-on) renders
+  inside the application layout, with its colours and without inline scripts.
+{% endcomment %}
+{% block main_class %}auth-panel{% endblock main_class %}
