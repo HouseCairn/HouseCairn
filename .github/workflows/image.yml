@@ -86,20 +86,80 @@ jobs:
           tar -xzf "$archive" -C "$RUNNER_TEMP/grype" grype
           "$RUNNER_TEMP/grype/grype" version
 
+      - name: Vulnerability inventory (every finding, never fails the job)
+        # The complete picture, fixable or not: the job summary and an artifact
+        # keep what code scanning does not receive (docs/adr/0015).
+        continue-on-error: true
+        env:
+          GRYPE_CHECK_FOR_APP_UPDATE: "false"
+        run: |
+          grype="$RUNNER_TEMP/grype/grype"
+          "$grype" docker:housecairn:ci -o json=grype-all.json -o table=grype-all.txt
+          total=$(jq '.matches | length' grype-all.json)
+          fixable=$(jq '[.matches[] | select(.vulnerability.fix.state == "fixed")] | length' grype-all.json)
+          echo "Grype inventory: ${total} findings, ${fixable} with a fix available"
+          {
+            echo "### Vulnerability inventory (Grype ${GRYPE_VERSION}, all findings)"
+            echo "- ${total} findings in total, ${fixable} with a fix available, $((total - fixable)) without."
+            echo "- Only the ${fixable} fixable ones go to code scanning; the complete list is in the \`grype-inventory\` artifact of this run and, for the published image, in its attested SBOM."
+            echo
+            echo "| Severity | Total | Fixable |"
+            echo "| --- | ---: | ---: |"
+            jq -r '
+              [.matches[] | {s: .vulnerability.severity, f: (.vulnerability.fix.state == "fixed")}]
+              | group_by(.s)
+              | map({s: .[0].s, n: length, f: (map(select(.f)) | length)})
+              | sort_by(.s as $x | ["Critical","High","Medium","Low","Negligible","Unknown"] | (index($x) // 9))
+              | .[] | "| \(.s) | \(.n) | \(.f) |"' grype-all.json
+            echo
+            echo "<details><summary>By package (top 25)</summary>"
+            echo
+            echo "| Package | Total | Fixable |"
+            echo "| --- | ---: | ---: |"
+            jq -r '
+              [.matches[] | {p: .artifact.name, f: (.vulnerability.fix.state == "fixed")}]
+              | group_by(.p)
+              | map({p: .[0].p, n: length, f: (map(select(.f)) | length)})
+              | sort_by(-.n)[:25]
+              | .[] | "| \(.p) | \(.n) | \(.f) |"' grype-all.json
+            echo
+            echo "</details>"
+            echo
+            echo "<details><summary>Fixable vulnerabilities (${fixable})</summary>"
+            echo
+            echo "| Vulnerability | Severity | Package | Installed | Fixed in |"
+            echo "| --- | --- | --- | --- | --- |"
+            jq -r '
+              .matches[] | select(.vulnerability.fix.state == "fixed")
+              | "| \(.vulnerability.id) | \(.vulnerability.severity) | \(.artifact.name) | \(.artifact.version) | \(.vulnerability.fix.versions | join(", ")) |"' grype-all.json
+            echo
+            echo "</details>"
+          } >>"$GITHUB_STEP_SUMMARY"
+
       - name: "Criterion 4: vulnerability scan (fails on fixable high or critical)"
         env:
           GRYPE_CHECK_FOR_APP_UPDATE: "false"
         run: |
           grype="$RUNNER_TEMP/grype/grype"
-          # Every finding goes to code scanning; the check fails only on a
-          # high or critical vulnerability that has a fix available.
-          "$grype" docker:housecairn:ci -o sarif --file grype.sarif
+          # Only vulnerabilities with a fix go to code scanning: the others
+          # cannot be fixed by the project and would bury the ones that can.
+          # The JSON of the same scan lets the next lines prove the filter.
+          "$grype" docker:housecairn:ci --only-fixed -o sarif=grype.sarif -o json=grype-fixable.json
+          results=$(jq '[.runs[].results[]] | length' grype.sarif)
+          fixable=$(jq '.matches | length' grype-fixable.json)
+          unfixed=$(jq '[.matches[] | select(.vulnerability.fix.state != "fixed" or (.vulnerability.fix.versions | length) == 0)] | length' grype-fixable.json)
+          echo "SARIF for code scanning: ${results} results; fixable matches of the same scan: ${fixable}; without a fix: ${unfixed}"
+          test "$unfixed" = 0
+          test "$results" = "$fixable"
+          # The check fails only on a high or critical vulnerability that has a
+          # fix available (unchanged scope: --only-fixed --fail-on high).
           set +e
           "$grype" docker:housecairn:ci --only-fixed --fail-on high -o table | tee grype.txt
           status=${PIPESTATUS[0]}
           set -e
           {
             echo "### Vulnerability scan (Grype ${GRYPE_VERSION})"
+            echo "- Code scanning receives ${results} fixable results; none without a fix."
             if [ "$status" = 0 ]; then
               echo "- PASS: no fixable vulnerability of high or critical severity"
             else
@@ -118,6 +178,16 @@ jobs:
           name: grype-sarif
           path: grype.sarif
           retention-days: 7
+
+      - name: Keep the complete inventory
+        if: ${{ !cancelled() && hashFiles('grype-all.json') != '' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: grype-inventory
+          path: |
+            grype-all.json
+            grype-all.txt
+          retention-days: 14
 
   code-scanning:
     name: Container image (code scanning)

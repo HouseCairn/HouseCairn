@@ -108,8 +108,8 @@ ADR 0001 is amended by this record:
 
 | Job | Trigger | Permissions | What it does |
 | --- | --- | --- | --- |
-| `Container image` | pull request, push to `main`, tag `v*` | `contents: read` | Builds the image for amd64 and runs `.github/scripts/image-smoke.sh` on it, with SQLite then with PostgreSQL: started with `--read-only --cap-drop ALL --security-opt no-new-privileges`, `/tmp` in memory and an empty volume; healthy; `/`, the sign-in page and a hashed static file answer; user 10001; writes outside `/data` and `/tmp` refused; secret key mode 600; clean stop on SIGTERM; restart on the same volume keeps the database and the key and applies no migration; killing the task worker stops the container. Validates `compose.yaml`. Scans the image with Grype. |
-| `Container image (code scanning)` | same, except pull requests from forks and Dependabot | `security-events: write` | Uploads the Grype SARIF of the previous job to code scanning. Runs no code of the pull request. |
+| `Container image` | pull request, push to `main`, tag `v*` | `contents: read` | Builds the image for amd64 and runs `.github/scripts/image-smoke.sh` on it, with SQLite then with PostgreSQL: started with `--read-only --cap-drop ALL --security-opt no-new-privileges`, `/tmp` in memory and an empty volume; healthy; `/`, the sign-in page and a hashed static file answer; user 10001; writes outside `/data` and `/tmp` refused; secret key mode 600; clean stop on SIGTERM; restart on the same volume keeps the database and the key and applies no migration; killing the task worker stops the container. Validates `compose.yaml`. Scans the image with Grype: an inventory of every finding (job summary and `grype-inventory` artifact), then the fixable ones for code scanning and the check. |
+| `Container image (code scanning)` | same, except pull requests from forks and Dependabot | `security-events: write` | Uploads the Grype SARIF of the previous job to code scanning; that file holds only vulnerabilities with a fix available. Runs no code of the pull request. |
 | `Container image (multi-arch build)` | pull request | `contents: read` | Builds `linux/amd64` and `linux/arm64` with provenance and SBOM, as the publication does, without pushing. |
 | `Publish image` | push to `main`, tag `v*`, after `Container image` passed | `contents: read`, `packages: write`, `id-token: write`, `attestations: write` | Builds and pushes both platforms to GHCR, then attests provenance and SBOMs. |
 
@@ -151,10 +151,36 @@ the workflow. Not Trivy: its release binary and its GitHub actions were
 compromised in March 2026 (CVE-2026-33634, GHSA-69fq-xp46-6x23); Grype does
 the same job with an equivalent database. The `Container image` job fails if
 the image has a vulnerability of **high or critical** severity **with a fix
-available** (`--only-fixed --fail-on high`); every finding, fixed or not, goes
-to code scanning (category `container-image`). A vulnerability without a fix
-does not block a release: there is nothing to update to, and code scanning
-keeps it visible.
+available** (`--only-fixed --fail-on high`). Code scanning (category
+`container-image`) receives the same set, every severity but only what has a
+fix (see the amendment of 2026-11-07 below). A vulnerability without a fix
+does not block a release: there is nothing to update to.
+
+**Amendment, 2026-11-07: code scanning receives fixable vulnerabilities only.**
+The first scans put 189 alerts in the Security tab, 181 of them without any fix
+published by Debian (glibc, SQLite, util-linux, systemd, tar, coreutils). The
+project cannot act on those: no dependency update, no code change or base image
+digest removes them, and they buried the few alerts that can be resolved. The
+SARIF now comes from `grype --only-fixed` (an option of the pinned Grype
+0.121.0: "ignore matches for vulnerabilities that are not fixed"), the same
+filter as the blocking check, so the tab lists what the project can fix. The
+job proves it on every run: the JSON of the same scan must contain no match
+without a fix, and its match count must equal the number of SARIF results.
+The blocking command itself is unchanged.
+
+Nothing is dropped. A separate step, which cannot fail the job
+(`continue-on-error`), scans again without the filter and writes to the job
+summary the counts by severity and by package and the list of fixable
+vulnerabilities; the full result (`grype-all.json` and a table) is the
+`grype-inventory` artifact of the run, kept 14 days. The published image's
+SBOM, attested on every release, lets anyone rescan it later.
+
+An empty Security tab therefore does **not** mean "no known CVE": the image
+carries vulnerabilities that Debian has not fixed yet, and the base image may
+carry more tomorrow. They are listed in the inventory of each run. Alerts
+already open without a fix close by themselves at the first analysis uploaded
+after this change reaches `main`, because the new SARIF no longer contains
+them.
 
 **Versions and cooldown.** The tools pinned in the workflow (Grype, BuildKit,
 binfmt, the SBOM scanner) were chosen among releases public for at least
@@ -168,7 +194,7 @@ pinned tools of `image.yml` (environment variables) and the PostgreSQL image of
 ### Third-party actions
 
 None. `image.yml` uses only actions published by GitHub: `actions/checkout`,
-`actions/upload-artifact` v7.0.2, `actions/download-artifact` v8.0.2,
+`actions/upload-artifact` v7.0.2 (the SARIF and the inventory), `actions/download-artifact` v8.0.2,
 `actions/attest` v4.2.2 and `github/codeql-action/upload-sarif`. QEMU,
 BuildKit and the registry login go through the `docker` command line rather
 than Docker's actions.
