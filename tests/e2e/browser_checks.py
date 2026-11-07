@@ -17,6 +17,7 @@ docs/adr/0018.
 import argparse
 import sys
 from pathlib import Path
+from typing import Any
 
 from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
 
@@ -86,6 +87,9 @@ def capture(browser: Browser, base: str, out: Path, invitation: str) -> None:
     out.mkdir(parents=True, exist_ok=True)
     for device, options in DEVICES.items():
         for language in ("en", "fr"):
+            # One sign-in per device and language, reused by the signed-in
+            # screens: signing in for each screen would hit the sign-in rate limit.
+            session: Any = None
             for name, path, authenticated in SCREENS:
                 context = browser.new_context(
                     viewport=options["viewport"],
@@ -94,10 +98,12 @@ def capture(browser: Browser, base: str, out: Path, invitation: str) -> None:
                     device_scale_factor=options["scale"],
                     locale=language,
                     extra_http_headers={"Accept-Language": language},
+                    storage_state=session if authenticated else None,
                 )
                 page = context.new_page()
-                if authenticated:
+                if authenticated and session is None:
                     sign_in(page, base)
+                    session = context.storage_state()
                 path = resolve(page, base, path, invitation)
                 response = page.goto(f"{base}{path}")
                 page.wait_for_load_state("networkidle")
