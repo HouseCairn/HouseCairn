@@ -31,7 +31,7 @@ Open the address of your instance and sign in with the account you created.
 :class: screenshot
 ```
 
-After signing in, Housecairn shows the list of your homes. A new instance has
+After signing in, HouseCairn shows the list of your homes. A new instance has
 none, and there is no screen to create one yet; the screenshot below comes
 from a demonstration instance.
 

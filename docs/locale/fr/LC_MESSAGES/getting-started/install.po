@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026 Robvred
-# This file is distributed under the same license as the Housecairn package.
+# This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn \n"
+"Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-07 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -22,8 +22,8 @@ msgstr ""
 msgid "Install with Docker Compose"
 msgstr "Installer avec Docker Compose"
 
-msgid "Housecairn ships as a single container image, `ghcr.io/housecairn/housecairn`, for `linux/amd64` and `linux/arm64`. It holds the web server, the background task worker and the static files. Everything it writes goes to one volume, `/data`. The design decisions behind the image are in [ADR 0015](../adr/0015-container-image-and-publication.md)."
-msgstr "Housecairn est livré sous la forme d'une seule image de conteneur, `ghcr.io/housecairn/housecairn`, pour `linux/amd64` et `linux/arm64`. Elle contient le serveur web, le worker de tâches de fond et les fichiers statiques. Tout ce qu'elle écrit va dans un seul volume, `/data`. Les décisions de conception de l'image sont dans l'[ADR 0015](../adr/0015-container-image-and-publication.md)."
+msgid "HouseCairn ships as a single container image, `ghcr.io/housecairn/housecairn`, for `linux/amd64` and `linux/arm64`. It holds the web server, the background task worker and the static files. Everything it writes goes to one volume, `/data`. The design decisions behind the image are in [ADR 0015](../adr/0015-container-image-and-publication.md)."
+msgstr "HouseCairn est livré sous la forme d'une seule image de conteneur, `ghcr.io/housecairn/housecairn`, pour `linux/amd64` et `linux/arm64`. Elle contient le serveur web, le worker de tâches de fond et les fichiers statiques. Tout ce qu'elle écrit va dans un seul volume, `/data`. Les décisions de conception de l'image sont dans l'[ADR 0015](../adr/0015-container-image-and-publication.md)."
 
 msgid "Requirements"
 msgstr "Prérequis"
@@ -31,8 +31,8 @@ msgstr "Prérequis"
 msgid "Docker Engine with the Compose plugin (`docker compose`)."
 msgstr "Docker Engine avec le plugin Compose (`docker compose`)."
 
-msgid "A reverse proxy that terminates HTTPS in front of Housecairn (Caddy, Traefik, nginx...). Housecairn listens on plain HTTP, port 8000, and redirects every request to HTTPS; it expects the proxy to set `X-Forwarded-Proto`. See [Reverse proxy](../administration/reverse-proxy.md)."
-msgstr "Un reverse proxy qui termine le HTTPS devant Housecairn (Caddy, Traefik, nginx...). Housecairn écoute en HTTP simple, port 8000, et redirige chaque requête vers HTTPS ; il attend du proxy qu'il pose `X-Forwarded-Proto`. Voir [Reverse proxy](../administration/reverse-proxy.md)."
+msgid "A reverse proxy that terminates HTTPS in front of HouseCairn (Caddy, Traefik, nginx...). HouseCairn listens on plain HTTP, port 8000, and redirects every request to HTTPS; it expects the proxy to set `X-Forwarded-Proto`. See [Reverse proxy](../administration/reverse-proxy.md)."
+msgstr "Un reverse proxy qui termine le HTTPS devant HouseCairn (Caddy, Traefik, nginx...). HouseCairn écoute en HTTP simple, port 8000, et redirige chaque requête vers HTTPS ; il attend du proxy qu'il pose `X-Forwarded-Proto`. Voir [Reverse proxy](../administration/reverse-proxy.md)."
 
 msgid "Install"
 msgstr "Installation"

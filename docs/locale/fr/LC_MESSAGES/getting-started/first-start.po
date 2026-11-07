@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026 Robvred
-# This file is distributed under the same license as the Housecairn package.
+# This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn \n"
+"Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-07 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -49,8 +49,8 @@ msgstr "Ouvrez l'adresse de votre instance et connectez-vous avec le compte que 
 msgid "The sign-in page, on a computer."
 msgstr "La page de connexion, sur ordinateur."
 
-msgid "After signing in, Housecairn shows the list of your homes. A new instance has none, and there is no screen to create one yet; the screenshot below comes from a demonstration instance."
-msgstr "Après la connexion, Housecairn affiche la liste de vos logements. Une nouvelle instance n'en a aucun, et il n'existe pas encore d'écran pour en créer un ; la capture ci-dessous vient d'une instance de démonstration."
+msgid "After signing in, HouseCairn shows the list of your homes. A new instance has none, and there is no screen to create one yet; the screenshot below comes from a demonstration instance."
+msgstr "Après la connexion, HouseCairn affiche la liste de vos logements. Une nouvelle instance n'en a aucun, et il n'existe pas encore d'écran pour en créer un ; la capture ci-dessous vient d'une instance de démonstration."
 
 msgid "The list of homes, on a phone."
 msgstr "La liste des logements, sur téléphone."

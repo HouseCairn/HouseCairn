@@ -1,6 +1,6 @@
 # API
 
-Housecairn has a REST API, mounted at `/api/v1/`, with the same rules as the
+HouseCairn has a REST API, mounted at `/api/v1/`, with the same rules as the
 web interface: every request only sees the homes of its user
 ([ADR 0004](../adr/0004-versioned-rest-api.md),
 [ADR 0006](../adr/0006-home-scoping.md)).

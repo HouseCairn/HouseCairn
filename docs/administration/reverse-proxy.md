@@ -1,6 +1,6 @@
 # Reverse proxy
 
-Housecairn listens on plain HTTP and expects a reverse proxy to terminate
+HouseCairn listens on plain HTTP and expects a reverse proxy to terminate
 HTTPS in front of it. With the example `compose.yaml`, it listens on
 `127.0.0.1:8000` of the host.
 
@@ -12,9 +12,9 @@ CSRF_TRUSTED_ORIGINS=https://housecairn.example.com
 HOUSECAIRN_BEHIND_TLS_PROXY=true
 ```
 
-`HOUSECAIRN_BEHIND_TLS_PROXY=true` makes Housecairn trust the
+`HOUSECAIRN_BEHIND_TLS_PROXY=true` makes HouseCairn trust the
 `X-Forwarded-Proto` header: set it only when the proxy sets that header itself
-and the container cannot be reached without the proxy. Without it, Housecairn
+and the container cannot be reached without the proxy. Without it, HouseCairn
 sees plain HTTP and redirects every request to HTTPS.
 
 ## Caddy
@@ -44,5 +44,5 @@ server {
 }
 ```
 
-Housecairn sets its own security headers (Content Security Policy, HSTS,
+HouseCairn sets its own security headers (Content Security Policy, HSTS,
 `X-Frame-Options`); the proxy does not need to add them.

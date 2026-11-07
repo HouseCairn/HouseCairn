@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026 Robvred
-# This file is distributed under the same license as the Housecairn package.
+# This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn \n"
+"Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-07 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -22,6 +22,6 @@ msgstr ""
 msgid "Security"
 msgstr "Sécurité"
 
-msgid "Housecairn sends no telemetry, makes no outgoing connection unless you configure one, and loads no resource from another host. Its images are signed, and vulnerabilities are reported privately."
-msgstr "Housecairn n'envoie aucune télémétrie, n'établit aucune connexion sortante que vous n'ayez configurée, et ne charge aucune ressource depuis un autre hôte. Ses images sont signées, et les vulnérabilités se signalent en privé."
+msgid "HouseCairn sends no telemetry, makes no outgoing connection unless you configure one, and loads no resource from another host. Its images are signed, and vulnerabilities are reported privately."
+msgstr "HouseCairn n'envoie aucune télémétrie, n'établit aucune connexion sortante que vous n'ayez configurée, et ne charge aucune ressource depuis un autre hôte. Ses images sont signées, et les vulnérabilités se signalent en privé."
 

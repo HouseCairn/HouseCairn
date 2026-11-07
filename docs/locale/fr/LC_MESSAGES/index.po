@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026 Robvred
-# This file is distributed under the same license as the Housecairn package.
+# This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn \n"
+"Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-07 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -19,14 +19,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-msgid "Housecairn"
-msgstr "Housecairn"
+msgid "HouseCairn"
+msgstr "HouseCairn"
 
-msgid "Housecairn is a self-hosted planner for home maintenance and renovation projects: what needs doing in the house, where, when, with what and for how much."
-msgstr "Housecairn est un planificateur auto-hébergé pour l'entretien de la maison et les projets de travaux : ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
+msgid "HouseCairn is a self-hosted planner for home maintenance and renovation projects: what needs doing in the house, where, when, with what and for how much."
+msgstr "HouseCairn est un planificateur auto-hébergé pour l'entretien de la maison et les projets de travaux : ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
 
-msgid "Housecairn is in early development and not usable yet. The application skeleton, its API and its container image exist; the screens to plan maintenance and projects do not. These pages describe only what exists today."
-msgstr "Housecairn est en développement précoce et n'est pas encore utilisable. Le squelette de l'application, son API et son image de conteneur existent ; les écrans pour planifier l'entretien et les projets n'existent pas. Ces pages décrivent seulement ce qui existe aujourd'hui."
+msgid "HouseCairn is in early development and not usable yet. The application skeleton, its API and its container image exist; the screens to plan maintenance and projects do not. These pages describe only what exists today."
+msgstr "HouseCairn est en développement précoce et n'est pas encore utilisable. Le squelette de l'application, son API et son image de conteneur existent ; les écrans pour planifier l'entretien et les projets n'existent pas. Ces pages décrivent seulement ce qui existe aujourd'hui."
 
 msgid "This documentation is also available in French: use the language switcher in the sidebar."
 msgstr "Cette documentation existe aussi en anglais : utilisez le sélecteur de langue dans la barre latérale."

@@ -1,6 +1,6 @@
 # Data and backups
 
-Everything Housecairn writes is in the `/data` volume:
+Everything HouseCairn writes is in the `/data` volume:
 
 | Path | Content |
 | --- | --- |
@@ -29,7 +29,7 @@ Back up `/data` in one of two ways:
 
   (The volume name is `<project>_housecairn-data`; `docker volume ls` shows it.)
 
-- **Online copy of the database**, while Housecairn runs, with SQLite's backup
+- **Online copy of the database**, while HouseCairn runs, with SQLite's backup
   API (the same as `sqlite3 db.sqlite3 ".backup ..."`):
 
   ```sh

@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026 Robvred
-# This file is distributed under the same license as the Housecairn package.
+# This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn \n"
+"Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-07 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -22,8 +22,8 @@ msgstr ""
 msgid "Architecture"
 msgstr "Architecture"
 
-msgid "Housecairn is a Django application with HTMX for the interactive parts, in a single container. The main rules, each recorded in a decision:"
-msgstr "Housecairn est une application Django, avec HTMX pour les parties interactives, dans un seul conteneur. Les règles principales, chacune consignée dans une décision :"
+msgid "HouseCairn is a Django application with HTMX for the interactive parts, in a single container. The main rules, each recorded in a decision:"
+msgstr "HouseCairn est une application Django, avec HTMX pour les parties interactives, dans un seul conteneur. Les règles principales, chacune consignée dans une décision :"
 
 msgid "**One service layer** holds the business rules; web views and API views call it and hold none of their own ([ADR 0002](../adr/0002-single-service-layer.md))."
 msgstr "**Une seule couche de services** porte les règles métier ; les vues web et les vues d'API l'appellent et n'en ont aucune en propre ([ADR 0002](../adr/0002-single-service-layer.md))."
