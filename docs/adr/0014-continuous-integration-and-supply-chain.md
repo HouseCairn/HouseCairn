@@ -49,7 +49,8 @@ own tests in `tests/test_ci_scripts.py`.
 - Values from the event (titles, commit SHAs) reach a `run:` step through
   `env:`, never through `${{ }}` inside the script.
 - `concurrency` cancels outdated runs of the same pull request (except the CLA
-  workflow, whose runs are queued so two signatures do not race).
+  workflow, which does not cancel a running check; what protects its
+  signatures from concurrent writes is described under "Record" below).
 - No `pull_request_target` workflow checks out or runs the code of a pull
   request. The only `pull_request_target` workflow is `cla.yml`, see below.
 
@@ -126,10 +127,21 @@ without network by `.github/scripts/cla.test.js` (`node --test`, run in the
   `main`, one entry per signer: login, numeric account id (signatures are
   matched by id, which survives a renaming), pull request number, comment id
   and date, and the SHA-256 of the `CLA.md` signed (from the default branch).
-  The file is written through the contents API with the blob SHA it replaces;
-  if another run wrote in between, the write is refused and retried on the new
-  version (up to five times). Runs of the same pull request are also queued by
-  `concurrency`. The branch must exist and stay outside the `main` ruleset; the
+  **Concurrent signatures.** The only protection against two runs writing at
+  once is optimistic concurrency on the file: each run reads it, adds its
+  entry, and writes it through the contents API with the blob SHA it read. If
+  another run wrote in between, GitHub refuses the write (409, or 422 if the
+  file appeared meanwhile); the run reads the new version, which keeps the
+  other signature, and tries again, up to five times, then fails and sets the
+  `CLA` status to `failure`. Two pull requests signed at the same time are
+  therefore both recorded, unless one run is refused five times in a row.
+  `concurrency` does not serialize them: its
+  group is per pull request. Within one pull request it lets one run work and
+  one wait (`cancel-in-progress: false`), but a third event replaces the
+  waiting run, which is cancelled: if that run was a signature, it is not
+  recorded (each run records only the comment that triggered it, and
+  `recheck` records nothing), and the signer has to post the phrase again.
+  The branch must exist and stay outside the `main` ruleset; the
   workflow does not create it and fails with an explicit message if it is
   missing. A new CLA text that must be signed again goes to a new
   `signatures/v2/` file.

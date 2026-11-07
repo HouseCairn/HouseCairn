@@ -24,6 +24,16 @@ ones (principle P7), and the same image must run anywhere.
   sniffing, `same-origin` referrer and opener policies.
   `HOUSECAIRN_BEHIND_TLS_PROXY=true` trusts `X-Forwarded-Proto` from a reverse
   proxy.
+- Forwarding headers (`X-Forwarded-For`, `X-Forwarded-Proto`,
+  `X-Forwarded-Host`, `Forwarded`, `X-Real-IP`...) count only from the peers
+  of `HOUSECAIRN_FORWARDED_ALLOW_IPS`, by default the loopback. The first
+  middleware, `housecairn.core.proxy.ForwardedHeadersMiddleware`, removes them
+  from a request of any other peer, and for a trusted proxy replaces
+  `REMOTE_ADDR` with the right-most address of `X-Forwarded-For` that is not a
+  trusted proxy. django-allauth's rate limits and everything else read
+  `REMOTE_ADDR` only (`ALLAUTH_TRUSTED_PROXY_COUNT = 0`). gunicorn gets the
+  same list (ADR 0015). `USE_X_FORWARDED_HOST` stays off: the `Host` header
+  names the site.
 - HSTS `includeSubDomains` and `preload` commit the whole domain, which only its
   owner can decide: they stay off by default, configurable, and Django's
   reminders about them (`security.W005`, `security.W021`) are silenced.

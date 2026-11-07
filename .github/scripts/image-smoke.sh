@@ -49,12 +49,18 @@ cleanup
 summary "### Smoke test ($DB)"
 docker network create "$NETWORK" >/dev/null
 docker volume create "$VOLUME" >/dev/null
+# Requests to the published port reach the container from the gateway of its
+# network: that is where the "reverse proxy" (curl on this host) comes from.
+GATEWAY=$(docker network inspect -f '{{(index .IPAM.Config 0).Gateway}}' "$NETWORK")
+[ -n "$GATEWAY" ] || fail "no gateway for network $NETWORK"
 
-# The example production environment, for a local host name.
+# The example production environment, for a local host name, with this
+# network's gateway as the trusted proxy.
 ENV_ARGS=(
   --env-file deploy/production.env.example
   -e ALLOWED_HOSTS=localhost
   -e CSRF_TRUSTED_ORIGINS=https://localhost
+  -e "HOUSECAIRN_FORWARDED_ALLOW_IPS=$GATEWAY"
 )
 
 if [ "$DB" = postgresql ]; then
@@ -121,6 +127,17 @@ body=$(mktemp)
 code=$(http_get / "$body")
 [ "$code" = 200 ] || fail "GET / answered $code"
 pass "GET / answers 200"
+
+# Another container on the same network is not the trusted proxy: its
+# X-Forwarded-Proto is ignored, so it is redirected to HTTPS.
+untrusted=$(docker run --rm --network "$NETWORK" --entrypoint python "$IMAGE" -c '
+import http.client, sys
+conn = http.client.HTTPConnection(sys.argv[1], 8000, timeout=10)
+conn.request("GET", "/", headers={"Host": "localhost", "X-Forwarded-Proto": "https"})
+print(conn.getresponse().status)
+' "$NAME")
+[ "$untrusted" = 301 ] || fail "X-Forwarded-Proto from an untrusted peer answered $untrusted, expected 301"
+pass "X-Forwarded-Proto counts from the trusted proxy ($GATEWAY) only: another peer gets 301"
 
 code=$(http_get /accounts/login/ "$body")
 [ "$code" = 200 ] || fail "GET /accounts/login/ answered $code"

@@ -23,6 +23,8 @@ SRC = Path(settings.BASE_DIR)
 SMTP_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 CONSOLE_BACKEND = "django.core.mail.backends.console.EmailBackend"
 LOGO = "img/brand/housecairn-logo.svg"
+# Layers of the interface's styles, imported by static/css/app.css in this order.
+STYLE_LAYERS = ("base.css", "shell.css", "components.css", "utilities.css")
 
 
 @pytest.fixture(autouse=True)
@@ -471,11 +473,20 @@ class TestTokens:
         for name, value in design.load_tokens()["color"].items():
             assert re.fullmatch(r"#[0-9A-F]{6}", value) or name == "overlay", name
 
+    def test_app_css_imports_the_layers_in_order(self) -> None:
+        css = (SRC / "static" / "css" / "app.css").read_text(encoding="utf-8")
+        rules = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL).split()
+        # Nothing but local imports, so that the order of the cascade is the
+        # order of the layers.
+        assert " ".join(rules) == " ".join(f'@import url("{layer}");' for layer in STYLE_LAYERS)
+        for layer in STYLE_LAYERS:
+            assert "@import" not in (SRC / "static" / "css" / layer).read_text(encoding="utf-8")
+
     def test_the_css_only_uses_declared_variables(self) -> None:
         declared = set(re.findall(r"(--hc-[a-z0-9-]+):", design.expected_css()))
         used = {
             variable
-            for css in ("app.css", "fonts.css")
+            for css in (*STYLE_LAYERS, "fonts.css")
             for variable in re.findall(
                 r"var\((--hc-[a-z0-9-]+)\)",
                 (SRC / "static" / "css" / css).read_text(encoding="utf-8"),

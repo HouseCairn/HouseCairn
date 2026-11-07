@@ -12,8 +12,10 @@ import threading
 import time
 from collections.abc import Iterator
 from contextlib import closing
+from datetime import datetime, tzinfo
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -112,6 +114,27 @@ class TestCommands:
         assert "--workers=3" in command
         assert "--worker-tmp-dir=/dev/shm" in command
         assert "--no-control-socket" in command
+
+    def test_no_proxy_may_claim_https_by_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("HOUSECAIRN_BEHIND_TLS_PROXY", raising=False)
+        monkeypatch.setenv("HOUSECAIRN_FORWARDED_ALLOW_IPS", "192.0.2.10")
+        command = entrypoint.web_command()
+        assert "--forwarded-allow-ips=" in command
+        assert not any(arg.startswith("--forwarded-allow-ips=*") for arg in command)
+
+    def test_behind_tls_proxy_default_is_the_loopback(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("HOUSECAIRN_BEHIND_TLS_PROXY", "true")
+        monkeypatch.delenv("HOUSECAIRN_FORWARDED_ALLOW_IPS", raising=False)
+        assert "--forwarded-allow-ips=127.0.0.1,::1" in entrypoint.web_command()
+
+    def test_behind_tls_proxy_trusts_the_configured_proxies(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("HOUSECAIRN_BEHIND_TLS_PROXY", "yes")
+        monkeypatch.setenv("HOUSECAIRN_FORWARDED_ALLOW_IPS", " 192.0.2.10, 2001:db8::/32 ,")
+        assert "--forwarded-allow-ips=192.0.2.10,2001:db8::/32" in entrypoint.web_command()
 
     def test_worker(self) -> None:
         assert entrypoint.worker_command()[1:] == ["-m", "django", "qcluster"]
@@ -330,6 +353,57 @@ class TestBackup:
         assert stat.S_IMODE(target.stat().st_mode) == 0o600
         with closing(sqlite3.connect(target)) as copy:
             assert copy.execute("SELECT v FROM t").fetchall() == [("kept",)]
+
+    def test_created_private_without_chmod(
+        self, data: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """The copy is mode 600 from its creation, not restricted afterwards."""
+        entrypoint.prepare_data_dir(data)
+        with closing(sqlite3.connect(data / "db.sqlite3")) as db:
+            db.execute("CREATE TABLE t (v TEXT)")
+            db.commit()
+        chmods: list[object] = []
+        monkeypatch.setattr(entrypoint.os, "chmod", lambda *args, **kw: chmods.append(args))
+        modes_when_opened: list[int] = []
+        real_connect = sqlite3.connect
+
+        def connect(database: str | Path, **kwargs: Any) -> sqlite3.Connection:
+            path = Path(database)
+            if path.parent == data / "backups":
+                # SQLite is about to write the copy: it must already be private.
+                modes_when_opened.append(stat.S_IMODE(path.stat().st_mode))
+            connection: sqlite3.Connection = real_connect(database, **kwargs)
+            return connection
+
+        monkeypatch.setattr(sqlite3, "connect", connect)
+        # A permissive umask, as with `docker exec`.
+        previous = os.umask(0o022)
+        try:
+            assert entrypoint.command_backup() == 0
+        finally:
+            os.umask(previous)
+        target = Path(capsys.readouterr().out.strip())
+        assert modes_when_opened == [0o600]
+        assert stat.S_IMODE(target.stat().st_mode) == 0o600
+        assert chmods == []
+
+    def test_existing_target_is_not_overwritten(
+        self, data: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        entrypoint.prepare_data_dir(data)
+        sqlite3.connect(data / "db.sqlite3").close()
+        (data / "backups").mkdir()
+
+        class Fixed(datetime):
+            @classmethod
+            def now(cls, tz: tzinfo | None = None) -> "Fixed":
+                return cls(2026, 1, 2, 3, 4, 5, tzinfo=tz)
+
+        monkeypatch.setattr(entrypoint, "datetime", Fixed)
+        existing = data / "backups" / "db-20260102T030405Z.sqlite3"
+        existing.write_bytes(b"older copy")
+        assert entrypoint.command_backup() == 1
+        assert existing.read_bytes() == b"older copy"
 
     def test_explicit_sqlite_url(self, data: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("DATABASE_URL", f"sqlite:///{data}/other.sqlite3")

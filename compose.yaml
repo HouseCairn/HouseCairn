@@ -5,6 +5,8 @@
 #
 # HouseCairn listens on port 8000 without TLS: put it behind a reverse proxy
 # that terminates HTTPS (HOUSECAIRN_BEHIND_TLS_PROXY=true in production.env).
+# A proxy on this host reaches the container through the gateway of the
+# network below, which HOUSECAIRN_FORWARDED_ALLOW_IPS must name.
 name: housecairn
 
 services:
@@ -60,6 +62,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+networks:
+  default:
+    ipam:
+      config:
+        # A fixed range, so that the gateway, the address a reverse proxy on
+        # the host comes from, is known: HOUSECAIRN_FORWARDED_ALLOW_IPS=192.0.2.1
+        # in production.env. 192.0.2.0/24 is a documentation range (RFC 5737),
+        # unused on the Internet; change both if it is taken on your host.
+        - subnet: 192.0.2.0/24
+          gateway: 192.0.2.1
 
 volumes:
   housecairn-data:

@@ -1,0 +1,122 @@
+/* Base layer (static/css/app.css): reset, typography, links, focus, text
+   helpers and the skip link. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  font-family: var(--hc-font-family-base);
+  font-size: 100%;
+  line-height: var(--hc-font-line-height);
+  color: var(--hc-color-text);
+  background: var(--hc-color-background);
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ---------- typography ---------- */
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: var(--hc-font-line-height-tight);
+  color: var(--hc-color-text);
+}
+
+h1 {
+  margin-bottom: var(--hc-space-4);
+  font-size: var(--hc-font-size-xl);
+  font-weight: var(--hc-font-weight-heavy);
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  margin: var(--hc-space-6) var(--hc-space-1) var(--hc-space-2);
+  font-size: var(--hc-font-size-xs);
+  font-weight: var(--hc-font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--hc-font-tracking-caps);
+  color: var(--hc-color-text-muted);
+}
+
+h3 {
+  margin-bottom: var(--hc-space-1);
+  font-size: var(--hc-font-size-md);
+  font-weight: var(--hc-font-weight-bold);
+}
+
+p {
+  margin: 0 0 var(--hc-space-2);
+}
+
+a {
+  color: var(--hc-color-primary);
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--hc-color-primary-hover);
+}
+
+code,
+.mono {
+  font-family: var(--hc-font-family-mono);
+  font-size: 0.9em;
+}
+
+hr {
+  margin: var(--hc-space-4) 0;
+  border: 0;
+  border-top: 1px solid var(--hc-color-border);
+}
+
+.small,
+.helptext {
+  font-size: var(--hc-font-size-xs);
+  color: var(--hc-color-text-muted);
+}
+
+.lead {
+  font-size: var(--hc-font-size-md);
+  color: var(--hc-color-text-muted);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+:focus-visible {
+  outline: 3px solid var(--hc-color-focus);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--hc-space-2);
+  top: -4rem;
+  z-index: 30;
+  padding: var(--hc-space-3) var(--hc-space-4);
+  background: var(--hc-color-surface);
+  border-radius: var(--hc-radius-md);
+  font-weight: var(--hc-font-weight-bold);
+}
+
+.skip-link:focus {
+  top: var(--hc-space-2);
+}

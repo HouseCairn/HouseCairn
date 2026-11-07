@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"POT-Creation-Date: 2026-11-07 21:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -60,6 +60,15 @@ msgstr "`false`"
 
 msgid "`true` behind a reverse proxy that sets `X-Forwarded-Proto`."
 msgstr "`true` derrière un reverse proxy qui pose `X-Forwarded-Proto`."
+
+msgid "`HOUSECAIRN_FORWARDED_ALLOW_IPS`"
+msgstr "`HOUSECAIRN_FORWARDED_ALLOW_IPS`"
+
+msgid "`127.0.0.1,::1`"
+msgstr "`127.0.0.1,::1`"
+
+msgid "Addresses or networks of that proxy, comma-separated: only their forwarding headers count (see [Reverse proxy](reverse-proxy.md))."
+msgstr "Adresses ou réseaux de ce proxy, séparés par des virgules : seuls leurs en-têtes de transfert comptent (voir [Reverse proxy](reverse-proxy.md))."
 
 msgid "`SECRET_KEY`"
 msgstr "`SECRET_KEY`"
@@ -195,4 +204,3 @@ msgstr "Décommentez `depends_on` dans le service `housecairn`, puis `docker com
 
 msgid "An existing PostgreSQL server works too: set `DATABASE_URL` to it."
 msgstr "Un serveur PostgreSQL existant convient aussi : pointez `DATABASE_URL` vers lui."
-

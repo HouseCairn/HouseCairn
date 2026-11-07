@@ -99,10 +99,15 @@ ADR 0001 is amended by this record:
   `/healthz` on the loopback with a host name taken from `ALLOWED_HOSTS`; the
   endpoint answers only `{"status": "ok"}` and needs no authentication
   (ADR 0012).
-- **Proxy headers.** gunicorn passes `X-Forwarded-Proto` from any peer
-  (`--forwarded-allow-ips=*`): the address of a reverse proxy in a container
-  network is not known in advance. Whether that header is trusted is decided
-  by Django only, with `HOUSECAIRN_BEHIND_TLS_PROXY` (ADR 0012).
+- **Proxy headers.** gunicorn trusts `X-Forwarded-Proto` from the addresses
+  of `HOUSECAIRN_FORWARDED_ALLOW_IPS` only (`--forwarded-allow-ips`, default
+  the loopback), and from nobody unless `HOUSECAIRN_BEHIND_TLS_PROXY` is true;
+  Django applies the same list to every forwarding header (ADR 0012). Trusting
+  any peer (`*`) was the first choice, since a proxy's address in a container
+  network is not known in advance; it let a client that reaches the port
+  directly pass for HTTPS and choose its address for the sign-in limits. The
+  example `compose.yaml` therefore fixes its network's range, so that the
+  address a proxy on the host comes from, the gateway, is known.
 
 ### Workflow `image.yml`
 
