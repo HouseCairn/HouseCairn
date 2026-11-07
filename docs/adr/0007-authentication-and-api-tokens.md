@@ -20,9 +20,38 @@ recovery codes and passkeys (WebAuthn, passkey login enabled); generic OpenID
 Connect through the `openid_connect` provider, enabled only when
 `OIDC_SERVER_URL` and `OIDC_CLIENT_ID` are set, with PKCE. No identity provider
 is named in the code. Local sign-up is closed unless
-`HOUSECAIRN_SIGNUP_OPEN=true`; sign-up through OIDC follows
-`HOUSECAIRN_OIDC_SIGNUP_OPEN` (default true: the provider decides who may sign
-in).
+`HOUSECAIRN_SIGNUP_OPEN=true`; the sign-in page only links to it when it is
+open. A local administrator bootstrap with a one-time installation token will
+come with account management.
+
+**Sign-up through OIDC is closed by default** (`HOUSECAIRN_OIDC_SIGNUP=closed`).
+An identity the provider accepts but that has no account here is refused, with
+a translated page asking the administrator for access. An existing local
+account is never taken over by an identity that merely shares its address: it
+links its OIDC identity once signed in. Three exceptions, decided in
+`accounts.services.oidc_signup_decision`:
+
+1. **Bootstrap.** While the instance has never had an account, the first OIDC
+   sign-in creates the account with instance administration rights
+   (`is_staff`, `is_superuser`). If `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL` is set,
+   only an identity whose address matches it (case-insensitively) and whose
+   `email_verified` claim is the JSON value `true` can do so; any other is
+   refused, even with sign-up open. The single-row `accounts.InstanceSetup`
+   table, written in the same transaction as the account, makes this happen
+   once: of two simultaneous first sign-ins, one inserts the row and the other
+   fails on its fixed primary key (with SQLite, it waits for the first and then
+   sees the account), and is then handled as any later sign-in. The row is also
+   written when the first account is created any other way (`createsuperuser`,
+   admin site, data migration) and is never removed, so the rule does not come
+   back even if every account is deleted. The creation logs a `WARNING` on the
+   `housecairn.security` logger, "first account created as instance
+   administrator via OIDC", with the account's identifier and nothing else; the
+   row records the method, the account and the time, read-only in the admin.
+2. **Open sign-up.** `HOUSECAIRN_OIDC_SIGNUP=open` lets anyone the provider
+   accepts create an account, without any administration right.
+3. **Invitation.** `accounts.services.has_invitation` is where invitations will
+   plug in with account management; it returns false until then. An invited
+   account has no administration right either.
 
 **API tokens** (`apitokens` app), deliberately minimal:
 
@@ -53,6 +82,15 @@ Nothing in the API or the services changes for it.
 
 ## Consequences
 
+- **Bootstrap risk.** Until the first account exists, the first person the
+  identity provider lets through becomes the instance administrator. Set
+  `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL` to the administrator's address before the
+  first start, and sign in right after installation. An operator who prefers
+  no OIDC bootstrap creates the first account with `manage.py createsuperuser`
+  before enabling OIDC.
+- Closing sign-up does not restrict who the provider authenticates: limiting
+  the application's client to a group at the provider remains the operator's
+  choice, and is what `open` relies on.
 - Home Assistant gets an `events` token for one home and cannot read or change
   anything else.
 - A leaked database does not reveal usable tokens.
