@@ -52,6 +52,11 @@ separator, no heading, one secondary button per configured provider, labelled
 under the form.
 The refusal page for closed OIDC sign-up is unchanged ([0007](0007-authentication-and-api-tokens.md)).
 
+**Forgotten password.** allauth's "Forgot your password?" link and the reset pages
+need outgoing email. They exist only when `EMAIL_HOST` is set and the email backend
+delivers (`accounts.services.email_is_configured`): the link is dropped from the
+form and the reset pages answer 404 otherwise.
+
 **Sign-up.** The link ("No account yet?") exists only when local sign-up is open,
 as before. The "send me a sign-in code" button only appears if that allauth
 feature is enabled, which it is not.

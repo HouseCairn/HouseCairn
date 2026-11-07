@@ -46,6 +46,12 @@ msgstr "Avec l'authentification unique"
 msgid "When the administrator has set up an OpenID Connect provider ([Single sign-on](../administration/oidc.md)), a button below the form reads *Continue with* and the name of that provider, for example *Continue with Company SSO*. There is one per provider."
 msgstr "Lorsque l'administrateur a configuré un fournisseur OpenID Connect ([Authentification unique](../administration/oidc.md)), un bouton sous le formulaire affiche *Continuer avec* suivi du nom de ce fournisseur, par exemple *Continuer avec Company SSO*. Il y en a un par fournisseur."
 
+msgid "Forgotten password"
+msgstr "Mot de passe oublié"
+
+msgid "The link *Forgot your password?* under the password field appears only when the administrator has set up outgoing email ([Email](../administration/variables.md)). Without it, the instance could not send the reset message: the link and the reset page are not there, and the administrator has to set a new password."
+msgstr "Le lien *Mot de passe oublié ?* sous le champ du mot de passe n'apparaît que si l'administrateur a configuré l'envoi de courriels ([Courriel](../administration/variables.md)). Sans cela, l'instance ne pourrait pas envoyer le message de réinitialisation : le lien et la page de réinitialisation sont absents, et l'administrateur doit définir un nouveau mot de passe."
+
 msgid "Creating an account"
 msgstr "Créer un compte"
 

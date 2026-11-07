@@ -31,6 +31,13 @@ When the administrator has set up an OpenID Connect provider
 *Continue with* and the name of that provider, for example *Continue with
 Company SSO*. There is one per provider.
 
+## Forgotten password
+
+The link *Forgot your password?* under the password field appears only when the
+administrator has set up outgoing email ([Email](../administration/variables.md)).
+Without it, the instance could not send the reset message: the link and the reset
+page are not there, and the administrator has to set a new password.
+
 ## Creating an account
 
 A link to sign up appears only when local sign-up is open
