@@ -1,6 +1,6 @@
-# Contributing to Housecairn
+# Contributing to HouseCairn
 
-Thank you for your interest. Housecairn is in early development: before
+Thank you for your interest. HouseCairn is in early development: before
 starting significant work, please open an issue to discuss it.
 
 By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).

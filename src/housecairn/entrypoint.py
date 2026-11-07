@@ -1,4 +1,4 @@
-"""Container entry point: prepare the data directory, then run Housecairn.
+"""Container entry point: prepare the data directory, then run HouseCairn.
 
 Usage (the image's ENTRYPOINT is `python -m housecairn.entrypoint`):
 

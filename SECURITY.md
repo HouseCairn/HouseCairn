@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Housecairn has no released version yet. Until the first release, only the
+HouseCairn has no released version yet. Until the first release, only the
 `main` branch is considered, and nothing in it is meant for production use.
 
 ## Reporting a vulnerability

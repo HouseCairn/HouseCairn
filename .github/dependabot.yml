@@ -76,7 +76,7 @@ updates:
     cooldown:
       default-days: 7
     ignore:
-      # Housecairn's own image: the example follows its releases by hand.
+      # HouseCairn's own image: the example follows its releases by hand.
       - dependency-name: ghcr.io/housecairn/housecairn
     groups:
       compose-minor-and-patch:

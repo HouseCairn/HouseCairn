@@ -741,7 +741,9 @@ form p:has(> input[type="checkbox"], > input[type="radio"]) label {
   border-radius: var(--hc-radius-sm);
 }
 
-.auth-panel form {
+/* Only forms with something to fill in or press: allauth also emits forms that
+   carry nothing but hidden fields. */
+.auth-panel form:has(input:not([type="hidden"]), button) {
   margin-bottom: var(--hc-space-4);
   padding: var(--hc-space-4);
   background: var(--hc-color-surface);
@@ -754,9 +756,6 @@ form p:has(> input[type="checkbox"], > input[type="radio"]) label {
   width: 100%;
 }
 
-.auth-panel form + form {
-  margin-top: var(--hc-space-4);
-}
 
 /* Single-sign-on buttons, under the sign-in form. */
 .sso-list {

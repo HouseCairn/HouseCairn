@@ -1,5 +1,6 @@
 """The interface: brand, shell, screens, sign-in, token contrast (docs/adr/0017, 0018)."""
 
+import hashlib
 import json
 import re
 from collections.abc import Iterator
@@ -68,6 +69,12 @@ class TestBrand:
         css = (SRC / "static" / "css" / "fonts.css").read_text(encoding="utf-8")
         assert css.count("@font-face") == 2
         assert "http" not in css
+
+    def test_fonts_match_their_recorded_hash(self) -> None:
+        fonts = SRC / "static" / "fonts"
+        readme = (fonts / "README.md").read_text(encoding="utf-8")
+        for path in fonts.glob("*.woff2"):
+            assert hashlib.sha256(path.read_bytes()).hexdigest() in readme, path.name
 
     def test_manifest_lists_the_icons(self, client: Client) -> None:
         response = _page(client, "manifest")
