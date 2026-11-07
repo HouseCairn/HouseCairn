@@ -417,6 +417,10 @@ def accept_invitation(user: User, raw: str) -> Membership:
         raise Invitation.DoesNotExist
     if not same_address(user.email, invitation.email):
         raise PermissionDenied(_("This invitation is for another email address."))
+    if invitation.delivered_by_email:
+        # The link reached the mailbox of that address and nobody else saw it:
+        # whoever opens it with this address proves the address (docs/adr/0020).
+        verify_address(user, invitation.email)
     membership: Membership | None = Membership.objects.filter(
         home=invitation.home, user=user
     ).first()
@@ -430,23 +434,39 @@ def accept_invitation(user: User, raw: str) -> Membership:
     return membership
 
 
+def verify_address(user: User, address: str) -> None:
+    """Mark the account's address verified, adding its record if it has none."""
+    from allauth.account.models import EmailAddress
+
+    record = EmailAddress.objects.filter(user=user, email__iexact=address).first()
+    if record is None:
+        has_primary = EmailAddress.objects.filter(user=user, primary=True).exists()
+        EmailAddress.objects.create(
+            user=user, email=user.email, primary=not has_primary, verified=True
+        )
+    elif not record.verified:
+        record.verified = True
+        record.save(update_fields=["verified"])
+
+
 @transaction.atomic
 def create_account_for_invitation(raw: str, *, password: str) -> User:
     """Create the account of an invited address, then accept the invitation.
 
-    The invitation is the way in when sign-up is closed. The address is marked
-    verified only when the link reached it by email.
+    The invitation is the way in when sign-up is closed. Only a link that went
+    to the address by email can create the account, and that is what verifies
+    the address. A link the owner handed over (the instance sends no email)
+    proves nothing about the address and never creates an account: it could
+    otherwise be used to take the address or to learn whether an account uses
+    it (docs/adr/0020).
     """
-    from allauth.account.models import EmailAddress
-
     invitation = find_invitation(raw)
     if invitation is None:
         raise Invitation.DoesNotExist
+    if not invitation.delivered_by_email:
+        raise PermissionDenied(_("This link was not sent by email: it cannot create an account."))
     if User.objects.filter(email__iexact=invitation.email).exists():
         raise ValidationError(_("An account already uses this address: sign in to accept."))
     user = User.objects.create_user(email=invitation.email, password=password)
-    EmailAddress.objects.create(
-        user=user, email=user.email, primary=True, verified=invitation.delivered_by_email
-    )
     accept_invitation(user, raw)
     return user

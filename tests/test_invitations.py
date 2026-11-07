@@ -3,6 +3,7 @@
 import re
 from collections.abc import Callable, Iterator
 from datetime import timedelta
+from urllib.parse import quote
 
 import pytest
 from allauth.account.models import EmailAddress
@@ -134,11 +135,21 @@ class TestRules:
             services.resend_invitation(alice, theirs, delivery=NO_DELIVERY)
 
 
+def invite_by_email(
+    owner: User, home: Home, email: str = "new@example.com", role: str = "member"
+) -> str:
+    """An invitation whose link went to the address by email (and nowhere else)."""
+    sent: list[str] = []
+    delivery = services.Delivery(send=lambda _invitation, raw: sent.append(raw))
+    services.invite(owner, home, email=email, role=role, delivery=delivery)
+    return sent[0]
+
+
 class TestWebAcceptance:
     def test_new_person_creates_an_account_and_joins(
         self, client: Client, alice: User, alice_home: Home
     ) -> None:
-        raw = invite(alice, alice_home, role="read_only")
+        raw = invite_by_email(alice, alice_home, role="read_only")
         page = client.get(link(raw))
         assert page.status_code == 200
         assert "Join Main house" in page.text
@@ -148,16 +159,63 @@ class TestWebAcceptance:
         user = User.objects.get(email="new@example.com")
         assert services.role_of(user, alice_home) == Role.READ_ONLY
         assert not user.is_staff
-        # The link was handed to the owner, not emailed: the address is not proven.
-        assert not EmailAddress.objects.get(user=user).verified
+        # The link went to the mailbox: opening it proves the address.
+        assert EmailAddress.objects.get(user=user).verified
         assert client.get(response["Location"]).status_code == 200
         # Used: the same link now opens nothing, even for the new account.
         reused = client.get(link(raw))
         assert reused.status_code == 404
         assert "does not work" in reused.text
 
-    def test_weak_password_is_refused(self, client: Client, alice: User, alice_home: Home) -> None:
+    def test_a_handed_over_link_creates_no_account_and_says_nothing_of_accounts(
+        self, client: Client, alice: User, alice_home: Home, make_user: Callable[..., User]
+    ) -> None:
+        """Without email the owner holds the link: it neither takes an address nor probes it."""
+        make_user("known@example.com")
+        known = invite(alice, alice_home, "known@example.com")
+        unknown = invite(alice, alice_home, "nobody@example.com")
+        pages = []
+        for raw, address in ((known, "known@example.com"), (unknown, "nobody@example.com")):
+            visit = client.get(link(raw))
+            attempt = client.post(link(raw), {"password1": PASSWORD, "password2": PASSWORD})
+            for page in (visit, attempt):
+                assert page.status_code == 200
+                assert "cannot create an account" in page.text
+                assert "Create the account and join" not in page.text
+                text = page.text.replace(address, "X").replace(quote(raw, safe=""), "T")
+                pages.append(re.sub(r'"X-CSRFToken": "[^"]*"', "CSRF", text))
+        assert len(set(pages)) == 1
+        assert not User.objects.filter(email="nobody@example.com").exists()
+        assert User.objects.filter(email="known@example.com").count() == 1
+        assert services.find_invitation(unknown) is not None
+
+    def test_the_service_refuses_to_create_an_account_from_a_handed_over_link(
+        self, alice: User, alice_home: Home
+    ) -> None:
         raw = invite(alice, alice_home)
+        with pytest.raises(PermissionDenied):
+            services.create_account_for_invitation(raw, password=PASSWORD)
+        assert not User.objects.filter(email="new@example.com").exists()
+
+    def test_accepting_a_link_sent_by_email_verifies_the_address(
+        self, alice: User, alice_home: Home, make_user: Callable[..., User]
+    ) -> None:
+        raw = invite_by_email(alice, alice_home, "carol@example.com")
+        carol = make_user("carol@example.com")
+        assert not EmailAddress.objects.filter(user=carol, verified=True).exists()
+        services.accept_invitation(carol, raw)
+        assert EmailAddress.objects.get(user=carol).verified
+
+    def test_accepting_a_handed_over_link_does_not_verify_the_address(
+        self, alice: User, alice_home: Home, make_user: Callable[..., User]
+    ) -> None:
+        raw = invite(alice, alice_home, "carol@example.com")
+        carol = make_user("carol@example.com")
+        services.accept_invitation(carol, raw)
+        assert not EmailAddress.objects.filter(user=carol, verified=True).exists()
+
+    def test_weak_password_is_refused(self, client: Client, alice: User, alice_home: Home) -> None:
+        raw = invite_by_email(alice, alice_home)
         response = client.post(link(raw), {"password1": "short", "password2": "short"})
         assert response.status_code == 200
         assert not User.objects.filter(email="new@example.com").exists()
@@ -165,7 +223,7 @@ class TestWebAcceptance:
     def test_existing_account_signs_in_then_joins(
         self, client: Client, alice: User, bob: User, alice_home: Home
     ) -> None:
-        raw = invite(alice, alice_home, "bob@example.com")
+        raw = invite_by_email(alice, alice_home, "bob@example.com")
         attempt = client.post(link(raw), {"password1": PASSWORD, "password2": PASSWORD})
         assert "sign in to accept" in attempt.text
         assert User.objects.filter(email="bob@example.com").count() == 1

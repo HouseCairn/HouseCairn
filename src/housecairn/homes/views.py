@@ -328,8 +328,12 @@ class InvitationView(View):
         ).render()
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        form = None if request.user.is_authenticated else self.signup_form()
+        form = self.signup_form() if self.may_create_account() else None
         return self.render(form=form)
+
+    def may_create_account(self) -> bool:
+        """Only a link that went by email creates an account (docs/adr/0020)."""
+        return not self.request.user.is_authenticated and self.invitation.delivered_by_email
 
     def signup_form(self, data: Any = None) -> forms.InvitationSignupForm:
         return forms.InvitationSignupForm(data, email=self.invitation.email)
@@ -337,6 +341,9 @@ class InvitationView(View):
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         if request.user.is_authenticated:
             return self.accept(request.user)
+        if not self.may_create_account():
+            # The same page as a visit: it says nothing about accounts.
+            return self.render(form=None)
         form = self.signup_form(request.POST)
         if not form.is_valid():
             return self.render(form=form)
@@ -346,6 +353,8 @@ class InvitationView(View):
             )
         except ValidationError:
             return self.render(form=None, account_exists=True)
+        except PermissionDenied:
+            return self.render(form=None)
         except Invitation.DoesNotExist as exc:
             raise Http404 from exc
         login(request, user, backend="django.contrib.auth.backends.ModelBackend")
