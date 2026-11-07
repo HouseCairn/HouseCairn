@@ -23,9 +23,9 @@ task worker and the static files. Everything it writes goes to one volume,
 
    ```sh
    mkdir -p housecairn/deploy && cd housecairn
-   curl -fsSLO https://raw.githubusercontent.com/HouseCairn/HouseCairn/main/compose.yaml
+   curl -fsSLO https://raw.githubusercontent.com/HouseCairn/housecairn/main/compose.yaml
    curl -fsSL -o deploy/production.env \
-     https://raw.githubusercontent.com/HouseCairn/HouseCairn/main/deploy/production.env.example
+     https://raw.githubusercontent.com/HouseCairn/housecairn/main/deploy/production.env.example
    ```
 
 2. Edit `deploy/production.env`: set `ALLOWED_HOSTS` and

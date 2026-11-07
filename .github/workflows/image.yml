@@ -60,7 +60,7 @@ jobs:
           echo "user=$user license=$license source=$source"
           test "$user" = "10001:10001"
           test "$license" = "AGPL-3.0-only"
-          test "$source" = "https://github.com/HouseCairn/HouseCairn"
+          test "$source" = "https://github.com/HouseCairn/housecairn"
           echo "- PASS: user $user, license $license, source $source" >>"$GITHUB_STEP_SUMMARY"
 
       - name: "Criterion 2: smoke test with SQLite"
@@ -177,7 +177,7 @@ jobs:
   publish:
     name: Publish image
     needs: image
-    if: ${{ github.event_name == 'push' && github.repository == 'HouseCairn/HouseCairn' }}
+    if: ${{ github.event_name == 'push' && github.repository == 'HouseCairn/housecairn' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:

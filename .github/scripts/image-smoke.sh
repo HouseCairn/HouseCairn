@@ -127,7 +127,7 @@ code=$(http_get /accounts/login/ "$body")
 grep -q 'type="password"' "$body" || fail "the sign-in page has no password field"
 pass "GET /accounts/login/ answers 200 with the sign-in form"
 
-css=$(grep -o '/static/css/app\.[0-9a-f]*\.css' "$body" | head -n 1)
+css=$(grep -o -m 1 '/static/css/app\.[0-9a-f]*\.css' "$body")
 [ -n "$css" ] || fail "no hashed stylesheet in the sign-in page"
 headers=$(mktemp)
 code=$(http_get "$css" /dev/null "$headers")
@@ -175,7 +175,10 @@ docker stop -t 30 "$NAME" >/dev/null
 stop_seconds=$(($(date +%s) - stop_started))
 exit_code=$(docker inspect -f '{{.State.ExitCode}}' "$NAME")
 [ "$exit_code" = 0 ] || fail "exit code $exit_code after docker stop"
-docker logs "$NAME" 2>&1 | grep -q 'received SIGTERM, stopping' || fail "SIGTERM was not handled"
+# Capture the logs first: piping docker logs into grep -q sends it SIGPIPE
+# once grep exits on the first match, which fails the pipeline under pipefail.
+logs=$(docker logs "$NAME" 2>&1)
+grep -q 'received SIGTERM, stopping' <<<"$logs" || fail "SIGTERM was not handled"
 [ "$stop_seconds" -lt 25 ] || fail "docker stop took $stop_seconds s"
 pass "docker stop: SIGTERM handled, exit code 0 in ${stop_seconds} s"
 
@@ -183,7 +186,9 @@ pass "docker stop: SIGTERM handled, exit code 0 in ${stop_seconds} s"
 logs_before=$(docker logs "$NAME" 2>&1 | wc -l)
 docker start "$NAME" >/dev/null
 wait_healthy "restart, same volume"
-docker logs "$NAME" 2>&1 | tail -n +"$((logs_before + 1))" | grep -q 'No migrations to apply' \
+logs=$(docker logs "$NAME" 2>&1)
+new_logs=$(tail -n +"$((logs_before + 1))" <<<"$logs")
+grep -q 'No migrations to apply' <<<"$new_logs" \
   || fail "migrations were not idempotent on restart"
 pass "migrations on restart: No migrations to apply"
 [ "$(in_container sha256sum /data/secret_key | cut -d' ' -f1)" = "$key_hash" ] \

@@ -1,8 +1,8 @@
 # Housecairn
 
-[![CI](https://github.com/HouseCairn/HouseCairn/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/HouseCairn/HouseCairn/actions/workflows/ci.yml?query=branch%3Amain)
-[![Image](https://github.com/HouseCairn/HouseCairn/actions/workflows/image.yml/badge.svg?branch=main)](https://github.com/HouseCairn/HouseCairn/actions/workflows/image.yml?query=branch%3Amain)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/HouseCairn/HouseCairn/badge)](https://securityscorecards.dev/viewer/?uri=github.com/HouseCairn/HouseCairn)
+[![CI](https://github.com/HouseCairn/housecairn/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/HouseCairn/housecairn/actions/workflows/ci.yml?query=branch%3Amain)
+[![Image](https://github.com/HouseCairn/housecairn/actions/workflows/image.yml/badge.svg?branch=main)](https://github.com/HouseCairn/housecairn/actions/workflows/image.yml?query=branch%3Amain)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/HouseCairn/housecairn/badge)](https://securityscorecards.dev/viewer/?uri=github.com/HouseCairn/housecairn)
 [![License: AGPL-3.0-only](docs/assets/license-badge.svg)](LICENSE)
 
 Self-hosted planner for home maintenance and renovation projects: recurring

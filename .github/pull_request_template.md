@@ -16,5 +16,5 @@
 
 ---
 
-- [ ] I have signed the [CLA](https://github.com/HouseCairn/HouseCairn/blob/main/CLA.md).
+- [ ] I have signed the [CLA](https://github.com/HouseCairn/housecairn/blob/main/CLA.md).
 - [ ] Every commit has a `Signed-off-by` line (`git commit -s`).
