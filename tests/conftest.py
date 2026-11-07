@@ -1,6 +1,8 @@
+import os
 from collections.abc import Callable
 
 import pytest
+from hypothesis import settings as hypothesis_settings
 from rest_framework.test import APIClient
 
 from housecairn.accounts.models import User
@@ -8,6 +10,21 @@ from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership, Role
 
 PASSWORD = "correct-horse-battery-staple"
+
+# Property-based tests (docs/adr/0019). CI sets HYPOTHESIS_PROFILE=ci: a fixed
+# number of examples, the same ones on every run, no example database. The
+# default `dev` profile tries more examples and keeps failing ones in
+# `.hypothesis/` (ignored by Git) to replay them first.
+hypothesis_settings.register_profile(
+    "ci", max_examples=50, derandomize=True, database=None, deadline=None, print_blob=True
+)
+hypothesis_settings.register_profile("dev", max_examples=300, deadline=None)
+hypothesis_settings.load_profile(os.environ.get("HYPOTHESIS_PROFILE", "dev"))
+
+
+def pytest_report_header() -> str:
+    profile = hypothesis_settings.get_current_profile_name()
+    return f"hypothesis profile: {profile} ({hypothesis_settings.default.max_examples} examples)"
 
 
 @pytest.fixture

@@ -12,14 +12,20 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.test import Client, override_settings
 from django.urls import reverse
 from django.utils import timezone
+from hypothesis import HealthCheck, given, settings
+from hypothesis import strategies as st
 from rest_framework.test import APIClient
 
 from housecairn.accounts.models import User
 from housecairn.apitokens import services as token_services
 from housecairn.homes import services
 from housecairn.homes.models import Home, Invitation, Membership, Role
+from housecairn.homes.services import INVITATION_PREFIX
 
 pytestmark = pytest.mark.django_db
+
+# Fixtures are created once per test and shared by its examples, on purpose.
+shared_fixtures = settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 
 PASSWORD = "a-long-and-unusual-passphrase"
 NO_DELIVERY = services.Delivery()
@@ -440,3 +446,39 @@ class TestApi:
             == 403
         )
         assert not Invitation.objects.exists()
+
+
+class TestProperties:
+    """Property-based tests of invitation links (docs/adr/0019)."""
+
+    @shared_fixtures
+    @given(raw=st.text(max_size=300))
+    def test_any_link_opens_nothing_and_never_fails(
+        self, alice: User, alice_home: Home, raw: str
+    ) -> None:
+        """No string but the issued secret finds an invitation; none raises."""
+        assert services.find_invitation(raw) is None
+        assert services.find_invitation(INVITATION_PREFIX + raw) is None
+
+    @shared_fixtures
+    @given(suffix=st.text(alphabet=st.characters(codec="ascii"), min_size=1, max_size=5))
+    def test_the_issued_secret_and_only_it_matches(
+        self, alice: User, alice_home: Home, suffix: str
+    ) -> None:
+        """Appending anything to a valid secret gives a dead link."""
+        Invitation.objects.filter(home=alice_home).delete()
+        raw = invite(alice, alice_home)
+        assert services.find_invitation(raw) is not None
+        assert services.find_invitation(raw + suffix) is None
+        assert services.find_invitation(raw[:-1]) is None
+
+
+@settings(max_examples=25)
+@given(token=st.text(max_size=80))
+def test_the_invitation_page_answers_404_to_any_link(token: str) -> None:
+    """Whatever the link, a dead one is a 404 page, never a server error."""
+    if "/" in token or not token or token in {".", ".."}:
+        return
+    cache.clear()
+    response = Client().get(reverse("invitation", kwargs={"token": token}))
+    assert response.status_code == 404

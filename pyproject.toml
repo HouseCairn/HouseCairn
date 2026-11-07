@@ -49,6 +49,7 @@ dev = [
   "pytest-django>=4.11",
   "pytest-cov>=7.0",
   "types-python-dateutil>=2.9",
+  "hypothesis>=6.170.14",
 ]
 # Documentation site and its screenshots (docs/adr/0016):
 # uv sync --locked --group docs.
@@ -59,6 +60,7 @@ docs = [
   "myst-parser>=5.1",
   "sphinx-intl>=2.4",
   "playwright>=1.64",
+  "sphinx-copybutton>=0.5.2",
 ]
 
 [build-system]

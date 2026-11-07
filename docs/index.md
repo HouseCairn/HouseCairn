@@ -1,20 +1,67 @@
 # HouseCairn
 
-HouseCairn is a self-hosted planner for home maintenance and renovation
-projects: what needs doing in the house, where, when, with what and for how
-much.
+:::{container} hc-hero
+HouseCairn plans the upkeep and the projects of a home, room by room: what
+needs doing, where, when, with what and for how much. Self-hosted, free
+software, in English and French.
+:::
 
-```{warning}
-HouseCairn is in early development and not usable yet. The application
-skeleton, its API and its container image exist; the screens to plan
-maintenance and projects do not. These pages describe only what exists today.
-```
+::::{container} hc-status
+**Early development**
 
-This documentation is also available in French: use the language switcher in
-the sidebar.
+HouseCairn is not usable for everyday life yet. Accounts and sign-in, homes,
+the REST API and the container image exist; the screens to plan maintenance
+and projects do not. These pages describe only what exists today.
+::::
+
+::::::{container} hc-cards
+:::::{container} hc-card hc-card-start
+[Get started](getting-started/index.md)
+
+Install HouseCairn with Docker Compose and sign in for the first time.
+:::::
+
+:::::{container} hc-card hc-card-guides
+[Guides](guides/index.md)
+
+Step-by-step pages, written as the planning screens arrive.
+:::::
+
+:::::{container} hc-card hc-card-screens
+[Screen reference](screens/index.md)
+
+Every screen of the application, with its help page.
+:::::
+
+:::::{container} hc-card hc-card-api
+[API](api/index.md)
+
+The REST API and its reference, generated from the code.
+:::::
+
+:::::{container} hc-card hc-card-admin
+[Administration](administration/index.md)
+
+Configuration, reverse proxy, single sign-on, backups and updates.
+:::::
+
+:::::{container} hc-card hc-card-security
+[Security](security/index.md)
+
+No telemetry, signed images, and how to report a vulnerability.
+:::::
+::::::
+
+:::{figure} /_generated/screenshots/start-page-desktop.png
+:alt: The start page of HouseCairn on a computer: the navigation on the left, the HouseCairn logo and a button to go to the homes.
+:class: screenshot
+:figclass: hc-preview
+
+The start page of the application, on a demonstration instance.
+:::
 
 ```{toctree}
-:maxdepth: 2
+:hidden:
 
 getting-started/index
 guides/index
