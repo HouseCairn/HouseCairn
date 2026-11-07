@@ -22,6 +22,15 @@ class AccountAdapter(DefaultAccountAdapter):  # type: ignore[misc]
     def is_open_for_signup(self, request: HttpRequest) -> bool:
         return bool(settings.HOUSECAIRN_SIGNUP_OPEN)
 
+    def is_safe_url(self, url: str | None) -> bool:
+        # allauth 65.21 parses `next` with urlparse before Django checks it, and
+        # urlparse raises ValueError on an address such as "//[" (a server error
+        # on the sign-in page). Such an address is simply not safe.
+        try:
+            return bool(super().is_safe_url(url))
+        except ValueError:
+            return False
+
 
 def provider_identity(sociallogin: SocialLogin) -> tuple[str | None, bool]:
     """The address the identity provider asserts, and whether it says it is verified.
