@@ -44,6 +44,10 @@ updates:
     open-pull-requests-limit: 5
 
   # Base images of the Dockerfile (docs/adr/0015): tag and digest together.
+  # The Python base image stays on the 3.12 line: Dependabot reports the jump to
+  # 3.13 or later as a minor update, and such a jump is a migration lot (Django
+  # 5.2 support, requires-python, uv lock, CI), not an automatic update. Patch
+  # releases of 3.12.x still come through. Remove this ignore at that migration.
   - package-ecosystem: docker
     directory: /
     schedule:
@@ -54,6 +58,9 @@ updates:
     groups:
       docker-minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     commit-message:
       prefix: chore(deps)
     open-pull-requests-limit: 5
