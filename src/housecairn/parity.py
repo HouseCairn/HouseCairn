@@ -21,6 +21,9 @@ EXEMPT: dict[str, str] = {
     "healthz": "probe for the container runtime",
     "api-schema": "API description itself",
     "api-docs": "API documentation page",
+    "manifest": "web app manifest read by browsers",
+    "more": "navigation page that links to other screens",
+    "about": "static information page",
 }
 
 # Third-party route trees: sign-in, administration. Their functions are either

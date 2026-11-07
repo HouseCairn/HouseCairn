@@ -1,0 +1,33 @@
+{% load static i18n %}<!DOCTYPE html>
+{% comment %}
+  Standalone on purpose: this page is shown when the application itself failed,
+  so it uses no context processor, no session and no database.
+{% endcomment %}
+<html lang="{% firstof LANGUAGE_CODE 'en' %}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% translate "Something went wrong" %} · HouseCairn</title>
+  <link rel="icon" href="{% static 'img/brand/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="no-nav">
+  <div class="shell">
+    <header class="appbar">
+      <a class="brand" href="/">
+        <img class="brand-logo" src="{% static 'img/brand/housecairn-logo.svg' %}" alt="HouseCairn" width="140" height="40">
+      </a>
+    </header>
+    <main id="main" class="content">
+      <section class="card hero">
+        <p class="error-code" aria-hidden="true">500</p>
+        <h1>{% translate "Something went wrong" %}</h1>
+        <p class="lead">{% translate "The server could not complete your request. Try again in a moment; if it keeps happening, tell the administrator of this instance." %}</p>
+        <a class="button" href="/">{% translate "Back to the home page" %}</a>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

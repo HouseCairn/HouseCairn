@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Access denied" %}{% endblock head_title %}
+{% block content %}
+  <section class="card hero">
+    <p class="error-code" aria-hidden="true">403</p>
+    <h1>{% translate "Access denied" %}</h1>
+    <p class="lead">{% translate "You do not have permission to see this page." %}</p>
+    <a class="button" href="{% url 'index' %}">{% translate "Back to the home page" %}</a>
+  </section>
+{% endblock content %}

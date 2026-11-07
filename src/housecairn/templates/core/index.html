@@ -1,12 +1,15 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 {% block head_title %}{% translate "Welcome" %}{% endblock head_title %}
 {% block content %}
-  <h1>{% translate "Housecairn" context "product name" %}</h1>
-  <p class="lead">{% translate "What needs doing in the house, where, when, with what and for how much." %}</p>
-  {% if user.is_authenticated %}
-    <p><a class="button" href="{% url 'homes:list' %}">{% translate "Go to my homes" %}</a></p>
-  {% else %}
-    <p><a class="button" href="{% url 'account_login' %}">{% translate "Sign in" %}</a></p>
-  {% endif %}
+  <section class="card hero">
+    <img src="{% static 'img/brand/housecairn-icon.svg' %}" alt="" width="80" height="80">
+    <h1>HouseCairn</h1>
+    <p class="lead">{% translate "What needs doing in the house, where, when, with what and for how much." %}</p>
+    {% if user.is_authenticated %}
+      <a class="button" href="{% url 'homes:list' %}">{% translate "Go to my homes" %}</a>
+    {% else %}
+      <a class="button" href="{% url 'account_login' %}">{% translate "Sign in" %}</a>
+    {% endif %}
+  </section>
 {% endblock content %}

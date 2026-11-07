@@ -2,11 +2,12 @@
 {% load i18n %}
 {% block head_title %}{{ home.name }}{% endblock head_title %}
 {% block content %}
+  <a class="back-link" href="{% url 'homes:list' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Homes" %}</a>
   <h1>{{ home.name }}</h1>
-  <dl class="facts">
-    <dt>{% translate "Your role" %}</dt>
-    <dd>{{ role.label }}</dd>
-    <dt>{% translate "Currency" %}</dt>
-    <dd>{{ home.currency }}</dd>
-  </dl>
+  <section class="card">
+    <dl class="facts">
+      <div><dt>{% translate "Your role" %}</dt><dd>{{ role.label }}</dd></div>
+      <div><dt>{% translate "Currency" %}</dt><dd>{{ home.currency }}</dd></div>
+    </dl>
+  </section>
 {% endblock content %}

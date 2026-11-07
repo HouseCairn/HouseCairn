@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Session expired" %}{% endblock head_title %}
+{% block content %}
+  <section class="card hero">
+    <p class="error-code" aria-hidden="true">403</p>
+    <h1>{% translate "Session expired" %}</h1>
+    <p class="lead">{% translate "The form you sent is no longer valid, usually because the page stayed open too long. Go back, reload the page and try again." %}</p>
+    <a class="button" href="{% url 'index' %}">{% translate "Back to the home page" %}</a>
+  </section>
+{% endblock content %}

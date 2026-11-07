@@ -356,7 +356,7 @@ class TestSignInPage:
     def test_no_signup_link_while_signup_is_closed(self, client: Client) -> None:
         page = client.get(reverse("account_login")).content.decode()
         assert reverse("account_signup") not in page
-        assert 'id="passkey_login"' in page
+        assert "Sign in with a passkey" not in page
 
     @override_settings(HOUSECAIRN_SIGNUP_OPEN=True)
     def test_signup_link_when_open(self, client: Client) -> None:

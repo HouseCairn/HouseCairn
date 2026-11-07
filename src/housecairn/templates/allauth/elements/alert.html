@@ -1,0 +1,5 @@
+{% load allauth %}
+<div class="alert alert-{% firstof attrs.level 'info' %}" role="status">
+  {% slot message %}
+  {% endslot %}
+</div>

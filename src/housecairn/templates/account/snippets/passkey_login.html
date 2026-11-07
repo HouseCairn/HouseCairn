@@ -1,0 +1,19 @@
+{% load i18n static %}
+{% comment %}
+  Passkey sign-in without a button (docs/adr/0018). The hidden form carries the
+  signed assertion to allauth's own endpoint; static/js/passkey-login.js asks the
+  browser for it, through autofill where the browser supports it, otherwise
+  through an offer that appears once an address is typed. The script comes from
+  this instance, the labels from this page: nothing inline.
+{% endcomment %}
+<form id="mfa_login" class="passkey-form" action="{% url 'mfa_login_webauthn' %}" method="post" hidden
+      data-options-url="{% url 'mfa_login_webauthn' %}"
+      data-offer-label="{% translate 'Use a passkey' %}"
+      data-offer-hint="{% translate 'Use a passkey saved on this device or on your phone.' %}"
+      data-error="{% translate 'Passkey sign-in did not complete. You can try again or use your password.' %}">
+  {% csrf_token %}
+  {{ redirect_field }}
+  <input type="hidden" name="credential" id="mfa_credential">
+</form>
+<script src="{% static 'mfa/js/webauthn-json.js' %}"></script>
+<script src="{% static 'js/passkey-login.js' %}"></script>
