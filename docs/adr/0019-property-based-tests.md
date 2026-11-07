@@ -49,10 +49,13 @@ Two profiles, set in `tests/conftest.py` and chosen by `HYPOTHESIS_PROFILE`:
 CI runs pytest with `--hypothesis-show-statistics`, so the log shows the
 profile and the number of examples of each property.
 
-A property that finds a bug gets its fix in a commit of its own. The first run
-found three: OIDC claims that are not a JSON object raised an exception
-during sign-in, `image_tags.py` accepted a ref or a SHA followed by a line
-break, and `check_external_urls.py` missed URLs with a port, a query or no path.
+A property that finds a bug gets its fix in a commit of its own, and the
+failing input stays as an explicit `@example` when the `ci` profile would not
+find it again by itself. The first runs found four: OIDC claims that are not a
+JSON object raised an exception during sign-in; a `next` address such as `//[`
+made the sign-in page fail (allauth parses it before Django checks it);
+`image_tags.py` accepted a ref or a SHA followed by a line break; and
+`check_external_urls.py` missed URLs with a port, a query or no path.
 
 ## Consequences
 
