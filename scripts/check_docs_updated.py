@@ -5,13 +5,14 @@ request is concerned when it changes a view, a URL route, a template, a form, a
 serializer, an API module, the settings or the example deployment files
 (`USER_FACING`). It then must change at least one file under `docs/`, or carry
 the `no-docs-needed` label, which only the maintainer can add (triage
-permission or more).
+permission or more). Pull requests opened by Dependabot (`PR_AUTHOR`) are exempt:
+they bump the image of `compose.yaml`, which changes no screen and no setting.
 
 Pull requests that change nothing user-facing pass: tests, workflows, scripts,
-dependencies (Dependabot's pull requests touch `pyproject.toml`, `uv.lock`,
-workflows and the Dockerfile only), documentation itself.
+dependencies, documentation itself.
 
-Usage: PR_LABELS=<comma-separated labels> python scripts/check_docs_updated.py <base-sha> <head-sha>
+Usage: PR_LABELS=<comma-separated labels> PR_AUTHOR=<login> \
+       python scripts/check_docs_updated.py <base-sha> <head-sha>
 """
 
 import os
@@ -21,6 +22,9 @@ import sys
 from collections.abc import Iterable
 
 LABEL = "no-docs-needed"
+# Only the author of the pull request counts, never a label or a branch name, and
+# only this one account: no other bot is exempted.
+EXEMPT_AUTHOR = "dependabot[bot]"
 DOCS_PREFIX = "docs/"
 # Files whose change is visible to users or administrators.
 USER_FACING = re.compile(
@@ -44,9 +48,11 @@ def documented(paths: Iterable[str]) -> bool:
     return any(path.startswith(DOCS_PREFIX) for path in paths)
 
 
-def problems(paths: list[str], labels: Iterable[str]) -> list[str]:
+def problems(paths: list[str], labels: Iterable[str], author: str = "") -> list[str]:
     """Why the pull request fails the rule, or an empty list."""
     concerned = user_facing(paths)
+    if author == EXEMPT_AUTHOR:
+        return []
     if not concerned or documented(paths) or LABEL in {label.strip() for label in labels}:
         return []
     shown = ", ".join(concerned[:5]) + (", ..." if len(concerned) > 5 else "")
@@ -75,12 +81,15 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     paths = changed_paths(args[0], args[1])
     labels = os.environ.get("PR_LABELS", "").split(",")
-    found = problems(paths, labels)
+    author = os.environ.get("PR_AUTHOR", "")
+    found = problems(paths, labels, author)
     if found:
         sys.stderr.writelines(f"{line}\n" for line in found)
         return 1
     concerned = user_facing(paths)
-    if concerned and not documented(paths):
+    if concerned and author == EXEMPT_AUTHOR and not documented(paths):
+        sys.stdout.write(f"Exempted: pull request of {EXEMPT_AUTHOR} ({len(concerned)} files).\n")
+    elif concerned and not documented(paths):
         sys.stdout.write(f"Exempted by the `{LABEL}` label ({len(concerned)} user-facing files).\n")
     elif concerned:
         sys.stdout.write(f"{len(concerned)} user-facing files changed, with documentation.\n")

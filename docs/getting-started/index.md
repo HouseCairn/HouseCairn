@@ -1,6 +1,6 @@
 # Getting started
 
-Install Housecairn with Docker Compose, then create the first administrator.
+Install HouseCairn with Docker Compose, then create the first administrator.
 
 ```{toctree}
 :maxdepth: 1

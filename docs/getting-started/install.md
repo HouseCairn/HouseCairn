@@ -1,6 +1,6 @@
 # Install with Docker Compose
 
-Housecairn ships as a single container image, `ghcr.io/housecairn/housecairn`,
+HouseCairn ships as a single container image, `ghcr.io/housecairn/housecairn`,
 for `linux/amd64` and `linux/arm64`. It holds the web server, the background
 task worker and the static files. Everything it writes goes to one volume,
 `/data`. The design decisions behind the image are in
@@ -9,8 +9,8 @@ task worker and the static files. Everything it writes goes to one volume,
 ## Requirements
 
 - Docker Engine with the Compose plugin (`docker compose`).
-- A reverse proxy that terminates HTTPS in front of Housecairn (Caddy, Traefik,
-  nginx...). Housecairn listens on plain HTTP, port 8000, and redirects every
+- A reverse proxy that terminates HTTPS in front of HouseCairn (Caddy, Traefik,
+  nginx...). HouseCairn listens on plain HTTP, port 8000, and redirects every
   request to HTTPS; it expects the proxy to set `X-Forwarded-Proto`. See
   [Reverse proxy](../administration/reverse-proxy.md).
 

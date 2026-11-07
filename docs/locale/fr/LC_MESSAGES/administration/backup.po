@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026 Robvred
-# This file is distributed under the same license as the Housecairn package.
+# This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn \n"
+"Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-07 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -22,8 +22,8 @@ msgstr ""
 msgid "Data and backups"
 msgstr "Données et sauvegardes"
 
-msgid "Everything Housecairn writes is in the `/data` volume:"
-msgstr "Tout ce que Housecairn écrit se trouve dans le volume `/data` :"
+msgid "Everything HouseCairn writes is in the `/data` volume:"
+msgstr "Tout ce que HouseCairn écrit se trouve dans le volume `/data` :"
 
 msgid "Path"
 msgstr "Chemin"
@@ -70,8 +70,8 @@ msgstr "**Copie à froid**, la plus simple : arrêtez le conteneur, copiez le vo
 msgid "(The volume name is `<project>_housecairn-data`; `docker volume ls` shows it.)"
 msgstr "(Le nom du volume est `<project>_housecairn-data` ; `docker volume ls` l'affiche.)"
 
-msgid "**Online copy of the database**, while Housecairn runs, with SQLite's backup API (the same as `sqlite3 db.sqlite3 \".backup ...\"`):"
-msgstr "**Copie à chaud de la base**, pendant que Housecairn tourne, avec l'API de sauvegarde de SQLite (la même que `sqlite3 db.sqlite3 \".backup ...\"`) :"
+msgid "**Online copy of the database**, while HouseCairn runs, with SQLite's backup API (the same as `sqlite3 db.sqlite3 \".backup ...\"`):"
+msgstr "**Copie à chaud de la base**, pendant que HouseCairn tourne, avec l'API de sauvegarde de SQLite (la même que `sqlite3 db.sqlite3 \".backup ...\"`) :"
 
 msgid "Then copy `/data/backups/`, `/data/secret_key` and `/data/media/` off the machine. Remove old copies from `/data/backups/` yourself."
 msgstr "Copiez ensuite `/data/backups/`, `/data/secret_key` et `/data/media/` hors de la machine. Supprimez vous-même les anciennes copies de `/data/backups/`."

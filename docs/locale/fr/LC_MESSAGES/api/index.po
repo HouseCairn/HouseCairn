@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026 Robvred
-# This file is distributed under the same license as the Housecairn package.
+# This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn \n"
+"Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-07 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -22,8 +22,8 @@ msgstr ""
 msgid "API"
 msgstr "API"
 
-msgid "Housecairn has a REST API, mounted at `/api/v1/`, with the same rules as the web interface: every request only sees the homes of its user ([ADR 0004](../adr/0004-versioned-rest-api.md), [ADR 0006](../adr/0006-home-scoping.md))."
-msgstr "Housecairn a une API REST, montée sur `/api/v1/`, avec les mêmes règles que l'interface web : chaque requête ne voit que les logements de son utilisateur ([ADR 0004](../adr/0004-versioned-rest-api.md), [ADR 0006](../adr/0006-home-scoping.md))."
+msgid "HouseCairn has a REST API, mounted at `/api/v1/`, with the same rules as the web interface: every request only sees the homes of its user ([ADR 0004](../adr/0004-versioned-rest-api.md), [ADR 0006](../adr/0006-home-scoping.md))."
+msgstr "HouseCairn a une API REST, montée sur `/api/v1/`, avec les mêmes règles que l'interface web : chaque requête ne voit que les logements de son utilisateur ([ADR 0004](../adr/0004-versioned-rest-api.md), [ADR 0006](../adr/0006-home-scoping.md))."
 
 msgid "**JSON** only, for requests and responses."
 msgstr "**JSON** uniquement, pour les requêtes et les réponses."

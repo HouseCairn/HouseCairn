@@ -1,6 +1,6 @@
 # Screen reference
 
-Each screen of Housecairn has a help link, **?**, in its top bar, which opens
+Each screen of HouseCairn has a help link, **?**, in its top bar, which opens
 its page here. The screens to plan maintenance and projects do not exist yet;
 this reference describes the screens that exist today and grows with each
 feature.
