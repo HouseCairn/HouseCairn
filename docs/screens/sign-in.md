@@ -27,8 +27,9 @@ Register a passkey from **More**, **Account security**, **Security keys**. Tick
 ## With single sign-on
 
 When the administrator has set up an OpenID Connect provider
-([Single sign-on](../administration/oidc.md)), a button below the form carries
-the name of that provider, for example *Zitadel*. There is one per provider.
+([Single sign-on](../administration/oidc.md)), a button below the form reads
+*Continue with* and the name of that provider, for example *Continue with
+Company SSO*. There is one per provider.
 
 ## Creating an account
 

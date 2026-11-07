@@ -47,8 +47,9 @@ error message.
 **Typing a password** cancels the pending conditional request (`AbortController`).
 
 **Third-party sign-in.** `socialaccount/snippets/login.html` is overridden: no
-separator, no heading, one secondary button per configured provider, labelled with
-the provider's name (`OIDC_PROVIDER_NAME`, for example "Zitadel"), under the form.
+separator, no heading, one secondary button per configured provider, labelled
+"Continue with" and the provider's name (`OIDC_PROVIDER_NAME`, for example "Company SSO"),
+under the form.
 The refusal page for closed OIDC sign-up is unchanged ([0007](0007-authentication-and-api-tokens.md)).
 
 **Sign-up.** The link ("No account yet?") exists only when local sign-up is open,
