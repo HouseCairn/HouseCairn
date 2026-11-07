@@ -3,7 +3,7 @@
 from typing import Any
 from uuid import UUID
 
-from allauth.core import ratelimit
+from allauth.core.internal import ratelimit
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
@@ -140,8 +140,14 @@ def allow(request: HttpRequest | Request, action: str) -> bool:
     """Consume one use of a rate limit of `ACCOUNT_RATE_LIMITS` (django-allauth).
 
     The client address is REMOTE_ADDR, set by ForwardedHeadersMiddleware from a
-    trusted proxy only (docs/adr/0012).
+    trusted proxy only (docs/adr/0012). GET requests count too: opening an
+    invitation link is what a guesser would repeat. The public helper of
+    django-allauth skips GET, hence its internal function, pinned by the lock
+    file and covered by tests/test_invitations.py.
     """
     django_request = request._request if isinstance(request, Request) else request
     user = request.user if request.user.is_authenticated else None
-    return bool(ratelimit.consume(django_request, action=action, user=user))
+    usage = ratelimit.consume(
+        django_request, app="allauth.account", action=action, user=user, limit_get=True
+    )
+    return usage is not None

@@ -415,3 +415,424 @@ msgstr "Devise"
 #: templates/homes/home_list.html
 msgid "You are not a member of any home yet."
 msgstr "Vous n'êtes membre d'aucun logement pour l'instant."
+
+#: homes/forms.py templates/homes/member.html
+msgid "Role"
+msgstr "Rôle"
+
+#: homes/forms.py
+msgid "Sign-in required to open this home"
+msgstr "Connexion exigée pour ouvrir ce logement"
+
+#: homes/forms.py
+msgid "No requirement: any sign-in method"
+msgstr "Aucune exigence : toute méthode de connexion"
+
+#: homes/forms.py
+msgid "Password"
+msgstr "Mot de passe"
+
+#: homes/forms.py
+msgid "Password (again)"
+msgstr "Mot de passe (confirmation)"
+
+#: homes/forms.py
+msgid "The two passwords differ."
+msgstr "Les deux mots de passe diffèrent."
+
+#: homes/models.py
+msgid "required sign-in provider"
+msgstr "fournisseur de connexion exigé"
+
+#: homes/models.py
+msgid "invitation"
+msgstr "invitation"
+
+#: homes/models.py
+msgid "invitations"
+msgstr "invitations"
+
+#: homes/models.py
+msgid "sent at"
+msgstr "envoyée le"
+
+#: homes/models.py
+msgid "accepted at"
+msgstr "acceptée le"
+
+#: homes/scoping.py
+#, python-format
+msgid "This home requires signing in through %(provider)s."
+msgstr "Ce logement exige une connexion par %(provider)s."
+
+#: homes/services.py
+msgid "This sign-in provider is not offered by this instance."
+msgstr "Cette instance ne propose pas ce fournisseur de connexion."
+
+#: homes/services.py
+msgid "Sign in through this provider first, then require it for the home."
+msgstr "Connectez-vous d'abord par ce fournisseur, puis exigez-le pour le logement."
+
+#: homes/services.py templates/homes/member.html
+msgid "A home always keeps at least one owner."
+msgstr "Un logement garde toujours au moins un propriétaire."
+
+#: homes/services.py
+msgid "Choose another member of the home."
+msgstr "Choisissez un autre membre du logement."
+
+#: homes/services.py
+msgid "This person is already a member of the home."
+msgstr "Cette personne est déjà membre du logement."
+
+#: homes/services.py
+msgid "An invitation to this address is already pending; send it again instead."
+msgstr "Une invitation à cette adresse est déjà en attente : renvoyez-la plutôt."
+
+#: homes/services.py
+msgid "This invitation was already accepted or revoked."
+msgstr "Cette invitation a déjà été acceptée ou révoquée."
+
+#: homes/services.py
+msgid "This invitation is for another email address."
+msgstr "Cette invitation est destinée à une autre adresse e-mail."
+
+#: homes/services.py
+msgid "An account already uses this address: sign in to accept."
+msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter."
+
+#: homes/views.py
+msgid "Too many invitations in a short time. Try again later."
+msgstr "Trop d'invitations en peu de temps. Réessayez plus tard."
+
+#: homes/views.py
+msgid "Invitation sent."
+msgstr "Invitation envoyée."
+
+#: homes/views.py
+msgid "Invitation created: share its link."
+msgstr "Invitation créée : partagez son lien."
+
+#: homes/views.py
+msgid "Invitation sent again."
+msgstr "Invitation renvoyée."
+
+#: homes/views.py
+msgid "New link created: share it."
+msgstr "Nouveau lien créé : partagez-le."
+
+#: homes/views.py
+msgid "Invitation revoked."
+msgstr "Invitation révoquée."
+
+#: homes/views.py
+msgid "Choose a role."
+msgstr "Choisissez un rôle."
+
+#: homes/views.py
+msgid "Role changed."
+msgstr "Rôle modifié."
+
+#: homes/views.py
+#, python-format
+msgid "You left %(home)s."
+msgstr "Vous avez quitté %(home)s."
+
+#: homes/views.py
+msgid "Member removed."
+msgstr "Membre retiré."
+
+#: homes/views.py
+msgid "Ownership transferred. You are now a member."
+msgstr "Propriété transférée. Vous êtes désormais membre."
+
+#: homes/views.py
+msgid "Choose a sign-in provider."
+msgstr "Choisissez un fournisseur de connexion."
+
+#: homes/views.py
+msgid "Sign-in requirement saved."
+msgstr "Exigence de connexion enregistrée."
+
+#: homes/views.py
+#, python-format
+msgid "Welcome to %(home)s."
+msgstr "Bienvenue dans %(home)s."
+
+#: homes/views.py
+#, python-format
+msgid "You joined %(home)s."
+msgstr "Vous avez rejoint %(home)s."
+
+#: templates/429.html
+msgid "Too many requests"
+msgstr "Trop de requêtes"
+
+#: templates/429.html
+msgid "Wait a minute, then try again."
+msgstr "Attendez une minute, puis réessayez."
+
+#: templates/homes/_role_text.html
+msgid "owner · everything, the household included"
+msgstr "propriétaire · tout, foyer compris"
+
+#: templates/homes/_role_text.html
+msgid "member · tasks, projects, marking work done"
+msgstr "membre · tâches, projets, réalisation"
+
+#: templates/homes/_role_text.html
+msgid "read only · sees the home, changes nothing"
+msgstr "lecture seule · voit le logement, ne modifie rien"
+
+#: templates/homes/email/invitation_message.html
+#: templates/homes/email/invitation_message.txt
+#, python-format
+msgid "You are invited to join the home \"%(home)s\" on HouseCairn, as %(role)s."
+msgstr "Vous êtes invité à rejoindre le logement « %(home)s » sur HouseCairn, avec le rôle %(role)s."
+
+#: templates/homes/email/invitation_message.html
+msgid "Accept the invitation"
+msgstr "Accepter l'invitation"
+
+#: templates/homes/email/invitation_message.html
+#: templates/homes/email/invitation_message.txt
+#, python-format
+msgid "The link works once and expires on %(date)s."
+msgstr "Le lien ne sert qu'une fois et expire le %(date)s."
+
+#: templates/homes/email/invitation_message.html
+#: templates/homes/email/invitation_message.txt
+msgid "If you did not expect this invitation, ignore this message."
+msgstr "Si vous n'attendiez pas cette invitation, ignorez ce message."
+
+#: templates/homes/email/invitation_message.txt
+msgid "Open this link to accept, and to create your account if you have none:"
+msgstr "Ouvrez ce lien pour accepter, et pour créer votre compte si vous n'en avez pas :"
+
+#: templates/homes/email/invitation_subject.txt
+#, python-format
+msgid "HouseCairn: you are invited to %(home)s"
+msgstr "HouseCairn : vous êtes invité à %(home)s"
+
+#: templates/homes/home_detail.html templates/homes/household.html
+#: templates/homes/member.html
+msgid "Household and roles"
+msgstr "Foyer et rôles"
+
+#: templates/homes/home_detail.html
+#, python-format
+msgid "%(counter)s person"
+msgid_plural "%(counter)s people"
+msgstr[0] "%(counter)s personne"
+msgstr[1] "%(counter)s personnes"
+
+#: templates/homes/home_form.html templates/homes/home_list.html
+msgid "Add a home"
+msgstr "Ajouter un logement"
+
+#: templates/homes/home_form.html
+msgid ""
+"Each home has its own rooms, tasks, budget and currency. You will be its "
+"owner, and can invite the rest of the household."
+msgstr ""
+"Chaque logement a ses pièces, ses tâches, son budget et sa devise. Vous en "
+"serez propriétaire, et pourrez inviter le reste du foyer."
+
+#: templates/homes/home_form.html
+msgid "Create the home"
+msgstr "Créer le logement"
+
+#: templates/homes/home_list.html
+#, python-format
+msgid "%(provider)s required"
+msgstr "%(provider)s exigé"
+
+#: templates/homes/household.html
+msgid "you"
+msgstr "vous"
+
+#: templates/homes/household.html
+msgid "Invitation link"
+msgstr "Lien d'invitation"
+
+#: templates/homes/household.html
+msgid ""
+"This instance does not send email. Give this link to the person you invite: "
+"it is shown only once and works once."
+msgstr ""
+"Cette instance n'envoie pas d'e-mails. Donnez ce lien à la personne invitée : "
+"il n'est affiché qu'une fois et ne sert qu'une fois."
+
+#: templates/homes/household.html
+msgid "Invite someone"
+msgstr "Inviter quelqu'un"
+
+#: templates/homes/household.html
+msgid "Invite"
+msgstr "Inviter"
+
+#: templates/homes/household.html
+msgid "The invitation is sent by email, with a link that works once."
+msgstr "L'invitation part par e-mail, avec un lien qui ne sert qu'une fois."
+
+#: templates/homes/household.html
+msgid ""
+"This instance does not send email: you will get a link to pass on, which "
+"works once."
+msgstr ""
+"Cette instance n'envoie pas d'e-mails : vous obtiendrez un lien à "
+"transmettre, qui ne sert qu'une fois."
+
+#: templates/homes/household.html
+#, python-format
+msgid "It expires after %(days)s day."
+msgid_plural "It expires after %(days)s days."
+msgstr[0] "Il expire au bout de %(days)s jour."
+msgstr[1] "Il expire au bout de %(days)s jours."
+
+#: templates/homes/household.html
+msgid "Pending invitations"
+msgstr "Invitations en attente"
+
+#: templates/homes/household.html
+#, python-format
+msgid "until %(date)s"
+msgstr "jusqu'au %(date)s"
+
+#: templates/homes/household.html
+msgid "Send again"
+msgstr "Renvoyer"
+
+#: templates/homes/household.html
+msgid "Revoke"
+msgstr "Révoquer"
+
+#: templates/homes/household.html
+msgid "Sign-in"
+msgstr "Connexion"
+
+#: templates/homes/household.html
+msgid ""
+"When a provider is required, members open this home only after signing in "
+"through it, not with a password or a passkey alone. Set it from a session "
+"signed in through that provider."
+msgstr ""
+"Quand un fournisseur est exigé, les membres n'ouvrent ce logement qu'après "
+"s'être connectés par lui, pas avec un mot de passe ou une passkey seuls. "
+"Réglez-le depuis une session connectée par ce fournisseur."
+
+#: templates/homes/household.html
+msgid "Save"
+msgstr "Enregistrer"
+
+#: templates/homes/household.html
+#, python-format
+msgid "Members open this home by signing in through %(provider)s."
+msgstr "Les membres ouvrent ce logement en se connectant par %(provider)s."
+
+#: templates/homes/household.html
+msgid "Only owners invite people and change roles."
+msgstr "Seuls les propriétaires invitent et changent les rôles."
+
+#: templates/homes/invitation.html templates/homes/invitation_invalid.html
+msgid "Invitation"
+msgstr "Invitation"
+
+#: templates/homes/invitation.html
+#, python-format
+msgid "Join %(home)s"
+msgstr "Rejoindre %(home)s"
+
+#: templates/homes/invitation.html
+#, python-format
+msgid "You are invited as %(role)s, with the address %(email)s."
+msgstr "Vous êtes invité avec le rôle %(role)s, à l'adresse %(email)s."
+
+#: templates/homes/invitation.html
+msgid "Join the home"
+msgstr "Rejoindre le logement"
+
+#: templates/homes/invitation.html
+#, python-format
+msgid ""
+"You are signed in with another address. Sign out, then open the link again "
+"and sign in as %(email)s."
+msgstr ""
+"Vous êtes connecté avec une autre adresse. Déconnectez-vous, rouvrez le lien "
+"et connectez-vous avec %(email)s."
+
+#: templates/homes/invitation.html
+msgid "An account already uses this address: sign in to accept the invitation."
+msgstr ""
+"Un compte utilise déjà cette adresse : connectez-vous pour accepter "
+"l'invitation."
+
+#: templates/homes/invitation.html
+msgid "Create your account"
+msgstr "Créer votre compte"
+
+#: templates/homes/invitation.html
+msgid "Create the account and join"
+msgstr "Créer le compte et rejoindre"
+
+#: templates/homes/invitation.html
+msgid "Already have an account?"
+msgstr "Vous avez déjà un compte ?"
+
+#: templates/homes/invitation_invalid.html
+msgid "This invitation link does not work"
+msgstr "Ce lien d'invitation ne fonctionne pas"
+
+#: templates/homes/invitation_invalid.html
+msgid ""
+"It may have been used already, revoked, replaced by a newer link, or it may "
+"have expired. Ask the person who invited you to send it again."
+msgstr ""
+"Il a peut-être déjà servi, été révoqué, remplacé par un lien plus récent, ou "
+"il a expiré. Demandez à la personne qui vous a invité de le renvoyer."
+
+#: templates/homes/member.html
+msgid "Member since"
+msgstr "Membre depuis"
+
+#: templates/homes/member.html
+msgid "Change the role"
+msgstr "Changer le rôle"
+
+#: templates/homes/member.html
+msgid "Make owner, and become a member myself"
+msgstr "Le nommer propriétaire, et devenir moi-même membre"
+
+#: templates/homes/member.html
+msgid "Remove from the home"
+msgstr "Retirer du logement"
+
+#: templates/homes/member.html
+msgid "Leave this home"
+msgstr "Quitter ce logement"
+
+#: templates/homes/sso_required.html
+#, python-format
+msgid "This home opens only after signing in through %(provider)s."
+msgstr "Ce logement ne s'ouvre qu'après une connexion par %(provider)s."
+
+#: templates/homes/sso_required.html
+msgid ""
+"If your account is not linked to this provider yet, link it first from your "
+"linked accounts."
+msgstr ""
+"Si votre compte n'est pas encore lié à ce fournisseur, liez-le d'abord depuis "
+"vos comptes liés."
+
+#: templates/homes/sso_required.html
+msgid "Linked accounts"
+msgstr "Comptes liés"
+
+#: templates/homes/sso_required.html
+msgid "This instance no longer offers this provider. Ask its administrator."
+msgstr ""
+"Cette instance ne propose plus ce fournisseur. Demandez à son administrateur."
+
+#: homes/forms.py templates/homes/invitation.html templates/homes/member.html
+msgid "Email address"
+msgstr "Adresse e-mail"
