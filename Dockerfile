@@ -66,9 +66,12 @@ RUN DEBUG=true .venv/bin/python manage.py build_design_tokens \
 # ---------------------------------------------------------------------------
 FROM python:3.12.16-slim-trixie@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54
 
-# Fixed, unprivileged identity, also the owner of /data. A host directory
-# mounted on /data must belong to 10001:10001.
-RUN groupadd --system --gid 10001 housecairn \
+# The base image's pip is not used at run time (dependencies are in
+# /app/.venv): removed, with its advisories. Then a fixed, unprivileged
+# identity, also the owner of /data. A host directory mounted on /data must
+# belong to 10001:10001.
+RUN python -m pip uninstall --yes --no-cache-dir pip \
+    && groupadd --system --gid 10001 housecairn \
     && useradd --system --uid 10001 --gid housecairn --no-create-home \
         --home-dir /nonexistent --shell /usr/sbin/nologin housecairn \
     && install -d -o 10001 -g 10001 -m 0700 /data

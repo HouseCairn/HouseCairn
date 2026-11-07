@@ -45,7 +45,8 @@ Two stages:
    gettext installed in this stage only) are generated from their sources,
    and static files are collected with `CompressedManifestStaticFilesStorage`
    (hashed names, compressed copies).
-2. **final**: the same base, a system user and group `housecairn`,
+2. **final**: the same base, without its `pip` (unused at run time, and the
+   source of most scanner findings), a system user and group `housecairn`,
    UID/GID **10001**, and `/app` copied from the build stage, owned by root,
    hence read-only for the application.
 

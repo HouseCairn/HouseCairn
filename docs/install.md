@@ -210,17 +210,19 @@ Verify them with the GitHub CLI before you deploy:
 ```sh
 # Provenance: built by this repository's workflow, from this repository.
 gh attestation verify oci://ghcr.io/housecairn/housecairn:X.Y.Z \
-  --repo HouseCairn/HouseCairn \
-  --signer-workflow HouseCairn/HouseCairn/.github/workflows/image.yml
+  --repo HouseCairn/housecairn \
+  --signer-workflow HouseCairn/housecairn/.github/workflows/image.yml
 
 # SBOM of the linux/amd64 image (use its digest, shown by the first command
 # below), and its list of packages.
 docker buildx imagetools inspect ghcr.io/housecairn/housecairn:X.Y.Z
 gh attestation verify oci://ghcr.io/housecairn/housecairn@sha256:<amd64 digest> \
-  --repo HouseCairn/HouseCairn --predicate-type https://spdx.dev/Document/v2.3
+  --repo HouseCairn/housecairn --predicate-type https://spdx.dev/Document/v2.3
 ```
 
-A successful verification ends with `✓ Verification succeeded!`. The
+Write the repository as `HouseCairn/housecairn`, the exact name recorded in
+the signing certificate. A successful verification ends with
+`✓ Verification succeeded!`. The
 attestations are also stored in the registry next to the image.
 
 ## Tags
