@@ -22,40 +22,14 @@
   <a class="skip-link" href="#main">{% translate "Skip to content" %}</a>
   <div class="shell">
     <header class="appbar">
-      <a class="brand" href="{% url 'index' %}">
-        <img class="brand-icon" src="{% static 'img/brand/housecairn-icon.svg' %}" alt="" width="40" height="40">
-        <span class="brand-name">HouseCairn</span>
-        <img class="brand-logo" src="{% static 'img/brand/housecairn-logo.svg' %}" alt="HouseCairn" width="168" height="48">
-      </a>
+      {% include "shell/brand.html" %}
       <div class="appbar-actions">
-        {% if help_url %}
-          <a class="help-link" href="{{ help_url }}" rel="help" title="{% translate 'Help for this page' %}" aria-label="{% translate 'Help for this page' %}">
-            {% include "components/icon.html" with name="help" %}
-          </a>
-        {% endif %}
+        {% include "shell/help_link.html" %}
         {% block header_actions %}{% endblock header_actions %}
       </div>
     </header>
     {% if user.is_authenticated %}
-      <nav class="nav" aria-label="{% translate 'Main navigation' %}">
-        <ul class="nav-list">
-          <li>
-            <a class="nav-link" href="{% url 'index' %}"{% if nav_section == "home" %} aria-current="page"{% endif %}>
-              {% include "components/icon.html" with name="home" %}{% translate "Home" %}
-            </a>
-          </li>
-          <li>
-            <a class="nav-link" href="{% url 'homes:list' %}"{% if nav_section == "homes" %} aria-current="page"{% endif %}>
-              {% include "components/icon.html" with name="homes" %}{% translate "Homes" %}
-            </a>
-          </li>
-          <li>
-            <a class="nav-link" href="{% url 'more' %}"{% if nav_section == "more" %} aria-current="page"{% endif %}>
-              {% include "components/icon.html" with name="more" %}{% translate "More" %}
-            </a>
-          </li>
-        </ul>
-      </nav>
+      {% include "shell/navigation.html" %}
     {% endif %}
     <main id="main" class="content {% block main_class %}{% endblock main_class %}" tabindex="-1">
       {% if messages %}

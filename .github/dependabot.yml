@@ -25,11 +25,6 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "django-stubs-ext"
         update-types: ["version-update:semver-major"]
-      # Sphinx was held at 9.1.1 while the project was on Python 3.12 (9.2
-      # needs 3.13, docs/adr/0016). The project is on 3.13 now: this block can
-      # be removed. Patch releases come through either way.
-      - dependency-name: "sphinx"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     commit-message:
       prefix: chore(deps)
     open-pull-requests-limit: 5

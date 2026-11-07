@@ -59,6 +59,20 @@ panel) are overridden under `templates/allauth/elements/` so its pages share the
 look. Icons are inline SVG from `templates/components/icon.html`. No inline style
 and no inline script anywhere.
 
+**Files.** `static/css/app.css` is the entry point: it only imports, from the same
+directory and in this order, `base.css` (reset, typography, focus), `shell.css`
+(app bar, navigation, content area, signed-out layout), `components.css` and
+`utilities.css` (rules over everything else, such as reduced motion), after the
+`tokens.css` and `fonts.css` that `base.html` loads first. No build step: the
+static files storage rewrites each `@import` to the hashed file name. The order is
+the original cascade order, shell before components, because some components
+refine a shell rule of the same specificity (`.chevron` after `.icon`). The shell's
+markup is in `templates/base.html`, which includes `templates/shell/brand.html`,
+`help_link.html` and `navigation.html` (the tab bar on a phone and the column on a
+computer are the same `nav`); the `header_actions`, `main_class` and `content`
+blocks stay in `base.html`, since a block inside an included template cannot be
+overridden.
+
 **Brand files.** Sources in `design/brand/` (with the trademark note), served
 copies in `static/img/brand/`: wordmark, icon, favicons, `apple-touch-icon`, 192
 and 512 px icons. The web manifest is a view (`/manifest.webmanifest`) because the
