@@ -6,6 +6,7 @@ Needs the `docs` dependency group (Sphinx); skipped without it.
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -63,3 +64,46 @@ def test_every_operation_of_the_generated_schema_is_listed() -> None:
         1 for item in schema["paths"].values() for method in ext.HTTP_METHODS if method in item
     )
     assert len(listed) == count > 0
+
+
+def test_interface_strings_exist_in_every_language() -> None:
+    assert set(ext.UI_STRINGS) == set(ext.LANGUAGES)
+    keys = set(ext.UI_STRINGS["en"])
+    for language, strings in ext.UI_STRINGS.items():
+        assert set(strings) == keys, language
+        assert all(value.strip() for value in strings.values()), language
+
+
+def test_issue_link_opens_the_bug_form_about_the_page() -> None:
+    url = ext.issue_url("screens/sign-in", "fr")
+    assert url.startswith("https://github.com/HouseCairn/housecairn/issues/new?")
+    assert "template=bug_report.yml" in url
+    assert "title=bug%3A%20documentation%20page%20screens%2Fsign-in%20%28fr%29" in url
+
+
+def _document_with_image(alt: str) -> Any:
+    from docutils import nodes
+    from docutils.frontend import get_default_settings
+    from docutils.parsers.rst import Parser
+    from docutils.utils import new_document
+
+    document = new_document("test", get_default_settings(Parser))
+    document += nodes.image(uri="x.png", alt=alt)
+    return document
+
+
+@pytest.mark.parametrize(
+    ("translated_alt", "expected"), [("Une capture.", True), ("A screenshot.", False)]
+)
+def test_image_counts_as_translated_when_its_alt_is(translated_alt: str, expected: bool) -> None:
+    from docutils import nodes
+
+    document = _document_with_image("A screenshot.")
+    ext.RememberImageAlt(document).apply()
+    # What Sphinx's Locale transform does to an image: new alt, still untranslated.
+    image = next(iter(document.findall(nodes.image)))
+    image["alt"] = translated_alt
+    image["translated"] = False
+    ext.CountTranslatedImageAlt(document).apply()
+    assert image["translated"] is expected
+    assert "hc_source_alt" not in image.attributes

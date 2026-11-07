@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"POT-Creation-Date: 2026-11-07 21:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -22,12 +22,53 @@ msgstr ""
 msgid "HouseCairn"
 msgstr "HouseCairn"
 
-msgid "HouseCairn is a self-hosted planner for home maintenance and renovation projects: what needs doing in the house, where, when, with what and for how much."
-msgstr "HouseCairn est un planificateur auto-hébergé pour l'entretien de la maison et les projets de travaux : ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
+msgid "HouseCairn plans the upkeep and the projects of a home, room by room: what needs doing, where, when, with what and for how much. Self-hosted, free software, in English and French."
+msgstr "HouseCairn planifie l'entretien et les travaux d'une maison, pièce par pièce : ce qu'il y a à faire, où, quand, avec quoi et pour combien. Auto-hébergé, logiciel libre, en français et en anglais."
 
-msgid "HouseCairn is in early development and not usable yet. The application skeleton, its API and its container image exist; the screens to plan maintenance and projects do not. These pages describe only what exists today."
-msgstr "HouseCairn est en développement précoce et n'est pas encore utilisable. Le squelette de l'application, son API et son image de conteneur existent ; les écrans pour planifier l'entretien et les projets n'existent pas. Ces pages décrivent seulement ce qui existe aujourd'hui."
+msgid "**Early development**"
+msgstr "**Développement précoce**"
 
-msgid "This documentation is also available in French: use the language switcher in the sidebar."
-msgstr "Cette documentation existe aussi en anglais : utilisez le sélecteur de langue dans la barre latérale."
+msgid "HouseCairn is not usable for everyday life yet. Accounts and sign-in, homes, the REST API and the container image exist; the screens to plan maintenance and projects do not. These pages describe only what exists today."
+msgstr "HouseCairn n'est pas encore utilisable au quotidien. Les comptes et la connexion, les logements, l'API REST et l'image de conteneur existent ; les écrans pour planifier l'entretien et les travaux n'existent pas encore. Ces pages décrivent seulement ce qui existe aujourd'hui."
 
+msgid "[Get started](getting-started/index.md)"
+msgstr "[Démarrer](getting-started/index.md)"
+
+msgid "Install HouseCairn with Docker Compose and sign in for the first time."
+msgstr "Installer HouseCairn avec Docker Compose et se connecter pour la première fois."
+
+msgid "[Guides](guides/index.md)"
+msgstr "[Guides](guides/index.md)"
+
+msgid "Step-by-step pages, written as the planning screens arrive."
+msgstr "Des pages pas à pas, écrites à mesure qu'arrivent les écrans de planification."
+
+msgid "[Screen reference](screens/index.md)"
+msgstr "[Référence des écrans](screens/index.md)"
+
+msgid "Every screen of the application, with its help page."
+msgstr "Chaque écran de l'application, avec sa page d'aide."
+
+msgid "[API](api/index.md)"
+msgstr "[API](api/index.md)"
+
+msgid "The REST API and its reference, generated from the code."
+msgstr "L'API REST et sa référence, générée à partir du code."
+
+msgid "[Administration](administration/index.md)"
+msgstr "[Administration](administration/index.md)"
+
+msgid "Configuration, reverse proxy, single sign-on, backups and updates."
+msgstr "Configuration, proxy inverse, authentification unique, sauvegardes et mises à jour."
+
+msgid "[Security](security/index.md)"
+msgstr "[Sécurité](security/index.md)"
+
+msgid "No telemetry, signed images, and how to report a vulnerability."
+msgstr "Aucune télémétrie, des images signées, et comment signaler une vulnérabilité."
+
+msgid "The start page of HouseCairn on a computer: the navigation on the left, the HouseCairn logo and a button to go to the homes."
+msgstr "La page d'accueil de HouseCairn sur un ordinateur : la navigation à gauche, le logo HouseCairn et un bouton pour aller aux logements."
+
+msgid "The start page of the application, on a demonstration instance."
+msgstr "La page d'accueil de l'application, sur une instance de démonstration."

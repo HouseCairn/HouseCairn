@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts import check_docs_site, check_docs_updated
+from scripts import check_docs_design, check_docs_site, check_docs_updated
 
 # check_docs_updated: the documentation changes with the code
 
@@ -270,3 +270,91 @@ def test_missing_api_operation_is_found(tmp_path: Path) -> None:
 
 def test_missing_site_is_an_error(tmp_path: Path) -> None:
     assert check_docs_site.main([str(tmp_path / "nothing")]) == 2
+
+
+# check_docs_design: contrast, focus and the pages of the site
+
+WHITE = (255.0, 255.0, 255.0, 1.0)
+BLACK = (0.0, 0.0, 0.0, 1.0)
+
+
+def test_contrast_matches_wcag() -> None:
+    assert check_docs_design.contrast(BLACK, WHITE) == pytest.approx(21.0)
+    assert check_docs_design.contrast(WHITE, WHITE) == pytest.approx(1.0)
+    # Slate on the page background of the tokens (docs/adr/0017).
+    slate = (31.0, 58.0, 61.0, 1.0)
+    page = (247.0, 245.0, 241.0, 1.0)
+    assert check_docs_design.contrast(slate, page) == pytest.approx(11.14, abs=0.01)
+
+
+def test_translucent_layers_are_blended() -> None:
+    half_black = (0.0, 0.0, 0.0, 0.5)
+    grey = check_docs_design.flatten([half_black])
+    assert grey[:3] == pytest.approx((127.5, 127.5, 127.5))
+    # Nearest layer first: an opaque layer hides what is under it.
+    assert check_docs_design.flatten([BLACK, WHITE]) == BLACK
+
+
+def test_large_text() -> None:
+    assert check_docs_design.is_large(24, 400)
+    assert check_docs_design.is_large(18.66, 700)
+    assert not check_docs_design.is_large(18.66, 600)
+    assert not check_docs_design.is_large(16, 800)
+
+
+def _sample(color: tuple[float, ...], size: float = 16, **extra: object) -> dict[str, object]:
+    return {
+        "element": "p",
+        "text": "text",
+        "color": list(color),
+        "layers": [list(WHITE)],
+        "unknown": False,
+        "size": size,
+        "weight": 400,
+        **extra,
+    }
+
+
+def test_text_failures() -> None:
+    grey = (150.0, 150.0, 150.0, 1.0)  # 2.96:1 on white
+    mid = (118.0, 118.0, 118.0, 1.0)  # 4.54:1 on white
+    failures, unknown = check_docs_design.text_failures(
+        "light /",
+        [
+            _sample(BLACK),
+            _sample(mid),
+            _sample(grey),
+            _sample(grey, size=32),
+            _sample(grey, unknown=True),
+        ],
+    )
+    assert [(f.ratio < 3, f.needed) for f in failures] == [(True, 4.5), (True, 3.0)]
+    assert unknown == 1
+    assert "light /: p 'text': 2.96:1 (needs 4.5:1)" in str(failures[0])
+
+
+@pytest.mark.parametrize(
+    ("focus", "problem"),
+    [
+        ({"style": "solid", "width": 3, "color": list(BLACK)}, None),
+        ({"style": "none", "width": 0, "color": list(BLACK)}, "no visible focus outline"),
+        ({"style": "solid", "width": 1, "color": list(BLACK)}, "no visible focus outline"),
+        ({"style": "solid", "width": 3, "color": [230, 230, 230, 1]}, "(needs 3:1)"),
+    ],
+)
+def test_focus_must_be_visible(focus: dict[str, object], problem: str | None) -> None:
+    found = check_docs_design.focus_problem(
+        "light /", {"element": "a", "layers": [list(WHITE)], **focus}
+    )
+    assert (found is None) if problem is None else (found is not None and problem in found)
+
+
+def test_pages_of_the_site(tmp_path: Path) -> None:
+    for page in ("", "guides/", "fr/", "fr/guides/", "_static/x/"):
+        (tmp_path / page).mkdir(parents=True, exist_ok=True)
+        (tmp_path / page / "index.html").write_text("<p>x</p>", encoding="utf-8")
+    assert sorted(check_docs_design.pages_of(tmp_path)) == ["", "fr/", "fr/guides/", "guides/"]
+
+
+def test_design_check_needs_a_site(tmp_path: Path) -> None:
+    assert check_docs_design.main([str(tmp_path)]) == 2
