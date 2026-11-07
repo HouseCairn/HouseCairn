@@ -7,8 +7,9 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.paginator import Paginator
 from django.db import models
-from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import FileResponse, Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
@@ -20,7 +21,8 @@ from django.views.generic import DetailView, FormView, ListView
 
 from housecairn.accounts.models import User
 from housecairn.accounts.services import email_is_configured
-from housecairn.homes import forms, services, sso
+from housecairn.audit import services as audit_services
+from housecairn.homes import exports, forms, services, sso
 from housecairn.homes.models import Home, Invitation, Membership
 from housecairn.homes.scoping import (
     WebHomeScopedMixin,
@@ -118,6 +120,69 @@ class HouseholdView(WebHomeScopedMixin, DetailView[Home]):
             shared_link=self.request.session.pop("housecairn_shared_invitation", None),
         )
         return context
+
+
+class HomeAuditView(WebHomeScopedMixin, DetailView[Home]):
+    """What happened in the home: roles, invitations, sign-in rule, export. Owners only."""
+
+    template_name = "homes/audit.html"
+    context_object_name = "home"
+    paginate_by = 50
+
+    def get_object(self, queryset: models.QuerySet[Home] | None = None) -> Home:
+        return self.get_home()
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        entries = audit_services.home_log(self.request.user, self.object.id)
+        context["page"] = Paginator(entries, self.paginate_by).get_page(
+            self.request.GET.get("page")
+        )
+        return context
+
+
+class HomeExportView(WebHomeScopedMixin, View):
+    """Download everything of the home as one archive. Owners only."""
+
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
+        home = self.get_home()
+        archive, name = exports.export_home(request.user, home)
+        return FileResponse(
+            archive, as_attachment=True, filename=name, content_type="application/zip"
+        )
+
+
+class HomeDeleteView(WebHomeScopedMixin, FormView[forms.DeleteHomeForm]):
+    """Delete the home for good, after typing its name. Owners only."""
+
+    template_name = "homes/delete.html"
+    form_class = forms.DeleteHomeForm
+
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        home = self.get_home()
+        if not services.is_owner(self.request.user, home):
+            raise PermissionDenied
+        context["home"] = home
+        context["member_count"] = services.members(home).count()
+        return context
+
+    def form_valid(self, form: forms.DeleteHomeForm) -> HttpResponse:
+        home = self.get_home()
+        try:
+            services.delete_home(
+                self.request.user, home, confirmation=form.cleaned_data["confirmation"]
+            )
+        except ValidationError as exc:
+            form.add_error("confirmation", exc)
+            return self.form_invalid(form)
+        messages.success(self.request, _("The home was deleted."))
+        return redirect("homes:list")
 
 
 class HomeActionView(WebHomeScopedMixin, View):

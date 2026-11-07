@@ -16,10 +16,26 @@
       </span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>
+    {% if user.is_staff and user.is_superuser %}
+    <a class="row" href="{% url 'instance:overview' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Instance administration" %}</span>
+        <span class="row-text">{% translate "Accounts, invitations, audit log" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+    {% endif %}
     <a class="row" href="{% url 'api-docs' %}">
       <span class="row-body">
         <span class="row-title">{% translate "API documentation" %}</span>
         <span class="row-text">{% translate "OpenAPI schema and test interface" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+    <a class="row" href="{% url 'account_delete' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Delete my account" %}</span>
+        <span class="row-text">{% translate "Erase your account and your data" %}</span>
       </span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>

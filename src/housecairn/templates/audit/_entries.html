@@ -1,0 +1,15 @@
+{% load i18n %}{# Entries of an audit log: what, who, when (docs/adr/0023). #}
+{% if entries %}
+  <ul class="card-list">
+    {% for entry in entries %}
+      <li class="row">
+        <span class="row-body">
+          <span class="row-title">{{ entry.label }}</span>
+          <span class="row-text">{{ entry.created_at|date:"SHORT_DATETIME_FORMAT" }} · {% if entry.actor %}{{ entry.actor.email }}{% else %}{% translate "deleted account or system" %}{% endif %}{% if entry.target_user %} → {{ entry.target_user.email }}{% endif %}</span>
+        </span>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="empty">{% translate "Nothing recorded yet." %}</p>
+{% endif %}

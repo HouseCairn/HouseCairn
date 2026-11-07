@@ -81,6 +81,11 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):  # type: ignore[misc]
         user.is_staff = False
         user.is_superuser = False
         saved: User = super().save_user(request, sociallogin, form)
+        # The provider vouched for the address: an invitation to the instance for it is used.
+        if email and verified:
+            from housecairn.instance.services import accept_for_identity
+
+            accept_for_identity(saved)
         return saved
 
     def _save_bootstrap(

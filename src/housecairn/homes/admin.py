@@ -1,17 +1,7 @@
-from django.contrib import admin
+"""Nothing of a home is registered in the administration site.
 
-from housecairn.homes.models import Home, Membership
-
-
-class MembershipInline(admin.TabularInline[Membership, Home]):
-    model = Membership
-    extra = 0
-    autocomplete_fields = ("user",)
-
-
-@admin.register(Home)
-class HomeAdmin(admin.ModelAdmin[Home]):
-    list_display = ("name", "currency", "created_at")
-    search_fields = ("name",)
-    readonly_fields = ("id", "created_at", "updated_at")
-    inlines = (MembershipInline,)
+The administrator of the instance runs accounts, invitations and settings but
+reads no home: neither the homes, nor their members, invitations or events
+(docs/adr/0022). Every model that belongs to a home, now or later, stays out of
+this site; `tests/test_instance_admin.py` fails when one is registered.
+"""

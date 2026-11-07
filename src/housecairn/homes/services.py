@@ -20,6 +20,8 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.audit import models as audit_models
+from housecairn.audit import services as audit
 from housecairn.homes.models import WRITE_ROLES, Home, Invitation, Membership, Role
 
 AnyUser = User | AnonymousUser
@@ -122,6 +124,7 @@ def create_home(owner: User, *, name: str, currency: str = "EUR") -> Home:
     home.full_clean()
     home.save()
     Membership.objects.create(home=home, user=owner, role=Role.OWNER)
+    audit.record("home.created", actor=owner, home_id=home.id)
     return home
 
 
@@ -163,6 +166,10 @@ def set_required_provider(
             )
     home.required_provider = provider_id
     home.save(update_fields=["required_provider", "updated_at"])
+    if provider_id:
+        audit.record("sso.required", actor=actor, home_id=home.id, provider=provider_id)
+    else:
+        audit.record("sso.lifted", actor=actor, home_id=home.id)
     return home
 
 
@@ -179,6 +186,7 @@ def lift_unavailable_requirement(actor: AnyUser, home: Home, *, declared: Iterab
         raise ValidationError(_("This home's sign-in provider is still offered by this instance."))
     home.required_provider = ""
     home.save(update_fields=["required_provider", "updated_at"])
+    audit.record("sso.lifted", actor=actor, home_id=home.id)
     return home
 
 
@@ -193,6 +201,51 @@ def lift_all_unavailable_requirements(*, declared: Iterable[str]) -> int:
         .exclude(required_provider__in=list(declared))
         .update(required_provider="", updated_at=timezone.now())
     )
+
+
+# ---------- deletion ----------
+
+
+def erase_home(home: Home) -> None:
+    """Delete a home and everything that hangs off it, for good (docs/adr/0023).
+
+    Rows go by cascade, soft-deleted ones included; so do the home's entries in
+    its audit log and, when files exist, its directory of files. An API token
+    left with no home is revoked. What remains is a count in the instance log.
+    """
+    from housecairn.apitokens.models import ApiToken
+
+    home_id = home.pk
+    tokens = list(ApiToken.objects.filter(homes=home).values_list("pk", flat=True))
+    Home.all_objects.filter(pk=home_id).delete()
+    audit_models.AuditEvent.objects.filter(home_id=home_id).delete()
+    ApiToken.objects.filter(pk__in=tokens, homes__isnull=True, revoked_at__isnull=True).update(
+        revoked_at=timezone.now()
+    )
+    transaction.on_commit(lambda: _remove_files(home_id))
+
+
+def _remove_files(home_id: UUID) -> None:
+    import shutil
+    from pathlib import Path
+
+    shutil.rmtree(Path(settings.MEDIA_ROOT) / "homes" / str(home_id), ignore_errors=True)
+
+
+@transaction.atomic
+def delete_home(actor: AnyUser, home: Home, *, confirmation: str) -> None:
+    """An owner deletes the home, for good, after typing its name.
+
+    The confirmation is the name as it is shown: a typo, or a request that does
+    not know the name (a script run by mistake), changes nothing. There is no
+    grace period: the specification asks for a definitive deletion, so the
+    owner is told to export first (docs/administration/data.md).
+    """
+    _require_owner(actor, home)
+    if confirmation.strip() != home.name.strip():
+        raise ValidationError(_("Type the exact name of the home to delete it."))
+    erase_home(home)
+    audit.record("home.deleted", actor=actor if isinstance(actor, User) else None)
 
 
 # ---------- household ----------
@@ -230,9 +283,18 @@ def change_role(actor: AnyUser, membership: Membership, role: Role | str) -> Mem
     target = next((m for m in locked if m.pk == membership.pk), None)
     if target is None:
         raise Membership.DoesNotExist
+    previous = target.role
     target.role = new_role
     _check_an_owner_remains(locked)
     target.save(update_fields=["role", "updated_at"])
+    audit.record(
+        "member.role_changed",
+        actor=actor,
+        home_id=home.id,
+        target=target.user,
+        role=str(new_role),
+        previous_role=str(previous),
+    )
     return target
 
 
@@ -248,6 +310,12 @@ def remove_member(actor: AnyUser, membership: Membership) -> None:
         raise Membership.DoesNotExist
     _check_an_owner_remains([m for m in locked if m.pk != target.pk])
     target.soft_delete()
+    audit.record(
+        "member.left" if target.user_id == getattr(actor, "pk", None) else "member.removed",
+        actor=actor,
+        home_id=home.id,
+        target=target.user,
+    )
 
 
 def leave_home(actor: User, home: Home) -> None:
@@ -272,6 +340,7 @@ def transfer_ownership(actor: User, home: Home, to: Membership) -> Membership:
     mine.role = Role.MEMBER
     target.save(update_fields=["role", "updated_at"])
     mine.save(update_fields=["role", "updated_at"])
+    audit.record("ownership.transferred", actor=actor, home_id=home.id, target=target.user)
     return target
 
 
@@ -356,6 +425,7 @@ def invite(
             raise ValidationError(
                 _("An invitation to this address is already pending; send it again instead.")
             ) from exc
+        audit.record("invitation.sent", actor=actor, home_id=home.id, role=str(new_role))
     return deliver(invitation, raw, delivery.send)
 
 
@@ -388,17 +458,21 @@ def resend_invitation(
     invitation.sent_at = now
     invitation.expires_at = now + _lifetime()
     invitation.delivered_by_email = delivery.send is not None
-    invitation.save(
-        update_fields=["digest", "sent_at", "expires_at", "delivered_by_email", "updated_at"]
-    )
+    with transaction.atomic():
+        invitation.save(
+            update_fields=["digest", "sent_at", "expires_at", "delivered_by_email", "updated_at"]
+        )
+        audit.record("invitation.resent", actor=actor, home_id=invitation.home_id)
     return deliver(invitation, raw, delivery.send)
 
 
 def revoke_invitation(actor: User, invitation: Invitation) -> None:
     _require_owner(actor, invitation.home)
     if invitation.revoked_at is None and invitation.accepted_at is None:
-        invitation.revoked_at = timezone.now()
-        invitation.save(update_fields=["revoked_at", "updated_at"])
+        with transaction.atomic():
+            invitation.revoked_at = timezone.now()
+            invitation.save(update_fields=["revoked_at", "updated_at"])
+            audit.record("invitation.revoked", actor=actor, home_id=invitation.home_id)
 
 
 def find_invitation(raw: str) -> Invitation | None:
@@ -460,6 +534,9 @@ def accept_invitation(user: User, raw: str) -> Membership:
     invitation.accepted_at = timezone.now()
     invitation.accepted_by = user
     invitation.save(update_fields=["accepted_at", "accepted_by", "updated_at"])
+    audit.record(
+        "invitation.accepted", actor=user, home_id=invitation.home_id, role=str(membership.role)
+    )
     return membership
 
 

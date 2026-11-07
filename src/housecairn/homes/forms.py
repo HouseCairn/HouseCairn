@@ -70,3 +70,9 @@ class InvitationSignupForm(forms.Form):
         if first:
             password_validation.validate_password(first)
         return data
+
+
+class DeleteHomeForm(forms.Form):
+    confirmation = forms.CharField(
+        label=_("Type the name of the home to confirm"), max_length=120, strip=True
+    )

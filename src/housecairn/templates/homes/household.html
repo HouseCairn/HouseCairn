@@ -52,6 +52,16 @@
         </section>
       {% endfor %}
     {% endif %}
+    <h2>{% translate "Audit log" %}</h2>
+    <div class="list">
+      <a class="row" href="{% url 'homes:audit' home_id=home.id %}">
+        <span class="row-body">
+          <span class="row-title">{% translate "Audit log" %}</span>
+          <span class="row-text">{% translate "Roles, invitations, sign-in rule, export" %}</span>
+        </span>
+        {% include "components/icon.html" with name="chevron" class="chevron" %}
+      </a>
+    </div>
     {% if providers %}
       <h2>{% translate "Sign-in" %}</h2>
       <form method="post" action="{% url 'homes:required-provider' home_id=home.id %}" class="card">

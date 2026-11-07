@@ -17,9 +17,12 @@ Accounts created in the last two cases have no administration rights.
 import enum
 import logging
 from collections.abc import Callable
+from typing import Any
 
 from django.conf import settings
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
+from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import InstanceSetup, SetupMethod, User
 
@@ -63,6 +66,25 @@ def email_is_configured() -> bool:
     return bool(settings.EMAIL_HOST) and settings.EMAIL_BACKEND not in _NON_DELIVERING_BACKENDS
 
 
+def is_instance_admin(user: Any) -> bool:
+    """The administrator of the instance: staff and superuser, signed in and active.
+
+    An administrator runs the instance (accounts, invitations, unlocking) and
+    reads no home: being one adds no row to `homes_for` (docs/adr/0022).
+    """
+    return bool(
+        getattr(user, "is_authenticated", False)
+        and user.is_active
+        and user.is_staff
+        and user.is_superuser
+    )
+
+
+def signup_is_open() -> bool:
+    """Whether anyone may create a local account from the sign-up page."""
+    return bool(settings.HOUSECAIRN_SIGNUP_OPEN)
+
+
 def same_address(a: str, b: str) -> bool:
     return a.strip().casefold() == b.strip().casefold()
 
@@ -84,8 +106,9 @@ def has_invitation(email: str | None, email_verified: bool) -> bool:
     if not email or not email_verified:
         return False
     from housecairn.homes.services import has_pending_invitation
+    from housecairn.instance.services import has_pending
 
-    return has_pending_invitation(email)
+    return has_pending_invitation(email) or has_pending(email)
 
 
 def oidc_signup_decision(email: str | None, email_verified: bool) -> Decision:
@@ -139,3 +162,82 @@ def record_first_account(user: User) -> None:
     except IntegrityError:
         # Another account was first; the instance is set up either way.
         pass
+
+
+# ---------- erasure ----------
+
+
+def is_last_instance_admin(user: User) -> bool:
+    """Whether no other active administrator would remain without this account."""
+    if not is_instance_admin(user):
+        return False
+    others = User.objects.filter(is_active=True, is_staff=True, is_superuser=True)
+    return not others.exclude(pk=user.pk).exists()
+
+
+def homes_blocking_erasure(user: User) -> list[Any]:
+    """Homes in which this account is the only owner and other people are members.
+
+    Erasing the account would leave them without an owner: the person hands
+    ownership over, or deletes the home, first. A home where they are the only
+    member is not in this list: it goes with the account.
+    """
+    from housecairn.homes.models import Home, Membership, Role
+
+    owned = Membership.objects.filter(user=user, role=Role.OWNER).values("home_id")
+    blocking = []
+    for home in Home.objects.filter(id__in=owned).order_by("name"):
+        members = Membership.objects.filter(home=home)
+        if (
+            not members.filter(role=Role.OWNER).exclude(user=user).exists()
+            and members.exclude(user=user).exists()
+        ):
+            blocking.append(home)
+    return blocking
+
+
+def delete_account(user: User, *, by_admin: User | None = None) -> None:
+    """Erase an account and what only it held (the right to erasure, docs/adr/0023).
+
+    Refused for the only administrator, and for an account that is the only
+    owner of a home others belong to; the message names no home, since an
+    administrator may be the one asking. A home with no other member goes with
+    the account. The audit log keeps that it happened, not who: its references
+    to the account become empty.
+    """
+    from housecairn.audit import services as audit
+    from housecairn.homes import services as home_services
+    from housecairn.homes.models import Invitation, Membership
+    from housecairn.instance.models import InstanceInvitation
+
+    if by_admin is not None and not is_instance_admin(by_admin):
+        raise PermissionDenied
+    with transaction.atomic():
+        if is_last_instance_admin(user):
+            raise ValidationError(_("This is the only administrator of the instance."))
+        blocking = homes_blocking_erasure(user)
+        if blocking:
+            raise ValidationError(
+                _(
+                    "This account is the only owner of %(count)s home(s) that have other "
+                    "members: hand ownership over or delete the home first."
+                )
+                % {"count": len(blocking)}
+            )
+        # Homes where the account is the only member go with it.
+        alone = [
+            membership.home
+            for membership in Membership.objects.filter(user=user).select_related("home")
+            if not Membership.objects.filter(home=membership.home).exclude(user=user).exists()
+        ]
+        for home in alone:
+            home_services.erase_home(home)
+        # Invitations to the address, accepted or not, are not kept after erasure.
+        Invitation.all_objects.filter(email__iexact=user.email).delete()
+        InstanceInvitation.all_objects.filter(email__iexact=user.email).delete()
+        audit.record(
+            "admin.user_deleted" if by_admin else "account.deleted",
+            actor=by_admin or user,
+            by="administrator" if by_admin else "self",
+        )
+        user.delete()

@@ -70,6 +70,8 @@ INSTALLED_APPS = [
     "housecairn.homes",
     "housecairn.apitokens",
     "housecairn.events",
+    "housecairn.audit",
+    "housecairn.instance",
 ]
 
 MIDDLEWARE = [
@@ -240,6 +242,8 @@ SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = False
 ACCOUNT_RATE_LIMITS = {
     "housecairn_invite": "10/m/user,50/d/user",
     "housecairn_invitation": "30/m/ip",
+    "housecairn_instance_invite": "10/m/user,50/d/user",
+    "housecairn_delete_account": "5/m/user",
 }
 # Days an invitation link stays valid.
 HOUSECAIRN_INVITATION_LIFETIME_DAYS: int = env.int("HOUSECAIRN_INVITATION_LIFETIME_DAYS", default=7)

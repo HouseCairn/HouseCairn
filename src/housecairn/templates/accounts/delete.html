@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Delete my account" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'more' %}">{% include "components/icon.html" with name="chevron" %}{% translate "More" %}</a>
+  <h1>{% translate "Delete my account" %}</h1>
+  <section class="card">
+    <p>{% translate "This erases your account, your sign-in methods, your API tokens and the homes where you are the only member. It cannot be undone. Homes shared with others stay with them." %}</p>
+    {% if last_admin %}
+      <div class="alert alert-warning" role="status">{% translate "You are the only administrator of this instance. Make someone else an administrator first." %}</div>
+    {% endif %}
+    {% if blocking %}
+      <div class="alert alert-warning" role="status">
+        <p>{% translate "You are the only owner of these homes, which have other members. Hand ownership over, or delete the home, first:" %}</p>
+        <ul>
+          {% for home in blocking %}
+            <li><a href="{% url 'homes:household' home_id=home.id %}">{{ home.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </section>
+  <form method="post" class="card">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button-danger button-block"{% if blocking or last_admin %} disabled{% endif %}>{% translate "Delete my account for good" %}</button>
+  </form>
+{% endblock content %}

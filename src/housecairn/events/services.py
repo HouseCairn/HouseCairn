@@ -31,3 +31,21 @@ def record_event(
         home=home, kind=kind, payload=payload, received_by=actor, token=token
     )
     return event
+
+
+def register_export() -> None:
+    """Events are part of the export of their home (docs/adr/0023)."""
+    from housecairn.homes import exports
+
+    def export(home: Home) -> list[dict[str, Any]]:
+        return [
+            {
+                "id": str(e.id),
+                "kind": e.kind,
+                "payload": e.payload,
+                "received_at": e.created_at.isoformat(),
+            }
+            for e in Event.objects.filter(home=home).order_by("created_at", "id")
+        ]
+
+    exports.register("events", export)

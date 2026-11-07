@@ -3,8 +3,10 @@
 from django.urls import path
 from rest_framework.routers import SimpleRouter
 
+from housecairn.accounts.api import AccountDeleteView
 from housecairn.events.api import EventCreateView
 from housecairn.homes.api import AcceptInvitationView, HomeViewSet, InvitationViewSet, MemberViewSet
+from housecairn.instance.api import InstanceAuditView, InstanceInvitationViewSet, UnlockHomesView
 
 app_name = "api-v1"
 
@@ -15,7 +17,12 @@ router.register(
     r"homes/(?P<home_id>[0-9a-f-]{36})/invitations", InvitationViewSet, basename="home-invitation"
 )
 
+router.register("instance/invitations", InstanceInvitationViewSet, basename="instance-invitation")
+router.register("instance/audit", InstanceAuditView, basename="instance-audit")
+
 urlpatterns = [
+    path("instance/unlock/", UnlockHomesView.as_view(), name="instance-unlock"),
+    path("account/delete/", AccountDeleteView.as_view(), name="account-delete"),
     *router.urls,
     path("homes/<uuid:home_id>/events/", EventCreateView.as_view(), name="home-events"),
     path("invitations/accept/", AcceptInvitationView.as_view(), name="invitation-accept"),
