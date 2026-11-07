@@ -94,8 +94,8 @@ v4.39.3, `actions/github-script` v9.0.0.
 ### CLA check
 
 The CLA check is a script of this repository, `.github/scripts/cla.js`, run by
-`actions/github-script` in `cla.yml`. It replaces CLA Assistant Lite
-(`contributor-assistant/github-action`), first chosen for this lot: its
+`actions/github-script` in `cla.yml`. It replaces the CLA Assistant Lite
+action, first chosen for this lot: its
 repository is archived upstream (read-only, no more fixes, `node20` runtime),
 and a third-party action given a write token on `pull_request_target` is the
 riskiest place to depend on unmaintained code. The script is about 300 lines,
