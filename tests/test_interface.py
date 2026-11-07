@@ -298,31 +298,43 @@ class TestSignInPage:
     def test_signup_link_when_open(self, client: Client) -> None:
         assert reverse("account_signup") in _page(client, "account_login").text
 
-    @pytest.mark.django_db
-    def test_one_button_per_provider_labelled_with_its_name(self, client: Client) -> None:
-        providers = {
-            "openid_connect": {
-                "APPS": [
-                    {
-                        "provider_id": provider_id,
-                        "name": name,
-                        "client_id": "housecairn",
-                        "secret": "not-a-secret",
-                        "settings": {"server_url": "https://id.example.com"},
-                    }
-                    for provider_id, name in (("first", "Zitadel"), ("second", "Company SSO"))
-                ]
-            }
+    PROVIDERS = {
+        "openid_connect": {
+            "APPS": [
+                {
+                    "provider_id": provider_id,
+                    "name": name,
+                    "client_id": "housecairn",
+                    "secret": "not-a-secret",
+                    "settings": {"server_url": "https://id.example.com"},
+                }
+                for provider_id, name in (("first", "Company SSO"), ("second", "Team SSO"))
+            ]
         }
-        with override_settings(SOCIALACCOUNT_PROVIDERS=providers):
+    }
+    BUTTON = r'<a class="button button-secondary" href="([^"]+)">([^<]+)</a>'
+
+    @pytest.mark.django_db
+    def test_one_button_per_provider_labelled_continue_with_its_name(self, client: Client) -> None:
+        with override_settings(SOCIALACCOUNT_PROVIDERS=self.PROVIDERS):
             html = _page(client, "account_login").text
-        buttons = re.findall(r'<a class="button button-secondary" href="([^"]+)">([^<]+)</a>', html)
-        assert sorted(label for _href, label in buttons) == ["Company SSO", "Zitadel"]
+        buttons = re.findall(self.BUTTON, html)
+        assert sorted(label for _href, label in buttons) == [
+            "Continue with Company SSO",
+            "Continue with Team SSO",
+        ]
         assert all("/accounts/oidc/" in href for href, _label in buttons)
         assert "<hr" not in html
         assert "third-party" not in html.lower()
         # The buttons come after the sign-in form, not before.
-        assert html.index("</form>") < html.index("Zitadel")
+        assert html.index("</form>") < html.index("Continue with Company SSO")
+
+    @pytest.mark.django_db
+    def test_provider_button_is_translated(self, client: Client) -> None:
+        with override_settings(SOCIALACCOUNT_PROVIDERS=self.PROVIDERS):
+            html = client.get(reverse("account_login"), headers={"Accept-Language": "fr"}).text
+        labels = sorted(label for _href, label in re.findall(self.BUTTON, html))
+        assert labels == ["Continuer avec Company SSO", "Continuer avec Team SSO"]
 
 
 class TestTokens:
