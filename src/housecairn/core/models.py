@@ -1,4 +1,4 @@
-"""Base model shared by every Housecairn table (docs/adr/0005)."""
+"""Base model shared by every HouseCairn table (docs/adr/0005)."""
 
 import uuid
 from typing import Any, ClassVar, Self, TypeVar

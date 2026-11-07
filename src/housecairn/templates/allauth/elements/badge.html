@@ -1,0 +1,5 @@
+{% load allauth %}
+<span class="pill{% if attrs.tags %}{% for tag in attrs.tags %}{% if tag == 'success' or tag == 'danger' or tag == 'warning' or tag == 'info' %} pill-{{ tag }}{% endif %}{% endfor %}{% endif %}" {% if attrs.title %}title="{{ attrs.title }}"{% endif %}>
+  {% slot %}
+  {% endslot %}
+</span>

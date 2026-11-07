@@ -1,0 +1,179 @@
+"""Browser checks run in CI (`.github/workflows/ui.yml`), against a running instance.
+
+Playwright is not a dependency of the project: the workflow installs a pinned
+version for this job only.
+
+    python tests/e2e/browser_checks.py capture --base http://localhost:8000 --out shots
+    python tests/e2e/browser_checks.py passkey --base http://localhost:8001
+
+`capture` takes the screenshots attached to the workflow run: the same screens on a
+phone and on a desktop, in English and French. `passkey` replays the sign-in with a
+virtual authenticator (Chromium's WebAuthn emulation): it registers a passkey, then
+signs in through the conditional (autofill) path and through the fallback button.
+What no script can do, the real autofill pop-up of each browser, is listed in
+docs/adr/0018.
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
+
+EMAIL = "demo@example.com"
+PASSWORD = "correct-horse-battery-staple"  # throwaway account of the CI instance
+
+DEVICES = {
+    "phone": {"viewport": {"width": 390, "height": 844}, "is_mobile": True, "scale": 2},
+    "desktop": {"viewport": {"width": 1280, "height": 800}, "is_mobile": False, "scale": 1},
+}
+# (name, path, needs sign-in)
+SCREENS = [
+    ("login", "/accounts/login/", False),
+    ("signup", "/accounts/signup/", False),
+    ("password-reset", "/accounts/password/reset/", False),
+    ("welcome", "/", False),
+    ("home", "/", True),
+    ("homes", "/h/", True),
+    ("more", "/more/", True),
+    ("security", "/accounts/2fa/", True),
+    ("security-keys", "/accounts/2fa/webauthn/", True),
+    ("api-docs", "/api/docs/", True),
+    ("about", "/about/", True),
+    ("not-found", "/no/such/page/", False),
+]
+
+
+def sign_in(page: Page, base: str) -> None:
+    page.goto(f"{base}/accounts/login/")
+    page.fill("input[name=login]", EMAIL)
+    page.fill("input[name=password]", PASSWORD)
+    page.click("main form button[type=submit]")
+    page.wait_for_url(f"{base}/h/")
+
+
+def sign_out(page: Page, base: str) -> None:
+    page.goto(f"{base}/more/")
+    page.click("button:has-text('Sign out')")
+    page.wait_for_url(f"{base}/")
+
+
+def capture(browser: Browser, base: str, out: Path) -> None:
+    out.mkdir(parents=True, exist_ok=True)
+    for device, options in DEVICES.items():
+        for language in ("en", "fr"):
+            for name, path, authenticated in SCREENS:
+                context = browser.new_context(
+                    viewport=options["viewport"],
+                    is_mobile=options["is_mobile"],
+                    has_touch=options["is_mobile"],
+                    device_scale_factor=options["scale"],
+                    locale=language,
+                    extra_http_headers={"Accept-Language": language},
+                )
+                page = context.new_page()
+                if authenticated:
+                    sign_in(page, base)
+                response = page.goto(f"{base}{path}")
+                page.wait_for_load_state("networkidle")
+                expected = 404 if name == "not-found" else 200
+                if response is None or response.status != expected:
+                    raise SystemExit(f"{name}: unexpected status for {path}")
+                page.screenshot(path=str(out / f"{device}-{language}-{name}.png"), full_page=True)
+                context.close()
+    say(f"{len(list(out.glob('*.png')))} screenshots in {out}")
+
+
+def say(message: str) -> None:
+    sys.stdout.write(message + "\n")
+
+
+def check(condition: bool, message: str) -> None:
+    if not condition:
+        raise SystemExit(f"FAILED: {message}")
+    say(f"ok: {message}")
+
+
+def virtual_authenticator(context: BrowserContext, page: Page) -> None:
+    session = context.new_cdp_session(page)
+    session.send("WebAuthn.enable")
+    session.send(
+        "WebAuthn.addVirtualAuthenticator",
+        {
+            "options": {
+                "protocol": "ctap2",
+                "transport": "internal",
+                "hasResidentKey": True,
+                "hasUserVerification": True,
+                "isUserVerified": True,
+                "automaticPresenceSimulation": True,
+            }
+        },
+    )
+
+
+def passkey(browser: Browser, base: str) -> None:
+    context = browser.new_context(viewport={"width": 390, "height": 844})
+    page = context.new_page()
+    virtual_authenticator(context, page)
+
+    # The page itself: no passkey button, the autofill token on the address field.
+    page.goto(f"{base}/accounts/login/")
+    check(page.locator("#passkey_login").count() == 0, "no element #passkey_login")
+    check("Sign in with a passkey" not in page.content(), "no 'Sign in with a passkey' text")
+    check(
+        page.get_attribute("input[name=login]", "autocomplete") == "username webauthn",
+        "address field has autocomplete='username webauthn'",
+    )
+
+    # Register a passkey (a discoverable credential) while signed in with the password.
+    sign_in(page, base)
+    page.goto(f"{base}/accounts/2fa/webauthn/add/")
+    if "reauthenticate" in page.url:
+        page.fill("input[name=password]", PASSWORD)
+        page.click("main form button[type=submit]")
+        page.wait_for_load_state()
+    page.check("input[type=checkbox]")
+    page.click("button:has-text('Add')")
+    page.wait_for_url("**/recovery-codes/")
+    check(True, "passkey registered")
+    sign_out(page, base)
+
+    # Conditional mediation: opening the sign-in page signs in with no click at all.
+    page.goto(f"{base}/accounts/login/")
+    page.wait_for_url(f"{base}/h/", timeout=15000)
+    check(True, "conditional (autofill) passkey sign-in reached the homes page")
+    sign_out(page, base)
+
+    # Fallback: a browser without conditional mediation gets a button once an address is typed.
+    page.add_init_script("PublicKeyCredential.isConditionalMediationAvailable = async () => false")
+    page.goto(f"{base}/accounts/login/")
+    offer = page.locator(".passkey-offer button")
+    page.wait_for_function("document.querySelector('.passkey-offer')")
+    check(not offer.is_visible(), "no offer before an address is typed")
+    page.fill("input[name=login]", "someone@example.com")
+    check(offer.is_visible(), "offer shown once an address is typed, whatever the address")
+    offer.click()
+    page.wait_for_url(f"{base}/h/", timeout=15000)
+    check(True, "fallback button signs in with the passkey")
+    context.close()
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("mode", choices=["capture", "passkey"])
+    parser.add_argument("--base", required=True, help="address of the running instance")
+    parser.add_argument("--out", type=Path, default=Path("shots"))
+    args = parser.parse_args()
+    base = args.base.rstrip("/")
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch()
+        if args.mode == "capture":
+            capture(browser, base, args.out)
+        else:
+            passkey(browser, base)
+        browser.close()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

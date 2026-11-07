@@ -37,7 +37,7 @@ class TestSignIn:
         assert response.status_code == 200
         assert "css/tokens.css" in response.text
         assert 'class="content auth-panel"' in response.text
-        assert 'id="passkey_login"' in response.text
+        assert 'id="passkey_login"' not in response.text
 
     def test_sign_in_with_email(self, client: Client, alice: User) -> None:
         from tests.conftest import PASSWORD

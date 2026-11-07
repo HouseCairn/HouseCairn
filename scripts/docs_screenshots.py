@@ -1,6 +1,6 @@
 """Take the screenshots of the documentation site (docs/adr/0016).
 
-Starts Housecairn on a throwaway demonstration database, with generated data
+Starts HouseCairn on a throwaway demonstration database, with generated data
 only (a demonstration account at example.com and made-up homes), then takes
 every screen in English and French, on a computer and on a phone, with
 Playwright's Chromium. The images go to docs/_generated/screenshots/, where
@@ -139,7 +139,11 @@ def take_all(base_url: str, password: str) -> int:
                 shoot(page, "home", language, device)
                 page.goto(f"{base_url}/")
                 shoot(page, "start-page", language, device)
-                taken += 4
+                page.goto(f"{base_url}/more/")
+                shoot(page, "more", language, device)
+                page.goto(f"{base_url}/about/")
+                shoot(page, "about", language, device)
+                taken += 6
                 context.close()
         browser.close()
     return taken

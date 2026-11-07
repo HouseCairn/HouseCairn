@@ -1,9 +1,9 @@
-# French translation of Housecairn.
-# This file is distributed under the same license as Housecairn (AGPL-3.0-only).
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn\n"
+"Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -148,6 +148,11 @@ msgstr "Cœur"
 msgid "deleted at"
 msgstr "supprimé le"
 
+#: core/views.py templates/core/index.html
+msgid "What needs doing in the house, where, when, with what and for how much."
+msgstr ""
+"Ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
+
 #: events/apps.py
 msgid "Events"
 msgstr "Événements"
@@ -172,7 +177,8 @@ msgstr "événements"
 msgid "Event payload is too large."
 msgstr "Le contenu de l'événement est trop volumineux."
 
-#: homes/apps.py templates/base.html templates/homes/home_list.html
+#: homes/apps.py templates/base.html templates/core/more.html
+#: templates/homes/home_detail.html templates/homes/home_list.html
 msgid "Homes"
 msgstr "Logements"
 
@@ -224,24 +230,83 @@ msgstr "Anglais"
 msgid "French"
 msgstr "Français"
 
-#: templates/account/login.html templates/base.html templates/core/index.html
+#: templates/400.html
+msgid "Bad request"
+msgstr "Requête invalide"
+
+#: templates/400.html
+msgid "The request could not be understood."
+msgstr "La requête n'a pas pu être comprise."
+
+#: templates/400.html templates/403.html templates/403_csrf.html
+#: templates/404.html templates/500.html
+msgid "Back to the home page"
+msgstr "Retour à l'accueil"
+
+#: templates/403.html
+msgid "Access denied"
+msgstr "Accès refusé"
+
+#: templates/403.html
+msgid "You do not have permission to see this page."
+msgstr "Vous n'avez pas le droit de voir cette page."
+
+#: templates/403_csrf.html
+msgid "Session expired"
+msgstr "Session expirée"
+
+#: templates/403_csrf.html
+msgid ""
+"The form you sent is no longer valid, usually because the page stayed open "
+"too long. Go back, reload the page and try again."
+msgstr "Le formulaire envoyé n'est plus valide, en général parce que la page est restée ouverte trop longtemps. Revenez en arrière, rechargez la page et réessayez."
+
+#: templates/404.html
+msgid "Page not found"
+msgstr "Page introuvable"
+
+#: templates/404.html
+msgid "This page does not exist, or it has moved."
+msgstr "Cette page n'existe pas ou a été déplacée."
+
+#: templates/500.html
+msgid "Something went wrong"
+msgstr "Une erreur est survenue"
+
+#: templates/500.html
+msgid ""
+"The server could not complete your request. Try again in a moment; if it "
+"keeps happening, tell the administrator of this instance."
+msgstr "Le serveur n'a pas pu traiter votre demande. Réessayez dans un instant ; si cela continue, prévenez l'administrateur de cette instance."
+
+#: templates/account/login.html templates/core/index.html
 msgid "Sign in"
 msgstr "Se connecter"
 
 #: templates/account/login.html
-#, python-format
-msgid ""
-"If you have not created an account yet, then please %(link)ssign "
-"up%(end_link)s first."
-msgstr "Si vous n'avez pas encore créé de compte, %(link)sinscrivez-vous%(end_link)s d'abord."
-
-#: templates/account/login.html
-msgid "Sign in with a passkey"
-msgstr "Se connecter avec une clé d'accès"
-
-#: templates/account/login.html
 msgid "Send me a sign-in code"
 msgstr "Envoyez-moi un code de connexion"
+
+#: templates/account/login.html
+msgid "No account yet?"
+msgstr "Pas encore de compte ?"
+
+#: templates/account/login.html
+msgid "Create an account"
+msgstr "Créer un compte"
+
+#: templates/account/snippets/passkey_login.html
+msgid "Use a passkey"
+msgstr "Utiliser une clé d'accès"
+
+#: templates/account/snippets/passkey_login.html
+msgid "Use a passkey saved on this device or on your phone."
+msgstr "Utiliser une clé d'accès enregistrée sur cet appareil ou sur votre téléphone."
+
+#: templates/account/snippets/passkey_login.html
+msgid ""
+"Passkey sign-in did not complete. You can try again or use your password."
+msgstr "La connexion par clé d'accès n'a pas abouti. Vous pouvez réessayer ou utiliser votre mot de passe."
 
 #: templates/accounts/oidc_signup_refused.html
 msgid "Sign-in refused"
@@ -252,7 +317,10 @@ msgid ""
 "No account on this instance matches this identity, and new accounts cannot "
 "be created through single sign-on. Ask the administrator of this instance "
 "for access."
-msgstr "Aucun compte de cette instance ne correspond à cette identité, et l'authentification unique ne permet pas de créer de nouveaux comptes. Demandez un accès à l'administrateur de cette instance."
+msgstr ""
+"Aucun compte de cette instance ne correspond à cette identité, et "
+"l'authentification unique ne permet pas de créer de nouveaux comptes. "
+"Demandez un accès à l'administrateur de cette instance."
 
 #: templates/accounts/oidc_signup_refused.html
 msgid "Back to sign-in"
@@ -267,8 +335,33 @@ msgid "Main navigation"
 msgstr "Navigation principale"
 
 #: templates/base.html
-msgid "Sign out"
-msgstr "Se déconnecter"
+msgid "Home"
+msgstr "Accueil"
+
+#: templates/base.html templates/core/more.html
+msgid "More"
+msgstr "Plus"
+
+#: templates/core/about.html templates/core/more.html
+msgid "About"
+msgstr "À propos"
+
+#: templates/core/about.html
+#, python-format
+msgid "version %(version)s"
+msgstr "version %(version)s"
+
+#: templates/core/about.html
+msgid "Free software under the AGPL-3.0 licence."
+msgstr "Logiciel libre sous licence AGPL-3.0."
+
+#: templates/core/about.html
+msgid "Source code and security reports on GitHub."
+msgstr "Code source et signalement de sécurité sur GitHub."
+
+#: templates/core/about.html
+msgid "Developed with an AI agent, under human review."
+msgstr "Développé avec un agent IA, sous revue humaine."
 
 #: templates/base.html
 msgid "Help for this page"
@@ -279,18 +372,32 @@ msgid "Welcome"
 msgstr "Bienvenue"
 
 #: templates/core/index.html
-msgctxt "product name"
-msgid "Housecairn"
-msgstr "Housecairn"
-
-#: templates/core/index.html
-msgid "What needs doing in the house, where, when, with what and for how much."
-msgstr ""
-"Ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
-
-#: templates/core/index.html
 msgid "Go to my homes"
 msgstr "Voir mes logements"
+
+#: templates/core/more.html
+msgid "Settings"
+msgstr "Réglages"
+
+#: templates/core/more.html
+msgid "Account security"
+msgstr "Sécurité du compte"
+
+#: templates/core/more.html
+msgid "Passkeys, authenticator app, recovery codes"
+msgstr "Clés d'accès, application d'authentification, codes de récupération"
+
+#: templates/core/more.html
+msgid "API documentation"
+msgstr "Documentation de l'API"
+
+#: templates/core/more.html
+msgid "OpenAPI schema and test interface"
+msgstr "Schéma OpenAPI et interface de test"
+
+#: templates/core/more.html
+msgid "Sign out"
+msgstr "Se déconnecter"
 
 #: templates/homes/home_detail.html
 msgid "Your role"

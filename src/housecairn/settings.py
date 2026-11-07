@@ -1,4 +1,4 @@
-"""Django settings for Housecairn.
+"""Django settings for HouseCairn.
 
 Every setting comes from environment variables (see `.env.example` and
 `docs/adr/0012-configuration-and-security-defaults.md`). The defaults are the
@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # allauth's security-key pages use its date filters.
+    "django.contrib.humanize",
     "allauth",
     "allauth.account",
     "allauth.mfa",
@@ -99,6 +101,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "housecairn.accounts.context_processors.signup",
+                "housecairn.core.context_processors.shell",
                 "housecairn.core.help.help_link",
             ],
         },
@@ -161,6 +164,9 @@ STORAGES = {
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
 
+# Public source repository, shown on the About screen.
+HOUSECAIRN_SOURCE_URL = "https://github.com/HouseCairn/housecairn"
+
 LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "homes:list"
 
@@ -198,6 +204,7 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = env.str("ACCOUNT_EMAIL_VERIFICATION", default="optional")
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_ADAPTER = "housecairn.accounts.adapters.AccountAdapter"
+ACCOUNT_FORMS = {"login": "housecairn.accounts.forms.LoginForm"}
 SOCIALACCOUNT_ADAPTER = "housecairn.accounts.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_ONLY = False
 HOUSECAIRN_SIGNUP_OPEN: bool = env.bool("HOUSECAIRN_SIGNUP_OPEN", default=False)
@@ -215,7 +222,7 @@ HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL: str = env.str(
 
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True
-MFA_TOTP_ISSUER = "Housecairn"
+MFA_TOTP_ISSUER = "HouseCairn"
 MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN = DEBUG
 
 # Generic OpenID Connect provider, enabled only when its variables are set. No
@@ -274,8 +281,8 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Housecairn API",
-    "DESCRIPTION": "Version 1 of the Housecairn API, shared by every client.",
+    "TITLE": "HouseCairn API",
+    "DESCRIPTION": "Version 1 of the HouseCairn API, shared by every client.",
     "VERSION": "1.0.0",
     "OAS_VERSION": "3.1.0",
     "SCHEMA_PATH_PREFIX": r"/api/v1",

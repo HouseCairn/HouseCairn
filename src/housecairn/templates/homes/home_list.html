@@ -6,10 +6,18 @@
   {% if homes %}
     <ul class="card-list">
       {% for home in homes %}
-        <li class="card"><a href="{% url 'homes:detail' home_id=home.id %}">{{ home.name }}</a></li>
+        <li>
+          <a class="row" href="{% url 'homes:detail' home_id=home.id %}">
+            <span class="row-body">
+              <span class="row-title">{{ home.name }}</span>
+              <span class="row-text">{{ home.currency }}</span>
+            </span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
       {% endfor %}
     </ul>
   {% else %}
-    <p>{% translate "You are not a member of any home yet." %}</p>
+    <p class="empty">{% translate "You are not a member of any home yet." %}</p>
   {% endif %}
 {% endblock content %}

@@ -1,4 +1,4 @@
-# Container image of Housecairn (docs/adr/0015, docs/getting-started/install.md).
+# Container image of HouseCairn (docs/adr/0015, docs/getting-started/install.md).
 #
 # One image for every instance: SQLite by default, PostgreSQL when DATABASE_URL
 # says so. Everything written at run time goes to the /data volume; the rest of
@@ -103,7 +103,7 @@ CMD ["run"]
 # Last, so that a new commit only changes this layer's metadata.
 ARG VERSION=dev
 ARG REVISION=unknown
-LABEL org.opencontainers.image.title="Housecairn" \
+LABEL org.opencontainers.image.title="HouseCairn" \
     org.opencontainers.image.description="Self-hosted planner for home maintenance and renovation projects." \
     org.opencontainers.image.source="https://github.com/HouseCairn/housecairn" \
     org.opencontainers.image.url="https://github.com/HouseCairn/housecairn" \

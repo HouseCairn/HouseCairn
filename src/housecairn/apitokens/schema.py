@@ -13,5 +13,5 @@ class ApiTokenScheme(OpenApiAuthenticationExtension):  # type: ignore[no-untyped
         return {
             "type": "http",
             "scheme": "bearer",
-            "description": "Housecairn API token (hc_...), with scopes read, write or events.",
+            "description": "HouseCairn API token (hc_...), with scopes read, write or events.",
         }

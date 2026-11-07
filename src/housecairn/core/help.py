@@ -15,6 +15,8 @@ HELP_PAGES: dict[str, str] = {
     "account_login": "screens/sign-in/",
     "homes:list": "screens/homes/",
     "homes:detail": "screens/home/",
+    "more": "screens/more/",
+    "about": "screens/about/",
 }
 # Other routes of django-allauth (sign-up, password, email addresses,
 # two-factor authentication, single sign-on): the account pages.
@@ -25,8 +27,8 @@ HELP_PREFIXES: dict[str, str] = {
     "openid_connect_": "screens/account/",
 }
 # Routes that are not screens of the interface: the API, its schema and
-# explorer, the health check, and Django's administration site.
-NOT_SCREENS: tuple[str, ...] = ("api-", "healthz", "admin:")
+# explorer, the health check, the web app manifest, and Django's administration site.
+NOT_SCREENS: tuple[str, ...] = ("api-", "healthz", "manifest", "admin:")
 
 # Languages published by the documentation site, and their path.
 DOCS_LANGUAGES: dict[str, str] = {"en": "", "fr": "fr/"}

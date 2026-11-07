@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"POT-Creation-Date: 2026-11-07 20:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -22,9 +22,36 @@ msgstr ""
 msgid "Sign-in"
 msgstr "Connexion"
 
-msgid "Sign in with the email address and password of a local account, with a passkey, or through single sign-on when the instance has an OpenID Connect provider ([Single sign-on](../administration/oidc.md)). A link to sign up appears only when local sign-up is open (`HOUSECAIRN_SIGNUP_OPEN=true`)."
-msgstr "Connectez-vous avec l'adresse e-mail et le mot de passe d'un compte local, avec une passkey, ou par authentification unique quand l'instance a un fournisseur OpenID Connect ([Authentification unique](../administration/oidc.md)). Un lien d'inscription n'apparaît que lorsque l'inscription locale est ouverte (`HOUSECAIRN_SIGNUP_OPEN=true`)."
+msgid "The page is the form, with your email address and password, and under it one button for the single sign-on provider, if the instance has one. Nothing else: no list of options."
+msgstr "La page est le formulaire, avec votre adresse e-mail et votre mot de passe, et dessous un bouton pour le fournisseur d'authentification unique, si l'instance en a un. Rien d'autre : pas de liste d'options."
 
 msgid "The sign-in page, on a phone."
 msgstr "La page de connexion, sur téléphone."
+
+msgid "With a passkey"
+msgstr "Avec une clé d'accès"
+
+msgid "There is no passkey button. Tap or click the email field: if you registered a passkey for this instance, your browser lists it among the suggestions, and choosing it signs you in. Safari, Chrome, Edge and Firefox do this on the devices whose password manager or system keeps passkeys."
+msgstr "Il n'y a pas de bouton pour la clé d'accès. Touchez ou cliquez le champ de l'adresse e-mail : si vous avez enregistré une clé d'accès pour cette instance, votre navigateur la propose parmi les suggestions, et la choisir vous connecte. Safari, Chrome, Edge et Firefox le font sur les appareils dont le gestionnaire de mots de passe ou le système conserve des clés d'accès."
+
+msgid "A browser without that feature shows a **Use a passkey** button under the field as soon as something is typed in it. It shows for any address, so the page never reveals which addresses have an account or a passkey."
+msgstr "Un navigateur sans cette fonction affiche un bouton **Utiliser une clé d'accès** sous le champ dès qu'on y saisit quelque chose. Il s'affiche pour n'importe quelle adresse : la page ne révèle jamais quelles adresses ont un compte ou une clé d'accès."
+
+msgid "Register a passkey from **More**, **Account security**, **Security keys**. Tick *Passwordless* if the passkey should be enough to sign in on its own."
+msgstr "Enregistrez une clé d'accès depuis **Plus**, **Sécurité du compte**, **Clés de sécurité**. Cochez *Sans mot de passe* si la clé d'accès doit suffire pour se connecter."
+
+msgid "With single sign-on"
+msgstr "Avec l'authentification unique"
+
+msgid "When the administrator has set up an OpenID Connect provider ([Single sign-on](../administration/oidc.md)), a button below the form carries the name of that provider, for example *Zitadel*. There is one per provider."
+msgstr "Lorsque l'administrateur a configuré un fournisseur OpenID Connect ([Authentification unique](../administration/oidc.md)), un bouton sous le formulaire porte le nom de ce fournisseur, par exemple *Zitadel*. Il y en a un par fournisseur."
+
+msgid "Creating an account"
+msgstr "Créer un compte"
+
+msgid "A link to sign up appears only when local sign-up is open (`HOUSECAIRN_SIGNUP_OPEN=true`); otherwise the page does not mention it."
+msgstr "Un lien d'inscription n'apparaît que lorsque l'inscription locale est ouverte (`HOUSECAIRN_SIGNUP_OPEN=true`) ; sinon la page n'en parle pas."
+
+#~ msgid "Sign in with the email address and password of a local account, with a passkey, or through single sign-on when the instance has an OpenID Connect provider ([Single sign-on](../administration/oidc.md)). A link to sign up appears only when local sign-up is open (`HOUSECAIRN_SIGNUP_OPEN=true`)."
+#~ msgstr "Connectez-vous avec l'adresse e-mail et le mot de passe d'un compte local, avec une passkey, ou par authentification unique quand l'instance a un fournisseur OpenID Connect ([Authentification unique](../administration/oidc.md)). Un lien d'inscription n'apparaît que lorsque l'inscription locale est ouverte (`HOUSECAIRN_SIGNUP_OPEN=true`)."
 

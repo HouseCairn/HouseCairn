@@ -1,0 +1,15 @@
+{% load allauth %}
+{% comment %}
+  allauth's button element with the application's classes. Tags: "outline" or
+  "secondary" give the secondary style, "danger" the destructive one.
+{% endcomment %}
+<{% if attrs.href %}a href="{{ attrs.href }}" class="button{% if 'outline' in attrs.tags or 'secondary' in attrs.tags %} button-secondary{% elif 'danger' in attrs.tags %} button-danger{% endif %}"{% else %}button class="{% if 'outline' in attrs.tags or 'secondary' in attrs.tags %}button-secondary{% elif 'danger' in attrs.tags %}button-danger{% endif %}"{% endif %}
+{% if attrs.form %}form="{{ attrs.form }}"{% endif %}
+{% if attrs.id %}id="{{ attrs.id }}"{% endif %}
+{% if attrs.name %}name="{{ attrs.name }}"{% endif %}
+{% if attrs.value %}value="{{ attrs.value }}"{% endif %}
+{% if attrs.type %}type="{{ attrs.type }}"{% endif %}
+>
+{% slot %}
+{% endslot %}
+</{% if attrs.href %}a{% else %}button{% endif %}>

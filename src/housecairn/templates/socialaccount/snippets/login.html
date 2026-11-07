@@ -1,0 +1,9 @@
+{% load socialaccount %}
+{% comment %}
+  Replaces allauth's snippet: no separator, no heading, just one button per
+  configured provider, under the sign-in form (docs/adr/0018).
+{% endcomment %}
+{% get_providers as socialaccount_providers %}
+{% if socialaccount_providers %}
+  {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+{% endif %}

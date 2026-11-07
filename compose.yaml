@@ -1,9 +1,9 @@
-# Example Docker Compose file for Housecairn (docs/getting-started/install.md).
+# Example Docker Compose file for HouseCairn (docs/getting-started/install.md).
 #
 #   cp deploy/production.env.example deploy/production.env   # then edit it
 #   docker compose up -d
 #
-# Housecairn listens on port 8000 without TLS: put it behind a reverse proxy
+# HouseCairn listens on port 8000 without TLS: put it behind a reverse proxy
 # that terminates HTTPS (HOUSECAIRN_BEHIND_TLS_PROXY=true in production.env).
 name: housecairn
 

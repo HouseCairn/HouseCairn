@@ -1,3 +1,5 @@
+<p align="center"><img src="design/brand/housecairn-logo.svg" alt="HouseCairn" width="360"></p>
+
 # HouseCairn
 
 [![CI](https://github.com/HouseCairn/housecairn/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/HouseCairn/housecairn/actions/workflows/ci.yml?query=branch%3Amain)
@@ -76,5 +78,5 @@ Copyright (C) 2026 Robvred.
 HouseCairn is licensed under the
 [GNU Affero General Public License v3.0 only](LICENSE)
 (`AGPL-3.0-only`), with the additional terms in [NOTICE](NOTICE): modified
-versions must keep the attribution "Housecairn, by Robvred", and the
-"HouseCairn" name is not licensed as a trademark.
+versions must keep the author attribution given there, and the HouseCairn name
+and logo are not licensed as a trademark.

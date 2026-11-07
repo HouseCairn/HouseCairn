@@ -13,4 +13,6 @@ sign-in
 account
 homes
 home
+more
+about
 ```

@@ -44,7 +44,8 @@ class TestIndex:
         client.force_login(alice)  # type: ignore[arg-type]
         response = client.get(reverse("index"))
         assert reverse("homes:list") in response.text
-        assert reverse("account_logout") in response.text
+        assert reverse("more") in response.text
+        assert reverse("account_logout") in client.get(reverse("more")).text
 
 
 class TestTasks:

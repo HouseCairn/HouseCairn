@@ -9,6 +9,9 @@ from housecairn.core import views as core_views
 urlpatterns = [
     path("", core_views.IndexView.as_view(), name="index"),
     path("healthz", core_views.healthz, name="healthz"),
+    path("manifest.webmanifest", core_views.manifest, name="manifest"),
+    path("more/", core_views.MoreView.as_view(), name="more"),
+    path("about/", core_views.AboutView.as_view(), name="about"),
     path("h/", include("housecairn.homes.urls")),
     path("accounts/", include("allauth.urls")),
     path("admin/", admin.site.urls),

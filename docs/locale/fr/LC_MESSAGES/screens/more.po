@@ -1,0 +1,30 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 20:34+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "More"
+msgstr "Plus"
+
+msgid "Everything that is not a daily gesture, at `/more/`, reached from the last entry of the navigation bar: your homes, account security (authenticator app, recovery codes, passkeys), the documentation of the API, the About page and sign-out."
+msgstr "Tout ce qui n'est pas un geste du quotidien, à l'adresse `/more/`, depuis la dernière entrée de la barre de navigation : vos logements, la sécurité du compte (application d'authentification, codes de récupération, clés d'accès), la documentation de l'API, la page À propos et la déconnexion."
+
+msgid "The More page, on a phone."
+msgstr "La page Plus, sur téléphone."
+

@@ -30,7 +30,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Housecairn version
+      label: HouseCairn version
       description: Release tag, or commit if you run from source.
     validations:
       required: true
