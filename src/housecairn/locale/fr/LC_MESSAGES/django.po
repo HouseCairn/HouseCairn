@@ -326,6 +326,11 @@ msgstr ""
 msgid "Back to sign-in"
 msgstr "Retour à la connexion"
 
+#: templates/allauth/elements/provider.html
+#, python-format
+msgid "Continue with %(provider)s"
+msgstr "Continuer avec %(provider)s"
+
 #: templates/base.html
 msgid "Skip to content"
 msgstr "Aller au contenu"

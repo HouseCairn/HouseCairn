@@ -23,9 +23,10 @@ in the code. Single sign-on is off until `OIDC_SERVER_URL` is set
    ```
 
    `OIDC_SERVER_URL` is the issuer: HouseCairn reads
-   `/.well-known/openid-configuration` below it. `OIDC_PROVIDER_NAME` sets the
-   name of the sign-in button, for example `Zitadel` (`Single sign-on` by
-   default); the sign-in page shows one button per provider, under the form.
+   `/.well-known/openid-configuration` below it. `OIDC_PROVIDER_NAME` is the
+   provider's name, for example `Company SSO` (`Single sign-on` by default);
+   the sign-in page shows one button per provider, under the form, labelled
+   "Continue with" and that name.
 3. Restart the container, then sign in right away with the address set in
    `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, which the provider must have verified.
 

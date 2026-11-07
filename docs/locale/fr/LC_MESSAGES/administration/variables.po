@@ -118,6 +118,12 @@ msgstr "`closed`, (aucun)"
 msgid "Who may get an account through single sign-on."
 msgstr "Qui peut obtenir un compte par l'authentification unique."
 
+msgid "`EMAIL_HOST`"
+msgstr "`EMAIL_HOST`"
+
+msgid "Outgoing mail server (SMTP); email is off while it is empty. See Email below."
+msgstr "Serveur de courriel sortant (SMTP) ; le courriel est désactivé tant qu'il est vide. Voir Courriel ci-dessous."
+
 msgid "`HOUSECAIRN_DOCS_URL`"
 msgstr "`HOUSECAIRN_DOCS_URL`"
 
@@ -171,6 +177,15 @@ msgstr "Niveau de journalisation de l'application ; les journaux vont vers la so
 
 msgid "Set inside the image, not to be changed: `HOUSECAIRN_DATA_DIR=/data`, `STATIC_ROOT=/app/static`, `DJANGO_SETTINGS_MODULE=housecairn.settings`."
 msgstr "Définies dans l'image, à ne pas modifier : `HOUSECAIRN_DATA_DIR=/data`, `STATIC_ROOT=/app/static`, `DJANGO_SETTINGS_MODULE=housecairn.settings`."
+
+msgid "Email"
+msgstr "Courriel"
+
+msgid "HouseCairn sends email only to reset a forgotten password. Set `EMAIL_HOST` to your SMTP server to turn it on, with `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`) and `DEFAULT_FROM_EMAIL` (`HouseCairn <noreply@localhost>`) as needed."
+msgstr "HouseCairn n'envoie de courriel que pour réinitialiser un mot de passe oublié. Renseignez `EMAIL_HOST` avec votre serveur SMTP pour l'activer, avec au besoin `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`) et `DEFAULT_FROM_EMAIL` (`HouseCairn <noreply@localhost>`)."
+
+msgid "Without `EMAIL_HOST`, or with a console or dummy email backend, nothing could be delivered: the *Forgot your password?* link is hidden and the reset page answers 404."
+msgstr "Sans `EMAIL_HOST`, ou avec un moteur de courriel console ou factice, rien ne pourrait être livré : le lien *Mot de passe oublié ?* est masqué et la page de réinitialisation répond 404."
 
 msgid "PostgreSQL"
 msgstr "PostgreSQL"

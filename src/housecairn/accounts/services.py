@@ -44,6 +44,25 @@ def instance_has_accounts() -> bool:
     return InstanceSetup.objects.exists() or User.objects.exists()
 
 
+# Backends that do not deliver anywhere: the console one prints, the dummy one drops.
+_NON_DELIVERING_BACKENDS = frozenset(
+    {
+        "django.core.mail.backends.console.EmailBackend",
+        "django.core.mail.backends.dummy.EmailBackend",
+    }
+)
+
+
+def email_is_configured() -> bool:
+    """True when the instance can really send email.
+
+    That takes an outgoing server (`EMAIL_HOST`) and a backend that delivers:
+    the console backend, the default without `EMAIL_HOST`, only prints. Password
+    reset by email is offered only then.
+    """
+    return bool(settings.EMAIL_HOST) and settings.EMAIL_BACKEND not in _NON_DELIVERING_BACKENDS
+
+
 def same_address(a: str, b: str) -> bool:
     return a.strip().casefold() == b.strip().casefold()
 

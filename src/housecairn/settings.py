@@ -242,6 +242,21 @@ HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL: str = env.str(
     "HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL", default=""
 ).strip()
 
+# Outgoing email, off until EMAIL_HOST is set. Without a server the console
+# backend only prints messages, so features that need a real mailbox, such as
+# password reset by email, stay hidden (accounts.services.email_is_configured).
+EMAIL_HOST: str = env.str("EMAIL_HOST", default="").strip()
+EMAIL_PORT: int = env.int("EMAIL_PORT", default=587)
+EMAIL_HOST_USER: str = env.str("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD: str = env.str("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS: bool = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_BACKEND = (
+    "django.core.mail.backends.smtp.EmailBackend"
+    if EMAIL_HOST
+    else "django.core.mail.backends.console.EmailBackend"
+)
+DEFAULT_FROM_EMAIL: str = env.str("DEFAULT_FROM_EMAIL", default="HouseCairn <noreply@localhost>")
+
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True
 MFA_TOTP_ISSUER = "HouseCairn"
