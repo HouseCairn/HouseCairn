@@ -4,6 +4,7 @@ Web views and API views call these functions; neither holds rules of its own.
 """
 
 import hashlib
+import logging
 import secrets
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
@@ -14,7 +15,7 @@ from uuid import UUID
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db import models, transaction
+from django.db import IntegrityError, models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -24,6 +25,38 @@ from housecairn.homes.models import WRITE_ROLES, Home, Invitation, Membership, R
 AnyUser = User | AnonymousUser
 
 INVITATION_PREFIX = "hci_"
+
+logger = logging.getLogger("housecairn.mail")
+
+
+class DeliveryFailedError(Exception):
+    """The invitation exists but its email could not be sent (docs/adr/0020).
+
+    The link was never shown to anybody and only its digest is kept: sending the
+    invitation again makes a new one.
+    """
+
+    def __init__(self, invitation: Any) -> None:
+        super().__init__("invitation email not sent")
+        self.invitation = invitation
+
+
+def deliver(
+    invitation: Any, raw: str, send: Callable[[Any, str], None] | None
+) -> tuple[Any, str | None]:
+    """Send the link by email, outside any transaction of ours.
+
+    A mail server that is down must neither undo the invitation nor become a
+    server error: it is logged, without the address, and reported to the caller.
+    """
+    if send is None:
+        return invitation, raw
+    try:
+        send(invitation, raw)
+    except Exception as exc:
+        logger.warning("invitation email not sent: %s", type(exc).__name__)
+        raise DeliveryFailedError(invitation) from exc
+    return invitation, None
 
 
 class SsoRequiredError(Exception):
@@ -251,7 +284,6 @@ class Delivery:
     send: Callable[[Invitation, str], None] | None = None
 
 
-@transaction.atomic
 def invite(
     actor: User, home: Home, *, email: str, role: Role | str, delivery: Delivery
 ) -> tuple[Invitation, str | None]:
@@ -259,38 +291,61 @@ def invite(
 
     Returns the invitation and, when it was not sent by email, its link secret
     (shown once). The answer does not depend on whether an account uses the
-    address, so inviting cannot be used to find out who has an account.
+    address, so inviting cannot be used to find out who has an account. The
+    email goes out after the invitation is saved: if it fails, the invitation
+    stays and `DeliveryFailedError` says so.
     """
     _require_owner(actor, home)
     address = email.strip()
     new_role = Role(role)
-    if any(same_address(m.user.email, address) for m in members(home)):
-        raise ValidationError(_("This person is already a member of the home."))
-    if any(same_address(i.email, address) for i in pending_invitations(home)):
-        raise ValidationError(
-            _("An invitation to this address is already pending; send it again instead.")
+    with transaction.atomic():
+        if any(same_address(m.user.email, address) for m in members(home)):
+            raise ValidationError(_("This person is already a member of the home."))
+        _retire_expired(home, address)
+        if any(same_address(i.email, address) for i in pending_invitations(home)):
+            raise ValidationError(
+                _("An invitation to this address is already pending; send it again instead.")
+            )
+        raw, digest = _new_secret()
+        now = timezone.now()
+        invitation = Invitation(
+            home=home,
+            email=address,
+            role=new_role,
+            invited_by=actor,
+            digest=digest,
+            expires_at=now + _lifetime(),
+            sent_at=now,
+            delivered_by_email=delivery.send is not None,
         )
-    raw, digest = _new_secret()
+        invitation.full_clean(exclude=["digest"])
+        try:
+            with transaction.atomic():
+                invitation.save()
+        except IntegrityError as exc:
+            # Two simultaneous invitations to one address: the database settled it.
+            raise ValidationError(
+                _("An invitation to this address is already pending; send it again instead.")
+            ) from exc
+    return deliver(invitation, raw, delivery.send)
+
+
+def _retire_expired(home: Home, address: str) -> None:
+    """Revoke the home's lapsed invitations to this address, so it can be invited again.
+
+    A lapsed invitation opens nothing; it would otherwise keep the one-pending
+    rule of the database (`unique_pending_invitation`) from letting a new one in.
+    """
     now = timezone.now()
-    invitation = Invitation(
+    Invitation.objects.filter(
         home=home,
-        email=address,
-        role=new_role,
-        invited_by=actor,
-        digest=digest,
-        expires_at=now + _lifetime(),
-        sent_at=now,
-        delivered_by_email=delivery.send is not None,
-    )
-    invitation.full_clean(exclude=["digest"])
-    invitation.save()
-    if delivery.send is not None:
-        delivery.send(invitation, raw)
-        return invitation, None
-    return invitation, raw
+        email__iexact=address,
+        accepted_at__isnull=True,
+        revoked_at__isnull=True,
+        expires_at__lte=now,
+    ).update(revoked_at=now)
 
 
-@transaction.atomic
 def resend_invitation(
     actor: User, invitation: Invitation, *, delivery: Delivery
 ) -> tuple[Invitation, str | None]:
@@ -307,10 +362,7 @@ def resend_invitation(
     invitation.save(
         update_fields=["digest", "sent_at", "expires_at", "delivered_by_email", "updated_at"]
     )
-    if delivery.send is not None:
-        delivery.send(invitation, raw)
-        return invitation, None
-    return invitation, raw
+    return deliver(invitation, raw, delivery.send)
 
 
 def revoke_invitation(actor: User, invitation: Invitation) -> None:

@@ -4,7 +4,7 @@ from typing import Any
 
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db import models
+from django.db import models, transaction
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_field, inline_serializer
 from rest_framework import exceptions, mixins, permissions, serializers, status, viewsets
@@ -129,19 +129,22 @@ class HomeViewSet(
         serializer.is_valid(raise_exception=True)
         changes = dict(serializer.validated_data)
         provider = changes.pop("required_provider", None)
+        if provider is not None and isinstance(request.auth, ApiToken):
+            # Refused before anything is written: no rename applied, then a 403.
+            raise exceptions.PermissionDenied(NoTokenForHousehold.message)
         try:
-            if changes:
-                home = services.update_home(request.user, home, **changes)
-            if provider is not None:
-                if isinstance(request.auth, ApiToken):
-                    raise exceptions.PermissionDenied(NoTokenForHousehold.message)
-                home = services.set_required_provider(
-                    request.user,
-                    home,
-                    provider,
-                    declared=[p.id for p in sso.declared_providers(request)],
-                    signed_in_with=sso.signed_in_providers(request),
-                )
+            # One transaction: a refused sign-in requirement leaves the name as it was.
+            with transaction.atomic():
+                if changes:
+                    home = services.update_home(request.user, home, **changes)
+                if provider is not None:
+                    home = services.set_required_provider(
+                        request.user,
+                        home,
+                        provider,
+                        declared=[p.id for p in sso.declared_providers(request)],
+                        signed_in_with=sso.signed_in_providers(request),
+                    )
         except DjangoValidationError as exc:
             raise _validation(exc) from exc
         return Response(self.get_serializer(home).data)

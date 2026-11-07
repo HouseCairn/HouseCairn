@@ -506,3 +506,51 @@ def test_the_invitation_page_answers_404_to_any_link(token: str) -> None:
     cache.clear()
     response = Client().get(reverse("invitation", kwargs={"token": token}))
     assert response.status_code == 404
+
+
+class TestMailServerDown:
+    """A failing mail server leaves the invitation saved and is neither a 500 nor silent."""
+
+    @pytest.fixture
+    def failing_send(self) -> Iterator[None]:
+        from unittest import mock
+
+        with (
+            override_settings(**EMAIL),
+            mock.patch(
+                "housecairn.homes.emails.EmailMultiAlternatives.send",
+                side_effect=ConnectionRefusedError("smtp down"),
+            ),
+        ):
+            yield
+
+    @pytest.mark.usefixtures("failing_send")
+    def test_web_invite_and_resend(self, client: Client, alice: User, alice_home: Home) -> None:
+        client.force_login(alice)
+        url = reverse("homes:invite", kwargs={"home_id": alice_home.id})
+        response = client.post(url, {"email": "new@example.com", "role": "member"}, follow=True)
+        assert response.status_code == 200
+        assert "could not be sent" in response.text
+        assert "smtp down" not in response.text
+        invitation = Invitation.objects.get()
+        assert invitation.is_pending
+        again = client.post(
+            reverse(
+                "homes:invitation-resend",
+                kwargs={"home_id": alice_home.id, "invitation_id": invitation.id},
+            ),
+            follow=True,
+        )
+        assert "could not be sent" in again.text
+
+    @pytest.mark.usefixtures("failing_send")
+    def test_api_answers_503_with_the_invitation_id(
+        self, api_client: APIClient, alice: User, alice_home: Home
+    ) -> None:
+        api_client.force_authenticate(alice)
+        url = reverse("api-v1:home-invitation-list", kwargs={"home_id": alice_home.id})
+        response = api_client.post(url, {"email": "new@example.com"})
+        assert response.status_code == 503
+        body = response.json()
+        assert body["code"] == "delivery_failed"
+        assert body["id"] == str(Invitation.objects.get().id)

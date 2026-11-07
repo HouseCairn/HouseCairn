@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _lazy
 from django.views import View
 from django.views.generic import DetailView, FormView, ListView
 
@@ -27,6 +28,11 @@ from housecairn.homes.scoping import (
     delivery_for,
     homes_for_request,
     invitation_link,
+)
+
+DELIVERY_FAILED = _lazy(
+    "The invitation is saved, but the email could not be sent. "
+    "Try Send again later, or ask the administrator to check the outgoing email settings."
 )
 
 
@@ -126,6 +132,9 @@ class HomeActionView(WebHomeScopedMixin, View):
         except ValidationError as exc:
             for message in exc.messages:
                 messages.error(request, message)
+            return redirect("homes:household", home_id=home.id)
+        except services.DeliveryFailedError:
+            messages.warning(request, DELIVERY_FAILED)
             return redirect("homes:household", home_id=home.id)
         return response or redirect("homes:household", home_id=home.id)
 

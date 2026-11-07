@@ -204,6 +204,25 @@ class TestSettingTheRequirement:
         assert accepted.status_code == 200
         assert accepted.json()["required_provider"] == "company"
 
+    def test_api_refusal_leaves_the_name_untouched(
+        self, client: Client, api_client: APIClient, alice: User, alice_home: Home
+    ) -> None:
+        """A rename sent with a refused requirement is not applied (session, then token)."""
+        url = reverse("api-v1:home-detail", kwargs={"home_id": alice_home.id})
+        body = {"name": "Renamed", "required_provider": "company"}
+        signed_in_through(client, alice, None)
+        assert client.patch(url, body, content_type="application/json").status_code == 400
+        _token, raw = token_services.issue_token(
+            alice, name="all", scopes=["read", "write"], homes=[alice_home]
+        )
+        api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
+        assert api_client.patch(url, body).status_code == 403
+        alice_home.refresh_from_db()
+        assert alice_home.name == "Main house"
+        assert alice_home.required_provider == ""
+        # A token may still rename the home when it asks nothing about sign-in.
+        assert api_client.patch(url, {"name": "Renamed"}).status_code == 200
+
     def test_no_section_without_a_declared_provider(
         self, client: Client, alice: User, alice_home: Home
     ) -> None:

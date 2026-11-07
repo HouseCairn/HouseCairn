@@ -105,6 +105,17 @@ def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response |
             },
             status=status.HTTP_403_FORBIDDEN,
         )
+    if isinstance(exc, services.DeliveryFailedError):
+        return Response(
+            {
+                "detail": _(
+                    "The invitation is saved, but the email could not be sent. Send it again later."
+                ),
+                "code": "delivery_failed",
+                "id": str(exc.invitation.pk),
+            },
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
     return exception_handler(exc, context)
 
 
