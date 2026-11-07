@@ -24,16 +24,17 @@ SHA = re.compile(r"^[0-9a-f]{40}$")
 
 def image_tags(ref: str, sha: str) -> tuple[str, list[str]]:
     """(version, tags) for this ref; ValueError if nothing is published for it."""
-    if not SHA.match(sha):
+    # fullmatch: `match` with `$` would also accept a trailing line break.
+    if not SHA.fullmatch(sha):
         raise ValueError(f"not a full commit SHA: {sha!r}")
     short = sha[:7]
     if ref == "refs/heads/main":
         return f"edge-{short}", ["edge", f"sha-{short}"]
-    if release := RELEASE.match(ref):
+    if release := RELEASE.fullmatch(ref):
         major, minor, patch = release.group("major", "minor", "patch")
         version = f"{major}.{minor}.{patch}"
         return version, [version, f"{major}.{minor}", "latest", f"sha-{short}"]
-    if prerelease := PRERELEASE.match(ref):
+    if prerelease := PRERELEASE.fullmatch(ref):
         version = prerelease.group("version")
         return version, [version, f"sha-{short}"]
     raise ValueError(f"no image is published for {ref!r}")

@@ -13,8 +13,12 @@ from pathlib import Path
 DEFAULT_ROOT = Path(__file__).resolve().parents[1] / "src" / "housecairn"
 WEB_SUFFIXES = frozenset({".html", ".css", ".js"})
 # An absolute or protocol-relative URL with a host name, as in
-# "https://cdn.example.com/" or "//fonts.example.com/".
-EXTERNAL_URL = re.compile(r"(?:https?:)?//[a-z0-9.-]+\.[a-z]{2,}/", re.IGNORECASE)
+# "https://cdn.example.com/" or "//fonts.example.com/": the host name ends at
+# the first character that cannot be part of it (path, port, query, quote, end
+# of line). The top-level domain is letters, or an IDNA `xn--` label.
+EXTERNAL_URL = re.compile(
+    r"(?:https?:)?//[a-z0-9.-]+\.(?:[a-z]{2,}|xn--[a-z0-9-]+)(?![a-z0-9.-])", re.IGNORECASE
+)
 
 
 def web_files(root: Path) -> list[Path]:

@@ -24,3 +24,4 @@ later record supersedes it.
 | [0016](0016-documentation-site.md) | Documentation site: Sphinx, two languages, screenshots, checks | 2026-11-07 |
 | [0017](0017-visual-system-and-brand.md) | Visual system, brand and application shell | 2026-11-07 |
 | [0018](0018-sign-in-page-and-passkeys.md) | Sign-in page: passkeys without a button, one button per provider | 2026-11-07 |
+| [0019](0019-property-based-tests.md) | Property-based tests with Hypothesis | 2026-11-07 |

@@ -17,6 +17,8 @@ concurrency:
 env:
   UV_LOCKED: "1"
   PYTHONDONTWRITEBYTECODE: "1"
+  # Property-based tests: fixed, derandomized examples (docs/adr/0019).
+  HYPOTHESIS_PROFILE: ci
 
 jobs:
   lint:
@@ -61,7 +63,7 @@ jobs:
       - name: Install locked dependencies (uv sync --locked)
         run: uv sync --locked
       - name: Tests with coverage (SQLite)
-        run: uv run pytest --cov=housecairn --cov-fail-under=85
+        run: uv run pytest --cov=housecairn --cov-fail-under=85 --hypothesis-show-statistics
 
   tests-postgresql:
     name: Tests (PostgreSQL)
@@ -108,7 +110,7 @@ jobs:
           print(engine)
           raise SystemExit(engine != "django.db.backends.postgresql")'
       - name: Tests with coverage (PostgreSQL)
-        run: uv run --extra postgres pytest --cov=housecairn --cov-fail-under=85
+        run: uv run --extra postgres pytest --cov=housecairn --cov-fail-under=85 --hypothesis-show-statistics
 
   django-checks:
     name: Django and repository checks
