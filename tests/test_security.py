@@ -13,6 +13,8 @@ from django.conf import settings
 from django.test import Client
 from django.urls import reverse
 
+from tests.htmlscan import inline_code_problems
+
 REPO = Path(settings.REPO_DIR)
 SRC = REPO / "src" / "housecairn"
 HTMX = SRC / "static" / "vendor" / "htmx" / "htmx.min.js"
@@ -55,11 +57,7 @@ def test_csp_header_is_strict(client: Client) -> None:
 @pytest.mark.parametrize("name", ["index", "account_login"])
 def test_pages_have_no_inline_script_or_style(client: Client, name: str) -> None:
     html = client.get(reverse(name)).text
-    for tag in re.findall(r"<script\b[^>]*>", html):
-        assert "src=" in tag or 'type="application/json"' in tag, tag
-    assert "<style" not in html
-    assert " style=" not in html
-    assert not re.search(r"\son[a-z]+=", html)
+    assert inline_code_problems(html) == []
 
 
 def test_no_external_url_in_templates_and_static() -> None:
