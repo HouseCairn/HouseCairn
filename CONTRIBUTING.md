@@ -71,6 +71,10 @@ uv run python manage.py check_translations --sources
 uv run python scripts/check_external_urls.py
 ```
 
+The property-based tests ([ADR 0019](docs/adr/0019-property-based-tests.md))
+try 300 generated examples each by default; `HYPOTHESIS_PROFILE=ci` runs the
+fixed 50 examples of CI, to reproduce a CI failure.
+
 To run the tests on PostgreSQL as well, install the driver and point
 `DATABASE_URL` at a server where the user may create databases:
 

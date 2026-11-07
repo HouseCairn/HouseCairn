@@ -8,8 +8,10 @@ HouseCairn has no released version yet. Until the first release, only the
 ## Reporting a vulnerability
 
 Please report vulnerabilities **only** through GitHub Private Vulnerability
-Reporting: open the repository's **Security** tab and choose **Report a
-vulnerability**.
+Reporting, with the private form at
+<https://github.com/HouseCairn/housecairn/security/advisories/new> (or: the
+repository's **Security** tab, then **Report a vulnerability**). You need a
+GitHub account; the report is visible only to you and the maintainer.
 
 Do **not** open a public issue, pull request or discussion about a
 vulnerability.
@@ -17,6 +19,10 @@ vulnerability.
 You will receive an acknowledgement within 7 days. We will then work with you
 on an assessment and a fix, and agree on a disclosure date. If you wish, you
 will be credited in the published advisory.
+
+The documentation describes how to report a vulnerability and how to verify
+the signature of the container images:
+<https://docs.housecairn.app/security/>.
 
 ## How the code is protected
 
@@ -27,6 +33,10 @@ These safeguards are described in
   tests, type checks, Django's deployment checks, and a review of new
   dependencies, which refuses known vulnerabilities of moderate severity or
   more;
+- property-based tests generate unexpected input for the code that reads
+  what others write (request headers and bodies, identity provider claims,
+  pull request titles, commit messages, Git refs), as described in
+  [ADR 0019](docs/adr/0019-property-based-tests.md);
 - code scanning: CodeQL for the Python code, zizmor for the GitHub Actions
   workflows, and OpenSSF Scorecard for the repository's practices;
 - GitHub Actions are pinned to full commit SHAs, workflow tokens are read-only

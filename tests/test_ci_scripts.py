@@ -226,8 +226,8 @@ def test_external_urls_are_reported(tmp_path: Path, capsys: pytest.CaptureFixtur
     _write(tmp_path, "static/css/app.css", "@import url(//fonts.example.net/css);\n")
     found = check_external_urls.offenders(tmp_path)
     assert [(p.name, n, url) for p, n, url in found] == [
-        ("app.css", 1, "//fonts.example.net/"),
-        ("page.html", 2, "https://cdn.example.com/"),
+        ("app.css", 1, "//fonts.example.net"),
+        ("page.html", 2, "https://cdn.example.com"),
     ]
     assert check_external_urls.main([str(tmp_path)]) == 1
     assert "page.html:2" in capsys.readouterr().err
