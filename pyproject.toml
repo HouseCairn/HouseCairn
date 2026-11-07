@@ -30,6 +30,11 @@ dependencies = [
   "django-stubs-ext>=5.2,<5.3",
 ]
 
+[project.optional-dependencies]
+# PostgreSQL driver, only for instances that set DATABASE_URL to PostgreSQL
+# (see docs/adr/0001). SQLite needs nothing more.
+postgres = ["psycopg[binary]>=3.2"]
+
 [dependency-groups]
 dev = [
   "ruff>=0.14",
@@ -65,6 +70,10 @@ select = [
 ignore = [
   "RUF012",  # Django and DRF class attributes (Meta, fields) are mutable by design.
 ]
+
+[tool.ruff.lint.isort]
+# Repository scripts run by CI (docs/adr/0014), imported by the tests.
+known-first-party = ["scripts"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106"]

@@ -8,8 +8,23 @@ By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 ## Before your pull request can be merged
 
 1. **Sign the CLA.** Every contributor signs the
-   [Contributor License Agreement](CLA.md) once. The CLA Assistant bot asks you
-   to do so in your first pull request. You keep the copyright of your work.
+   [Contributor License Agreement](CLA.md) once. You keep the copyright of your
+   work. On your first pull request, the CLA check posts a comment; read the
+   CLA, then sign it by posting this comment on the pull request, exactly as
+   written, with nothing else in the comment:
+
+   ```text
+   I have read the CLA Document and I hereby sign the CLA
+   ```
+
+   The `CLA` check then turns green. Your signature is recorded in this
+   repository, on the `cla-signatures` branch, with your GitHub account id and
+   the fingerprint of the CLA text, and covers all your later pull requests.
+   A comment signs only for its own author. The check requires a signature
+   from the author of every commit and from the person who opens the pull
+   request, so each commit must be authored with an email address linked to a
+   GitHub account (or its noreply address). If the check does not update,
+   comment `recheck`.
 2. **Sign off every commit** with the
    [Developer Certificate of Origin](https://developercertificate.org/):
 
@@ -17,8 +32,12 @@ By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
    git commit -s -m "fix: handle empty schedules"
    ```
 
-   This adds a `Signed-off-by: Your Name <you@example.com>` line. Pull requests
-   with unsigned-off commits cannot be merged.
+   This adds a `Signed-off-by: Your Name <you@example.com>` line. The
+   `Signed-off-by` check requires it on every commit of the pull request
+   (merge commits, and bot commits in a pull request opened by that bot,
+   excepted), with the same address as the commit author. To
+   fix commits you already pushed, run `git rebase --signoff origin/main`,
+   then `git push --force-with-lease`.
 
 ## Local development
 
@@ -43,12 +62,22 @@ Checks to run before opening a pull request:
 ```sh
 uv run ruff check .
 uv run ruff format --check .
-uv run mypy src
+uv run mypy src scripts
 uv run pytest --cov=housecairn --cov-fail-under=85
 uv run python manage.py makemigrations --check --dry-run
 uv run python manage.py spectacular --validate --fail-on-warn --file /dev/null
 uv run python manage.py build_design_tokens --check
 uv run python manage.py check_translations --sources
+uv run python scripts/check_external_urls.py
+```
+
+To run the tests on PostgreSQL as well, install the driver and point
+`DATABASE_URL` at a server where the user may create databases:
+
+```sh
+uv sync --locked --extra postgres
+DATABASE_URL=postgres://housecairn:***@localhost:5432/housecairn \
+  uv run --extra postgres pytest
 ```
 
 `manage.py` commands other than tests need `DEBUG=true` (from `.env`) or a
@@ -64,6 +93,25 @@ When you change `design/tokens.json`, run `manage.py build_design_tokens` and
 commit the generated `tokens.css`. When you add or change a user-facing string,
 update the French catalog as described in
 [ADR 0013](docs/adr/0013-internationalization.md).
+
+## Checks run on every pull request
+
+GitHub runs these checks on each pull request; all must pass before the
+maintainer merges it ([ADR 0014](docs/adr/0014-continuous-integration-and-supply-chain.md)):
+
+| Check | What it verifies |
+| --- | --- |
+| `Lint and types` | `uv sync --locked`, ruff lint and format, mypy. |
+| `Tests (SQLite)`, `Tests (PostgreSQL)` | The test suite and at least 85 % coverage, on both databases. |
+| `Django and repository checks` | Migrations, OpenAPI schema, production `check --deploy`, design tokens, translations, no external URL in templates and static files, tests of the CLA script. |
+| `zizmor` | Security of the GitHub Actions workflows. |
+| `Dependency review` | New dependencies: no known vulnerability of moderate severity or more, a license compatible with AGPL-3.0-only. |
+| `Conventional Commits title` | The pull request title. |
+| `Signed-off-by` | The sign-off of every commit. |
+| `CLA` | Every commit author and the pull request author have signed the CLA. |
+
+Workflows of a pull request from outside the project only start once the
+maintainer approves them.
 
 ## Pull requests
 

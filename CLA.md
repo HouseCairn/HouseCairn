@@ -9,7 +9,7 @@ inspired by the Apache Software Foundation Individual Contributor License
 Agreement. It applies to every Contribution You submit to the Housecairn
 project (the "Project"), now or in the future.
 
-You sign it by commenting on your first pull request as the CLA Assistant bot
+You sign it by commenting on your first pull request as the project's CLA check
 asks. You sign it once; it then covers all your later Contributions.
 
 ## 1. Definitions
