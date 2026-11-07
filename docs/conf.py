@@ -81,6 +81,9 @@ linkcheck_timeout = 20
 linkcheck_retries = 3
 linkcheck_anchors = False
 linkcheck_ignore = [
+    # The site itself: it does not answer before its first publication, which
+    # needs this check to pass (docs/adr/0016).
+    r"https://docs\.housecairn\.app(/.*)?$",
     # Placeholders of the examples.
     r"https?://([a-z0-9-]+\.)*example\.com(/.*)?$",
     r"http://(localhost|127\.0\.0\.1)(:\d+)?(/.*)?$",

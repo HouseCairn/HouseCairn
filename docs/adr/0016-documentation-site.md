@@ -73,7 +73,7 @@ allowed list, except as noted.
 | myst-parser | 5.1.0 | MIT |
 | sphinx-intl | 2.4.0 | BSD-2-Clause |
 | playwright | 1.64.1 | Apache-2.0 |
-| docutils | 0.22.4 | Public domain, BSD-2-Clause for some modules (files relicensed from GPL-3.0-or-later by their author are BSD-2-Clause) |
+| docutils | 0.22.4 | Public domain, BSD-2-Clause for some modules (see the exception below) |
 | babel, accessible-pygments, idna, click, markupsafe, snowballstemmer | see `uv.lock` | BSD-3-Clause |
 | jinja2, alabaster, sphinxcontrib-* | see `uv.lock` | BSD (2 or 3 clauses) |
 | markdown-it-py, mdit-py-plugins, mdurl, sphinx-basic-ng, beautifulsoup4, soupsieve, pyyaml, imagesize, charset-normalizer, urllib3, pyee, greenlet | see `uv.lock` | MIT (greenlet: MIT and PSF-2.0) |
@@ -82,6 +82,19 @@ allowed list, except as noted.
 | certifi | 2026.10.23 | MPL-2.0 |
 | roman-numerals | 4.1.0 | 0BSD or CC0-1.0 |
 | typing-extensions | 4.16.0 | PSF-2.0 |
+
+**docutils needs an exception in the dependency review.** Its license scan finds
+`BSD-2-Clause AND BSD-3-Clause AND CC-PDDC AND GPL-1.0-or-later AND GPL-3.0-only
+AND GPL-3.0-or-later AND LicenseRef-scancode-other-copyleft AND
+LicenseRef-scancode-public-domain`, which no entry of the allowed list matches.
+Read from its `COPYING.rst`: most of docutils is dedicated to the public domain,
+three modules are BSD-2-Clause, and the files that were part of the GPL-3.0
+project eLyXer carry a copy of the GPL text because their author relicensed them
+to BSD-2-Clause for docutils. Nothing in it is GPL-only, and it is not
+distributed with Housecairn (documentation build only). `dependency-review.yml`
+therefore allows the package `pkg:pypi/docutils` (any version) by name, and no
+other. Every other package of the `docs` group passed the review with the
+existing list.
 
 Sphinx 9.2 requires Python 3.13, and the project is on 3.12 (`requires-python`):
 the `docs` group asks for `sphinx>=9.1.1`, resolved to 9.1.1, and Dependabot
@@ -124,7 +137,8 @@ Internal links, images and anchors are checked twice: by nitpicky mode at build
 time, and by `check_docs_site.py` on the built HTML (every relative target exists
 in the site, every `#anchor` exists on its page). External links are checked by
 `sphinx-build -b linkcheck` in the `Documentation` job, with retries; examples
-at `example.com` and `localhost` are skipped.
+at `example.com` and `localhost` are skipped, and so is the site's own address:
+it answers nothing before its first publication, which needs this check to pass.
 
 ### API reference
 

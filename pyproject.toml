@@ -109,6 +109,8 @@ module = [
   "csp.*",
   "drf_spectacular.*",
   "drf_spectacular_sidecar.*",
+  # Documentation group only (docs/adr/0016): not installed by `uv sync`.
+  "playwright.*",
 ]
 ignore_missing_imports = true
 
