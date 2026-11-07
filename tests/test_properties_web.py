@@ -53,6 +53,9 @@ extra_data = (
 
 
 @given(extra_data)
+# Found by this property; `ci` explores too few examples to find them again by itself.
+@example(data={"userinfo": [None]})
+@example(data=True)
 def test_provider_identity_reads_any_claims(data: Any) -> None:
     """Any JSON from the provider: no exception, and verified only on a JSON `true`."""
     login = SocialLogin(account=SocialAccount(extra_data=data))
