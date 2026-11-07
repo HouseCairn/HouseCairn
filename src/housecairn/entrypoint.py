@@ -320,12 +320,19 @@ def command_backup() -> int:
     target_dir.mkdir(mode=0o700, exist_ok=True)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     target = target_dir / f"db-{stamp}.sqlite3"
+    # Created empty and readable by the application user only before SQLite
+    # writes to it, whatever the umask: no moment where another user could
+    # open it. SQLite gives its journal file the same mode.
+    try:
+        os.close(os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600))
+    except FileExistsError:
+        log(f"{target} already exists; wait a second and run the backup again.")
+        return 1
     with (
         closing(sqlite3.connect(f"file:{source}?mode=ro", uri=True)) as src,
         closing(sqlite3.connect(target)) as dst,
     ):
         src.backup(dst)
-    os.chmod(target, 0o600)
     sys.stdout.write(f"{target}\n")
     return 0
 
