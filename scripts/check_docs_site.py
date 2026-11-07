@@ -1,8 +1,10 @@
 """Check the built documentation site (docs/adr/0016).
 
 1. No external resource: no script, style, font, image, frame or other
-   resource loaded from another host, in the HTML and CSS of the site. Links
-   (<a href>) to other sites are allowed.
+   resource loaded from another host, in the HTML, CSS and JavaScript of the
+   site, no external <base href>, no <meta http-equiv="refresh"> to another
+   page, no fetch(), import() or WebSocket to an absolute URL in a script.
+   Links (<a href>) to other sites are allowed.
 2. Internal links: every relative link or resource of a page points to a file
    of the site, and its #anchor, if any, to an element of that page.
 3. API coverage: the API reference of each language documents every
@@ -66,9 +68,20 @@ CSS_EXTERNAL = re.compile(
 )
 
 
+# Network calls of a script to an absolute URL written as a literal. This cannot
+# see an address built at run time; Sphinx and Furo write none, and the content
+# security policy of ADR 0011 is the net below this check.
+JS_EXTERNAL = re.compile(
+    r"""(?:\bfetch|\bimport|\bnew\s+WebSocket|\bnew\s+EventSource|\.open\s*\(\s*['"`][A-Za-z]+['"`]\s*,)"""
+    r"""\s*\(?\s*['"`]\s*((?:https?:|wss?:)?//[^'"`\s)]+)""",
+    re.IGNORECASE,
+)
+REFRESH_URL = re.compile(r"url\s*=\s*['\"]?\s*([^'\";]+)", re.IGNORECASE)
+
+
 def is_external(url: str) -> bool:
     url = url.strip().lower()
-    return url.startswith(("http://", "https://", "//"))
+    return url.startswith(("http://", "https://", "//", "ws://", "wss://"))
 
 
 class _Page(HTMLParser):
@@ -93,6 +106,12 @@ class _Page(HTMLParser):
             if values.get(attribute):
                 for url in _urls(attribute, values[attribute]):
                     self.resources.append((f"<{tag} {attribute}>", url))
+        if tag == "base" and values.get("href"):
+            self.resources.append(("<base href>", values["href"]))
+        if tag == "meta" and values.get("http-equiv", "").strip().lower() == "refresh":
+            target = REFRESH_URL.search(values.get("content", ""))
+            if target:
+                self.resources.append(('<meta http-equiv="refresh">', target.group(1).strip()))
         if tag == "link" and values.get("href"):
             rels = set(values.get("rel", "").lower().split())
             if rels & LOADING_RELS:
@@ -138,6 +157,11 @@ def external_resources(site: Path) -> list[str]:
     for path in sorted(site.rglob("*.css")):
         css = path.read_text(encoding="utf-8")
         found += [f"{path.relative_to(site)}: {url}" for url in CSS_EXTERNAL.findall(css)]
+    for path in sorted(site.rglob("*.js")):
+        script = path.read_text(encoding="utf-8")
+        found += [
+            f"{path.relative_to(site)}: script call {url}" for url in JS_EXTERNAL.findall(script)
+        ]
     return found
 
 
@@ -201,7 +225,9 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.write("External resources in the site (docs/adr/0016):\n")
         sys.stderr.writelines(f"- {line}\n" for line in external[:MAX_LINES])
     else:
-        sys.stdout.write(f"External resources: 0 in {pages} HTML files and their CSS.\n")
+        sys.stdout.write(
+            f"External resources: 0 in {pages} HTML files and their CSS and scripts.\n"
+        )
 
     broken = broken_links(site)
     if broken:
