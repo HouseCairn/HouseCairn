@@ -5,6 +5,8 @@ from typing import Any
 from allauth.account.forms import LoginForm as AllauthLoginForm
 from django.conf import settings
 
+from housecairn.accounts import services
+
 
 class LoginForm(AllauthLoginForm):  # type: ignore[misc]
     """Sign-in form whose address field also offers the browser's passkeys.
@@ -18,3 +20,7 @@ class LoginForm(AllauthLoginForm):  # type: ignore[misc]
         super().__init__(*args, **kwargs)
         if settings.MFA_PASSKEY_LOGIN_ENABLED:
             self.fields["login"].widget.attrs["autocomplete"] = "username webauthn"
+        if not services.email_is_configured():
+            # allauth links "Forgot your password?" under the field; the reset
+            # mail could not be sent, so the link would lead nowhere useful.
+            self.fields["password"].help_text = ""

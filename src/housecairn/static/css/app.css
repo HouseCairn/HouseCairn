@@ -155,14 +155,14 @@ hr {
 }
 
 .brand-icon {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: var(--hc-layout-logo-icon);
+  height: var(--hc-layout-logo-icon);
   flex: none;
 }
 
 .brand-logo {
   display: none;
-  height: 2rem;
+  height: var(--hc-layout-logo-bar);
   width: auto;
 }
 
@@ -283,7 +283,8 @@ hr {
 
 .no-nav .brand-logo {
   display: block;
-  height: 2.75rem;
+  height: var(--hc-layout-logo-auth);
+  max-width: 100%;
 }
 
 .no-nav .brand-name {

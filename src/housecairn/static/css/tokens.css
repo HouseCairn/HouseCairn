@@ -69,4 +69,7 @@
   --hc-layout-auth-max: 26rem;
   --hc-layout-nav-width: 15rem;
   --hc-layout-tabbar-height: 4rem;
+  --hc-layout-logo-icon: 2.5rem;
+  --hc-layout-logo-bar: 3rem;
+  --hc-layout-logo-auth: 4.5rem;
 }
