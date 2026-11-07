@@ -5,15 +5,25 @@ the commit author's address, as `git commit -s` writes it. Merge commits are
 skipped: they only bring in commits that are checked on their own branch
 (docs/adr/0014).
 
-Usage: python scripts/check_signoff.py <base-sha> <head-sha>
+Commits authored by GitHub's bots (Dependabot, GitHub Actions) are skipped in a
+pull request opened by that same bot: Dependabot signs off with
+`support@github.com`, not with its author address. The pull request author
+comes from the `PR_AUTHOR` environment variable; a commit that merely claims a
+bot address in someone else's pull request is still checked.
+
+Usage: PR_AUTHOR=<login> python scripts/check_signoff.py <base-sha> <head-sha>
 """
 
+import os
 import re
 import subprocess
 import sys
 from dataclasses import dataclass
 
 _SIGNOFF = re.compile(r"^Signed-off-by: *(?P<name>.+?) *<(?P<email>[^<>\s]+)> *$", re.MULTILINE)
+# GitHub's noreply address of an account: `<id>+<login>@users.noreply.github.com`.
+_NOREPLY = re.compile(r"^\d+\+(?P<login>[^@\s]+)@users\.noreply\.github\.com$", re.IGNORECASE)
+EXEMPT_BOTS = frozenset({"dependabot[bot]", "github-actions[bot]"})
 _FIELD = "\x1f"
 _RECORD = "\x1e"
 
@@ -60,18 +70,31 @@ def read_commits(base: str, head: str) -> list[Commit]:
     return parse_log(result.stdout)
 
 
-def unsigned(commits: list[Commit]) -> list[Commit]:
+def is_exempt_bot(commit: Commit, pr_author: str | None) -> bool:
+    """A commit of an exempt bot, in a pull request opened by that bot."""
+    match = _NOREPLY.match(commit.author_email)
+    if match is None or not pr_author:
+        return False
+    login = match["login"].lower()
+    return login in EXEMPT_BOTS and login == pr_author.lower()
+
+
+def unsigned(commits: list[Commit], pr_author: str | None = None) -> list[Commit]:
     """Commits that need a sign-off and lack one from their author."""
-    return [c for c in commits if len(c.parents) < 2 and not is_signed_off(c)]
+    return [
+        c
+        for c in commits
+        if len(c.parents) < 2 and not is_exempt_bot(c, pr_author) and not is_signed_off(c)
+    ]
 
 
 def main(argv: list[str] | None = None) -> int:
     args = sys.argv[1:] if argv is None else argv
     if len(args) != 2:
-        sys.stderr.write("usage: check_signoff.py <base-sha> <head-sha>\n")
+        sys.stderr.write("usage: PR_AUTHOR=<login> check_signoff.py <base-sha> <head-sha>\n")
         return 2
     commits = read_commits(args[0], args[1])
-    missing = unsigned(commits)
+    missing = unsigned(commits, os.environ.get("PR_AUTHOR"))
     if missing:
         sys.stderr.write(
             "These commits have no Signed-off-by line matching their author's address:\n"

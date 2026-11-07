@@ -152,6 +152,65 @@ def test_signoff_usage_error() -> None:
     assert check_signoff.main([]) == 2
 
 
+DEPENDABOT_EMAIL = "49699333+dependabot[bot]@users.noreply.github.com"
+# As Dependabot writes it: the sign-off address is not the author address.
+DEPENDABOT_MESSAGE = (
+    "chore(deps): bump django from 5.2.7 to 5.2.8\n\n"
+    "Signed-off-by: dependabot[bot] <support@github.com>"
+)
+
+
+def _dependabot_commit(repo: Path) -> str:
+    subprocess.run(  # noqa: S603 - fixed program, test-controlled arguments
+        ["git", "-C", str(repo), "commit", "--allow-empty", "-q", "-m", DEPENDABOT_MESSAGE],  # noqa: S607
+        env={
+            **os.environ,
+            "GIT_AUTHOR_NAME": "dependabot[bot]",
+            "GIT_AUTHOR_EMAIL": DEPENDABOT_EMAIL,
+            "GIT_COMMITTER_NAME": "GitHub",
+            "GIT_COMMITTER_EMAIL": "noreply@github.com",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_CONFIG_NOSYSTEM": "1",
+        },
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return _git(repo, "rev-parse", "HEAD")
+
+
+def test_dependabot_commits_pass_in_a_dependabot_pull_request(
+    repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    base = _git(repo, "rev-parse", "HEAD")
+    head = _dependabot_commit(repo)
+    monkeypatch.setenv("PR_AUTHOR", "dependabot[bot]")
+    assert check_signoff.main([base, head]) == 0
+
+
+def test_bot_address_in_someone_elses_pull_request_is_checked(
+    repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    base = _git(repo, "rev-parse", "HEAD")
+    head = _dependabot_commit(repo)
+    monkeypatch.setenv("PR_AUTHOR", "mallory")
+    assert check_signoff.main([base, head]) == 1
+    monkeypatch.delenv("PR_AUTHOR")
+    assert check_signoff.main([base, head]) == 1
+
+
+def test_only_listed_bots_are_exempt() -> None:
+    commit = check_signoff.Commit(
+        "a" * 40, ("b" * 40,), "123+other[bot]@users.noreply.github.com", "chore: x"
+    )
+    assert check_signoff.unsigned([commit], "other[bot]") == [commit]
+    actions = check_signoff.Commit(
+        "c" * 40, ("b" * 40,), "41898282+github-actions[bot]@users.noreply.github.com", "chore: y"
+    )
+    assert check_signoff.unsigned([actions], "github-actions[bot]") == []
+    assert check_signoff.unsigned([actions], "dependabot[bot]") == [actions]
+
+
 # External URLs
 
 

@@ -162,3 +162,7 @@ jobs:
         run: uv run python manage.py check_translations --sources
       - name: No external URL in templates and static files
         run: uv run python scripts/check_external_urls.py
+      - name: CLA workflow script tests (node --test, no network)
+        # Node.js is preinstalled on the runner image; the tests use only
+        # Node's built-in modules.
+        run: node --test .github/scripts/cla.test.js

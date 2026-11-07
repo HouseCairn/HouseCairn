@@ -27,7 +27,7 @@ the `main` ruleset.
 | `dependency-review.yml` | pull request | New dependencies: fails on a known vulnerability of moderate severity or more, or on a license outside the allowed list below. |
 | `pr-title.yml` | pull request opened, edited, synchronized, reopened | The title is a Conventional Commit (`scripts/check_pr_title.py`): it becomes the squash commit message on `main` and feeds the release notes. |
 | `dco.yml` | pull request | Every non-merge commit has a `Signed-off-by` trailer with its author's address (`scripts/check_signoff.py`). |
-| `cla.yml` | pull request target, issue comment | Every contributor has signed `CLA.md` (CLA Assistant Lite). |
+| `cla.yml` | pull request target, issue comment | Every commit author and the pull request author have signed `CLA.md` (`.github/scripts/cla.js`, see below); sets the `CLA` commit status. |
 | `scorecard.yml` | push to `main`, weekly | OpenSSF Scorecard; results published to the Scorecard API (README badge) and to code scanning. |
 
 **CodeQL** runs through GitHub's default setup, enabled in the repository
@@ -55,24 +55,26 @@ own tests in `tests/test_ci_scripts.py`.
 
 ### Exceptions
 
-- **`cla.yml` uses `pull_request_target` and `issue_comment`.** CLA Assistant
-  Lite must comment on pull requests from forks, set a status and commit the
-  signature, which the read-only token of a `pull_request` run cannot do. The
-  workflow has no checkout step and runs no code from the pull request; the
-  comment body is only compared to two fixed strings in `if:`. zizmor's
-  `dangerous-triggers` finding is ignored by inline comments in this file
-  only.
-- **CLA Assistant Lite is archived.** Its upstream repository is archived
-  (read-only), so it will get no fixes; zizmor reports it
-  (`archived-uses`, ignored inline in `cla.yml` only). Its last release, v2.6.1,
-  is pinned and still declares the `node20` runtime. It is kept because it
-  stores signatures in this repository without any third-party service or
-  personal token. Replacing it (a maintained fork or a small script in this
-  repository) is a follow-up decision, to be taken before the first external
-  contribution.
+- **`cla.yml` uses `pull_request_target` and `issue_comment`.** The CLA check
+  must comment on pull requests from forks, set a commit status and record the
+  signature, which the read-only token of a `pull_request` run cannot do. Its
+  only checkout is the default branch (`.github/scripts/cla.js` and `CLA.md`,
+  `persist-credentials: false`); it never checks out, builds or runs the code
+  of the pull request, and reads the pull request through the API only (the
+  authors of its commits, the signature comment). No event value is
+  interpolated in its script: `cla.js` reads `context`. zizmor's
+  `dangerous-triggers` finding is ignored by inline comments in this file only;
+  it is the only zizmor exception in the repository.
 - **Merge commits are not checked for a sign-off.** They only bring in commits
   that are checked on their own; the sign-off check would otherwise fail on the
   merge commit created by GitHub's "Update branch" button.
+- **Bot commits are not checked for a sign-off in their own pull requests.**
+  Dependabot signs off as `dependabot[bot] <support@github.com>`, not with its
+  author address, so its pull requests could never pass. Commits authored by
+  `dependabot[bot]` or `github-actions[bot]` (their noreply addresses) are
+  skipped only when that same bot opened the pull request: an author address
+  is free text, and a commit claiming a bot address in anyone else's pull
+  request is still checked.
 
 ### Third-party actions
 
@@ -84,27 +86,66 @@ of other actions. Each one below is on that list for a reason:
 | `astral-sh/setup-uv` | v10.3.3 | Installs uv, the tool that locks and installs the dependencies (ADR 0001), with its cache. Published by uv's authors. |
 | `zizmorcore/zizmor-action` | v0.8.1 | Runs zizmor, the workflow security analyser, and uploads its SARIF. Published by zizmor's authors. |
 | `ossf/scorecard-action` | v2.5.0 | The only way to publish OpenSSF Scorecard results for the badge. Published by the OpenSSF. |
-| `contributor-assistant/github-action` | v2.6.1 | CLA signatures stored in this repository (see Exceptions). |
 
 Actions published by GitHub: `actions/checkout` v7.0.1,
 `actions/dependency-review-action` v5.0.0, `github/codeql-action/upload-sarif`
-v4.39.3.
+v4.39.3, `actions/github-script` v9.0.0.
 
-### CLA signatures
+### CLA check
 
-Signatures are stored by the CLA workflow in `signatures/v1/cla.json` on the
-`cla-signatures` branch, never on `main`. The branch must exist and stay
-outside the `main` ruleset, because the workflow pushes to it with the
-workflow token. The maintainer (`Robvred`), `dependabot[bot]` and
-`github-actions[bot]` are exempt. A contributor signs by commenting, on their
-pull request, exactly:
+The CLA check is a script of this repository, `.github/scripts/cla.js`, run by
+`actions/github-script` in `cla.yml`. It replaces CLA Assistant Lite
+(`contributor-assistant/github-action`), first chosen for this lot: its
+repository is archived upstream (read-only, no more fixes, `node20` runtime),
+and a third-party action given a write token on `pull_request_target` is the
+riskiest place to depend on unmaintained code. The script is about 300 lines,
+uses only GitHub's own action and Node's built-in modules, and is tested
+without network by `.github/scripts/cla.test.js` (`node --test`, run in the
+`Django and repository checks` job).
 
-```text
-I have read the CLA Document and I hereby sign the CLA
-```
+- **Who must sign**: the GitHub account of the author of every commit of the
+  pull request, and the account that opened it. The opener is added because a
+  commit author address is free text: commits that only claim the address of
+  an exempt account would otherwise need no signature at all. A commit whose
+  author address is not linked to any GitHub account fails the check, with a
+  comment that explains how to fix it. The commit list comes from the pull
+  requests API, which returns at most 250 commits.
+- **Exempt**: `Robvred` (the maintainer), `dependabot[bot]`,
+  `github-actions[bot]`.
+- **Signing**: a comment on the pull request whose whole body, without leading
+  and trailing white space, is exactly:
 
-After a merge, the workflow locks the pull request conversation so the
-signature comment cannot be edited or deleted.
+  ```text
+  I have read the CLA Document and I hereby sign the CLA
+  ```
+
+  The comment signs for its own author only, never for anyone else. Edited
+  comments are not read (`issue_comment` `created` only). Commenting `recheck`
+  runs the check again.
+- **Record**: `signatures/v1/cla.json` on the `cla-signatures` branch, never on
+  `main`, one entry per signer: login, numeric account id (signatures are
+  matched by id, which survives a renaming), pull request number, comment id
+  and date, and the SHA-256 of the `CLA.md` signed (from the default branch).
+  The file is written through the contents API with the blob SHA it replaces;
+  if another run wrote in between, the write is refused and retried on the new
+  version (up to five times). Runs of the same pull request are also queued by
+  `concurrency`. The branch must exist and stay outside the `main` ruleset; the
+  workflow does not create it and fails with an explicit message if it is
+  missing. A new CLA text that must be signed again goes to a new
+  `signatures/v2/` file.
+- **Result**: a commit status named `CLA` on the head commit of the pull
+  request (`success` or `failure`) and a single bot comment, updated rather
+  than repeated, that lists the missing signers and the phrase to copy. The job
+  itself is named `CLA signatures` so that it is not confused with the status;
+  it fails only when the check cannot run (missing branch, API error), after
+  setting the `CLA` status to `failure`.
+- **Permissions of the job**: `contents: write` (signatures file),
+  `pull-requests: write` (read the pull request and its commits, write the
+  comment), `statuses: write` (the `CLA` status). No other secret than the
+  workflow token.
+- Not kept from CLA Assistant Lite: locking the conversation after a merge.
+  Signatures do not depend on the comment staying in place: the record holds
+  the comment id and date and the account id.
 
 ### Licenses allowed for dependencies
 
@@ -152,9 +193,13 @@ every merge):
 - `Dependency review`
 - `Conventional Commits title`
 - `Signed-off-by`
-- `CLA`
+- `CLA` (a commit status set by `cla.js`, not a job; add it last, once
+  `cla.yml` is on `main` and the `cla-signatures` branch exists)
 
-Not required: `zizmor (code scanning)` (skipped for pull requests from forks),
+Not required: `CLA signatures` (the job that sets the `CLA` status; it runs on
+the default branch, not on the pull request head), `zizmor (code scanning)`
+(skipped for pull requests from forks and for runs triggered by Dependabot,
+whose token is read-only),
 `Scorecard analysis` (runs on `main` only). CodeQL findings are enforced, if
 wanted, with the ruleset's code scanning merge protection rather than a status
 check.

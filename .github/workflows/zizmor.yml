@@ -38,9 +38,13 @@ jobs:
 
   zizmor-sarif:
     name: zizmor (code scanning)
-    # Pull requests from forks get a read-only token: code scanning cannot
-    # receive their results, the blocking job above still runs.
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    # Pull requests from forks, and runs triggered by Dependabot, get a
+    # read-only token: code scanning cannot receive their results, the blocking
+    # job above still runs.
+    if: >-
+      github.actor != 'dependabot[bot]'
+      && (github.event_name == 'push'
+          || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
