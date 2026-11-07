@@ -68,7 +68,7 @@ allowed list, except as noted.
 
 | Package | Locked version | License |
 | --- | --- | --- |
-| sphinx | 9.1.1 | BSD-2-Clause |
+| sphinx | 9.2.0 | BSD-2-Clause |
 | furo | 2025.12.19 | MIT |
 | myst-parser | 5.1.0 | MIT |
 | sphinx-intl | 2.4.0 | BSD-2-Clause |
@@ -98,10 +98,11 @@ existing list.
 
 Sphinx 9.2 requires Python 3.13 ([PyPI](https://pypi.org/project/Sphinx/9.2.0/),
 `Requires: Python >=3.13`). The project was on 3.12 when this ADR was written, so
-the `docs` group asks for `sphinx>=9.1.1`, resolved to 9.1.1, and Dependabot
-ignores the minor and major updates of `sphinx`. The project has since moved to
-Python 3.13 (ADR 0015, `requires-python`), so 9.2 is installable: the floor and
-the Dependabot rule are kept for now and can be lifted in a later change.
+the `docs` group first asked for `sphinx>=9.1.1`, locked at 9.1.1, and
+Dependabot ignored the minor and major updates of `sphinx`. Since the project
+moved to Python 3.13 (ADR 0015, `requires-python`), the group asks for
+`sphinx>=9.2`, locked at 9.2.0, the strict build passes with it, and Dependabot
+proposes Sphinx updates like any other.
 
 ### Languages
 
