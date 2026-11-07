@@ -12,7 +12,21 @@ from django.urls import URLPattern, URLResolver, get_resolver
 # Web route name -> API route name(s).
 PARITY: dict[str, tuple[str, ...]] = {
     "homes:list": ("api-v1:home-list",),
+    "homes:create": ("api-v1:home-list",),
     "homes:detail": ("api-v1:home-detail",),
+    "homes:household": ("api-v1:home-member-list", "api-v1:home-invitation-list"),
+    "homes:invite": ("api-v1:home-invitation-list",),
+    "homes:invitation-resend": ("api-v1:home-invitation-resend",),
+    "homes:invitation-revoke": ("api-v1:home-invitation-detail",),
+    "homes:required-provider": ("api-v1:home-detail",),
+    "homes:leave": ("api-v1:home-leave",),
+    "homes:member": ("api-v1:home-member-detail",),
+    "homes:member-role": ("api-v1:home-member-detail",),
+    "homes:member-remove": ("api-v1:home-member-detail",),
+    "homes:transfer": ("api-v1:home-member-make-owner",),
+    # Creating an account from an invitation is account management, which the
+    # API leaves to sign-in (see EXEMPT_MODULE_PREFIXES); accepting is in it.
+    "invitation": ("api-v1:invitation-accept",),
 }
 
 # Web routes without business function, with the reason.

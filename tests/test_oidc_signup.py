@@ -303,11 +303,23 @@ class TestOpenSignup:
         assert settings.HOUSECAIRN_OIDC_SIGNUP == "closed"
         assert settings.HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL == ""
 
-    def test_invitation_extension_point(self, make_user: Callable[..., User]) -> None:
-        make_user("local@example.com")
-        assert services.has_invitation("new@example.com") is False
-        with mock.patch.object(services, "has_invitation", return_value=True):
-            response, _request = sign_in(email="new@example.com", email_verified=True)
+    def test_invitation_lets_a_verified_address_sign_up(
+        self, make_user: Callable[..., User]
+    ) -> None:
+        from housecairn.homes import services as home_services
+
+        owner = make_user("local@example.com")
+        home = home_services.create_home(owner, name="Main house")
+        assert services.has_invitation("new@example.com", True) is False
+        home_services.invite(
+            owner, home, email="New@Example.com", role="member", delivery=home_services.Delivery()
+        )
+        assert services.has_invitation("new@example.com", True) is True
+        # An address the provider does not assert as verified is not enough.
+        assert services.has_invitation("new@example.com", False) is False
+        refused, _request = sign_in(email="new@example.com", email_verified=False)
+        assert refused.status_code == 403
+        response, _request = sign_in(email="new@example.com", email_verified=True)
         assert response.status_code == 302
         assert not User.objects.get(email="new@example.com").is_staff
 

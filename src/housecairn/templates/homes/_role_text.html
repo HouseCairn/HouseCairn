@@ -1,0 +1,1 @@
+{% load i18n %}{# What a role allows, in a few words (docs/adr/0020). #}{% if role == "owner" %}{% translate "owner · everything, the household included" %}{% elif role == "member" %}{% translate "member · tasks, projects, marking work done" %}{% else %}{% translate "read only · sees the home, changes nothing" %}{% endif %}

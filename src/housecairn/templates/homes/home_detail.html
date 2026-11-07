@@ -10,4 +10,14 @@
       <div><dt>{% translate "Currency" %}</dt><dd>{{ home.currency }}</dd></div>
     </dl>
   </section>
+  <h2>{% translate "Settings" %}</h2>
+  <div class="list">
+    <a class="row" href="{% url 'homes:household' home_id=home.id %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Household and roles" %}</span>
+        <span class="row-text">{% blocktranslate count counter=member_count %}{{ counter }} person{% plural %}{{ counter }} people{% endblocktranslate %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+  </div>
 {% endblock content %}

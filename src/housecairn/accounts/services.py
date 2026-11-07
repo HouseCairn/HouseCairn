@@ -8,8 +8,8 @@ account is refused, except:
   address with `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`;
 - when the operator opens sign-up to everyone the provider accepts
   (`HOUSECAIRN_OIDC_SIGNUP=open`);
-- when the address has an invitation (not implemented yet, see
-  `has_invitation`).
+- when a home has a pending invitation for the address, and the provider
+  says the address is verified (`has_invitation`, docs/adr/0020).
 
 Accounts created in the last two cases have no administration rights.
 """
@@ -75,14 +75,17 @@ def may_bootstrap(email: str | None, email_verified: bool) -> bool:
     return bool(email) and email_verified and same_address(email or "", pinned)
 
 
-def has_invitation(email: str | None) -> bool:
-    """Whether an invitation lets this address sign up through OIDC.
+def has_invitation(email: str | None, email_verified: bool) -> bool:
+    """Whether an invitation lets this identity sign up through OIDC.
 
-    Extension point for invitations, which come with the account management
-    work: return True when an unused, unexpired invitation exists for this
-    address. Until then nobody is invited.
+    Only for an address the provider asserts as verified: otherwise anyone the
+    provider accepts could claim the invited address.
     """
-    return False
+    if not email or not email_verified:
+        return False
+    from housecairn.homes.services import has_pending_invitation
+
+    return has_pending_invitation(email)
 
 
 def oidc_signup_decision(email: str | None, email_verified: bool) -> Decision:
@@ -93,7 +96,7 @@ def oidc_signup_decision(email: str | None, email_verified: bool) -> Decision:
         return (
             Decision.BOOTSTRAP_ADMIN if may_bootstrap(email, email_verified) else Decision.REFUSED
         )
-    if settings.HOUSECAIRN_OIDC_SIGNUP == SIGNUP_OPEN or has_invitation(email):
+    if settings.HOUSECAIRN_OIDC_SIGNUP == SIGNUP_OPEN or has_invitation(email, email_verified):
         return Decision.MEMBER
     return Decision.REFUSED
 

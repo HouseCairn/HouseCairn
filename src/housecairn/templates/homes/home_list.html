@@ -3,15 +3,16 @@
 {% block head_title %}{% translate "Homes" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Homes" %}</h1>
-  {% if homes %}
+  {% if rows %}
     <ul class="card-list">
-      {% for home in homes %}
+      {% for row in rows %}
         <li>
-          <a class="row" href="{% url 'homes:detail' home_id=home.id %}">
+          <a class="row" href="{% url 'homes:detail' home_id=row.home.id %}">
             <span class="row-body">
-              <span class="row-title">{{ home.name }}</span>
-              <span class="row-text">{{ home.currency }}</span>
+              <span class="row-title">{{ row.home.name }}</span>
+              <span class="row-text">{{ row.home.currency }}</span>
             </span>
+            {% if row.locked %}<span class="pill pill-warning">{% blocktranslate with provider=row.provider.name %}{{ provider }} required{% endblocktranslate %}</span>{% endif %}
             {% include "components/icon.html" with name="chevron" class="chevron" %}
           </a>
         </li>
@@ -20,4 +21,5 @@
   {% else %}
     <p class="empty">{% translate "You are not a member of any home yet." %}</p>
   {% endif %}
+  <a class="button button-secondary button-block" href="{% url 'homes:create' %}">{% translate "Add a home" %}</a>
 {% endblock content %}
