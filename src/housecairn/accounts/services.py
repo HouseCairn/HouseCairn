@@ -85,6 +85,25 @@ def signup_is_open() -> bool:
     return bool(settings.HOUSECAIRN_SIGNUP_OPEN)
 
 
+def signup_domain_allowed(email: str | None) -> bool:
+    """Whether sign-up is open to this address's domain.
+
+    With `HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS` set, only those domains; and never
+    one of `HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS`. Neither list set: any domain.
+    Subdomains count as their parent (`mail.example.com` is `example.com`).
+    """
+    domain = (email or "").rpartition("@")[2].strip().lower().rstrip(".")
+    allowed: list[str] = settings.HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS
+    blocked: list[str] = settings.HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS
+
+    def listed(names: list[str]) -> bool:
+        return any(domain == name or domain.endswith("." + name) for name in names)
+
+    if allowed and not (domain and listed(allowed)):
+        return False
+    return not (domain and listed(blocked))
+
+
 def same_address(a: str, b: str) -> bool:
     return a.strip().casefold() == b.strip().casefold()
 
@@ -119,7 +138,9 @@ def oidc_signup_decision(email: str | None, email_verified: bool) -> Decision:
         return (
             Decision.BOOTSTRAP_ADMIN if may_bootstrap(email, email_verified) else Decision.REFUSED
         )
-    if settings.HOUSECAIRN_OIDC_SIGNUP == SIGNUP_OPEN or has_invitation(email, email_verified):
+    if has_invitation(email, email_verified):
+        return Decision.MEMBER
+    if settings.HOUSECAIRN_OIDC_SIGNUP == SIGNUP_OPEN and signup_domain_allowed(email):
         return Decision.MEMBER
     return Decision.REFUSED
 

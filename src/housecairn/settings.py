@@ -225,10 +225,18 @@ _form_action: list[str] = [SELF]
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_VERIFICATION = env.str("ACCOUNT_EMAIL_VERIFICATION", default="optional")
+HOUSECAIRN_SIGNUP_OPEN: bool = env.bool("HOUSECAIRN_SIGNUP_OPEN", default=False)
+# With sign-up open, an address is verified by email before the account can be used;
+# otherwise the accounts are the administrator's and the invited people's.
+ACCOUNT_EMAIL_VERIFICATION = env.str(
+    "ACCOUNT_EMAIL_VERIFICATION", default="mandatory" if HOUSECAIRN_SIGNUP_OPEN else "optional"
+)
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_ADAPTER = "housecairn.accounts.adapters.AccountAdapter"
-ACCOUNT_FORMS = {"login": "housecairn.accounts.forms.LoginForm"}
+ACCOUNT_FORMS = {
+    "login": "housecairn.accounts.forms.LoginForm",
+    "signup": "housecairn.accounts.forms.SignupForm",
+}
 SOCIALACCOUNT_ADAPTER = "housecairn.accounts.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_ONLY = False
 # An identity from a provider never signs in to, nor attaches itself to, an
@@ -244,6 +252,8 @@ ACCOUNT_RATE_LIMITS = {
     "housecairn_invitation": "30/m/ip",
     "housecairn_instance_invite": "10/m/user,50/d/user",
     "housecairn_delete_account": "5/m/user",
+    # Sign-up and password reset, per client address (allauth's own actions).
+    "signup": "10/m/ip,60/d/ip",
 }
 # Days an invitation link stays valid.
 HOUSECAIRN_INVITATION_LIFETIME_DAYS: int = env.int("HOUSECAIRN_INVITATION_LIFETIME_DAYS", default=7)
@@ -260,7 +270,18 @@ if HOUSECAIRN_SITE_URL and (
     raise ImproperlyConfigured(
         "HOUSECAIRN_SITE_URL must be an http:// or https:// address without a path."
     )
-HOUSECAIRN_SIGNUP_OPEN: bool = env.bool("HOUSECAIRN_SIGNUP_OPEN", default=False)
+# Open sign-up (docs/adr/0024): the proof of work asked on the sign-up page, as a
+# count of zero bits (8 to 24; 16 takes a second or so), and optional lists of
+# domains, comma-separated, that may (only those) or may not sign up.
+HOUSECAIRN_SIGNUP_POW_BITS: int = env.int("HOUSECAIRN_SIGNUP_POW_BITS", default=16)
+if not 8 <= HOUSECAIRN_SIGNUP_POW_BITS <= 24:
+    raise ImproperlyConfigured("HOUSECAIRN_SIGNUP_POW_BITS must be between 8 and 24.")
+HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS: list[str] = [
+    d.strip().lower().lstrip("@") for d in env.list("HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS", default=[])
+]
+HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS: list[str] = [
+    d.strip().lower().lstrip("@") for d in env.list("HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS", default=[])
+]
 # Sign-up through OIDC: "closed" (default) refuses an identity without an
 # account, except the very first one, which becomes the instance
 # administrator; "open" lets anyone the provider accepts create an account.

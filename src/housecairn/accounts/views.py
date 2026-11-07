@@ -62,3 +62,10 @@ class AccountDeleteView(LoginRequiredMixin, FormView[forms.DeleteAccountForm]):
         logout(self.request)
         messages.success(self.request, _("Your account was deleted."))
         return redirect("account_login")
+
+
+class SignupView(allauth_views.SignupView):  # type: ignore[misc]
+    """allauth's sign-up page, whose form also gets the request (for the proof of work)."""
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        return {**super().get_form_kwargs(), "request": self.request}

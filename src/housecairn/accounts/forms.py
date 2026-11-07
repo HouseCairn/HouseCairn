@@ -3,11 +3,12 @@
 from typing import Any
 
 from allauth.account.forms import LoginForm as AllauthLoginForm
+from allauth.account.forms import SignupForm as AllauthSignupForm
 from django import forms
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from housecairn.accounts import services
+from housecairn.accounts import antibot, services
 
 
 class LoginForm(AllauthLoginForm):  # type: ignore[misc]
@@ -53,4 +54,46 @@ class DeleteAccountForm(forms.Form):
             self.add_error("confirm_email", _("This is not the address of your account."))
         if "password" in self.fields and not self.user.check_password(data.get("password") or ""):
             self.add_error("password", _("The password is not correct."))
+        return data
+
+
+class SignupForm(AllauthSignupForm):  # type: ignore[misc]
+    """Open sign-up: the allowed and blocked domains, and the proof of work (docs/adr/0024)."""
+
+    pow_solution = forms.CharField(required=False, widget=forms.HiddenInput)
+
+    def __init__(self, *args: Any, request: Any = None, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.request = request
+        if request is not None and not self.is_bound:
+            self._arm(antibot.issue(request))
+
+    def _arm(self, challenge: dict[str, Any]) -> None:
+        """Hand the challenge to the script that solves it, through the hidden field."""
+        self.fields["pow_solution"].widget.attrs.update(
+            {"data-challenge": challenge["challenge"], "data-bits": str(challenge["bits"])}
+        )
+
+    def clean_email(self) -> str:
+        value: str = super().clean_email()
+        if value and not services.signup_domain_allowed(value):
+            raise forms.ValidationError(
+                _("Sign-up is not open to addresses of this domain."), code="domain"
+            )
+        return value
+
+    def clean(self) -> dict[str, Any]:
+        data: dict[str, Any] = super().clean()
+        if self.request is not None:
+            solved = antibot.check(self.request, data.get("pow_solution") or "")
+            # Used up, solved or not: the page that comes back has a new one.
+            self._arm(antibot.issue(self.request))
+            if not solved:
+                self.add_error(
+                    None,
+                    _(
+                        "The check that you are not a robot did not complete. "
+                        "Wait a few seconds for it on the page, with JavaScript on, then try again."
+                    ),
+                )
         return data

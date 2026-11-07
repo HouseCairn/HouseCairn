@@ -29,6 +29,8 @@ urlpatterns = [
     # These patterns come first and carry no name, so allauth's own names still
     # reverse to the same addresses.
     path("accounts/delete/", account_views.AccountDeleteView.as_view(), name="account_delete"),
+    # Sign-up carries the anti-robot check (docs/adr/0024); same address, allauth's name.
+    path("accounts/signup/", account_views.SignupView.as_view()),
     path("accounts/password/reset/", account_views.password_reset),
     path("accounts/password/reset/done/", account_views.password_reset_done),
     path("accounts/", include("allauth.urls")),
