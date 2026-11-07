@@ -8,7 +8,17 @@ task worker and the static files. Everything it writes goes to one volume,
 
 ## Requirements
 
-- Docker Engine with the Compose plugin (`docker compose`).
+- Docker Engine 25.0 or later, with the Compose plugin (`docker compose`)
+  2.24.0 or later.
+  - Engine 25.0: the image's health check checks every 2 seconds while the
+    container starts (`--start-interval`), an option that
+    [requires Docker Engine 25.0 or later](https://docs.docker.com/reference/dockerfile/#healthcheck)
+    ([release notes](https://docs.docker.com/engine/release-notes/25.0/)).
+  - Compose 2.24.0: the example `compose.yaml` marks `deploy/postgres.env` as
+    optional (`required: false`), which
+    [Compose supports since 2.24.0](https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/#use-the-env_file-attribute).
+  - Check with `docker version --format '{{.Server.Version}}'` and
+    `docker compose version`.
 - A reverse proxy that terminates HTTPS in front of HouseCairn (Caddy, Traefik,
   nginx...). HouseCairn listens on plain HTTP, port 8000, and redirects every
   request to HTTPS; it expects the proxy to set `X-Forwarded-Proto`. See

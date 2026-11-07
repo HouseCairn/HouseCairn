@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 21:32+0000\n"
+"POT-Creation-Date: 2026-11-07 21:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -28,8 +28,17 @@ msgstr "HouseCairn est livré sous la forme d'une seule image de conteneur, `ghc
 msgid "Requirements"
 msgstr "Prérequis"
 
-msgid "Docker Engine with the Compose plugin (`docker compose`)."
-msgstr "Docker Engine avec le plugin Compose (`docker compose`)."
+msgid "Docker Engine 25.0 or later, with the Compose plugin (`docker compose`) 2.24.0 or later."
+msgstr "Docker Engine 25.0 ou plus récent, avec le plugin Compose (`docker compose`) 2.24.0 ou plus récent."
+
+msgid "Engine 25.0: the image's health check checks every 2 seconds while the container starts (`--start-interval`), an option that [requires Docker Engine 25.0 or later](https://docs.docker.com/reference/dockerfile/#healthcheck) ([release notes](https://docs.docker.com/engine/release-notes/25.0/))."
+msgstr "Engine 25.0 : le contrôle de santé de l'image vérifie toutes les 2 secondes pendant le démarrage du conteneur (`--start-interval`), une option qui [demande Docker Engine 25.0 ou plus récent](https://docs.docker.com/reference/dockerfile/#healthcheck) ([notes de version](https://docs.docker.com/engine/release-notes/25.0/))."
+
+msgid "Compose 2.24.0: the example `compose.yaml` marks `deploy/postgres.env` as optional (`required: false`), which [Compose supports since 2.24.0](https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/#use-the-env_file-attribute)."
+msgstr "Compose 2.24.0 : l'exemple `compose.yaml` déclare `deploy/postgres.env` facultatif (`required: false`), ce que [Compose accepte depuis la version 2.24.0](https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/#use-the-env_file-attribute)."
+
+msgid "Check with `docker version --format '{{.Server.Version}}'` and `docker compose version`."
+msgstr "Vérifiez avec `docker version --format '{{.Server.Version}}'` et `docker compose version`."
 
 msgid "A reverse proxy that terminates HTTPS in front of HouseCairn (Caddy, Traefik, nginx...). HouseCairn listens on plain HTTP, port 8000, and redirects every request to HTTPS; it expects the proxy to set `X-Forwarded-Proto`. See [Reverse proxy](../administration/reverse-proxy.md)."
 msgstr "Un reverse proxy qui termine le HTTPS devant HouseCairn (Caddy, Traefik, nginx...). HouseCairn écoute en HTTP simple, port 8000, et redirige chaque requête vers HTTPS ; il attend du proxy qu'il pose `X-Forwarded-Proto`. Voir [Reverse proxy](../administration/reverse-proxy.md)."
