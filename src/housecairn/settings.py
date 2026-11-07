@@ -16,6 +16,8 @@ from csp.constants import NONE, SELF
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext_lazy as _
 
+from housecairn.core.proxy import TrustedProxies
+
 # Allows generic annotations such as ListView[Home] at runtime.
 django_stubs_ext.monkeypatch()
 
@@ -71,6 +73,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # First: forwarding headers count only from a trusted reverse proxy, before
+    # the HTTPS redirect or anything else reads them (docs/adr/0012).
+    "housecairn.core.proxy.ForwardedHeadersMiddleware",
     "django.middleware.security.SecurityMiddleware",
     # Serves the collected static files, right after the security headers are
     # set (docs/adr/0015).
@@ -173,8 +178,25 @@ LOGIN_REDIRECT_URL = "homes:list"
 # Security headers and cookies (docs/adr/0012). Safe values unless DEBUG is on.
 SECURE_SSL_REDIRECT: bool = env.bool("SECURE_SSL_REDIRECT", default=not DEBUG)
 SECURE_REDIRECT_EXEMPT = [r"^healthz$"]
-if env.bool("HOUSECAIRN_BEHIND_TLS_PROXY", default=False):
+HOUSECAIRN_BEHIND_TLS_PROXY: bool = env.bool("HOUSECAIRN_BEHIND_TLS_PROXY", default=False)
+if HOUSECAIRN_BEHIND_TLS_PROXY:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# Reverse proxies whose forwarding headers count: X-Forwarded-Proto above and
+# X-Forwarded-For for the client address. From any other peer, these headers
+# are removed by housecairn.core.proxy.ForwardedHeadersMiddleware. The loopback
+# by default; set it to the proxy's address or network.
+HOUSECAIRN_FORWARDED_ALLOW_IPS: list[str] = env.list(
+    "HOUSECAIRN_FORWARDED_ALLOW_IPS", default=["127.0.0.1", "::1"]
+)
+TrustedProxies.parse(HOUSECAIRN_FORWARDED_ALLOW_IPS)  # fails at start-up if invalid
+# The client address is resolved once, by that middleware, into REMOTE_ADDR:
+# django-allauth's rate limits must not read X-Forwarded-For themselves.
+ALLAUTH_TRUSTED_PROXY_COUNT = 0
+ALLAUTH_TRUSTED_CLIENT_IP_HEADER = None
+# The Host header, not X-Forwarded-Host, names the site: the proxy must pass
+# Host through (Caddy and Traefik do by default; nginx: proxy_set_header Host).
+USE_X_FORWARDED_HOST = False
+USE_X_FORWARDED_PORT = False
 SECURE_HSTS_SECONDS: int = env.int("SECURE_HSTS_SECONDS", default=0 if DEBUG else 31536000)
 SECURE_HSTS_INCLUDE_SUBDOMAINS: bool = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=False)
 SECURE_HSTS_PRELOAD: bool = env.bool("SECURE_HSTS_PRELOAD", default=False)

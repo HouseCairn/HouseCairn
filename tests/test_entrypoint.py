@@ -113,6 +113,27 @@ class TestCommands:
         assert "--worker-tmp-dir=/dev/shm" in command
         assert "--no-control-socket" in command
 
+    def test_no_proxy_may_claim_https_by_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("HOUSECAIRN_BEHIND_TLS_PROXY", raising=False)
+        monkeypatch.setenv("HOUSECAIRN_FORWARDED_ALLOW_IPS", "192.0.2.10")
+        command = entrypoint.web_command()
+        assert "--forwarded-allow-ips=" in command
+        assert not any(arg.startswith("--forwarded-allow-ips=*") for arg in command)
+
+    def test_behind_tls_proxy_default_is_the_loopback(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("HOUSECAIRN_BEHIND_TLS_PROXY", "true")
+        monkeypatch.delenv("HOUSECAIRN_FORWARDED_ALLOW_IPS", raising=False)
+        assert "--forwarded-allow-ips=127.0.0.1,::1" in entrypoint.web_command()
+
+    def test_behind_tls_proxy_trusts_the_configured_proxies(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("HOUSECAIRN_BEHIND_TLS_PROXY", "yes")
+        monkeypatch.setenv("HOUSECAIRN_FORWARDED_ALLOW_IPS", " 192.0.2.10, 2001:db8::/32 ,")
+        assert "--forwarded-allow-ips=192.0.2.10,2001:db8::/32" in entrypoint.web_command()
+
     def test_worker(self) -> None:
         assert entrypoint.worker_command()[1:] == ["-m", "django", "qcluster"]
 

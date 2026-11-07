@@ -42,6 +42,8 @@ SECRET_KEY_FILE = "secret_key"  # noqa: S105 - a file name, not a secret
 DEFAULT_PORT = 8000
 DEFAULT_WEB_WORKERS = 2
 DEFAULT_STOP_TIMEOUT = 20.0
+# Same default as HOUSECAIRN_FORWARDED_ALLOW_IPS in the settings.
+DEFAULT_FORWARDED_ALLOW_IPS = ("127.0.0.1", "::1")
 
 
 def log(message: str) -> None:
@@ -132,11 +134,28 @@ def web_command() -> list[str]:
         "--no-control-socket",
         "--access-logfile=-",
         "--error-logfile=-",
-        # Django decides which proxy headers to trust (HOUSECAIRN_BEHIND_TLS_PROXY,
-        # docs/adr/0012); gunicorn passes X-Forwarded-Proto from any peer, since
-        # the proxy's address inside a container network is not known in advance.
-        "--forwarded-allow-ips=*",
+        # Proxy headers count from the reverse proxies of
+        # HOUSECAIRN_FORWARDED_ALLOW_IPS only, in gunicorn as in Django
+        # (docs/adr/0012). Without HOUSECAIRN_BEHIND_TLS_PROXY, no peer may mark
+        # a request as HTTPS.
+        f"--forwarded-allow-ips={forwarded_allow_ips()}",
     ]
+
+
+def env_bool(name: str) -> bool:
+    """A boolean variable read as the settings read it (django-environ)."""
+    from environ import Env
+
+    return bool(Env().bool(name, default=False))
+
+
+def forwarded_allow_ips() -> str:
+    """gunicorn's `--forwarded-allow-ips`: who may set X-Forwarded-Proto."""
+    if not env_bool("HOUSECAIRN_BEHIND_TLS_PROXY"):
+        return ""
+    raw = os.environ.get("HOUSECAIRN_FORWARDED_ALLOW_IPS", "")
+    entries = [entry.strip() for entry in raw.split(",") if entry.strip()]
+    return ",".join(entries or DEFAULT_FORWARDED_ALLOW_IPS)
 
 
 def worker_command() -> list[str]:
