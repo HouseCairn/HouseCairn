@@ -24,7 +24,7 @@ What allauth 65 provides and is reused: the endpoint that issues the challenge
 credentials), the endpoint that checks the signed answer (a POST of the form),
 `mfa/js/webauthn-json.js` to convert between the browser API and JSON, and the
 passkey login itself. allauth's own `login` script only binds a button and has no
-conditional mode, so a small script, `static/js/passkey-login.js` (about 100
+conditional mode, so a small script, `static/js/passkey-login.js` (about 120
 lines, served locally, no inline code), starts the conditional request. The
 labels it needs are `data-` attributes of a hidden form rendered by
 `account/snippets/passkey_login.html`.
