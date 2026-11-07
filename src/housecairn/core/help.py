@@ -22,6 +22,7 @@ HELP_PAGES: dict[str, str] = {
     "homes:invitation-revoke": "screens/household/",
     "homes:required-provider": "screens/household/",
     "homes:leave": "screens/member/",
+    "homes:unlock": "screens/household/",
     "homes:member": "screens/member/",
     "homes:member-role": "screens/member/",
     "homes:member-remove": "screens/member/",

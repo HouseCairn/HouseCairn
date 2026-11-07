@@ -18,6 +18,7 @@ urlpatterns = [
         name="required-provider",
     ),
     path("<uuid:home_id>/household/leave/", views.LeaveView.as_view(), name="leave"),
+    path("<uuid:home_id>/household/unlock/", views.UnlockView.as_view(), name="unlock"),
     path(
         "<uuid:home_id>/household/members/<uuid:member_id>/",
         views.MemberView.as_view(),

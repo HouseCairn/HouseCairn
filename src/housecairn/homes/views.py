@@ -125,8 +125,12 @@ class HomeActionView(WebHomeScopedMixin, View):
 
     http_method_names = ["post"]
 
+    def locked_ok(self) -> bool:
+        """Whether this action is allowed on a home whose sign-in requirement is not met."""
+        return False
+
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        home = self.get_home()
+        home = self.get_home(allow_locked=self.locked_ok())
         try:
             response = self.act(home)
         except ValidationError as exc:
@@ -244,7 +248,49 @@ class MemberRoleView(HomeActionView):
         return None
 
 
-class MemberRemoveView(HomeActionView):
+class ConfirmedActionView(HomeActionView):
+    """A POST action that is first confirmed on a page of its own (GET)."""
+
+    http_method_names = ["get", "post"]
+    confirm_template = "homes/confirm.html"
+
+    def confirmation(self, home: Home) -> dict[str, Any]:  # pragma: no cover - abstract
+        raise NotImplementedError
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        home = self.get_home(allow_locked=self.locked_ok())
+        return TemplateResponse(
+            request, self.confirm_template, {"home": home, **self.confirmation(home)}
+        ).render()
+
+
+class MemberRemoveView(ConfirmedActionView):
+    def _is_me(self) -> bool:
+        return Membership.objects.filter(
+            id=self.kwargs["member_id"], user=self.request.user
+        ).exists()
+
+    def locked_ok(self) -> bool:
+        # Leaving never needs the provider: nobody is held in a home.
+        return self._is_me()
+
+    def confirmation(self, home: Home) -> dict[str, Any]:
+        membership = self.membership(home)
+        me = membership.user_id == self.request.user.pk
+        return {
+            "title": _("Leave this home?") if me else _("Remove this member?"),
+            "text": _(
+                "You will lose access to %(home)s. Someone has to invite you again to return."
+            )
+            % {"home": home.name}
+            if me
+            else _("%(who)s will lose access to %(home)s.")
+            % {"who": membership.user.get_full_name() or membership.user.email, "home": home.name},
+            "action": reverse("homes:member-remove", args=[home.id, membership.id]),
+            "button": _("Leave") if me else _("Remove"),
+            "back": reverse("homes:member", args=[home.id, membership.id]),
+        }
+
     def act(self, home: Home) -> HttpResponse | None:
         membership = self.membership(home)
         services.remove_member(self.request.user, membership)
@@ -255,11 +301,42 @@ class MemberRemoveView(HomeActionView):
         return None
 
 
-class LeaveView(HomeActionView):
+class LeaveView(ConfirmedActionView):
+    def locked_ok(self) -> bool:
+        return True
+
+    def confirmation(self, home: Home) -> dict[str, Any]:
+        return {
+            "title": _("Leave this home?"),
+            "text": _(
+                "You will lose access to %(home)s. Someone has to invite you again to return."
+            )
+            % {"home": home.name},
+            "action": reverse("homes:leave", args=[home.id]),
+            "button": _("Leave"),
+            "back": reverse("homes:household", args=[home.id]),
+        }
+
     def act(self, home: Home) -> HttpResponse | None:
         services.leave_home(self.request.user, home)
         messages.success(self.request, _("You left %(home)s.") % {"home": home.name})
         return redirect("homes:list")
+
+
+class UnlockView(HomeActionView):
+    """Stop requiring a sign-in provider the instance no longer offers."""
+
+    def locked_ok(self) -> bool:
+        return True
+
+    def act(self, home: Home) -> HttpResponse | None:
+        services.lift_unavailable_requirement(
+            self.request.user,
+            home,
+            declared=[p.id for p in sso.declared_providers(self.request)],
+        )
+        messages.success(self.request, _("Sign-in requirement removed."))
+        return redirect("homes:household", home_id=home.id)
 
 
 class TransferView(HomeActionView):

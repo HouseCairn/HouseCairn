@@ -166,6 +166,35 @@ def set_required_provider(
     return home
 
 
+def lift_unavailable_requirement(actor: AnyUser, home: Home, *, declared: Iterable[str]) -> Home:
+    """Stop requiring a sign-in provider the instance no longer offers.
+
+    The way out when the administrator removes a provider from the
+    configuration: nobody could otherwise open the home to change the rule. An
+    owner only, and only for a provider that is gone: a provider that is still
+    offered keeps its protection (docs/adr/0021).
+    """
+    _require_owner(actor, home)
+    if not home.required_provider or home.required_provider in set(declared):
+        raise ValidationError(_("This home's sign-in provider is still offered by this instance."))
+    home.required_provider = ""
+    home.save(update_fields=["required_provider", "updated_at"])
+    return home
+
+
+def lift_all_unavailable_requirements(*, declared: Iterable[str]) -> int:
+    """Instance-wide version for the administrator: how many homes were freed.
+
+    Names no home and reads none: it only clears a rule that points at a provider
+    that no longer exists.
+    """
+    return int(
+        Home.objects.exclude(required_provider="")
+        .exclude(required_provider__in=list(declared))
+        .update(required_provider="", updated_at=timezone.now())
+    )
+
+
 # ---------- household ----------
 
 

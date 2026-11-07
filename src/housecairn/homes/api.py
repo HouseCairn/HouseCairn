@@ -155,12 +155,29 @@ class HomeViewSet(
         """Leave the home. The last owner cannot leave."""
         if isinstance(request.auth, ApiToken):
             raise exceptions.PermissionDenied(NoTokenForHousehold.message)
-        home = self.get_home()
+        home = self.get_home(allow_locked=True)  # leaving never needs the provider
         try:
             services.leave_home(request.user, home)  # type: ignore[arg-type]
         except DjangoValidationError as exc:
             raise _validation(exc) from exc
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @extend_schema(request=None, responses={200: HomeSerializer})
+    @action(detail=True, methods=["post"])
+    def unlock(self, request: Request, home_id: str) -> Response:
+        """Stop requiring a sign-in provider the instance no longer offers (owners)."""
+        if isinstance(request.auth, ApiToken):
+            raise exceptions.PermissionDenied(NoTokenForHousehold.message)
+        home = self.get_home(allow_locked=True)
+        try:
+            home = services.lift_unavailable_requirement(
+                request.user,
+                home,
+                declared=[p.id for p in sso.declared_providers(request)],
+            )
+        except DjangoValidationError as exc:
+            raise _validation(exc) from exc
+        return Response(self.get_serializer(home).data)
 
 
 # ---------- members ----------

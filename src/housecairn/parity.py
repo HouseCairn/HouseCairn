@@ -20,6 +20,7 @@ PARITY: dict[str, tuple[str, ...]] = {
     "homes:invitation-revoke": ("api-v1:home-invitation-detail",),
     "homes:required-provider": ("api-v1:home-detail",),
     "homes:leave": ("api-v1:home-leave",),
+    "homes:unlock": ("api-v1:home-unlock",),
     "homes:member": ("api-v1:home-member-detail",),
     "homes:member-role": ("api-v1:home-member-detail",),
     "homes:member-remove": ("api-v1:home-member-detail",),
