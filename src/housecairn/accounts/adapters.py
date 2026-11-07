@@ -27,10 +27,14 @@ def provider_identity(sociallogin: SocialLogin) -> tuple[str | None, bool]:
     """The address the identity provider asserts, and whether it says it is verified.
 
     Read from the claims themselves (userinfo, else the ID token), and only a
-    JSON `true` counts as verified: a string such as "false" must not.
+    JSON `true` counts as verified: a string such as "false" must not. Claims
+    that are not a JSON object are ignored, so that a provider returning
+    something else is refused rather than failing the sign-in.
     """
-    data: dict[str, Any] = sociallogin.account.extra_data or {}
-    claims: dict[str, Any] = data.get("userinfo") or data.get("id_token") or data
+    data: Any = sociallogin.account.extra_data
+    data = data if isinstance(data, dict) else {}
+    candidates = (data.get("userinfo"), data.get("id_token"), data)
+    claims: dict[str, Any] = next((c for c in candidates if isinstance(c, dict) and c), {})
     email = claims.get("email")
     if not isinstance(email, str) or not email.strip():
         return None, False
