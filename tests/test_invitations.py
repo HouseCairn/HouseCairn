@@ -554,3 +554,42 @@ class TestMailServerDown:
         body = response.json()
         assert body["code"] == "delivery_failed"
         assert body["id"] == str(Invitation.objects.get().id)
+
+
+class TestOnePendingInvitation:
+    """One open invitation per home and address, enforced by the database too."""
+
+    def test_the_database_refuses_a_second_open_invitation(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        from django.db import IntegrityError, transaction
+
+        invite(alice, alice_home, "new@example.com")
+        first = Invitation.objects.get()
+        duplicate = Invitation(
+            home=alice_home,
+            email="NEW@example.com",
+            role="member",
+            digest="d" * 64,
+            expires_at=first.expires_at,
+            sent_at=first.sent_at,
+        )
+        with pytest.raises(IntegrityError), transaction.atomic():
+            duplicate.save()
+
+    def test_a_lapsed_invitation_does_not_block_a_new_one(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        old_link = invite(alice, alice_home, "new@example.com")
+        Invitation.objects.update(expires_at=timezone.now() - timedelta(seconds=1))
+        fresh_link = invite(alice, alice_home, "New@Example.com")
+        assert services.find_invitation(old_link) is None
+        assert services.find_invitation(fresh_link) is not None
+        assert Invitation.objects.filter(revoked_at__isnull=True).count() == 1
+
+    def test_a_revoked_or_accepted_one_does_not_block_a_new_one(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        invite(alice, alice_home, "new@example.com")
+        services.revoke_invitation(alice, Invitation.objects.get())
+        assert services.find_invitation(invite(alice, alice_home, "new@example.com")) is not None
