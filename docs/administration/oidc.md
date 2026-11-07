@@ -1,6 +1,6 @@
 # Single sign-on (OpenID Connect)
 
-Housecairn signs people in through any OpenID Connect provider; none is named
+HouseCairn signs people in through any OpenID Connect provider; none is named
 in the code. Single sign-on is off until `OIDC_SERVER_URL` is set
 ([ADR 0007](../adr/0007-authentication-and-api-tokens.md)).
 
@@ -22,7 +22,7 @@ in the code. Single sign-on is off until `OIDC_SERVER_URL` is set
    HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL=admin@example.com
    ```
 
-   `OIDC_SERVER_URL` is the issuer: Housecairn reads
+   `OIDC_SERVER_URL` is the issuer: HouseCairn reads
    `/.well-known/openid-configuration` below it. `OIDC_PROVIDER_NAME` sets the
    label of the sign-in button (`Single sign-on` by default).
 3. Restart the container, then sign in right away with the address set in

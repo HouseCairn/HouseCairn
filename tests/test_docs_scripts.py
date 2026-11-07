@@ -67,6 +67,34 @@ def test_label_is_the_escape_hatch() -> None:
     assert check_docs_updated.problems(paths, [""]) != []
 
 
+def test_dependabot_is_exempt_for_its_own_pull_requests() -> None:
+    paths = ["compose.yaml"]
+    assert check_docs_updated.problems(paths, [], "") != []
+    assert check_docs_updated.problems(paths, [], "dependabot[bot]") == []
+
+
+@pytest.mark.parametrize(
+    "author",
+    ["Robvred", "dependabot", "dependabot[bot]-fork", "renovate[bot]", "github-actions[bot]"],
+)
+def test_no_other_author_is_exempt(author: str) -> None:
+    assert check_docs_updated.problems(["compose.yaml"], [], author) != []
+
+
+def test_main_reads_the_author(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(check_docs_updated, "changed_paths", lambda base, head: ["compose.yaml"])
+    monkeypatch.setenv("PR_LABELS", "")
+    monkeypatch.setenv("PR_AUTHOR", "dependabot[bot]")
+    assert check_docs_updated.main(["base", "head"]) == 0
+    assert "Exempted" in capsys.readouterr().out
+    monkeypatch.setenv("PR_AUTHOR", "Robvred")
+    assert check_docs_updated.main(["base", "head"]) == 1
+    monkeypatch.delenv("PR_AUTHOR")
+    assert check_docs_updated.main(["base", "head"]) == 1
+
+
 def test_main_reads_labels_and_diff(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -157,6 +185,9 @@ def test_clean_site_passes(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -
         '<div style="background: url(https://example.net/bg.png)"></div>',
         '<style>@import "https://fonts.example.net/css";</style>',
         '<svg><image href="https://example.net/image.svg"></image></svg>',
+        '<base href="https://example.net/">',
+        '<meta http-equiv="refresh" content="0; url=https://example.net/elsewhere">',
+        '<META HTTP-EQUIV="Refresh" CONTENT="5;URL=\'//example.net/x\'">',
     ],
 )
 def test_external_resource_is_found(tmp_path: Path, extra: str) -> None:
@@ -171,6 +202,47 @@ def test_external_resource_in_css_is_found(tmp_path: Path) -> None:
     assert check_docs_site.external_resources(site) == [
         "_static/site.css: https://fonts.example.net/f.woff2"
     ]
+
+
+@pytest.mark.parametrize(
+    "script",
+    [
+        'fetch("https://example.net/collect", {method: "POST"});',
+        "fetch( 'https://example.net/a' )",
+        "fetch(`//example.net/a`)",
+        'import("https://cdn.example.net/module.js");',
+        'const socket = new WebSocket("wss://example.net/socket");',
+        'new EventSource("https://example.net/events")',
+        'const r = new XMLHttpRequest(); r.open("GET", "https://example.net/x");',
+    ],
+)
+def test_external_call_in_script_is_found(tmp_path: Path, script: str) -> None:
+    site = make_site(tmp_path)
+    (site / "_static" / "site.js").write_text(script, encoding="utf-8")
+    assert len(check_docs_site.external_resources(site)) == 1
+    assert check_docs_site.main([str(site), str(schema_file(tmp_path))]) == 1
+
+
+@pytest.mark.parametrize(
+    "script",
+    [
+        'fetch("searchindex.json");',
+        'fetch(DOCUMENTATION_OPTIONS.URL_ROOT + "searchindex.json")',
+        'import("./module.js")',
+        'new WebSocket(location.origin.replace("http", "ws"))',
+        'const url = "https://example.net/docs"; link.href = url;',
+    ],
+)
+def test_local_or_dynamic_calls_in_script_pass(tmp_path: Path, script: str) -> None:
+    site = make_site(tmp_path)
+    (site / "_static" / "site.js").write_text(script, encoding="utf-8")
+    assert check_docs_site.external_resources(site) == []
+
+
+def test_relative_refresh_and_base_are_not_external(tmp_path: Path) -> None:
+    extra = '<meta http-equiv="refresh" content="0; url=other/"><meta charset="utf-8">'
+    site = make_site(tmp_path, extra)
+    assert check_docs_site.external_resources(site) == []
 
 
 def test_outgoing_links_are_not_resources(tmp_path: Path) -> None:

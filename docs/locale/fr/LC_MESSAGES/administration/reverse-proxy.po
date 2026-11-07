@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026 Robvred
-# This file is distributed under the same license as the Housecairn package.
+# This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn \n"
+"Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-07 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -22,14 +22,14 @@ msgstr ""
 msgid "Reverse proxy"
 msgstr "Reverse proxy"
 
-msgid "Housecairn listens on plain HTTP and expects a reverse proxy to terminate HTTPS in front of it. With the example `compose.yaml`, it listens on `127.0.0.1:8000` of the host."
-msgstr "Housecairn écoute en HTTP simple et attend d'un reverse proxy qu'il termine le HTTPS devant lui. Avec l'exemple `compose.yaml`, il écoute sur `127.0.0.1:8000` de l'hôte."
+msgid "HouseCairn listens on plain HTTP and expects a reverse proxy to terminate HTTPS in front of it. With the example `compose.yaml`, it listens on `127.0.0.1:8000` of the host."
+msgstr "HouseCairn écoute en HTTP simple et attend d'un reverse proxy qu'il termine le HTTPS devant lui. Avec l'exemple `compose.yaml`, il écoute sur `127.0.0.1:8000` de l'hôte."
 
 msgid "In `deploy/production.env`, for an instance at `housecairn.example.com`:"
 msgstr "Dans `deploy/production.env`, pour une instance à l'adresse `housecairn.example.com` :"
 
-msgid "`HOUSECAIRN_BEHIND_TLS_PROXY=true` makes Housecairn trust the `X-Forwarded-Proto` header: set it only when the proxy sets that header itself and the container cannot be reached without the proxy. Without it, Housecairn sees plain HTTP and redirects every request to HTTPS."
-msgstr "`HOUSECAIRN_BEHIND_TLS_PROXY=true` fait que Housecairn se fie à l'en-tête `X-Forwarded-Proto` : ne l'activez que si le proxy pose lui-même cet en-tête et que le conteneur est inaccessible sans le proxy. Sans cela, Housecairn voit du HTTP simple et redirige chaque requête vers HTTPS."
+msgid "`HOUSECAIRN_BEHIND_TLS_PROXY=true` makes HouseCairn trust the `X-Forwarded-Proto` header: set it only when the proxy sets that header itself and the container cannot be reached without the proxy. Without it, HouseCairn sees plain HTTP and redirects every request to HTTPS."
+msgstr "`HOUSECAIRN_BEHIND_TLS_PROXY=true` fait que HouseCairn se fie à l'en-tête `X-Forwarded-Proto` : ne l'activez que si le proxy pose lui-même cet en-tête et que le conteneur est inaccessible sans le proxy. Sans cela, HouseCairn voit du HTTP simple et redirige chaque requête vers HTTPS."
 
 msgid "Caddy"
 msgstr "Caddy"
@@ -40,6 +40,6 @@ msgstr "Caddy obtient le certificat et pose `X-Forwarded-Proto` par défaut :"
 msgid "nginx"
 msgstr "nginx"
 
-msgid "Housecairn sets its own security headers (Content Security Policy, HSTS, `X-Frame-Options`); the proxy does not need to add them."
-msgstr "Housecairn pose ses propres en-têtes de sécurité (Content Security Policy, HSTS, `X-Frame-Options`) ; le proxy n'a pas besoin d'en ajouter."
+msgid "HouseCairn sets its own security headers (Content Security Policy, HSTS, `X-Frame-Options`); the proxy does not need to add them."
+msgstr "HouseCairn pose ses propres en-têtes de sécurité (Content Security Policy, HSTS, `X-Frame-Options`) ; le proxy n'a pas besoin d'en ajouter."
 

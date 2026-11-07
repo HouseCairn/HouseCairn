@@ -31,4 +31,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+          # The author of the pull request: Dependabot's own pull requests
+          # (the postgres image of compose.yaml) are exempted (docs/adr/0016).
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: python3 scripts/check_docs_updated.py "$BASE_SHA" "$HEAD_SHA"

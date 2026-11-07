@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026 Robvred
-# This file is distributed under the same license as the Housecairn package.
+# This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn \n"
+"Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-07 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -22,6 +22,6 @@ msgstr ""
 msgid "Integrations"
 msgstr "Intégrations"
 
-msgid "There is no integration yet. Connectors to Home Assistant, Paperless-ngx and Sure are planned; each will be optional and off by default, and Housecairn works fully without them. Wherever possible, the other tool will push to Housecairn (webhooks) rather than Housecairn holding its token."
-msgstr "Il n'y a pas encore d'intégration. Des connecteurs vers Home Assistant, Paperless-ngx et Sure sont prévus ; chacun sera optionnel et désactivé par défaut, et Housecairn fonctionne entièrement sans eux. Chaque fois que possible, c'est l'autre outil qui poussera vers Housecairn (webhooks), plutôt que Housecairn ne détienne son jeton."
+msgid "There is no integration yet. Connectors to Home Assistant, Paperless-ngx and Sure are planned; each will be optional and off by default, and HouseCairn works fully without them. Wherever possible, the other tool will push to HouseCairn (webhooks) rather than HouseCairn holding its token."
+msgstr "Il n'y a pas encore d'intégration. Des connecteurs vers Home Assistant, Paperless-ngx et Sure sont prévus ; chacun sera optionnel et désactivé par défaut, et HouseCairn fonctionne entièrement sans eux. Chaque fois que possible, c'est l'autre outil qui poussera vers HouseCairn (webhooks), plutôt que HouseCairn ne détienne son jeton."
 

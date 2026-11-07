@@ -10,7 +10,7 @@ from pathlib import Path
 DOCS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(DOCS_DIR / "_ext"))
 
-project = "Housecairn"
+project = "HouseCairn"
 author = "Robvred"
 copyright = "2026 Robvred"  # noqa: A001 (Sphinx setting name)
 
@@ -45,7 +45,7 @@ myst_enable_extensions = ["deflist"]
 nitpicky = True
 
 html_theme = "furo"
-html_title = "Housecairn"
+html_title = "HouseCairn"
 html_static_path = ["_static"]
 html_css_files = ["housecairn.css"]
 html_baseurl = "https://docs.housecairn.app/"

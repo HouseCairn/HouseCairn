@@ -6,7 +6,7 @@ Set them in `deploy/production.env`. The full list, with defaults, is in
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `ALLOWED_HOSTS` | (none: required) | Host names Housecairn answers to, comma-separated. |
+| `ALLOWED_HOSTS` | (none: required) | Host names HouseCairn answers to, comma-separated. |
 | `CSRF_TRUSTED_ORIGINS` | (none) | `https://` origins of those host names. |
 | `HOUSECAIRN_BEHIND_TLS_PROXY` | `false` | `true` behind a reverse proxy that sets `X-Forwarded-Proto`. |
 | `SECRET_KEY` | generated in `/data/secret_key` | Set it only to manage the key yourself. |

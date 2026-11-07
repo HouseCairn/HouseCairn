@@ -1,4 +1,4 @@
-"""Sphinx extension of the Housecairn documentation site (docs/adr/0016).
+"""Sphinx extension of the HouseCairn documentation site (docs/adr/0016).
 
 - Links from a page to a repository file outside `docs/` point to that file on
   GitHub, so the Markdown files keep working when browsed on GitHub.

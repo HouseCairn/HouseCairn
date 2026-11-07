@@ -1,6 +1,6 @@
 # Architecture
 
-Housecairn is a Django application with HTMX for the interactive parts, in a
+HouseCairn is a Django application with HTMX for the interactive parts, in a
 single container. The main rules, each recorded in a decision:
 
 - **One service layer** holds the business rules; web views and API views

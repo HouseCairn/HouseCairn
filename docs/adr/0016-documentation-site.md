@@ -5,7 +5,7 @@
 
 ## Context
 
-Housecairn is installed and used by people who will not read its code. They need
+HouseCairn is installed and used by people who will not read its code. They need
 a public documentation site, in English and French, that is always the one of
 the code they run, that loads nothing from other hosts (ADR 0011), and whose
 screenshots and API reference cannot go stale. The site is published at
@@ -24,7 +24,7 @@ candidates was checked on 2026-11-07, before writing any file:
 | Material for MkDocs | In maintenance mode since 2025-11-05 (9.7.0, "final version"): critical and security fixes only, end of life on 2027-05-05 ([Zensical, upcoming changes](https://zensical.org/upcoming-changes/)). The publisher recommends evaluating Zensical. | MIT |
 | Zensical | Version 0.1.0 of 2026-11-05, out of its 0.0.x alpha series; same team as Material, reads `mkdocs.yml`. No i18n plugin: one language per build ([plugin compatibility](https://zensical.org/docs/compatibility/mkdocs/plugins/)). Public interfaces still moving. | MIT |
 | ProperDocs | A fork of MkDocs 1.x, 1.6.7 of 2026-03-20; does not settle the end of life of Material. | BSD-2-Clause |
-| Sphinx | Maintained, releases in 2026-10; gettext translation built in. | BSD-2-Clause |
+| Sphinx | Maintained: 9.1.1 released on 2026-10-20 ([PyPI](https://pypi.org/project/Sphinx/#history)); gettext translation built in. | BSD-2-Clause |
 
 MkDocs 1.x has no security maintenance and Material ends in six months, so the
 choice went to the maintainer, who chose **Sphinx with the Furo theme and MyST
@@ -91,15 +91,17 @@ Read from its `COPYING.rst`: most of docutils is dedicated to the public domain,
 three modules are BSD-2-Clause, and the files that were part of the GPL-3.0
 project eLyXer carry a copy of the GPL text because their author relicensed them
 to BSD-2-Clause for docutils. Nothing in it is GPL-only, and it is not
-distributed with Housecairn (documentation build only). `dependency-review.yml`
+distributed with HouseCairn (documentation build only). `dependency-review.yml`
 therefore allows the package `pkg:pypi/docutils` (any version) by name, and no
 other. Every other package of the `docs` group passed the review with the
 existing list.
 
-Sphinx 9.2 requires Python 3.13, and the project is on 3.12 (`requires-python`):
+Sphinx 9.2 requires Python 3.13 ([PyPI](https://pypi.org/project/Sphinx/9.2.0/),
+`Requires: Python >=3.13`). The project was on 3.12 when this ADR was written, so
 the `docs` group asks for `sphinx>=9.1.1`, resolved to 9.1.1, and Dependabot
-ignores the minor and major updates of `sphinx` until the migration to a newer
-Python.
+ignores the minor and major updates of `sphinx`. The project has since moved to
+Python 3.13 (ADR 0015, `requires-python`), so 9.2 is installable: the floor and
+the Dependabot rule are kept for now and can be lifted in a later change.
 
 ### Languages
 
@@ -127,7 +129,11 @@ fails on a URL loaded as a resource from another host: `script`, `img`,
 `source`/`srcset`, `iframe`, `object`, `embed`, `video`, `audio`, `track`,
 `<link>` with a loading `rel` (stylesheet, icon, preload, preconnect, manifest...),
 SVG `image` and `use`, CSS `url()` and `@import` in files, `<style>` and `style`
-attributes. Outgoing `<a>` links are allowed. Search is Sphinx's own, on a static
+attributes, an external `<base href>`, a `<meta http-equiv="refresh">` to an
+absolute address, and `fetch()`, `import()`, `new WebSocket()`, `new EventSource()`
+or `XMLHttpRequest.open()` with an absolute URL written as a literal in the
+built `.js` files (an address built at run time is out of reach of this check;
+the content security policy of ADR 0011 is the net below it). Outgoing `<a>` links are allowed. Search is Sphinx's own, on a static
 index served with the site; there is no analytics. `tests/test_docs_scripts.py`
 has a negative test for each kind of resource, so the check is shown to fail.
 
@@ -136,9 +142,13 @@ has a negative test for each kind of resource, so the check is shown to fail.
 Internal links, images and anchors are checked twice: by nitpicky mode at build
 time, and by `check_docs_site.py` on the built HTML (every relative target exists
 in the site, every `#anchor` exists on its page). External links are checked by
-`sphinx-build -b linkcheck` in the `Documentation` job, with retries; examples
-at `example.com` and `localhost` are skipped, and so is the site's own address:
-it answers nothing before its first publication, which needs this check to pass.
+`sphinx-build -b linkcheck`, with retries, in a separate job named
+**`Documentation (external links)`** of `docs.yml`, on pull requests and every
+Monday on `main`. It is deliberately not a required check: it depends on sites
+we do not control, and a passing outage of one of them must not block every pull
+request; it still fails visibly. Everything deterministic stays in the required
+`Documentation` job. Examples at `example.com` and `localhost` are skipped, and
+so is the site's own address: it answers nothing before its first publication.
 
 ### API reference
 
@@ -191,12 +201,13 @@ page is missing from the built site in either language.
 - on `pull_request` and on `push` to `main`, the job named **`Documentation`**:
   locked install, browser, screenshots, strict build in both languages,
   `check_docs_site.py`, the tests of the site, of the help links and of the
-  scripts (with the built site), then the external link check;
+  scripts (with the built site), the external link check is a separate job, see below;
 - on `push` to `main` only, the site is packaged by `actions/upload-pages-artifact`
   and the job **`Publish documentation`** deploys it with `actions/configure-pages`
   and `actions/deploy-pages`, in the `github-pages` environment. Its token has
-  `pages: write` and `id-token: write`, the only jobs of the repository with
-  these permissions; the build job has `contents: read` only.
+  `pages: write` and `id-token: write`; `pages: write` is held by no other job
+  of the repository (`id-token: write` is also held by the image and Scorecard
+  jobs); the build job has `contents: read` only.
 
 Both follow ADR 0014: full commit SHAs with the tag in a comment, checked with
 `git ls-remote`; `permissions: {}` at the workflow level; `persist-credentials:
@@ -224,9 +235,11 @@ example deployment files (`compose.yaml`, `deploy/*.example`, `.env.example`)
 and changes nothing under `docs/` fails. The escape hatch is the label
 `no-docs-needed`, added by the maintainer (the workflow also runs when a label
 is added or removed). The rule only looks at file paths, which is the simplest
-mechanism that does not need to understand the change; it never concerns
-Dependabot, whose pull requests touch only `pyproject.toml`, `uv.lock`, workflows
-and the Dockerfile.
+mechanism that does not need to understand the change; Dependabot's
+own pull requests are exempt (author `dependabot[bot]`, read from the pull
+request author by the workflow, never from a label or a branch name): they bump
+the postgres image in `compose.yaml`, which changes no screen and no setting. No
+other account is exempt.
 
 ### Checks to require on `main`
 

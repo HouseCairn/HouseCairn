@@ -24,5 +24,5 @@ docker run -d --name housecairn \
 `/healthz` answers `{"status": "ok"}` without authentication and reveals
 nothing else; the image's `HEALTHCHECK` calls it.
 
-Housecairn makes no outgoing connection unless you configure one (single
+HouseCairn makes no outgoing connection unless you configure one (single
 sign-on, later the integrations), and sends no telemetry.

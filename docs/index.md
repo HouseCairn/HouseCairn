@@ -1,11 +1,11 @@
-# Housecairn
+# HouseCairn
 
-Housecairn is a self-hosted planner for home maintenance and renovation
+HouseCairn is a self-hosted planner for home maintenance and renovation
 projects: what needs doing in the house, where, when, with what and for how
 much.
 
 ```{warning}
-Housecairn is in early development and not usable yet. The application
+HouseCairn is in early development and not usable yet. The application
 skeleton, its API and its container image exist; the screens to plan
 maintenance and projects do not. These pages describe only what exists today.
 ```

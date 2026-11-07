@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026 Robvred
-# This file is distributed under the same license as the Housecairn package.
+# This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Housecairn \n"
+"Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-07 19:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -22,6 +22,6 @@ msgstr ""
 msgid "Release notes"
 msgstr "Notes de version"
 
-msgid "Housecairn has no release yet. The notes of each version will be published with it on the project's [releases page](https://github.com/HouseCairn/housecairn/releases)."
-msgstr "Housecairn n'a pas encore de version publiée. Les notes de chaque version seront publiées avec elle sur la [page des versions](https://github.com/HouseCairn/housecairn/releases) du projet."
+msgid "HouseCairn has no release yet. The notes of each version will be published with it on the project's [releases page](https://github.com/HouseCairn/housecairn/releases)."
+msgstr "HouseCairn n'a pas encore de version publiée. Les notes de chaque version seront publiées avec elle sur la [page des versions](https://github.com/HouseCairn/housecairn/releases) du projet."
 
