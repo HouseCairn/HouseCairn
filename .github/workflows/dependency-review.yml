@@ -1,0 +1,34 @@
+# Dependency review of each pull request (docs/adr/0014): fails on a new
+# dependency with a known vulnerability of moderate severity or more, or with a
+# license outside the list of licenses compatible with AGPL-3.0-only.
+name: Dependency review
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate
+          # SPDX identifiers whose terms allow combining with AGPL-3.0-only
+          # code (docs/adr/0014). Anything else, unknown licenses included,
+          # needs a decision recorded in an ADR before it can be added.
+          allow-licenses: >-
+            0BSD, AGPL-3.0-only, AGPL-3.0-or-later, Apache-2.0, BlueOak-1.0.0,
+            BSD-2-Clause, BSD-3-Clause, CC0-1.0, GPL-3.0-only, GPL-3.0-or-later,
+            ISC, LGPL-2.1-or-later, LGPL-3.0-only, LGPL-3.0-or-later, MIT, MIT-0,
+            MPL-2.0, PSF-2.0, Python-2.0, Unlicense, Zlib
+          comment-summary-in-pr: never

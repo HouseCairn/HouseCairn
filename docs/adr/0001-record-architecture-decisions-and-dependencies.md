@@ -30,6 +30,13 @@ we would otherwise write (principle "do not reinvent"):
 | python-dateutil | RFC 5545 recurrence rules, needed from the tasks lot onwards. |
 | django-stubs-ext | Lets generic classes such as `ModelAdmin[Home]` be subscripted at runtime for the type checker. Companion of django-stubs, maintained by the same project, no runtime behaviour otherwise. |
 
+Optional runtime dependency, installed with the `postgres` extra
+(`uv sync --extra postgres`) only by instances that use PostgreSQL:
+
+| Package | Why |
+| --- | --- |
+| psycopg, with its `binary` extra | PostgreSQL driver supported by Django. The `binary` extra ships a prebuilt `libpq`, so no compiler or system library is needed. Added by ADR 0014, which tests every pull request on PostgreSQL. |
+
 Development tools: uv (locking), ruff, mypy with django-stubs and
 djangorestframework-stubs, pytest, pytest-django, pytest-cov.
 

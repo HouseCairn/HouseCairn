@@ -1,0 +1,63 @@
+# Static analysis of the GitHub Actions workflows with zizmor (docs/adr/0014).
+# The "zizmor" job is the blocking check: it fails on any finding of medium
+# severity or more. The "zizmor (code scanning)" job publishes every finding to
+# the Security tab, which needs a write permission the blocking job does not get.
+name: zizmor
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Fail on findings of medium severity or more
+        uses: zizmorcore/zizmor-action@45d7276c9ca790aabd705e31ca99c6185c3e76dd # v0.8.1
+        with:
+          version: "1.32.0"
+          inputs: .github/
+          advanced-security: false
+          annotations: true
+          min-severity: medium
+
+  zizmor-sarif:
+    name: zizmor (code scanning)
+    # Pull requests from forks, and runs triggered by Dependabot, get a
+    # read-only token: code scanning cannot receive their results, the blocking
+    # job above still runs.
+    if: >-
+      github.actor != 'dependabot[bot]'
+      && (github.event_name == 'push'
+          || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read # read the workflows
+      security-events: write # upload the SARIF results to code scanning
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Analyse and upload SARIF to code scanning
+        uses: zizmorcore/zizmor-action@45d7276c9ca790aabd705e31ca99c6185c3e76dd # v0.8.1
+        with:
+          version: "1.32.0"
+          inputs: .github/
+          advanced-security: true

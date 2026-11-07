@@ -2,7 +2,6 @@
 
 import hashlib
 import os
-import re
 import secrets
 import subprocess
 import sys
@@ -13,6 +12,7 @@ from django.conf import settings
 from django.test import Client
 from django.urls import reverse
 
+from scripts import check_external_urls
 from tests.htmlscan import inline_code_problems
 
 REPO = Path(settings.REPO_DIR)
@@ -61,13 +61,9 @@ def test_pages_have_no_inline_script_or_style(client: Client, name: str) -> None
 
 
 def test_no_external_url_in_templates_and_static() -> None:
-    pattern = re.compile(r"(?:https?:)?//[a-z0-9.-]+\.[a-z]{2,}/", re.IGNORECASE)
-    offenders = []
-    for path in [*SRC.glob("templates/**/*"), *SRC.glob("static/**/*")]:
-        is_web_file = path.is_file() and path.suffix in {".html", ".css", ".js"}
-        if is_web_file and pattern.search(path.read_text(encoding="utf-8")):
-            offenders.append(str(path.relative_to(REPO)))
-    assert offenders == []
+    # Same check as the CI step, from scripts/check_external_urls.py.
+    assert check_external_urls.web_files(SRC)
+    assert check_external_urls.offenders(SRC) == []
 
 
 def test_vendored_htmx_matches_its_recorded_hash() -> None:
