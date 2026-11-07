@@ -1,0 +1,20 @@
+{% load i18n %}{# Main navigation of signed-in pages: the tab bar at the bottom of a phone screen, the column on the left of a computer screen (static/css/shell.css). #}
+<nav class="nav" aria-label="{% translate 'Main navigation' %}">
+  <ul class="nav-list">
+    <li>
+      <a class="nav-link" href="{% url 'index' %}"{% if nav_section == "home" %} aria-current="page"{% endif %}>
+        {% include "components/icon.html" with name="home" %}{% translate "Home" %}
+      </a>
+    </li>
+    <li>
+      <a class="nav-link" href="{% url 'homes:list' %}"{% if nav_section == "homes" %} aria-current="page"{% endif %}>
+        {% include "components/icon.html" with name="homes" %}{% translate "Homes" %}
+      </a>
+    </li>
+    <li>
+      <a class="nav-link" href="{% url 'more' %}"{% if nav_section == "more" %} aria-current="page"{% endif %}>
+        {% include "components/icon.html" with name="more" %}{% translate "More" %}
+      </a>
+    </li>
+  </ul>
+</nav>

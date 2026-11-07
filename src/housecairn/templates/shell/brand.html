@@ -1,0 +1,6 @@
+{% load static %}{# Brand of the app bar: icon and name on a phone, logo on a computer and on signed-out pages (static/css/shell.css). #}
+<a class="brand" href="{% url 'index' %}">
+  <img class="brand-icon" src="{% static 'img/brand/housecairn-icon.svg' %}" alt="" width="40" height="40">
+  <span class="brand-name">HouseCairn</span>
+  <img class="brand-logo" src="{% static 'img/brand/housecairn-logo.svg' %}" alt="HouseCairn" width="168" height="48">
+</a>
