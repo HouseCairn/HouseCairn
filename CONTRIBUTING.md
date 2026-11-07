@@ -41,7 +41,7 @@ By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Local development
 
-Requirements: [uv](https://docs.astral.sh/uv/) (it installs Python 3.12 if
+Requirements: [uv](https://docs.astral.sh/uv/) (it installs Python 3.13 if
 needed) and, to update translations, GNU gettext.
 
 ```sh

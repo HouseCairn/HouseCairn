@@ -5,12 +5,12 @@ description = "Self-hosted planner for home maintenance and renovation projects.
 readme = "README.md"
 license = "AGPL-3.0-only"
 license-files = ["LICENSE", "NOTICE"]
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.13,<3.14"
 authors = [{ name = "Robvred" }]
 classifiers = [
   "Framework :: Django",
   "Framework :: Django :: 5.2",
-  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Private :: Do Not Upload",
 ]
 dependencies = [
@@ -83,7 +83,7 @@ known-first-party = ["scripts"]
 "tests/**" = ["S101", "S105", "S106"]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 mypy_path = "src"
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 strict = true
