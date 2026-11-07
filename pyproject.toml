@@ -74,7 +74,7 @@ default-groups = ["dev"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py312"
+target-version = "py313"
 src = ["src", "tests"]
 extend-exclude = ["src/housecairn/*/migrations/*"]
 
