@@ -31,6 +31,8 @@ urlpatterns = [
     path("accounts/delete/", account_views.AccountDeleteView.as_view(), name="account_delete"),
     # Sign-up carries the anti-robot check (docs/adr/0024); same address, allauth's name.
     path("accounts/signup/", account_views.SignupView.as_view()),
+    # Adding an address sends it a verification: no page without an outgoing mail server.
+    path("accounts/email/", account_views.email_addresses),
     path("accounts/password/reset/", account_views.password_reset),
     path("accounts/password/reset/done/", account_views.password_reset_done),
     path("accounts/", include("allauth.urls")),

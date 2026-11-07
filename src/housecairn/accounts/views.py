@@ -30,6 +30,7 @@ def needs_email(view: Callable[..., HttpResponse]) -> Callable[..., HttpResponse
     return guarded
 
 
+email_addresses = needs_email(allauth_views.email)
 password_reset = needs_email(allauth_views.password_reset)
 password_reset_done = needs_email(allauth_views.password_reset_done)
 

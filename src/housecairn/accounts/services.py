@@ -262,3 +262,58 @@ def delete_account(user: User, *, by_admin: User | None = None) -> None:
             by="administrator" if by_admin else "self",
         )
         user.delete()
+
+
+# ---------- security alerts ----------
+
+DEVICE_COOKIE = "housecairn_device"
+DEVICE_COOKIE_MAX_AGE = 400 * 24 * 3600
+# Devices kept per account: the oldest are forgotten beyond this.
+MAX_KNOWN_DEVICES = 20
+
+
+def _digest(secret: str) -> str:
+    import hashlib
+
+    return hashlib.sha256(secret.encode("utf-8")).hexdigest()
+
+
+def note_sign_in(request: Any, user: User) -> str | None:
+    """Record a sign-in; email an alert if the browser is new to an account that had others.
+
+    Returns the secret to set in the browser's cookie when the device is new,
+    else None. The first device of an account raises no alert: a new account is
+    not worth one. Without outgoing email nothing is recorded.
+    """
+    import logging
+    import secrets
+
+    from allauth.account.adapter import get_adapter
+    from django.utils import timezone
+
+    from housecairn.accounts.models import KnownDevice
+
+    if not email_is_configured():
+        return None
+    cookie = request.COOKIES.get(DEVICE_COOKIE, "")
+    if cookie:
+        known = KnownDevice.objects.filter(user=user, digest=_digest(cookie)).first()
+        if known is not None:
+            KnownDevice.objects.filter(pk=known.pk).update(last_seen_at=timezone.now())
+            return None
+    had_devices = KnownDevice.objects.filter(user=user).exists()
+    secret = secrets.token_urlsafe(32)
+    KnownDevice.objects.create(user=user, digest=_digest(secret))
+    stale = KnownDevice.objects.filter(user=user).order_by("-last_seen_at")[MAX_KNOWN_DEVICES:]
+    KnownDevice.objects.filter(pk__in=[d.pk for d in stale]).delete()
+    if had_devices:
+        try:
+            get_adapter(request).send_notification_mail(
+                "account/email/new_login", user, email=user.email
+            )
+        except Exception as exc:
+            # A mail server that is down must not stop anyone from signing in.
+            logging.getLogger("housecairn.mail").warning(
+                "sign-in alert not sent: %s", type(exc).__name__
+            )
+    return secret

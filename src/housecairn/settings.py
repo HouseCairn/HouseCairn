@@ -88,6 +88,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "housecairn.accounts.middleware.DeviceCookieMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -301,13 +302,25 @@ EMAIL_HOST: str = env.str("EMAIL_HOST", default="").strip()
 EMAIL_PORT: int = env.int("EMAIL_PORT", default=587)
 EMAIL_HOST_USER: str = env.str("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD: str = env.str("EMAIL_HOST_PASSWORD", default="")
+# STARTTLS on the submission port (587) by default; EMAIL_USE_SSL is TLS from the
+# first byte (port 465). One of them: Django refuses both.
 EMAIL_USE_TLS: bool = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_USE_SSL: bool = env.bool("EMAIL_USE_SSL", default=False)
+if EMAIL_USE_SSL:
+    EMAIL_USE_TLS = False
+# Seconds to wait for the mail server: a server that does not answer must not hold a
+# web process for minutes (the default of Python is no limit).
+EMAIL_TIMEOUT: int = env.int("EMAIL_TIMEOUT", default=15)
 EMAIL_BACKEND = (
     "django.core.mail.backends.smtp.EmailBackend"
     if EMAIL_HOST
     else "django.core.mail.backends.console.EmailBackend"
 )
 DEFAULT_FROM_EMAIL: str = env.str("DEFAULT_FROM_EMAIL", default="HouseCairn <noreply@localhost>")
+# Security alerts (password or passkey changed, new address, new sign-in) go out
+# only when mail can be delivered (docs/adr/0023); subjects start with the name.
+ACCOUNT_EMAIL_NOTIFICATIONS = bool(EMAIL_HOST)
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "HouseCairn: "
 
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True

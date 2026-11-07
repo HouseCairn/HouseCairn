@@ -25,6 +25,22 @@
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>
     {% endif %}
+    <a class="row" href="{% if user.has_usable_password %}{% url 'account_change_password' %}{% else %}{% url 'account_set_password' %}{% endif %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Password" %}</span>
+        <span class="row-text">{% translate "Change the password you sign in with" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+    {% if email_configured %}
+    <a class="row" href="{% url 'account_email' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Email addresses" %}</span>
+        <span class="row-text">{% translate "Add or verify the addresses of your account" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+    {% endif %}
     <a class="row" href="{% url 'api-docs' %}">
       <span class="row-body">
         <span class="row-title">{% translate "API documentation" %}</span>
