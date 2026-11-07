@@ -32,7 +32,7 @@ jobs:
         uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           version: "0.13.7"
-          python-version: "3.12"
+          python-version: "3.13"
           enable-cache: true
       - name: Install locked dependencies (uv sync --locked)
         run: uv sync --locked
@@ -56,7 +56,7 @@ jobs:
         uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           version: "0.13.7"
-          python-version: "3.12"
+          python-version: "3.13"
           enable-cache: true
       - name: Install locked dependencies (uv sync --locked)
         run: uv sync --locked
@@ -94,7 +94,7 @@ jobs:
         uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           version: "0.13.7"
-          python-version: "3.12"
+          python-version: "3.13"
           enable-cache: true
       - name: Install locked dependencies with the PostgreSQL driver (uv sync --locked)
         run: uv sync --locked --extra postgres
@@ -123,7 +123,7 @@ jobs:
         uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           version: "0.13.7"
-          python-version: "3.12"
+          python-version: "3.13"
           enable-cache: true
       - name: Install GNU gettext (translation scan)
         run: |

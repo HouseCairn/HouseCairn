@@ -46,3 +46,8 @@ Thumbs.db
 
 # Local data (SQLite database, uploads, collected static files)
 /data/
+
+# Documentation site (docs/adr/0016): built, generated at every build
+/docs/_build/
+/docs/_generated/
+/docs/locale/**/*.mo

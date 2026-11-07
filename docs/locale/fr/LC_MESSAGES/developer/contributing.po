@@ -1,0 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the Housecairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Housecairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Contributing"
+msgstr "Contribuer"
+
+msgid "The rules for contributions (CLA, sign-off, checks, AI-assisted contributions) are in [CONTRIBUTING.md](https://github.com/HouseCairn/housecairn/blob/main/CONTRIBUTING.md). This page covers the documentation."
+msgstr "Les règles de contribution (CLA, sign-off, vérifications, contributions assistées par IA) sont dans [CONTRIBUTING.md](https://github.com/HouseCairn/housecairn/blob/main/CONTRIBUTING.md). Cette page traite de la documentation."
+
+msgid "Documentation changes with the code"
+msgstr "La documentation change avec le code"
+
+msgid "A pull request that changes what users see or configure (a screen, an address, an API operation, a setting) updates this documentation in the same pull request. The `Documentation updated` check fails when such a change comes without any change under `docs/`. When no page is concerned, the maintainer adds the `no-docs-needed` label to the pull request, and the check passes."
+msgstr "Une pull request qui change ce que les utilisateurs voient ou configurent (un écran, une adresse, une opération d'API, un réglage) met à jour cette documentation dans la même pull request. Le contrôle `Documentation updated` échoue quand un tel changement arrive sans aucune modification sous `docs/`. Quand aucune page n'est concernée, le mainteneur ajoute l'étiquette `no-docs-needed` à la pull request, et le contrôle passe."
+
+msgid "Build the site locally"
+msgstr "Construire le site en local"
+
+msgid "The site is in `docs/_build/site/`, English at its root and French under `fr/`; open `docs/_build/site/index.html` in a browser. The build is strict: any warning, such as a broken reference, fails it."
+msgstr "Le site est dans `docs/_build/site/`, l'anglais à sa racine et le français sous `fr/` ; ouvrez `docs/_build/site/index.html` dans un navigateur. La construction est stricte : le moindre avertissement, comme une référence cassée, la fait échouer."
+
+msgid "Screenshots come from a demonstration instance with generated data, in English and French, on a computer and on a phone. They are not committed: the script takes them again before every build."
+msgstr "Les captures d'écran viennent d'une instance de démonstration aux données générées, en anglais et en français, sur ordinateur et sur téléphone. Elles ne sont pas commitées : le script les refait avant chaque construction."
+
+msgid "Translations"
+msgstr "Traductions"
+
+msgid "Pages are written in English. Their French translations are gettext catalogs, one per page, in `docs/locale/fr/LC_MESSAGES/`. After changing a page, update the catalogs, then translate the new strings in the `.po` files:"
+msgstr "Les pages sont écrites en anglais. Leurs traductions françaises sont des catalogues gettext, un par page, dans `docs/locale/fr/LC_MESSAGES/`. Après avoir modifié une page, mettez les catalogues à jour, puis traduisez les nouvelles chaînes dans les fichiers `.po` :"
+
+msgid "A string without translation is shown in English, and the French page then says that it is not entirely translated. The build fails when a catalog lacks a string of its page, so that the catalogs never lag behind the pages."
+msgstr "Une chaîne sans traduction s'affiche en anglais, et la page française indique alors qu'elle n'est pas entièrement traduite. La construction échoue quand un catalogue manque d'une chaîne de sa page, afin que les catalogues ne prennent jamais de retard sur les pages."
+

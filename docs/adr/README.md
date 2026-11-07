@@ -21,3 +21,4 @@ later record supersedes it.
 | [0013](0013-internationalization.md) | English source, French shipped, no hard-coded strings | 2026-11-07 |
 | [0014](0014-continuous-integration-and-supply-chain.md) | Continuous integration and supply-chain security | 2026-11-07 |
 | [0015](0015-container-image-and-publication.md) | Container image, signed publication to GHCR | 2026-11-07 |
+| [0016](0016-documentation-site.md) | Documentation site: Sphinx, two languages, screenshots, checks | 2026-11-07 |

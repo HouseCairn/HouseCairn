@@ -3,7 +3,7 @@
 #
 # Usage: .github/scripts/image-smoke.sh <image> sqlite|postgresql
 #
-# Starts the image the way docs/install.md recommends (read-only root file
+# Starts the image the way docs/getting-started/install.md recommends (read-only root file
 # system, no capability, no privilege escalation, /tmp in memory, an empty
 # volume on /data), then checks that it becomes healthy, serves its pages and
 # static files as an unprivileged user, cannot write outside /data and /tmp,

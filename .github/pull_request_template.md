@@ -10,6 +10,10 @@
 
 <!-- Only what you actually ran: commands, tests, manual checks, and their result. -->
 
+## Documentation
+
+<!-- The pages you updated under `docs/`, or why none is concerned (then ask the maintainer for the `no-docs-needed` label). -->
+
 ## AI assistance (tool and model)
 
 <!-- "None", or the tool and model used, and for what. -->

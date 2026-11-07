@@ -28,6 +28,9 @@
         {% else %}
           <li><a href="{% url 'account_login' %}">{% translate "Sign in" %}</a></li>
         {% endif %}
+        {% if help_url %}
+          <li><a class="help-link" href="{{ help_url }}" rel="help" title="{% translate 'Help for this page' %}" aria-label="{% translate 'Help for this page' %}">?</a></li>
+        {% endif %}
       </ul>
     </nav>
   </header>

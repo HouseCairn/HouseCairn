@@ -16,7 +16,7 @@ repository's workflow from a given commit, and what it contains.
 
 ### Base image
 
-`python:3.12.<patch>-slim-trixie`, the official Python image on Debian 13
+`python:3.13.<patch>-slim-trixie`, the official Python image on Debian 13
 slim, pinned by digest with its tag on the same line; both stages use the same
 digest so the virtual environment built in the first runs in the second.
 Debian rather than Alpine: Debian's glibc takes the `manylinux` wheels, the
@@ -222,3 +222,25 @@ Dependabot), `Publish image` (never runs on a pull request).
   blocks pull requests until it is updated, which Dependabot proposes.
 - The `X.Y` and `latest` tags move to the most recently published release,
   even if it is a patch of an older line.
+
+## Move to Python 3.13 (2026-11-07)
+
+The image started on `python:3.12.16-slim-trixie`. The scanner (Grype) reported
+eight CVEs against the Python 3.12.16 interpreter, with fixed versions in
+3.13 or later. The CPython CNA records list:
+
+- fixed in 3.13: CVE-2025-12781 (3.13.10), CVE-2026-3446 and CVE-2026-3479
+  (3.13.13), CVE-2026-6019 (3.13.14), CVE-2025-15366 (3.13.15);
+- not fixed in any 3.13 release: CVE-2025-15367 (fixed in 3.15.0a6),
+  CVE-2026-103995 and CVE-2026-116566 (fixed in 3.16.0).
+
+The project therefore moved to Python 3.13, which Django 5.2 LTS supports. The base image is now
+`python:3.13.18-slim-trixie`, pinned by digest as before, in both stages. The
+CI runs the tests, the type checks and the Django checks on 3.13, so that what
+is tested is what is shipped. `requires-python` is `>=3.13,<3.14` and
+`uv.lock` was regenerated for it (same package versions).
+
+The Dependabot rule is unchanged in substance: it ignores minor and major
+updates of the `python` image (a jump to 3.14 is a migration lot) and keeps the
+3.13.x patch releases. The three CVEs above stay reported until a Python line
+that fixes them is adopted; they are accepted until then.
