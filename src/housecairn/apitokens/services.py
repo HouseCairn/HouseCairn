@@ -1,6 +1,7 @@
 """Issuing, checking and revoking API tokens (docs/adr/0007)."""
 
 import hashlib
+import hmac
 import secrets
 from collections.abc import Iterable
 from datetime import timedelta
@@ -68,10 +69,13 @@ def authenticate(raw: str) -> ApiToken | None:
     """The active token matching this secret, or None."""
     if not raw.startswith(TOKEN_PREFIX):
         return None
-    token: ApiToken | None = (
-        ApiToken.objects.select_related("user").filter(digest=hash_token(raw)).first()
-    )
-    if token is None or not token.is_active or not token.user.is_active:
+    digest = hash_token(raw)
+    token: ApiToken | None = ApiToken.objects.select_related("user").filter(digest=digest).first()
+    # The lookup compares digests, which reveal nothing about the secret; the
+    # constant-time comparison is a second guard, independent of the database.
+    if token is None or not hmac.compare_digest(token.digest, digest):
+        return None
+    if not token.is_active or not token.user.is_active:
         return None
     now = timezone.now()
     if token.last_used_at is None or now - token.last_used_at > timedelta(minutes=1):
