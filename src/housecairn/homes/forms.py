@@ -30,7 +30,7 @@ class ProviderForm(forms.Form):
 
     def __init__(self, *args: Any, providers: list[Provider], **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        choices: list[tuple[str, str]] = [("", str(_("No requirement: any sign-in method")))]
+        choices: list[tuple[str, str]] = [("", str(_("No requirement")))]
         choices += [(p.id, p.name) for p in providers]
         field = self.fields["provider"]
         assert isinstance(field, forms.ChoiceField)  # noqa: S101 - narrows the type

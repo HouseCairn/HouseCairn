@@ -35,13 +35,11 @@
     </form>
     {% if invitations %}
       <h2>{% translate "Pending invitations" %}</h2>
-      <div class="list">
-        {% for invitation in invitations %}
-          <div class="row">
-            <span class="row-body">
-              <span class="row-title">{{ invitation.email }}</span>
-              <span class="row-text">{{ invitation.get_role_display }} · {% blocktranslate with date=invitation.expires_at|date:"SHORT_DATE_FORMAT" %}until {{ date }}{% endblocktranslate %}</span>
-            </span>
+      {% for invitation in invitations %}
+        <section class="card">
+          <p class="row-title">{{ invitation.email }}</p>
+          <p class="row-text">{{ invitation.get_role_display }} · {% blocktranslate with date=invitation.expires_at|date:"SHORT_DATE_FORMAT" %}until {{ date }}{% endblocktranslate %}</p>
+          <div class="button-row">
             <form method="post" action="{% url 'homes:invitation-resend' home_id=home.id invitation_id=invitation.id %}">
               {% csrf_token %}
               <button type="submit" class="button-secondary button-small">{% translate "Send again" %}</button>
@@ -51,8 +49,8 @@
               <button type="submit" class="button-danger button-small">{% translate "Revoke" %}</button>
             </form>
           </div>
-        {% endfor %}
-      </div>
+        </section>
+      {% endfor %}
     {% endif %}
     {% if providers %}
       <h2>{% translate "Sign-in" %}</h2>

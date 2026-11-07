@@ -425,8 +425,8 @@ msgid "Sign-in required to open this home"
 msgstr "Connexion exigée pour ouvrir ce logement"
 
 #: homes/forms.py
-msgid "No requirement: any sign-in method"
-msgstr "Aucune exigence : toute méthode de connexion"
+msgid "No requirement"
+msgstr "Aucune exigence"
 
 #: homes/forms.py
 msgid "Password"
