@@ -175,9 +175,11 @@ default-days: 7`, supported for these three ecosystems by GitHub's Dependabot
 options reference) delays version updates until a release has been public for
 a week, which leaves time for a compromised release to be noticed and pulled.
 Security updates are not delayed. The `docker` entry prepares lot J1-D and has
-nothing to update until a Dockerfile exists. The PostgreSQL service image of
-`ci.yml` is not seen by Dependabot: its tag and digest are updated by hand,
-together.
+nothing to update until a Dockerfile exists. The project stays on the Django 5.2
+LTS line: the `uv` entry ignores `version-update:semver-major` for `django`,
+`django-stubs` and `django-stubs-ext` until the migration to the next LTS. The
+PostgreSQL service image of `ci.yml` is not seen by Dependabot: its tag and
+digest are updated by hand, together.
 
 ### Checks required on `main`
 
