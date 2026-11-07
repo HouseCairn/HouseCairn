@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Install with Docker Compose"
+msgstr "Installer avec Docker Compose"
+
+msgid "HouseCairn ships as a single container image, `ghcr.io/housecairn/housecairn`, for `linux/amd64` and `linux/arm64`. It holds the web server, the background task worker and the static files. Everything it writes goes to one volume, `/data`. The design decisions behind the image are in [ADR 0015](../adr/0015-container-image-and-publication.md)."
+msgstr "HouseCairn est livré sous la forme d'une seule image de conteneur, `ghcr.io/housecairn/housecairn`, pour `linux/amd64` et `linux/arm64`. Elle contient le serveur web, le worker de tâches de fond et les fichiers statiques. Tout ce qu'elle écrit va dans un seul volume, `/data`. Les décisions de conception de l'image sont dans l'[ADR 0015](../adr/0015-container-image-and-publication.md)."
+
+msgid "Requirements"
+msgstr "Prérequis"
+
+msgid "Docker Engine with the Compose plugin (`docker compose`)."
+msgstr "Docker Engine avec le plugin Compose (`docker compose`)."
+
+msgid "A reverse proxy that terminates HTTPS in front of HouseCairn (Caddy, Traefik, nginx...). HouseCairn listens on plain HTTP, port 8000, and redirects every request to HTTPS; it expects the proxy to set `X-Forwarded-Proto`. See [Reverse proxy](../administration/reverse-proxy.md)."
+msgstr "Un reverse proxy qui termine le HTTPS devant HouseCairn (Caddy, Traefik, nginx...). HouseCairn écoute en HTTP simple, port 8000, et redirige chaque requête vers HTTPS ; il attend du proxy qu'il pose `X-Forwarded-Proto`. Voir [Reverse proxy](../administration/reverse-proxy.md)."
+
+msgid "Install"
+msgstr "Installation"
+
+msgid "Get `compose.yaml` and `deploy/production.env.example` from the repository, in the same layout:"
+msgstr "Récupérez `compose.yaml` et `deploy/production.env.example` depuis le dépôt, avec la même arborescence :"
+
+msgid "Edit `deploy/production.env`: set `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` to your host name (see [Environment variables](../administration/variables.md)). Leave `SECRET_KEY` empty: a key is generated on first start."
+msgstr "Modifiez `deploy/production.env` : définissez `ALLOWED_HOSTS` et `CSRF_TRUSTED_ORIGINS` avec votre nom d'hôte (voir [Variables d'environnement](../administration/variables.md)). Laissez `SECRET_KEY` vide : une clé est générée au premier démarrage."
+
+msgid "In `compose.yaml`, replace the `edge` tag with a released version, ideally with its digest (`ghcr.io/housecairn/housecairn:X.Y.Z@sha256:...`). [Verify the image](../security/verify-image.md) before the first start."
+msgstr "Dans `compose.yaml`, remplacez l'étiquette `edge` par une version publiée, idéalement avec son condensat (`ghcr.io/housecairn/housecairn:X.Y.Z@sha256:...`). [Vérifiez l'image](../security/verify-image.md) avant le premier démarrage."
+
+msgid "Start it, then check its state:"
+msgstr "Démarrez-le, puis vérifiez son état :"
+
+msgid "Point your reverse proxy at `http://127.0.0.1:8000`."
+msgstr "Pointez votre reverse proxy vers `http://127.0.0.1:8000`."
+
+msgid "On every start, the container creates the secret key if it is missing, applies the database migrations, then starts the web server (gunicorn, two processes by default) and the task worker (django-q2). If either stops, the container stops, and Compose restarts it."
+msgstr "À chaque démarrage, le conteneur crée la clé secrète si elle manque, applique les migrations de la base, puis lance le serveur web (gunicorn, deux processus par défaut) et le worker de tâches (django-q2). Si l'un des deux s'arrête, le conteneur s'arrête, et Compose le redémarre."
+
+msgid "Next: [create the first administrator](first-start.md)."
+msgstr "Ensuite : [créer le premier administrateur](first-start.md)."
+

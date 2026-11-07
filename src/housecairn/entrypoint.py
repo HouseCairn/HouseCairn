@@ -13,7 +13,7 @@ Usage (the image's ENTRYPOINT is `python -m housecairn.entrypoint`):
 - `manage <command> [args]`: run a Django management command.
 
 No account is created here: the first administrator signs up through the web
-interface (docs/adr/0007, docs/install.md). See docs/adr/0015.
+interface (docs/adr/0007, docs/getting-started/install.md). See docs/adr/0015.
 """
 
 from __future__ import annotations

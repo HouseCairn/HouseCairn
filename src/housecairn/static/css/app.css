@@ -179,6 +179,23 @@ hr {
   margin-left: auto;
 }
 
+/* Help link of the screen, to its page of the documentation site. */
+.help-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--hc-layout-touch-target);
+  height: var(--hc-layout-touch-target);
+  color: var(--hc-color-primary);
+  border-radius: var(--hc-radius-pill);
+  text-decoration: none;
+}
+
+.help-link:hover {
+  color: var(--hc-color-primary);
+  background: var(--hc-color-sand-soft);
+}
+
 .content {
   width: 100%;
   max-width: var(--hc-layout-content-max);

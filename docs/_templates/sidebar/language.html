@@ -1,0 +1,16 @@
+{#- Language switcher: the same page in the other language (docs/adr/0016). -#}
+{%- if hc_languages %}
+<nav class="sidebar-languages" aria-label="Language / Langue">
+  <ul>
+    {%- for item in hc_languages %}
+    <li>
+      {%- if item.current %}
+      <span aria-current="page" lang="{{ item.code }}">{{ item.label }}</span>
+      {%- else %}
+      <a href="{{ item.url }}" hreflang="{{ item.code }}" lang="{{ item.code }}">{{ item.label }}</a>
+      {%- endif %}
+    </li>
+    {%- endfor %}
+  </ul>
+</nav>
+{%- endif %}

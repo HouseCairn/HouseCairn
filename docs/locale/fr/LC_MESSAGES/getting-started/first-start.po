@@ -1,0 +1,57 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "First start"
+msgstr "Premier démarrage"
+
+msgid "The image creates no account and has no default password. The first administrator comes from one of these, right after the first start."
+msgstr "L'image ne crée aucun compte et n'a aucun mot de passe par défaut. Le premier administrateur vient de l'une de ces voies, juste après le premier démarrage."
+
+msgid "Single sign-on (OpenID Connect)"
+msgstr "Authentification unique (OpenID Connect)"
+
+msgid "Set `OIDC_SERVER_URL`, `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET`, and preferably `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`. The first person to sign in through the provider becomes the instance administrator; if the address is set, only an identity with that verified address can. See [Single sign-on](../administration/oidc.md)."
+msgstr "Définissez `OIDC_SERVER_URL`, `OIDC_CLIENT_ID` et `OIDC_CLIENT_SECRET`, et de préférence `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`. La première personne qui se connecte par le fournisseur devient l'administratrice de l'instance ; si l'adresse est définie, seule une identité ayant cette adresse vérifiée le peut. Voir [Authentification unique](../administration/oidc.md)."
+
+msgid "A local account"
+msgstr "Un compte local"
+
+msgid "Create it from the command line:"
+msgstr "Créez-le en ligne de commande :"
+
+msgid "Local sign-up from the web page stays closed unless `HOUSECAIRN_SIGNUP_OPEN=true`."
+msgstr "L'inscription locale depuis la page web reste fermée tant que `HOUSECAIRN_SIGNUP_OPEN=true` n'est pas défini."
+
+msgid "Sign in"
+msgstr "Se connecter"
+
+msgid "Open the address of your instance and sign in with the account you created."
+msgstr "Ouvrez l'adresse de votre instance et connectez-vous avec le compte que vous avez créé."
+
+msgid "The sign-in page, on a computer."
+msgstr "La page de connexion, sur ordinateur."
+
+msgid "After signing in, HouseCairn shows the list of your homes. A new instance has none, and there is no screen to create one yet; the screenshot below comes from a demonstration instance."
+msgstr "Après la connexion, HouseCairn affiche la liste de vos logements. Une nouvelle instance n'en a aucun, et il n'existe pas encore d'écran pour en créer un ; la capture ci-dessous vient d'une instance de démonstration."
+
+msgid "The list of homes, on a phone."
+msgstr "La liste des logements, sur téléphone."
+

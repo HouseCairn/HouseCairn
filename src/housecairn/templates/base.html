@@ -27,7 +27,14 @@
         <span class="brand-name">HouseCairn</span>
         <img class="brand-logo" src="{% static 'img/brand/housecairn-logo.svg' %}" alt="HouseCairn" width="140" height="40">
       </a>
-      <div class="appbar-actions">{% block header_actions %}{% endblock header_actions %}</div>
+      <div class="appbar-actions">
+        {% if help_url %}
+          <a class="help-link" href="{{ help_url }}" rel="help" title="{% translate 'Help for this page' %}" aria-label="{% translate 'Help for this page' %}">
+            {% include "components/icon.html" with name="help" %}
+          </a>
+        {% endif %}
+        {% block header_actions %}{% endblock header_actions %}
+      </div>
     </header>
     {% if user.is_authenticated %}
       <nav class="nav" aria-label="{% translate 'Main navigation' %}">

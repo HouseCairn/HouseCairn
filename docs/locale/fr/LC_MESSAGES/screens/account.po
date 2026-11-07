@@ -1,0 +1,27 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 20:34+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Account pages"
+msgstr "Pages du compte"
+
+msgid "The other pages under `/accounts/` manage your account: sign-up when it is open, sign-out, password change and reset, email addresses, two-factor authentication (authenticator app, recovery codes, passkeys) and the identities linked through single sign-on. They come from django-allauth and use the layout of the application. They are listed on the [More](more.md) page, under *Account security*. How passkeys are used to sign in is on the [Sign-in](sign-in.md) page."
+msgstr "Les autres pages sous `/accounts/` gèrent votre compte : inscription lorsqu'elle est ouverte, déconnexion, changement et réinitialisation du mot de passe, adresses e-mail, authentification à deux facteurs (application d'authentification, codes de récupération, clés d'accès) et identités liées par l'authentification unique. Elles viennent de django-allauth et reprennent la mise en page de l'application. Elles sont listées sur la page [Plus](more.md), sous *Sécurité du compte*. L'usage des clés d'accès pour se connecter est décrit sur la page [Connexion](sign-in.md)."
+

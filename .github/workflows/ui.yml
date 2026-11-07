@@ -1,8 +1,9 @@
 # Interface checks in a real browser (docs/adr/0017, docs/adr/0018): screenshots of
 # the main screens on a phone and a desktop, in English and French, attached to the
 # run, and an end-to-end passkey sign-in with Chromium's virtual authenticator.
-# Not a required check: it produces evidence for review. Playwright is installed
-# for this job only, pinned, and is not a dependency of the application.
+# Not a required check: it produces evidence for review. Playwright comes from the
+# `docs` dependency group (locked in uv.lock, docs/adr/0016): it is not a dependency
+# of the application.
 name: UI
 
 on:
@@ -24,7 +25,6 @@ concurrency:
 env:
   UV_LOCKED: "1"
   PYTHONDONTWRITEBYTECODE: "1"
-  PLAYWRIGHT_VERSION: "1.64.1"
   # Throwaway instance, reachable from the runner only.
   SECRET_KEY: ci-only-key-for-the-ui-job-not-a-secret-0123456789abcdef
   ALLOWED_HOSTS: localhost,127.0.0.1
@@ -49,12 +49,10 @@ jobs:
           version: "0.13.7"
           python-version: "3.12"
           enable-cache: true
-      - name: Install locked dependencies (uv sync --locked)
-        run: uv sync --locked
-      - name: Install Playwright and Chromium
-        run: |
-          uv run --no-project --with "playwright==${PLAYWRIGHT_VERSION}" \
-            python -m playwright install --with-deps chromium
+      - name: Install locked dependencies with the docs group (uv sync --locked)
+        run: uv sync --locked --group docs
+      - name: Install the browser (playwright install)
+        run: uv run playwright install --with-deps --only-shell --no-progress chromium
       - name: Start the instance for the screenshots (production settings)
         env:
           HOUSECAIRN_DATA_DIR: ${{ runner.temp }}/shots-data
@@ -78,8 +76,8 @@ jobs:
           for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/healthz && break; sleep 1; done
       - name: Take the screenshots
         run: |
-          uv run --no-project --with "playwright==${PLAYWRIGHT_VERSION}" \
-            python tests/e2e/browser_checks.py capture --base http://localhost:8000 --out "$RUNNER_TEMP/screenshots"
+          uv run python tests/e2e/browser_checks.py capture \
+            --base http://localhost:8000 --out "$RUNNER_TEMP/screenshots"
       - name: Start the instance for the passkey sign-in (development settings)
         env:
           # WebAuthn needs a secure origin: http://localhost is one for the browser, and the
@@ -99,8 +97,7 @@ jobs:
           for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8001/healthz && break; sleep 1; done
       - name: Sign in with a passkey (virtual authenticator)
         run: |
-          uv run --no-project --with "playwright==${PLAYWRIGHT_VERSION}" \
-            python tests/e2e/browser_checks.py passkey --base http://localhost:8001
+          uv run python tests/e2e/browser_checks.py passkey --base http://localhost:8001
       - name: Upload the screenshots
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

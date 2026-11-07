@@ -70,7 +70,9 @@ icon addresses carry a content hash in production.
 **Evidence for review.** The workflow `ui.yml` (not a required check) starts a
 throwaway instance, takes screenshots of the main screens on a phone and a desktop in
 English and French, and attaches them to the run. Playwright is installed for that
-job only, at a pinned version; it is not a dependency of the application.
+job only, from the `docs` dependency group locked in `uv.lock`
+([0016](0016-documentation-site.md)); it is not a dependency of the application. The
+documentation job keeps its own screenshots (the pages of the site) as an artifact too.
 
 **Screens of the mock-up not built yet.** Household, API tokens, notifications,
 integrations, data, onboarding, and every business screen: they do not exist in the

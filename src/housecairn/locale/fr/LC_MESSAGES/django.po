@@ -363,6 +363,10 @@ msgstr "Code source et signalement de sécurité sur GitHub."
 msgid "Developed with an AI agent, under human review."
 msgstr "Développé avec un agent IA, sous revue humaine."
 
+#: templates/base.html
+msgid "Help for this page"
+msgstr "Aide sur cette page"
+
 #: templates/core/index.html
 msgid "Welcome"
 msgstr "Bienvenue"

@@ -1,0 +1,54 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 20:34+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Single sign-on (OpenID Connect)"
+msgstr "Authentification unique (OpenID Connect)"
+
+msgid "HouseCairn signs people in through any OpenID Connect provider; none is named in the code. Single sign-on is off until `OIDC_SERVER_URL` is set ([ADR 0007](../adr/0007-authentication-and-api-tokens.md))."
+msgstr "HouseCairn authentifie les personnes auprès de n'importe quel fournisseur OpenID Connect ; aucun n'est nommé dans le code. L'authentification unique reste désactivée tant que `OIDC_SERVER_URL` n'est pas définie ([ADR 0007](../adr/0007-authentication-and-api-tokens.md))."
+
+msgid "At the provider, create a client (an application) of the web type, with the authorization code flow and this redirect URI, for an instance at `housecairn.example.com`:"
+msgstr "Chez le fournisseur, créez un client (une application) de type web, avec le flux par code d'autorisation et cette URI de redirection, pour une instance à l'adresse `housecairn.example.com` :"
+
+msgid "The second `oidc` is `OIDC_PROVIDER_ID`, `oidc` by default."
+msgstr "Le second `oidc` est `OIDC_PROVIDER_ID`, `oidc` par défaut."
+
+msgid "In `deploy/production.env`:"
+msgstr "Dans `deploy/production.env` :"
+
+msgid "`OIDC_SERVER_URL` is the issuer: HouseCairn reads `/.well-known/openid-configuration` below it. `OIDC_PROVIDER_NAME` sets the name of the sign-in button, for example `Zitadel` (`Single sign-on` by default); the sign-in page shows one button per provider, under the form."
+msgstr "`OIDC_SERVER_URL` est l'émetteur (issuer) : HouseCairn lit `/.well-known/openid-configuration` sous cette adresse. `OIDC_PROVIDER_NAME` donne le nom du bouton de connexion, par exemple `Zitadel` (`Single sign-on` par défaut) ; la page de connexion affiche un bouton par fournisseur, sous le formulaire."
+
+msgid "Restart the container, then sign in right away with the address set in `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, which the provider must have verified."
+msgstr "Redémarrez le conteneur, puis connectez-vous aussitôt avec l'adresse définie dans `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, que le fournisseur doit avoir vérifiée."
+
+msgid "Who gets an account"
+msgstr "Qui obtient un compte"
+
+msgid "**First sign-in of a new instance**: while the instance has never had an account, the first identity to sign in becomes its administrator; with `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, only that verified address can."
+msgstr "**Première connexion d'une nouvelle instance** : tant que l'instance n'a jamais eu de compte, la première identité qui se connecte en devient l'administratrice ; avec `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, seule cette adresse vérifiée le peut."
+
+msgid "**Afterwards**, with `HOUSECAIRN_OIDC_SIGNUP=closed` (the default), an identity without an account is refused, with a page that asks to contact the administrator. With `open`, anyone the provider accepts gets an account, without administration rights."
+msgstr "**Ensuite**, avec `HOUSECAIRN_OIDC_SIGNUP=closed` (le défaut), une identité sans compte est refusée, avec une page qui invite à contacter l'administrateur. Avec `open`, toute personne que le fournisseur accepte obtient un compte, sans droits d'administration."
+
+msgid "An existing local account is never taken over by an identity that only shares its address: sign in with the local account, then link the identity from the account pages."
+msgstr "Un compte local existant n'est jamais repris par une identité qui en partage seulement l'adresse : connectez-vous avec le compte local, puis liez l'identité depuis les pages du compte."
+

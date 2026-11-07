@@ -1,0 +1,27 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Guides"
+msgstr "Guides"
+
+msgid "There is no guide yet. Guides will explain how to plan recurring maintenance and renovation projects once the screens to do so exist. Until then, see [Getting started](../getting-started/index.md) to install HouseCairn."
+msgstr "Il n'y a pas encore de guide. Les guides expliqueront comment planifier l'entretien récurrent et les projets de travaux, une fois que les écrans correspondants existeront. D'ici là, voyez [Démarrer](../getting-started/index.md) pour installer HouseCairn."
+

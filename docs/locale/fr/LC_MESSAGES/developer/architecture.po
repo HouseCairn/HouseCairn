@@ -1,0 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Architecture"
+msgstr "Architecture"
+
+msgid "HouseCairn is a Django application with HTMX for the interactive parts, in a single container. The main rules, each recorded in a decision:"
+msgstr "HouseCairn est une application Django, avec HTMX pour les parties interactives, dans un seul conteneur. Les règles principales, chacune consignée dans une décision :"
+
+msgid "**One service layer** holds the business rules; web views and API views call it and hold none of their own ([ADR 0002](../adr/0002-single-service-layer.md))."
+msgstr "**Une seule couche de services** porte les règles métier ; les vues web et les vues d'API l'appellent et n'en ont aucune en propre ([ADR 0002](../adr/0002-single-service-layer.md))."
+
+msgid "**Web and API parity**: what the web interface does, the API does too, checked by a test ([ADR 0003](../adr/0003-web-api-parity.md))."
+msgstr "**Parité web et API** : ce que fait l'interface web, l'API le fait aussi, vérifié par un test ([ADR 0003](../adr/0003-web-api-parity.md))."
+
+msgid "**Every query is scoped** to the homes of the user, or of the API token ([ADR 0006](../adr/0006-home-scoping.md))."
+msgstr "**Chaque requête est bornée** aux logements de l'utilisateur, ou du jeton d'API ([ADR 0006](../adr/0006-home-scoping.md))."
+
+msgid "**Stable identifiers and addresses**: UUIDs, soft deletion, addresses that do not change ([ADR 0005](../adr/0005-stable-identifiers-and-soft-deletion.md), [ADR 0010](../adr/0010-stable-urls.md))."
+msgstr "**Identifiants et adresses stables** : UUID, suppression logique, adresses qui ne changent pas ([ADR 0005](../adr/0005-stable-identifiers-and-soft-deletion.md), [ADR 0010](../adr/0010-stable-urls.md))."
+
+msgid "**Background tasks** with django-q2 and the database as broker ([ADR 0008](../adr/0008-background-tasks.md))."
+msgstr "**Tâches de fond** avec django-q2 et la base de données comme file ([ADR 0008](../adr/0008-background-tasks.md))."
+
+msgid "**No external resource** and a strict Content Security Policy ([ADR 0011](../adr/0011-no-external-resources-and-csp.md))."
+msgstr "**Aucune ressource externe** et une Content Security Policy stricte ([ADR 0011](../adr/0011-no-external-resources-and-csp.md))."
+
+msgid "**English source, French shipped**, no hard-coded string ([ADR 0013](../adr/0013-internationalization.md))."
+msgstr "**Anglais comme langue source, français livré**, aucune chaîne en dur ([ADR 0013](../adr/0013-internationalization.md))."
+
+msgid "The code is in `src/housecairn/`, one Django application per domain (`accounts`, `apitokens`, `core`, `events`, `homes`)."
+msgstr "Le code est dans `src/housecairn/`, une application Django par domaine (`accounts`, `apitokens`, `core`, `events`, `homes`)."
+

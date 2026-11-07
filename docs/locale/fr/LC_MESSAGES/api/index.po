@@ -1,0 +1,46 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "API"
+msgstr "API"
+
+msgid "HouseCairn has a REST API, mounted at `/api/v1/`, with the same rules as the web interface: every request only sees the homes of its user ([ADR 0004](../adr/0004-versioned-rest-api.md), [ADR 0006](../adr/0006-home-scoping.md))."
+msgstr "HouseCairn a une API REST, montée sur `/api/v1/`, avec les mêmes règles que l'interface web : chaque requête ne voit que les logements de son utilisateur ([ADR 0004](../adr/0004-versioned-rest-api.md), [ADR 0006](../adr/0006-home-scoping.md))."
+
+msgid "**JSON** only, for requests and responses."
+msgstr "**JSON** uniquement, pour les requêtes et les réponses."
+
+msgid "**Versioned**: version 1 only gets additive changes; a breaking change will go to `/api/v2/`, served alongside version 1 for a deprecation period."
+msgstr "**Versionnée** : la version 1 ne reçoit que des ajouts ; une rupture ira sur `/api/v2/`, servie en parallèle de la version 1 pendant une période de dépréciation."
+
+msgid "**Cursor pagination**, up to 200 items per page."
+msgstr "**Pagination par curseur**, jusqu'à 200 éléments par page."
+
+msgid "**Updates** with `PATCH`; `PUT` is not offered."
+msgstr "**Mises à jour** avec `PATCH` ; `PUT` n'est pas proposé."
+
+msgid "**Authentication** by API token, `Authorization: Bearer hc_...`, with the scopes `read`, `write` and `events`, bound to one or more homes and expiring after 90 days by default ([ADR 0007](../adr/0007-authentication-and-api-tokens.md)). There is no screen to create a token yet."
+msgstr "**Authentification** par jeton d'API, `Authorization: Bearer hc_...`, avec les portées `read`, `write` et `events`, liée à un ou plusieurs logements et expirant par défaut après 90 jours ([ADR 0007](../adr/0007-authentication-and-api-tokens.md)). Il n'existe pas encore d'écran pour créer un jeton."
+
+#, python-brace-format
+msgid "The [reference](reference.md) lists every operation. It is generated from the OpenAPI 3.1 schema of the code at each build of this site: {download}`download the schema (openapi.json) </_generated/openapi.json>`. A running instance serves the same schema at `/api/schema/` and an interactive explorer at `/api/docs/`, both to signed-in users only."
+msgstr "La [référence](reference.md) liste chaque opération. Elle est générée à chaque construction de ce site à partir du schéma OpenAPI 3.1 du code : {download}`télécharger le schéma (openapi.json) </_generated/openapi.json>`. Une instance en marche sert le même schéma sur `/api/schema/` et un explorateur interactif sur `/api/docs/`, réservés aux personnes connectées."
+

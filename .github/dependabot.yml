@@ -25,6 +25,11 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "django-stubs-ext"
         update-types: ["version-update:semver-major"]
+      # Sphinx 9.2 and later need Python 3.13; the project is on 3.12
+      # (docs/adr/0016). Patch releases still come through. Remove this block
+      # at the migration to a newer Python.
+      - dependency-name: "sphinx"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     commit-message:
       prefix: chore(deps)
     open-pull-requests-limit: 5
@@ -44,10 +49,10 @@ updates:
     open-pull-requests-limit: 5
 
   # Base images of the Dockerfile (docs/adr/0015): tag and digest together.
-  # The Python base image stays on the 3.12 line: Dependabot reports the jump to
-  # 3.13 or later as a minor update, and such a jump is a migration lot (Django
+  # The Python base image stays on the 3.13 line: Dependabot reports the jump to
+  # 3.14 or later as a minor update, and such a jump is a migration lot (Django
   # 5.2 support, requires-python, uv lock, CI), not an automatic update. Patch
-  # releases of 3.12.x still come through. Remove this ignore at that migration.
+  # releases of 3.13.x still come through. Remove this ignore at that migration.
   - package-ecosystem: docker
     directory: /
     schedule:

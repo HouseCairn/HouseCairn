@@ -5,12 +5,12 @@ description = "Self-hosted planner for home maintenance and renovation projects.
 readme = "README.md"
 license = "AGPL-3.0-only"
 license-files = ["LICENSE", "NOTICE"]
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.13,<3.14"
 authors = [{ name = "Robvred" }]
 classifiers = [
   "Framework :: Django",
   "Framework :: Django :: 5.2",
-  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Private :: Do Not Upload",
 ]
 dependencies = [
@@ -50,6 +50,16 @@ dev = [
   "pytest-cov>=7.0",
   "types-python-dateutil>=2.9",
 ]
+# Documentation site and its screenshots (docs/adr/0016):
+# uv sync --locked --group docs.
+docs = [
+  # Sphinx 9.2 needs Python 3.13; the project is on 3.12 (docs/adr/0016).
+  "sphinx>=9.1.1",
+  "furo>=2025.12.19",
+  "myst-parser>=5.1",
+  "sphinx-intl>=2.4",
+  "playwright>=1.64",
+]
 
 [build-system]
 requires = ["hatchling>=1.27"]
@@ -83,7 +93,7 @@ known-first-party = ["scripts"]
 "tests/**" = ["S101", "S105", "S106"]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 mypy_path = "src"
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 strict = true
@@ -99,6 +109,8 @@ module = [
   "csp.*",
   "drf_spectacular.*",
   "drf_spectacular_sidecar.*",
+  # Documentation group only (docs/adr/0016): not installed by `uv sync`.
+  "playwright.*",
 ]
 ignore_missing_imports = true
 

@@ -1,4 +1,4 @@
-# Container image of HouseCairn (docs/adr/0015, docs/install.md).
+# Container image of HouseCairn (docs/adr/0015, docs/getting-started/install.md).
 #
 # One image for every instance: SQLite by default, PostgreSQL when DATABASE_URL
 # says so. Everything written at run time goes to the /data volume; the rest of
@@ -12,7 +12,7 @@ FROM ghcr.io/astral-sh/uv:0.13.7@sha256:96f40d3904aad8d0bd010539001d36c8e2188b98
 # ---------------------------------------------------------------------------
 # Build stage: dependencies, design tokens, translations, static files.
 # ---------------------------------------------------------------------------
-FROM python:3.12.16-slim-trixie@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54 AS build
+FROM python:3.13.18-slim-trixie@sha256:09a17cad02668ae61ece136b4fd36ac3849e14f670ebedb637ea3e15580525bc AS build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -31,7 +31,7 @@ COPY --from=uv /uv /usr/local/bin/uv
 # final stage); uv never downloads another one. Bytecode is compiled now, since
 # the final image's file system is read-only.
 ENV UV_PROJECT_ENVIRONMENT=/app/.venv \
-    UV_PYTHON=/usr/local/bin/python3.12 \
+    UV_PYTHON=/usr/local/bin/python3.13 \
     UV_PYTHON_DOWNLOADS=never \
     UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
@@ -64,7 +64,7 @@ RUN DEBUG=true .venv/bin/python manage.py build_design_tokens \
 # ---------------------------------------------------------------------------
 # Final stage.
 # ---------------------------------------------------------------------------
-FROM python:3.12.16-slim-trixie@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54
+FROM python:3.13.18-slim-trixie@sha256:09a17cad02668ae61ece136b4fd36ac3849e14f670ebedb637ea3e15580525bc
 
 # The base image's pip is not used at run time (dependencies are in
 # /app/.venv): removed, with its advisories. Then a fixed, unprivileged
@@ -107,7 +107,7 @@ LABEL org.opencontainers.image.title="HouseCairn" \
     org.opencontainers.image.description="Self-hosted planner for home maintenance and renovation projects." \
     org.opencontainers.image.source="https://github.com/HouseCairn/housecairn" \
     org.opencontainers.image.url="https://github.com/HouseCairn/housecairn" \
-    org.opencontainers.image.documentation="https://github.com/HouseCairn/housecairn/blob/main/docs/install.md" \
+    org.opencontainers.image.documentation="https://docs.housecairn.app/getting-started/install/" \
     org.opencontainers.image.licenses="AGPL-3.0-only" \
     org.opencontainers.image.version="${VERSION}" \
     org.opencontainers.image.revision="${REVISION}"
