@@ -58,7 +58,10 @@ added, changed or deleted, by `audit.record_object`: the title of the object as 
 named it (a photo or a file: the room, the item or the task it belongs to), cut to 120
 characters and on one line, and for a change the names of the fields that changed, never
 their values. No note, cost, procedure, file name or file. The entries stay in the home's log
-(owners only) and go with the home.
+(owners only) and go with the home. The log names people as every other page does, through
+`person_name`: on the screens the name, never the address; in the API `actor_name` and
+`target_name` (empty for a deleted account or the system) next to the `actor_email` and
+`target_email` that existed.
 
 **Seasons and the hemisphere of the home.** A task limited to a season takes a `season`:
 `spring`, `summer`, `autumn`, `winter`, `heating` or `custom`, empty for the whole year. The

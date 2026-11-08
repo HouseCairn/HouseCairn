@@ -163,6 +163,59 @@ class TestVisibility:
         assert audit.home_log(alice, alice_home.id).count() == 1
 
 
+class TestNames:
+    """The log names people, as every other page does, and not by their address (ADR 0045)."""
+
+    def test_the_log_of_a_home_shows_the_name(
+        self,
+        client: Client,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        add_member: Callable[..., Membership],
+    ) -> None:
+        alice.display_name = "Ally"
+        alice.save()
+        membership = add_member(alice_home, bob, Role.MEMBER)
+        services.change_role(alice, membership, Role.READ_ONLY)
+        client.force_login(alice)
+        page = client.get(reverse("homes:audit", kwargs={"home_id": alice_home.id})).text
+        assert "Ally" in page
+        assert "bob" in page  # no display name: the start of the address, as elsewhere
+        assert "alice@example.com" not in page
+        assert "bob@example.com" not in page
+
+    def test_the_log_of_the_instance_shows_the_name(
+        self, client: Client, make_user: Callable[..., User]
+    ) -> None:
+        admin = make_user("admin@example.com", is_staff=True, is_superuser=True)
+        admin.display_name = "The admin"
+        admin.save()
+        audit.record("account.created", actor=admin, by="administrator")
+        client.force_login(admin)
+        page = client.get(reverse("instance:audit")).text
+        assert "The admin" in page
+        assert "admin@example.com" not in page
+
+    def test_the_api_carries_the_name(
+        self,
+        client: Client,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        add_member: Callable[..., Membership],
+    ) -> None:
+        alice.display_name = "Ally"
+        alice.save()
+        services.change_role(alice, add_member(alice_home, bob, Role.MEMBER), Role.READ_ONLY)
+        client.force_login(alice)
+        url = reverse("api-v1:home-audit", kwargs={"home_id": alice_home.id})
+        entries = {e["action"]: e for e in client.get(url).json()["results"]}
+        changed = entries["member.role_changed"]
+        assert (changed["actor_name"], changed["target_name"]) == ("Ally", "bob")
+        assert entries["home.created"]["target_name"] == ""
+
+
 def test_an_unknown_action_is_shown_as_its_code() -> None:
     from housecairn.audit.labels import label
 
