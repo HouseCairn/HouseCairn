@@ -537,11 +537,12 @@ class TestContentSecurityPolicy:
         assert self._form_action(client).split() == ["form-action", "'self'"]
         provider = declare(admin_user)
         declare(admin_user, slug="off", issuer="https://off.example.com", enabled=False)
-        directive = self._form_action(client)
-        assert "https://id.example.com" in directive
-        assert "off.example.com" not in directive
-        assert "*" not in directive
-        assert "/realms" not in directive
+        # The sources of the directive, one by one: exactly 'self' and the enabled origin.
+        assert self._form_action(client).split() == [
+            "form-action",
+            "'self'",
+            "https://id.example.com",
+        ]
         providers.update(admin_user, provider, {"enabled": False})
         assert self._form_action(client).split() == ["form-action", "'self'"]
 
