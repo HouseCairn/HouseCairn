@@ -1,0 +1,11 @@
+{# The fields of `form`, a ProviderForm, in the layout of `form.as_p`, except that a box keeps its label beside it and its help in a paragraph below, as on the settings screen (J1-F). #}
+{{ form.non_field_errors }}
+{% for field in form %}
+  {{ field.errors }}
+  {% if field.widget_type == "checkbox" %}
+    <p>{{ field.label_tag }}{{ field }}</p>
+    {% if field.help_text %}<p class="small helptext" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}
+  {% else %}
+    <p>{{ field.label_tag }}{{ field }}{% if field.help_text %}<span class="helptext" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</span>{% endif %}</p>
+  {% endif %}
+{% endfor %}

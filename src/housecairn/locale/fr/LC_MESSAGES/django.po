@@ -5,13 +5,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 13:28+0000\n"
+"POT-Creation-Date: 2026-11-08 14:32+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: accounts/admin.py
+msgid ""
+"This is the only administrator of the instance: make another account an "
+"administrator first."
+msgstr ""
+"C'est le seul administrateur de l'instance : nommez d'abord un autre compte "
+"administrateur."
 
 #: accounts/apps.py templates/instance/overview.html
 msgid "Accounts"
@@ -142,8 +150,8 @@ msgstr "Écriture"
 msgid "Post events"
 msgstr "Envoi d'événements"
 
-#: apitokens/models.py homes/models.py rooms/models.py stock/models.py
-#: tasks/models.py
+#: apitokens/models.py homes/models.py instance/models.py rooms/models.py
+#: stock/models.py tasks/models.py
 msgid "name"
 msgstr "nom"
 
@@ -291,6 +299,37 @@ msgstr "Réglage secret %(setting)s modifié"
 #, python-format
 msgid "Setting %(setting)s reset to its default"
 msgstr "Réglage %(setting)s rétabli à son défaut"
+
+#: audit/labels.py
+#, python-format
+msgid "Sign-in provider %(provider)s added"
+msgstr "Fournisseur de connexion %(provider)s ajouté"
+
+#: audit/labels.py
+#, python-format
+msgid ""
+"Sign-in provider %(provider)s: %(setting)s changed from %(old)s to %(new)s"
+msgstr ""
+"Fournisseur de connexion %(provider)s : %(setting)s passé de %(old)s à "
+"%(new)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Sign-in provider %(provider)s: client secret changed"
+msgstr "Fournisseur de connexion %(provider)s : secret client modifié"
+
+#: audit/labels.py
+#, python-format
+msgid ""
+"Sign-in provider %(provider)s: client secret cleared, the issuer changed"
+msgstr ""
+"Fournisseur de connexion %(provider)s : secret client effacé, l'émetteur a "
+"changé"
+
+#: audit/labels.py
+#, python-format
+msgid "Sign-in provider %(provider)s deleted"
+msgstr "Fournisseur de connexion %(provider)s supprimé"
 
 #: audit/labels.py
 msgid "Account changed in the administration site"
@@ -626,6 +665,65 @@ msgstr "Bienvenue dans %(home)s."
 msgid "You joined %(home)s."
 msgstr "Vous avez rejoint %(home)s."
 
+#: instance/forms.py templates/instance/provider.html
+#: templates/instance/providers.html
+msgid "Identifier"
+msgstr "Identifiant"
+
+#: instance/forms.py
+msgid ""
+"In the redirect URI; lowercase letters, digits and hyphens. It never changes "
+"and is never given to another provider."
+msgstr ""
+"Dans l'URI de redirection ; lettres minuscules, chiffres et tirets. Il ne "
+"change jamais et n'est jamais donné à un autre fournisseur."
+
+#: instance/forms.py
+msgid "Name"
+msgstr "Nom"
+
+#: instance/forms.py
+msgid "On the button, such as Company SSO."
+msgstr "Sur le bouton, par exemple Company SSO."
+
+#: instance/forms.py templates/instance/providers.html
+msgid "Issuer"
+msgstr "Émetteur"
+
+#: instance/forms.py
+msgid "https:// address; its OpenID configuration is read below it."
+msgstr "Adresse https:// ; sa configuration OpenID est lue en dessous."
+
+#: instance/forms.py templates/instance/providers.html
+msgid "Client identifier"
+msgstr "Identifiant client"
+
+#: instance/forms.py templates/instance/provider.html
+#: templates/instance/providers.html
+msgid "Client secret"
+msgstr "Secret client"
+
+#: instance/forms.py
+msgid "Write only: it is never shown again. Empty: unchanged."
+msgstr "Écriture seule : il n'est plus jamais affiché. Vide : inchangé."
+
+#: instance/forms.py instance/models.py
+msgid "PKCE"
+msgstr "PKCE"
+
+#: instance/forms.py
+msgid "Recommended; on by default."
+msgstr "Recommandé ; activé par défaut."
+
+#: instance/forms.py
+msgid "Enabled"
+msgstr "Activé"
+
+#: instance/forms.py
+msgid "Shown on the sign-in page. Test the issuer before you enable it."
+msgstr ""
+"Affiché sur la page de connexion. Testez l'émetteur avant de l'activer."
+
 #: instance/models.py
 msgid "instance invitation"
 msgstr "invitation à l'instance"
@@ -635,12 +733,158 @@ msgid "instance invitations"
 msgstr "invitations à l'instance"
 
 #: instance/models.py
+msgid "identifier"
+msgstr "identifiant"
+
+#: instance/models.py
+msgid "issuer"
+msgstr "émetteur"
+
+#: instance/models.py
+msgid "client identifier"
+msgstr "identifiant client"
+
+#: instance/models.py
+msgid "client secret"
+msgstr "secret client"
+
+#: instance/models.py templates/instance/providers.html
+msgid "enabled"
+msgstr "activé"
+
+#: instance/models.py
+msgid "sign-in provider"
+msgstr "fournisseur de connexion"
+
+#: instance/models.py
+msgid "sign-in providers"
+msgstr "fournisseurs de connexion"
+
+#: instance/models.py
 msgid "instance setting"
 msgstr "réglage de l'instance"
 
 #: instance/models.py
 msgid "instance settings"
 msgstr "réglages de l'instance"
+
+#: instance/providers.py
+msgid "Expected an https:// address."
+msgstr "Une adresse https:// est attendue."
+
+#: instance/providers.py
+msgid "Expected an https:// address, without query or credentials."
+msgstr "Une adresse https:// est attendue, sans paramètres ni identifiants."
+
+#: instance/providers.py
+msgid "This address cannot be an identity provider."
+msgstr "Cette adresse ne peut pas être un fournisseur d'identité."
+
+#: instance/providers.py instance/registry.py
+msgid "Expected text."
+msgstr "Du texte est attendu."
+
+#: instance/providers.py instance/registry.py
+msgid "Expected a single line of text."
+msgstr "Une seule ligne de texte est attendue."
+
+#: instance/providers.py
+msgid "This field is required."
+msgstr "Ce champ est obligatoire."
+
+#: instance/providers.py
+msgid ""
+"From 2 to 32 lowercase letters, digits or hyphens, starting with a letter or "
+"a digit."
+msgstr ""
+"De 2 à 32 lettres minuscules, chiffres ou tirets, en commençant par une "
+"lettre ou un chiffre."
+
+#: instance/providers.py
+msgid "This identifier is or was already used."
+msgstr "Cet identifiant est ou a déjà été utilisé."
+
+#: instance/providers.py instance/registry.py
+msgid "Expected true or false."
+msgstr "Vrai ou faux est attendu."
+
+#: instance/providers.py
+msgid ""
+"This is your last way to sign in: set a password or a passkey, or link "
+"another provider, first."
+msgstr ""
+"C'est votre dernier moyen de connexion : définissez d'abord un mot de passe "
+"ou une clé d'accès, ou liez un autre fournisseur."
+
+#: instance/providers.py
+msgid ""
+"The client secret is not kept for another issuer: enter it again, or disable "
+"the provider to save the new issuer without a secret."
+msgstr ""
+"Le secret client n'est pas gardé pour un autre émetteur : saisissez-le de "
+"nouveau, ou désactivez le fournisseur pour enregistrer le nouvel émetteur "
+"sans secret."
+
+#: instance/providers.py
+msgid "The identifier of a provider never changes."
+msgstr "L'identifiant d'un fournisseur ne change jamais."
+
+#: instance/providers.py
+msgid "Unknown field."
+msgstr "Champ inconnu."
+
+#: instance/providers.py
+msgid ""
+"Accounts are linked to this provider: another issuer could sign in as them. "
+"Declare a new provider for the new issuer."
+msgstr ""
+"Des comptes sont liés à ce fournisseur : un autre émetteur pourrait se "
+"connecter à leur place. Déclarez un nouveau fournisseur pour le nouvel "
+"émetteur."
+
+#: instance/providers.py
+#, python-format
+msgid ""
+"%(count)s home(s) require this provider: it cannot be deleted. Disable it "
+"instead; the owners, or you from the instance page, can then remove the "
+"requirement."
+msgstr ""
+"%(count)s logement(s) exigent ce fournisseur : il ne peut pas être supprimé. "
+"Désactivez-le plutôt ; les propriétaires, ou vous depuis la page de "
+"l'instance, pourront alors retirer l'exigence."
+
+#: instance/providers.py
+msgid "The issuer answers with a valid OpenID configuration."
+msgstr "L'émetteur répond par une configuration OpenID valide."
+
+#: instance/providers.py
+msgid "The issuer is not a valid https:// address."
+msgstr "L'émetteur n'est pas une adresse https:// valide."
+
+#: instance/providers.py
+msgid "The issuer resolves to an address the instance does not call."
+msgstr "L'émetteur désigne une adresse que l'instance n'appelle pas."
+
+#: instance/providers.py
+msgid "The issuer could not be reached."
+msgstr "L'émetteur est injoignable."
+
+#: instance/providers.py
+msgid "The secure connection to the issuer failed: check its certificate."
+msgstr ""
+"La connexion sécurisée à l'émetteur a échoué : vérifiez son certificat."
+
+#: instance/providers.py
+msgid "The issuer has no OpenID configuration at the usual address."
+msgstr "L'émetteur n'a pas de configuration OpenID à l'adresse habituelle."
+
+#: instance/providers.py
+msgid "The issuer's answer is not a valid OpenID configuration."
+msgstr "La réponse de l'émetteur n'est pas une configuration OpenID valide."
+
+#: instance/providers.py
+msgid "The OpenID configuration names another issuer."
+msgstr "La configuration OpenID nomme un autre émetteur."
 
 #: instance/registry.py
 msgid "Public address"
@@ -657,10 +901,6 @@ msgstr "Invitations"
 #: instance/registry.py templates/instance/overview.html
 msgid "Outgoing email"
 msgstr "E-mail sortant"
-
-#: instance/registry.py
-msgid "Expected true or false."
-msgstr "Vrai ou faux est attendu."
 
 #: instance/registry.py
 msgid "Expected a whole number."
@@ -684,14 +924,6 @@ msgstr "Une liste de domaines est attendue."
 #, python-brace-format
 msgid "{item} is not a domain name."
 msgstr "{item} n'est pas un nom de domaine."
-
-#: instance/registry.py
-msgid "Expected text."
-msgstr "Du texte est attendu."
-
-#: instance/registry.py
-msgid "Expected a single line of text."
-msgstr "Une seule ligne de texte est attendue."
 
 #: instance/registry.py
 #, python-brace-format
@@ -971,11 +1203,13 @@ msgstr ""
 "Confirmez votre connexion pour modifier les réglages, puis refaites la "
 "modification."
 
-#: instance/views.py
+#: instance/views.py templates/instance/provider.html
+#: templates/instance/providers.html
 msgid "set"
 msgstr "défini"
 
-#: instance/views.py
+#: instance/views.py templates/instance/provider.html
+#: templates/instance/providers.html
 msgid "not set"
 msgstr "non défini"
 
@@ -1002,6 +1236,18 @@ msgstr "Défaut rétabli."
 #: instance/views.py
 msgid "Too many tests in a short time. Try again later."
 msgstr "Trop de tests en peu de temps. Réessayez plus tard."
+
+#: instance/views.py
+msgid "Provider added."
+msgstr "Fournisseur ajouté."
+
+#: instance/views.py
+msgid "Provider deleted."
+msgstr "Fournisseur supprimé."
+
+#: instance/views.py
+msgid "Provider saved."
+msgstr "Fournisseur enregistré."
 
 #: instance/views.py
 msgid "(none)"
@@ -1333,7 +1579,9 @@ msgstr "Éléments compatibles"
 
 #: stock/forms.py
 msgid "The equipment this fits, such as the boiler a filter is made for."
-msgstr "L'équipement concerné, par exemple la chaudière pour laquelle un filtre est fait."
+msgstr ""
+"L'équipement concerné, par exemple la chaudière pour laquelle un filtre est "
+"fait."
 
 #: stock/forms.py
 msgid "Photo of the label"
@@ -1479,7 +1727,8 @@ msgstr "Article enregistré."
 #: stock/views.py
 msgid ""
 "The stock item, its suppliers and its movements disappear from the screens."
-msgstr "L'article, ses fournisseurs et ses mouvements disparaissent des écrans."
+msgstr ""
+"L'article, ses fournisseurs et ses mouvements disparaissent des écrans."
 
 #: stock/views.py
 msgid "Stock item deleted."
@@ -2168,7 +2417,8 @@ msgid "Passkeys, authenticator app, recovery codes"
 msgstr "Clés d'accès, application d'authentification, codes de récupération"
 
 #: templates/core/more.html templates/instance/audit.html
-#: templates/instance/overview.html templates/instance/settings.html
+#: templates/instance/overview.html templates/instance/providers.html
+#: templates/instance/settings.html
 msgid "Instance administration"
 msgstr "Administration de l'instance"
 
@@ -2438,11 +2688,11 @@ msgstr ""
 "s'être connectés par lui, pas avec un mot de passe ou une passkey seuls. "
 "Réglez-le depuis une session connectée par ce fournisseur."
 
-#: templates/homes/household.html templates/instance/settings.html
-#: templates/rooms/item_form.html templates/rooms/room_form.html
-#: templates/rooms/room_memory_form.html templates/stock/article_form.html
-#: templates/stock/supplier_form.html templates/tasks/completion_form.html
-#: templates/tasks/task_form.html
+#: templates/homes/household.html templates/instance/provider.html
+#: templates/instance/settings.html templates/rooms/item_form.html
+#: templates/rooms/room_form.html templates/rooms/room_memory_form.html
+#: templates/stock/article_form.html templates/stock/supplier_form.html
+#: templates/tasks/completion_form.html templates/tasks/task_form.html
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -2555,7 +2805,8 @@ msgstr ""
 "Si votre compte n'est pas encore lié à ce fournisseur, liez-le d'abord "
 "depuis vos comptes liés."
 
-#: templates/homes/sso_required.html
+#: templates/homes/sso_required.html templates/instance/provider.html
+#: templates/instance/providers.html
 msgid "Linked accounts"
 msgstr "Comptes liés"
 
@@ -2652,7 +2903,8 @@ msgstr "configuré"
 msgid "not configured"
 msgstr "non configuré"
 
-#: templates/instance/overview.html
+#: templates/instance/overview.html templates/instance/provider.html
+#: templates/instance/providers.html
 msgid "Sign-in providers"
 msgstr "Fournisseurs de connexion"
 
@@ -2717,8 +2969,122 @@ msgid "Sign-up, invitations, outgoing email, public address"
 msgstr "Inscription, invitations, e-mail sortant, adresse publique"
 
 #: templates/instance/overview.html
+msgid "Single sign-on through OpenID Connect"
+msgstr "Authentification unique par OpenID Connect"
+
+#: templates/instance/overview.html
 msgid "Administration actions, invitations, accounts"
 msgstr "Actions d'administration, invitations, comptes"
+
+#: templates/instance/provider.html
+msgid "Redirect URI"
+msgstr "URI de redirection"
+
+#: templates/instance/provider.html templates/instance/settings.html
+msgid "The stored secret can no longer be read: enter it again."
+msgstr "Le secret enregistré n'est plus lisible : saisissez-le de nouveau."
+
+#: templates/instance/provider.html
+msgid "Homes that require it"
+msgstr "Logements qui l'exigent"
+
+#: templates/instance/provider.html
+msgid ""
+"Accounts are linked to this provider, so its issuer cannot change: declare a "
+"new provider for another issuer."
+msgstr ""
+"Des comptes sont liés à ce fournisseur, son émetteur ne peut donc pas "
+"changer : déclarez un nouveau fournisseur pour un autre émetteur."
+
+#: templates/instance/provider.html templates/instance/providers.html
+msgid "Test the issuer"
+msgstr "Tester l'émetteur"
+
+#: templates/instance/provider.html templates/instance/providers.html
+msgid ""
+"Reads the issuer's OpenID configuration and checks it; nothing is saved. You "
+"can save without testing."
+msgstr ""
+"Lit la configuration OpenID de l'émetteur et la vérifie ; rien n'est "
+"enregistré. Vous pouvez enregistrer sans tester."
+
+#: templates/instance/provider.html
+msgid "Delete the provider"
+msgstr "Supprimer le fournisseur"
+
+#: templates/instance/provider.html
+msgid ""
+"People can no longer sign in with it; its identifier is never given to "
+"another provider. A provider that a home requires cannot be deleted: disable "
+"it instead."
+msgstr ""
+"On ne peut plus se connecter par lui ; son identifiant n'est jamais donné à "
+"un autre fournisseur. Un fournisseur exigé par un logement ne peut pas être "
+"supprimé : désactivez-le plutôt."
+
+#: templates/instance/provider.html templates/rooms/_photos.html
+#: templates/rooms/confirm_delete.html templates/stock/confirm_delete.html
+#: templates/tasks/_attachments.html templates/tasks/confirm_delete.html
+msgid "Delete"
+msgstr "Supprimer"
+
+#: templates/instance/providers.html
+msgid ""
+"OpenID Connect providers people can sign in with, as well as the built-in "
+"sign-in. A provider set by environment variables is shown read only. An "
+"identity never reaches an existing account through its address: each person "
+"links it once signed in."
+msgstr ""
+"Les fournisseurs OpenID Connect par lesquels on peut se connecter, en plus "
+"de la connexion intégrée. Un fournisseur défini par des variables "
+"d'environnement est affiché en lecture seule. Une identité n'atteint jamais "
+"un compte existant par son adresse : chacun la lie une fois connecté."
+
+#: templates/instance/providers.html
+msgid ""
+"Set by the variables <code>OIDC_SERVER_URL</code>, <code>OIDC_CLIENT_ID</"
+"code> and the others: change it there."
+msgstr ""
+"Défini par les variables <code>OIDC_SERVER_URL</code>, <code>OIDC_CLIENT_ID</"
+"code> et les autres : modifiez-le là."
+
+#: templates/instance/providers.html templates/instance/settings.html
+msgid "Documentation"
+msgstr "Documentation"
+
+#: templates/instance/providers.html
+msgid "disabled"
+msgstr "désactivé"
+
+#: templates/instance/providers.html
+#, python-format
+msgid "%(counter)s linked account"
+msgid_plural "%(counter)s linked accounts"
+msgstr[0] "%(counter)s compte lié"
+msgstr[1] "%(counter)s comptes liés"
+
+#: templates/instance/providers.html
+msgid "No provider yet: people sign in with a password or a passkey."
+msgstr ""
+"Aucun fournisseur pour l'instant : on se connecte par mot de passe ou par "
+"clé d'accès."
+
+#: templates/instance/providers.html
+msgid "Add a provider"
+msgstr "Ajouter un fournisseur"
+
+#: templates/instance/providers.html
+#, python-format
+msgid ""
+"Redirect URI to register at the provider: <code>%(callback_base)s&lt;"
+"identifier&gt;/login/callback/</code>"
+msgstr ""
+"URI de redirection à déclarer chez le fournisseur : "
+"<code>%(callback_base)s&lt;identifiant&gt;/login/callback/</code>"
+
+#: templates/instance/providers.html
+msgid "Add"
+msgstr "Ajouter"
 
 #: templates/instance/settings.html
 msgid "Instance settings"
@@ -2734,10 +3100,6 @@ msgstr ""
 "variable l'emporte : le champ est alors verrouillé et affiche la valeur en "
 "vigueur. Sans variable, la valeur choisie est enregistrée et le défaut est "
 "affiché."
-
-#: templates/instance/settings.html
-msgid "The stored secret can no longer be read: enter it again."
-msgstr "Le secret enregistré n'est plus lisible : saisissez-le de nouveau."
 
 #: templates/instance/settings.html
 msgid "A secret is stored."
@@ -2761,10 +3123,6 @@ msgstr "Rétablir le défaut"
 msgid "Set by the variable <code>%(env)s</code>. Value in force: %(value)s."
 msgstr ""
 "Défini par la variable <code>%(env)s</code>. Valeur en vigueur : %(value)s."
-
-#: templates/instance/settings.html
-msgid "Documentation"
-msgstr "Documentation"
 
 #: templates/instance/settings.html
 msgid "Test the connection to the mail server"
@@ -2795,12 +3153,6 @@ msgstr ""
 #, python-format
 msgid "Photo of %(name)s"
 msgstr "Photo de %(name)s"
-
-#: templates/rooms/_photos.html templates/rooms/confirm_delete.html
-#: templates/stock/confirm_delete.html templates/tasks/_attachments.html
-#: templates/tasks/confirm_delete.html
-msgid "Delete"
-msgstr "Supprimer"
 
 #: templates/rooms/_photos.html
 msgid "this photo"
@@ -3111,7 +3463,9 @@ msgstr "Fixer le compte"
 msgid ""
 "Set the count states what you counted on the shelf; the stock is corrected "
 "to it."
-msgstr "« Fixer le compte » indique ce que vous avez compté sur l'étagère ; le stock est corrigé en conséquence."
+msgstr ""
+"« Fixer le compte » indique ce que vous avez compté sur l'étagère ; le stock "
+"est corrigé en conséquence."
 
 #: templates/stock/article_detail.html
 msgid "No compatible item chosen."
@@ -3167,7 +3521,9 @@ msgstr "Ajouter un article"
 msgid ""
 "Label photo: JPEG, PNG or WebP, up to %(size)s. Location data and other "
 "information stored in the file are removed."
-msgstr "Photo de l'étiquette : JPEG, PNG ou WebP, jusqu'à %(size)s. La position et les autres informations stockées dans le fichier sont supprimées."
+msgstr ""
+"Photo de l'étiquette : JPEG, PNG ou WebP, jusqu'à %(size)s. La position et "
+"les autres informations stockées dans le fichier sont supprimées."
 
 #: templates/stock/article_form.html
 msgid "Add the stock item"
@@ -3202,7 +3558,9 @@ msgstr "Choisissez le logement dont vous voulez ouvrir le matériel."
 msgid ""
 "The price is in %(currency)s, the currency of the home. The link is only "
 "stored: HouseCairn never opens it."
-msgstr "Le prix est en %(currency)s, la devise du logement. Le lien est seulement enregistré : HouseCairn ne l'ouvre jamais."
+msgstr ""
+"Le prix est en %(currency)s, la devise du logement. Le lien est seulement "
+"enregistré : HouseCairn ne l'ouvre jamais."
 
 #: templates/stock/supplier_form.html
 msgid "Add the supplier"

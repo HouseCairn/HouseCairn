@@ -24,8 +24,8 @@ from housecairn.audit.api import AuditEventSerializer
 from housecairn.audit.models import AuditEvent
 from housecairn.homes import sso
 from housecairn.homes.scoping import allow
-from housecairn.instance import config, emails, registry, services, settings_services
-from housecairn.instance.models import InstanceInvitation
+from housecairn.instance import config, emails, providers, registry, services, settings_services
+from housecairn.instance.models import InstanceInvitation, OidcProvider
 from housecairn.instance.reauth import signed_in_recently
 
 
@@ -299,6 +299,175 @@ class InstanceSettingResetView(APIView):
         except DjangoValidationError as exc:
             raise exceptions.ValidationError(exc.message_dict) from exc
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+ProviderSerializer = inline_serializer(
+    "SignInProvider",
+    {
+        "slug": serializers.CharField(),
+        "name": serializers.CharField(),
+        "issuer": serializers.CharField(),
+        "client_id": serializers.CharField(),
+        "pkce": serializers.BooleanField(),
+        "enabled": serializers.BooleanField(),
+        "secret_set": serializers.BooleanField(help_text="Whether a client secret is stored."),
+        "secret_unreadable": serializers.BooleanField(),
+        "locked": serializers.BooleanField(
+            help_text="True when environment variables set it: it cannot be changed here."
+        ),
+        "linked_accounts": serializers.IntegerField(),
+        "homes": serializers.IntegerField(help_text="How many homes require it."),
+    },
+)
+
+
+class ProviderWriteSerializer(serializers.Serializer[Any]):
+    """A provider to create or change; `secret` is write-only and never returned."""
+
+    slug = serializers.CharField(max_length=32, required=False)
+    name = serializers.CharField(max_length=64, required=False)
+    issuer = serializers.CharField(max_length=255, required=False)
+    client_id = serializers.CharField(max_length=255, required=False)
+    secret = serializers.CharField(max_length=1024, required=False, write_only=True)
+    pkce = serializers.BooleanField(required=False)
+    enabled = serializers.BooleanField(required=False)
+
+
+def _provider_json(state: providers.Declared) -> dict[str, Any]:
+    return {
+        "slug": state.slug,
+        "name": state.name,
+        "issuer": state.issuer,
+        "client_id": state.client_id,
+        "pkce": state.pkce,
+        "enabled": state.enabled,
+        "secret_set": state.secret_set,
+        "secret_unreadable": state.secret_unreadable,
+        "locked": state.locked,
+        "linked_accounts": state.linked_accounts,
+        "homes": state.homes,
+    }
+
+
+def _provider_changes(request: Request) -> dict[str, Any]:
+    if not isinstance(request.data, dict):
+        raise exceptions.ValidationError({"detail": ["Expected an object."]})
+    unknown = sorted(set(request.data) - set(ProviderWriteSerializer().fields))
+    if unknown:
+        raise exceptions.ValidationError({k: ["Unknown field."] for k in unknown})
+    serializer = ProviderWriteSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    return dict(serializer.validated_data)
+
+
+_PROVIDER_LOCKED = {
+    "detail": "This provider is set by environment variables: change it there.",
+    "code": "locked_by_environment",
+}
+
+
+class InstanceProvidersView(APIView):
+    """Sign-in providers (docs/adr/0041): those of the variables, read only, then the others.
+
+    Creating one needs a recent sign-in. The client secret is write-only.
+    """
+
+    permission_classes = [InstanceAdminOnly]
+
+    @extend_schema(
+        operation_id="instance_providers_list",
+        responses={
+            200: inline_serializer(
+                "SignInProviders", {"providers": serializers.ListField(child=ProviderSerializer)}
+            )
+        },
+    )
+    def get(self, request: Request) -> Response:
+        return Response({"providers": [_provider_json(p) for p in providers.describe_all()]})
+
+    @extend_schema(request=ProviderWriteSerializer, responses={201: ProviderSerializer})
+    def post(self, request: Request) -> Response:
+        if (refused := _needs_recent_sign_in(request)) is not None:
+            return refused
+        data = _provider_changes(request)
+        try:
+            provider = providers.create(request.user, data)  # type: ignore[arg-type]
+        except DjangoValidationError as exc:
+            raise exceptions.ValidationError(exc.message_dict) from exc
+        return Response(
+            _provider_json(providers.describe(provider)), status=status.HTTP_201_CREATED
+        )
+
+
+class InstanceProviderView(APIView):
+    """One provider: read, change (PATCH), delete. One set by variables answers 409 to writes."""
+
+    permission_classes = [InstanceAdminOnly]
+
+    def _find(self, slug: str) -> OidcProvider | None:
+        if slug in providers.environment_slugs():
+            return None
+        provider: OidcProvider | None = OidcProvider.objects.filter(slug=slug).first()
+        if provider is None:
+            raise exceptions.NotFound()
+        return provider
+
+    @extend_schema(responses={200: ProviderSerializer})
+    def get(self, request: Request, slug: str) -> Response:
+        provider = self._find(slug)
+        if provider is None:
+            state = next(p for p in providers.describe_all() if p.slug == slug)
+            return Response(_provider_json(state))
+        return Response(_provider_json(providers.describe(provider)))
+
+    @extend_schema(request=ProviderWriteSerializer, responses={200: ProviderSerializer})
+    def patch(self, request: Request, slug: str) -> Response:
+        provider = self._find(slug)
+        if provider is None:
+            return Response(_PROVIDER_LOCKED, status=status.HTTP_409_CONFLICT)
+        if (refused := _needs_recent_sign_in(request)) is not None:
+            return refused
+        try:
+            providers.update(request.user, provider, _provider_changes(request))  # type: ignore[arg-type]
+        except DjangoValidationError as exc:
+            raise exceptions.ValidationError(exc.message_dict) from exc
+        provider.refresh_from_db()
+        return Response(_provider_json(providers.describe(provider)))
+
+    @extend_schema(request=None, responses={204: None})
+    def delete(self, request: Request, slug: str) -> Response:
+        provider = self._find(slug)
+        if provider is None:
+            return Response(_PROVIDER_LOCKED, status=status.HTTP_409_CONFLICT)
+        if (refused := _needs_recent_sign_in(request)) is not None:
+            return refused
+        try:
+            providers.delete(request.user, provider)  # type: ignore[arg-type]
+        except DjangoValidationError as exc:
+            raise exceptions.ValidationError(exc.message_dict) from exc
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class InstanceProviderCheckView(APIView):
+    """The test button: read an issuer's OpenID configuration and check it; saves nothing."""
+
+    permission_classes = [InstanceAdminOnly]
+
+    @extend_schema(
+        request=inline_serializer("ProviderCheckRequest", {"issuer": serializers.CharField()}),
+        responses={
+            200: inline_serializer(
+                "ProviderCheck",
+                {"ok": serializers.BooleanField(), "detail": serializers.CharField()},
+            )
+        },
+    )
+    def post(self, request: Request) -> Response:
+        if not allow(request, "housecairn_settings_test"):
+            raise exceptions.Throttled()
+        issuer = request.data.get("issuer") if isinstance(request.data, dict) else None
+        ok, detail = providers.check(request.user, str(issuer or ""))  # type: ignore[arg-type]
+        return Response({"ok": ok, "detail": detail})
 
 
 class InstanceEmailTestView(APIView):
