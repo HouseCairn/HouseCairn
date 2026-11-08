@@ -34,6 +34,8 @@ urlpatterns = [
         name="display-preferences",
     ),
     path("me/profile/", account_views.ProfileView.as_view(), name="profile"),
+    # Notification channels and reminders of the person (docs/adr/0043).
+    path("me/notifications/", include("housecairn.notifications.urls")),
     # Stock items, suppliers and movements of a home (docs/adr/0038); /stock/ is the entry.
     path("h/<uuid:home_id>/", include("housecairn.stock.urls")),
     path("stock/", stock_views.EntryView.as_view(), name="stock"),

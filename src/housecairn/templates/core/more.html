@@ -23,6 +23,13 @@
       </span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>
+    <a class="row" href="{% url 'notifications:index' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Notifications" %}</span>
+        <span class="row-text">{% translate "Where and when your reminders go" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
     <a class="row" href="{% url 'mfa_index' %}">
       <span class="row-body">
         <span class="row-title">{% translate "Account security" %}</span>

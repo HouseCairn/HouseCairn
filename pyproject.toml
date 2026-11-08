@@ -37,6 +37,7 @@ dependencies = [
   "whitenoise>=6.9",
   "pillow>=12",
   "markdown-it-py>=4",
+  "apprise>=2.1",
 ]
 
 [project.optional-dependencies]

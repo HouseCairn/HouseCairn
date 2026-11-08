@@ -51,6 +51,7 @@ class Section(StrEnum):
     EMAIL = "email"
     RATE_LIMITS = "rate-limits"
     FILES = "files"
+    NOTIFICATIONS = "notifications"
 
 
 SECTION_LABELS: dict[Section, Promise] = {
@@ -61,6 +62,7 @@ SECTION_LABELS: dict[Section, Promise] = {
     Section.EMAIL: _("Outgoing email"),
     Section.RATE_LIMITS: _("Rate limits"),
     Section.FILES: _("Files of a home"),
+    Section.NOTIFICATIONS: _("Notifications"),
 }
 
 # The product name: the default name of an instance, and what an empty name shows.
@@ -619,3 +621,10 @@ def read_environment(environ: dict[str, str] | None = None) -> Environment:
         else:
             values[setting.key] = setting.default
     return Environment(values, frozenset(locked))
+
+
+# Settings of other apps, declared next to their code (docs/adr/0043).
+from housecairn.notifications.conf import SETTINGS as _NOTIFICATIONS  # noqa: E402
+
+_SETTINGS += _NOTIFICATIONS
+SETTINGS.update({s.key: s for s in _NOTIFICATIONS})

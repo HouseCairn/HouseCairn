@@ -42,6 +42,7 @@ contractors
 contractor
 contractor-form
 profile
+notifications
 stock
 stock-item
 stock-item-form
