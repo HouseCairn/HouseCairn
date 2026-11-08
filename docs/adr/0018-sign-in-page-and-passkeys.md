@@ -73,6 +73,12 @@ feature is enabled, which it is not.
   password form and, in browsers without autofill support, the fallback button.
 - The conditional request is created on every load of the page where passkey login
   is enabled; the cost is one small GET.
+- The sign-in page opens a session when the browser has none, before that GET leaves.
+  Otherwise the GET created one, and when the person signed in with a password before it
+  answered, its late answer gave the browser that new, signed-out session: the person was
+  signed out right after signing in. With the session opened first, the late answer finds
+  it replaced by the sign-in, answers 400 and sets no cookie
+  (`tests/test_session_race.py`). The cost is one session row per visit of the page.
 - Automated: the page has no passkey button, the field's attribute, the local
   scripts and the hidden form, the provider buttons (`tests/test_interface.py`),
   and, in CI, an end-to-end run in Chromium with a virtual authenticator that

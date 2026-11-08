@@ -29,6 +29,25 @@ def needs_email(view: Callable[..., HttpResponse]) -> Callable[..., HttpResponse
     return guarded
 
 
+class LoginView(allauth_views.LoginView):
+    """allauth's sign-in page, which opens the session before the page can ask for anything.
+
+    The page fetches a passkey challenge as soon as it loads (docs/adr/0018), and that
+    request writes the challenge in the session. Without a session yet, it would create
+    one: if the person signs in with a password before the challenge answers, the late
+    answer would hand the browser that new, signed-out session instead of the one of the
+    sign-in (tests/test_session_race.py). With the session opened here, the late answer
+    finds it replaced by the sign-in and sets no cookie.
+    """
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if request.session.session_key is None:
+            request.session.create()
+        response: HttpResponse = super().get(request, *args, **kwargs)
+        return response
+
+
+login = LoginView.as_view()
 email_addresses = needs_email(allauth_views.email)
 password_reset = needs_email(allauth_views.password_reset)
 password_reset_done = needs_email(allauth_views.password_reset_done)
