@@ -45,6 +45,9 @@ sender, the sign-up rules, the invitation lifetime and the public address need n
 | Sender address | `DEFAULT_FROM_EMAIL` | Outgoing email | `HouseCairn <noreply@localhost>` | At once |
 % settings-table:end
 
+`manage.py check --deploy` reads the variables and the defaults, not the database: a setting
+chosen in the interface is checked when it is saved, not at start-up.
+
 The list of settings is the same one the API returns
 (`GET /api/v1/instance/settings/`, with the variable, the default and the source of each).
 
