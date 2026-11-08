@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 14:32+0000\n"
+"POT-Creation-Date: 2026-11-08 15:04+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -704,8 +704,12 @@ msgid "Client secret"
 msgstr "Secret client"
 
 #: instance/forms.py
-msgid "Write only: it is never shown again. Empty: unchanged, but a new issuer clears it."
-msgstr "Écriture seule : il n'est plus jamais affiché. Vide : inchangé, mais un nouvel émetteur l'efface."
+msgid ""
+"Write only: it is never shown again. Empty: unchanged, but a new issuer "
+"clears it."
+msgstr ""
+"Écriture seule : il n'est plus jamais affiché. Vide : inchangé, mais un "
+"nouvel émetteur l'efface."
 
 #: instance/forms.py instance/models.py
 msgid "PKCE"
@@ -1244,6 +1248,14 @@ msgstr "Fournisseur ajouté."
 #: instance/views.py
 msgid "Provider deleted."
 msgstr "Fournisseur supprimé."
+
+#: instance/views.py
+msgid ""
+"Provider saved. The new issuer cleared the client secret: enter it again "
+"before you enable the provider."
+msgstr ""
+"Fournisseur enregistré. Le nouvel émetteur a effacé le secret client : "
+"saisissez-le de nouveau avant d'activer le fournisseur."
 
 #: instance/views.py
 msgid "Provider saved."

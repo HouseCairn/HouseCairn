@@ -334,6 +334,21 @@ class TestTheSecretStaysWithItsIssuer:
         response = admin_api.patch(detail, {"issuer": ISSUER, "secret": SECRET}, format="json")
         assert (response.json()["issuer"], response.json()["secret_set"]) == (ISSUER, True)
 
+    def test_the_screen_says_the_secret_was_cleared(
+        self, admin_client: Client, admin_user: User
+    ) -> None:
+        declare(admin_user, enabled=False)
+        url = reverse("instance:provider", kwargs={"slug": "company"})
+        page = form(admin_client, url, issuer=EVIL, enabled=False)
+        assert page.status_code == 302
+        shown = admin_client.get(url).text
+        assert "The new issuer cleared the client secret" in shown
+        # Another change, with no secret to clear, says only that it is saved.
+        form(admin_client, url, name="Renamed", issuer=EVIL, enabled=False)
+        shown = admin_client.get(url).text
+        assert "Provider saved." in shown
+        assert "cleared the client secret" not in shown
+
 
 class TestLastWayToSignIn:
     def test_an_sso_only_administrator_cannot_disable_nor_delete_its_provider(

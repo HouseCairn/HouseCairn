@@ -478,14 +478,25 @@ class ProviderView(InstanceAdminMixin, TemplateView):
             messages.success(request, _("Provider deleted."))
             return redirect("instance:providers")
         if form.is_valid():
+            had_secret = bool(self.provider.secret)
             try:
                 changed = providers.update(actor, self.provider, form.data_for_service())
             except ValidationError as exc:
                 _form_errors(form, exc)
             else:
-                messages.success(
-                    request, _("Provider saved.") if changed else _("Nothing to change.")
-                )
+                self.provider.refresh_from_db()
+                if had_secret and not self.provider.secret:
+                    messages.warning(
+                        request,
+                        _(
+                            "Provider saved. The new issuer cleared the client secret: "
+                            "enter it again before you enable the provider."
+                        ),
+                    )
+                else:
+                    messages.success(
+                        request, _("Provider saved.") if changed else _("Nothing to change.")
+                    )
                 return redirect(here)
         return self.render_to_response(self.get_context_data(form=form), status=422)
 
