@@ -602,15 +602,21 @@ class TestWebScreen:
         assert tag is not None
         assert 'value="set"' in tag.group(0)
 
-    def test_a_write_to_a_locked_setting_is_ignored_by_the_screen(
-        self, admin_client: Client
-    ) -> None:
+    def test_a_write_to_a_locked_setting_is_refused_by_name(self, admin_client: Client) -> None:
         with locked("invitation_lifetime_days", HOUSECAIRN_INVITATION_LIFETIME_DAYS=3):
             response = post(admin_client, "invitations", invitation_lifetime_days="30")
-            assert response.status_code == 302
+            assert response.status_code == 409
+            assert (
+                "Set by the variable HOUSECAIRN_INVITATION_LIFETIME_DAYS: change it there."
+                in response.text
+            )
+            assert "Nothing to change." not in response.text
             assert config.get_setting("invitation_lifetime_days") == 3
             response = post(admin_client, "invitations", reset="invitation_lifetime_days")
             assert response.status_code == 302
+            page = admin_client.get(reverse(WEB)).text
+            assert "HOUSECAIRN_INVITATION_LIFETIME_DAYS: change it there." in page
+            assert "Default restored." not in page
         assert not SettingValue.objects.exists()
         assert not AuditEvent.objects.exists()
 

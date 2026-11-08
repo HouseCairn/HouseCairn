@@ -25,7 +25,7 @@ def _require_admin(actor: Any) -> None:
         raise PermissionDenied
 
 
-def _locked_message(setting: registry.Setting) -> str:
+def locked_message(setting: registry.Setting) -> str:
     return _("Set by the variable %(env)s: change it there.") % {"env": setting.env}
 
 
@@ -45,7 +45,7 @@ def _validate(changes: dict[str, Any]) -> dict[str, Any]:
         if setting is None:
             errors[key] = [_("Unknown setting.")]
         elif config.is_locked(key):
-            errors[key] = [_locked_message(setting)]
+            errors[key] = [locked_message(setting)]
         else:
             try:
                 clean[key] = setting.coerce(raw)
@@ -145,7 +145,7 @@ def reset(actor: User, key: str) -> bool:
     if setting is None:
         raise ValidationError({key: [_("Unknown setting.")]})
     if config.is_locked(key):
-        raise ValidationError({key: [_locked_message(setting)]})
+        raise ValidationError({key: [locked_message(setting)]})
     if config.source(key) == config.Source.DATABASE:
         errors = _validate_together({key: config.without_database(key)})
         if errors:

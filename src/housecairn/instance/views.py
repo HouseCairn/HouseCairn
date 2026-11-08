@@ -325,6 +325,20 @@ class SettingsView(InstanceAdminMixin, TemplateView):
         if "test_email" in request.POST:
             return self._test_email(request, actor)
         form = SettingsSectionForm(section, request.POST)
+        locked_sent = [
+            setting
+            for setting in registry.in_section(section)
+            if setting.key in request.POST and config.is_locked(setting.key)
+        ]
+        if locked_sent:
+            # The screen never sends a locked setting (its field has no name): a form older
+            # than the variable, or a forged request. Refused by name, nothing is saved.
+            form.is_valid()
+            for setting in locked_sent:
+                form.add_error(None, services_settings.locked_message(setting))
+            return self.render_to_response(
+                self.get_context_data(bound={section: form}), status=409
+            )
         if form.is_valid():
             try:
                 changed = services_settings.update(actor, form.changes())
