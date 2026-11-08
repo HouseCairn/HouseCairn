@@ -7,6 +7,7 @@ from django.utils.safestring import SafeString
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 
+from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item, Room
 from housecairn.tasks import markup
 from housecairn.tasks.models import OPEN_STATUSES, Occurrence, RepeatMode, Task
@@ -88,8 +89,6 @@ def where_and_who(occurrence: Occurrence) -> str:
         task.room.name if task.room else "",
         task.item.name if task.item else "",
         task.contractor.name if task.contractor else "",
-        (occurrence.completed_by.get_full_name() or occurrence.completed_by.email)
-        if occurrence.completed_by
-        else "",
+        person_name(occurrence.completed_by),
     ]
     return " · ".join(part for part in parts if part)

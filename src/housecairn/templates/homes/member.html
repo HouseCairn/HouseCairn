@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% load i18n tabs %}
-{% block head_title %}{% firstof membership.user.get_full_name membership.user.email %}{% endblock head_title %}
+{% load i18n tabs people %}
+{% block head_title %}{{ membership.user|person }}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{% url 'homes:household' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Household and roles" %}</a>
-  <h1>{% firstof membership.user.get_full_name membership.user.email %}</h1>
+  <h1>{{ membership.user|person }}</h1>
   {% tab_bar "home" %}
   <section class="card">
     <dl class="facts">

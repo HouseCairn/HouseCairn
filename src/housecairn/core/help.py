@@ -27,6 +27,7 @@ HELP_PAGES: dict[str, str] = {
     "homes:export": "screens/home/",
     "homes:delete": "screens/home/",
     "account_delete": "screens/account/",
+    "profile": "screens/profile/",
     "instance:overview": "screens/instance/",
     "instance:invite": "screens/instance/",
     "instance:invitation-resend": "screens/instance/",

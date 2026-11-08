@@ -19,6 +19,7 @@ from django.db.models.functions import Coalesce, TruncDate
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.accounts.names import person_name
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms.models import Item
@@ -102,7 +103,7 @@ def _room_name(occurrence: Occurrence) -> str:
 
 def _person(occurrence: Occurrence) -> str:
     who = occurrence.task.assignee
-    return (who.get_full_name() or who.email) if who else ""
+    return person_name(who) if who else ""
 
 
 def _grouped(rows: list[Occurrence], group: str, day: datetime.date) -> list[Section]:

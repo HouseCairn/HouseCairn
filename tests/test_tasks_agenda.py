@@ -177,9 +177,9 @@ class TestToday:
     def test_by_person(self, busy: Home, alice: User) -> None:
         agenda.update_preferences(alice, today_group="person", horizon_days=30)
         sections = titles(agenda.today_sections(busy, agenda.preferences_of(alice)))
-        assert sections["person:alice@example.com"] == ["Due today"]
+        assert sections["person:alice"] == ["Due today"]
         assert sections["person:Nobody yet"] == ["Due soon", "Due in a month"]
-        assert list(sections)[-3:-1] == ["person:alice@example.com", "person:Nobody yet"]
+        assert list(sections)[-3:-1] == ["person:alice", "person:Nobody yet"]
 
     def test_by_calendar(self, busy: Home, alice: User) -> None:
         agenda.update_preferences(alice, today_group="calendar")
@@ -425,7 +425,7 @@ class TestScreens:
         assert "100.00 EUR" in content
         filtered = signed_in.get(web("history", past), {"q": "washer", "status": "done"})
         assert "Fix the tap" in filtered.content.decode()
-        assert "Living room · Pipes Ltd · alice@example.com" in content
+        assert "Living room · Pipes Ltd · alice" in content
         assert "Paint the hall" not in filtered.content.decode()
         nothing = signed_in.get(web("history", past), {"q": "zzz"}).content.decode()
         assert "Nothing matches." in nothing

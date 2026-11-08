@@ -7,6 +7,8 @@ from django.conf import settings
 from django.utils.dates import MONTHS
 from django.utils.translation import gettext_lazy as _
 
+from housecairn.accounts.models import User
+from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item
 from housecairn.tasks import files, services
 from housecairn.tasks.models import DisplayPreference, Occurrence, Task
@@ -37,9 +39,17 @@ class ItemChoiceField(forms.ModelChoiceField[Item]):
         return f"{obj.room.name} · {obj.name}"
 
 
+class PersonChoiceField(forms.ModelChoiceField[User]):
+    """A member of the home, by their name and never by their address (docs/adr/0045)."""
+
+    def label_from_instance(self, obj: User) -> str:
+        return person_name(obj)
+
+
 class TaskForm(forms.ModelForm[Task]):
     """A task: the title is the only required field; the rest is under the headings."""
 
+    assignee = PersonChoiceField(label=_("Assignee"), queryset=User.objects.none(), required=False)
     item = ItemChoiceField(label=_("Item"), queryset=Item.objects.none(), required=False)
 
     due_on = forms.DateField(label=_("Due on"), required=False, widget=_DATE)

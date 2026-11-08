@@ -27,6 +27,7 @@ from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
 from housecairn.accounts.models import User
+from housecairn.accounts.names import person_name
 from housecairn.core.pagination import DefaultCursorPagination
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import open_homes_for_request
@@ -142,6 +143,9 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
         allow_null=True,
         help_text="A member of the home.",
     )
+    assignee_name = serializers.SerializerMethodField(
+        help_text="The name shown for the assignee (display name, never the address)."
+    )
     contractor = serializers.PrimaryKeyRelatedField(
         queryset=Contractor.objects.none(), required=False, allow_null=True
     )
@@ -174,6 +178,7 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
             "notes",
             "procedure",
             "assignee",
+            "assignee_name",
             "contractor",
             "repeat_mode",
             "repeat_unit",
@@ -194,6 +199,10 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
             self.fields["item"].queryset = Item.objects.filter(home=home)  # type: ignore[attr-defined]
             self.fields["assignee"].queryset = services.members_for_forms(home)  # type: ignore[attr-defined]
             self.fields["contractor"].queryset = Contractor.objects.filter(home=home)  # type: ignore[attr-defined]
+
+
+    def get_assignee_name(self, task: Task) -> str:
+        return person_name(task.assignee)
 
 
 class TaskViewSet(
@@ -309,6 +318,12 @@ class OccurrenceSerializer(serializers.ModelSerializer[Occurrence]):
     room = serializers.UUIDField(source="task.room_id", read_only=True, allow_null=True)
     item = serializers.UUIDField(source="task.item_id", read_only=True, allow_null=True)
     completed_by = serializers.UUIDField(source="completed_by_id", read_only=True, allow_null=True)
+    completed_by_name = serializers.SerializerMethodField(
+        help_text="The name shown for who closed it (display name, never the address)."
+    )
+    assignee_name = serializers.SerializerMethodField(
+        help_text="The name shown for the assignee of the task."
+    )
     is_overdue = serializers.SerializerMethodField()
 
     class Meta:
@@ -325,6 +340,8 @@ class OccurrenceSerializer(serializers.ModelSerializer[Occurrence]):
             "postponed_from",
             "completed_on",
             "completed_by",
+            "completed_by_name",
+            "assignee_name",
             "actual_cost",
             "completion_note",
             "is_overdue",
@@ -341,6 +358,12 @@ class OccurrenceSerializer(serializers.ModelSerializer[Occurrence]):
             "created_at",
             "updated_at",
         ]
+
+    def get_completed_by_name(self, occurrence: Occurrence) -> str:
+        return person_name(occurrence.completed_by)
+
+    def get_assignee_name(self, occurrence: Occurrence) -> str:
+        return person_name(occurrence.task.assignee)
 
     def get_is_overdue(self, occurrence: Occurrence) -> bool:
         return occurrence.is_overdue(services.today())

@@ -132,7 +132,7 @@ def contractors_of(home: Home) -> models.QuerySet[Contractor]:
 def occurrences_of(home: Home) -> models.QuerySet[Occurrence]:
     """Occurrences of the home's tasks, in no particular order: arrears first is `order_open`."""
     return Occurrence.objects.filter(home=home, task__deleted_at__isnull=True).select_related(
-        "task", "task__room", "task__item", "task__assignee"
+        "task", "task__room", "task__item", "task__assignee", "completed_by"
     )
 
 

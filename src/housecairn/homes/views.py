@@ -19,6 +19,7 @@ from django.views import View
 from django.views.generic import DetailView, FormView, ListView
 
 from housecairn.accounts.models import User
+from housecairn.accounts.names import person_name
 from housecairn.accounts.services import email_is_configured
 from housecairn.audit import services as audit_services
 from housecairn.homes import exports, forms, services, sso
@@ -348,7 +349,7 @@ class MemberRemoveView(ConfirmedActionView):
             % {"home": home.name}
             if me
             else _("%(who)s will lose access to %(home)s.")
-            % {"who": membership.user.get_full_name() or membership.user.email, "home": home.name},
+            % {"who": person_name(membership.user), "home": home.name},
             "action": reverse("homes:member-remove", args=[home.id, membership.id]),
             "button": _("Leave") if me else _("Remove"),
             "back": reverse("homes:member", args=[home.id, membership.id]),
