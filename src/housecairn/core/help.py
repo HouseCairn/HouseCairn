@@ -33,6 +33,7 @@ HELP_PAGES: dict[str, str] = {
     "instance:invitation-revoke": "screens/instance/",
     "instance:unlock": "screens/instance/",
     "instance:audit": "screens/instance/",
+    "instance:settings": "screens/instance-settings/",
     "instance-invitation": "screens/instance-invitation/",
     "homes:member": "screens/member/",
     "homes:member-role": "screens/member/",
@@ -93,6 +94,12 @@ def help_url(route: str, language: str | None) -> str | None:
     code = (language or settings.LANGUAGE_CODE).split("-")[0].lower()
     prefix = DOCS_LANGUAGES.get(code, "")
     return f"{settings.HOUSECAIRN_DOCS_URL}/{prefix}{page}"
+
+
+def docs_page_url(page: str, language: str | None) -> str:
+    """Address of a page of the documentation site, in the language of the interface."""
+    code = (language or settings.LANGUAGE_CODE).split("-")[0].lower()
+    return f"{settings.HOUSECAIRN_DOCS_URL}/{DOCS_LANGUAGES.get(code, '')}{page}"
 
 
 def help_link(request: HttpRequest) -> dict[str, str | None]:

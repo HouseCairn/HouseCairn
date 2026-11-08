@@ -23,6 +23,7 @@ from housecairn.accounts.models import User
 from housecairn.audit import models as audit_models
 from housecairn.audit import services as audit
 from housecairn.homes.models import WRITE_ROLES, Home, Invitation, Membership, Role
+from housecairn.instance.config import get_setting
 
 AnyUser = User | AnonymousUser
 
@@ -358,7 +359,7 @@ def _new_secret() -> tuple[str, str]:
 
 
 def _lifetime() -> timedelta:
-    return timedelta(days=settings.HOUSECAIRN_INVITATION_LIFETIME_DAYS)
+    return timedelta(days=get_setting("invitation_lifetime_days"))
 
 
 def pending_invitations(home: Home) -> models.QuerySet[Invitation]:

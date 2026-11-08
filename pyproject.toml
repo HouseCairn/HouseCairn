@@ -15,6 +15,9 @@ classifiers = [
 ]
 dependencies = [
   "django>=5.2.8,<5.3",
+  # Encrypts the secrets kept in the database (docs/adr/0031); already installed by
+  # django-allauth's passkey support, now a direct dependency.
+  "cryptography>=45",
   "djangorestframework>=3.16",
   "drf-spectacular>=0.28",
   "drf-spectacular-sidecar>=2025.1.1",

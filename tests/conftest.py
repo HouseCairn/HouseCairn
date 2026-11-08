@@ -1,5 +1,5 @@
 import os
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 
 import pytest
 from hypothesis import settings as hypothesis_settings
@@ -71,3 +71,13 @@ def add_member() -> Callable[[Home, User, Role], Membership]:
 @pytest.fixture
 def api_client() -> APIClient:
     return APIClient()
+
+
+@pytest.fixture(autouse=True)
+def _fresh_instance_settings() -> Iterator[None]:
+    """The settings snapshot of one test must not leak into the next (docs/adr/0031)."""
+    from housecairn.instance import config
+
+    config.reset()
+    yield
+    config.reset()

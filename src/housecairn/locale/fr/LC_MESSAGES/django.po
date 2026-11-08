@@ -1969,3 +1969,276 @@ msgstr "Ce qui a été utilisé et posé dans cette pièce, pour le retrouver qu
 #: templates/rooms/search.html
 msgid "Nothing matches “%(query)s”."
 msgstr "Rien ne correspond à « %(query)s »."
+
+msgid "(none)"
+msgstr "(aucun)"
+
+msgid "587 for STARTTLS, 465 for TLS from the first byte."
+msgstr "587 pour STARTTLS, 465 pour TLS dès le premier octet."
+
+msgid "A secret cannot be empty: reset it to remove it."
+msgstr "Un secret ne peut pas être vide : rétablissez le défaut pour le retirer."
+
+msgid "A secret is stored."
+msgstr "Un secret est enregistré."
+
+msgid "Address emails come from, such as HouseCairn <noreply@example.com>."
+msgstr "Adresse d'expédition des e-mails, par exemple HouseCairn <noreply@example.com>."
+
+msgid "Allowed domains"
+msgstr "Domaines autorisés"
+
+msgid "Anti-robot work"
+msgstr "Travail anti-robot"
+
+msgid "Anyone may create an account from the sign-up page. Needs outgoing email."
+msgstr "Tout le monde peut créer un compte depuis la page d'inscription. Nécessite l'envoi d'e-mails."
+
+msgid "Behind a TLS reverse proxy"
+msgstr "Derrière un proxy inverse TLS"
+
+msgid "Blocked domains"
+msgstr "Domaines refusés"
+
+msgid "Comma-separated. If set, only these domains may sign up."
+msgstr "Séparés par des virgules. Si renseigné, seuls ces domaines peuvent s'inscrire."
+
+msgid "Comma-separated. These domains may not sign up."
+msgstr "Séparés par des virgules. Ces domaines ne peuvent pas s'inscrire."
+
+msgid "Confirm your sign-in to change settings, then make the change again."
+msgstr "Confirmez votre connexion pour modifier les réglages, puis refaites la modification."
+
+msgid "Connected to the mail server."
+msgstr "Connexion au serveur de messagerie établie."
+
+msgid "Data directory"
+msgstr "Répertoire de données"
+
+msgid "Database"
+msgstr "Base de données"
+
+msgid "Days an invitation link stays valid, from 1 to 90. Applies to new links."
+msgstr "Nombre de jours de validité d'un lien d'invitation, de 1 à 90. S'applique aux nouveaux liens."
+
+msgid "Debug mode"
+msgstr "Mode débogage"
+
+msgid "Default restored."
+msgstr "Défaut rétabli."
+
+msgid "Default: %(value)s."
+msgstr "Défaut : %(value)s."
+
+msgid "Documentation"
+msgstr "Documentation"
+
+msgid "Each setting can be set here or by an environment variable. A variable wins: the field is then locked and shows the value in force. Without a variable, the value you choose is stored and the default is shown."
+msgstr "Chaque réglage peut être posé ici ou par une variable d'environnement. La variable l'emporte : le champ est alors verrouillé et affiche la valeur en vigueur. Sans variable, la valeur choisie est enregistrée et le défaut est affiché."
+
+msgid "Empty: no authentication."
+msgstr "Vide : pas d'authentification."
+
+msgid "Expected a list of domains."
+msgstr "Une liste de domaines est attendue."
+
+msgid "Expected a single line of text."
+msgstr "Une seule ligne de texte est attendue."
+
+msgid "Expected a whole number."
+msgstr "Un nombre entier est attendu."
+
+msgid "Expected text."
+msgstr "Du texte est attendu."
+
+msgid "Expected true or false."
+msgstr "Vrai ou faux est attendu."
+
+msgid "First administrator"
+msgstr "Premier administrateur"
+
+msgid "Host name of the outgoing mail server. Empty: email is off."
+msgstr "Nom d'hôte du serveur d'envoi. Vide : l'envoi d'e-mails est désactivé."
+
+msgid "Host names the instance answers to"
+msgstr "Noms d'hôte auxquels l'instance répond"
+
+msgid "How long to wait for the mail server, from 1 to 120."
+msgstr "Délai d'attente du serveur de messagerie, de 1 à 120."
+
+msgid "Instance settings"
+msgstr "Réglages de l'instance"
+
+msgid "Invitation lifetime (days)"
+msgstr "Validité d'une invitation (jours)"
+
+msgid "Invitations"
+msgstr "Invitations"
+
+msgid "Must be a host name or an address."
+msgstr "Doit être un nom d'hôte ou une adresse."
+
+msgid "Must be an address, such as HouseCairn <noreply@example.com>."
+msgstr "Doit être une adresse, par exemple HouseCairn <noreply@example.com>."
+
+msgid "Must be an http:// or https:// address without a path."
+msgstr "Doit être une adresse http:// ou https:// sans chemin."
+
+msgid "Must be at least {n}."
+msgstr "Doit valoir au moins {n}."
+
+msgid "Must be at most {n}."
+msgstr "Doit valoir au plus {n}."
+
+msgid "Must be one of: {choices}."
+msgstr "Doit être l'une de ces valeurs : {choices}."
+
+msgid "No SMTP server is set."
+msgstr "Aucun serveur SMTP n'est renseigné."
+
+msgid "No secret is stored."
+msgstr "Aucun secret n'est enregistré."
+
+msgid "Nothing to change."
+msgstr "Rien à modifier."
+
+msgid "Open sign-up verifies addresses by email: set the SMTP server first, or keep sign-up closed."
+msgstr "L'inscription ouverte vérifie les adresses par e-mail : renseignez d'abord le serveur SMTP, ou laissez l'inscription fermée."
+
+msgid "Opens a connection with the settings in force and closes it; nothing is sent. You can save without testing."
+msgstr "Ouvre une connexion avec les réglages en vigueur puis la ferme ; rien n'est envoyé. Vous pouvez enregistrer sans tester."
+
+msgid "Public address"
+msgstr "Adresse publique"
+
+msgid "Restore the default"
+msgstr "Rétablir le défaut"
+
+msgid "SMTP password"
+msgstr "Mot de passe SMTP"
+
+msgid "SMTP port"
+msgstr "Port SMTP"
+
+msgid "SMTP server"
+msgstr "Serveur SMTP"
+
+msgid "SMTP timeout (seconds)"
+msgstr "Délai SMTP (secondes)"
+
+msgid "SMTP user name"
+msgstr "Nom d'utilisateur SMTP"
+
+msgid "STARTTLS"
+msgstr "STARTTLS"
+
+msgid "Scheme and host of the instance, such as https://home.example.com, used for links in emails. Empty: the address of the request."
+msgstr "Schéma et hôte de l'instance, par exemple https://home.example.com, utilisés pour les liens des e-mails. Vide : l'adresse de la requête."
+
+msgid "Secret key of the instance"
+msgstr "Clé secrète de l'instance"
+
+msgid "Secret setting %(setting)s changed"
+msgstr "Réglage secret %(setting)s modifié"
+
+msgid "Sender address"
+msgstr "Adresse d'expédition"
+
+msgid "Server"
+msgstr "Serveur"
+
+msgid "Set by the variable %(env)s: change it there."
+msgstr "Défini par la variable %(env)s : modifiez-le là."
+
+msgid "Set by the variable <code>%(env)s</code>. Value in force: %(value)s."
+msgstr "Défini par la variable <code>%(env)s</code>. Valeur en vigueur : %(value)s."
+
+msgid "Setting %(setting)s changed from %(old)s to %(new)s"
+msgstr "Réglage %(setting)s modifié, de %(old)s à %(new)s"
+
+msgid "Setting %(setting)s reset to its default"
+msgstr "Réglage %(setting)s rétabli à son défaut"
+
+msgid "Settings saved."
+msgstr "Réglages enregistrés."
+
+msgid "Sign-up through single sign-on"
+msgstr "Inscription par authentification unique"
+
+msgid "Sign-up"
+msgstr "Inscription"
+
+msgid "Sign-up, invitations, outgoing email, public address"
+msgstr "Inscription, invitations, e-mail sortant, adresse publique"
+
+msgid "TLS from the first byte"
+msgstr "TLS dès le premier octet"
+
+msgid "Task worker processes"
+msgstr "Processus de tâches"
+
+msgid "Test the connection to the mail server"
+msgstr "Tester la connexion au serveur de messagerie"
+
+msgid "The mail server could not be reached or refused the connection."
+msgstr "Le serveur de messagerie est injoignable ou a refusé la connexion."
+
+msgid "The secure connection could not be set up: check STARTTLS and the port."
+msgstr "La connexion sécurisée n'a pas pu être établie : vérifiez STARTTLS et le port."
+
+msgid "The server refused the user name or password."
+msgstr "Le serveur a refusé le nom d'utilisateur ou le mot de passe."
+
+msgid "The stored secret can no longer be read: enter it again."
+msgstr "Le secret enregistré n'est plus lisible : saisissez-le de nouveau."
+
+msgid "These are set by environment variables only: the instance needs them before it has a database, or they could lock you out. Read only; no secret is shown."
+msgstr "Ces réglages ne passent que par des variables d'environnement : l'instance en a besoin avant d'avoir une base de données, ou ils pourraient vous enfermer dehors. Lecture seule ; aucun secret n'est affiché."
+
+msgid "Too many tests in a short time. Try again later."
+msgstr "Trop de tests en peu de temps. Réessayez plus tard."
+
+msgid "Trusted origins for forms"
+msgstr "Origines de confiance pour les formulaires"
+
+msgid "Trusted reverse proxies"
+msgstr "Proxys inverses de confiance"
+
+msgid "Unknown setting."
+msgstr "Réglage inconnu."
+
+msgid "Upgrade the connection with STARTTLS. Ignored when TLS from the first byte is on."
+msgstr "Passe la connexion en TLS avec STARTTLS. Ignoré quand TLS dès le premier octet est activé."
+
+msgid "Usually with port 465."
+msgstr "En général avec le port 465."
+
+msgid "Write only: it is never shown again."
+msgstr "Écriture seule : il n'est plus jamais affiché."
+
+msgid "Zero bits the browser must find before signing up, from 8 to 24; 16 takes a second."
+msgstr "Nombre de bits à zéro que le navigateur doit trouver avant l'inscription, de 8 à 24 ; 16 prend environ une seconde."
+
+msgid "closed: only invited people and the first administrator; open: anyone the provider accepts."
+msgstr "closed : seulement les personnes invitées et le premier administrateur ; open : toute personne que le fournisseur accepte."
+
+msgid "instance setting"
+msgstr "réglage de l'instance"
+
+msgid "instance settings"
+msgstr "réglages de l'instance"
+
+msgid "no"
+msgstr "non"
+
+msgid "not set"
+msgstr "non défini"
+
+msgid "set"
+msgstr "défini"
+
+msgid "yes"
+msgstr "oui"
+
+msgid "{item} is not a domain name."
+msgstr "{item} n'est pas un nom de domaine."

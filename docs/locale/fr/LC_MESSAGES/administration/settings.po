@@ -1,0 +1,265 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 01:59+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Settings"
+msgstr "Réglages"
+
+msgid "Most of what an administrator configures can be set **in the interface** and by an **environment variable**, as a pair. The variable wins; without it, the value chosen in the interface is used; without either, the default. The screen is **Instance administration, Settings** (see [Instance settings](../screens/instance-settings.md))."
+msgstr "La plupart de ce qu'un administrateur configure peut se régler **dans l'interface** et par une **variable d'environnement**, en binôme. La variable l'emporte ; sans elle, la valeur choisie dans l'interface est utilisée ; sans l'une ni l'autre, le défaut. L'écran est **Administration de l'instance, Réglages** (voir [Réglages de l'instance](../screens/instance-settings.md))."
+
+msgid "**A variable is set** (and not empty): it decides. In the interface the field is locked, shows the value in force and names the variable. The interface and the API refuse to change it."
+msgstr "**Une variable est posée** (et non vide) : elle décide. Dans l'interface, le champ est verrouillé, affiche la valeur en vigueur et nomme la variable. L'interface et l'API refusent de le modifier."
+
+msgid "**No variable**: an administrator changes the value in the interface or the API. It is stored in the database, with the default shown next to it and a button to restore the default."
+msgstr "**Pas de variable** : un administrateur modifie la valeur dans l'interface ou l'API. Elle est enregistrée en base de données, avec le défaut affiché à côté et un bouton pour rétablir le défaut."
+
+msgid "**Nothing set**: the default."
+msgstr "**Rien de posé** : le défaut."
+
+#, python-brace-format
+msgid "An instance configured only with variables, as before, behaves the same: every field is locked. A variable set to an empty value counts as not set, so a Compose file that passes `EMAIL_HOST=${EMAIL_HOST:-}` leaves the field editable."
+msgstr "Une instance configurée uniquement par variables, comme avant, se comporte à l'identique : tous les champs sont verrouillés. Une variable posée à une valeur vide compte comme non posée : un fichier Compose qui transmet `EMAIL_HOST=${EMAIL_HOST:-}` laisse le champ modifiable."
+
+msgid "The table"
+msgstr "Le tableau"
+
+msgid "Every change takes effect at once on the process that saves it, and within a few seconds on the others (each process reloads the stored values every five seconds). The mail server, the sender, the sign-up rules, the invitation lifetime and the public address need no restart."
+msgstr "Chaque modification prend effet tout de suite sur le processus qui l'enregistre, et en quelques secondes sur les autres (chaque processus recharge les valeurs enregistrées toutes les cinq secondes). Le serveur de messagerie, l'expéditeur, les règles d'inscription, la durée des invitations et l'adresse publique ne demandent aucun redémarrage."
+
+msgid "Setting"
+msgstr "Réglage"
+
+msgid "Variable"
+msgstr "Variable"
+
+msgid "Section"
+msgstr "Section"
+
+msgid "Default"
+msgstr "Défaut"
+
+msgid "Takes effect"
+msgstr "Prise en compte"
+
+msgid "Public address"
+msgstr "Adresse publique"
+
+msgid "`HOUSECAIRN_SITE_URL`"
+msgstr "`HOUSECAIRN_SITE_URL`"
+
+msgid "(none)"
+msgstr "(aucun)"
+
+msgid "At once"
+msgstr "Immédiate"
+
+msgid "Open sign-up"
+msgstr "Inscription ouverte"
+
+msgid "`HOUSECAIRN_SIGNUP_OPEN`"
+msgstr "`HOUSECAIRN_SIGNUP_OPEN`"
+
+msgid "Sign-up"
+msgstr "Inscription"
+
+msgid "`false`"
+msgstr "`false`"
+
+msgid "Sign-up through single sign-on"
+msgstr "Inscription par authentification unique"
+
+msgid "`HOUSECAIRN_OIDC_SIGNUP`"
+msgstr "`HOUSECAIRN_OIDC_SIGNUP`"
+
+msgid "`closed`"
+msgstr "`closed`"
+
+msgid "Allowed domains"
+msgstr "Domaines autorisés"
+
+msgid "`HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS`"
+msgstr "`HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS`"
+
+msgid "Blocked domains"
+msgstr "Domaines refusés"
+
+msgid "`HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS`"
+msgstr "`HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS`"
+
+msgid "Anti-robot work"
+msgstr "Travail anti-robot"
+
+msgid "`HOUSECAIRN_SIGNUP_POW_BITS`"
+msgstr "`HOUSECAIRN_SIGNUP_POW_BITS`"
+
+msgid "`16`"
+msgstr "`16`"
+
+msgid "Invitation lifetime (days)"
+msgstr "Validité d'une invitation (jours)"
+
+msgid "`HOUSECAIRN_INVITATION_LIFETIME_DAYS`"
+msgstr "`HOUSECAIRN_INVITATION_LIFETIME_DAYS`"
+
+msgid "Invitations"
+msgstr "Invitations"
+
+msgid "`7`"
+msgstr "`7`"
+
+msgid "SMTP server"
+msgstr "Serveur SMTP"
+
+msgid "`EMAIL_HOST`"
+msgstr "`EMAIL_HOST`"
+
+msgid "Outgoing email"
+msgstr "E-mail sortant"
+
+msgid "SMTP port"
+msgstr "Port SMTP"
+
+msgid "`EMAIL_PORT`"
+msgstr "`EMAIL_PORT`"
+
+msgid "`587`"
+msgstr "`587`"
+
+msgid "STARTTLS"
+msgstr "STARTTLS"
+
+msgid "`EMAIL_USE_TLS`"
+msgstr "`EMAIL_USE_TLS`"
+
+msgid "`true`"
+msgstr "`true`"
+
+msgid "TLS from the first byte"
+msgstr "TLS dès le premier octet"
+
+msgid "`EMAIL_USE_SSL`"
+msgstr "`EMAIL_USE_SSL`"
+
+msgid "SMTP user name"
+msgstr "Nom d'utilisateur SMTP"
+
+msgid "`EMAIL_HOST_USER`"
+msgstr "`EMAIL_HOST_USER`"
+
+msgid "SMTP password"
+msgstr "Mot de passe SMTP"
+
+msgid "`EMAIL_HOST_PASSWORD`"
+msgstr "`EMAIL_HOST_PASSWORD`"
+
+msgid "SMTP timeout (seconds)"
+msgstr "Délai SMTP (secondes)"
+
+msgid "`EMAIL_TIMEOUT`"
+msgstr "`EMAIL_TIMEOUT`"
+
+msgid "`15`"
+msgstr "`15`"
+
+msgid "Sender address"
+msgstr "Adresse d'expédition"
+
+msgid "`DEFAULT_FROM_EMAIL`"
+msgstr "`DEFAULT_FROM_EMAIL`"
+
+msgid "`HouseCairn <noreply@localhost>`"
+msgstr "`HouseCairn <noreply@localhost>`"
+
+msgid "The list of settings is the same one the API returns (`GET /api/v1/instance/settings/`, with the variable, the default and the source of each)."
+msgstr "La liste des réglages est celle que renvoie l'API (`GET /api/v1/instance/settings/`, avec la variable, le défaut et l'origine de chacun)."
+
+msgid "Secrets"
+msgstr "Secrets"
+
+msgid "The SMTP password is write-only. The interface and the API say whether one is set, never what it is; it is absent from the audit log, the exports and the logs. A secret stored from the interface is encrypted in the database with a key derived from the instance's `SECRET_KEY`. If `SECRET_KEY` changes, the stored secret can no longer be read: the instance treats it as not set, the screen says so, and you enter it again. To rotate the key without losing it, list the old key in Django's `SECRET_KEY_FALLBACKS` while you re-enter the secrets. A password set by `EMAIL_HOST_PASSWORD` is shown as \"set\", without its value."
+msgstr "Le mot de passe SMTP est en écriture seule. L'interface et l'API disent si un mot de passe est défini, jamais lequel ; il est absent du journal d'audit, des exports et des journaux. Un secret enregistré depuis l'interface est chiffré en base de données avec une clé dérivée de la `SECRET_KEY` de l'instance. Si `SECRET_KEY` change, le secret enregistré n'est plus lisible : l'instance le considère comme non défini, l'écran le dit, et vous le saisissez de nouveau. Pour changer la clé sans perdre le secret, listez l'ancienne clé dans `SECRET_KEY_FALLBACKS` de Django le temps de ressaisir les secrets. Un mot de passe posé par `EMAIL_HOST_PASSWORD` s'affiche « défini », sans sa valeur."
+
+msgid "What changing a setting asks for"
+msgstr "Ce qu'exige la modification d'un réglage"
+
+msgid "You must be an instance administrator, and signed in recently (five minutes): the interface sends you to confirm your sign-in, and the API answers `403` with the code `reauthentication_required`. An API token never serves these endpoints."
+msgstr "Il faut être administrateur de l'instance et s'être connecté récemment (cinq minutes) : l'interface vous envoie confirmer votre connexion, et l'API répond `403` avec le code `reauthentication_required`. Un jeton d'API ne sert jamais ces points d'accès."
+
+msgid "A value that is not valid is refused with a message. Open sign-up is refused while no mail server is set. The **Test the connection** button opens a connection to the mail server and closes it; it is never required to save."
+msgstr "Une valeur invalide est refusée avec un message. L'inscription ouverte est refusée tant qu'aucun serveur de messagerie n'est renseigné. Le bouton **Tester la connexion** ouvre une connexion au serveur de messagerie puis la ferme ; il n'est jamais obligatoire pour enregistrer."
+
+msgid "Each change is written to the instance's [audit log](../screens/instance.md) with who made it, the setting and the old and new values; for a secret, only that it changed."
+msgstr "Chaque modification est inscrite au [journal d'audit](../screens/instance.md) de l'instance avec son auteur, le réglage et les anciennes et nouvelles valeurs ; pour un secret, seulement le fait qu'il a changé."
+
+msgid "Server variables: environment only"
+msgstr "Variables du serveur : environnement seulement"
+
+msgid "These cannot be changed in the interface: the instance needs them before it has a database, or a mistake could lock the administrator out. The **Server** part of the screen shows them read-only, without secrets."
+msgstr "Elles ne se modifient pas dans l'interface : l'instance en a besoin avant d'avoir une base de données, ou une erreur pourrait enfermer l'administrateur dehors. La partie **Serveur** de l'écran les affiche en lecture seule, sans secret."
+
+msgid "Why it stays in the environment"
+msgstr "Pourquoi elle reste dans l'environnement"
+
+msgid "`SECRET_KEY`"
+msgstr "`SECRET_KEY`"
+
+msgid "Signs sessions and encrypts stored secrets."
+msgstr "Signe les sessions et chiffre les secrets enregistrés."
+
+msgid "`ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`"
+msgstr "`ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`"
+
+msgid "A wrong value makes the instance unreachable."
+msgstr "Une mauvaise valeur rend l'instance injoignable."
+
+msgid "`DATABASE_URL`, `HOUSECAIRN_DATA_DIR`"
+msgstr "`DATABASE_URL`, `HOUSECAIRN_DATA_DIR`"
+
+msgid "Needed before the settings can be read."
+msgstr "Nécessaires avant de pouvoir lire les réglages."
+
+msgid "`HOUSECAIRN_BEHIND_TLS_PROXY`, `HOUSECAIRN_FORWARDED_ALLOW_IPS`"
+msgstr "`HOUSECAIRN_BEHIND_TLS_PROXY`, `HOUSECAIRN_FORWARDED_ALLOW_IPS`"
+
+msgid "Decide which proxy headers to trust."
+msgstr "Décident quels en-têtes de proxy croire."
+
+msgid "`DEBUG`"
+msgstr "`DEBUG`"
+
+msgid "Changes the security posture of the whole instance."
+msgstr "Change la posture de sécurité de toute l'instance."
+
+msgid "`HOUSECAIRN_TASK_WORKERS`, `HOUSECAIRN_WEB_WORKERS`"
+msgstr "`HOUSECAIRN_TASK_WORKERS`, `HOUSECAIRN_WEB_WORKERS`"
+
+msgid "Fixed when the processes start."
+msgstr "Fixé au démarrage des processus."
+
+msgid "`HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`"
+msgstr "`HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`"
+
+msgid "Decides who may become the first administrator."
+msgstr "Décide qui peut devenir le premier administrateur."
+
+msgid "Single sign-on providers (`OIDC_*`), the rate limits, the default language and time zone and the name of the instance are not in the interface yet: they stay variables, see [Environment variables](variables.md)."
+msgstr "Les fournisseurs d'authentification unique (`OIDC_*`), les limites de débit, la langue et le fuseau horaire par défaut et le nom de l'instance ne sont pas encore dans l'interface : ils restent des variables, voir [Variables d'environnement](variables.md)."
+

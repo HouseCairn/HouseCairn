@@ -17,6 +17,7 @@ from django.template.response import TemplateResponse
 from housecairn.accounts import services
 from housecairn.accounts.models import User
 from housecairn.accounts.services import Decision
+from housecairn.instance.config import get_setting
 
 logger = logging.getLogger("housecairn.security")
 
@@ -32,7 +33,7 @@ def on_site(url: str) -> str:
     that triggered them; the configured public address replaces it, so that a
     request cannot choose where a reset or verification link points.
     """
-    base: str = settings.HOUSECAIRN_SITE_URL
+    base: str = get_setting("site_url")
     if not base:
         return url
     parts = urlsplit(url)
@@ -41,7 +42,7 @@ def on_site(url: str) -> str:
 
 class AccountAdapter(DefaultAccountAdapter):  # type: ignore[misc]
     def is_open_for_signup(self, request: HttpRequest) -> bool:
-        return bool(settings.HOUSECAIRN_SIGNUP_OPEN)
+        return bool(get_setting("signup_open"))
 
     def send_mail(self, template_prefix: str, email: str, context: dict[str, Any]) -> None:
         for key in _EMAIL_LINKS:

@@ -9,7 +9,6 @@ from collections.abc import Callable, Iterable
 from datetime import timedelta
 from typing import Any
 
-from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, models, transaction
 from django.utils import timezone
@@ -19,6 +18,7 @@ from housecairn.accounts.models import User
 from housecairn.accounts.services import is_instance_admin
 from housecairn.audit import services as audit
 from housecairn.homes import services as home_services
+from housecairn.instance.config import get_setting
 from housecairn.instance.models import InstanceInvitation
 
 INSTANCE_PREFIX = "hcn_"
@@ -35,7 +35,7 @@ def _new_secret() -> tuple[str, str]:
 
 
 def _lifetime() -> timedelta:
-    return timedelta(days=settings.HOUSECAIRN_INVITATION_LIFETIME_DAYS)
+    return timedelta(days=get_setting("invitation_lifetime_days"))
 
 
 def pending_invitations() -> models.QuerySet[InstanceInvitation]:

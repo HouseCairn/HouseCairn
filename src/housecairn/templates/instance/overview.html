@@ -63,6 +63,13 @@
       </span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>
+    <a class="row" href="{% url 'instance:settings' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Settings" %}</span>
+        <span class="row-text">{% translate "Sign-up, invitations, outgoing email, public address" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
     <a class="row" href="{% url 'instance:audit' %}">
       <span class="row-body">
         <span class="row-title">{% translate "Audit log" %}</span>

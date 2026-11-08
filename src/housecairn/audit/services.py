@@ -11,7 +11,20 @@ from housecairn.accounts.models import User
 from housecairn.audit.models import AuditEvent, Scope
 
 # Keys `detail` may carry. A value is short and says nothing of a home's content.
-ALLOWED_DETAIL = frozenset({"role", "previous_role", "provider", "count", "by", "fields", "format"})
+ALLOWED_DETAIL = frozenset(
+    {
+        "role",
+        "previous_role",
+        "provider",
+        "count",
+        "by",
+        "fields",
+        "format",
+        "setting",
+        "old",
+        "new",
+    }
+)
 
 
 def record(

@@ -33,3 +33,4 @@ later record supersedes it.
 | [0025](0025-rate-limit-counters-and-workers.md) | Rate-limit counters and several web processes | 2026-11-08 |
 | [0029](0029-rooms-items-and-room-memory.md) | Rooms, items and room memory | 2026-11-08 |
 | [0030](0030-photo-storage-and-processing.md) | Photo storage and processing | 2026-11-08 |
+| [0031](0031-instance-settings-in-the-interface.md) | Instance settings in the interface, paired with environment variables | 2026-11-08 |

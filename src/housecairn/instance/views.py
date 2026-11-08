@@ -16,6 +16,8 @@ from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils.http import urlencode
+from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _lazy
 from django.views import View
@@ -24,14 +26,17 @@ from django.views.generic import TemplateView
 from housecairn.accounts import services as account_services
 from housecairn.accounts.models import User
 from housecairn.audit import services as audit
+from housecairn.core.help import docs_page_url
 from housecairn.homes import services as home_services
 from housecairn.homes import sso
 from housecairn.homes.forms import InvitationSignupForm
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import allow
-from housecairn.instance import emails, services
-from housecairn.instance.forms import InstanceInviteForm
+from housecairn.instance import config, emails, registry, services
+from housecairn.instance import settings_services as services_settings
+from housecairn.instance.forms import InstanceInviteForm, SettingsSectionForm
 from housecairn.instance.models import InstanceInvitation
+from housecairn.instance.reauth import signed_in_recently
 
 DELIVERY_FAILED = _lazy(
     "The invitation is saved, but the email could not be sent. "
@@ -222,3 +227,153 @@ class InstanceInvitationView(View):
             raise Http404 from exc
         messages.success(self.request, _("Invitation accepted. You can add a home."))
         return redirect("homes:list")
+
+
+def _reauthenticate(request: HttpRequest) -> HttpResponse | None:
+    """Send the administrator to confirm their sign-in, then back here (nothing is replayed).
+
+    The submitted values are not kept: a secret typed in the form must not be stored in
+    the session while the person re-authenticates.
+    """
+    if signed_in_recently(request):
+        return None
+    messages.warning(
+        request, _("Confirm your sign-in to change settings, then make the change again.")
+    )
+    query = urlencode({"next": reverse("instance:settings")})
+    return redirect(f"{reverse('account_reauthenticate')}?{query}")
+
+
+def _server_rows() -> list[dict[str, Any]]:
+    """What the environment alone decides, without any secret."""
+    from django.conf import settings
+
+    # The engine only: the address and credentials of a database stay in the variable.
+    engine = str(settings.DATABASES["default"]["ENGINE"]).rsplit(".", 1)[-1]
+    values: dict[str, str] = {
+        "SECRET_KEY": _("set") if settings.SECRET_KEY else _("not set"),
+        "ALLOWED_HOSTS": ", ".join(settings.ALLOWED_HOSTS) or "-",
+        "CSRF_TRUSTED_ORIGINS": ", ".join(settings.CSRF_TRUSTED_ORIGINS) or "-",
+        "DATABASE_URL": engine,
+        "HOUSECAIRN_DATA_DIR": str(settings.DATA_DIR),
+        "HOUSECAIRN_BEHIND_TLS_PROXY": _("yes")
+        if settings.HOUSECAIRN_BEHIND_TLS_PROXY
+        else _("no"),
+        "HOUSECAIRN_FORWARDED_ALLOW_IPS": ", ".join(settings.HOUSECAIRN_FORWARDED_ALLOW_IPS),
+        "DEBUG": _("yes") if settings.DEBUG else _("no"),
+        "HOUSECAIRN_TASK_WORKERS": str(settings.Q_CLUSTER["workers"]),
+        "HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL": (
+            _("set") if settings.HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL else _("not set")
+        ),
+    }
+    return [
+        {"env": env, "label": label, "value": values[env]}
+        for env, label in registry.SERVER_VARIABLES
+    ]
+
+
+class SettingsView(InstanceAdminMixin, TemplateView):
+    """The settings of the instance, by section, each paired with its variable (docs/adr/0031)."""
+
+    template_name = "instance/settings.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        bound: dict[registry.Section, SettingsSectionForm] = kwargs.get("bound", {})
+        sections = []
+        for section in registry.Section:
+            form = bound.get(section) or SettingsSectionForm(section)
+            items = []
+            for setting in registry.in_section(section):
+                state = config.describe(setting.key)
+                items.append(
+                    {
+                        "state": state,
+                        "setting": setting,
+                        "field": form[setting.key] if setting.key in form.fields else None,
+                        "shown": _display(state),
+                        "default": _display_default(setting),
+                    }
+                )
+            sections.append(
+                {
+                    "id": section.value,
+                    "label": registry.SECTION_LABELS[section],
+                    "form": form,
+                    "items": items,
+                    "test_email": section is registry.Section.EMAIL,
+                }
+            )
+        context.update(
+            sections=sections,
+            server_rows=_server_rows(),
+            docs_settings_url=docs_page_url("administration/settings/", get_language()),
+        )
+        return context
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        try:
+            section = registry.Section(request.POST.get("section", ""))
+        except ValueError as exc:
+            raise Http404 from exc
+        if (response := _reauthenticate(request)) is not None:
+            return response
+        actor: User = request.user  # type: ignore[assignment]
+        reset_key = request.POST.get("reset", "")
+        if reset_key:
+            return self._reset(request, actor, section, reset_key)
+        if "test_email" in request.POST:
+            return self._test_email(request, actor)
+        form = SettingsSectionForm(section, request.POST)
+        if form.is_valid():
+            try:
+                changed = services_settings.update(actor, form.changes())
+            except ValidationError as exc:
+                for key, errors in exc.message_dict.items():
+                    for error in errors:
+                        form.add_error(key if key in form.fields else None, error)
+            else:
+                messages.success(
+                    request,
+                    _("Settings saved.") if changed else _("Nothing to change."),
+                )
+                return redirect(f"{reverse('instance:settings')}#{section.value}")
+        return self.render_to_response(self.get_context_data(bound={section: form}), status=422)
+
+    def _reset(
+        self, request: HttpRequest, actor: User, section: registry.Section, key: str
+    ) -> HttpResponse:
+        try:
+            services_settings.reset(actor, key)
+        except ValidationError as exc:
+            messages.error(request, " ".join(m for ms in exc.message_dict.values() for m in ms))
+        else:
+            messages.success(request, _("Default restored."))
+        return redirect(f"{reverse('instance:settings')}#{section.value}")
+
+    def _test_email(self, request: HttpRequest, actor: User) -> HttpResponse:
+        if not allow(request, "housecairn_settings_test"):
+            messages.error(request, _("Too many tests in a short time. Try again later."))
+        else:
+            ok, text = services_settings.check_email(actor)
+            (messages.success if ok else messages.error)(request, text)
+        return redirect(f"{reverse('instance:settings')}#email")
+
+
+def _display(state: config.State) -> str:
+    """The effective value as text; a secret is only 'set' or 'not set'."""
+    if state.setting.secret:
+        return _("set") if state.is_set else _("not set")
+    return _display_value(state.value)
+
+
+def _display_value(value: Any) -> str:
+    if isinstance(value, bool):
+        return _("yes") if value else _("no")
+    if isinstance(value, list):
+        return ", ".join(value) or _("(none)")
+    return str(value) if value not in ("", None) else _("(none)")
+
+
+def _display_default(setting: registry.Setting) -> str:
+    return _display_value(setting.default)

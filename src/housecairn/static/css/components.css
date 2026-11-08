@@ -616,3 +616,11 @@ td {
   width: 4.5rem;
   height: 4.5rem;
 }
+
+/* A setting that an environment variable fixes: shown as it is, not editable. */
+input[readonly],
+input:disabled {
+  color: var(--hc-color-text-muted);
+  background: var(--hc-color-surface-muted);
+  border-style: dashed;
+}

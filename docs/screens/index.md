@@ -19,6 +19,7 @@ audit
 member
 invitation
 instance
+instance-settings
 instance-invitation
 rooms
 room
