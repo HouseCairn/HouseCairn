@@ -101,8 +101,8 @@ web interface: every request only sees the homes of its user
   there. Someone else's channel is a 404.
 - **Calendar** ([ADR 0052](../adr/0052-calendar-and-secret-ics-feeds.md)):
   `GET /api/v1/calendar/?from=YYYY-MM-DD&to=YYYY-MM-DD` returns the occurrences of the
-  caller's homes (at most 400 days; `truncated` tells when the limit of 5 000 entries cut the
-  answer) with the filters `home`, `room`, `person` (an id, or `none`) and `priority`. Dates of a
+  caller's homes (at most 400 days; `truncated` tells when the limit of 5 000 entries, or of 1 000 repeating
+  tasks, cut the answer, always on the farthest dates) with the filters `home`, `room`, `person` (an id, or `none`) and `priority`. Dates of a
   task that repeats and has no occurrence yet are returned with `projected: true` and
   `occurrence: null`. A token needs the `read` scope and only sees the homes it is bound to;
   `can_complete` is false for a reader. `/api/v1/me/calendar-feeds/` lists, creates (`home`, or

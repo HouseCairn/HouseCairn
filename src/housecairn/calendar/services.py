@@ -8,6 +8,8 @@ queries does not depend on the number of tasks.
 """
 
 import datetime
+import heapq
+import itertools
 import zoneinfo
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
@@ -111,6 +113,14 @@ def _task_filter(filters: Filters) -> models.Q:
     return q
 
 
+_RANK = {Priority.HIGH: 0, Priority.NORMAL: 1, Priority.LOW: 2}
+
+
+def _order(entry: Entry) -> tuple[datetime.date, int, str]:
+    """By day, then by priority, then by title."""
+    return (entry.day, _RANK.get(Priority(entry.priority), 1), entry.title.casefold())
+
+
 def _project(occurrence: Occurrence, end: datetime.date) -> Iterator[datetime.date]:
     """The dates after an open occurrence up to `end`, were each closed on its due date."""
     task = occurrence.task
@@ -150,52 +160,53 @@ def entries(
     )
     base = base.select_related("task", "task__room", "task__assignee", "home")
 
-    found: list[Entry] = []
-
-    def add(occurrence: Occurrence, day: datetime.date, *, projected: bool) -> None:
+    def entry(occurrence: Occurrence, day: datetime.date, *, projected: bool) -> Entry:
         task = occurrence.task
-        found.append(
-            Entry(
-                day=day,
-                status=Status.PLANNED if projected else occurrence.status,
-                projected=projected,
-                title=clean_title(task.title),
-                task_id=task.id,
-                occurrence_id=None if projected else occurrence.id,
-                home=occurrence.home,
-                room_id=task.room_id,
-                room=task.room.name if task.room else "",
-                assignee_id=task.assignee_id,
-                person=person_name(task.assignee),
-                priority=task.priority,
-                can_write=roles.get(occurrence.home_id) in WRITE_ROLES,
-                updated_at=occurrence.updated_at,
-            )
+        return Entry(
+            day=day,
+            status=Status.PLANNED if projected else occurrence.status,
+            projected=projected,
+            title=clean_title(task.title),
+            task_id=task.id,
+            occurrence_id=None if projected else occurrence.id,
+            home=occurrence.home,
+            room_id=task.room_id,
+            room=task.room.name if task.room else "",
+            assignee_id=task.assignee_id,
+            person=person_name(task.assignee),
+            priority=task.priority,
+            can_write=roles.get(occurrence.home_id) in WRITE_ROLES,
+            updated_at=occurrence.updated_at,
         )
+
+    def forecast(occurrence: Occurrence) -> Iterator[Entry]:
+        for day in _project(occurrence, end):
+            if day >= start:
+                yield entry(occurrence, day, projected=True)
 
     real = (
         base.annotate(cal_day=Coalesce("due_on", "completed_on"))
         .filter(cal_day__range=(start, end))
         .order_by("cal_day", "created_at", "id")[: ENTRY_LIMIT + 1]
     )
-    for occurrence in real:
-        add(occurrence, occurrence.cal_day, projected=False)
-    repeating = base.filter(
-        status__in=OPEN_STATUSES,
-        due_on__isnull=False,
-        due_on__lte=end,
-        task__repeat_mode__in=[RepeatMode.FIXED, RepeatMode.AFTER_LAST],
-    ).order_by("due_on", "id")[:PROJECTED_TASKS_LIMIT]
-    for occurrence in repeating:
-        for day in _project(occurrence, end):
-            if len(found) > ENTRY_LIMIT:
-                break
-            if day >= start:
-                add(occurrence, day, projected=True)
-    truncated = len(found) > ENTRY_LIMIT
-    rank = {Priority.HIGH: 0, Priority.NORMAL: 1, Priority.LOW: 2}
-    found.sort(key=lambda e: (e.day, rank.get(Priority(e.priority), 1), e.title.casefold()))
-    return Result(found[:ENTRY_LIMIT], truncated)
+    recorded = sorted((entry(o, o.cal_day, projected=False) for o in real), key=_order)
+    repeating = list(
+        base.filter(
+            status__in=OPEN_STATUSES,
+            due_on__isnull=False,
+            due_on__lte=end,
+            task__repeat_mode__in=[RepeatMode.FIXED, RepeatMode.AFTER_LAST],
+        ).order_by("due_on", "id")[: PROJECTED_TASKS_LIMIT + 1]
+    )
+    tasks_cut = len(repeating) > PROJECTED_TASKS_LIMIT
+    # Every stream is in ascending order: the merge hands out the entries day by day, whatever
+    # the number of tasks, and stops at the limit, so the cut falls on the farthest dates and
+    # never removes a near date of one task while keeping a far date of another.
+    merged = heapq.merge(
+        recorded, *(forecast(o) for o in repeating[:PROJECTED_TASKS_LIMIT]), key=_order
+    )
+    found = list(itertools.islice(merged, ENTRY_LIMIT + 1))
+    return Result(found[:ENTRY_LIMIT], len(found) > ENTRY_LIMIT or tasks_cut)
 
 
 def by_day(items: Iterable[Entry]) -> dict[datetime.date, list[Entry]]:

@@ -141,6 +141,40 @@ class TestRange:
             make_task(alice, alice_home, f"Task {n}", n, repeat_mode="fixed", repeat_unit="month")
         assert count() == few <= 3
 
+    def test_a_cut_removes_the_farthest_dates_and_no_task_loses_a_near_one(
+        self, monkeypatch: pytest.MonkeyPatch, alice: User, alice_home: Home
+    ) -> None:
+        monkeypatch.setattr(services, "ENTRY_LIMIT", 500)
+        tasks = [
+            make_task(
+                alice, alice_home, f"Daily {n:02d}", 0, repeat_mode="fixed", repeat_unit="day"
+            )
+            for n in range(12)
+        ]
+        wanted = TODAY + 30 * DAY
+        shown = services.entries(alice, [alice_home], TODAY, TODAY + 365 * DAY)
+        assert shown.truncated
+        assert len(shown.entries) == 500
+        by_day = services.by_day(shown.entries)
+        assert {e.task_id for e in by_day[wanted]} == {t.id for t in tasks}
+        # Every day but the last kept one is complete: the cut is on the farthest dates.
+        last = max(by_day)
+        assert all(len(by_day[d]) == len(tasks) for d in by_day if d < last)
+        # The feed (the API goes through the same function) has each task at day 30 as well.
+        body = ics.render(feeds.create_feed(alice, alice_home)[0], "https://h.example.com")
+        in_feed = [str(e["URL"]) for e in events_of(body) if e["DTSTART"].dt == wanted]
+        assert len(in_feed) == len(tasks)
+
+    def test_more_projected_tasks_than_the_limit_is_reported_not_silent(
+        self, monkeypatch: pytest.MonkeyPatch, alice: User, alice_home: Home
+    ) -> None:
+        monkeypatch.setattr(services, "PROJECTED_TASKS_LIMIT", 3)
+        for n in range(5):
+            make_task(alice, alice_home, f"Task {n}", n, repeat_mode="fixed", repeat_unit="week")
+        assert services.entries(alice, [alice_home], TODAY, TODAY + 30 * DAY).truncated
+        monkeypatch.setattr(services, "PROJECTED_TASKS_LIMIT", 5)
+        assert not services.entries(alice, [alice_home], TODAY, TODAY + 30 * DAY).truncated
+
     def test_the_range_is_bounded(self, alice: User, alice_home: Home) -> None:
         with pytest.raises(ValueError, match="range"):
             services.entries(alice, [alice_home], TODAY, TODAY + 401 * DAY)
@@ -777,6 +811,22 @@ class TestApi:
         assert all("@" not in r["person"] for r in data["results"])
         week = signed_in.get(reverse("calendar:week"), {"date": str(start)}).content.decode()
         assert all(r["title"] in week for r in data["results"] if r["date"] < str(start + 7 * DAY))
+
+    def test_the_api_has_each_task_on_day_30_and_says_it_was_cut(
+        self, monkeypatch: pytest.MonkeyPatch, alice: User, alice_home: Home
+    ) -> None:
+        monkeypatch.setattr(services, "ENTRY_LIMIT", 500)
+        for n in range(12):
+            make_task(
+                alice, alice_home, f"Daily {n:02d}", 0, repeat_mode="fixed", repeat_unit="day"
+            )
+        client = APIClient()
+        client.force_authenticate(alice)
+        start, end = TODAY.isoformat(), (TODAY + 365 * DAY).isoformat()
+        data = client.get(self.url(), {"from": start, "to": end}).json()
+        assert data["truncated"] is True
+        day_30 = (TODAY + 30 * DAY).isoformat()
+        assert sum(1 for r in data["results"] if r["date"] == day_30) == 12
 
     def test_bad_ranges_and_filters_are_400(self, alice: User, alice_home: Home) -> None:
         client = APIClient()

@@ -23,7 +23,11 @@ filters)` serves the week, month and year screens, the API and the feed (ADR 000
 makes at most three queries whatever the number of tasks: the roles of the person, the
 occurrences whose day falls in the range, and the open occurrences of the tasks that repeat. A
 test counts them with 1 and with 26 tasks. The range is at most 400 days and 5 000 entries; the
-answer says when it was cut.
+answer says when it was cut. The entries come day by day: the real occurrences and the
+forecast of every task are merged in ascending order (`heapq.merge`) and the merge stops at the
+limit, so a cut removes the farthest dates and never a near date of one task while a far date
+of another stays. The same holds past 1 000 repeating tasks: the 1 000 whose open occurrence
+is the earliest are projected, and the answer says it was cut.
 
 - **The day of an occurrence** is its due date, or, when it has none, its completion date. A
   task done late stays on the day it was due, with the status "done".

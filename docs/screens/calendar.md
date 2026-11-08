@@ -16,8 +16,8 @@ what is still to come for a task that repeats.
 - **Forecast**: the dates after the open occurrence of a task that repeats are computed from its
   rule and marked as forecast. They are not created until the task is done; they have no button.
 
-The range is limited to 400 days and 5 000 entries; past that the screen says so, and narrowing
-the filters shows the rest. The same data is in the [API](../api/index.md)
+The range is limited to 400 days and 5 000 entries; past that the screen says so. What is left out
+is always the farthest dates; narrowing the filters or the range shows the rest. The same data is in the [API](../api/index.md)
 (`GET /api/v1/calendar/?from=&to=`).
 
 ## Feeds
