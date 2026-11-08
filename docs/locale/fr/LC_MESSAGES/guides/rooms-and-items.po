@@ -1,0 +1,66 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 00:13+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Rooms and items"
+msgstr "Pièces et éléments"
+
+msgid "A home is made of rooms, and a room holds items: the equipment (boiler, smoke detector, oven) and the surfaces (the north wall, the floor) that you will have to maintain, repair or replace one day. This guide shows how to describe them. Every field is optional except the name, so you can start with a name and complete the rest when you have the document in hand."
+msgstr "Un logement se compose de pièces, et une pièce contient des éléments : les équipements (chaudière, détecteur de fumée, four) et les surfaces (le mur nord, le sol) qu'il faudra un jour entretenir, réparer ou remplacer. Ce guide montre comment les décrire. Tous les champs sont facultatifs sauf le nom : on peut commencer par un nom et compléter le reste quand on a le document sous la main."
+
+msgid "Add the rooms"
+msgstr "Ajouter les pièces"
+
+msgid "Open **Rooms** in the navigation, then **Add a room**. Give it a name and, if you like, a type. Use **Change the order** on the list to put the rooms in the order you want, for example the way you walk through the house. An area such as the garden or the cellar is a room like any other."
+msgstr "Ouvrez **Pièces** dans la navigation, puis **Ajouter une pièce**. Donnez-lui un nom et, si vous le souhaitez, un type. **Changer l'ordre** sur la liste place les pièces dans l'ordre voulu, par exemple celui du parcours dans la maison. Un espace comme le jardin ou la cave est une pièce comme une autre."
+
+msgid "Write down the room memory"
+msgstr "Noter la mémoire de la pièce"
+
+msgid "On the page of a room, **Edit the memory** keeps what you would otherwise search for later: the paint (colour, brand, reference, batch, how much is left and where), the floor and wall coverings, and free notes. Take photos before closing a wall or a duct and add them under **Open walls**: in ten years, they tell where the cables run."
+msgstr "Sur la page d'une pièce, **Modifier la mémoire** garde ce qu'il faudrait sinon chercher plus tard : la peinture (couleur, marque, référence, lot, ce qu'il en reste et où), les revêtements de sol et de mur, et des notes libres. Prenez des photos avant de fermer un mur ou une gaine et ajoutez-les sous **Murs ouverts** : dans dix ans, elles disent où passent les câbles."
+
+msgid "Add the items"
+msgstr "Ajouter les éléments"
+
+msgid "**Add an item** on the page of a room. Note the brand, the model, the serial number, the installation date and the end of the warranty, the maintenance contract and a link to it, and any link worth keeping, such as the manual online. The item page shows a label that tells whether the warranty is still running."
+msgstr "**Ajouter un élément** sur la page d'une pièce. Notez la marque, le modèle, le numéro de série, la date de pose et la fin de la garantie, le contrat d'entretien et un lien vers celui-ci, et tout lien qui mérite d'être gardé, comme la notice en ligne. La page de l'élément affiche une étiquette qui indique si la garantie court encore."
+
+msgid "If you put an item in the wrong room, edit it and choose another room: the item moves with its photos."
+msgstr "Si un élément est dans la mauvaise pièce, modifiez-le et choisissez une autre pièce : l'élément se déplace avec ses photos."
+
+msgid "Add photos"
+msgstr "Ajouter des photos"
+
+msgid "Photos can be added to a room or to an item, from a phone or a computer. HouseCairn keeps the picture and nothing else: the location, the date and every other piece of information hidden in the file are removed, and a large picture is reduced to 2,560 pixels on its longest side. Only JPEG, PNG and WebP are accepted. HEIC pictures, which some phones save by default, are not accepted: set the camera to its most compatible format (JPEG) or convert them first."
+msgstr "On peut ajouter des photos à une pièce ou à un élément, depuis un téléphone ou un ordinateur. HouseCairn garde l'image et rien d'autre : la position, la date et toute autre information cachée dans le fichier sont supprimées, et une grande image est réduite à 2 560 pixels sur son plus grand côté. Seuls JPEG, PNG et WebP sont acceptés. Les images HEIC, que certains téléphones enregistrent par défaut, ne le sont pas : réglez l'appareil photo sur son format le plus compatible (JPEG) ou convertissez-les d'abord."
+
+msgid "The default limit is 10 MB per photo. The administrator changes it with the `HOUSECAIRN_PHOTO_MAX_BYTES` environment variable, in bytes, between 10,240 (10 KB) and 104,857,600 (100 MB). A reverse proxy in front of HouseCairn may have its own, lower limit on the size of a request: raise it as well. Photos are stored in the data volume, in `media/photos/`, and are included in the backup of that volume (see [Data and backups](../administration/backup.md))."
+msgstr "La limite par défaut est de 10 Mo par photo. L'administrateur la modifie avec la variable d'environnement `HOUSECAIRN_PHOTO_MAX_BYTES`, en octets, entre 10 240 (10 Ko) et 104 857 600 (100 Mo). Un reverse proxy placé devant HouseCairn peut avoir sa propre limite, plus basse, sur la taille d'une requête : relevez-la aussi. Les photos sont stockées dans le volume de données, dans `media/photos/`, et sont comprises dans la sauvegarde de ce volume (voir [Données et sauvegardes](../administration/backup.md))."
+
+msgid "Search and share"
+msgstr "Rechercher et partager"
+
+msgid "The search field of the room list finds a room or an item by its name. Everyone in the home sees the same rooms; read-only members see everything and change nothing. The address of a room or of an item never changes, whatever you rename or move, and opens only for signed-in members of the home."
+msgstr "Le champ de recherche de la liste des pièces trouve une pièce ou un élément par son nom. Tout le monde dans le logement voit les mêmes pièces ; les membres en lecture seule voient tout et ne modifient rien. L'adresse d'une pièce ou d'un élément ne change jamais, quoi qu'on renomme ou déplace, et ne s'ouvre que pour les membres connectés du logement."
+
+msgid "The same data is available to scripts and integrations through the [API](../api/index.md): rooms, items and photos, with the `read` and `write` scopes of an API token."
+msgstr "Les mêmes données sont accessibles aux scripts et aux intégrations par l'[API](../api/index.md) : pièces, éléments et photos, avec les portées `read` et `write` d'un jeton d'API."
+

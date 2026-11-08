@@ -5,7 +5,9 @@ web interface: every request only sees the homes of its user
 ([ADR 0004](../adr/0004-versioned-rest-api.md),
 [ADR 0006](../adr/0006-home-scoping.md)).
 
-- **JSON** only, for requests and responses.
+- **JSON** for requests and responses, except the upload of a photo, which is
+  `multipart/form-data` (`POST /api/v1/homes/<home id>/photos/`), and the image
+  and thumbnail of a photo, which are served as images.
 - **Versioned**: version 1 only gets additive changes; a breaking change will
   go to `/api/v2/`, served alongside version 1 for a deprecation period.
 - **Cursor pagination**, up to 200 items per page.
@@ -15,6 +17,13 @@ web interface: every request only sees the homes of its user
   after 90 days by default
   ([ADR 0007](../adr/0007-authentication-and-api-tokens.md)). There is no
   screen to create a token yet.
+- **Rooms, items and photos** of a home: `/api/v1/homes/<home id>/rooms/`,
+  `.../items/`, `.../photos/` and `.../search/?q=`, with the same rules as the
+  screens ([ADR 0029](../adr/0029-rooms-items-and-room-memory.md),
+  [ADR 0030](../adr/0030-photo-storage-and-processing.md)). A token needs the
+  `read` scope to read them and `write` to change them, and its user needs a role
+  that writes. Rooms and items can be filtered with `q` (name); items with
+  `room`; photos with `room`, `item` and `category`.
 
 The [reference](reference.md) lists every operation. It is generated from the
 OpenAPI 3.1 schema of the code at each build of this site:

@@ -836,3 +836,529 @@ msgstr ""
 #: homes/forms.py templates/homes/invitation.html templates/homes/member.html
 msgid "Email address"
 msgstr "Adresse e-mail"
+
+#: rooms/apps.py templates/rooms/choose_home.html
+#: templates/rooms/room_detail.html templates/rooms/room_form.html
+#: templates/rooms/room_list.html templates/rooms/search.html
+#: templates/shell/navigation.html
+msgid "Rooms"
+msgstr "Pièces"
+
+#: rooms/forms.py
+msgid "Room"
+msgstr "Pièce"
+
+#: rooms/forms.py
+msgid "Where the item is. Choose another room to move it."
+msgstr "Où se trouve l'élément. Choisissez une autre pièce pour le déplacer."
+
+#: rooms/forms.py templates/rooms/item_detail.html
+msgid "Links"
+msgstr "Liens"
+
+#: rooms/forms.py
+msgid "One per line: the address, then a label if you like."
+msgstr "Un par ligne : l'adresse, puis une étiquette si vous le souhaitez."
+
+#: rooms/forms.py rooms/models.py
+msgid "Photo"
+msgstr "Photo"
+
+#: rooms/forms.py
+msgid "Caption"
+msgstr "Légende"
+
+#: rooms/forms.py
+msgid "Category"
+msgstr "Catégorie"
+
+#: rooms/images.py
+msgid "This file is not a valid JPEG, PNG or WebP image."
+msgstr "Ce fichier n'est pas une image JPEG, PNG ou WebP valide."
+
+#: rooms/images.py
+msgid "This image is too large (more than 40 megapixels)."
+msgstr "Cette image est trop grande (plus de 40 mégapixels)."
+
+#: rooms/models.py
+msgid "Links must be a list."
+msgstr "Les liens doivent former une liste."
+
+#: rooms/models.py
+msgid "At most %(max)d links."
+msgstr "%(max)d liens au plus."
+
+#: rooms/models.py
+msgid "Each link has a url and, optionally, a label."
+msgstr "Chaque lien a une adresse et, facultativement, une étiquette."
+
+#: rooms/models.py
+msgid "A link or its label is too long."
+msgstr "Un lien ou son étiquette est trop long."
+
+#: rooms/models.py
+msgid "Living room"
+msgstr "Salon"
+
+#: rooms/models.py
+msgid "Kitchen"
+msgstr "Cuisine"
+
+#: rooms/models.py
+msgid "Bathroom"
+msgstr "Salle de bain"
+
+#: rooms/models.py
+msgid "Bedroom"
+msgstr "Chambre"
+
+#: rooms/models.py
+msgid "Hallway"
+msgstr "Couloir"
+
+#: rooms/models.py
+msgid "Office"
+msgstr "Bureau"
+
+#: rooms/models.py
+msgid "Utility room"
+msgstr "Local technique"
+
+#: rooms/models.py
+msgid "Garage"
+msgstr "Garage"
+
+#: rooms/models.py
+msgid "Cellar"
+msgstr "Cave"
+
+#: rooms/models.py
+msgid "Attic"
+msgstr "Grenier"
+
+#: rooms/models.py
+msgid "Outdoor"
+msgstr "Extérieur"
+
+#: rooms/models.py
+msgid "Other"
+msgstr "Autre"
+
+#: rooms/models.py
+msgid "type"
+msgstr "type"
+
+#: rooms/models.py
+msgid "position"
+msgstr "position"
+
+#: rooms/models.py
+msgid "notes"
+msgstr "notes"
+
+#: rooms/models.py
+msgid "paint colour"
+msgstr "couleur de la peinture"
+
+#: rooms/models.py
+msgid "paint brand"
+msgstr "marque de la peinture"
+
+#: rooms/models.py
+msgid "paint reference"
+msgstr "référence de la peinture"
+
+#: rooms/models.py
+msgid "paint batch"
+msgstr "lot de la peinture"
+
+#: rooms/models.py
+msgid "paint left in stock"
+msgstr "peinture restant en stock"
+
+#: rooms/models.py
+msgid "For example: half a tin, in the garage."
+msgstr "Par exemple : un demi-pot, au garage."
+
+#: rooms/models.py
+msgid "floor covering"
+msgstr "revêtement de sol"
+
+#: rooms/models.py
+msgid "wall covering"
+msgstr "revêtement de mur"
+
+#: rooms/models.py
+msgid "memory notes"
+msgstr "notes de mémoire"
+
+#: rooms/models.py
+msgid "room"
+msgstr "pièce"
+
+#: rooms/models.py
+msgid "rooms"
+msgstr "pièces"
+
+#: rooms/models.py
+msgid "Equipment"
+msgstr "Équipement"
+
+#: rooms/models.py
+msgid "Surface"
+msgstr "Surface"
+
+#: rooms/models.py
+msgid "brand"
+msgstr "marque"
+
+#: rooms/models.py
+msgid "model"
+msgstr "modèle"
+
+#: rooms/models.py
+msgid "serial number"
+msgstr "numéro de série"
+
+#: rooms/models.py
+msgid "installed on"
+msgstr "posé le"
+
+#: rooms/models.py
+msgid "warranty ends on"
+msgstr "fin de garantie"
+
+#: rooms/models.py
+msgid "maintenance contract"
+msgstr "contrat d'entretien"
+
+#: rooms/models.py
+msgid "Who services it, and the contract number if any."
+msgstr "Qui l'entretient, et le numéro de contrat s'il y en a un."
+
+#: rooms/models.py
+msgid "contract link"
+msgstr "lien du contrat"
+
+#: rooms/models.py
+msgid "links"
+msgstr "liens"
+
+#: rooms/models.py
+msgid "item"
+msgstr "élément"
+
+#: rooms/models.py
+msgid "items"
+msgstr "éléments"
+
+#: rooms/models.py rooms/services.py
+msgid "This room is not in this home."
+msgstr "Cette pièce n'est pas dans ce logement."
+
+#: rooms/models.py templates/rooms/room_detail.html
+msgid "Open walls"
+msgstr "Murs ouverts"
+
+#: rooms/models.py
+msgid "category"
+msgstr "catégorie"
+
+#: rooms/models.py
+msgid "caption"
+msgstr "légende"
+
+#: rooms/models.py
+msgid "photo"
+msgstr "photo"
+
+#: rooms/models.py
+msgid "photos"
+msgstr "photos"
+
+#: rooms/services.py
+msgid "The list holds a room twice, or a room that does not exist."
+msgstr "La liste contient une pièce deux fois, ou une pièce qui n'existe pas."
+
+#: rooms/services.py
+msgid "Choose up or down."
+msgstr "Choisissez monter ou descendre."
+
+#: rooms/services.py
+msgid "This file is too large: the limit is %(limit)s."
+msgstr "Ce fichier est trop volumineux : la limite est de %(limit)s."
+
+#: rooms/services.py
+msgid "This file is empty."
+msgstr "Ce fichier est vide."
+
+#: rooms/services.py
+msgid "At most %(max)d photos for a room or an item."
+msgstr "%(max)d photos au plus pour une pièce ou un élément."
+
+#: rooms/views.py
+msgid "Room added."
+msgstr "Pièce ajoutée."
+
+#: rooms/views.py
+msgid "Room saved."
+msgstr "Pièce enregistrée."
+
+#: rooms/views.py
+msgid "The room, its items and their photos disappear from the screens."
+msgstr "La pièce, ses éléments et leurs photos disparaissent des écrans."
+
+#: rooms/views.py
+msgid "Room deleted."
+msgstr "Pièce supprimée."
+
+#: rooms/views.py
+msgid "Item added."
+msgstr "Élément ajouté."
+
+#: rooms/views.py
+msgid "Item saved."
+msgstr "Élément enregistré."
+
+#: rooms/views.py
+msgid "The item and its photos disappear from the screens."
+msgstr "L'élément et ses photos disparaissent des écrans."
+
+#: rooms/views.py
+msgid "Item deleted."
+msgstr "Élément supprimé."
+
+#: rooms/views.py
+msgid "This file is too large."
+msgstr "Ce fichier est trop volumineux."
+
+#: rooms/views.py
+msgid "Photo added."
+msgstr "Photo ajoutée."
+
+#: rooms/views.py
+msgid "Photo deleted."
+msgstr "Photo supprimée."
+
+#: templates/rooms/_photos.html
+msgid "Photo of %(name)s"
+msgstr "Photo de %(name)s"
+
+#: templates/rooms/_photos.html templates/rooms/confirm_delete.html
+msgid "Delete"
+msgstr "Supprimer"
+
+#: templates/rooms/_photos.html
+msgid "this photo"
+msgstr "cette photo"
+
+#: templates/rooms/choose_home.html
+msgid "Choose the home whose rooms you want to open."
+msgstr "Choisissez le logement dont vous voulez ouvrir les pièces."
+
+#: templates/rooms/choose_home.html
+msgid "You have no home to open yet."
+msgstr "Vous n'avez pas encore de logement à ouvrir."
+
+#: templates/rooms/confirm_delete.html
+msgid "Delete %(name)s?"
+msgstr "Supprimer %(name)s ?"
+
+#: templates/rooms/confirm_delete.html
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/rooms/item_detail.html
+msgid "Brand, model"
+msgstr "Marque, modèle"
+
+#: templates/rooms/item_detail.html
+msgid "Serial number"
+msgstr "Numéro de série"
+
+#: templates/rooms/item_detail.html
+msgid "Installed on"
+msgstr "Posé le"
+
+#: templates/rooms/item_detail.html
+msgid "Warranty"
+msgstr "Garantie"
+
+#: templates/rooms/item_detail.html
+msgid "ended on %(date)s"
+msgstr "terminée le %(date)s"
+
+#: templates/rooms/item_detail.html
+msgid "Maintenance contract"
+msgstr "Contrat d'entretien"
+
+#: templates/rooms/item_detail.html
+msgid "open the contract"
+msgstr "ouvrir le contrat"
+
+#: templates/rooms/item_detail.html templates/rooms/room_detail.html
+msgid "Notes"
+msgstr "Notes"
+
+#: templates/rooms/item_detail.html templates/rooms/item_form.html
+msgid "Edit the item"
+msgstr "Modifier l'élément"
+
+#: templates/rooms/item_detail.html templates/rooms/room_detail.html
+msgid "Photos"
+msgstr "Photos"
+
+#: templates/rooms/item_detail.html templates/rooms/photo_form.html
+#: templates/rooms/room_detail.html
+msgid "Add a photo"
+msgstr "Ajouter une photo"
+
+#: templates/rooms/item_detail.html templates/rooms/room_detail.html
+msgid "No photo yet."
+msgstr "Aucune photo pour l'instant."
+
+#: templates/rooms/item_detail.html
+msgid "Maintenance log"
+msgstr "Journal d'entretien"
+
+#: templates/rooms/item_form.html templates/rooms/room_detail.html
+msgid "Add an item"
+msgstr "Ajouter un élément"
+
+#: templates/rooms/item_form.html
+msgid "Add the item"
+msgstr "Ajouter l'élément"
+
+#: templates/rooms/item_form.html
+msgid "Delete the item"
+msgstr "Supprimer l'élément"
+
+#: templates/rooms/photo_form.html
+msgid "Upload"
+msgstr "Envoyer"
+
+#: templates/rooms/photo_form.html
+msgid "JPEG, PNG or WebP, up to %(size)s. Location data and other information stored in the file are removed."
+msgstr "JPEG, PNG ou WebP, jusqu'à %(size)s. La position et les autres informations stockées dans le fichier sont supprimées."
+
+#: templates/rooms/room_detail.html
+msgid "Type"
+msgstr "Type"
+
+#: templates/rooms/room_detail.html templates/rooms/room_form.html
+msgid "Edit the room"
+msgstr "Modifier la pièce"
+
+#: templates/rooms/room_detail.html templates/rooms/room_memory_form.html
+msgid "Room memory"
+msgstr "Mémoire de la pièce"
+
+#: templates/rooms/room_detail.html
+msgid "Paint colour"
+msgstr "Couleur de la peinture"
+
+#: templates/rooms/room_detail.html
+msgid "Paint brand"
+msgstr "Marque de la peinture"
+
+#: templates/rooms/room_detail.html
+msgid "Paint reference"
+msgstr "Référence de la peinture"
+
+#: templates/rooms/room_detail.html
+msgid "Paint batch"
+msgstr "Lot de la peinture"
+
+#: templates/rooms/room_detail.html
+msgid "Paint left in stock"
+msgstr "Peinture restant en stock"
+
+#: templates/rooms/room_detail.html
+msgid "Floor covering"
+msgstr "Revêtement de sol"
+
+#: templates/rooms/room_detail.html
+msgid "Wall covering"
+msgstr "Revêtement de mur"
+
+#: templates/rooms/room_detail.html
+msgid "Memory notes"
+msgstr "Notes de mémoire"
+
+#: templates/rooms/room_detail.html
+msgid "Nothing noted yet: paint, floor and wall coverings, and photos of the open walls."
+msgstr "Rien de noté pour l'instant : peinture, revêtements de sol et de mur, et photos des murs ouverts."
+
+#: templates/rooms/room_detail.html
+msgid "Edit the memory"
+msgstr "Modifier la mémoire"
+
+#: templates/rooms/room_detail.html
+msgid "Photos taken before closing a wall or a duct: where the cables and pipes run."
+msgstr "Photos prises avant de fermer un mur ou une gaine : où passent les câbles et les tuyaux."
+
+#: templates/rooms/room_detail.html templates/rooms/search.html
+msgid "Items"
+msgstr "Éléments"
+
+#: templates/rooms/room_detail.html
+msgid "warranty until %(date)s"
+msgstr "garantie jusqu'au %(date)s"
+
+#: templates/rooms/room_detail.html
+msgid "No item in this room yet."
+msgstr "Aucun élément dans cette pièce pour l'instant."
+
+#: templates/rooms/room_form.html templates/rooms/room_list.html
+msgid "Add a room"
+msgstr "Ajouter une pièce"
+
+#: templates/rooms/room_form.html
+msgid "Add the room"
+msgstr "Ajouter la pièce"
+
+#: templates/rooms/room_form.html
+msgid "Delete the room"
+msgstr "Supprimer la pièce"
+
+#: templates/rooms/room_list.html templates/rooms/search.html
+msgid "Search rooms and items"
+msgstr "Rechercher des pièces et des éléments"
+
+#: templates/rooms/room_list.html templates/rooms/search.html
+msgid "Search"
+msgstr "Rechercher"
+
+#: templates/rooms/room_list.html
+msgid "Move %(name)s up"
+msgstr "Monter %(name)s"
+
+#: templates/rooms/room_list.html
+msgid "Move %(name)s down"
+msgstr "Descendre %(name)s"
+
+#: templates/rooms/room_list.html
+msgid "%(counter)s item"
+msgid_plural "%(counter)s items"
+msgstr[0] "%(counter)s élément"
+msgstr[1] "%(counter)s éléments"
+
+#: templates/rooms/room_list.html
+msgid "No room yet."
+msgstr "Aucune pièce pour l'instant."
+
+#: templates/rooms/room_list.html
+msgid "Done"
+msgstr "Terminé"
+
+#: templates/rooms/room_list.html
+msgid "Change the order"
+msgstr "Changer l'ordre"
+
+#: templates/rooms/room_memory_form.html
+msgid "What was used and fitted in this room, to find it again when you need to touch up or replace it. Every field is optional."
+msgstr "Ce qui a été utilisé et posé dans cette pièce, pour le retrouver quand il faudra faire des retouches ou le remplacer. Tous les champs sont facultatifs."
+
+#: templates/rooms/search.html
+msgid "Nothing matches “%(query)s”."
+msgstr "Rien ne correspond à « %(query)s »."

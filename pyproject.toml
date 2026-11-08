@@ -32,6 +32,7 @@ dependencies = [
   # by the container image (see docs/adr/0015).
   "gunicorn>=23",
   "whitenoise>=6.9",
+  "pillow>=12",
 ]
 
 [project.optional-dependencies]
