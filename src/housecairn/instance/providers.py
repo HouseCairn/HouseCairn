@@ -211,13 +211,33 @@ def form_action_origins() -> list[str]:
 # ---------- checks ----------
 
 
+NAT64 = ipaddress.IPv6Network("64:ff9b::/96")  # RFC 6052: the IPv4 address is the last 32 bits
+
+
+def _embedded_ipv4(address: ipaddress.IPv6Address) -> ipaddress.IPv4Address | None:
+    """The IPv4 address an IPv6 one carries: mapped, NAT64, 6to4 or Teredo (client)."""
+    if address.ipv4_mapped is not None:
+        return address.ipv4_mapped
+    if address in NAT64:
+        return ipaddress.IPv4Address(int(address) & 0xFFFFFFFF)
+    if address.sixtofour is not None:
+        return address.sixtofour
+    if address.teredo is not None:
+        return address.teredo[1]
+    return None
+
+
 def _forbidden_address(address: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
     """Addresses an issuer may not point to: the instance itself and link-local services.
 
-    Private networks stay allowed: an identity provider often runs on the local network.
+    An IPv6 address that carries an IPv4 one is judged by the IPv4 address: through a
+    NAT64 gateway or a 6to4 relay, it reaches that address. Private networks stay allowed:
+    an identity provider often runs on the local network.
     """
-    if isinstance(address, ipaddress.IPv6Address) and address.ipv4_mapped is not None:
-        address = address.ipv4_mapped
+    if isinstance(address, ipaddress.IPv6Address):
+        embedded = _embedded_ipv4(address)
+        if embedded is not None:
+            address = embedded
     return bool(
         address.is_loopback
         or address.is_link_local

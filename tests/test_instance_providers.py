@@ -1,5 +1,6 @@
 """Sign-in providers declared in the interface, and the last-way-to-sign-in guard (ADR 0041)."""
 
+import ipaddress
 import json
 import logging
 import time
@@ -789,6 +790,29 @@ class TestDiscovery:
         calls = self._serve(monkeypatch, 200, self.GOOD, address=address)
         assert providers.discover(ISSUER) == "blocked"
         assert calls == []
+
+    @pytest.mark.parametrize(
+        ("address", "code"),
+        [
+            # NAT64 (RFC 6052): the IPv4 address is the last 32 bits.
+            ("64:ff9b::7f00:1", "blocked"),  # 127.0.0.1
+            ("64:ff9b::a9fe:a9fe", "blocked"),  # 169.254.169.254
+            ("64:ff9b::c000:20a", "ok"),  # 192.0.2.10, reached through the gateway
+            # 6to4 (RFC 3056): the IPv4 address follows 2002::/16.
+            ("2002:7f00:1::1", "blocked"),
+            ("2002:a9fe:a9fe::1", "blocked"),
+            ("2002:c000:20a::1", "ok"),
+            # Teredo (RFC 4380): the client address, inverted, in the last 32 bits.
+            ("2001:0:c000:20a::80ff:fffe", "blocked"),  # client 127.0.0.1
+        ],
+    )
+    def test_an_ipv6_address_is_judged_by_the_ipv4_one_it_carries(
+        self, monkeypatch: Any, address: str, code: str
+    ) -> None:
+        calls = self._serve(monkeypatch, 200, self.GOOD, address=address)
+        assert providers.discover(ISSUER) == code
+        assert len(calls) == (code == "ok")
+        assert providers._forbidden_address(ipaddress.ip_address(address)) is (code != "ok")
 
     def test_a_private_network_is_called(self, monkeypatch: Any) -> None:
         calls = self._serve(monkeypatch, 200, self.GOOD, address="198.18.0.7")

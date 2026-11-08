@@ -97,8 +97,11 @@ checked, the connection made to the checked address (no second resolution, so no
 rebinding) with the certificate verified against the host name, no redirect followed, five
 seconds and 64 KiB at most, and the answer is one of a few fixed sentences, never the body.
 Loopback, link-local (cloud metadata services), multicast, unspecified and reserved addresses
-are refused, at the test and, for an address typed as is, when the issuer is saved. Private
-networks are allowed: an identity provider often runs on the local network.
+are refused, at the test and, for an address typed as is, when the issuer is saved. An IPv6
+address that carries an IPv4 one (IPv4-mapped, NAT64 `64:ff9b::/96`, 6to4 `2002::/16`, the
+client of a Teredo address) is judged by that IPv4 address, which a gateway or relay would
+reach; a public address behind NAT64 is therefore called as it should. Private networks are
+allowed: an identity provider often runs on the local network.
 
 **What stays outside this choice.** At sign-in, django-allauth fetches the same configuration
 itself, as it does for the provider of the variables; the address checks of the test button do
