@@ -14,12 +14,13 @@ from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import Resolver404, resolve, reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from housecairn.accounts import names
-from housecairn.core.redirects import is_safe_redirect
+from housecairn.core.redirects import has_safe_shape
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import open_homes_for_request
 from housecairn.rooms import conf
@@ -85,9 +86,15 @@ def _url(name: str, **kwargs: object) -> str:
 
 
 def _back(request: HttpRequest, default: str) -> str:
-    """Where to go after an action: the page it was sent from, if that is on this site."""
+    """Where to go after an action: the page it was sent from, if that is on this site.
+
+    The rule of `core.redirects` (a safe shape, then Django's own check of host and scheme)
+    is written out where the address is used, so that the check is on the value redirected to.
+    """
     target = request.POST.get("next", "")
-    if is_safe_redirect(target, request):
+    if has_safe_shape(target) and url_has_allowed_host_and_scheme(
+        target, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
         return target
     return default
 
@@ -515,7 +522,9 @@ class PreferencesView(LoginRequiredMixin, FormView[Any]):
 
     def _next(self) -> str:
         target = self.request.POST.get("next") or self.request.GET.get("next", "")
-        if is_safe_redirect(target, self.request):
+        if has_safe_shape(target) and url_has_allowed_host_and_scheme(
+            target, allowed_hosts={self.request.get_host()}, require_https=self.request.is_secure()
+        ):
             return target
         return reverse("my-home")
 
