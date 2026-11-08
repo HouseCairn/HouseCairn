@@ -30,6 +30,7 @@ STYLE_LAYERS = (
     "components.css",
     "rooms.css",
     "tasks.css",
+    "stock.css",
     "utilities.css",
 )
 

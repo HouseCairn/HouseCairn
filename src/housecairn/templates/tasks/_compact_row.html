@@ -1,0 +1,12 @@
+{% load i18n tasks_extras %}{# One open occurrence as a link, without buttons. `occurrence`, `home`, `today`. #}
+<li class="task-row{% if occurrence|late_days:today %} task-row-overdue{% endif %}">
+  <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
+    <span class="row-body">
+      <span class="row-title">{{ occurrence.task.title }}</span>
+      <span class="row-text">
+        {% if occurrence.task.room %}{{ occurrence.task.room.name }}{% if occurrence.task.item %} · {{ occurrence.task.item.name }}{% endif %}{% elif occurrence.task.item %}{{ occurrence.task.item.name }}{% endif %}
+      </span>
+      {% include "tasks/_due.html" %}
+    </span>
+  </a>
+</li>

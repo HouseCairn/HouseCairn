@@ -31,6 +31,15 @@ LABELS: dict[str, Promise] = {
     "settings.changed": _("Setting %(setting)s changed from %(old)s to %(new)s"),
     "settings.secret_changed": _("Secret setting %(setting)s changed"),
     "settings.reset": _("Setting %(setting)s reset to its default"),
+    "provider.created": _("Sign-in provider %(provider)s added"),
+    "provider.changed": _(
+        "Sign-in provider %(provider)s: %(setting)s changed from %(old)s to %(new)s"
+    ),
+    "provider.secret_changed": _("Sign-in provider %(provider)s: client secret changed"),
+    "provider.secret_cleared": _(
+        "Sign-in provider %(provider)s: client secret cleared, the issuer changed"
+    ),
+    "provider.deleted": _("Sign-in provider %(provider)s deleted"),
     "admin.user_changed": _("Account changed in the administration site"),
     "admin.user_deleted": _("Account deleted in the administration site"),
 }

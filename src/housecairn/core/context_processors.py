@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from django.urls import reverse
 
 # Sections of the signed-in navigation, in display order.
-HOME, HOMES, ROOMS, TASKS, MORE = "home", "homes", "rooms", "tasks", "more"
+HOME, HOMES, ROOMS, TASKS, STOCK, MORE = "home", "homes", "rooms", "tasks", "stock", "more"
 
 
 def nav_section(request: HttpRequest) -> str:
@@ -10,7 +10,7 @@ def nav_section(request: HttpRequest) -> str:
     match = getattr(request, "resolver_match", None)
     if match is None:
         return ""
-    if match.view_name == "index":
+    if match.view_name in ("index", "my-home", "display-preferences"):
         return HOME
     if match.namespace == "homes":
         return HOMES
@@ -18,6 +18,8 @@ def nav_section(request: HttpRequest) -> str:
         return ROOMS
     if match.namespace == "tasks" or match.view_name == "tasks":
         return TASKS
+    if match.namespace == "stock" or match.view_name == "stock":
+        return STOCK
     return MORE
 
 
@@ -39,10 +41,29 @@ def tasks_url(request: HttpRequest) -> str:
     return reverse("tasks")
 
 
+def home_url(request: HttpRequest) -> str:
+    """Address of the Home entry: My home when signed in, else the start page."""
+    user = getattr(request, "user", None)
+    if user is not None and user.is_authenticated:
+        return reverse("my-home")
+    return reverse("index")
+
+
+def stock_url(request: HttpRequest) -> str:
+    """Address of the Stock entry: the stock of the home being viewed, else the entry page."""
+    match = getattr(request, "resolver_match", None)
+    home_id = match.kwargs.get("home_id") if match else None
+    if home_id:
+        return reverse("stock:list", kwargs={"home_id": home_id})
+    return reverse("stock")
+
+
 def shell(request: HttpRequest) -> dict[str, str]:
     """Context of the application shell: the current navigation entry and its entry addresses."""
     return {
         "nav_section": nav_section(request),
         "rooms_url": rooms_url(request),
         "tasks_url": tasks_url(request),
+        "home_url": home_url(request),
+        "stock_url": stock_url(request),
     }

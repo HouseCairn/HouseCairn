@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 01:53+0000\n"
+"POT-Creation-Date: 2026-11-08 12:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -37,8 +37,12 @@ msgstr "Une tâche peut être masquée jusqu'à quelques jours avant sa date (vo
 msgid "The list shows 30 rows at a time."
 msgstr "La liste affiche 30 lignes à la fois."
 
+msgid "**Today** and **History** above the selectors open the [Today](today.md) screen and the [history](history.md)."
+msgstr "**Aujourd'hui** et **Historique** au-dessus des sélecteurs ouvrent l'écran [Aujourd'hui](today.md) et l'[historique](history.md)."
+
 msgid "**Add a task** opens the [task form](task-form.md)."
 msgstr "**Ajouter une tâche** ouvre le [formulaire de tâche](task-form.md)."
 
 msgid "Read-only members see the same list and none of the buttons that change it."
 msgstr "Les membres en lecture seule voient la même liste et aucun des boutons qui la modifient."
+

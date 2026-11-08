@@ -5,13 +5,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 12:11+0000\n"
+"POT-Creation-Date: 2026-11-08 14:48+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: accounts/admin.py
+msgid ""
+"This is the only administrator of the instance: make another account an "
+"administrator first."
+msgstr ""
+"C'est le seul administrateur de l'instance : nommez d'abord un autre compte "
+"administrateur."
 
 #: accounts/apps.py templates/instance/overview.html
 msgid "Accounts"
@@ -142,7 +150,8 @@ msgstr "Écriture"
 msgid "Post events"
 msgstr "Envoi d'événements"
 
-#: apitokens/models.py homes/models.py rooms/models.py tasks/models.py
+#: apitokens/models.py homes/models.py instance/models.py rooms/models.py
+#: stock/models.py tasks/models.py
 msgid "name"
 msgstr "nom"
 
@@ -292,6 +301,37 @@ msgid "Setting %(setting)s reset to its default"
 msgstr "Réglage %(setting)s rétabli à son défaut"
 
 #: audit/labels.py
+#, python-format
+msgid "Sign-in provider %(provider)s added"
+msgstr "Fournisseur de connexion %(provider)s ajouté"
+
+#: audit/labels.py
+#, python-format
+msgid ""
+"Sign-in provider %(provider)s: %(setting)s changed from %(old)s to %(new)s"
+msgstr ""
+"Fournisseur de connexion %(provider)s : %(setting)s passé de %(old)s à "
+"%(new)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Sign-in provider %(provider)s: client secret changed"
+msgstr "Fournisseur de connexion %(provider)s : secret client modifié"
+
+#: audit/labels.py
+#, python-format
+msgid ""
+"Sign-in provider %(provider)s: client secret cleared, the issuer changed"
+msgstr ""
+"Fournisseur de connexion %(provider)s : secret client effacé, l'émetteur a "
+"changé"
+
+#: audit/labels.py
+#, python-format
+msgid "Sign-in provider %(provider)s deleted"
+msgstr "Fournisseur de connexion %(provider)s supprimé"
+
+#: audit/labels.py
 msgid "Account changed in the administration site"
 msgstr "Compte modifié dans le site d'administration"
 
@@ -299,7 +339,7 @@ msgstr "Compte modifié dans le site d'administration"
 msgid "Account deleted in the administration site"
 msgstr "Compte supprimé dans le site d'administration"
 
-#: audit/models.py templates/shell/navigation.html
+#: audit/models.py templates/shell/navigation.html templates/tasks/my_home.html
 msgid "Home"
 msgstr "Accueil"
 
@@ -307,7 +347,7 @@ msgstr "Accueil"
 msgid "Instance"
 msgstr "Instance"
 
-#: audit/models.py
+#: audit/models.py stock/models.py
 msgid "date"
 msgstr "date"
 
@@ -625,6 +665,65 @@ msgstr "Bienvenue dans %(home)s."
 msgid "You joined %(home)s."
 msgstr "Vous avez rejoint %(home)s."
 
+#: instance/forms.py templates/instance/provider.html
+#: templates/instance/providers.html
+msgid "Identifier"
+msgstr "Identifiant"
+
+#: instance/forms.py
+msgid ""
+"In the redirect URI; lowercase letters, digits and hyphens. It never changes "
+"and is never given to another provider."
+msgstr ""
+"Dans l'URI de redirection ; lettres minuscules, chiffres et tirets. Il ne "
+"change jamais et n'est jamais donné à un autre fournisseur."
+
+#: instance/forms.py
+msgid "Name"
+msgstr "Nom"
+
+#: instance/forms.py
+msgid "On the button, such as Company SSO."
+msgstr "Sur le bouton, par exemple Company SSO."
+
+#: instance/forms.py templates/instance/providers.html
+msgid "Issuer"
+msgstr "Émetteur"
+
+#: instance/forms.py
+msgid "https:// address; its OpenID configuration is read below it."
+msgstr "Adresse https:// ; sa configuration OpenID est lue en dessous."
+
+#: instance/forms.py templates/instance/providers.html
+msgid "Client identifier"
+msgstr "Identifiant client"
+
+#: instance/forms.py templates/instance/provider.html
+#: templates/instance/providers.html
+msgid "Client secret"
+msgstr "Secret client"
+
+#: instance/forms.py
+msgid "Write only: it is never shown again. Empty: unchanged."
+msgstr "Écriture seule : il n'est plus jamais affiché. Vide : inchangé."
+
+#: instance/forms.py instance/models.py
+msgid "PKCE"
+msgstr "PKCE"
+
+#: instance/forms.py
+msgid "Recommended; on by default."
+msgstr "Recommandé ; activé par défaut."
+
+#: instance/forms.py
+msgid "Enabled"
+msgstr "Activé"
+
+#: instance/forms.py
+msgid "Shown on the sign-in page. Test the issuer before you enable it."
+msgstr ""
+"Affiché sur la page de connexion. Testez l'émetteur avant de l'activer."
+
 #: instance/models.py
 msgid "instance invitation"
 msgstr "invitation à l'instance"
@@ -634,12 +733,158 @@ msgid "instance invitations"
 msgstr "invitations à l'instance"
 
 #: instance/models.py
+msgid "identifier"
+msgstr "identifiant"
+
+#: instance/models.py
+msgid "issuer"
+msgstr "émetteur"
+
+#: instance/models.py
+msgid "client identifier"
+msgstr "identifiant client"
+
+#: instance/models.py
+msgid "client secret"
+msgstr "secret client"
+
+#: instance/models.py templates/instance/providers.html
+msgid "enabled"
+msgstr "activé"
+
+#: instance/models.py
+msgid "sign-in provider"
+msgstr "fournisseur de connexion"
+
+#: instance/models.py
+msgid "sign-in providers"
+msgstr "fournisseurs de connexion"
+
+#: instance/models.py
 msgid "instance setting"
 msgstr "réglage de l'instance"
 
 #: instance/models.py
 msgid "instance settings"
 msgstr "réglages de l'instance"
+
+#: instance/providers.py
+msgid "Expected an https:// address."
+msgstr "Une adresse https:// est attendue."
+
+#: instance/providers.py
+msgid "Expected an https:// address, without query or credentials."
+msgstr "Une adresse https:// est attendue, sans paramètres ni identifiants."
+
+#: instance/providers.py
+msgid "This address cannot be an identity provider."
+msgstr "Cette adresse ne peut pas être un fournisseur d'identité."
+
+#: instance/providers.py instance/registry.py
+msgid "Expected text."
+msgstr "Du texte est attendu."
+
+#: instance/providers.py instance/registry.py
+msgid "Expected a single line of text."
+msgstr "Une seule ligne de texte est attendue."
+
+#: instance/providers.py
+msgid "This field is required."
+msgstr "Ce champ est obligatoire."
+
+#: instance/providers.py
+msgid ""
+"From 2 to 32 lowercase letters, digits or hyphens, starting with a letter or "
+"a digit."
+msgstr ""
+"De 2 à 32 lettres minuscules, chiffres ou tirets, en commençant par une "
+"lettre ou un chiffre."
+
+#: instance/providers.py
+msgid "This identifier is or was already used."
+msgstr "Cet identifiant est ou a déjà été utilisé."
+
+#: instance/providers.py instance/registry.py
+msgid "Expected true or false."
+msgstr "Vrai ou faux est attendu."
+
+#: instance/providers.py
+msgid ""
+"This is your last way to sign in: set a password or a passkey, or link "
+"another provider, first."
+msgstr ""
+"C'est votre dernier moyen de connexion : définissez d'abord un mot de passe "
+"ou une clé d'accès, ou liez un autre fournisseur."
+
+#: instance/providers.py
+msgid ""
+"The client secret is not kept for another issuer: enter it again, or disable "
+"the provider to save the new issuer without a secret."
+msgstr ""
+"Le secret client n'est pas gardé pour un autre émetteur : saisissez-le de "
+"nouveau, ou désactivez le fournisseur pour enregistrer le nouvel émetteur "
+"sans secret."
+
+#: instance/providers.py
+msgid "The identifier of a provider never changes."
+msgstr "L'identifiant d'un fournisseur ne change jamais."
+
+#: instance/providers.py
+msgid "Unknown field."
+msgstr "Champ inconnu."
+
+#: instance/providers.py
+msgid ""
+"Accounts are linked to this provider: another issuer could sign in as them. "
+"Declare a new provider for the new issuer."
+msgstr ""
+"Des comptes sont liés à ce fournisseur : un autre émetteur pourrait se "
+"connecter à leur place. Déclarez un nouveau fournisseur pour le nouvel "
+"émetteur."
+
+#: instance/providers.py
+#, python-format
+msgid ""
+"%(count)s home(s) require this provider: it cannot be deleted. Disable it "
+"instead; the owners, or you from the instance page, can then remove the "
+"requirement."
+msgstr ""
+"%(count)s logement(s) exigent ce fournisseur : il ne peut pas être supprimé. "
+"Désactivez-le plutôt ; les propriétaires, ou vous depuis la page de "
+"l'instance, pourront alors retirer l'exigence."
+
+#: instance/providers.py
+msgid "The issuer answers with a valid OpenID configuration."
+msgstr "L'émetteur répond par une configuration OpenID valide."
+
+#: instance/providers.py
+msgid "The issuer is not a valid https:// address."
+msgstr "L'émetteur n'est pas une adresse https:// valide."
+
+#: instance/providers.py
+msgid "The issuer resolves to an address the instance does not call."
+msgstr "L'émetteur désigne une adresse que l'instance n'appelle pas."
+
+#: instance/providers.py
+msgid "The issuer could not be reached."
+msgstr "L'émetteur est injoignable."
+
+#: instance/providers.py
+msgid "The secure connection to the issuer failed: check its certificate."
+msgstr ""
+"La connexion sécurisée à l'émetteur a échoué : vérifiez son certificat."
+
+#: instance/providers.py
+msgid "The issuer has no OpenID configuration at the usual address."
+msgstr "L'émetteur n'a pas de configuration OpenID à l'adresse habituelle."
+
+#: instance/providers.py
+msgid "The issuer's answer is not a valid OpenID configuration."
+msgstr "La réponse de l'émetteur n'est pas une configuration OpenID valide."
+
+#: instance/providers.py
+msgid "The OpenID configuration names another issuer."
+msgstr "La configuration OpenID nomme un autre émetteur."
 
 #: instance/registry.py
 msgid "Public address"
@@ -656,10 +901,6 @@ msgstr "Invitations"
 #: instance/registry.py templates/instance/overview.html
 msgid "Outgoing email"
 msgstr "E-mail sortant"
-
-#: instance/registry.py
-msgid "Expected true or false."
-msgstr "Vrai ou faux est attendu."
 
 #: instance/registry.py
 msgid "Expected a whole number."
@@ -683,14 +924,6 @@ msgstr "Une liste de domaines est attendue."
 #, python-brace-format
 msgid "{item} is not a domain name."
 msgstr "{item} n'est pas un nom de domaine."
-
-#: instance/registry.py
-msgid "Expected text."
-msgstr "Du texte est attendu."
-
-#: instance/registry.py
-msgid "Expected a single line of text."
-msgstr "Une seule ligne de texte est attendue."
 
 #: instance/registry.py
 #, python-brace-format
@@ -970,11 +1203,13 @@ msgstr ""
 "Confirmez votre connexion pour modifier les réglages, puis refaites la "
 "modification."
 
-#: instance/views.py
+#: instance/views.py templates/instance/provider.html
+#: templates/instance/providers.html
 msgid "set"
 msgstr "défini"
 
-#: instance/views.py
+#: instance/views.py templates/instance/provider.html
+#: templates/instance/providers.html
 msgid "not set"
 msgstr "non défini"
 
@@ -1003,6 +1238,18 @@ msgid "Too many tests in a short time. Try again later."
 msgstr "Trop de tests en peu de temps. Réessayez plus tard."
 
 #: instance/views.py
+msgid "Provider added."
+msgstr "Fournisseur ajouté."
+
+#: instance/views.py
+msgid "Provider deleted."
+msgstr "Fournisseur supprimé."
+
+#: instance/views.py
+msgid "Provider saved."
+msgstr "Fournisseur enregistré."
+
+#: instance/views.py
 msgid "(none)"
 msgstr "(aucun)"
 
@@ -1013,7 +1260,8 @@ msgstr "(aucun)"
 msgid "Rooms"
 msgstr "Pièces"
 
-#: rooms/forms.py tasks/forms.py templates/tasks/task_list.html
+#: rooms/forms.py tasks/forms.py tasks/models.py templates/tasks/history.html
+#: templates/tasks/task_list.html
 msgid "Room"
 msgstr "Pièce"
 
@@ -1114,7 +1362,7 @@ msgstr "Extérieur"
 msgid "Other"
 msgstr "Autre"
 
-#: rooms/models.py
+#: rooms/models.py stock/models.py
 msgid "type"
 msgstr "type"
 
@@ -1122,7 +1370,7 @@ msgstr "type"
 msgid "position"
 msgstr "position"
 
-#: rooms/models.py tasks/models.py
+#: rooms/models.py stock/models.py tasks/models.py
 msgid "notes"
 msgstr "notes"
 
@@ -1254,12 +1502,12 @@ msgstr "La liste contient une pièce deux fois, ou une pièce qui n'existe pas."
 msgid "Choose up or down."
 msgstr "Choisissez monter ou descendre."
 
-#: rooms/services.py
+#: rooms/services.py stock/services.py
 #, python-format
 msgid "This file is too large: the limit is %(limit)s."
 msgstr "Ce fichier est trop volumineux : la limite est de %(limit)s."
 
-#: rooms/services.py
+#: rooms/services.py stock/services.py
 msgid "This file is empty."
 msgstr "Ce fichier est vide."
 
@@ -1300,7 +1548,7 @@ msgstr "L'élément et ses photos disparaissent des écrans."
 msgid "Item deleted."
 msgstr "Élément supprimé."
 
-#: rooms/views.py tasks/views.py
+#: rooms/views.py stock/views.py tasks/views.py
 msgid "This file is too large."
 msgstr "Ce fichier est trop volumineux."
 
@@ -1320,6 +1568,219 @@ msgstr "Anglais"
 msgid "French"
 msgstr "Français"
 
+#: stock/apps.py templates/shell/navigation.html
+#: templates/stock/article_detail.html templates/stock/article_form.html
+#: templates/stock/article_list.html templates/stock/choose_home.html
+msgid "Stock"
+msgstr "Matériel"
+
+#: stock/forms.py templates/stock/article_detail.html
+msgid "Compatible items"
+msgstr "Éléments compatibles"
+
+#: stock/forms.py
+msgid "The equipment this fits, such as the boiler a filter is made for."
+msgstr ""
+"L'équipement concerné, par exemple la chaudière pour laquelle un filtre est "
+"fait."
+
+#: stock/forms.py
+msgid "Photo of the label"
+msgstr "Photo de l'étiquette"
+
+#: stock/forms.py
+msgid "Remove the photo of the label"
+msgstr "Supprimer la photo de l'étiquette"
+
+#: stock/forms.py
+msgid "Quantity"
+msgstr "Quantité"
+
+#: stock/forms.py
+msgid "Date"
+msgstr "Date"
+
+#: stock/forms.py tasks/forms.py
+msgid "Note"
+msgstr "Note"
+
+#: stock/models.py
+msgid "manufacturer reference"
+msgstr "référence fabricant"
+
+#: stock/models.py
+msgid "dimensions"
+msgstr "dimensions"
+
+#: stock/models.py
+msgid "storage location"
+msgstr "emplacement de rangement"
+
+#: stock/models.py
+msgid "For example: garage, second shelf."
+msgstr "Par exemple : garage, deuxième étagère."
+
+#: stock/models.py tasks/models.py
+msgid "unit"
+msgstr "unité"
+
+#: stock/models.py
+msgid "For example: pieces, litres, metres."
+msgstr "Par exemple : pièces, litres, mètres."
+
+#: stock/models.py
+msgid "threshold"
+msgstr "seuil"
+
+#: stock/models.py
+msgid "The stock is flagged when it falls to this quantity or below."
+msgstr "Le stock est signalé quand il descend à cette quantité ou en dessous."
+
+#: stock/models.py
+msgid "compatible items"
+msgstr "éléments compatibles"
+
+#: stock/models.py
+msgid "stock item"
+msgstr "article"
+
+#: stock/models.py
+msgid "stock items"
+msgstr "articles"
+
+#: stock/models.py
+msgid "supplier reference"
+msgstr "référence fournisseur"
+
+#: stock/models.py
+msgid "purchase link"
+msgstr "lien d'achat"
+
+#: stock/models.py
+msgid "last price paid"
+msgstr "dernier prix payé"
+
+#: stock/models.py
+msgid "supplier"
+msgstr "fournisseur"
+
+#: stock/models.py
+msgid "suppliers"
+msgstr "fournisseurs"
+
+#: stock/models.py
+msgid "Entry"
+msgstr "Entrée"
+
+#: stock/models.py
+msgid "Exit"
+msgstr "Sortie"
+
+#: stock/models.py
+msgid "Inventory"
+msgstr "Inventaire"
+
+#: stock/models.py
+msgid "quantity"
+msgstr "quantité"
+
+#: stock/models.py
+msgid "change"
+msgstr "variation"
+
+#: stock/models.py tasks/models.py
+msgid "note"
+msgstr "note"
+
+#: stock/models.py
+msgid "movement"
+msgstr "mouvement"
+
+#: stock/models.py
+msgid "movements"
+msgstr "mouvements"
+
+#: stock/services.py tasks/models.py
+msgid "This item is not in this home."
+msgstr "Cet élément n'est pas dans ce logement."
+
+#: stock/services.py
+msgid "Choose entry, exit or inventory."
+msgstr "Choisissez entrée, sortie ou inventaire."
+
+#: stock/services.py
+msgid "The quantity must be more than zero."
+msgstr "La quantité doit être supérieure à zéro."
+
+#: stock/services.py
+#, python-format
+msgid "Only %(available)s in stock."
+msgstr "Il n'y en a que %(available)s en stock."
+
+#: stock/views.py
+msgid "Stock item added."
+msgstr "Article ajouté."
+
+#: stock/views.py
+msgid "Stock item saved."
+msgstr "Article enregistré."
+
+#: stock/views.py
+msgid ""
+"The stock item, its suppliers and its movements disappear from the screens."
+msgstr ""
+"L'article, ses fournisseurs et ses mouvements disparaissent des écrans."
+
+#: stock/views.py
+msgid "Stock item deleted."
+msgstr "Article supprimé."
+
+#: stock/views.py
+msgid "Movement recorded."
+msgstr "Mouvement enregistré."
+
+#: stock/views.py
+msgid "Supplier added."
+msgstr "Fournisseur ajouté."
+
+#: stock/views.py
+msgid "Supplier saved."
+msgstr "Fournisseur enregistré."
+
+#: stock/views.py
+msgid "The supplier disappears from the stock item."
+msgstr "Le fournisseur disparaît de l'article."
+
+#: stock/views.py
+msgid "Supplier deleted."
+msgstr "Fournisseur supprimé."
+
+#: tasks/agenda.py
+msgid "No room"
+msgstr "Aucune pièce"
+
+#: tasks/agenda.py
+msgid "Nobody yet"
+msgstr "Personne pour l'instant"
+
+#: tasks/agenda.py templates/tasks/_due.html templates/tasks/history.html
+#: templates/tasks/my_home.html templates/tasks/task_list.html
+#: templates/tasks/today.html
+msgid "Today"
+msgstr "Aujourd'hui"
+
+#: tasks/agenda.py
+msgid "Coming up"
+msgstr "À venir"
+
+#: tasks/agenda.py
+msgid "Overdue"
+msgstr "En retard"
+
+#: tasks/agenda.py
+msgid "In season"
+msgstr "De saison"
+
 #: tasks/apps.py templates/rooms/item_detail.html
 #: templates/rooms/room_detail.html templates/shell/navigation.html
 #: templates/tasks/choose_home.html templates/tasks/task_detail.html
@@ -1335,7 +1796,7 @@ msgstr ""
 "Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou WebP, "
 "ou un fichier PDF, texte, Word, Excel ou OpenDocument."
 
-#: tasks/forms.py
+#: tasks/forms.py templates/tasks/history.html
 msgid "Item"
 msgstr "Élément"
 
@@ -1377,10 +1838,6 @@ msgid "Choose a contractor or give a new one, not both."
 msgstr "Choisissez un intervenant ou donnez-en un nouveau, pas les deux."
 
 #: tasks/forms.py
-msgid "Note"
-msgstr "Note"
-
-#: tasks/forms.py
 msgid "New date"
 msgstr "Nouvelle date"
 
@@ -1388,7 +1845,7 @@ msgstr "Nouvelle date"
 msgid "Choose at least one file."
 msgstr "Choisissez au moins un fichier."
 
-#: tasks/models.py
+#: tasks/models.py templates/stock/article_list.html
 msgid "Low"
 msgstr "Basse"
 
@@ -1432,7 +1889,8 @@ msgstr "ans"
 msgid "Planned"
 msgstr "Prévue"
 
-#: tasks/models.py templates/tasks/task_detail.html
+#: tasks/models.py templates/tasks/_occurrence_row.html
+#: templates/tasks/history.html templates/tasks/task_detail.html
 #: templates/tasks/task_list.html
 msgctxt "task"
 msgid "Done"
@@ -1442,17 +1900,13 @@ msgstr "Fait"
 msgid "Postponed"
 msgstr "Reportée"
 
-#: tasks/models.py
+#: tasks/models.py templates/tasks/history.html
 msgid "Skipped"
 msgstr "Ignorée"
 
 #: tasks/models.py
 msgid "trade"
 msgstr "métier"
-
-#: tasks/models.py
-msgid "note"
-msgstr "note"
 
 #: tasks/models.py
 msgid "contractor"
@@ -1495,10 +1949,6 @@ msgid "repeat"
 msgstr "répétition"
 
 #: tasks/models.py
-msgid "unit"
-msgstr "unité"
-
-#: tasks/models.py
 msgid "every"
 msgstr "tous les"
 
@@ -1525,10 +1975,6 @@ msgstr "tâche"
 #: tasks/models.py
 msgid "tasks"
 msgstr "tâches"
-
-#: tasks/models.py
-msgid "This item is not in this home."
-msgstr "Cet élément n'est pas dans ce logement."
 
 #: tasks/models.py
 msgid "This item is not in this room."
@@ -1569,6 +2015,66 @@ msgstr "occurrence"
 #: tasks/models.py
 msgid "occurrences"
 msgstr "occurrences"
+
+#: tasks/models.py
+msgid "Urgency"
+msgstr "Urgence"
+
+#: tasks/models.py
+msgid "Person"
+msgstr "Personne"
+
+#: tasks/models.py
+msgid "Calendar"
+msgstr "Calendrier"
+
+#: tasks/models.py
+msgid "1 week"
+msgstr "1 semaine"
+
+#: tasks/models.py
+msgid "2 weeks"
+msgstr "2 semaines"
+
+#: tasks/models.py
+msgid "1 month"
+msgstr "1 mois"
+
+#: tasks/models.py
+msgid "2 months"
+msgstr "2 mois"
+
+#: tasks/models.py
+msgid "3 months"
+msgstr "3 mois"
+
+#: tasks/models.py
+msgid "group by"
+msgstr "regrouper par"
+
+#: tasks/models.py
+msgid "look ahead"
+msgstr "voir à l'avance"
+
+#: tasks/models.py
+msgid "overdue"
+msgstr "en retard"
+
+#: tasks/models.py
+msgid "coming up"
+msgstr "à venir"
+
+#: tasks/models.py
+msgid "in season"
+msgstr "de saison"
+
+#: tasks/models.py
+msgid "display preference"
+msgstr "préférence d'affichage"
+
+#: tasks/models.py
+msgid "display preferences"
+msgstr "préférences d'affichage"
 
 #: tasks/models.py
 msgid "attachment"
@@ -1716,6 +2222,10 @@ msgstr "Tâche reportée."
 #: tasks/views.py
 msgid "Details saved."
 msgstr "Détails enregistrés."
+
+#: tasks/views.py
+msgid "Preferences saved."
+msgstr "Préférences enregistrées."
 
 #: tasks/views.py
 msgid "Some files were added."
@@ -1940,7 +2450,8 @@ msgstr "compte supprimé ou système"
 msgid "Nothing recorded yet."
 msgstr "Rien n'est encore enregistré."
 
-#: templates/audit/_pager.html templates/tasks/task_list.html
+#: templates/audit/_pager.html templates/tasks/history.html
+#: templates/tasks/task_list.html
 msgid "Pages"
 msgstr "Pages"
 
@@ -1990,6 +2501,15 @@ msgstr "Voir mes logements"
 msgid "Settings"
 msgstr "Réglages"
 
+#: templates/core/more.html templates/tasks/my_home.html
+#: templates/tasks/preferences.html
+msgid "Display preferences"
+msgstr "Préférences d'affichage"
+
+#: templates/core/more.html
+msgid "How the Today screen is laid out for you"
+msgstr "La disposition de l'écran Aujourd'hui pour vous"
+
 #: templates/core/more.html
 msgid "Account security"
 msgstr "Sécurité du compte"
@@ -1999,7 +2519,8 @@ msgid "Passkeys, authenticator app, recovery codes"
 msgstr "Clés d'accès, application d'authentification, codes de récupération"
 
 #: templates/core/more.html templates/instance/audit.html
-#: templates/instance/overview.html templates/instance/settings.html
+#: templates/instance/overview.html templates/instance/providers.html
+#: templates/instance/settings.html
 msgid "Instance administration"
 msgstr "Administration de l'instance"
 
@@ -2062,7 +2583,7 @@ msgstr ""
 "tâches, ni documents, ni notes."
 
 #: templates/homes/confirm.html templates/rooms/confirm_delete.html
-#: templates/tasks/confirm_delete.html
+#: templates/stock/confirm_delete.html templates/tasks/confirm_delete.html
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -2164,7 +2685,8 @@ msgstr ""
 "Une archive avec tout le contenu de ce logement, dans un format ouvert."
 
 #: templates/homes/home_form.html templates/homes/home_list.html
-#: templates/rooms/choose_home.html templates/tasks/choose_home.html
+#: templates/rooms/choose_home.html templates/stock/choose_home.html
+#: templates/tasks/choose_home.html templates/tasks/my_home.html
 msgid "Add a home"
 msgstr "Ajouter un logement"
 
@@ -2268,9 +2790,11 @@ msgstr ""
 "s'être connectés par lui, pas avec un mot de passe ou une passkey seuls. "
 "Réglez-le depuis une session connectée par ce fournisseur."
 
-#: templates/homes/household.html templates/instance/settings.html
-#: templates/rooms/item_form.html templates/rooms/room_form.html
-#: templates/rooms/room_memory_form.html templates/tasks/completion_form.html
+#: templates/homes/household.html templates/instance/provider.html
+#: templates/instance/settings.html templates/rooms/item_form.html
+#: templates/rooms/room_form.html templates/rooms/room_memory_form.html
+#: templates/stock/article_form.html templates/stock/supplier_form.html
+#: templates/tasks/completion_form.html templates/tasks/preferences.html
 #: templates/tasks/task_form.html
 msgid "Save"
 msgstr "Enregistrer"
@@ -2384,7 +2908,8 @@ msgstr ""
 "Si votre compte n'est pas encore lié à ce fournisseur, liez-le d'abord "
 "depuis vos comptes liés."
 
-#: templates/homes/sso_required.html
+#: templates/homes/sso_required.html templates/instance/provider.html
+#: templates/instance/providers.html
 msgid "Linked accounts"
 msgstr "Comptes liés"
 
@@ -2481,7 +3006,8 @@ msgstr "configuré"
 msgid "not configured"
 msgstr "non configuré"
 
-#: templates/instance/overview.html
+#: templates/instance/overview.html templates/instance/provider.html
+#: templates/instance/providers.html
 msgid "Sign-in providers"
 msgstr "Fournisseurs de connexion"
 
@@ -2546,8 +3072,122 @@ msgid "Sign-up, invitations, outgoing email, public address"
 msgstr "Inscription, invitations, e-mail sortant, adresse publique"
 
 #: templates/instance/overview.html
+msgid "Single sign-on through OpenID Connect"
+msgstr "Authentification unique par OpenID Connect"
+
+#: templates/instance/overview.html
 msgid "Administration actions, invitations, accounts"
 msgstr "Actions d'administration, invitations, comptes"
+
+#: templates/instance/provider.html
+msgid "Redirect URI"
+msgstr "URI de redirection"
+
+#: templates/instance/provider.html templates/instance/settings.html
+msgid "The stored secret can no longer be read: enter it again."
+msgstr "Le secret enregistré n'est plus lisible : saisissez-le de nouveau."
+
+#: templates/instance/provider.html
+msgid "Homes that require it"
+msgstr "Logements qui l'exigent"
+
+#: templates/instance/provider.html
+msgid ""
+"Accounts are linked to this provider, so its issuer cannot change: declare a "
+"new provider for another issuer."
+msgstr ""
+"Des comptes sont liés à ce fournisseur, son émetteur ne peut donc pas "
+"changer : déclarez un nouveau fournisseur pour un autre émetteur."
+
+#: templates/instance/provider.html templates/instance/providers.html
+msgid "Test the issuer"
+msgstr "Tester l'émetteur"
+
+#: templates/instance/provider.html templates/instance/providers.html
+msgid ""
+"Reads the issuer's OpenID configuration and checks it; nothing is saved. You "
+"can save without testing."
+msgstr ""
+"Lit la configuration OpenID de l'émetteur et la vérifie ; rien n'est "
+"enregistré. Vous pouvez enregistrer sans tester."
+
+#: templates/instance/provider.html
+msgid "Delete the provider"
+msgstr "Supprimer le fournisseur"
+
+#: templates/instance/provider.html
+msgid ""
+"People can no longer sign in with it; its identifier is never given to "
+"another provider. A provider that a home requires cannot be deleted: disable "
+"it instead."
+msgstr ""
+"On ne peut plus se connecter par lui ; son identifiant n'est jamais donné à "
+"un autre fournisseur. Un fournisseur exigé par un logement ne peut pas être "
+"supprimé : désactivez-le plutôt."
+
+#: templates/instance/provider.html templates/rooms/_photos.html
+#: templates/rooms/confirm_delete.html templates/stock/confirm_delete.html
+#: templates/tasks/_attachments.html templates/tasks/confirm_delete.html
+msgid "Delete"
+msgstr "Supprimer"
+
+#: templates/instance/providers.html
+msgid ""
+"OpenID Connect providers people can sign in with, as well as the built-in "
+"sign-in. A provider set by environment variables is shown read only. An "
+"identity never reaches an existing account through its address: each person "
+"links it once signed in."
+msgstr ""
+"Les fournisseurs OpenID Connect par lesquels on peut se connecter, en plus "
+"de la connexion intégrée. Un fournisseur défini par des variables "
+"d'environnement est affiché en lecture seule. Une identité n'atteint jamais "
+"un compte existant par son adresse : chacun la lie une fois connecté."
+
+#: templates/instance/providers.html
+msgid ""
+"Set by the variables <code>OIDC_SERVER_URL</code>, <code>OIDC_CLIENT_ID</"
+"code> and the others: change it there."
+msgstr ""
+"Défini par les variables <code>OIDC_SERVER_URL</code>, <code>OIDC_CLIENT_ID</"
+"code> et les autres : modifiez-le là."
+
+#: templates/instance/providers.html templates/instance/settings.html
+msgid "Documentation"
+msgstr "Documentation"
+
+#: templates/instance/providers.html
+msgid "disabled"
+msgstr "désactivé"
+
+#: templates/instance/providers.html
+#, python-format
+msgid "%(counter)s linked account"
+msgid_plural "%(counter)s linked accounts"
+msgstr[0] "%(counter)s compte lié"
+msgstr[1] "%(counter)s comptes liés"
+
+#: templates/instance/providers.html
+msgid "No provider yet: people sign in with a password or a passkey."
+msgstr ""
+"Aucun fournisseur pour l'instant : on se connecte par mot de passe ou par "
+"clé d'accès."
+
+#: templates/instance/providers.html
+msgid "Add a provider"
+msgstr "Ajouter un fournisseur"
+
+#: templates/instance/providers.html
+#, python-format
+msgid ""
+"Redirect URI to register at the provider: <code>%(callback_base)s&lt;"
+"identifier&gt;/login/callback/</code>"
+msgstr ""
+"URI de redirection à déclarer chez le fournisseur : "
+"<code>%(callback_base)s&lt;identifiant&gt;/login/callback/</code>"
+
+#: templates/instance/providers.html
+msgid "Add"
+msgstr "Ajouter"
 
 #: templates/instance/settings.html
 msgid "Instance settings"
@@ -2563,10 +3203,6 @@ msgstr ""
 "variable l'emporte : le champ est alors verrouillé et affiche la valeur en "
 "vigueur. Sans variable, la valeur choisie est enregistrée et le défaut est "
 "affiché."
-
-#: templates/instance/settings.html
-msgid "The stored secret can no longer be read: enter it again."
-msgstr "Le secret enregistré n'est plus lisible : saisissez-le de nouveau."
 
 #: templates/instance/settings.html
 msgid "A secret is stored."
@@ -2590,10 +3226,6 @@ msgstr "Rétablir le défaut"
 msgid "Set by the variable <code>%(env)s</code>. Value in force: %(value)s."
 msgstr ""
 "Défini par la variable <code>%(env)s</code>. Valeur en vigueur : %(value)s."
-
-#: templates/instance/settings.html
-msgid "Documentation"
-msgstr "Documentation"
 
 #: templates/instance/settings.html
 msgid "Test the connection to the mail server"
@@ -2625,11 +3257,6 @@ msgstr ""
 msgid "Photo of %(name)s"
 msgstr "Photo de %(name)s"
 
-#: templates/rooms/_photos.html templates/rooms/confirm_delete.html
-#: templates/tasks/_attachments.html templates/tasks/confirm_delete.html
-msgid "Delete"
-msgstr "Supprimer"
-
 #: templates/rooms/_photos.html
 msgid "this photo"
 msgstr "cette photo"
@@ -2638,11 +3265,13 @@ msgstr "cette photo"
 msgid "Choose the home whose rooms you want to open."
 msgstr "Choisissez le logement dont vous voulez ouvrir les pièces."
 
-#: templates/rooms/choose_home.html templates/tasks/choose_home.html
+#: templates/rooms/choose_home.html templates/stock/choose_home.html
+#: templates/tasks/choose_home.html templates/tasks/my_home.html
 msgid "You have no home to open yet."
 msgstr "Vous n'avez pas encore de logement à ouvrir."
 
-#: templates/rooms/confirm_delete.html templates/tasks/confirm_delete.html
+#: templates/rooms/confirm_delete.html templates/stock/confirm_delete.html
+#: templates/tasks/confirm_delete.html
 #, python-format
 msgid "Delete %(name)s?"
 msgstr "Supprimer %(name)s ?"
@@ -2677,7 +3306,7 @@ msgid "open the contract"
 msgstr "ouvrir le contrat"
 
 #: templates/rooms/item_detail.html templates/rooms/room_detail.html
-#: templates/tasks/task_detail.html
+#: templates/stock/article_detail.html templates/tasks/task_detail.html
 msgid "Notes"
 msgstr "Notes"
 
@@ -2699,7 +3328,7 @@ msgid "No photo yet."
 msgstr "Aucune photo pour l'instant."
 
 #: templates/rooms/item_detail.html templates/rooms/room_detail.html
-#: templates/tasks/_due.html
+#: templates/tasks/_due.html templates/tasks/today.html
 msgid "No date"
 msgstr "Sans date"
 
@@ -2709,6 +3338,7 @@ msgstr "Aucune tâche pour l'instant."
 
 #: templates/rooms/item_detail.html templates/rooms/room_detail.html
 #: templates/tasks/task_form.html templates/tasks/task_list.html
+#: templates/tasks/today.html
 msgid "Add a task"
 msgstr "Ajouter une tâche"
 
@@ -2834,6 +3464,7 @@ msgid "Search rooms and items"
 msgstr "Rechercher des pièces et des éléments"
 
 #: templates/rooms/room_list.html templates/rooms/search.html
+#: templates/stock/article_list.html templates/tasks/history.html
 msgid "Search"
 msgstr "Rechercher"
 
@@ -2887,6 +3518,162 @@ msgstr "Aide sur cette page"
 msgid "Main navigation"
 msgstr "Navigation principale"
 
+#: templates/stock/article_detail.html
+msgid "Low stock"
+msgstr "Stock bas"
+
+#: templates/stock/article_detail.html
+msgid "Threshold"
+msgstr "Seuil"
+
+#: templates/stock/article_detail.html
+msgid "Manufacturer reference"
+msgstr "Référence fabricant"
+
+#: templates/stock/article_detail.html
+msgid "Dimensions"
+msgstr "Dimensions"
+
+#: templates/stock/article_detail.html
+msgid "Storage location"
+msgstr "Emplacement de rangement"
+
+#: templates/stock/article_detail.html
+#, python-format
+msgid "Label of %(name)s"
+msgstr "Étiquette de %(name)s"
+
+#: templates/stock/article_detail.html templates/stock/article_form.html
+msgid "Edit the stock item"
+msgstr "Modifier l'article"
+
+#: templates/stock/article_detail.html
+msgid "Record a movement"
+msgstr "Enregistrer un mouvement"
+
+#: templates/stock/article_detail.html
+msgid "Add to stock"
+msgstr "Ajouter au stock"
+
+#: templates/stock/article_detail.html
+msgid "Take from stock"
+msgstr "Sortir du stock"
+
+#: templates/stock/article_detail.html
+msgid "Set the count"
+msgstr "Fixer le compte"
+
+#: templates/stock/article_detail.html
+msgid ""
+"Set the count states what you counted on the shelf; the stock is corrected "
+"to it."
+msgstr ""
+"« Fixer le compte » indique ce que vous avez compté sur l'étagère ; le stock "
+"est corrigé en conséquence."
+
+#: templates/stock/article_detail.html
+msgid "No compatible item chosen."
+msgstr "Aucun élément compatible choisi."
+
+#: templates/stock/article_detail.html
+msgid "Suppliers"
+msgstr "Fournisseurs"
+
+#: templates/stock/article_detail.html
+msgid "Supplier reference"
+msgstr "Référence fournisseur"
+
+#: templates/stock/article_detail.html
+msgid "Last price paid"
+msgstr "Dernier prix payé"
+
+#: templates/stock/article_detail.html
+msgid "Purchase link"
+msgstr "Lien d'achat"
+
+#: templates/stock/article_detail.html templates/stock/supplier_form.html
+msgid "Edit the supplier"
+msgstr "Modifier le fournisseur"
+
+#: templates/stock/article_detail.html
+msgid "No supplier yet."
+msgstr "Aucun fournisseur pour l'instant."
+
+#: templates/stock/article_detail.html templates/stock/supplier_form.html
+msgid "Add a supplier"
+msgstr "Ajouter un fournisseur"
+
+#: templates/stock/article_detail.html
+msgid "Movements"
+msgstr "Mouvements"
+
+#: templates/stock/article_detail.html
+#, python-format
+msgid "counted %(count)s"
+msgstr "compté : %(count)s"
+
+#: templates/stock/article_detail.html
+msgid "No movement yet."
+msgstr "Aucun mouvement pour l'instant."
+
+#: templates/stock/article_form.html templates/stock/article_list.html
+msgid "Add a stock item"
+msgstr "Ajouter un article"
+
+#: templates/stock/article_form.html
+#, python-format
+msgid ""
+"Label photo: JPEG, PNG or WebP, up to %(size)s. Location data and other "
+"information stored in the file are removed."
+msgstr ""
+"Photo de l'étiquette : JPEG, PNG ou WebP, jusqu'à %(size)s. La position et "
+"les autres informations stockées dans le fichier sont supprimées."
+
+#: templates/stock/article_form.html
+msgid "Add the stock item"
+msgstr "Ajouter l'article"
+
+#: templates/stock/article_form.html
+msgid "Delete the stock item"
+msgstr "Supprimer l'article"
+
+#: templates/stock/article_list.html
+msgid "Search by name, reference or supplier"
+msgstr "Rechercher par nom, référence ou fournisseur"
+
+#: templates/stock/article_list.html
+msgid "Low stock only"
+msgstr "Stock bas seulement"
+
+#: templates/stock/article_list.html
+msgid "No stock item yet."
+msgstr "Aucun article pour l'instant."
+
+#: templates/stock/article_list.html
+msgid "No stock item matches."
+msgstr "Aucun article ne correspond."
+
+#: templates/stock/choose_home.html
+msgid "Choose the home whose stock you want to open."
+msgstr "Choisissez le logement dont vous voulez ouvrir le matériel."
+
+#: templates/stock/supplier_form.html
+#, python-format
+msgid ""
+"The price is in %(currency)s, the currency of the home. The link is only "
+"stored: HouseCairn never opens it."
+msgstr ""
+"Le prix est en %(currency)s, la devise du logement. Le lien est seulement "
+"enregistré : HouseCairn ne l'ouvre jamais."
+
+#: templates/stock/supplier_form.html
+msgid "Add the supplier"
+msgstr "Ajouter le fournisseur"
+
+#: templates/stock/supplier_form.html
+msgid "Delete the supplier"
+msgstr "Supprimer le fournisseur"
+
 #: templates/tasks/_attachments.html
 #, python-format
 msgid "Photo: %(name)s"
@@ -2898,10 +3685,6 @@ msgid "%(counter)s day late"
 msgid_plural "%(counter)s days late"
 msgstr[0] "%(counter)s jour de retard"
 msgstr[1] "%(counter)s jours de retard"
-
-#: templates/tasks/_due.html
-msgid "Today"
-msgstr "Aujourd'hui"
 
 #: templates/tasks/_undo.html
 msgid "Marked done."
@@ -2942,9 +3725,160 @@ msgstr "Détails de ce qui a été fait"
 msgid "The task, its history and its files disappear from the screens."
 msgstr "La tâche, son historique et ses fichiers disparaissent des écrans."
 
+#: templates/tasks/history.html templates/tasks/my_home.html
+#: templates/tasks/task_detail.html templates/tasks/task_list.html
+#: templates/tasks/today.html
+msgid "History"
+msgstr "Historique"
+
+#: templates/tasks/history.html
+msgid "Filters"
+msgstr "Filtres"
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "All rooms"
+msgstr "Toutes les pièces"
+
+#: templates/tasks/history.html
+msgid "All items"
+msgstr "Tous les éléments"
+
+#: templates/tasks/history.html templates/tasks/task_detail.html
+msgid "Contractor"
+msgstr "Intervenant"
+
+#: templates/tasks/history.html
+msgid "Everyone"
+msgstr "Tout le monde"
+
+#: templates/tasks/history.html
+msgid "Done by"
+msgstr "Fait par"
+
+#: templates/tasks/history.html
+msgid "Outcome"
+msgstr "Résultat"
+
+#: templates/tasks/history.html
+msgid "Done or skipped"
+msgstr "Faites ou ignorées"
+
+#: templates/tasks/history.html
+msgid "From"
+msgstr "Du"
+
+#: templates/tasks/history.html
+msgid "To"
+msgstr "Au"
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Filter"
+msgstr "Filtrer"
+
+#: templates/tasks/history.html
+msgid "Clear"
+msgstr "Effacer"
+
+#: templates/tasks/history.html
+#, python-format
+msgid "%(counter)s entry"
+msgid_plural "%(counter)s entries"
+msgstr[0] "%(counter)s entrée"
+msgstr[1] "%(counter)s entrées"
+
+#: templates/tasks/history.html
+#, python-format
+msgid "real cost: %(total)s %(currency)s, entered on %(counter)s entry"
+msgid_plural ""
+"real cost: %(total)s %(currency)s, entered on %(counter)s entries"
+msgstr[0] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrée"
+msgstr[1] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrées"
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Previous"
+msgstr "Précédent"
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+#, python-format
+msgid "Page %(number)s of %(total)s"
+msgstr "Page %(number)s sur %(total)s"
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Next"
+msgstr "Suivant"
+
+#: templates/tasks/history.html
+msgid "Nothing matches."
+msgstr "Rien ne correspond."
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Nothing done yet."
+msgstr "Rien de fait pour l'instant."
+
+#: templates/tasks/my_home.html
+msgid "My home"
+msgstr "Mon accueil"
+
+#: templates/tasks/my_home.html
+msgid "All my homes"
+msgstr "Tous mes logements"
+
+#: templates/tasks/my_home.html templates/tasks/task_list.html
+msgid "Show"
+msgstr "Afficher"
+
+#: templates/tasks/my_home.html templates/tasks/today.html
+msgid "All tasks"
+msgstr "Toutes les tâches"
+
+#: templates/tasks/my_home.html
+msgid "Nothing needs you here."
+msgstr "Rien ne vous attend ici."
+
+#: templates/tasks/my_home.html
+msgid "Assigned to me"
+msgstr "Qui me sont confiées"
+
+#: templates/tasks/my_home.html
+msgid "Overdue in the home"
+msgstr "En retard dans le logement"
+
+#: templates/tasks/my_home.html
+msgid "Nobody has taken these"
+msgstr "Personne ne s'en est chargé"
+
+#: templates/tasks/my_home.html
+msgid "Warranties ending soon"
+msgstr "Garanties qui se terminent bientôt"
+
+#: templates/tasks/my_home.html
+#, python-format
+msgid "ends %(date)s"
+msgstr "se termine le %(date)s"
+
 #: templates/tasks/postpone_form.html templates/tasks/task_detail.html
 msgid "Postpone"
 msgstr "Reporter"
+
+#: templates/tasks/preferences.html
+msgid "Back"
+msgstr "Retour"
+
+#: templates/tasks/preferences.html
+msgid ""
+"How the Today screen is laid out for you. Other people of your homes keep "
+"their own."
+msgstr ""
+"La disposition de l'écran Aujourd'hui pour vous. Les autres personnes de vos "
+"logements gardent la leur."
+
+#: templates/tasks/preferences.html
+msgid "Group by"
+msgstr "Regrouper par"
+
+#: templates/tasks/preferences.html
+msgid "Sections"
+msgstr "Sections"
 
 #: templates/tasks/task_detail.html
 msgid "High priority"
@@ -3020,20 +3954,12 @@ msgid "Material budget"
 msgstr "Budget matériel"
 
 #: templates/tasks/task_detail.html
-msgid "Contractor"
-msgstr "Intervenant"
-
-#: templates/tasks/task_detail.html
 msgid "Add photos or files"
 msgstr "Ajouter des photos ou des fichiers"
 
 #: templates/tasks/task_detail.html
 msgid "No file yet."
 msgstr "Aucun fichier pour l'instant."
-
-#: templates/tasks/task_detail.html
-msgid "History"
-msgstr "Historique"
 
 #: templates/tasks/task_form.html
 msgid "Who"
@@ -3052,41 +3978,12 @@ msgid "Delete the task"
 msgstr "Supprimer la tâche"
 
 #: templates/tasks/task_list.html
-msgid "Show"
-msgstr "Afficher"
-
-#: templates/tasks/task_list.html
 msgid "To do"
 msgstr "À faire"
 
 #: templates/tasks/task_list.html
-msgid "All rooms"
-msgstr "Toutes les pièces"
-
-#: templates/tasks/task_list.html
-msgid "Filter"
-msgstr "Filtrer"
-
-#: templates/tasks/task_list.html
-msgid "Previous"
-msgstr "Précédent"
-
-#: templates/tasks/task_list.html
-#, python-format
-msgid "Page %(number)s of %(total)s"
-msgstr "Page %(number)s sur %(total)s"
-
-#: templates/tasks/task_list.html
-msgid "Next"
-msgstr "Suivant"
-
-#: templates/tasks/task_list.html
 msgid "Nothing to do. Add a task to start."
 msgstr "Rien à faire. Ajoutez une tâche pour commencer."
-
-#: templates/tasks/task_list.html
-msgid "Nothing done yet."
-msgstr "Rien de fait pour l'instant."
 
 #: templates/tasks/task_list.html
 #, python-format
@@ -3098,3 +3995,11 @@ msgstr[1] "%(counter)s tâches sont masquées jusqu'à ce que leur date approche
 #: templates/tasks/task_list.html
 msgid "Show them"
 msgstr "Les afficher"
+
+#: templates/tasks/today.html
+msgid "Display"
+msgstr "Affichage"
+
+#: templates/tasks/today.html
+msgid "Nothing to do for now."
+msgstr "Rien à faire pour l'instant."

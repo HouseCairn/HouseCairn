@@ -1,0 +1,19 @@
+{% load i18n tasks_extras %}{# One open occurrence as a row, with Done in one tap when the person may write. `occurrence`, `home`, `today`, `can_write`; `request` is the page, which Done returns to. #}
+<li class="task-row{% if occurrence|late_days:today %} task-row-overdue{% endif %}">
+  <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
+    <span class="row-body">
+      <span class="row-title">{{ occurrence.task.title }}</span>
+      <span class="row-text">
+        {% if occurrence.task.room %}{{ occurrence.task.room.name }}{% if occurrence.task.item %} · {{ occurrence.task.item.name }}{% endif %}{% elif occurrence.task.item %}{{ occurrence.task.item.name }}{% endif %}{% if show_person and occurrence.task.assignee %}{% if occurrence.task.room or occurrence.task.item %} · {% endif %}{% firstof occurrence.task.assignee.get_full_name occurrence.task.assignee.email %}{% endif %}
+      </span>
+      {% include "tasks/_due.html" %}
+    </span>
+  </a>
+  {% if can_write %}
+    <form method="post" action="{% url 'tasks:complete' home_id=home.id task_id=occurrence.task_id occurrence_id=occurrence.id %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button type="submit" class="button-small">{% translate "Done" context "task" %}<span class="visually-hidden"> {{ occurrence.task.title }}</span></button>
+    </form>
+  {% endif %}
+</li>

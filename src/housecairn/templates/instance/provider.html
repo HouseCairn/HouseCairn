@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{{ provider.name }}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'instance:providers' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Sign-in providers" %}</a>
+  <h1>{{ provider.name }}</h1>
+  <section class="card">
+    <dl class="facts">
+      <div><dt>{% translate "Identifier" %}</dt><dd><code>{{ provider.slug }}</code></dd></div>
+      <div><dt>{% translate "Redirect URI" %}</dt><dd><code>{{ callback }}</code></dd></div>
+      <div><dt>{% translate "Client secret" %}</dt><dd>{% if state.secret_unreadable %}{% translate "The stored secret can no longer be read: enter it again." %}{% elif state.secret_set %}{% translate "set" %}{% else %}{% translate "not set" %}{% endif %}</dd></div>
+      <div><dt>{% translate "Linked accounts" %}</dt><dd>{{ state.linked_accounts }}</dd></div>
+      <div><dt>{% translate "Homes that require it" %}</dt><dd>{{ state.homes }}</dd></div>
+    </dl>
+  </section>
+
+  <form method="post" action="{% url 'instance:provider' slug=provider.slug %}" class="card">
+    {% csrf_token %}
+    {% include "instance/_provider_form.html" %}
+    {% if state.linked_accounts %}
+      <p class="small">{% translate "Accounts are linked to this provider, so its issuer cannot change: declare a new provider for another issuer." %}</p>
+    {% endif %}
+    <button type="submit" class="button-block">{% translate "Save" %}</button>
+    <button type="submit" name="test" value="1" formnovalidate class="button-secondary button-block">{% translate "Test the issuer" %}</button>
+    <p class="small">{% translate "Reads the issuer's OpenID configuration and checks it; nothing is saved. You can save without testing." %}</p>
+  </form>
+
+  <h2>{% translate "Delete the provider" %}</h2>
+  <form method="post" action="{% url 'instance:provider' slug=provider.slug %}" class="card">
+    {% csrf_token %}
+    <p class="small">{% translate "People can no longer sign in with it; its identifier is never given to another provider. A provider that a home requires cannot be deleted: disable it instead." %}</p>
+    <button type="submit" name="delete" value="1" class="button-danger button-block">{% translate "Delete" %}</button>
+  </form>
+{% endblock content %}

@@ -10,11 +10,15 @@ from housecairn.instance.api import (
     InstanceAuditView,
     InstanceEmailTestView,
     InstanceInvitationViewSet,
+    InstanceProviderCheckView,
+    InstanceProvidersView,
+    InstanceProviderView,
     InstanceSettingResetView,
     InstanceSettingsView,
     UnlockHomesView,
 )
 from housecairn.rooms import api as rooms_api
+from housecairn.stock import api as stock_api
 from housecairn.tasks import api as tasks_api
 
 app_name = "api-v1"
@@ -38,6 +42,9 @@ for prefix, viewset, basename in (
     ("tasks", tasks_api.TaskViewSet, "home-task"),
     ("occurrences", tasks_api.OccurrenceViewSet, "home-occurrence"),
     ("contractors", tasks_api.ContractorViewSet, "home-contractor"),
+    ("articles", stock_api.ArticleViewSet, "home-article"),
+    ("suppliers", stock_api.SupplierViewSet, "home-supplier"),
+    ("movements", stock_api.MovementViewSet, "home-movement"),
     ("attachments", tasks_api.AttachmentViewSet, "home-attachment"),
 ):
     router.register(rf"homes/(?P<home_id>[0-9a-f-]{{36}})/{prefix}", viewset, basename=basename)
@@ -55,8 +62,24 @@ urlpatterns = [
         InstanceSettingResetView.as_view(),
         name="instance-setting-reset",
     ),
+    path("instance/providers/", InstanceProvidersView.as_view(), name="instance-provider-list"),
+    path(
+        "instance/providers/<slug:slug>/",
+        InstanceProviderView.as_view(),
+        name="instance-provider-detail",
+    ),
+    path(
+        "instance/provider-check/",
+        InstanceProviderCheckView.as_view(),
+        name="instance-provider-check",
+    ),
     path("instance/unlock/", UnlockHomesView.as_view(), name="instance-unlock"),
     path("account/delete/", AccountDeleteView.as_view(), name="account-delete"),
+    path("me/home/", tasks_api.MyHomeView.as_view(), name="my-home"),
+    path(
+        "me/display-preferences/", tasks_api.PreferencesView.as_view(), name="display-preferences"
+    ),
+    path("homes/<uuid:home_id>/today/", tasks_api.TodayView.as_view(), name="home-today"),
     *router.urls,
     path("homes/<uuid:home_id>/events/", EventCreateView.as_view(), name="home-events"),
     path("homes/<uuid:home_id>/search/", rooms_api.SearchView.as_view(), name="home-search"),

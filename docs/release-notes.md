@@ -20,6 +20,18 @@ with it on the project's
   API, each paired with its environment variable: a variable that is set wins and locks the
   field. Secrets are encrypted in the database. See [Settings](administration/settings.md).
 
+- **Sign-in providers in the interface.** An instance administrator can declare OpenID
+  Connect providers on **Instance administration, Sign-in providers**, or by the API, next to
+  the one the `OIDC_*` variables set, which stays read only. A **Test the issuer** button
+  reads the provider's configuration. The administrator cannot remove their own last way to
+  sign in, and the only administrator cannot be switched off in the administration site. See
+  [Single sign-on](administration/oidc.md).
+
+- **Stock.** Keep track of spare parts and supplies: items with a threshold, suppliers
+  and an append-only ledger of movements from which the quantity is computed, a photo of
+  the label, and the equipment each item fits. Screens, API and a guide: see
+  [Stock and supplies](guides/stock.md). Label photos are stored in `/data/media/stock/`.
+
 ### Upgrade notes
 
 - **Environment variables are checked a little more strictly.** A boolean variable such as

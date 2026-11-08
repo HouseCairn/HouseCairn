@@ -1,0 +1,21 @@
+/* Stock layer (static/css/app.css): the quantity of a stock item and the photo of its
+   label (docs/adr/0038). Tokens only, no inline style. */
+
+.stock-quantity {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--hc-space-2);
+  margin: 0 0 var(--hc-space-3);
+}
+
+.stock-quantity strong {
+  font-size: var(--hc-font-size-2xl);
+}
+
+.stock-label {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--hc-radius-sm);
+}
