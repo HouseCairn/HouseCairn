@@ -25,11 +25,32 @@ def test_the_helper_drops_control_and_format_characters_only() -> None:
     assert without_control_characters("a\tb\nc") == "abc"
 
 
+FAMILY = "\U0001f468\u200d\U0001f469\u200d\U0001f467"
+HEART_ON_FIRE = "\u2764\ufe0f\u200d\U0001f525"
+ENGLAND = "\U0001f3f4" + "".join(chr(0xE0000 + ord(c)) for c in "gbeng") + "\U000e007f"
+PERSIAN = "\u0645\u06cc\u200c\u062e\u0648\u0627\u0647\u0645"
+SKIN_TONE = "\U0001f44d\U0001f3fd"
+KEPT = [FAMILY, HEART_ON_FIRE, ENGLAND, PERSIAN, SKIN_TONE]
+
+
+@pytest.mark.parametrize("text", KEPT)
+def test_the_helper_keeps_joiners_and_tag_characters(text: str) -> None:
+    assert without_control_characters(text) == text
+    assert without_control_characters("\u200b" + text + "\u202e\u2066\ufeff") == text
+
+
 class TestAuditTitles:
     def test_a_title_reaches_the_log_without_them(self, alice: User, alice_home: Home) -> None:
         audit.record_object("room.created", actor=alice, home_id=alice_home.id, title=DIRTY)
         event = AuditEvent.objects.filter(action="room.created").get()
         assert event.detail["title"] == CLEAN
+
+    @pytest.mark.parametrize("text", KEPT)
+    def test_composed_emoji_and_scripts_stay_intact(
+        self, alice: User, alice_home: Home, text: str
+    ) -> None:
+        audit.record_object("room.created", actor=alice, home_id=alice_home.id, title=text)
+        assert AuditEvent.objects.get(action="room.created").detail["title"] == text
 
     def test_line_breaks_still_become_a_space(self, alice: User, alice_home: Home) -> None:
         audit.record_object("room.created", actor=alice, home_id=alice_home.id, title="a\nb\x07c")
