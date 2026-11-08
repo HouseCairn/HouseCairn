@@ -3,6 +3,7 @@
 import ipaddress
 import json
 import logging
+import re
 import time
 from collections.abc import Callable
 from typing import Any
@@ -490,6 +491,24 @@ class TestWebScreens:
         assert admin_client.post(url, {"delete": "1"}).status_code == 302
         assert not OidcProvider.objects.exists()
         assert OidcProvider.all_objects.get(slug="company").secret == ""
+
+    def test_a_box_has_its_label_beside_it_and_its_help_below(
+        self, admin_client: Client, admin_user: User
+    ) -> None:
+        declare(admin_user)
+        for url in (reverse(LIST), reverse("instance:provider", kwargs={"slug": "company"})):
+            page = admin_client.get(url).text
+            for name in ("pkce", "enabled"):
+                assert re.search(
+                    rf'<p><label for="id_{name}">[^<]+</label><input type="checkbox"[^>]*'
+                    rf'id="id_{name}"[^>]*></p>\s*'
+                    rf'<p class="small helptext" id="id_{name}_helptext">',
+                    page,
+                ), (url, name)
+            # Text fields keep the layout of `form.as_p`.
+            assert re.search(
+                r'<p><label for="id_issuer">[^<]+</label><input[^>]*name="issuer"', page
+            )
 
     def test_an_invalid_provider_is_refused_with_a_message(self, admin_client: Client) -> None:
         response = form(admin_client, reverse(LIST), slug="company", issuer="http://x.example")

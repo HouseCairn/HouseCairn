@@ -39,7 +39,7 @@
   <h2>{% translate "Add a provider" %}</h2>
   <form method="post" action="{% url 'instance:providers' %}" class="card">
     {% csrf_token %}
-    {{ form.as_p }}
+    {% include "instance/_provider_form.html" %}
     <p class="small">{% blocktranslate %}Redirect URI to register at the provider: <code>{{ callback_base }}&lt;identifier&gt;/login/callback/</code>{% endblocktranslate %}</p>
     <button type="submit" class="button-block">{% translate "Add" %}</button>
     <button type="submit" name="test" value="1" formnovalidate class="button-secondary button-block">{% translate "Test the issuer" %}</button>

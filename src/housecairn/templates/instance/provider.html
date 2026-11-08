@@ -16,7 +16,7 @@
 
   <form method="post" action="{% url 'instance:provider' slug=provider.slug %}" class="card">
     {% csrf_token %}
-    {{ form.as_p }}
+    {% include "instance/_provider_form.html" %}
     {% if state.linked_accounts %}
       <p class="small">{% translate "Accounts are linked to this provider, so its issuer cannot change: declare a new provider for another issuer." %}</p>
     {% endif %}
