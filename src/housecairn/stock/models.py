@@ -70,6 +70,10 @@ class Article(HomeOwnedModel):
     def __str__(self) -> str:
         return self.name
 
+    @property
+    def unit_label(self) -> str:
+        return self.unit
+
 
 class Supplier(HomeOwnedModel):
     """Where an article is bought; an article has one or more."""

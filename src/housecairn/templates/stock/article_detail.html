@@ -61,6 +61,20 @@
     <p class="empty">{% translate "No compatible item chosen." %}</p>
   {% endif %}
 
+  {% if tasks %}
+    <h2>{% translate "Needed by tasks" %}</h2>
+    <ul class="card-list">
+      {% for task in tasks %}
+        <li>
+          <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=task.id %}">
+            <span class="row-body"><span class="row-title">{{ task.title }}</span></span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
   <h2>{% translate "Suppliers" %}</h2>
   {% if suppliers %}
     <ul class="card-list">

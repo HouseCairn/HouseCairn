@@ -67,10 +67,14 @@ def plain(quantity: Decimal) -> str:
 # ---------- reading ----------
 
 
-def articles_of(home: Home) -> models.QuerySet[Article]:
-    """Articles of the home, each with `quantity`: the sum of its movements."""
+def quantity_expression(article: str = "pk") -> Coalesce:
+    """The stock of an article as a query expression: the sum of its movements.
+
+    `article` names the column that holds the article's identifier in the query it is
+    used in (`pk` on an article, `article_id` on a row that points to one).
+    """
     total = (
-        Movement.objects.filter(article=models.OuterRef("pk"))
+        Movement.objects.filter(article=models.OuterRef(article))
         .order_by()
         .values("article")
         .annotate(total=models.Sum("delta"))
@@ -79,11 +83,16 @@ def articles_of(home: Home) -> models.QuerySet[Article]:
     decimal: models.DecimalField[Decimal, Decimal] = models.DecimalField(
         max_digits=12, decimal_places=2
     )
+    return Coalesce(
+        models.Subquery(total, output_field=decimal),
+        models.Value(_ZERO, output_field=decimal),
+    )
+
+
+def articles_of(home: Home) -> models.QuerySet[Article]:
+    """Articles of the home, each with `quantity`: the sum of its movements."""
     articles: models.QuerySet[Article] = Article.objects.filter(home=home).annotate(
-        quantity=Coalesce(
-            models.Subquery(total, output_field=decimal),
-            models.Value(_ZERO, output_field=decimal),
-        )
+        quantity=quantity_expression()
     )
     return articles
 

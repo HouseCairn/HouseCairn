@@ -6,6 +6,7 @@ has exactly one open occurrence; closing it creates the next.
 """
 
 import datetime
+from decimal import Decimal
 from typing import Any
 
 from django.conf import settings
@@ -224,8 +225,6 @@ class Task(HomeOwnedModel):
     )
     # First due date of a fixed series: it carries the day of the month (docs/adr/0031).
     series_start = models.DateField(null=True, blank=True, editable=False)
-    # Room for the materials with quantities of a task: they belong to the stock (a later
-    # lot) and will hang off the task by their own table.
 
     class Meta:
         verbose_name = _("task")
@@ -278,6 +277,46 @@ class Task(HomeOwnedModel):
             errors["season_start_month"] = _("Give the first and the last month of the season.")
         if errors:
             raise ValidationError(errors)
+
+
+class TaskMaterial(HomeOwnedModel):
+    """An article of the stock that a task needs, with the quantity planned (docs/adr/0046).
+
+    The article lives in the stock of the same home; the task only names it and says how
+    much. Marking the task done takes that quantity from the stock (`MaterialDraw`).
+    """
+
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="materials")
+    article = models.ForeignKey(
+        "stock.Article",
+        on_delete=models.CASCADE,
+        related_name="task_materials",
+        verbose_name=_("stock item"),
+    )
+    quantity = models.DecimalField(
+        _("quantity"),
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
+
+    class Meta:
+        verbose_name = _("task material")
+        verbose_name_plural = _("task materials")
+        ordering = ["created_at", "id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["task", "article"],
+                condition=models.Q(deleted_at__isnull=True),
+                name="one_material_line_per_article",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(quantity__gt=0), name="task_material_quantity_positive"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.article_id} x {self.quantity}"
 
 
 class Occurrence(HomeOwnedModel):

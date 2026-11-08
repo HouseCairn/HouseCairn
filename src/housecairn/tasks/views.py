@@ -1,7 +1,8 @@
 """Web views of tasks, occurrences and attachments. Rules live in `services`."""
 
 import datetime
-from typing import Any
+from functools import cached_property
+from typing import Any, cast
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from uuid import UUID
 
@@ -26,8 +27,11 @@ from housecairn.homes.scoping import open_homes_for_request
 from housecairn.rooms import conf
 from housecairn.rooms.models import Item, Room
 from housecairn.rooms.views import HomeRoomsMixin
+from housecairn.stock import services as stock_services
 from housecairn.tasks import agenda, forms, services
+from housecairn.tasks import materials as material_services
 from housecairn.tasks.files import attachment_response
+from housecairn.tasks.forms.materials import BaseMaterialFormSet
 from housecairn.tasks.models import Attachment, Occurrence, Status, Task
 
 PAGE_SIZE = 30
@@ -186,8 +190,38 @@ class TaskFormMixin(HomeTasksMixin, FormView[Any]):
         kwargs.update(home=self.home, with_files=self.with_files)
         return kwargs
 
+    def material_initial(self) -> list[dict[str, Any]]:
+        return []
+
+    @cached_property
+    def materials(self) -> BaseMaterialFormSet:
+        """The stock items of the task, a formset next to the form (docs/adr/0046)."""
+        formset = forms.MaterialFormSet(
+            self.request.POST if self.request.method == "POST" else None,
+            prefix="materials",
+            initial=self.material_initial(),
+            form_kwargs={"articles": stock_services.articles_of(self.home)},
+        )
+        return cast(BaseMaterialFormSet, formset)
+
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        return super().get_context_data(**self.page(), **kwargs)
+        return super().get_context_data(**self.page(materials=self.materials), **kwargs)
+
+    @cached_property
+    def materials_sent(self) -> bool:
+        """The form carried the stock items; a request without them leaves them as they are."""
+        return "materials-TOTAL_FORMS" in self.request.POST
+
+    def save_materials(self, task: Task) -> None:
+        if self.materials_sent:
+            material_services.set_materials(self.request.user, task, self.materials.lines())
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        form = self.get_form()
+        valid = form.is_valid()
+        if self.materials_sent:
+            valid = self.materials.is_valid() and valid  # both are checked, to show both
+        return self.form_valid(form) if valid else self.form_invalid(form)
 
     def split(self, form: forms.TaskForm) -> tuple[dict[str, Any], dict[str, Any]]:
         """Fields of the task, and the rest (date, new contractor, files)."""
@@ -228,6 +262,7 @@ class TaskCreateView(TaskFormMixin):
                 task = services.create_task(
                     self.request.user, self.home, due_on=extra["due_on"], **data
                 )
+                self.save_materials(task)
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)
@@ -263,6 +298,10 @@ class TaskDetailView(HomeTasksMixin, TemplateView):
                 history=closed,
                 today=services.today(),
                 next_dates=services.upcoming_dates(task),
+                materials=material_services.materials_of(task),
+                material_form=forms.MaterialSaveForm(
+                    articles=stock_services.articles_of(self.home)
+                ),
                 images=[a for a in attachments if a.is_image],
                 documents=[a for a in attachments if not a.is_image],
                 undo=self.undo_banner(),
@@ -280,6 +319,12 @@ class TaskEditView(TaskFormMixin):
         kwargs["instance"] = self.get_task()
         return kwargs
 
+    def material_initial(self) -> list[dict[str, Any]]:
+        return [
+            {"article": line.article_id, "quantity": line.quantity}
+            for line in material_services.materials_of(self.get_task())
+        ]
+
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         return super().get_context_data(task=self.get_task(), **kwargs)
 
@@ -290,6 +335,7 @@ class TaskEditView(TaskFormMixin):
             with transaction.atomic():
                 self.contractor_of(data, extra)
                 services.update_task(self.request.user, task, due_on=extra["due_on"], **data)
+                self.save_materials(task)
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)
@@ -316,6 +362,46 @@ class TaskDeleteView(HomeTasksMixin, TemplateView):
         services.delete_task(request.user, self.get_task())
         messages.success(request, _("Task deleted."))
         return redirect("tasks:list", home_id=self.home.id)
+
+
+class MaterialSaveView(HomeTasksMixin, View):
+    """Add a stock item to the task, or change its quantity (the form of the task page)."""
+
+    require_write = True
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        task = self.get_task()
+        form = forms.MaterialSaveForm(request.POST, articles=stock_services.articles_of(self.home))
+        target = redirect("tasks:detail", home_id=self.home.id, task_id=task.id)
+        if not form.is_valid():
+            messages.error(
+                request, " ".join(str(m) for errors in form.errors.values() for m in errors)
+            )
+            return target
+        try:
+            material_services.save_material(
+                request.user, task, form.cleaned_data["article"], form.cleaned_data["quantity"]
+            )
+        except ValidationError as exc:
+            messages.error(request, " ".join(exc.messages))
+            return target
+        messages.success(request, _("Stock item saved on the task."))
+        return target
+
+
+class MaterialRemoveView(HomeTasksMixin, View):
+    require_write = True
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        task = self.get_task()
+        line = get_object_or_404(
+            material_services.materials_of(task), id=self.kwargs["material_id"]
+        )
+        material_services.remove_material(request.user, line)
+        messages.success(request, _("Stock item removed from the task."))
+        return redirect("tasks:detail", home_id=self.home.id, task_id=task.id)
 
 
 # ---------- occurrences ----------

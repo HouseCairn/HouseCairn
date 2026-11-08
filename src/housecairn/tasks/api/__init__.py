@@ -6,6 +6,7 @@ resources sit in one module each; this package exposes the ones the router mount
 
 from housecairn.tasks.api.attachments import AttachmentViewSet
 from housecairn.tasks.api.contractors import ContractorViewSet
+from housecairn.tasks.api.materials import MaterialViewSet
 from housecairn.tasks.api.occurrences import OccurrenceViewSet
 from housecairn.tasks.api.tasks import TaskViewSet
 from housecairn.tasks.api.today import MyHomeView, PreferencesView, TodayView
@@ -13,6 +14,7 @@ from housecairn.tasks.api.today import MyHomeView, PreferencesView, TodayView
 __all__ = [
     "AttachmentViewSet",
     "ContractorViewSet",
+    "MaterialViewSet",
     "MyHomeView",
     "OccurrenceViewSet",
     "PreferencesView",

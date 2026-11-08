@@ -23,6 +23,7 @@ from housecairn.rooms.services import items_of
 from housecairn.stock import forms, services
 from housecairn.stock.files import label_response
 from housecairn.stock.models import Article, Supplier
+from housecairn.tasks import materials as task_materials
 
 
 class EntryView(LoginRequiredMixin, TemplateView):
@@ -191,6 +192,7 @@ class ArticleDetailView(HomeStockMixin, TemplateView):
                     "room__name", "name"
                 ),
                 movement_form=forms.MovementForm(),
+                tasks=task_materials.tasks_using(article),
             ),
             **kwargs,
         )

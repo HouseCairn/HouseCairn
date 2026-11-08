@@ -26,12 +26,14 @@ from housecairn.rooms.api import (
 from housecairn.rooms.models import Item, Room
 from housecairn.tasks import durations, services
 from housecairn.tasks.api.common import DATE_PARAMS, _date_param
+from housecairn.tasks.api.materials import MaterialSummarySerializer
 from housecairn.tasks.models import (
     OPEN_STATUSES,
     Contractor,
     Occurrence,
     Season,
     Task,
+    TaskMaterial,
 )
 
 
@@ -79,6 +81,12 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
         allow_null=True,
         help_text="Due date of the open occurrence. Writing it moves that occurrence.",
     )
+    materials = MaterialSummarySerializer(
+        many=True,
+        read_only=True,
+        source="material_lines",
+        help_text="The stock items the task needs; change them in `task-materials`.",
+    )
     open_occurrence = serializers.UUIDField(
         source="open_occurrence_id",
         read_only=True,
@@ -96,6 +104,7 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
             "priority",
             "due_on",
             "open_occurrence",
+            "materials",
             "estimated_minutes",
             "estimated_text",
             "labour_budget",
@@ -158,9 +167,21 @@ class TaskViewSet(
 
     def get_queryset(self) -> models.QuerySet[Task]:
         open_rows = Occurrence.objects.filter(task=models.OuterRef("pk"), status__in=OPEN_STATUSES)
-        tasks = services.tasks_of(self.get_home()).annotate(
-            open_occurrence_id=models.Subquery(open_rows.values("id")[:1]),
-            open_due_on=models.Subquery(open_rows.values("due_on")[:1]),
+        tasks = (
+            services.tasks_of(self.get_home())
+            .annotate(
+                open_occurrence_id=models.Subquery(open_rows.values("id")[:1]),
+                open_due_on=models.Subquery(open_rows.values("due_on")[:1]),
+            )
+            .prefetch_related(
+                models.Prefetch(
+                    "materials",
+                    queryset=TaskMaterial.objects.filter(
+                        article__deleted_at__isnull=True
+                    ).select_related("article"),
+                    to_attr="material_lines",
+                )
+            )
         )
         params = self.request.query_params
         for name, field in (
