@@ -126,6 +126,7 @@ jobs:
           path: spike-results
           merge-multiple: true
       - name: Write the report
+        shell: bash -euo pipefail {0}
         run: |
           python3 spike/base-images/report.py spike-results | tee spike-results/report.md
           cat spike-results/report.md >>"$GITHUB_STEP_SUMMARY"

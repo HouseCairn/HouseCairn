@@ -7,6 +7,7 @@ every failed check. Only reads the files written by measure.sh.
 """
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -57,8 +58,9 @@ def column(r: dict) -> list[str]:
     build = r.get("build", {})
     built = "yes" if build.get("ok") else f"**no**: {build.get('reason', '')[:120]}"
     files = r.get("files", {})
+    measured = str(r.get("measured", "n/a"))
     image_rows = [
-        r.get("measured", "n/a"),
+        "bare base image (application not built)" if measured.startswith("base") else measured,
         built,
         f"{build.get('seconds', 'n/a')} s",
         get(r, "image", "python") or "n/a",
@@ -110,8 +112,28 @@ LABELS = [
 ]
 
 
+def high_and_critical(directory: Path, candidate: str, arch: str) -> list[str]:
+    """High and Critical Grype findings of one image, one line per finding and package."""
+    path = directory / f"{candidate}-{arch}-image-grype.json"
+    if not path.is_file():
+        return []
+    seen = set()
+    for match in json.loads(path.read_text())["matches"]:
+        vulnerability = match["vulnerability"]
+        if vulnerability["severity"] not in {"High", "Critical"}:
+            continue
+        fix = ", ".join(vulnerability["fix"].get("versions") or []) or vulnerability["fix"]["state"]
+        seen.add(
+            f"| {vulnerability['id']} | {vulnerability['severity']} | {match['artifact']['name']}"
+            f" {match['artifact']['version']} | {fix} |"
+        )
+    return sorted(seen)
+
+
 def main(directory: str) -> int:
-    results = [json.loads(p.read_text()) for p in sorted(Path(directory).glob("*-*.json"))]
+    root = Path(directory)
+    names = re.compile(rf"^({'|'.join(ORDER)})-[a-z0-9]+\.json$")
+    results = [json.loads(p.read_text()) for p in sorted(root.iterdir()) if names.match(p.name)]
     lines = ["# Base image spike: measurements", ""]
     for arch in sorted({r["arch"] for r in results}):
         rows = sorted(
@@ -129,6 +151,20 @@ def main(directory: str) -> int:
                 if value["status"] not in {"pass", "absent", "present"}:
                     lines.append(f"- {r['candidate']} {key}: {value['detail']}")
         lines.append("")
+        for r in rows:
+            found = high_and_critical(root, r["candidate"], arch)
+            lines += [
+                f"<details><summary>{r['candidate']} ({arch}): {len(found)} High or Critical"
+                " findings</summary>",
+                "",
+            ]
+            if found:
+                lines += [
+                    "| Vulnerability | Severity | Package | Fixed in |",
+                    "| --- | --- | --- | --- |",
+                    *found,
+                ]
+            lines += ["", "</details>", ""]
     sys.stdout.write("\n".join(lines) + "\n")
     return 0
 
