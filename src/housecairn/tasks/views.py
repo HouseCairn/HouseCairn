@@ -20,7 +20,7 @@ from django.views.generic import FormView, TemplateView
 from housecairn.homes.scoping import open_homes_for_request
 from housecairn.rooms.models import Item, Room
 from housecairn.rooms.views import HomeRoomsMixin
-from housecairn.tasks import forms, services
+from housecairn.tasks import agenda, forms, services
 from housecairn.tasks.models import Occurrence, Status, Task
 
 PAGE_SIZE = 30
@@ -387,3 +387,125 @@ class OccurrenceEditView(HomeTasksMixin, FormView[Any]):
             return self.form_invalid(form)
         messages.success(self.request, _("Details saved."))
         return redirect("tasks:detail", home_id=self.home.id, task_id=occurrence.task_id)
+
+
+# ---------- Today, My home, History, display preferences ----------
+
+
+class TodayView(HomeTasksMixin, TemplateView):
+    """What to do in a home, laid out as the person asked (docs/adr/0037)."""
+
+    template_name = "tasks/today.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        day = services.today()
+        prefs = agenda.preferences_of(self.request.user)  # type: ignore[arg-type]
+        return super().get_context_data(
+            **self.page(
+                sections=agenda.today_sections(self.home, prefs, day=day),
+                prefs=prefs,
+                show_person=prefs.today_group != "person",
+                today=day,
+                undo=self.undo_banner(),
+                undo_return=self.undo_return(),
+            ),
+            **kwargs,
+        )
+
+
+class MyHomeView(LoginRequiredMixin, TemplateView):
+    """What concerns the person signed in, in one home or in all of them."""
+
+    template_name = "tasks/my_home.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        homes = list(open_homes_for_request(self.request).order_by("name"))
+        raw = self.request.GET.get("home", "")
+        chosen = next((h for h in homes if str(h.id) == raw), None)
+        shown = [chosen] if chosen else homes
+        return super().get_context_data(
+            homes=homes,
+            chosen=chosen,
+            digests=agenda.my_home(self.request.user, shown, day=services.today()),  # type: ignore[arg-type]
+            today=services.today(),
+            **kwargs,
+        )
+
+
+def _uuid_or_none(raw: str) -> UUID | None:
+    try:
+        return UUID(raw)
+    except ValueError:
+        return None
+
+
+def _date_or_none(raw: str) -> datetime.date | None:
+    try:
+        return datetime.date.fromisoformat(raw)
+    except ValueError:
+        return None
+
+
+class HistoryView(HomeTasksMixin, TemplateView):
+    """Everything that was done or skipped, filtered and searched, with its real cost."""
+
+    template_name = "tasks/history.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        params = self.request.GET
+        status = params.get("status", "")
+        selection = agenda.HistoryFilter(
+            room=_uuid_or_none(params.get("room", "")),
+            item=_uuid_or_none(params.get("item", "")),
+            contractor=_uuid_or_none(params.get("contractor", "")),
+            person=_uuid_or_none(params.get("person", "")),
+            query=params.get("q", "").strip()[:200],
+            status=status if status in ("done", "skipped") else "",
+            after=_date_or_none(params.get("after", "")),
+            before=_date_or_none(params.get("before", "")),
+        )
+        rows = agenda.history(self.home, selection)
+        page = Paginator(rows, PAGE_SIZE).get_page(params.get("page"))
+        kept = [(k, v) for k, v in params.items() if k not in ("page", "undo") and v]
+        return super().get_context_data(
+            **self.page(
+                page=page,
+                selection=selection,
+                cost=agenda.cost_of(rows),
+                rooms=services.rooms_for_forms(self.home),
+                items=services.items_for_forms(self.home),
+                contractors=services.contractors_of(self.home),
+                members=services.members_for_forms(self.home),
+                query_string=urlencode(kept),
+                filtered=bool(kept),
+            ),
+            **kwargs,
+        )
+
+
+class PreferencesView(LoginRequiredMixin, FormView[Any]):
+    """How the Today screen is laid out, for the person signed in."""
+
+    template_name = "tasks/preferences.html"
+    form_class = forms.PreferencesForm
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = agenda.preferences_of(self.request.user)  # type: ignore[arg-type]
+        return kwargs
+
+    def _next(self) -> str:
+        target = self.request.POST.get("next") or self.request.GET.get("next", "")
+        if target and url_has_allowed_host_and_scheme(
+            target, allowed_hosts={self.request.get_host()}, require_https=self.request.is_secure()
+        ):
+            return target
+        return reverse("my-home")
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        return super().get_context_data(next=self._next(), **kwargs)
+
+    def form_valid(self, form: forms.PreferencesForm) -> HttpResponse:
+        agenda.update_preferences(self.request.user, **form.cleaned_data)
+        messages.success(self.request, _("Preferences saved."))
+        return redirect(self._next())

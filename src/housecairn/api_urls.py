@@ -56,6 +56,11 @@ urlpatterns = [
     ),
     path("instance/unlock/", UnlockHomesView.as_view(), name="instance-unlock"),
     path("account/delete/", AccountDeleteView.as_view(), name="account-delete"),
+    path("me/home/", tasks_api.MyHomeView.as_view(), name="my-home"),
+    path(
+        "me/display-preferences/", tasks_api.PreferencesView.as_view(), name="display-preferences"
+    ),
+    path("homes/<uuid:home_id>/today/", tasks_api.TodayView.as_view(), name="home-today"),
     *router.urls,
     path("homes/<uuid:home_id>/events/", EventCreateView.as_view(), name="home-events"),
     path("homes/<uuid:home_id>/search/", rooms_api.SearchView.as_view(), name="home-search"),

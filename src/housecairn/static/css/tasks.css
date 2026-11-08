@@ -146,3 +146,33 @@
 .file-list form {
   margin: 0;
 }
+
+/* Today, My home and History (docs/adr/0037). */
+
+.today-bar {
+  margin: 0 0 var(--hc-space-3);
+}
+
+.section-overdue {
+  color: var(--hc-color-danger);
+}
+
+.digest {
+  margin-bottom: var(--hc-space-4);
+}
+
+.history-filters {
+  display: grid;
+  gap: var(--hc-space-1) var(--hc-space-3);
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  margin-bottom: var(--hc-space-3);
+}
+
+.history-filters .button-row {
+  grid-column: 1 / -1;
+}
+
+.history-total {
+  margin: 0 0 var(--hc-space-2);
+  color: var(--hc-color-text-muted);
+}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Display preferences" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{{ next }}">{% include "components/icon.html" with name="chevron" %}{% translate "Back" %}</a>
+  <h1>{% translate "Display preferences" %}</h1>
+  <p class="small">{% translate "How the Today screen is laid out for you. Other people of your homes keep their own." %}</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {{ form.non_field_errors }}
+    <fieldset>
+      <legend>{% translate "Group by" %}</legend>
+      {{ form.today_group.errors }}
+      {% for radio in form.today_group %}<p>{{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></p>{% endfor %}
+    </fieldset>
+    {% include "tasks/_field.html" with field=form.horizon_days %}
+    <fieldset>
+      <legend>{% translate "Sections" %}</legend>
+      {% include "tasks/_field.html" with field=form.show_overdue %}
+      {% include "tasks/_field.html" with field=form.show_upcoming %}
+      {% include "tasks/_field.html" with field=form.show_season %}
+    </fieldset>
+    <button type="submit" class="button-block">{% translate "Save" %}</button>
+  </form>
+{% endblock content %}

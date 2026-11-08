@@ -38,4 +38,5 @@ later record supersedes it.
 | [0033](0033-done-with-undo.md) | "Done" in one gesture, with undo | 2026-11-08 |
 | [0035](0035-instance-settings-in-the-interface.md) | Instance settings in the interface, paired with environment variables | 2026-11-08 |
 | [0036](0036-export-rooms-photos-and-file-erasure.md) | Export of rooms and photos, erasure of files with the home | 2026-11-08 |
+| [0037](0037-today-my-home-history-and-display-preferences.md) | Today, My home, History and display preferences | 2026-11-08 |
 | [0040](0040-merge-queue.md) | Merge queue, required checks on each queue entry | 2026-11-08 |

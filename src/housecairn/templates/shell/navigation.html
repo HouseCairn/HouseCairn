@@ -2,7 +2,7 @@
 <nav class="nav" aria-label="{% translate 'Main navigation' %}">
   <ul class="nav-list">
     <li>
-      <a class="nav-link" href="{% url 'index' %}"{% if nav_section == "home" %} aria-current="page"{% endif %}>
+      <a class="nav-link" href="{{ home_url }}"{% if nav_section == "home" %} aria-current="page"{% endif %}>
         {% include "components/icon.html" with name="home" %}{% translate "Home" %}
       </a>
     </li>

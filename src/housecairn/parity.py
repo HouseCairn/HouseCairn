@@ -75,6 +75,11 @@ PARITY: dict[str, tuple[str, ...]] = {
     "tasks:skip": ("api-v1:home-occurrence-skip",),
     "tasks:postpone": ("api-v1:home-occurrence-postpone",),
     "tasks:occurrence-edit": ("api-v1:home-occurrence-detail",),
+    # Today, My home, History and the display preferences (docs/adr/0037).
+    "tasks:today": ("api-v1:home-today",),
+    "tasks:history": ("api-v1:home-occurrence-list", "api-v1:home-occurrence-cost"),
+    "my-home": ("api-v1:my-home",),
+    "display-preferences": ("api-v1:display-preferences",),
 }
 
 # Web routes without business function, with the reason.

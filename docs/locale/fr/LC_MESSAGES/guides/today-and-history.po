@@ -1,0 +1,54 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 12:22+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Today, My home and history"
+msgstr "Aujourd'hui, Mon accueil et historique"
+
+msgid "Three screens to look at your tasks without setting anything up, and one setting to make them yours."
+msgstr "Trois écrans pour regarder vos tâches sans rien configurer, et un réglage pour les rendre vôtres."
+
+msgid "Start the day on My home"
+msgstr "Commencer la journée sur Mon accueil"
+
+msgid "**Home** in the navigation opens [My home](../screens/my-home.md): what is assigned to you, what is late in the home, what nobody has taken yet, and the warranties that end soon. With several homes, pick one or look at them all together."
+msgstr "**Accueil** dans la navigation ouvre [Mon accueil](../screens/my-home.md) : ce qui vous est confié, ce qui est en retard dans le logement, ce que personne n'a encore pris, et les garanties qui se terminent bientôt. Avec plusieurs logements, choisissez-en un ou regardez-les tous ensemble."
+
+msgid "Do the day on Today"
+msgstr "Faire la journée sur Aujourd'hui"
+
+msgid "From there, **Today** opens the [Today](../screens/today.md) screen of a home. The arrears are on top; then what comes up in the next days; then what is in season. **Done** is on every row: one tap, and a banner offers **Undo** if it was a mistake."
+msgstr "De là, **Aujourd'hui** ouvre l'écran [Aujourd'hui](../screens/today.md) d'un logement. L'arriéré est en tête ; puis ce qui arrive dans les prochains jours ; puis ce qui est de saison. **Fait** est sur chaque ligne : un geste, et un bandeau propose **Annuler** en cas d'erreur."
+
+msgid "By default the screen is ordered by urgency over one week. If you think by room (the bathroom first), by person (what is mine, what is hers) or by day, change it in the [display preferences](../screens/display-preferences.md): **Group by**, how far to look ahead, and which sections to show. Your choice is yours alone, in every home."
+msgstr "Par défaut, l'écran est ordonné par urgence sur une semaine. Si vous pensez par pièce (la salle de bain d'abord), par personne (ce qui est à moi, ce qui est à elle) ou par jour, changez-le dans les [préférences d'affichage](../screens/display-preferences.md) : **Regrouper par**, jusqu'où regarder, et quelles sections montrer. Votre choix n'est qu'à vous, dans tous les logements."
+
+msgid "Remember what was done"
+msgstr "Se souvenir de ce qui a été fait"
+
+msgid "[History](../screens/history.md) lists what was done or skipped, the most recent first. Search a word of the title or of the note, or narrow by room, item, contractor or person, by outcome and by dates: this is how you find who changed the filter, or when the plumber came last. The total is that of the real costs you entered when closing the tasks; an entry without a cost is not counted."
+msgstr "L'[historique](../screens/history.md) liste ce qui a été fait ou ignoré, le plus récent d'abord. Cherchez un mot du titre ou de la note, ou affinez par pièce, élément, intervenant ou personne, par issue et par dates : c'est ainsi que vous retrouvez qui a changé le filtre, ou quand le plombier est passé pour la dernière fois. Le total est celui des coûts réels saisis à la clôture des tâches ; une entrée sans coût n'est pas comptée."
+
+msgid "For scripts"
+msgstr "Pour les scripts"
+
+msgid "The [API](../api/index.md) has the same three views: `GET /api/v1/me/home/`, `GET /api/v1/homes/<home id>/today/` and the occurrences with `ordering=recent`. `GET`/`PATCH /api/v1/me/display-preferences/` reads and changes the layout."
+msgstr "L'[API](../api/index.md) a les mêmes trois vues : `GET /api/v1/me/home/`, `GET /api/v1/homes/<home id>/today/` et les occurrences avec `ordering=recent`. `GET`/`PATCH /api/v1/me/display-preferences/` lit et change la disposition."
+

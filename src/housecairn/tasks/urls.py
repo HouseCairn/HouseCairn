@@ -7,6 +7,8 @@ from housecairn.tasks import views
 app_name = "tasks"
 
 urlpatterns = [
+    path("today/", views.TodayView.as_view(), name="today"),
+    path("history/", views.HistoryView.as_view(), name="history"),
     path("tasks/", views.TaskListView.as_view(), name="list"),
     path("tasks/new/", views.TaskCreateView.as_view(), name="create"),
     path("tasks/<uuid:task_id>/", views.TaskDetailView.as_view(), name="detail"),

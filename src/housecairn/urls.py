@@ -24,6 +24,14 @@ urlpatterns = [
     # Tasks of a home (docs/adr/0031); /tasks/ is the navigation entry.
     path("h/<uuid:home_id>/", include("housecairn.tasks.urls")),
     path("tasks/", task_views.EntryView.as_view(), name="tasks"),
+    # My home (what concerns the person, in every home) and their display preferences
+    # (docs/adr/0037).
+    path("me/", task_views.MyHomeView.as_view(), name="my-home"),
+    path(
+        "me/preferences/",
+        task_views.PreferencesView.as_view(),
+        name="display-preferences",
+    ),
     # Invitation links, opened signed in or not (docs/adr/0020).
     path("invitations/<str:token>/", home_views.InvitationView.as_view(), name="invitation"),
     # Instance invitation links: an account, without a home (docs/adr/0022).

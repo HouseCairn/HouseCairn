@@ -29,9 +29,13 @@ item
 item-form
 photo-form
 search
+my-home
+today
 tasks
 task
 task-form
+history
+display-preferences
 more
 about
 ```

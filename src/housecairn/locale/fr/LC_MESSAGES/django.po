@@ -3020,3 +3020,156 @@ msgstr[1] "%(counter)s tâches sont masquées jusqu'à ce que leur date approche
 #: templates/tasks/task_list.html
 msgid "Show them"
 msgstr "Les afficher"
+
+msgid "No room"
+msgstr "Aucune pièce"
+
+msgid "Nobody yet"
+msgstr "Personne pour l'instant"
+
+msgid "Coming up"
+msgstr "À venir"
+
+msgid "Overdue"
+msgstr "En retard"
+
+msgid "In season"
+msgstr "De saison"
+
+msgid "Urgency"
+msgstr "Urgence"
+
+msgid "Person"
+msgstr "Personne"
+
+msgid "Calendar"
+msgstr "Calendrier"
+
+msgid "1 week"
+msgstr "1 semaine"
+
+msgid "2 weeks"
+msgstr "2 semaines"
+
+msgid "1 month"
+msgstr "1 mois"
+
+msgid "2 months"
+msgstr "2 mois"
+
+msgid "3 months"
+msgstr "3 mois"
+
+msgid "group by"
+msgstr "regrouper par"
+
+msgid "look ahead"
+msgstr "voir à l'avance"
+
+msgid "overdue"
+msgstr "en retard"
+
+msgid "coming up"
+msgstr "à venir"
+
+msgid "in season"
+msgstr "de saison"
+
+msgid "display preference"
+msgstr "préférence d'affichage"
+
+msgid "display preferences"
+msgstr "préférences d'affichage"
+
+msgid "Preferences saved."
+msgstr "Préférences enregistrées."
+
+msgid "Display preferences"
+msgstr "Préférences d'affichage"
+
+msgid "How the Today screen is laid out for you"
+msgstr "La disposition de l'écran Aujourd'hui pour vous"
+
+msgid "All items"
+msgstr "Tous les éléments"
+
+msgid "Everyone"
+msgstr "Tout le monde"
+
+msgid "Done by"
+msgstr "Fait par"
+
+msgid "Outcome"
+msgstr "Issue"
+
+msgid "Done or skipped"
+msgstr "Faites ou ignorées"
+
+msgid "From"
+msgstr "Du"
+
+msgid "To"
+msgstr "Au"
+
+msgid "Clear"
+msgstr "Effacer"
+
+msgid "Nothing matches."
+msgstr "Rien ne correspond."
+
+msgid "My home"
+msgstr "Mon accueil"
+
+msgid "All my homes"
+msgstr "Tous mes logements"
+
+msgid "All tasks"
+msgstr "Toutes les tâches"
+
+msgid "Nothing needs you here."
+msgstr "Rien ne vous attend ici."
+
+msgid "Assigned to me"
+msgstr "Qui me sont confiées"
+
+msgid "Overdue in the home"
+msgstr "En retard dans le logement"
+
+msgid "Nobody has taken these"
+msgstr "Personne ne s'en est chargé"
+
+msgid "Warranties ending soon"
+msgstr "Garanties qui se terminent bientôt"
+
+msgid "ends %(date)s"
+msgstr "se termine le %(date)s"
+
+msgid "Back"
+msgstr "Retour"
+
+msgid "How the Today screen is laid out for you. Other people of your homes keep their own."
+msgstr "La disposition de l'écran Aujourd'hui pour vous. Les autres personnes de vos logements gardent la leur."
+
+msgid "Group by"
+msgstr "Regrouper par"
+
+msgid "Sections"
+msgstr "Sections"
+
+msgid "Display"
+msgstr "Affichage"
+
+msgid "Nothing to do for now."
+msgstr "Rien à faire pour l'instant."
+
+#, python-format
+msgid "%(counter)s entry"
+msgid_plural "%(counter)s entries"
+msgstr[0] "%(counter)s entrée"
+msgstr[1] "%(counter)s entrées"
+
+#, python-format
+msgid "real cost: %(total)s %(currency)s, entered on %(counter)s entry"
+msgid_plural "real cost: %(total)s %(currency)s, entered on %(counter)s entries"
+msgstr[0] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrée"
+msgstr[1] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrées"

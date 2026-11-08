@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from housecairn.rooms.models import Item
 from housecairn.tasks import services
-from housecairn.tasks.models import Occurrence, Task
+from housecairn.tasks.models import DisplayPreference, Occurrence, Task
 
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
 
@@ -135,3 +135,12 @@ class CompletionForm(forms.ModelForm[Occurrence]):
 
 class PostponeForm(forms.Form):
     due_on = forms.DateField(label=_("New date"), widget=_DATE)
+
+
+class PreferencesForm(forms.ModelForm[DisplayPreference]):
+    """The Today screen, as one person wants it."""
+
+    class Meta:
+        model = DisplayPreference
+        fields = ["today_group", "horizon_days", "show_overdue", "show_upcoming", "show_season"]
+        widgets = {"today_group": forms.RadioSelect}

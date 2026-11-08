@@ -10,7 +10,7 @@ def nav_section(request: HttpRequest) -> str:
     match = getattr(request, "resolver_match", None)
     if match is None:
         return ""
-    if match.view_name == "index":
+    if match.view_name in ("index", "my-home", "display-preferences"):
         return HOME
     if match.namespace == "homes":
         return HOMES
@@ -39,10 +39,19 @@ def tasks_url(request: HttpRequest) -> str:
     return reverse("tasks")
 
 
+def home_url(request: HttpRequest) -> str:
+    """Address of the Home entry: My home when signed in, else the start page."""
+    user = getattr(request, "user", None)
+    if user is not None and user.is_authenticated:
+        return reverse("my-home")
+    return reverse("index")
+
+
 def shell(request: HttpRequest) -> dict[str, str]:
     """Context of the application shell: the current navigation entry and its entry addresses."""
     return {
         "nav_section": nav_section(request),
         "rooms_url": rooms_url(request),
         "tasks_url": tasks_url(request),
+        "home_url": home_url(request),
     }

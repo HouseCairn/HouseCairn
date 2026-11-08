@@ -5,6 +5,10 @@
   <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
   <h1>{% translate "Tasks" %}</h1>
   {% include "tasks/_undo.html" %}
+  <p class="small today-bar">
+    <a href="{% url 'tasks:today' home_id=home.id %}">{% translate "Today" %}</a> ·
+    <a href="{% url 'tasks:history' home_id=home.id %}">{% translate "History" %}</a>
+  </p>
   <form method="get" class="filter-row" role="search">
     <label class="visually-hidden" for="filter-status">{% translate "Show" %}</label>
     <select id="filter-status" name="status">
