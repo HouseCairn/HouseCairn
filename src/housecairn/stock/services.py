@@ -6,13 +6,14 @@ writing is checked here, by role: owners and members write, read-only reads.
 """
 
 import datetime
+import logging
 from collections.abc import Iterable
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
 from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied, SuspiciousOperation, ValidationError
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import UploadedFile
 from django.db import models, transaction
@@ -27,9 +28,12 @@ from housecairn.homes.models import Home
 from housecairn.rooms import conf, images
 from housecairn.rooms.models import Item, Room
 from housecairn.stock.models import Article, Movement, MovementKind, Supplier
+from housecairn.stock.storage import stock_storage
 
 if TYPE_CHECKING:
     from housecairn.tasks.models import Occurrence
+
+logger = logging.getLogger(__name__)
 
 AnyUser = User | AnonymousUser
 
@@ -198,24 +202,41 @@ def _check_label(upload: UploadedFile) -> images.ProcessedPhoto:
         raise ValidationError({"label": exc.messages}) from exc
 
 
-def _clear_label(article: Article) -> None:
-    if article.label:
-        article.label.delete(save=False)
+def _forget_label(article: Article) -> str:
+    """Detach the label from the article; return the name of the file it was."""
+    previous = article.label.name if article.label else ""
     article.label = ""
     article.label_content_type = ""
+    return previous
 
 
-def _write_label(article: Article, processed: images.ProcessedPhoto) -> None:
-    # A new label replaces the old one: one more file only when there was none.
+def _erase_label_file(name: str) -> None:
+    """Remove a label file from the disk. A failure is logged, never raised: it is leftover."""
+    if not name:
+        return
     try:
+        stock_storage.delete(name)
+    except (OSError, ValueError, SuspiciousOperation):
+        logger.error("Could not erase a label file of the stock: %s", name)
+
+
+def _write_label(article: Article, processed: images.ProcessedPhoto) -> str:
+    """Write the new label file; return the name of the one it replaces ("" if none).
+
+    The old file is not touched here: it goes once the article is saved, so that a save
+    that fails leaves the old label in place, and the new file is removed.
+    """
+    previous = article.label.name if article.label else ""
+    try:
+        # A new label replaces the old one: one more file only when there was none.
         with quotas.room_for(
-            article.home, size=len(processed.data), new_files=0 if article.label else 1
+            article.home, size=len(processed.data), new_files=0 if previous else 1
         ):
-            _clear_label(article)
             article.label.save(processed.extension, ContentFile(processed.data), save=False)
     except ValidationError as exc:
         raise ValidationError({"label": exc.messages}) from exc
     article.label_content_type = processed.content_type
+    return previous
 
 
 # ---------- articles ----------
@@ -254,9 +275,14 @@ def create_article(
     processed = _check_label(label) if label is not None else None
     if processed is not None:
         _write_label(article, processed)
-    article.save()
-    article.compatible_items.set(items)
-    article.rooms.set(chosen_rooms)
+    try:
+        article.save()
+        article.compatible_items.set(items)
+        article.rooms.set(chosen_rooms)
+    except Exception:
+        if processed is not None:
+            _erase_label_file(article.label.name)
+        raise
     return article
 
 
@@ -278,15 +304,22 @@ def update_article(
     items = None if compatible_items is None else _check_items(article.home, compatible_items)
     chosen_rooms = None if rooms is None else _check_rooms(article.home, rooms)
     processed = _check_label(label) if label is not None else None
+    previous = ""
     if processed is not None:
-        _write_label(article, processed)
+        previous = _write_label(article, processed)
     elif clear_label:
-        _clear_label(article)
-    article.save()
-    if items is not None:
-        article.compatible_items.set(items)
-    if chosen_rooms is not None:
-        article.rooms.set(chosen_rooms)
+        previous = _forget_label(article)
+    try:
+        article.save()
+        if items is not None:
+            article.compatible_items.set(items)
+        if chosen_rooms is not None:
+            article.rooms.set(chosen_rooms)
+    except Exception:
+        if processed is not None:
+            _erase_label_file(article.label.name)
+        raise
+    _erase_label_file(previous)
     return article
 
 
@@ -354,7 +387,18 @@ def _append(
     )
     if occurred_on is not None:
         movement.occurred_on = occurred_on
-    movement.full_clean()
+    try:
+        movement.full_clean()
+    except ValidationError as exc:
+        # `delta` is worked out, not typed: a count too far from the stock to be recorded
+        # is the person's quantity to correct.
+        errors = exc.message_dict
+        if "delta" in errors:
+            del errors["delta"]
+            errors.setdefault("quantity", []).append(
+                _("The difference with the stock is too large to be recorded.")
+            )
+        raise ValidationError(errors) from exc
     movement.save()
     return movement
 
