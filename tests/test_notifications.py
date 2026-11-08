@@ -1,5 +1,6 @@
 """Notification channels: sealed addresses, outgoing calls, isolation, API (docs/adr/0043)."""
 
+import contextvars
 import datetime
 import http.server
 import ipaddress
@@ -7,6 +8,7 @@ import json
 import logging
 import re
 import socket
+import ssl
 import threading
 import time
 from collections.abc import Callable, Iterator
@@ -16,9 +18,15 @@ from typing import Any
 import apprise
 import pytest
 import requests
+from apprise.apprise import any_abandoned_calls_still_running
 from apprise.plugins.discord import NotifyDiscord
 from apprise.plugins.gotify import NotifyGotify
+from apprise.plugins.matrix import NotifyMatrix
 from apprise.plugins.telegram import NotifyTelegram
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.x509.oid import NameOID
 from django.core.exceptions import PermissionDenied
 from django.db import connection
 from django.test import Client
@@ -83,6 +91,49 @@ def spy_refusals(monkeypatch: pytest.MonkeyPatch) -> list[str]:
 
     monkeypatch.setattr(outbound, "forbidden_address", spy)
     return refused
+
+
+class Drip:
+    """What a dripping test server knows: its addresses and its connections still open."""
+
+    def __init__(self) -> None:
+        self.lock = threading.Lock()
+        self.stop = threading.Event()
+        self.open = 0
+        self.served = 0
+        self.urls: list[str] = []
+
+
+def self_signed(folder: Path) -> tuple[Path, Path]:
+    """A certificate for 127.0.0.1 and its key, written in `folder`."""
+    key = ec.generate_private_key(ec.SECP256R1())
+    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "127.0.0.1")])
+    now = datetime.datetime.now(datetime.UTC)
+    certificate = (
+        x509.CertificateBuilder()
+        .subject_name(name)
+        .issuer_name(name)
+        .public_key(key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(now - datetime.timedelta(minutes=5))
+        .not_valid_after(now + datetime.timedelta(hours=1))
+        .add_extension(
+            x509.SubjectAlternativeName([x509.IPAddress(ipaddress.ip_address("127.0.0.1"))]),
+            critical=False,
+        )
+        .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
+        .sign(key, hashes.SHA256())
+    )
+    cert_path, key_path = folder / "server.pem", folder / "server.key"
+    cert_path.write_bytes(certificate.public_bytes(serialization.Encoding.PEM))
+    key_path.write_bytes(
+        key.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.PKCS8,
+            serialization.NoEncryption(),
+        )
+    )
+    return cert_path, key_path
 
 
 def signed_in(client: Client, user: User) -> Client:
@@ -393,6 +444,131 @@ class TestOutgoingCalls:
         assert reminders.dispatch(timezone.now() + datetime.timedelta(days=1)) == 1
         assert time.monotonic() - started < 3
         assert Delivery.objects.get().sent is False
+
+    @pytest.fixture
+    def dripping_server(self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Iterator[Drip]:
+        """Announces a body of a megabyte and sends one byte of it a second, for ever: each
+        wait of the socket is short, so only the end of the send can stop the plugin."""
+        drip = Drip()
+
+        class Dripping(http.server.BaseHTTPRequestHandler):
+            def do_POST(self) -> None:
+                self.rfile.read(int(self.headers.get("Content-Length") or 0))
+                with drip.lock:
+                    drip.open += 1
+                    drip.served += 1
+                try:
+                    self.wfile.write(b"HTTP/1.1 200 OK\r\nContent-Length: 1000000\r\n\r\n")
+                    while not drip.stop.wait(1.0):
+                        self.wfile.write(b" ")
+                        self.wfile.flush()
+                except OSError:
+                    pass  # the client is gone
+                finally:
+                    with drip.lock:
+                        drip.open -= 1
+
+            def log_message(self, *args: Any) -> None:
+                pass
+
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Dripping)
+        server.daemon_threads = True
+        certificate, key = self_signed(tmp_path)
+        context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        context.load_cert_chain(certificate, key)
+        tls = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Dripping)
+        tls.daemon_threads = True
+        tls.socket = context.wrap_socket(tls.socket, server_side=True)
+        for each in (server, tls):
+            threading.Thread(target=each.serve_forever, daemon=True).start()
+        # The certificate of the test server is the only one trusted (requests reads it).
+        monkeypatch.setenv("REQUESTS_CA_BUNDLE", str(certificate))
+        monkeypatch.setattr(outbound, "forbidden_address", lambda address: False)
+        monkeypatch.setattr(outbound, "SEND_SECONDS", 1.0, raising=False)
+        drip.urls = [
+            f"gotify://127.0.0.1:{server.server_port}/token",
+            f"gotifys://127.0.0.1:{tls.server_port}/token",
+        ]
+        try:
+            yield drip
+        finally:
+            drip.stop.set()
+            for each in (server, tls):
+                each.shutdown()
+                each.server_close()
+
+    def test_a_server_that_drips_keeps_no_thread_after_the_send(
+        self, dripping_server: Drip
+    ) -> None:
+        """Three sends at once, in clear and over TLS: each one returns within the total
+        delay, and ten seconds after they started, no thread of a plugin still runs and no
+        connection is left open."""
+        started = time.monotonic()
+        urls = [*dripping_server.urls, dripping_server.urls[0]]
+        results: list[bool] = []
+        sends = [
+            threading.Thread(
+                target=lambda url=url: results.append(
+                    outbound.send(outbound.seal(url), title="t", body="b")
+                )
+            )
+            for url in urls
+        ]
+        for each in sends:
+            each.start()
+        for each in sends:
+            each.join(5)
+        assert results == [False, False, False]
+        assert time.monotonic() - started < 3
+        assert dripping_server.served == 3  # each one reached the server, TLS included
+        while time.monotonic() - started < 10 and (
+            dripping_server.open or any_abandoned_calls_still_running()
+        ):
+            time.sleep(0.1)
+        assert dripping_server.open == 0
+        assert not any_abandoned_calls_still_running()
+
+    def test_a_send_that_ended_opens_nothing_more(self) -> None:
+        """What the thread of a plugin still does after the end of its send is refused: a
+        new socket, a new name, a new connection."""
+        with outbound.guarded():
+            context = contextvars.copy_context()
+            sock = context.run(socket.socket)
+        with pytest.raises(OSError, match="ended"):
+            context.run(socket.socket)
+        with pytest.raises(OSError, match="ended"):
+            context.run(socket.getaddrinfo, "example.com", 443)
+        with pytest.raises(OSError, match="ended"):
+            context.run(sock.connect, ("192.0.2.1", 443))
+        sock.close()
+
+    def test_matrix_logs_out_inside_the_guard(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """The Matrix plugin logs out when it is garbage collected, wherever that happens:
+        the send does it while the guard still checks names, then drops the token."""
+        guarded_at_logout: list[bool] = []
+
+        def log_out(self: Any) -> bool:
+            guarded_at_logout.append(outbound._guard.get() is not None)
+            return True
+
+        def logged_in(self: Any, *args: Any, **kwargs: Any) -> bool:
+            self.access_token = "session"
+            return True
+
+        monkeypatch.setattr(NotifyMatrix, "_logout", log_out)
+        monkeypatch.setattr(NotifyMatrix, "send", logged_in)
+        plugins: list[Any] = []
+        real = outbound._plugin
+
+        def keep(url: str) -> Any:
+            plugins.append(real(url))
+            return plugins[-1]
+
+        monkeypatch.setattr(outbound, "_plugin", keep)
+        sealed = outbound.seal("matrixs://user:pass@matrix.example.com/!room:example.com")
+        assert outbound.send(sealed, title="t", body="b") is True
+        assert guarded_at_logout == [True]
+        assert plugins[0].access_token is None
 
     def test_certificates_are_verified_whatever_the_address_says(self) -> None:
         plugin = outbound._plugin("gotifys://gotify.example.com/token?verify=no")

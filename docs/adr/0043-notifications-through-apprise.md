@@ -66,10 +66,10 @@ removed since is not called.
 `requests` or `smtplib` itself. What the instance controls, and how:
 
 - *Names.* While a message is sent, a guard (a context variable, so it follows the thread
-  of the send) wraps `socket.getaddrinfo`. Every address a name resolves to is checked, and
-  the connection is made to an address of that same answer: there is no second resolution,
-  hence no DNS rebinding between the check and the call. Outside a send, resolution is left
-  as it was.
+  of the send) wraps `socket.getaddrinfo`, and records the sockets of the send (see
+  *Delays*). Every address a name resolves to is checked, and the connection is made to an
+  address of that same answer: there is no second resolution, hence no DNS rebinding
+  between the check and the call. Outside a send, resolution is left as it was.
 - *Addresses.* The same rule as the test of an identity provider (ADR 0041): loopback,
   link-local, multicast, unspecified and reserved addresses are refused, an IPv6 address
   that carries an IPv4 one is judged by that IPv4 address, and an address typed as is in
@@ -84,8 +84,17 @@ removed since is not called.
   message to one channel gives up after eight seconds in all (`notify(timeout=8)`): a
   server that answers one byte at a time cannot hold the test button, which runs in a web
   worker, nor the background run, which sends one message after the other. Past that
-  delay the message counts as not sent; Apprise stops waiting for the thread of the plugin,
-  which ends when the server closes the connection or stays silent for five seconds.
+  delay the message counts as not sent. Apprise only stops waiting for the thread of the
+  plugin, which would go on as long as the server sends a byte now and then; so the guard
+  also records every socket created for the send (TLS ones included), and shuts them all
+  down when the send ends. The thread then reads the end of the stream and finishes, and
+  it can open no new socket, resolve no new name and make no new connection: once its
+  eight seconds are over (and the tenth of a second of grace Apprise adds), a send holds
+  no thread and no connection. Only a name resolution already under way when the send
+  ends can last longer, within the timeouts of the resolver of the system, whatever the
+  service called does. The Matrix plugin logs out when it is garbage collected, in
+  whatever thread drops it: the send logs it out itself, inside the guard and within the
+  eight seconds, then forgets the session, so nothing is sent outside the guard.
   `?retry=` and `?wait=` are ignored: a channel is called once per message.
 - *What the person sees.* The test button sends a real message and answers one of two
   fixed sentences, sent or not sent, never the service's answer or error. Five tests a
