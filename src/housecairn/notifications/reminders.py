@@ -1,8 +1,10 @@
 """Which reminders are due, and sending each one once (docs/adr/0043).
 
 `dispatch` runs in the background worker every few minutes (docs/adr/0008). For each open
-occurrence with a due date, the people to remind are the person in charge of the task, or,
-when nobody is, every member of the home who may write and has a channel on. A person's
+occurrence with a due date, the person to remind is the one in charge of the task, if their
+account is active, they may still write in the home and they have a channel on; otherwise
+(nobody in charge, a reader, no channel, an inactive account) every member of the home who
+may write, with an active account and a channel on. Readers never are. A person's
 first reminder goes out `days_before` days before the due date, from `send_at` in their
 time zone; follow-ups come every `FOLLOW_UP_DAYS[priority]` days while the occurrence stays
 open. Postponing moves the due date, so the reminders start again from the new date; done
@@ -122,10 +124,12 @@ def _deliver(
 def _recipients(
     occurrence: Occurrence, writers: dict[Any, set[Any]], reachable: set[Any]
 ) -> set[Any]:
+    """The person in charge if they may write and have a channel on; otherwise everyone
+    of the home who may and has. `reachable` holds active accounts only."""
     allowed = writers.get(occurrence.home_id, set()) & reachable
     assignee = occurrence.task.assignee_id
-    if assignee is not None:
-        return {assignee} & allowed
+    if assignee in allowed:
+        return {assignee}
     return allowed
 
 

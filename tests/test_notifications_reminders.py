@@ -302,6 +302,55 @@ class TestRecipients:
             "bob@example.com",
         }
 
+    @pytest.mark.parametrize("case", ["reader", "no channel", "inactive"])
+    def test_a_person_in_charge_who_cannot_be_reminded_hands_over_to_the_writers(
+        self,
+        alice: User,
+        bob: User,
+        make_user: Callable[..., User],
+        alice_home: Home,
+        make_task: Callable[..., Occurrence],
+        due: datetime.date,
+        add_member: Callable[[Home, User, Role], Membership],
+        outbox: Any,
+        case: str,
+    ) -> None:
+        """A reader, someone without a channel or an inactive account: the writers get it."""
+        carol = make_user("carol@example.com")
+        add_member(alice_home, bob, Role.MEMBER)
+        add_member(alice_home, carol, Role.READ_ONLY if case == "reader" else Role.MEMBER)
+        reachable(alice, days_before=0)
+        reachable(bob, days_before=0)
+        if case != "no channel":
+            reachable(carol, days_before=0)
+        if case == "inactive":
+            User.objects.filter(pk=carol.pk).update(is_active=False)
+        make_task()
+        Task.objects.update(assignee=carol)  # a reader cannot be chosen: forced here
+        assert reminders.dispatch(at(due, 8)) == 2
+        assert set(Delivery.objects.values_list("user__email", flat=True)) == {
+            "alice@example.com",
+            "bob@example.com",
+        }
+
+    def test_an_inactive_writer_is_not_reminded(
+        self,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        make_task: Callable[..., Occurrence],
+        due: datetime.date,
+        add_member: Callable[[Home, User, Role], Membership],
+        outbox: Any,
+    ) -> None:
+        add_member(alice_home, bob, Role.MEMBER)
+        reachable(alice, days_before=0)
+        reachable(bob, days_before=0)
+        User.objects.filter(pk=bob.pk).update(is_active=False)
+        make_task()
+        assert reminders.dispatch(at(due, 8)) == 1
+        assert Delivery.objects.get().user == alice
+
     def test_someone_who_left_the_home_is_not_reminded(
         self,
         alice: User,

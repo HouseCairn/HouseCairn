@@ -103,9 +103,11 @@ instance. It is in the language of the person. The text is sent as plain text: A
 escapes it for the format of each channel (HTML or Markdown, as the service expects), so a
 title cannot change the markup of the message. The title of a message is fixed.
 
-**Who is reminded.** The person in charge of the task, if they may still write in the
-home; otherwise every member of the home who may write and has a channel on. Readers are
-never reminded, nor anyone outside the home.
+**Who is reminded.** The person in charge of the task, if their account is active, they
+may still write in the home and they have a channel on. Otherwise (nobody in charge, or a
+person in charge who became a reader, has no channel on or whose account is inactive),
+every member of the home who may write, with an active account and a channel on. Readers
+are never reminded, nor inactive accounts, nor anyone outside the home.
 
 **When.** The first reminder goes out `days_before` days before the due date (1 by
 default, 0 to 30), from `send_at` (08:00 by default) in the time zone of the person, or

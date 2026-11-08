@@ -44,9 +44,10 @@ network are accepted, for a self-hosted ntfy or Gotify.
 ## Choose when
 
 A reminder says the title of the task, the home, the due date and a link: nothing else of
-the task leaves HouseCairn. It goes to the person in charge of the task, or, when nobody
-is, to every member of the home who may change it and has a channel. A reader of the home
-receives nothing.
+the task leaves HouseCairn. It goes to the person in charge of the task. When nobody is,
+or when that person cannot receive it (they only read the home now, have no channel on,
+or their account is deactivated), it goes to every member of the home who may change it
+and has a channel on. A reader of the home receives nothing.
 
 - The first reminder comes one day before the due date by default, from 08:00 in your
   time zone. Change both in **Reminders**.
