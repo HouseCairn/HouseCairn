@@ -80,6 +80,11 @@ SCREENS = [
     ("task-form", "{home}tasks/new/", True),
     ("task-edit", "{task}edit/", True),
     ("task-postpone", "{task}postpone/", True),
+    # Today, My home, History and the display preferences (docs/adr/0037).
+    ("today", "{home}today/", True),
+    ("history", "{home}history/", True),
+    ("my-home", "/me/", True),
+    ("display-preferences", "/me/preferences/", True),
     ("task-files", "{task}attachments/new/", True),
 ]
 NOT_FOUND = {"not-found", "invitation-invalid"}

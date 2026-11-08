@@ -41,6 +41,16 @@ web interface: every request only sees the homes of its user
   oldest date first, the arrears on top, and the open ones hidden by their task
   (masked until N days before) only appear with `include_hidden=1`. The scopes are
   the same as for rooms: `read` to read, `write` to change, and a role that writes.
+- **Today, My home, History and display preferences**
+  ([ADR 0037](../adr/0037-today-my-home-history-and-display-preferences.md)):
+  `GET /api/v1/homes/<home id>/today/` returns the sections of the Today screen as the
+  display preferences of the caller lay them out; `GET /api/v1/me/home/` (with an optional
+  `home`) what concerns the caller in each home; `GET` and `PATCH
+  /api/v1/me/display-preferences/` the layout (`today_group`, `horizon_days`,
+  `show_overdue`, `show_upcoming`, `show_season`), which only its owner can read or
+  change. History is the occurrence list with `status=closed&ordering=recent` and the
+  filters `contractor`, `completed_by`, `q`, `closed_after` and `closed_before`;
+  `GET .../occurrences/cost/` gives the real cost entered on the same selection.
 - **Stock** of a home: `/api/v1/homes/<home id>/articles/`, `.../suppliers/` and
   `.../movements/` ([ADR 0038](../adr/0038-stock-suppliers-and-movements.md)). Only
   `name` is required to create an article; its `quantity` is read-only, the sum of its

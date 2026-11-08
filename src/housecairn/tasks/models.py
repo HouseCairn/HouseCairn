@@ -15,6 +15,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy
 
+from housecairn.core.models import BaseModel
 from housecairn.homes.models import HomeOwnedModel
 from housecairn.rooms.models import Item, Room, notes_field
 from housecairn.tasks import recurrence
@@ -249,6 +250,46 @@ class Occurrence(HomeOwnedModel):
 
     def is_overdue(self, today: datetime.date) -> bool:
         return self.is_open and self.due_on is not None and self.due_on < today
+
+
+class TodayGroup(models.TextChoices):
+    URGENCY = "urgency", _("Urgency")
+    ROOM = "room", _("Room")
+    PERSON = "person", _("Person")
+    CALENDAR = "calendar", _("Calendar")
+
+
+class Horizon(models.IntegerChoices):
+    WEEK = 7, _("1 week")
+    TWO_WEEKS = 14, _("2 weeks")
+    MONTH = 30, _("1 month")
+    TWO_MONTHS = 60, _("2 months")
+    QUARTER = 90, _("3 months")
+
+
+class DisplayPreference(BaseModel):
+    """How a person wants the Today screen laid out (docs/adr/0037).
+
+    It belongs to the person, not to a home: one setting for every home they open.
+    A person who never changed anything has no row; the defaults below apply.
+    """
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="display_preference"
+    )
+    today_group = models.CharField(
+        _("group by"), max_length=10, choices=TodayGroup.choices, default=TodayGroup.URGENCY
+    )
+    horizon_days = models.PositiveSmallIntegerField(
+        _("look ahead"), choices=Horizon.choices, default=Horizon.WEEK
+    )
+    show_overdue = models.BooleanField(_("overdue"), default=True)
+    show_upcoming = models.BooleanField(_("coming up"), default=True)
+    show_season = models.BooleanField(_("in season"), default=True)
+
+    class Meta:
+        verbose_name = _("display preference")
+        verbose_name_plural = _("display preferences")
 
 
 def attachment_path(attachment: "Attachment", filename: str) -> str:

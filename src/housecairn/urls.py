@@ -25,6 +25,14 @@ urlpatterns = [
     # Tasks of a home (docs/adr/0031); /tasks/ is the navigation entry.
     path("h/<uuid:home_id>/", include("housecairn.tasks.urls")),
     path("tasks/", task_views.EntryView.as_view(), name="tasks"),
+    # My home (what concerns the person, in every home) and their display preferences
+    # (docs/adr/0037).
+    path("me/", task_views.MyHomeView.as_view(), name="my-home"),
+    path(
+        "me/preferences/",
+        task_views.PreferencesView.as_view(),
+        name="display-preferences",
+    ),
     # Stock items, suppliers and movements of a home (docs/adr/0038); /stock/ is the entry.
     path("h/<uuid:home_id>/", include("housecairn.stock.urls")),
     path("stock/", stock_views.EntryView.as_view(), name="stock"),

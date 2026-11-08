@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 14:32+0000\n"
+"POT-Creation-Date: 2026-11-08 14:48+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -339,7 +339,7 @@ msgstr "Compte modifié dans le site d'administration"
 msgid "Account deleted in the administration site"
 msgstr "Compte supprimé dans le site d'administration"
 
-#: audit/models.py templates/shell/navigation.html
+#: audit/models.py templates/shell/navigation.html templates/tasks/my_home.html
 msgid "Home"
 msgstr "Accueil"
 
@@ -1260,7 +1260,8 @@ msgstr "(aucun)"
 msgid "Rooms"
 msgstr "Pièces"
 
-#: rooms/forms.py tasks/forms.py templates/tasks/task_list.html
+#: rooms/forms.py tasks/forms.py tasks/models.py templates/tasks/history.html
+#: templates/tasks/task_list.html
 msgid "Room"
 msgstr "Pièce"
 
@@ -1754,6 +1755,32 @@ msgstr "Le fournisseur disparaît de l'article."
 msgid "Supplier deleted."
 msgstr "Fournisseur supprimé."
 
+#: tasks/agenda.py
+msgid "No room"
+msgstr "Aucune pièce"
+
+#: tasks/agenda.py
+msgid "Nobody yet"
+msgstr "Personne pour l'instant"
+
+#: tasks/agenda.py templates/tasks/_due.html templates/tasks/history.html
+#: templates/tasks/my_home.html templates/tasks/task_list.html
+#: templates/tasks/today.html
+msgid "Today"
+msgstr "Aujourd'hui"
+
+#: tasks/agenda.py
+msgid "Coming up"
+msgstr "À venir"
+
+#: tasks/agenda.py
+msgid "Overdue"
+msgstr "En retard"
+
+#: tasks/agenda.py
+msgid "In season"
+msgstr "De saison"
+
 #: tasks/apps.py templates/rooms/item_detail.html
 #: templates/rooms/room_detail.html templates/shell/navigation.html
 #: templates/tasks/choose_home.html templates/tasks/task_detail.html
@@ -1769,7 +1796,7 @@ msgstr ""
 "Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou WebP, "
 "ou un fichier PDF, texte, Word, Excel ou OpenDocument."
 
-#: tasks/forms.py
+#: tasks/forms.py templates/tasks/history.html
 msgid "Item"
 msgstr "Élément"
 
@@ -1862,7 +1889,8 @@ msgstr "ans"
 msgid "Planned"
 msgstr "Prévue"
 
-#: tasks/models.py templates/tasks/task_detail.html
+#: tasks/models.py templates/tasks/_occurrence_row.html
+#: templates/tasks/history.html templates/tasks/task_detail.html
 #: templates/tasks/task_list.html
 msgctxt "task"
 msgid "Done"
@@ -1872,7 +1900,7 @@ msgstr "Fait"
 msgid "Postponed"
 msgstr "Reportée"
 
-#: tasks/models.py
+#: tasks/models.py templates/tasks/history.html
 msgid "Skipped"
 msgstr "Ignorée"
 
@@ -1987,6 +2015,66 @@ msgstr "occurrence"
 #: tasks/models.py
 msgid "occurrences"
 msgstr "occurrences"
+
+#: tasks/models.py
+msgid "Urgency"
+msgstr "Urgence"
+
+#: tasks/models.py
+msgid "Person"
+msgstr "Personne"
+
+#: tasks/models.py
+msgid "Calendar"
+msgstr "Calendrier"
+
+#: tasks/models.py
+msgid "1 week"
+msgstr "1 semaine"
+
+#: tasks/models.py
+msgid "2 weeks"
+msgstr "2 semaines"
+
+#: tasks/models.py
+msgid "1 month"
+msgstr "1 mois"
+
+#: tasks/models.py
+msgid "2 months"
+msgstr "2 mois"
+
+#: tasks/models.py
+msgid "3 months"
+msgstr "3 mois"
+
+#: tasks/models.py
+msgid "group by"
+msgstr "regrouper par"
+
+#: tasks/models.py
+msgid "look ahead"
+msgstr "voir à l'avance"
+
+#: tasks/models.py
+msgid "overdue"
+msgstr "en retard"
+
+#: tasks/models.py
+msgid "coming up"
+msgstr "à venir"
+
+#: tasks/models.py
+msgid "in season"
+msgstr "de saison"
+
+#: tasks/models.py
+msgid "display preference"
+msgstr "préférence d'affichage"
+
+#: tasks/models.py
+msgid "display preferences"
+msgstr "préférences d'affichage"
 
 #: tasks/models.py
 msgid "attachment"
@@ -2134,6 +2222,10 @@ msgstr "Tâche reportée."
 #: tasks/views.py
 msgid "Details saved."
 msgstr "Détails enregistrés."
+
+#: tasks/views.py
+msgid "Preferences saved."
+msgstr "Préférences enregistrées."
 
 #: tasks/views.py
 msgid "Some files were added."
@@ -2358,7 +2450,8 @@ msgstr "compte supprimé ou système"
 msgid "Nothing recorded yet."
 msgstr "Rien n'est encore enregistré."
 
-#: templates/audit/_pager.html templates/tasks/task_list.html
+#: templates/audit/_pager.html templates/tasks/history.html
+#: templates/tasks/task_list.html
 msgid "Pages"
 msgstr "Pages"
 
@@ -2407,6 +2500,15 @@ msgstr "Voir mes logements"
 #: templates/instance/overview.html
 msgid "Settings"
 msgstr "Réglages"
+
+#: templates/core/more.html templates/tasks/my_home.html
+#: templates/tasks/preferences.html
+msgid "Display preferences"
+msgstr "Préférences d'affichage"
+
+#: templates/core/more.html
+msgid "How the Today screen is laid out for you"
+msgstr "La disposition de l'écran Aujourd'hui pour vous"
 
 #: templates/core/more.html
 msgid "Account security"
@@ -2584,7 +2686,7 @@ msgstr ""
 
 #: templates/homes/home_form.html templates/homes/home_list.html
 #: templates/rooms/choose_home.html templates/stock/choose_home.html
-#: templates/tasks/choose_home.html
+#: templates/tasks/choose_home.html templates/tasks/my_home.html
 msgid "Add a home"
 msgstr "Ajouter un logement"
 
@@ -2692,7 +2794,8 @@ msgstr ""
 #: templates/instance/settings.html templates/rooms/item_form.html
 #: templates/rooms/room_form.html templates/rooms/room_memory_form.html
 #: templates/stock/article_form.html templates/stock/supplier_form.html
-#: templates/tasks/completion_form.html templates/tasks/task_form.html
+#: templates/tasks/completion_form.html templates/tasks/preferences.html
+#: templates/tasks/task_form.html
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -3163,7 +3266,7 @@ msgid "Choose the home whose rooms you want to open."
 msgstr "Choisissez le logement dont vous voulez ouvrir les pièces."
 
 #: templates/rooms/choose_home.html templates/stock/choose_home.html
-#: templates/tasks/choose_home.html
+#: templates/tasks/choose_home.html templates/tasks/my_home.html
 msgid "You have no home to open yet."
 msgstr "Vous n'avez pas encore de logement à ouvrir."
 
@@ -3225,7 +3328,7 @@ msgid "No photo yet."
 msgstr "Aucune photo pour l'instant."
 
 #: templates/rooms/item_detail.html templates/rooms/room_detail.html
-#: templates/tasks/_due.html
+#: templates/tasks/_due.html templates/tasks/today.html
 msgid "No date"
 msgstr "Sans date"
 
@@ -3235,6 +3338,7 @@ msgstr "Aucune tâche pour l'instant."
 
 #: templates/rooms/item_detail.html templates/rooms/room_detail.html
 #: templates/tasks/task_form.html templates/tasks/task_list.html
+#: templates/tasks/today.html
 msgid "Add a task"
 msgstr "Ajouter une tâche"
 
@@ -3360,7 +3464,7 @@ msgid "Search rooms and items"
 msgstr "Rechercher des pièces et des éléments"
 
 #: templates/rooms/room_list.html templates/rooms/search.html
-#: templates/stock/article_list.html
+#: templates/stock/article_list.html templates/tasks/history.html
 msgid "Search"
 msgstr "Rechercher"
 
@@ -3582,10 +3686,6 @@ msgid_plural "%(counter)s days late"
 msgstr[0] "%(counter)s jour de retard"
 msgstr[1] "%(counter)s jours de retard"
 
-#: templates/tasks/_due.html
-msgid "Today"
-msgstr "Aujourd'hui"
-
 #: templates/tasks/_undo.html
 msgid "Marked done."
 msgstr "Marquée comme faite."
@@ -3625,9 +3725,160 @@ msgstr "Détails de ce qui a été fait"
 msgid "The task, its history and its files disappear from the screens."
 msgstr "La tâche, son historique et ses fichiers disparaissent des écrans."
 
+#: templates/tasks/history.html templates/tasks/my_home.html
+#: templates/tasks/task_detail.html templates/tasks/task_list.html
+#: templates/tasks/today.html
+msgid "History"
+msgstr "Historique"
+
+#: templates/tasks/history.html
+msgid "Filters"
+msgstr "Filtres"
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "All rooms"
+msgstr "Toutes les pièces"
+
+#: templates/tasks/history.html
+msgid "All items"
+msgstr "Tous les éléments"
+
+#: templates/tasks/history.html templates/tasks/task_detail.html
+msgid "Contractor"
+msgstr "Intervenant"
+
+#: templates/tasks/history.html
+msgid "Everyone"
+msgstr "Tout le monde"
+
+#: templates/tasks/history.html
+msgid "Done by"
+msgstr "Fait par"
+
+#: templates/tasks/history.html
+msgid "Outcome"
+msgstr "Résultat"
+
+#: templates/tasks/history.html
+msgid "Done or skipped"
+msgstr "Faites ou ignorées"
+
+#: templates/tasks/history.html
+msgid "From"
+msgstr "Du"
+
+#: templates/tasks/history.html
+msgid "To"
+msgstr "Au"
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Filter"
+msgstr "Filtrer"
+
+#: templates/tasks/history.html
+msgid "Clear"
+msgstr "Effacer"
+
+#: templates/tasks/history.html
+#, python-format
+msgid "%(counter)s entry"
+msgid_plural "%(counter)s entries"
+msgstr[0] "%(counter)s entrée"
+msgstr[1] "%(counter)s entrées"
+
+#: templates/tasks/history.html
+#, python-format
+msgid "real cost: %(total)s %(currency)s, entered on %(counter)s entry"
+msgid_plural ""
+"real cost: %(total)s %(currency)s, entered on %(counter)s entries"
+msgstr[0] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrée"
+msgstr[1] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrées"
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Previous"
+msgstr "Précédent"
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+#, python-format
+msgid "Page %(number)s of %(total)s"
+msgstr "Page %(number)s sur %(total)s"
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Next"
+msgstr "Suivant"
+
+#: templates/tasks/history.html
+msgid "Nothing matches."
+msgstr "Rien ne correspond."
+
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Nothing done yet."
+msgstr "Rien de fait pour l'instant."
+
+#: templates/tasks/my_home.html
+msgid "My home"
+msgstr "Mon accueil"
+
+#: templates/tasks/my_home.html
+msgid "All my homes"
+msgstr "Tous mes logements"
+
+#: templates/tasks/my_home.html templates/tasks/task_list.html
+msgid "Show"
+msgstr "Afficher"
+
+#: templates/tasks/my_home.html templates/tasks/today.html
+msgid "All tasks"
+msgstr "Toutes les tâches"
+
+#: templates/tasks/my_home.html
+msgid "Nothing needs you here."
+msgstr "Rien ne vous attend ici."
+
+#: templates/tasks/my_home.html
+msgid "Assigned to me"
+msgstr "Qui me sont confiées"
+
+#: templates/tasks/my_home.html
+msgid "Overdue in the home"
+msgstr "En retard dans le logement"
+
+#: templates/tasks/my_home.html
+msgid "Nobody has taken these"
+msgstr "Personne ne s'en est chargé"
+
+#: templates/tasks/my_home.html
+msgid "Warranties ending soon"
+msgstr "Garanties qui se terminent bientôt"
+
+#: templates/tasks/my_home.html
+#, python-format
+msgid "ends %(date)s"
+msgstr "se termine le %(date)s"
+
 #: templates/tasks/postpone_form.html templates/tasks/task_detail.html
 msgid "Postpone"
 msgstr "Reporter"
+
+#: templates/tasks/preferences.html
+msgid "Back"
+msgstr "Retour"
+
+#: templates/tasks/preferences.html
+msgid ""
+"How the Today screen is laid out for you. Other people of your homes keep "
+"their own."
+msgstr ""
+"La disposition de l'écran Aujourd'hui pour vous. Les autres personnes de vos "
+"logements gardent la leur."
+
+#: templates/tasks/preferences.html
+msgid "Group by"
+msgstr "Regrouper par"
+
+#: templates/tasks/preferences.html
+msgid "Sections"
+msgstr "Sections"
 
 #: templates/tasks/task_detail.html
 msgid "High priority"
@@ -3703,20 +3954,12 @@ msgid "Material budget"
 msgstr "Budget matériel"
 
 #: templates/tasks/task_detail.html
-msgid "Contractor"
-msgstr "Intervenant"
-
-#: templates/tasks/task_detail.html
 msgid "Add photos or files"
 msgstr "Ajouter des photos ou des fichiers"
 
 #: templates/tasks/task_detail.html
 msgid "No file yet."
 msgstr "Aucun fichier pour l'instant."
-
-#: templates/tasks/task_detail.html
-msgid "History"
-msgstr "Historique"
 
 #: templates/tasks/task_form.html
 msgid "Who"
@@ -3735,41 +3978,12 @@ msgid "Delete the task"
 msgstr "Supprimer la tâche"
 
 #: templates/tasks/task_list.html
-msgid "Show"
-msgstr "Afficher"
-
-#: templates/tasks/task_list.html
 msgid "To do"
 msgstr "À faire"
 
 #: templates/tasks/task_list.html
-msgid "All rooms"
-msgstr "Toutes les pièces"
-
-#: templates/tasks/task_list.html
-msgid "Filter"
-msgstr "Filtrer"
-
-#: templates/tasks/task_list.html
-msgid "Previous"
-msgstr "Précédent"
-
-#: templates/tasks/task_list.html
-#, python-format
-msgid "Page %(number)s of %(total)s"
-msgstr "Page %(number)s sur %(total)s"
-
-#: templates/tasks/task_list.html
-msgid "Next"
-msgstr "Suivant"
-
-#: templates/tasks/task_list.html
 msgid "Nothing to do. Add a task to start."
 msgstr "Rien à faire. Ajoutez une tâche pour commencer."
-
-#: templates/tasks/task_list.html
-msgid "Nothing done yet."
-msgstr "Rien de fait pour l'instant."
 
 #: templates/tasks/task_list.html
 #, python-format
@@ -3781,3 +3995,11 @@ msgstr[1] "%(counter)s tâches sont masquées jusqu'à ce que leur date approche
 #: templates/tasks/task_list.html
 msgid "Show them"
 msgstr "Les afficher"
+
+#: templates/tasks/today.html
+msgid "Display"
+msgstr "Affichage"
+
+#: templates/tasks/today.html
+msgid "Nothing to do for now."
+msgstr "Rien à faire pour l'instant."

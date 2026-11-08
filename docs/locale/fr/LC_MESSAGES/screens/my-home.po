@@ -1,0 +1,48 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 12:22+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "My home"
+msgstr "Mon accueil"
+
+msgid "What concerns you, at `/me/`; **Home** in the navigation opens it once you are signed in. With several homes, the selector at the top chooses one, or **All my homes** to see them together."
+msgstr "Ce qui vous concerne, sur `/me/` ; **Accueil** dans la navigation l'ouvre une fois connecté. Avec plusieurs logements, le sélecteur du haut en choisit un, ou **Tous mes logements** pour les voir ensemble."
+
+msgid "For each home, under its name (with links to [Today](today.md), the [task list](tasks.md) and the [history](history.md)):"
+msgstr "Pour chaque logement, sous son nom (avec des liens vers [Aujourd'hui](today.md), la [liste des tâches](tasks.md) et l'[historique](history.md)) :"
+
+msgid "**Assigned to me**: the open tasks that are yours, the late ones first."
+msgstr "**Qui me sont confiées** : les tâches ouvertes qui sont les vôtres, les plus en retard d'abord."
+
+msgid "**Overdue in the home**: what is late for other people or for nobody."
+msgstr "**En retard dans le logement** : ce qui est en retard pour d'autres personnes ou pour personne."
+
+msgid "**Nobody has taken these**: open tasks with nobody in charge that are not late."
+msgstr "**Personne ne s'en est chargé** : les tâches ouvertes sans responsable qui ne sont pas en retard."
+
+msgid "**Warranties ending soon**: items whose warranty ends within 60 days; a row opens the item."
+msgstr "**Garanties qui se terminent bientôt** : les éléments dont la garantie se termine dans les 60 jours ; une ligne ouvre l'élément."
+
+msgid "The lists share no row, so a late task of yours is only in the first one. Each list shows at most 20 rows. A row opens the [task](task.md); close it from [Today](today.md). A home with nothing for you says so."
+msgstr "Les listes ne partagent aucune ligne : une tâche en retard qui est la vôtre n'est que dans la première. Chaque liste montre 20 lignes au plus. Une ligne ouvre la [tâche](task.md) ; fermez-la depuis [Aujourd'hui](today.md). Un logement où rien ne vous attend le dit."
+
+msgid "**Display preferences** at the bottom opens the [display preferences](display-preferences.md)."
+msgstr "**Préférences d'affichage**, en bas, ouvre les [préférences d'affichage](display-preferences.md)."
+
