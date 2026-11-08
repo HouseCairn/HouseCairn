@@ -37,7 +37,9 @@ class ProviderForm(forms.Form):
         required=False,
         max_length=1024,
         widget=forms.PasswordInput(render_value=False, attrs={"autocomplete": "new-password"}),
-        help_text=_("Write only: it is never shown again. Empty: unchanged."),
+        help_text=_(
+            "Write only: it is never shown again. Empty: unchanged, but a new issuer clears it."
+        ),
     )
     # A box has its label beside it, without a colon, as on the settings screen.
     pkce = forms.BooleanField(

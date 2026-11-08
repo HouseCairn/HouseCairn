@@ -704,8 +704,8 @@ msgid "Client secret"
 msgstr "Secret client"
 
 #: instance/forms.py
-msgid "Write only: it is never shown again. Empty: unchanged."
-msgstr "Écriture seule : il n'est plus jamais affiché. Vide : inchangé."
+msgid "Write only: it is never shown again. Empty: unchanged, but a new issuer clears it."
+msgstr "Écriture seule : il n'est plus jamais affiché. Vide : inchangé, mais un nouvel émetteur l'efface."
 
 #: instance/forms.py instance/models.py
 msgid "PKCE"

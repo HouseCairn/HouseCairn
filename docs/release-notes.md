@@ -23,8 +23,9 @@ with it on the project's
 - **Sign-in providers in the interface.** An instance administrator can declare OpenID
   Connect providers on **Instance administration, Sign-in providers**, or by the API, next to
   the one the `OIDC_*` variables set, which stays read only. A **Test the issuer** button
-  reads the provider's configuration. The administrator cannot remove their own last way to
-  sign in, and the only administrator cannot be switched off in the administration site. See
+  reads the provider's configuration. A new issuer clears the client secret unless it is
+  entered again. The administrator cannot remove nor change their own last way to sign in,
+  and the only administrator cannot be switched off in the administration site. See
   [Single sign-on](administration/oidc.md).
 
 - **Stock.** Keep track of spare parts and supplies: items with a threshold, suppliers
