@@ -19,9 +19,10 @@ Each row shows the task, its room and item, and its state. **Done**, on the righ
 of the row, closes it in one tap, for every task; the page comes back with a banner
 that offers **Undo**. A row opens the [task](task.md).
 
-- **Display** opens the display preferences and comes back here.
-- **All tasks** and **History** open the [task list](tasks.md) and the
-  [history](history.md).
+- The **tabs** above the list, shared by the [task list](tasks.md), the
+  [history](history.md) and the [display preferences](display-preferences.md), switch
+  between **Today**, **All tasks**, **History** and **Display preferences**. The current
+  tab is marked; on a phone the tabs scroll sideways when they do not all fit.
 - A task hidden until a few days before its date does not appear until then.
 - Each section shows at most 200 rows; the task list holds the rest.
 

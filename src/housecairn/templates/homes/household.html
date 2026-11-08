@@ -1,9 +1,10 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n tabs %}
 {% block head_title %}{% translate "Household and roles" %}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
   <h1>{% translate "Household and roles" %}</h1>
+  {% tab_bar "home" %}
   <ul class="card-list">
     {% for membership in members %}
       <li>
@@ -52,16 +53,6 @@
         </section>
       {% endfor %}
     {% endif %}
-    <h2>{% translate "Audit log" %}</h2>
-    <div class="list">
-      <a class="row" href="{% url 'homes:audit' home_id=home.id %}">
-        <span class="row-body">
-          <span class="row-title">{% translate "Audit log" %}</span>
-          <span class="row-text">{% translate "Roles, invitations, sign-in rule, export" %}</span>
-        </span>
-        {% include "components/icon.html" with name="chevron" class="chevron" %}
-      </a>
-    </div>
     {% if providers %}
       <h2>{% translate "Sign-in" %}</h2>
       <form method="post" action="{% url 'homes:required-provider' home_id=home.id %}" class="card">

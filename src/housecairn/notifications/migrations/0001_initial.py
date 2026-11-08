@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('quiet_start', models.TimeField(blank=True, null=True, verbose_name='quiet hours from')),
                 ('quiet_end', models.TimeField(blank=True, null=True, verbose_name='quiet hours until')),
                 ('digest', models.BooleanField(default=False, help_text='One message a day for every task to remind, instead of one per task.', verbose_name='daily summary')),
-                ('language', models.CharField(choices=[('en', 'English'), ('fr', 'French')], default='en', max_length=8, verbose_name='language')),
+                ('language', models.CharField(choices=[('en', 'English'), ('fr', 'Français')], default='en', max_length=8, verbose_name='language')),
                 ('time_zone', models.CharField(blank=True, help_text='Empty: the time zone of the instance.', max_length=64, verbose_name='time zone')),
             ],
             options={

@@ -6,6 +6,7 @@ Validation only; rules live in `services`. Everything the screens do is done her
 import datetime
 from typing import Any
 
+from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
 from django.db.models.functions import Coalesce, TruncDate
@@ -580,9 +581,30 @@ class OccurrenceViewSet(
 
 
 class PreferencesSerializer(serializers.ModelSerializer[DisplayPreference]):
+    language = serializers.ChoiceField(
+        choices=[("", "automatic"), *settings.LANGUAGES],
+        required=False,
+        help_text="Interface language of the person: a language the instance ships, or empty "
+        "to follow the browser, then the default of the instance.",
+    )
+
     class Meta:
         model = DisplayPreference
-        fields = ["today_group", "horizon_days", "show_overdue", "show_upcoming", "show_season"]
+        fields = [
+            "today_group",
+            "horizon_days",
+            "show_overdue",
+            "show_upcoming",
+            "show_season",
+            "language",
+        ]
+
+    def to_representation(self, instance: DisplayPreference) -> dict[str, Any]:
+        data: dict[str, Any] = super().to_representation(instance)
+        # A value written behind the model's back is not a choice the instance ships.
+        if data["language"] not in {code for code, _name in settings.LANGUAGES}:
+            data["language"] = ""
+        return data
 
 
 class SectionSerializer(serializers.Serializer[Any]):

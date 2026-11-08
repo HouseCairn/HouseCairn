@@ -5,6 +5,7 @@
       <a href="{% url 'rooms:photo' home_id=home.id photo_id=photo.id %}">
         <img src="{% url 'rooms:photo-thumbnail' home_id=home.id photo_id=photo.id %}" alt="{% if photo.caption %}{{ photo.caption }}{% else %}{% blocktranslate with name=label %}Photo of {{ name }}{% endblocktranslate %}{% endif %}" loading="lazy" decoding="async">
       </a>
+      <span class="photo-category">{{ photo.get_category_display }}</span>
       {% if photo.caption %}<span class="photo-caption">{{ photo.caption }}</span>{% endif %}
       {% if can_write %}
         <form method="post" action="{% url 'rooms:photo-delete' home_id=home.id photo_id=photo.id %}">

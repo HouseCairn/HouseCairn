@@ -8,6 +8,10 @@ You run the instance here and read no home: the page shows counts and
 invitations, never a home, a member of a home, a task or a document (see
 [Instance administrator](../administration/instance.md)).
 
+The tabs at the top switch between the **Overview**, the **Settings**, the **Sign-in
+providers**, the **Files of the homes** and the **Audit log**, and are the same on each of
+those pages.
+
 - **Overview**: the number of accounts, whether open sign-up is on, whether
   outgoing email is configured and the sign-in providers the instance offers.
 - **Invite someone to the instance**: an email address; the person receives a

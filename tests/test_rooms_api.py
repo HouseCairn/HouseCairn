@@ -213,13 +213,13 @@ class TestPhotos:
             image_bytes("JPEG", gps=True),
             room=str(owner_room.id),
             caption="North wall",
-            category="open_walls",
+            category="behind_walls",
         )
         assert response.status_code == 201, response.json()  # type: ignore[attr-defined]
         body = response.json()  # type: ignore[attr-defined]
         assert (body["content_type"], body["category"], body["room"], body["item"]) == (
             "image/jpeg",
-            "open_walls",
+            "behind_walls",
             str(owner_room.id),
             None,
         )
@@ -256,7 +256,7 @@ class TestPhotos:
     ) -> None:
         self.post(client_of_alice, alice_home, image_bytes(), item=str(owner_item.id))
         services.add_photo(
-            alice, room=owner_room, upload=upload(image_bytes()), category="open_walls"
+            alice, room=owner_room, upload=upload(image_bytes()), category="behind_walls"
         )
         listing = api("photo-list", alice_home)
         assert len(client_of_alice.get(listing).json()["results"]) == 2
@@ -264,7 +264,7 @@ class TestPhotos:
         assert len(of_item) == 1
         of_room = client_of_alice.get(listing, {"room": str(owner_room.id)}).json()["results"]
         assert len(of_room) == 1
-        walls = client_of_alice.get(listing, {"category": "open_walls"}).json()["results"]
+        walls = client_of_alice.get(listing, {"category": "behind_walls"}).json()["results"]
         assert len(walls) == 1
 
     def test_bad_uploads(

@@ -39,7 +39,7 @@ DIGEST_LIMIT = 20
 WARRANTY_REMINDER_DAYS = 60
 
 PREFERENCE_FIELDS = frozenset(
-    {"today_group", "horizon_days", "show_overdue", "show_upcoming", "show_season"}
+    {"today_group", "horizon_days", "show_overdue", "show_upcoming", "show_season", "language"}
 )
 _PRIORITY_RANK = {"high": 0, "normal": 1, "low": 2}
 _FAR = datetime.date.max

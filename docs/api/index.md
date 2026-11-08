@@ -24,7 +24,9 @@ web interface: every request only sees the homes of its user
   [ADR 0030](../adr/0030-photo-storage-and-processing.md)). A token needs the
   `read` scope to read them and `write` to change them, and its user needs a role
   that writes. Rooms and items can be filtered with `q` (name); items with
-  `room`; photos with `room`, `item` and `category`.
+  `room`; photos with `room`, `item` and `category` (`general`, `behind_walls`, `before`,
+  `after` or `other`, [ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)).
+  An item carries `contract_provider` and `contract_number`.
 - **Tasks** of a home: `/api/v1/homes/<home id>/tasks/`, `.../occurrences/`,
   `.../contractors/` and `.../attachments/`
   ([ADR 0031](../adr/0031-tasks-occurrences-and-recurrence.md),
@@ -47,8 +49,9 @@ web interface: every request only sees the homes of its user
   display preferences of the caller lay them out; `GET /api/v1/me/home/` (with an optional
   `home`) what concerns the caller in each home; `GET` and `PATCH
   /api/v1/me/display-preferences/` the layout (`today_group`, `horizon_days`,
-  `show_overdue`, `show_upcoming`, `show_season`), which only its owner can read or
-  change. History is the occurrence list with `status=closed&ordering=recent` and the
+  `show_overdue`, `show_upcoming`, `show_season`, `language`), which only its owner can
+  read or change. `language` is a language the instance ships (`en`, `fr`) or empty to
+  follow the browser; the web screens apply it from the next page. History is the occurrence list with `status=closed&ordering=recent` and the
   filters `contractor`, `completed_by`, `q`, `closed_after` and `closed_before`;
   `GET .../occurrences/cost/` gives the real cost entered on the same selection.
 - **Stock** of a home: `/api/v1/homes/<home id>/articles/`, `.../suppliers/` and

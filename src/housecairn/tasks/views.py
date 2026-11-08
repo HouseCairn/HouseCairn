@@ -12,12 +12,13 @@ from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
+from django.urls import Resolver404, resolve, reverse
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from housecairn.core.redirects import is_safe_redirect
+from housecairn.homes.models import Home
 from housecairn.homes.scoping import open_homes_for_request
 from housecairn.rooms import conf
 from housecairn.rooms.models import Item, Room
@@ -516,8 +517,22 @@ class PreferencesView(LoginRequiredMixin, FormView[Any]):
             return target
         return reverse("my-home")
 
+    def _home(self) -> Home | None:
+        """The home the person came from, if `next` is a page of one they may open.
+
+        Only for the tabs of its tasks; it reads nothing from the address but the home.
+        """
+        try:
+            match = resolve(urlsplit(self._next()).path)
+        except Resolver404:
+            return None
+        home_id = match.kwargs.get("home_id")
+        if home_id is None:
+            return None
+        return open_homes_for_request(self.request).filter(id=home_id).first()
+
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(next=self._next(), **kwargs)
+        context = super().get_context_data(next=self._next(), home=self._home(), **kwargs)
         form = context["form"]
         context["sections"] = [form["show_overdue"], form["show_upcoming"], form["show_season"]]
         return context

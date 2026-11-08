@@ -552,10 +552,21 @@ form p > a,
   text-decoration: none;
 }
 
+/* .chips scrolls sideways, which clips anything outside its box: draw the ring inside. */
+.chip:focus-visible {
+  outline-offset: -3px;
+}
+
 .chip[aria-current="page"] {
   color: var(--hc-color-text-inverse);
   background: var(--hc-color-primary);
   border-color: var(--hc-color-primary);
+}
+
+/* The ring is drawn inside, over the chip's own background, which is the focus colour: a ring of
+   that colour would not show (WCAG 2.4.7, 1.4.11). */
+.chip[aria-current="page"]:focus-visible {
+  outline-color: var(--hc-color-text-inverse);
 }
 
 /* ---------- code, tables ---------- */
@@ -633,4 +644,53 @@ input.setting-locked {
   color: var(--hc-color-text-muted);
   background: var(--hc-color-surface-muted);
   border-style: dashed;
+}
+
+/* ---------- tabs: the sub-navigation of an area (templates/components/tabs.html) ---------- */
+
+.tabs {
+  margin: 0 0 var(--hc-space-3);
+  border-bottom: 1px solid var(--hc-color-border);
+}
+
+.tabs-list {
+  display: flex;
+  gap: var(--hc-space-1);
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: thin;
+}
+
+.tabs-list li {
+  flex: none;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  min-height: var(--hc-layout-touch-target);
+  padding: var(--hc-space-2) var(--hc-space-3);
+  color: var(--hc-color-text-muted);
+  border-bottom: 3px solid transparent;
+  font-size: var(--hc-font-size-sm);
+  font-weight: var(--hc-font-weight-medium);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.tab:hover {
+  color: var(--hc-color-text);
+}
+
+/* .tabs-list scrolls sideways, which clips anything outside its box: draw the ring inside. */
+.tab:focus-visible {
+  outline-offset: -3px;
+}
+
+.tab[aria-current="page"] {
+  color: var(--hc-color-primary);
+  border-bottom-color: var(--hc-color-accent);
+  font-weight: var(--hc-font-weight-bold);
 }

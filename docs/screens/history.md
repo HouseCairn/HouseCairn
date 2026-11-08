@@ -5,6 +5,8 @@ first. Each row shows the task, where it is, the contractor and who closed it, t
 outcome with its date, and the real cost when one was entered. A row opens the
 [task](task.md).
 
+The tabs above it are those of [Today](today.md).
+
 The form at the top narrows the list. It is folded under **Filters** (open when a
 filter is active), so the list stays in reach on a phone. All fields are optional:
 

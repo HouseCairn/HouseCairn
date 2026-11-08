@@ -9,7 +9,7 @@ the camera and the gallery.
 | --- | --- |
 | Photo | A JPEG, PNG or WebP image, 10 MB at most by default (see [Rooms and items](../guides/rooms-and-items.md)). |
 | Caption | Optional, 200 characters at most. |
-| Category | "Photo", or "Open walls" for a photo taken before closing a wall. |
+| Category | **General** (the default), **Behind the walls** (pipes and cables photographed before the wall is closed, to know where not to drill), **Before the work**, **After the work** or **Other** (say what it is in the caption). |
 
 HouseCairn checks the content of the file, not its name or the type your browser
 announces. It then writes the image again: the location and every other

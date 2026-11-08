@@ -5,8 +5,8 @@ The form to add a room, at `/h/<home id>/rooms/new/`, and to edit one, at
 
 | Field | Content |
 | --- | --- |
-| Name | Required, 120 characters at most. |
-| Type | Living room, kitchen, bathroom and so on; "Other" by default. |
+| Type | First field. Living room, kitchen, bathroom and so on, or "Other". It sets the icon and the filters of the room and, later, the task templates offered for it. |
+| Name | 120 characters at most. Choosing a type fills it in with the name of the type, and you can change it. Left empty, it takes the name of the type; with the type "Other" it is required. |
 | Notes | Free text, 4,000 characters at most. |
 
 The paint, the coverings and the photos of the room are kept in its

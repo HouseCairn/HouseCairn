@@ -71,6 +71,12 @@ button:disabled {
   object-fit: cover;
 }
 
+.photo-category {
+  font-size: var(--hc-font-size-xs);
+  font-weight: var(--hc-font-weight-medium);
+  color: var(--hc-color-text-sand);
+}
+
 .photo-caption {
   font-size: var(--hc-font-size-xs);
   color: var(--hc-color-text-muted);

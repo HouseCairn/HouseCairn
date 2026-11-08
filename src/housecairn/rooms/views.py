@@ -21,7 +21,7 @@ from housecairn.homes.models import Home
 from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
 from housecairn.rooms import conf, forms, services
 from housecairn.rooms.files import photo_response
-from housecairn.rooms.models import Item, Photo, PhotoCategory, Room
+from housecairn.rooms.models import BEHIND_WALLS_HELP, Item, Photo, PhotoCategory, Room
 
 
 class EntryView(LoginRequiredMixin, TemplateView):
@@ -106,7 +106,11 @@ class RoomCreateView(RoomFormMixin):
     form_class = forms.RoomForm
 
     def form_valid(self, form: forms.RoomForm) -> HttpResponse:
-        room = services.create_room(self.request.user, self.home, **form.cleaned_data)
+        try:
+            room = services.create_room(self.request.user, self.home, **form.cleaned_data)
+        except ValidationError as exc:
+            _errors(form, exc)
+            return self.form_invalid(form)
         messages.success(self.request, _("Room added."))
         return redirect("rooms:detail", home_id=self.home.id, room_id=room.id)
 
@@ -116,13 +120,21 @@ class RoomDetailView(HomeRoomsMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         room = self.get_room()
-        photos = list(services.photos_for(room))
+        everything = services.photos_for(room)
+        chosen = self.request.GET.get("category", "")
+        chosen = chosen if chosen in PhotoCategory.values else ""
+        photos = list(everything.filter(category=chosen) if chosen else everything)
+        present = set(everything.values_list("category", flat=True))
         return super().get_context_data(
             **self.page(
                 room=room,
                 items=room.items.order_by("name", "id"),
-                open_wall_photos=[p for p in photos if p.category == PhotoCategory.OPEN_WALLS],
-                photos=[p for p in photos if p.category != PhotoCategory.OPEN_WALLS],
+                photos=photos,
+                category=chosen,
+                categories=[
+                    (value, label) for value, label in PhotoCategory.choices if value in present
+                ],
+                behind_walls_help=BEHIND_WALLS_HELP,
             ),
             **kwargs,
         )
@@ -141,7 +153,11 @@ class RoomEditView(RoomFormMixin):
         return super().get_context_data(room=self.get_room(), **kwargs)
 
     def form_valid(self, form: forms.RoomForm) -> HttpResponse:
-        room = services.update_room(self.request.user, self.get_room(), **form.cleaned_data)
+        try:
+            room = services.update_room(self.request.user, self.get_room(), **form.cleaned_data)
+        except ValidationError as exc:
+            _errors(form, exc)
+            return self.form_invalid(form)
         messages.success(self.request, _("Room saved."))
         return redirect("rooms:detail", home_id=self.home.id, room_id=room.id)
 
@@ -217,6 +233,7 @@ class ItemFormMixin(RoomFormMixin):
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         kwargs["rooms"] = services.rooms_of(self.home)
+        kwargs["brands"] = services.brands_of(self.home)
         return kwargs
 
 

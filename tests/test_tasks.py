@@ -984,9 +984,10 @@ class TestScreens:
         home_services.create_home(alice, name="Holiday flat")
         chooser = signed_in.get(reverse("tasks")).content.decode()
         assert "Choose the home" in chooser
+        # The navigation entry and the "All tasks" tab.
         assert (
             signed_in.get(url("list", alice_home)).content.decode().count('aria-current="page"')
-            == 1
+            == 2
         )
 
     def test_the_entry_without_a_home(self, client: Client, make_user: object) -> None:
