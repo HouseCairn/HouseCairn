@@ -25,8 +25,8 @@ msgstr "Historique"
 msgid "What was done or skipped in a home, at `/h/<home id>/history/`, the most recent first. Each row shows the task, where it is, the contractor and who closed it, the outcome with its date, and the real cost when one was entered. A row opens the [task](task.md)."
 msgstr "Ce qui a été fait ou ignoré dans un logement, sur `/h/<home id>/history/`, le plus récent d'abord. Chaque ligne montre la tâche, où elle se trouve, l'intervenant et qui l'a fermée, le résultat avec sa date, et le coût réel quand il a été saisi. Une ligne ouvre la [tâche](task.md)."
 
-msgid "The form at the top narrows the list; all fields are optional:"
-msgstr "Le formulaire du haut restreint la liste ; tous les champs sont facultatifs :"
+msgid "The form at the top narrows the list. It is folded under **Filters** (open when a filter is active), so the list stays in reach on a phone. All fields are optional:"
+msgstr "Le formulaire du haut restreint la liste. Il est replié sous **Filtres** (ouvert quand un filtre est actif), pour que la liste reste à portée sur téléphone. Tous les champs sont facultatifs :"
 
 msgid "**Search** looks in the task title and in the note written when it was closed."
 msgstr "**Rechercher** cherche dans le titre de la tâche et dans la note écrite à sa clôture."

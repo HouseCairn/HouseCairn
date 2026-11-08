@@ -3064,6 +3064,9 @@ msgid "All rooms"
 msgstr "Toutes les pièces"
 
 #: templates/tasks/task_list.html
+msgid "Filters"
+msgstr "Filtres"
+
 msgid "Filter"
 msgstr "Filtrer"
 

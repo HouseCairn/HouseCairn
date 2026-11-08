@@ -5,7 +5,8 @@ first. Each row shows the task, where it is, the contractor and who closed it, t
 outcome with its date, and the real cost when one was entered. A row opens the
 [task](task.md).
 
-The form at the top narrows the list; all fields are optional:
+The form at the top narrows the list. It is folded under **Filters** (open when a
+filter is active), so the list stays in reach on a phone. All fields are optional:
 
 - **Search** looks in the task title and in the note written when it was closed.
 - **Room**, **Item**, **Contractor** and **Done by**.

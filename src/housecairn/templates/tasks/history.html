@@ -5,6 +5,9 @@
   <a class="back-link" href="{% url 'tasks:today' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Today" %}</a>
   <h1>{% translate "History" %}</h1>
   <form method="get" class="history-filters" role="search">
+    <details class="history-filter-fields"{% if filtered %} open{% endif %}>
+      <summary>{% translate "Filters" %}</summary>
+      <div class="history-filter-grid">
     <p>
       <label for="filter-q">{% translate "Search" %}</label>
       <input id="filter-q" type="search" name="q" value="{{ selection.query }}" maxlength="200">
@@ -53,10 +56,12 @@
       <label for="filter-before">{% translate "To" %}</label>
       <input id="filter-before" type="date" name="before" value="{{ selection.before|date:'Y-m-d' }}">
     </p>
+      </div>
     <div class="button-row">
       <button type="submit" class="button-secondary">{% translate "Filter" %}</button>
       {% if filtered %}<a class="button button-secondary" href="{% url 'tasks:history' home_id=home.id %}">{% translate "Clear" %}</a>{% endif %}
     </div>
+    </details>
   </form>
   <p class="history-total" role="status">
     {% blocktranslate count counter=cost.count %}{{ counter }} entry{% plural %}{{ counter }} entries{% endblocktranslate %}
