@@ -8,6 +8,8 @@ class TasksConfig(AppConfig):
     verbose_name = _("Tasks")
 
     def ready(self) -> None:
+        from housecairn.homes import files
         from housecairn.tasks import exports
 
         exports.register()
+        files.register_media_folder("attachments")

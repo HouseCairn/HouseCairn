@@ -42,3 +42,6 @@ def owner_occurrence(owner_task: Task) -> Occurrence:
     occurrence = services.open_occurrence_of(owner_task)
     assert occurrence is not None
     return occurrence
+
+
+PDF = b"%PDF-1.7\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF\n"

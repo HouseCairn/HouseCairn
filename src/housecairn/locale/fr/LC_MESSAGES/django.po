@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 11:47+0000\n"
+"POT-Creation-Date: 2026-11-08 12:11+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -1300,7 +1300,7 @@ msgstr "L'élément et ses photos disparaissent des écrans."
 msgid "Item deleted."
 msgstr "Élément supprimé."
 
-#: rooms/views.py
+#: rooms/views.py tasks/views.py
 msgid "This file is too large."
 msgstr "Ce fichier est trop volumineux."
 
@@ -1326,6 +1326,14 @@ msgstr "Français"
 #: templates/tasks/task_form.html templates/tasks/task_list.html
 msgid "Tasks"
 msgstr "Tâches"
+
+#: tasks/files.py
+msgid ""
+"This type of file is not accepted. Use a JPEG, PNG or WebP image, or a PDF, "
+"text, Word, Excel or OpenDocument file."
+msgstr ""
+"Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou WebP, "
+"ou un fichier PDF, texte, Word, Excel ou OpenDocument."
 
 #: tasks/forms.py
 msgid "Item"
@@ -1355,6 +1363,10 @@ msgstr "Ou un nouvel intervenant"
 msgid "Trade of the new contractor"
 msgstr "Métier du nouvel intervenant"
 
+#: tasks/forms.py templates/tasks/task_detail.html
+msgid "Photos and files"
+msgstr "Photos et fichiers"
+
 #: tasks/forms.py
 msgid "Markdown: how to do it, step by step. Links to web pages only."
 msgstr ""
@@ -1371,6 +1383,10 @@ msgstr "Note"
 #: tasks/forms.py
 msgid "New date"
 msgstr "Nouvelle date"
+
+#: tasks/forms.py
+msgid "Choose at least one file."
+msgstr "Choisissez au moins un fichier."
 
 #: tasks/models.py
 msgid "Low"
@@ -1554,6 +1570,14 @@ msgstr "occurrence"
 msgid "occurrences"
 msgstr "occurrences"
 
+#: tasks/models.py
+msgid "attachment"
+msgstr "pièce jointe"
+
+#: tasks/models.py
+msgid "attachments"
+msgstr "pièces jointes"
+
 #: tasks/services.py
 #, python-format
 msgid "Choose a date within %(years)d years of today."
@@ -1593,6 +1617,15 @@ msgstr ""
 #: tasks/services.py
 msgid "The details can be filled in once the task is done."
 msgstr "Les détails se renseignent une fois la tâche faite."
+
+#: tasks/services.py
+msgid "This occurrence is not one of this task."
+msgstr "Cette occurrence n'appartient pas à cette tâche."
+
+#: tasks/services.py
+#, python-format
+msgid "At most %(max)d attachments for a task."
+msgstr "%(max)d pièces jointes au plus pour une tâche."
 
 #: tasks/templatetags/tasks_extras.py
 #, python-format
@@ -1660,6 +1693,11 @@ msgid "Task added."
 msgstr "Tâche ajoutée."
 
 #: tasks/views.py
+#, python-format
+msgid "File not added: %(reason)s"
+msgstr "Fichier non ajouté : %(reason)s"
+
+#: tasks/views.py
 msgid "Task saved."
 msgstr "Tâche enregistrée."
 
@@ -1678,6 +1716,18 @@ msgstr "Tâche reportée."
 #: tasks/views.py
 msgid "Details saved."
 msgstr "Détails enregistrés."
+
+#: tasks/views.py
+msgid "Some files were added."
+msgstr "Une partie des fichiers a été ajoutée."
+
+#: tasks/views.py
+msgid "Files added."
+msgstr "Fichiers ajoutés."
+
+#: tasks/views.py
+msgid "File deleted."
+msgstr "Fichier supprimé."
 
 #: templates/400.html
 msgid "Bad request"
@@ -2576,7 +2626,7 @@ msgid "Photo of %(name)s"
 msgstr "Photo de %(name)s"
 
 #: templates/rooms/_photos.html templates/rooms/confirm_delete.html
-#: templates/tasks/confirm_delete.html
+#: templates/tasks/_attachments.html templates/tasks/confirm_delete.html
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -2678,7 +2728,7 @@ msgstr "Ajouter l'élément"
 msgid "Delete the item"
 msgstr "Supprimer l'élément"
 
-#: templates/rooms/photo_form.html
+#: templates/rooms/photo_form.html templates/tasks/attachment_form.html
 msgid "Upload"
 msgstr "Envoyer"
 
@@ -2837,6 +2887,11 @@ msgstr "Aide sur cette page"
 msgid "Main navigation"
 msgstr "Navigation principale"
 
+#: templates/tasks/_attachments.html
+#, python-format
+msgid "Photo: %(name)s"
+msgstr "Photo : %(name)s"
+
 #: templates/tasks/_due.html
 #, python-format
 msgid "%(counter)s day late"
@@ -2859,6 +2914,21 @@ msgstr "Ignorée."
 #: templates/tasks/_undo.html templates/tasks/task_detail.html
 msgid "Undo"
 msgstr "Annuler"
+
+#: templates/tasks/attachment_form.html
+msgid "Add photos and files"
+msgstr "Ajouter des photos et des fichiers"
+
+#: templates/tasks/attachment_form.html
+#, python-format
+msgid ""
+"Images (JPEG, PNG, WebP) and PDF, text, Word, Excel or OpenDocument files, "
+"up to %(size)s each. Location data and other information stored in an image "
+"are removed."
+msgstr ""
+"Images (JPEG, PNG, WebP) et fichiers PDF, texte, Word, Excel ou "
+"OpenDocument, jusqu'à %(size)s chacun. La position et les autres "
+"informations stockées dans une image sont supprimées."
 
 #: templates/tasks/choose_home.html
 msgid "Choose the home whose tasks you want to open."
@@ -2952,6 +3022,14 @@ msgstr "Budget matériel"
 #: templates/tasks/task_detail.html
 msgid "Contractor"
 msgstr "Intervenant"
+
+#: templates/tasks/task_detail.html
+msgid "Add photos or files"
+msgstr "Ajouter des photos ou des fichiers"
+
+#: templates/tasks/task_detail.html
+msgid "No file yet."
+msgstr "Aucun fichier pour l'instant."
 
 #: templates/tasks/task_detail.html
 msgid "History"

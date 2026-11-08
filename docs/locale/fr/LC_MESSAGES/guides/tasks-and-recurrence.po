@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 02:12+0000\n"
+"POT-Creation-Date: 2026-11-08 01:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -28,14 +28,14 @@ msgstr "Une tâche est quelque chose à faire dans le logement : vérifier le d�
 msgid "Add a task"
 msgstr "Ajouter une tâche"
 
-msgid "**Tasks** in the navigation, then **Add a task**. From the page of a room or of an item, **Add a task** already knows where the task belongs. Everything else is in the sections of the [form](../screens/task-form.md), opened only when needed."
-msgstr "**Tâches** dans la navigation, puis **Ajouter une tâche**. Depuis la page d'une pièce ou d'un élément, **Ajouter une tâche** sait déjà où la tâche se range. Le reste est dans les sections du [formulaire](../screens/task-form.md), qui ne s'ouvrent qu'au besoin."
+msgid "**Tasks** in the navigation, then **Add a task**. From the page of a room or of an item, **Add a task** already knows where the task belongs. Everything else is in the sections of the [form](../screens/task-form.md), opened only when needed. Photos and files (a photo of the label, the manual in PDF) can be added right away."
+msgstr "**Tâches** dans la navigation, puis **Ajouter une tâche**. Depuis la page d'une pièce ou d'un élément, **Ajouter une tâche** sait déjà où la tâche se range. Le reste est dans les sections du [formulaire](../screens/task-form.md), qui ne s'ouvrent qu'au besoin. Des photos et des fichiers (la photo de l'étiquette, la notice en PDF) peuvent être ajoutés tout de suite."
 
 msgid "Done, in one tap"
 msgstr "Fait, en un geste"
 
-msgid "**Done** is on every row of the list and on the page of every task, one-time or repeating. The occurrence is closed today and, if the task repeats, the next one appears at once. A banner offers **Undo**: it brings the task back exactly as it was and removes the occurrence that was created. Once you have worked on that next occurrence (postponed it, written a note, done it), **Undo** is no longer possible for the previous one."
-msgstr "**Fait** est sur chaque ligne de la liste et sur la page de chaque tâche, ponctuelle ou répétée. L'occurrence est close aujourd'hui et, si la tâche se répète, la suivante apparaît aussitôt. Un bandeau propose **Annuler** : il remet la tâche exactement comme elle était et supprime l'occurrence qui a été créée. Dès que vous avez travaillé sur cette occurrence suivante (reportée, annotée, faite), **Annuler** n'est plus possible pour la précédente."
+msgid "**Done** is on every row of the list and on the page of every task, one-time or repeating. The occurrence is closed today and, if the task repeats, the next one appears at once. A banner offers **Undo**: it brings the task back exactly as it was and removes the occurrence that was created. Once you have worked on that next occurrence (postponed it, written a note, added a photo, done it), **Undo** is no longer possible for the previous one."
+msgstr "**Fait** est sur chaque ligne de la liste et sur la page de chaque tâche, ponctuelle ou répétée. L'occurrence est close aujourd'hui et, si la tâche se répète, la suivante apparaît aussitôt. Un bandeau propose **Annuler** : il remet la tâche exactement comme elle était et supprime l'occurrence qui a été créée. Dès que vous avez travaillé sur cette occurrence suivante (reportée, annotée, ajout d'une photo, faite), **Annuler** n'est plus possible pour la précédente."
 
 msgid "The real date, the cost and a note can be filled in afterwards, from **Details** in the history of the task. **Skip this time** closes an occurrence without doing it, for a season where the chore does not apply, and also creates the next one. **Postpone** moves the date; the occurrence stays on the list as *postponed*."
 msgstr "La date réelle, le coût et une note peuvent se renseigner ensuite, depuis **Détails** dans l'historique de la tâche. **Ignorer cette fois** clôt une occurrence sans la faire, pour une saison où la corvée ne s'applique pas, et crée aussi la suivante. **Reporter** déplace la date ; l'occurrence reste dans la liste, en *reportée*."
@@ -100,5 +100,5 @@ msgstr "Nommez la personne ou l'entreprise sur la tâche : choisissez un interve
 msgid "For scripts"
 msgstr "Pour les scripts"
 
-msgid "Everything above is available through the [API](../api/index.md): tasks, occurrences (with `complete`, `undo`, `skip` and `postpone`) and contractors."
-msgstr "Tout ce qui précède est disponible par l'[API](../api/index.md) : tâches, occurrences (avec `complete`, `undo`, `skip` et `postpone`) et intervenants."
+msgid "Everything above is available through the [API](../api/index.md): tasks, occurrences (with `complete`, `undo`, `skip` and `postpone`), contractors and attachments."
+msgstr "Tout ce qui précède est disponible par l'[API](../api/index.md) : tâches, occurrences (avec `complete`, `undo`, `skip` et `postpone`), intervenants et pièces jointes."
