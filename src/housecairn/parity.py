@@ -61,7 +61,7 @@ PARITY: dict[str, tuple[str, ...]] = {
     "rooms:photo-thumbnail": ("api-v1:home-photo-thumbnail",),
     "rooms:photo-delete": ("api-v1:home-photo-detail",),
     "rooms:search": ("api-v1:home-search",),
-    # Tasks, occurrences and attachments (docs/adr/0031 to 0034). The entry page only leads
+    # Tasks and occurrences (docs/adr/0031 to 0033). The entry page only leads
     # to the tasks of a home, like the rooms one.
     "tasks": ("api-v1:home-list",),
     "tasks:list": ("api-v1:home-task-list", "api-v1:home-occurrence-list"),
@@ -74,10 +74,6 @@ PARITY: dict[str, tuple[str, ...]] = {
     "tasks:skip": ("api-v1:home-occurrence-skip",),
     "tasks:postpone": ("api-v1:home-occurrence-postpone",),
     "tasks:occurrence-edit": ("api-v1:home-occurrence-detail",),
-    "tasks:attachment-add": ("api-v1:home-attachment-list",),
-    "tasks:attachment": ("api-v1:home-attachment-content",),
-    "tasks:attachment-thumbnail": ("api-v1:home-attachment-thumbnail",),
-    "tasks:attachment-delete": ("api-v1:home-attachment-detail",),
 }
 
 # Web routes without business function, with the reason.

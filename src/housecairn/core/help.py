@@ -68,10 +68,6 @@ HELP_PAGES: dict[str, str] = {
     "tasks:skip": "screens/task/",
     "tasks:postpone": "screens/task/",
     "tasks:occurrence-edit": "screens/task/",
-    "tasks:attachment-add": "screens/task-files/",
-    "tasks:attachment": "screens/task-files/",
-    "tasks:attachment-thumbnail": "screens/task-files/",
-    "tasks:attachment-delete": "screens/task-files/",
     "more": "screens/more/",
     "about": "screens/about/",
 }

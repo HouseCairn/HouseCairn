@@ -6,3 +6,8 @@ class TasksConfig(AppConfig):
     name = "housecairn.tasks"
     label = "tasks"
     verbose_name = _("Tasks")
+
+    def ready(self) -> None:
+        from housecairn.tasks import exports
+
+        exports.register()

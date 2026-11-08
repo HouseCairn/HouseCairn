@@ -12,11 +12,8 @@ due date and, below, four sections that open when you need them:
 | Repeat | **Once**, **Fixed date** (every N days, weeks, months or years from the first date) or **After the last time** (N units after the day it was done). A season (first and last month; November to March is fine) outside of which nothing falls, and the number of days before the date from which the task shows. |
 | Who | Priority, the person in charge (a member of the home) and the contractor: pick one of the home or type a new name and trade. |
 | Time and budget | Estimated duration in minutes, labour and material budgets, in the currency of the home. |
-| How to do it | The procedure in Markdown, notes and, when adding, photos and files. |
+| How to do it | The procedure in Markdown and notes. |
 
 Editing the date moves the occurrence that is open. Deleting the task, at the
 bottom of the edit form, asks for confirmation and removes the task, its history
 and its files from the screens.
-
-When you add files together with the task and one of them is refused, the task is
-created anyway and a message names the file and the reason.

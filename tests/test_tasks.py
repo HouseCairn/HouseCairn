@@ -1,6 +1,8 @@
 """Tasks: services (create, done, undo, skip, postpone), web screens, roles and isolation."""
 
 import datetime
+import json
+import zipfile
 from decimal import Decimal
 
 import pytest
@@ -9,6 +11,7 @@ from django.test import Client
 from django.urls import reverse
 
 from housecairn.accounts.models import User
+from housecairn.homes import exports
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms import services as room_services
@@ -604,7 +607,6 @@ class TestScreens:
         edit = url("edit", alice_home, task_id=owner_task.id)
         page = signed_in.get(edit)
         assert page.status_code == 200
-        assert 'name="uploads"' not in page.content.decode()
         changed = signed_in.post(
             edit,
             {
@@ -797,7 +799,6 @@ class TestWebRolesAndIsolation:
                     occurrence_id=owner_occurrence.id,
                 ),
             ),
-            ("get", url("attachment-add", alice_home, task_id=owner_task.id)),
         ]
         for method, address in writes:
             assert getattr(client, method)(address).status_code == 403, address
@@ -828,7 +829,6 @@ class TestWebRolesAndIsolation:
                     task_id=owner_task.id,
                     occurrence_id=owner_occurrence.id,
                 ),
-                url("attachment-add", home, task_id=owner_task.id),
             ]
             for address in addresses:
                 assert client.get(address).status_code == 404, address
@@ -873,3 +873,56 @@ class TestWebRolesAndIsolation:
             "complete", alice_home, task_id=owner_task.id, occurrence_id=owner_occurrence.id
         )
         assert signed_in.get(address).status_code == 405
+
+
+class TestExportAndDeletion:
+    def test_the_export_holds_the_tasks_of_the_home_and_nothing_of_another(
+        self,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        bob_home: Home,
+        owner_task: Task,
+        owner_occurrence: Occurrence,
+    ) -> None:
+        contractor = services.create_contractor(
+            alice, alice_home, name="A. Plumber", trade="Plumber"
+        )
+        services.update_task(alice, owner_task, contractor=contractor, assignee=alice)
+        done = services.complete(alice, owner_occurrence, actual_cost=Decimal("4.5"), note="AAA")
+        services.create_task(bob, bob_home, title="Their secret", due_on=TODAY)
+        archive, _name = exports.export_home(alice, alice_home)
+        raw = zipfile.ZipFile(archive).read("export.json").decode()
+        data = json.loads(raw)
+        [task] = data["tasks"]
+        assert task["title"] == "Change the smoke detector battery"
+        assert (task["assignee"], task["contractor"]) == ("alice@example.com", str(contractor.id))
+        assert task["repeat_mode"] == "after_last"
+        assert [c["name"] for c in data["contractors"]] == ["A. Plumber"]
+        by_status = {o["status"]: o for o in data["occurrences"]}
+        assert by_status["done"]["completed_by"] == "alice@example.com"
+        assert by_status["done"]["actual_cost"] == "4.50"
+        assert by_status["done"]["note"] == "AAA"
+        assert by_status["planned"]["due_on"] == str(done.next.due_on)  # type: ignore[union-attr]
+        assert "Their secret" not in raw
+
+    def test_deleting_the_home_removes_its_tasks_and_only_them(
+        self,
+        client: Client,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        bob_home: Home,
+        owner_task: Task,
+    ) -> None:
+        theirs = services.create_task(bob, bob_home, title="Theirs", due_on=TODAY)
+        client.force_login(alice)
+        response = client.post(
+            reverse("homes:delete", kwargs={"home_id": alice_home.id}),
+            {"confirmation": "Main house"},
+        )
+        assert response.status_code == 302
+        assert not Task.all_objects.filter(home_id=alice_home.id).exists()
+        assert not Occurrence.all_objects.filter(home_id=alice_home.id).exists()
+        assert Task.objects.filter(id=theirs.id).exists()
+        assert Occurrence.objects.filter(task=theirs).count() == 1

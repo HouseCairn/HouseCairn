@@ -9,8 +9,7 @@ back and how to close it.
 
 **Tasks** in the navigation, then **Add a task**. From the page of a room or of an
 item, **Add a task** already knows where the task belongs. Everything else is in the
-sections of the [form](../screens/task-form.md), opened only when needed. Photos and
-files (a photo of the label, the manual in PDF) can be added right away.
+sections of the [form](../screens/task-form.md), opened only when needed.
 
 ## Done, in one tap
 
@@ -18,7 +17,7 @@ files (a photo of the label, the manual in PDF) can be added right away.
 repeating. The occurrence is closed today and, if the task repeats, the next one
 appears at once. A banner offers **Undo**: it brings the task back exactly as it was
 and removes the occurrence that was created. Once you have worked on that next
-occurrence (postponed it, written a note, added a photo, done it), **Undo** is no
+occurrence (postponed it, written a note, done it), **Undo** is no
 longer possible for the previous one.
 
 The real date, the cost and a note can be filled in afterwards, from **Details** in
@@ -68,5 +67,4 @@ type a new name and trade in the form. The API also lists and edits them.
 ## For scripts
 
 Everything above is available through the [API](../api/index.md): tasks,
-occurrences (with `complete`, `undo`, `skip` and `postpone`), contractors and
-attachments.
+occurrences (with `complete`, `undo`, `skip` and `postpone`) and contractors.

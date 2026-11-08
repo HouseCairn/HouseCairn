@@ -82,6 +82,8 @@ the same 404.
 - Web and API call the same functions of `tasks.services` (ADR 0002); the screens
   of the next lot (today, history) read through `open_occurrences`, `overdue`,
   `upcoming` and `done`.
+- Tasks, occurrences and contractors are registered in the export of a home (ADR
+  0023) and go with the home when it is deleted (their rows hang off it).
 - A rule that needs a new unit or a new mode changes `recurrence.py` and its tests
   only.
 - Dates in the far future are bounded (intervals of about fifty years at most); a

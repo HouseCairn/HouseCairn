@@ -36,4 +36,3 @@ later record supersedes it.
 | [0031](0031-tasks-occurrences-and-recurrence.md) | Tasks, occurrences and recurrence | 2026-11-08 |
 | [0032](0032-dates-and-time-zone-of-tasks.md) | Dates and time zone of tasks | 2026-11-08 |
 | [0033](0033-done-with-undo.md) | "Done" in one gesture, with undo | 2026-11-08 |
-| [0034](0034-task-attachments.md) | Photos and files attached to tasks | 2026-11-08 |

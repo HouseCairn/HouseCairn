@@ -1977,10 +1977,6 @@ msgstr "Rien ne correspond à « %(query)s »."
 msgid "Tasks"
 msgstr "Tâches"
 
-#: tasks/files.py
-msgid "This type of file is not accepted. Use a JPEG, PNG or WebP image, or a PDF, text, Word, Excel or OpenDocument file."
-msgstr "Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou WebP, ou un fichier PDF, texte, Word, Excel ou OpenDocument."
-
 #: tasks/forms.py
 msgid "Item"
 msgstr "Élément"
@@ -2009,10 +2005,6 @@ msgstr "Ou un nouvel intervenant"
 msgid "Trade of the new contractor"
 msgstr "Métier du nouvel intervenant"
 
-#: tasks/forms.py templates/tasks/task_detail.html
-msgid "Photos and files"
-msgstr "Photos et fichiers"
-
 #: tasks/forms.py
 msgid "Markdown: how to do it, step by step. Links to web pages only."
 msgstr "Markdown : comment faire, pas à pas. Liens vers des pages web seulement."
@@ -2028,10 +2020,6 @@ msgstr "Note"
 #: tasks/forms.py
 msgid "New date"
 msgstr "Nouvelle date"
-
-#: tasks/forms.py
-msgid "Choose at least one file."
-msgstr "Choisissez au moins un fichier."
 
 #: tasks/models.py
 msgid "Low"
@@ -2215,14 +2203,6 @@ msgstr "occurrence"
 msgid "occurrences"
 msgstr "occurrences"
 
-#: tasks/models.py
-msgid "attachment"
-msgstr "pièce jointe"
-
-#: tasks/models.py
-msgid "attachments"
-msgstr "pièces jointes"
-
 #: tasks/services.py
 msgid "This person is not a member of this home."
 msgstr "Cette personne n'est pas membre de ce logement."
@@ -2254,14 +2234,6 @@ msgstr "L'occurrence suivante a été modifiée depuis : l'annulation n'est plus
 #: tasks/services.py
 msgid "The details can be filled in once the task is done."
 msgstr "Les détails se renseignent une fois la tâche faite."
-
-#: tasks/services.py
-msgid "This occurrence is not one of this task."
-msgstr "Cette occurrence n'appartient pas à cette tâche."
-
-#: tasks/services.py
-msgid "At most %(max)d attachments for a task."
-msgstr "%(max)d pièces jointes au plus pour une tâche."
 
 #: tasks/templatetags/tasks_extras.py
 #, python-format
@@ -2329,11 +2301,6 @@ msgid "Task added."
 msgstr "Tâche ajoutée."
 
 #: tasks/views.py
-#, python-format
-msgid "File not added: %(reason)s"
-msgstr "Fichier non ajouté : %(reason)s"
-
-#: tasks/views.py
 msgid "Task saved."
 msgstr "Tâche enregistrée."
 
@@ -2353,18 +2320,6 @@ msgstr "Tâche reportée."
 msgid "Details saved."
 msgstr "Détails enregistrés."
 
-#: tasks/views.py
-msgid "Some files were added."
-msgstr "Une partie des fichiers a été ajoutée."
-
-#: tasks/views.py
-msgid "Files added."
-msgstr "Fichiers ajoutés."
-
-#: tasks/views.py
-msgid "File deleted."
-msgstr "Fichier supprimé."
-
 #: templates/rooms/item_detail.html templates/rooms/room_detail.html
 #: templates/tasks/_due.html
 msgid "No date"
@@ -2378,10 +2333,6 @@ msgstr "Aucune tâche pour l'instant."
 #: templates/tasks/task_form.html templates/tasks/task_list.html
 msgid "Add a task"
 msgstr "Ajouter une tâche"
-
-#: templates/tasks/_attachments.html
-msgid "Photo: %(name)s"
-msgstr "Photo : %(name)s"
 
 #: templates/tasks/_due.html
 msgid "%(counter)s day late"
@@ -2404,14 +2355,6 @@ msgstr "Ignorée."
 #: templates/tasks/_undo.html templates/tasks/task_detail.html
 msgid "Undo"
 msgstr "Annuler"
-
-#: templates/tasks/attachment_form.html
-msgid "Add photos and files"
-msgstr "Ajouter des photos et des fichiers"
-
-#: templates/tasks/attachment_form.html
-msgid "Images (JPEG, PNG, WebP) and PDF, text, Word, Excel or OpenDocument files, up to %(size)s each. Location data and other information stored in an image are removed."
-msgstr "Images (JPEG, PNG, WebP) et fichiers PDF, texte, Word, Excel ou OpenDocument, jusqu'à %(size)s chacun. La position et les autres informations stockées dans une image sont supprimées."
 
 #: templates/tasks/choose_home.html
 msgid "Choose the home whose tasks you want to open."
@@ -2504,14 +2447,6 @@ msgstr "Budget matériel"
 #: templates/tasks/task_detail.html
 msgid "Contractor"
 msgstr "Intervenant"
-
-#: templates/tasks/task_detail.html
-msgid "Add photos or files"
-msgstr "Ajouter des photos ou des fichiers"
-
-#: templates/tasks/task_detail.html
-msgid "No file yet."
-msgstr "Aucun fichier pour l'instant."
 
 #: templates/tasks/task_detail.html
 msgid "History"

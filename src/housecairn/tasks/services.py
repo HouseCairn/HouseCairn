@@ -1,4 +1,4 @@
-"""Business rules of tasks, occurrences, contractors and attachments (docs/adr/0002, 0031-0034).
+"""Business rules of tasks, occurrences and contractors (docs/adr/0002, 0031-0033).
 
 Web views and API views call these functions; neither holds rules of its own.
 Reading is limited to the user's homes by the views (`housecairn.homes.scoping`);
@@ -12,8 +12,6 @@ from typing import Any
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.core.files.base import ContentFile
-from django.core.files.uploadedfile import UploadedFile
 from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -21,14 +19,10 @@ from django.utils.translation import gettext as _
 from housecairn.accounts.models import User
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership
-from housecairn.rooms import images
 from housecairn.rooms.models import Item, Room
-from housecairn.rooms.services import _read_upload
-from housecairn.tasks import files, recurrence
+from housecairn.tasks import recurrence
 from housecairn.tasks.models import (
-    MAX_ATTACHMENTS_PER_TASK,
     OPEN_STATUSES,
-    Attachment,
     Contractor,
     Occurrence,
     RepeatMode,
@@ -101,10 +95,6 @@ def occurrences_of(home: Home) -> models.QuerySet[Occurrence]:
     return Occurrence.objects.filter(home=home, task__deleted_at__isnull=True).select_related(
         "task", "task__room", "task__item", "task__assignee"
     )
-
-
-def attachments_of(home: Home) -> models.QuerySet[Attachment]:
-    return Attachment.objects.filter(home=home, task__deleted_at__isnull=True)
 
 
 def order_open(rows: models.QuerySet[Occurrence]) -> models.QuerySet[Occurrence]:
@@ -274,11 +264,10 @@ def update_task(
 
 @transaction.atomic
 def delete_task(actor: AnyUser, task: Task) -> None:
-    """Soft-delete the task with its occurrences and attachments."""
+    """Soft-delete the task with its occurrences."""
     _require_write(actor, task.home)
     now = timezone.now()
     Occurrence.objects.filter(task=task).update(deleted_at=now)
-    Attachment.objects.filter(task=task).update(deleted_at=now)
     task.soft_delete()
 
 
@@ -399,7 +388,6 @@ def _untouched(occurrence: Occurrence) -> bool:
         and occurrence.postponed_from is None
         and not occurrence.actual_cost
         and not occurrence.completion_note
-        and not occurrence.attachments.exists()
     )
 
 
@@ -442,95 +430,6 @@ def update_occurrence(actor: AnyUser, occurrence: Occurrence, **changes: Any) ->
     occurrence.full_clean()
     occurrence.save()
     return occurrence
-
-
-# ---------- attachments ----------
-
-
-def add_attachment(
-    actor: AnyUser,
-    task: Task,
-    *,
-    upload: UploadedFile,
-    occurrence: Occurrence | None = None,
-    name: str = "",
-) -> Attachment:
-    """Attach a photo or a file to a task (or to one of its occurrences).
-
-    The content decides the type: an image is decoded and written again as a photo
-    is (`rooms.images.process`), a document must be on the allow-list
-    (`files.detect`). The name sent with it is only kept, cleaned, to be shown.
-    """
-    _require_write(actor, task.home)
-    if occurrence is not None and occurrence.task_id != task.id:
-        raise ValidationError({"occurrence": _("This occurrence is not one of this task.")})
-    if Attachment.objects.filter(task=task).count() >= MAX_ATTACHMENTS_PER_TASK:
-        raise ValidationError(
-            _("At most %(max)d attachments for a task."), params={"max": MAX_ATTACHMENTS_PER_TASK}
-        )
-    data = _read_upload(upload)
-    display = files.clean_name(name or upload.name)
-    try:
-        processed = images.process(data)
-    except ValidationError as image_error:
-        if _looks_like_image(data):
-            raise image_error from None
-        kind = files.detect(data)
-        attachment = Attachment(
-            home=task.home,
-            task=task,
-            occurrence=occurrence,
-            name=display,
-            content_type=kind.content_type,
-            is_image=False,
-            size_bytes=len(data),
-        )
-        stored, thumbnail, extension = data, None, kind.extension
-    else:
-        attachment = Attachment(
-            home=task.home,
-            task=task,
-            occurrence=occurrence,
-            name=display,
-            content_type=processed.content_type,
-            is_image=True,
-            size_bytes=len(processed.data),
-            width=processed.width,
-            height=processed.height,
-        )
-        stored, thumbnail, extension = processed.data, processed.thumbnail, processed.extension
-    attachment.full_clean(exclude=["file", "thumbnail"])
-    attachment.file.save(extension, ContentFile(stored), save=False)
-    if thumbnail is not None:
-        attachment.thumbnail.save("-thumb.jpg", ContentFile(thumbnail), save=False)
-    try:
-        attachment.save()
-    except Exception:
-        attachment.file.delete(save=False)
-        attachment.thumbnail.delete(save=False)
-        raise
-    return attachment
-
-
-def _looks_like_image(data: bytes) -> bool:
-    """The start of the file is that of a JPEG, PNG or WebP: its error is the image's own."""
-    return data.startswith((b"\xff\xd8\xff", b"\x89PNG\r\n\x1a\n")) or (
-        data[:4] == b"RIFF" and data[8:12] == b"WEBP"
-    )
-
-
-def update_attachment(actor: AnyUser, attachment: Attachment, *, name: str) -> Attachment:
-    _require_write(actor, attachment.home)
-    attachment.name = files.clean_name(name)
-    attachment.full_clean(exclude=["file", "thumbnail"])
-    attachment.save()
-    return attachment
-
-
-def delete_attachment(actor: AnyUser, attachment: Attachment) -> None:
-    """Soft-delete: the file stays on disk until the purge of deleted records."""
-    _require_write(actor, attachment.home)
-    attachment.soft_delete()
 
 
 # ---------- helpers shared by the views ----------
