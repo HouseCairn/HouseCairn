@@ -106,7 +106,11 @@ class RoomCreateView(RoomFormMixin):
     form_class = forms.RoomForm
 
     def form_valid(self, form: forms.RoomForm) -> HttpResponse:
-        room = services.create_room(self.request.user, self.home, **form.cleaned_data)
+        try:
+            room = services.create_room(self.request.user, self.home, **form.cleaned_data)
+        except ValidationError as exc:
+            _errors(form, exc)
+            return self.form_invalid(form)
         messages.success(self.request, _("Room added."))
         return redirect("rooms:detail", home_id=self.home.id, room_id=room.id)
 
@@ -149,7 +153,11 @@ class RoomEditView(RoomFormMixin):
         return super().get_context_data(room=self.get_room(), **kwargs)
 
     def form_valid(self, form: forms.RoomForm) -> HttpResponse:
-        room = services.update_room(self.request.user, self.get_room(), **form.cleaned_data)
+        try:
+            room = services.update_room(self.request.user, self.get_room(), **form.cleaned_data)
+        except ValidationError as exc:
+            _errors(form, exc)
+            return self.form_invalid(form)
         messages.success(self.request, _("Room saved."))
         return redirect("rooms:detail", home_id=self.home.id, room_id=room.id)
 

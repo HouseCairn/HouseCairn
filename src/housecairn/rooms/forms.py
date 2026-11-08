@@ -6,6 +6,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from housecairn.core.text import without_control_characters
 from housecairn.rooms.models import (
     Item,
     PhotoCategory,
@@ -50,7 +51,10 @@ class RoomForm(forms.ModelForm[Room]):
     def clean(self) -> dict[str, Any]:
         data: dict[str, Any] = super().clean() or {}
         kind = data.get("kind")
-        if not (data.get("name") or "").strip() and kind and "name" not in self.errors:
+        # Clean the name first: one made only of invisible characters is an empty one.
+        if "name" in data:
+            data["name"] = without_control_characters(data["name"] or "").strip()
+        if not data.get("name") and kind and "name" not in self.errors:
             if kind == RoomKind.OTHER:
                 self.add_error("name", _("Give the room a name."))
             else:
