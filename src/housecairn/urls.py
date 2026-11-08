@@ -7,6 +7,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerSplitVie
 from housecairn.accounts import views as account_views
 from housecairn.core import views as core_views
 from housecairn.homes import views as home_views
+from housecairn.instance import views as instance_views
 from housecairn.rooms import views as room_views
 
 urlpatterns = [
@@ -21,9 +22,21 @@ urlpatterns = [
     path("rooms/", room_views.EntryView.as_view(), name="rooms"),
     # Invitation links, opened signed in or not (docs/adr/0020).
     path("invitations/<str:token>/", home_views.InvitationView.as_view(), name="invitation"),
+    # Instance invitation links: an account, without a home (docs/adr/0022).
+    path(
+        "join/<str:token>/",
+        instance_views.InstanceInvitationView.as_view(),
+        name="instance-invitation",
+    ),
+    path("instance/", include("housecairn.instance.urls")),
     # Password reset sends an email: no page without an outgoing mail server.
     # These patterns come first and carry no name, so allauth's own names still
     # reverse to the same addresses.
+    path("accounts/delete/", account_views.AccountDeleteView.as_view(), name="account_delete"),
+    # Sign-up carries the anti-robot check (docs/adr/0024); same address, allauth's name.
+    path("accounts/signup/", account_views.SignupView.as_view()),
+    # Adding an address sends it a verification: no page without an outgoing mail server.
+    path("accounts/email/", account_views.email_addresses),
     path("accounts/password/reset/", account_views.password_reset),
     path("accounts/password/reset/done/", account_views.password_reset_done),
     path("accounts/", include("allauth.urls")),

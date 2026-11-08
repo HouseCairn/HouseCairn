@@ -150,6 +150,29 @@ class TestBootstrap:
         assert not local.is_superuser
 
 
+@pytest.mark.parametrize("oidc_signup", ["closed", "open"])
+@pytest.mark.parametrize("verified", [True, False])
+def test_no_account_is_taken_over_by_a_matching_address(
+    make_user: Callable[..., User], oidc_signup: str, verified: bool
+) -> None:
+    """A provider's claim of an address never signs in to, nor links to, a local account.
+
+    Behaviour, not settings: the sign-in of an identity that asserts the address
+    of an existing local account leaves that account unlinked and the visitor
+    anonymous (docs/adr/0021).
+    """
+    local = make_user("someone@example.com")
+    with override_settings(HOUSECAIRN_OIDC_SIGNUP=oidc_signup):
+        response, request = sign_in(email="someone@example.com", email_verified=verified)
+    assert not request.user.is_authenticated
+    assert response.status_code in {302, 403}
+    assert not SocialAccount.objects.exists()
+    assert list(User.objects.values_list("email", flat=True)) == ["someone@example.com"]
+    local.refresh_from_db()
+    assert not local.is_staff
+    assert not local.is_superuser
+
+
 class TestSimultaneousFirstSignIns:
     """Both sign-ins are checked before either account is saved."""
 

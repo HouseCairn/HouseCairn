@@ -5,13 +5,15 @@ version for this job only.
 
     python tests/e2e/browser_checks.py capture --base http://localhost:8000 --out shots
     python tests/e2e/browser_checks.py passkey --base http://localhost:8001
+    python tests/e2e/browser_checks.py sso --base http://localhost:8001 --provider http://127.0.0.1:8002
 
 `capture` takes the screenshots attached to the workflow run: the same screens on a
 phone and on a desktop, in English and French. `passkey` replays the sign-in with a
 virtual authenticator (Chromium's WebAuthn emulation): it registers a passkey, then
 signs in through the conditional (autofill) path and through the fallback button.
 What no script can do, the real autofill pop-up of each browser, is listed in
-docs/adr/0018.
+docs/adr/0018. `sso` clicks the provider button of the sign-in page once and checks that
+the browser lands on the provider, with no confirmation page of the application in between.
 """
 
 import argparse
@@ -49,6 +51,15 @@ SCREENS = [
     ("member", "{member}", True),
     ("invitation", "{invitation}", False),
     ("invitation-invalid", "/invitations/hci_no-longer-valid/", False),
+    # Accounts, data and administration (docs/adr/0022 and 0023).
+    ("password-change", "/accounts/password/change/", True),
+    ("email-addresses", "/accounts/email/", True),
+    ("account-delete", "/accounts/delete/", True),
+    ("home-audit", "{home}audit/", True),
+    ("home-delete", "{home}delete/", True),
+    ("instance", "/instance/", True),
+    ("instance-audit", "/instance/audit/", True),
+    ("instance-invitation", "{instance_invitation}", False),
     # Rooms, items and photos (docs/adr/0029, 0030).
     ("rooms", "{home}rooms/", True),
     ("rooms-reorder", "{home}rooms/?reorder=1", True),
@@ -63,10 +74,13 @@ SCREENS = [
 NOT_FOUND = {"not-found", "invitation-invalid"}
 
 
-def resolve(page: Page, base: str, path: str, invitation: str) -> str:
+def resolve(page: Page, base: str, path: str, invitations: tuple[str, str]) -> str:
     """Fill in the addresses of the demonstration data, read through the API."""
+    invitation, instance_invitation = invitations
     if "{invitation}" in path:
         return path.replace("{invitation}", f"/invitations/{invitation}/")
+    if "{instance_invitation}" in path:
+        return path.replace("{instance_invitation}", f"/join/{instance_invitation}/")
     placeholders = ("{home}", "{member}", "{room}", "{item}")
     if not any(placeholder in path for placeholder in placeholders):
         return path
@@ -92,7 +106,7 @@ def sign_in(page: Page, base: str) -> None:
     page.goto(f"{base}/accounts/login/")
     page.fill("input[name=login]", EMAIL)
     page.fill("input[name=password]", PASSWORD)
-    page.click("main form button[type=submit]")
+    page.click("main form:has(input[name=login]) button[type=submit]")
     page.wait_for_url(f"{base}/h/")
 
 
@@ -102,7 +116,7 @@ def sign_out(page: Page, base: str) -> None:
     page.wait_for_url(f"{base}/")
 
 
-def capture(browser: Browser, base: str, out: Path, invitation: str) -> None:
+def capture(browser: Browser, base: str, out: Path, invitations: tuple[str, str]) -> None:
     out.mkdir(parents=True, exist_ok=True)
     for device, options in DEVICES.items():
         for language in ("en", "fr"):
@@ -123,8 +137,9 @@ def capture(browser: Browser, base: str, out: Path, invitation: str) -> None:
                 if authenticated and session is None:
                     sign_in(page, base)
                     session = context.storage_state()
-                path = resolve(page, base, path, invitation)
+                path = resolve(page, base, path, invitations)
                 response = page.goto(f"{base}{path}")
+                say(f"{device}-{language}-{name}")
                 page.wait_for_load_state("networkidle")
                 expected = 404 if name in NOT_FOUND else 200
                 if response is None or response.status != expected:
@@ -209,15 +224,52 @@ def passkey(browser: Browser, base: str) -> None:
     context.close()
 
 
+def sso(browser: Browser, base: str, provider: str) -> None:
+    """One click from the sign-in page to the provider (a stub that serves the discovery)."""
+    page = browser.new_page(viewport={"width": 390, "height": 844})
+    navigations: list[str] = []
+    page.on(
+        "request",
+        lambda request: (
+            navigations.append(f"{request.method} {request.url}")
+            if request.is_navigation_request()
+            else None
+        ),
+    )
+    page.goto(f"{base}/accounts/login/")
+    button = page.locator("form button:has-text('Continue with Company SSO')")
+    check(button.count() == 1, "one provider button on the sign-in page")
+    navigations.clear()
+    button.click()
+    page.wait_for_url(f"{provider}/authorize*", timeout=15000)
+    check(True, "one click reached the provider")
+    check(
+        navigations[0].startswith("POST ") and "/accounts/oidc/" in navigations[0],
+        f"the click posts to the provider login ({navigations[0]})",
+    )
+    check(
+        not any("/accounts/oidc/" in n and n.startswith("GET ") for n in navigations),
+        "no confirmation page between the button and the provider",
+    )
+    check("state=" in page.url and "code_challenge=" in page.url, "state and PKCE are sent")
+    page.close()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("mode", choices=["capture", "passkey"])
+    parser.add_argument("mode", choices=["capture", "passkey", "sso"])
     parser.add_argument("--base", required=True, help="address of the running instance")
     parser.add_argument("--out", type=Path, default=Path("shots"))
+    parser.add_argument("--provider", help="address of the stub identity provider (sso mode)")
     parser.add_argument(
         "--invitation-file",
         type=Path,
         help="file holding the secret of a pending invitation of the demonstration data",
+    )
+    parser.add_argument(
+        "--instance-invitation-file",
+        type=Path,
+        help="file holding the secret of a pending invitation to the instance",
     )
     args = parser.parse_args()
     base = args.base.rstrip("/")
@@ -225,7 +277,11 @@ def main() -> None:
         browser = playwright.chromium.launch()
         if args.mode == "capture":
             invitation = args.invitation_file.read_text().strip() if args.invitation_file else ""
-            capture(browser, base, args.out, invitation)
+            instance_file = args.instance_invitation_file
+            instance_invitation = instance_file.read_text().strip() if instance_file else ""
+            capture(browser, base, args.out, (invitation, instance_invitation))
+        elif args.mode == "sso":
+            sso(browser, base, args.provider.rstrip("/"))
         else:
             passkey(browser, base)
         browser.close()

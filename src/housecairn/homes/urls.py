@@ -11,6 +11,9 @@ urlpatterns = [
     path("new/", views.HomeCreateView.as_view(), name="create"),
     path("<uuid:home_id>/", views.HomeDetailView.as_view(), name="detail"),
     path("<uuid:home_id>/household/", views.HouseholdView.as_view(), name="household"),
+    path("<uuid:home_id>/export/", views.HomeExportView.as_view(), name="export"),
+    path("<uuid:home_id>/delete/", views.HomeDeleteView.as_view(), name="delete"),
+    path("<uuid:home_id>/audit/", views.HomeAuditView.as_view(), name="audit"),
     path("<uuid:home_id>/household/invite/", views.InviteView.as_view(), name="invite"),
     path(
         "<uuid:home_id>/household/sign-in/",
@@ -18,6 +21,7 @@ urlpatterns = [
         name="required-provider",
     ),
     path("<uuid:home_id>/household/leave/", views.LeaveView.as_view(), name="leave"),
+    path("<uuid:home_id>/household/unlock/", views.UnlockView.as_view(), name="unlock"),
     path(
         "<uuid:home_id>/household/members/<uuid:member_id>/",
         views.MemberView.as_view(),

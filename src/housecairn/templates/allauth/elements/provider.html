@@ -1,2 +1,10 @@
-{% load i18n %}{% comment %}One single-sign-on button: "Continue with" and the provider's name.{% endcomment %}
-<a class="button button-secondary" href="{{ attrs.href }}">{% blocktranslate with provider=attrs.name %}Continue with {{ provider }}{% endblocktranslate %}</a>
+{% load i18n %}{% comment %}
+  One single-sign-on button: "Continue with" and the provider's name. A form posted
+  with the CSRF token, not a link: allauth shows a confirmation page to a GET and
+  goes straight to the provider for a POST, and the instance does not turn
+  SOCIALACCOUNT_LOGIN_ON_GET on, which would let any link start a sign-in.
+{% endcomment %}
+<form method="post" action="{{ attrs.href }}">
+  {% csrf_token %}
+  <button type="submit" class="button button-secondary">{% blocktranslate with provider=attrs.name %}Continue with {{ provider }}{% endblocktranslate %}</button>
+</form>

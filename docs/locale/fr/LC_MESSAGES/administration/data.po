@@ -1,0 +1,129 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 00:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Export and deletion"
+msgstr "Export et suppression"
+
+msgid "The data of a home belongs to its owners, who can take it out and delete it; the data of a person is erased with their account ([ADR 0023](../adr/0023-audit-log-export-erasure-and-email-alerts.md)). The administrator of the instance does neither for a home they do not own."
+msgstr "Les données d'un logement appartiennent à ses propriétaires, qui peuvent les récupérer et les supprimer ; les données d'une personne sont effacées avec son compte ([ADR 0023](../adr/0023-audit-log-export-erasure-and-email-alerts.md)). L'administrateur de l'instance ne fait ni l'un ni l'autre pour un logement dont il n'est pas propriétaire."
+
+msgid "Export of a home"
+msgstr "Export d'un logement"
+
+msgid "An owner downloads the archive from the page of the home (**Export all data**) or from the API (`POST /api/v1/homes/<id>/export/`, signed in; an API token cannot). The export is written to the audit log of the home."
+msgstr "Un propriétaire télécharge l'archive depuis la page du logement (**Exporter toutes les données**) ou depuis l'API (`POST /api/v1/homes/<id>/export/`, connecté ; un jeton d'API ne peut pas). L'export est inscrit au journal d'audit du logement."
+
+msgid "The archive is a zip:"
+msgstr "L'archive est un fichier zip :"
+
+msgid "Part"
+msgstr "Élément"
+
+msgid "Content"
+msgstr "Contenu"
+
+msgid "`export.json`"
+msgstr "`export.json`"
+
+msgid "The data, as JSON (below)."
+msgstr "Les données, au format JSON (ci-dessous)."
+
+msgid "`files/`"
+msgstr "`files/`"
+
+msgid "The files of the home, at the paths `export.json` lists. None yet."
+msgstr "Les fichiers du logement, aux chemins que liste `export.json`. Aucun pour l'instant."
+
+msgid "`README.txt`"
+msgstr "`README.txt`"
+
+msgid "A reminder of the format."
+msgstr "Un rappel du format."
+
+msgid "`export.json` is versioned. Version `1` has these keys:"
+msgstr "`export.json` est versionné. La version `1` comporte ces clés :"
+
+msgid "Key"
+msgstr "Clé"
+
+msgid "`format`, `version`"
+msgstr "`format`, `version`"
+
+msgid "`\"housecairn-export\"` and `1`. A change that removes or renames a key raises the version."
+msgstr "`\"housecairn-export\"` et `1`. Un changement qui supprime ou renomme une clé augmente la version."
+
+msgid "`exported_at`, `application_version`"
+msgstr "`exported_at`, `application_version`"
+
+msgid "When, and by which version."
+msgstr "Quand, et par quelle version."
+
+msgid "`home`"
+msgstr "`home`"
+
+msgid "`id`, `name`, `currency`, `required_provider`, `created_at`."
+msgstr "`id`, `name`, `currency`, `required_provider`, `created_at`."
+
+msgid "`members`"
+msgstr "`members`"
+
+msgid "`id`, `email`, `name`, `role`, `joined_at` of each member."
+msgstr "`id`, `email`, `name`, `role`, `joined_at` de chaque membre."
+
+msgid "`pending_invitations`"
+msgstr "`pending_invitations`"
+
+msgid "`id`, `email`, `role`, `sent_at`, `expires_at`; never a link."
+msgstr "`id`, `email`, `role`, `sent_at`, `expires_at` ; jamais de lien."
+
+msgid "`events`"
+msgstr "`events`"
+
+msgid "`id`, `kind`, `payload`, `received_at` of the events received."
+msgstr "`id`, `kind`, `payload`, `received_at` des événements reçus."
+
+msgid "`files`"
+msgstr "`files`"
+
+msgid "`path` and `size` of each file in `files/`."
+msgstr "`path` et `size` de chaque fichier de `files/`."
+
+msgid "Each lot that adds data adds its section here and to the archive. The archive holds the home it was made for and nothing of another."
+msgstr "Chaque lot qui ajoute des données ajoute sa section ici et dans l'archive. L'archive contient le logement pour lequel elle a été faite, et rien d'un autre."
+
+msgid "Deletion of a home"
+msgstr "Suppression d'un logement"
+
+msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
+msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
+
+msgid "Erasure of an account"
+msgstr "Effacement d'un compte"
+
+msgid "**Delete my account** (see [Account pages](../screens/account.md)) erases the account, its sign-in methods, devices and API tokens, the homes where it is the only member, and the invitations to its address. It is refused for the only administrator and for the only owner of a home with other members: hand ownership over, or delete the home, first. The audit log keeps that it happened and no longer says who."
+msgstr "**Supprimer mon compte** (voir [Pages du compte](../screens/account.md)) efface le compte, ses méthodes de connexion, ses appareils et ses jetons d'API, les logements dont il est le seul membre, et les invitations envoyées à son adresse. L'effacement est refusé pour l'unique administrateur et pour l'unique propriétaire d'un logement qui a d'autres membres : transmettez d'abord la propriété, ou supprimez le logement. Le journal d'audit garde la trace de l'opération, sans plus dire qui."
+
+msgid "Backups"
+msgstr "Sauvegardes"
+
+msgid "Deleted data stays in backups until they expire: tell people how long you keep them (see [Backup](backup.md))."
+msgstr "Les données supprimées restent dans les sauvegardes jusqu'à leur expiration : indiquez aux gens combien de temps vous les conservez (voir [Sauvegarde](backup.md))."
+

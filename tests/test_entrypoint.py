@@ -162,6 +162,7 @@ class TestCommands:
         assert entrypoint.main(["run"]) == 0
         assert calls == [
             ["-m", "django", "migrate", "--noinput"],
+            ["-m", "django", "createcachetable"],
             ["web server", "task worker"],
         ]
         assert (data / "secret_key").is_file()

@@ -5,6 +5,7 @@ from typing import Any, ClassVar, Self, TypeVar
 from django.conf import settings
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -98,6 +99,19 @@ class Invitation(BaseModel):
     class Meta:
         verbose_name = _("invitation")
         verbose_name_plural = _("invitations")
+        constraints = [
+            # One invitation at a time per home and address, settled by the
+            # database: of two simultaneous requests, one fails. Lapsed ones
+            # are revoked when a new invitation is made (services.invite).
+            models.UniqueConstraint(
+                Lower("email"),
+                "home",
+                condition=models.Q(
+                    accepted_at__isnull=True, revoked_at__isnull=True, deleted_at__isnull=True
+                ),
+                name="unique_pending_invitation",
+            )
+        ]
 
     def __str__(self) -> str:
         return f"{self.email} → {self.home} ({self.role})"

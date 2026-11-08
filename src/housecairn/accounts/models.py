@@ -110,3 +110,25 @@ class InstanceSetup(models.Model):
 
     def __str__(self) -> str:
         return str(self.get_method_display())
+
+
+class KnownDevice(models.Model):
+    """A browser the account has signed in from (docs/adr/0023).
+
+    The browser holds a random secret in a cookie; only its SHA-256 digest is
+    kept here. A sign-in from a browser without a known secret raises a
+    security alert by email, once the account has at least one known device.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="known_devices")
+    digest = models.CharField(max_length=64, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("known device")
+        verbose_name_plural = _("known devices")
+
+    def __str__(self) -> str:
+        return f"{self.user} ({self.created_at:%Y-%m-%d})"

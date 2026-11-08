@@ -7,19 +7,22 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.paginator import Paginator
 from django.db import models
-from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import FileResponse, Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _lazy
 from django.views import View
 from django.views.generic import DetailView, FormView, ListView
 
 from housecairn.accounts.models import User
 from housecairn.accounts.services import email_is_configured
-from housecairn.homes import forms, services, sso
+from housecairn.audit import services as audit_services
+from housecairn.homes import exports, forms, services, sso
 from housecairn.homes.models import Home, Invitation, Membership
 from housecairn.homes.scoping import (
     WebHomeScopedMixin,
@@ -27,6 +30,11 @@ from housecairn.homes.scoping import (
     delivery_for,
     homes_for_request,
     invitation_link,
+)
+
+DELIVERY_FAILED = _lazy(
+    "The invitation is saved, but the email could not be sent. "
+    "Try Send again later, or ask the administrator to check the outgoing email settings."
 )
 
 
@@ -114,18 +122,85 @@ class HouseholdView(WebHomeScopedMixin, DetailView[Home]):
         return context
 
 
+class HomeAuditView(WebHomeScopedMixin, DetailView[Home]):
+    """What happened in the home: roles, invitations, sign-in rule, export. Owners only."""
+
+    template_name = "homes/audit.html"
+    context_object_name = "home"
+    paginate_by = 50
+
+    def get_object(self, queryset: models.QuerySet[Home] | None = None) -> Home:
+        return self.get_home()
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        entries = audit_services.home_log(self.request.user, self.object.id)
+        context["page"] = Paginator(entries, self.paginate_by).get_page(
+            self.request.GET.get("page")
+        )
+        return context
+
+
+class HomeExportView(WebHomeScopedMixin, View):
+    """Download everything of the home as one archive. Owners only."""
+
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
+        home = self.get_home()
+        archive, name = exports.export_home(request.user, home)
+        return FileResponse(
+            archive, as_attachment=True, filename=name, content_type="application/zip"
+        )
+
+
+class HomeDeleteView(WebHomeScopedMixin, FormView[forms.DeleteHomeForm]):
+    """Delete the home for good, after typing its name. Owners only."""
+
+    template_name = "homes/delete.html"
+    form_class = forms.DeleteHomeForm
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        home = self.get_home()
+        if not services.is_owner(self.request.user, home):
+            raise PermissionDenied
+        context["home"] = home
+        context["member_count"] = services.members(home).count()
+        return context
+
+    def form_valid(self, form: forms.DeleteHomeForm) -> HttpResponse:
+        home = self.get_home()
+        try:
+            services.delete_home(
+                self.request.user, home, confirmation=form.cleaned_data["confirmation"]
+            )
+        except ValidationError as exc:
+            form.add_error("confirmation", exc)
+            return self.form_invalid(form)
+        messages.success(self.request, _("The home was deleted."))
+        return redirect("homes:list")
+
+
 class HomeActionView(WebHomeScopedMixin, View):
     """Base of the household's POST actions: run, then back to the household."""
 
     http_method_names = ["post"]
 
+    def locked_ok(self) -> bool:
+        """Whether this action is allowed on a home whose sign-in requirement is not met."""
+        return False
+
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        home = self.get_home()
+        home = self.get_home(allow_locked=self.locked_ok())
         try:
             response = self.act(home)
         except ValidationError as exc:
             for message in exc.messages:
                 messages.error(request, message)
+            return redirect("homes:household", home_id=home.id)
+        except services.DeliveryFailedError:
+            messages.warning(request, DELIVERY_FAILED)
             return redirect("homes:household", home_id=home.id)
         return response or redirect("homes:household", home_id=home.id)
 
@@ -235,7 +310,49 @@ class MemberRoleView(HomeActionView):
         return None
 
 
-class MemberRemoveView(HomeActionView):
+class ConfirmedActionView(HomeActionView):
+    """A POST action that is first confirmed on a page of its own (GET)."""
+
+    http_method_names = ["get", "post"]
+    confirm_template = "homes/confirm.html"
+
+    def confirmation(self, home: Home) -> dict[str, Any]:  # pragma: no cover - abstract
+        raise NotImplementedError
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        home = self.get_home(allow_locked=self.locked_ok())
+        return TemplateResponse(
+            request, self.confirm_template, {"home": home, **self.confirmation(home)}
+        ).render()
+
+
+class MemberRemoveView(ConfirmedActionView):
+    def _is_me(self) -> bool:
+        return Membership.objects.filter(
+            id=self.kwargs["member_id"], user=self.request.user
+        ).exists()
+
+    def locked_ok(self) -> bool:
+        # Leaving never needs the provider: nobody is held in a home.
+        return self._is_me()
+
+    def confirmation(self, home: Home) -> dict[str, Any]:
+        membership = self.membership(home)
+        me = membership.user_id == self.request.user.pk
+        return {
+            "title": _("Leave this home?") if me else _("Remove this member?"),
+            "text": _(
+                "You will lose access to %(home)s. Someone has to invite you again to return."
+            )
+            % {"home": home.name}
+            if me
+            else _("%(who)s will lose access to %(home)s.")
+            % {"who": membership.user.get_full_name() or membership.user.email, "home": home.name},
+            "action": reverse("homes:member-remove", args=[home.id, membership.id]),
+            "button": _("Leave") if me else _("Remove"),
+            "back": reverse("homes:member", args=[home.id, membership.id]),
+        }
+
     def act(self, home: Home) -> HttpResponse | None:
         membership = self.membership(home)
         services.remove_member(self.request.user, membership)
@@ -246,11 +363,42 @@ class MemberRemoveView(HomeActionView):
         return None
 
 
-class LeaveView(HomeActionView):
+class LeaveView(ConfirmedActionView):
+    def locked_ok(self) -> bool:
+        return True
+
+    def confirmation(self, home: Home) -> dict[str, Any]:
+        return {
+            "title": _("Leave this home?"),
+            "text": _(
+                "You will lose access to %(home)s. Someone has to invite you again to return."
+            )
+            % {"home": home.name},
+            "action": reverse("homes:leave", args=[home.id]),
+            "button": _("Leave"),
+            "back": reverse("homes:household", args=[home.id]),
+        }
+
     def act(self, home: Home) -> HttpResponse | None:
         services.leave_home(self.request.user, home)
         messages.success(self.request, _("You left %(home)s.") % {"home": home.name})
         return redirect("homes:list")
+
+
+class UnlockView(HomeActionView):
+    """Stop requiring a sign-in provider the instance no longer offers."""
+
+    def locked_ok(self) -> bool:
+        return True
+
+    def act(self, home: Home) -> HttpResponse | None:
+        services.lift_unavailable_requirement(
+            self.request.user,
+            home,
+            declared=[p.id for p in sso.declared_providers(self.request)],
+        )
+        messages.success(self.request, _("Sign-in requirement removed."))
+        return redirect("homes:household", home_id=home.id)
 
 
 class TransferView(HomeActionView):
@@ -319,8 +467,12 @@ class InvitationView(View):
         ).render()
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        form = None if request.user.is_authenticated else self.signup_form()
+        form = self.signup_form() if self.may_create_account() else None
         return self.render(form=form)
+
+    def may_create_account(self) -> bool:
+        """Only a link that went by email creates an account (docs/adr/0020)."""
+        return not self.request.user.is_authenticated and self.invitation.delivered_by_email
 
     def signup_form(self, data: Any = None) -> forms.InvitationSignupForm:
         return forms.InvitationSignupForm(data, email=self.invitation.email)
@@ -328,6 +480,9 @@ class InvitationView(View):
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         if request.user.is_authenticated:
             return self.accept(request.user)
+        if not self.may_create_account():
+            # The same page as a visit: it says nothing about accounts.
+            return self.render(form=None)
         form = self.signup_form(request.POST)
         if not form.is_valid():
             return self.render(form=form)
@@ -337,6 +492,8 @@ class InvitationView(View):
             )
         except ValidationError:
             return self.render(form=None, account_exists=True)
+        except PermissionDenied:
+            return self.render(form=None)
         except Invitation.DoesNotExist as exc:
             raise Http404 from exc
         login(request, user, backend="django.contrib.auth.backends.ModelBackend")

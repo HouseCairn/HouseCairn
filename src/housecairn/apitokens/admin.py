@@ -20,16 +20,21 @@ class ApiTokenAdmin(admin.ModelAdmin[ApiToken]):
         "name",
         "prefix",
         "scopes",
-        "homes",
         "expires_at",
         "revoked_at",
         "last_used_at",
         "created_at",
     )
-    exclude = ("digest",)
+    # Neither the secret nor the homes the token opens: an administrator may list and
+    # revoke tokens, and learns nothing of any home (docs/adr/0022).
+    exclude = ("digest", "homes")
     actions = ("revoke",)
 
     def has_add_permission(self, request: HttpRequest) -> bool:
+        return False
+
+    def has_delete_permission(self, request: HttpRequest, obj: ApiToken | None = None) -> bool:
+        # Revoke instead: a deletion page would list the homes of the token.
         return False
 
     @admin.action(description=_("Revoke selected tokens"))

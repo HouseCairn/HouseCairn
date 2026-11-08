@@ -253,6 +253,11 @@ def migrate() -> None:
     result = subprocess.run(django_command("migrate", "--noinput"), check=False)  # noqa: S603
     if result.returncode != 0:
         raise SystemExit(f"housecairn: migrations failed (exit code {result.returncode}).")
+    # The table of a database cache (HOUSECAIRN_CACHE_URL=dbcache://...); a no-op for any
+    # other cache (docs/adr/0025).
+    result = subprocess.run(django_command("createcachetable"), check=False)  # noqa: S603
+    if result.returncode != 0:
+        raise SystemExit(f"housecairn: cache table failed (exit code {result.returncode}).")
 
 
 def command_run() -> int:
