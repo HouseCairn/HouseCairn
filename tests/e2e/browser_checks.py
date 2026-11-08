@@ -49,6 +49,16 @@ SCREENS = [
     ("member", "{member}", True),
     ("invitation", "{invitation}", False),
     ("invitation-invalid", "/invitations/hci_no-longer-valid/", False),
+    # Rooms, items and photos (docs/adr/0029, 0030).
+    ("rooms", "{home}rooms/", True),
+    ("rooms-reorder", "{home}rooms/?reorder=1", True),
+    ("room", "{room}", True),
+    ("room-form", "{home}rooms/new/", True),
+    ("room-memory", "{room}memory/", True),
+    ("item", "{item}", True),
+    ("item-form", "{room}items/new/", True),
+    ("photo-form", "{room}photos/new/", True),
+    ("search", "{home}search/?q=stove", True),
 ]
 NOT_FOUND = {"not-found", "invitation-invalid"}
 
@@ -57,7 +67,8 @@ def resolve(page: Page, base: str, path: str, invitation: str) -> str:
     """Fill in the addresses of the demonstration data, read through the API."""
     if "{invitation}" in path:
         return path.replace("{invitation}", f"/invitations/{invitation}/")
-    if "{home}" not in path and "{member}" not in path:
+    placeholders = ("{home}", "{member}", "{room}", "{item}")
+    if not any(placeholder in path for placeholder in placeholders):
         return path
     homes = page.request.get(f"{base}/api/v1/homes/").json()["results"]
     home = next(h for h in homes if h["name"] == "Main house")
@@ -66,6 +77,14 @@ def resolve(page: Page, base: str, path: str, invitation: str) -> str:
         members = page.request.get(f"{base}/api/v1/homes/{home['id']}/members/").json()
         other = next(m for m in members["results"] if m["user"]["email"] != EMAIL)
         return f"{home_path}household/members/{other['id']}/"
+    if "{room}" in path or "{item}" in path:
+        rooms = page.request.get(f"{base}/api/v1/homes/{home['id']}/rooms/").json()["results"]
+        room = next(r for r in rooms if r["name"] == "Living room")
+        items = page.request.get(f"{base}/api/v1/homes/{home['id']}/items/").json()["results"]
+        item = next(i for i in items if i["name"] == "Wood stove")
+        path = path.replace("{room}", f"{home_path}rooms/{room['id']}/")
+        path = path.replace("{item}", f"{home_path}items/{item['id']}/")
+        return path
     return path.replace("{home}", home_path)
 
 

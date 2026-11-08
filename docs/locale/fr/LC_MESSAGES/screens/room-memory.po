@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 00:13+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Room memory"
+msgstr "Mémoire de la pièce"
+
+msgid "What was used and fitted in a room, at `/h/<home id>/rooms/<room id>/memory/`, to find it again when a wall needs touching up or a floor replacing. Every field is optional."
+msgstr "Ce qui a été utilisé et posé dans une pièce, sur `/h/<home id>/rooms/<room id>/memory/`, pour le retrouver quand un mur a besoin de retouches ou un sol d'être remplacé. Tous les champs sont facultatifs."
+
+msgid "Field"
+msgstr "Champ"
+
+msgid "Content"
+msgstr "Contenu"
+
+msgid "Paint colour, brand, reference, batch"
+msgstr "Couleur, marque, référence et lot de la peinture"
+
+msgid "As written on the tin."
+msgstr "Tels qu'écrits sur le pot."
+
+msgid "Paint left in stock"
+msgstr "Peinture restant en stock"
+
+msgid "For example \"half a tin, in the garage\"."
+msgstr "Par exemple « un demi-pot, au garage »."
+
+msgid "Floor covering, wall covering"
+msgstr "Revêtement de sol, revêtement de mur"
+
+msgid "The product, and where it was bought."
+msgstr "Le produit, et où il a été acheté."
+
+msgid "Memory notes"
+msgstr "Notes de mémoire"
+
+msgid "Free text, 4,000 characters at most."
+msgstr "Texte libre, 4 000 caractères au plus."
+
+msgid "Photos of the open walls are added from the [room page](room.md)."
+msgstr "Les photos des murs ouverts s'ajoutent depuis la [page de la pièce](room.md)."
+

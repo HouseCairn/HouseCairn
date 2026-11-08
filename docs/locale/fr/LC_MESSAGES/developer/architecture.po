@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 19:43+0000\n"
+"POT-Creation-Date: 2026-11-08 00:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -46,6 +46,6 @@ msgstr "**Aucune ressource externe** et une Content Security Policy stricte ([AD
 msgid "**English source, French shipped**, no hard-coded string ([ADR 0013](../adr/0013-internationalization.md))."
 msgstr "**Anglais comme langue source, français livré**, aucune chaîne en dur ([ADR 0013](../adr/0013-internationalization.md))."
 
-msgid "The code is in `src/housecairn/`, one Django application per domain (`accounts`, `apitokens`, `core`, `events`, `homes`)."
-msgstr "Le code est dans `src/housecairn/`, une application Django par domaine (`accounts`, `apitokens`, `core`, `events`, `homes`)."
+msgid "The code is in `src/housecairn/`, one Django application per domain (`accounts`, `apitokens`, `core`, `events`, `homes`, `rooms`)."
+msgstr "Le code est dans `src/housecairn/`, une application Django par domaine (`accounts`, `apitokens`, `core`, `events`, `homes`, `rooms`)."
 

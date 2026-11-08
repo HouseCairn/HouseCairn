@@ -28,6 +28,7 @@ we would otherwise write (principle "do not reinvent"):
 | django-environ | Configuration from environment variables (0012). |
 | django-csp | Content Security Policy (0011). |
 | python-dateutil | RFC 5545 recurrence rules, needed from the tasks lot onwards. |
+| Pillow | Decodes and writes again the photos of rooms and items, to check their content and drop their metadata (0030). |
 | django-stubs-ext | Lets generic classes such as `ModelAdmin[Home]` be subscripted at runtime for the type checker. Companion of django-stubs, maintained by the same project, no runtime behaviour otherwise. |
 
 Optional runtime dependency, installed with the `postgres` extra

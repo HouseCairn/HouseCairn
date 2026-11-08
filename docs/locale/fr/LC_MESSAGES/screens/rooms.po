@@ -1,0 +1,39 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 00:13+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Rooms"
+msgstr "Pièces"
+
+msgid "The rooms of a home, at `/h/<home id>/rooms/`. **Rooms** in the navigation opens it directly when you belong to a single home; with several homes, it first asks which one (`/rooms/`). Each row shows the name of the room, its type and how many items it holds; a row opens the [room](room.md)."
+msgstr "Les pièces d'un logement, sur `/h/<home id>/rooms/`. **Pièces** dans la navigation l'ouvre directement quand vous appartenez à un seul logement ; avec plusieurs logements, il demande d'abord lequel (`/rooms/`). Chaque ligne montre le nom de la pièce, son type et le nombre d'éléments qu'elle contient ; une ligne ouvre la [pièce](room.md)."
+
+msgid "**Add a room** opens the [room form](room-form.md). Only the name is required."
+msgstr "**Ajouter une pièce** ouvre le [formulaire de la pièce](room-form.md). Seul le nom est obligatoire."
+
+msgid "**Change the order** shows an up and a down button per room instead of the links; **Done** goes back. The order is the one of the list, here and in the API."
+msgstr "**Changer l'ordre** affiche un bouton monter et un bouton descendre par pièce à la place des liens ; **Terminé** revient en arrière. L'ordre est celui de la liste, ici et dans l'API."
+
+msgid "The search field looks for a name among the rooms and the items of the home: `/h/<home id>/search/?q=<text>`. Rooms and items are listed apart, each linking to its page. The search ignores case and looks for the text anywhere in the name."
+msgstr "Le champ de recherche cherche un nom parmi les pièces et les éléments du logement : `/h/<home id>/search/?q=<texte>`. Les pièces et les éléments sont listés à part, chacun lié à sa page. La recherche ignore la casse et cherche le texte n'importe où dans le nom."
+
+msgid "Read-only members see the same list and none of the buttons that change it."
+msgstr "Les membres en lecture seule voient la même liste et aucun des boutons qui la modifient."
+

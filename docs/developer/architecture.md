@@ -21,4 +21,4 @@ single container. The main rules, each recorded in a decision:
   ([ADR 0013](../adr/0013-internationalization.md)).
 
 The code is in `src/housecairn/`, one Django application per domain
-(`accounts`, `apitokens`, `core`, `events`, `homes`).
+(`accounts`, `apitokens`, `core`, `events`, `homes`, `rooms`).

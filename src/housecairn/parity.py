@@ -27,6 +27,26 @@ PARITY: dict[str, tuple[str, ...]] = {
     # Creating an account from an invitation is account management, which the
     # API leaves to sign-in (see EXEMPT_MODULE_PREFIXES); accepting is in it.
     "invitation": ("api-v1:invitation-accept",),
+    # Rooms, items and photos (docs/adr/0029, 0030). The entry page only leads to
+    # the rooms of a home: choosing among the homes is the list of homes.
+    "rooms": ("api-v1:home-list",),
+    "rooms:list": ("api-v1:home-room-list",),
+    "rooms:create": ("api-v1:home-room-list",),
+    "rooms:detail": ("api-v1:home-room-detail",),
+    "rooms:edit": ("api-v1:home-room-detail",),
+    "rooms:memory": ("api-v1:home-room-detail",),
+    "rooms:delete": ("api-v1:home-room-detail",),
+    "rooms:move": ("api-v1:home-room-reorder",),
+    "rooms:item-create": ("api-v1:home-item-list",),
+    "rooms:item-detail": ("api-v1:home-item-detail",),
+    "rooms:item-edit": ("api-v1:home-item-detail",),
+    "rooms:item-delete": ("api-v1:home-item-detail",),
+    "rooms:room-photo-add": ("api-v1:home-photo-list",),
+    "rooms:item-photo-add": ("api-v1:home-photo-list",),
+    "rooms:photo": ("api-v1:home-photo-content",),
+    "rooms:photo-thumbnail": ("api-v1:home-photo-thumbnail",),
+    "rooms:photo-delete": ("api-v1:home-photo-detail",),
+    "rooms:search": ("api-v1:home-search",),
 }
 
 # Web routes without business function, with the reason.

@@ -1,0 +1,17 @@
+{% load i18n %}{# A grid of thumbnails; each opens the photo. `photos`, `home`, `can_write`, `label` (alternative text). #}
+<ul class="photo-grid">
+  {% for photo in photos %}
+    <li class="photo">
+      <a href="{% url 'rooms:photo' home_id=home.id photo_id=photo.id %}">
+        <img src="{% url 'rooms:photo-thumbnail' home_id=home.id photo_id=photo.id %}" alt="{% if photo.caption %}{{ photo.caption }}{% else %}{% blocktranslate with name=label %}Photo of {{ name }}{% endblocktranslate %}{% endif %}" loading="lazy" decoding="async">
+      </a>
+      {% if photo.caption %}<span class="photo-caption">{{ photo.caption }}</span>{% endif %}
+      {% if can_write %}
+        <form method="post" action="{% url 'rooms:photo-delete' home_id=home.id photo_id=photo.id %}">
+          {% csrf_token %}
+          <button type="submit" class="link-button">{% translate "Delete" %}<span class="visually-hidden"> {% translate "this photo" %}</span></button>
+        </form>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
