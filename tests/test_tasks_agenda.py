@@ -243,6 +243,16 @@ class TestMyHome:
         assert [o.task.title for o in theirs.mine] == ["Late and urgent"]
         assert "Late and urgent" not in [o.task.title for o in theirs.overdue]
 
+    def test_the_warranty_of_another_home_is_not_announced(
+        self, alice: User, bob: User, alice_home: Home, bob_home: Home
+    ) -> None:
+        far_room = room_services.create_room(bob, bob_home, name="Kitchen", kind="kitchen")
+        room_services.create_item(
+            bob, far_room, name="Their dishwasher", warranty_ends_on=TODAY + 10 * DAY
+        )
+        (digest,) = agenda.my_home(alice, [alice_home])
+        assert digest.warranties == []
+
     def test_a_home_with_nothing(self, alice: User, alice_home: Home) -> None:
         (digest,) = agenda.my_home(alice, [alice_home])
         assert digest.empty
@@ -610,9 +620,6 @@ class TestApi:
         assert titles_of(status="closed", closed_after=(TODAY - DAY).isoformat()) == [
             "Paint the hall",
             "Clean the gutters",
-        ] or titles_of(status="closed", closed_after=(TODAY - DAY).isoformat()) == [
-            "Clean the gutters",
-            "Paint the hall",
         ]
         assert titles_of(status="closed", closed_before=(TODAY - 5 * DAY).isoformat()) == [
             "Fix the tap"
