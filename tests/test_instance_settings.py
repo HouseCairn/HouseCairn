@@ -914,9 +914,13 @@ class TestSecretsStayInside:
     ) -> None:
         with caplog.at_level(logging.DEBUG):
             assert post(admin_client, "email", email_host_password=SECRET).status_code == 302
-            post(admin_client, "email", email_host_password=SECRET, email_port="not a number")
+            refused = post(
+                admin_client, "email", email_host_password=SECRET, email_port="not a number"
+            )
+            assert refused.status_code == 422
             admin_api.patch(reverse(API), {"email_host_password": SECRET + "-api"})
             outputs = [
+                refused.text,
                 admin_client.get(reverse(WEB)).text,
                 admin_api.get(reverse(API)).text,
                 admin_client.get(reverse("instance:audit")).text,
