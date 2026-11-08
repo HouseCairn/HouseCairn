@@ -134,3 +134,15 @@ class TestStoredLanguageIsCheckedAgain:
         response = signed_in.get(reverse("display-preferences"), HTTP_ACCEPT_LANGUAGE="fr")
         assert response.status_code == 200
         assert 'lang="fr"' in response.content.decode()
+
+
+class TestLanguageNames:
+    def test_each_language_is_named_in_itself_in_any_interface_language(
+        self, signed_in: Client
+    ) -> None:
+        for browser in ("en", "fr"):
+            content = page(signed_in, HTTP_ACCEPT_LANGUAGE=browser)
+            assert ">English</option>" in content
+            assert ">Français</option>" in content
+            assert ">Anglais</option>" not in content
+            assert ">French</option>" not in content

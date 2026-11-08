@@ -1985,14 +1985,6 @@ msgstr "Photo ajoutée."
 msgid "Photo deleted."
 msgstr "Photo supprimée."
 
-#: settings.py
-msgid "English"
-msgstr "Anglais"
-
-#: settings.py
-msgid "French"
-msgstr "Français"
-
 #: stock/apps.py templates/shell/navigation.html
 #: templates/stock/article_detail.html templates/stock/article_form.html
 #: templates/stock/article_list.html templates/stock/choose_home.html
