@@ -17,7 +17,6 @@ adds the `no-docs-needed` label to the pull request, and the check passes.
 ```sh
 uv sync --locked --group docs
 uv run playwright install --only-shell chromium   # once
-uv run python scripts/docs_screenshots.py
 uv run python scripts/build_docs.py
 uv run python scripts/check_docs_site.py docs/_build/site
 uv run python scripts/check_docs_design.py docs/_build/site
@@ -27,12 +26,10 @@ The site is in `docs/_build/site/`, English at its root and French under
 `fr/`; open `docs/_build/site/index.html` in a browser. The build is strict:
 any warning, such as a broken reference, fails it. `check_docs_design.py`
 checks the contrast of every page in the light and dark themes, the keyboard
-focus and reduced motion, and writes screenshots of a few pages to
-`docs/_build/site-screenshots/`.
+focus and reduced motion.
 
-Screenshots come from a demonstration instance with generated data, in
-English and French, on a computer and on a phone. They are not committed: the
-script takes them again before every build.
+The site has no screenshots for now, and the CI takes none: they come back in
+one dedicated change before the first public release.
 
 ## Translations
 

@@ -4,11 +4,6 @@ The people of a home and what each may do, at `/h/<home id>/household/`. Open
 it from the page of the home. Every member sees the list; only owners invite
 people, change roles and set the sign-in rule.
 
-```{image} /_generated/screenshots/household-desktop.png
-:alt: The household of a home, with its members and a pending invitation, on a computer.
-:class: screenshot
-```
-
 ## Roles
 
 | Role | What it allows |

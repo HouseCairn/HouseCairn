@@ -102,7 +102,7 @@ docker build -t housecairn:dev .
 .github/scripts/image-smoke.sh housecairn:dev sqlite   # the CI smoke test
 ```
 
-To build the documentation site locally (strict build, screenshots, checks),
+To build the documentation site locally (strict build, checks),
 see [Documentation](#documentation) below.
 
 When you change `design/tokens.json`, run `manage.py build_design_tokens` and
@@ -177,10 +177,14 @@ Build and check the site locally:
 ```sh
 uv sync --locked --group docs
 uv run playwright install --only-shell chromium   # once: downloads the browser
-uv run python scripts/docs_screenshots.py         # screenshots of a demo instance
 uv run python scripts/build_docs.py               # strict build, English and French
 uv run python scripts/check_docs_site.py docs/_build/site
+uv run python scripts/check_docs_design.py docs/_build/site
 ```
+
+No screenshots are taken in CI, for the documentation or for review: they come
+back in one dedicated change before the first public release
+([ADR 0016](docs/adr/0016-documentation-site.md)).
 
 The site is in `docs/_build/site/`. After changing a page, refresh the French
 catalogs with `uv run python scripts/build_docs.py --update-catalogs`, then

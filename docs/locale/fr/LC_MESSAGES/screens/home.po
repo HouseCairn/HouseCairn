@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 00:04+0000\n"
+"POT-Creation-Date: 2026-11-08 14:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -25,9 +25,6 @@ msgstr "Logement"
 msgid "The page of one home, at `/h/<home id>/`: its name, your role in it and its currency. Its address stays the same as long as the home exists. **Household and roles** lists its members."
 msgstr "La page d'un logement, sur `/h/<home id>/` : son nom, votre rôle et sa devise. Son adresse ne change pas tant que le logement existe. **Foyer et rôles** liste ses membres."
 
-msgid "The page of a home, on a phone."
-msgstr "La page d'un logement, sur téléphone."
-
 msgid "When the home requires signing in through a provider and your session did not, the page asks you to continue with that provider instead."
 msgstr "Quand le logement exige une connexion par un fournisseur que votre session n'a pas utilisé, la page vous propose de continuer avec ce fournisseur."
 
@@ -42,4 +39,7 @@ msgstr "**Exporter toutes les données** télécharge une archive unique avec to
 
 msgid "**Delete this home** removes the home and everything in it, for good, for every member. The page asks you to type the exact name of the home, and offers the export first. There is no way back."
 msgstr "**Supprimer ce logement** supprime le logement et tout ce qu'il contient, définitivement, pour chaque membre. La page vous demande de saisir le nom exact du logement, et propose d'abord l'export. Il n'y a pas de retour en arrière."
+
+#~ msgid "The page of a home, on a phone."
+#~ msgstr "La page d'un logement, sur téléphone."
 
