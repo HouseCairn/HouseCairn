@@ -359,6 +359,32 @@ class TestEraseAccount:
         assert client.post(url, right, content_type="application/json").status_code == 429
         assert User.objects.filter(pk=bob.pk).exists()
 
+    def test_erasing_locks_the_memberships_of_the_homes_it_decides_on(
+        self,
+        bob: User,
+        alice: User,
+        alice_home: Home,
+        add_member: Callable[..., Membership],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        # The rules (last owner, home left alone) read the memberships: they are locked
+        # first, as `remove_member` does, so a departure at the same moment is seen.
+        from django.db.models import QuerySet
+
+        add_member(alice_home, bob, Role.MEMBER)
+        locked: list[str] = []
+        original = QuerySet.select_for_update
+
+        def spy(self: QuerySet[Any], *args: Any, **kwargs: Any) -> QuerySet[Any]:
+            locked.append(self.model.__name__)
+            return original(self, *args, **kwargs)
+
+        monkeypatch.setattr(QuerySet, "select_for_update", spy)
+        account_services.delete_account(bob)
+        assert "Membership" in locked
+        assert not User.objects.filter(pk=bob.pk).exists()
+        assert Home.objects.filter(pk=alice_home.pk).exists()
+
     def test_the_web_form_lists_the_homes_that_block(
         self,
         client: Client,

@@ -304,3 +304,40 @@ class TestOidcInvitedAddress:
         services.accept_for_identity(user)
         assert not services.pending_invitations().exists()
         assert InstanceInvitation.objects.get().accepted_by == user
+
+
+@pytest.mark.django_db
+class TestTwoSubmissionsOfOneLink:
+    def test_the_second_one_gets_the_account_exists_page_and_not_a_500(
+        self, admin_user: User, client: Client, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # The other submission wins between the check and the insertion: the unique
+        # address then refuses the second one, which is told so.
+        raw = sent(admin_user)
+        original = User.objects.create_user
+
+        def winner_first(*args: object, **kwargs: object) -> User:
+            original(email="new@example.com", password="Another-Pass-123")
+            return original(*args, **kwargs)  # type: ignore[arg-type]
+
+        monkeypatch.setattr(User.objects, "create_user", winner_first)
+        response = client.post(
+            link(raw), {"password1": "Correct-Horse-9", "password2": "Correct-Horse-9"}
+        )
+        assert response.status_code == 200
+        assert "already" in response.text
+
+    def test_the_service_says_so_in_a_validation_error(
+        self, admin_user: User, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        raw = sent(admin_user)
+        original = User.objects.create_user
+
+        def winner_first(*args: object, **kwargs: object) -> User:
+            original(email="new@example.com", password="Another-Pass-123")
+            return original(*args, **kwargs)  # type: ignore[arg-type]
+
+        monkeypatch.setattr(User.objects, "create_user", winner_first)
+        with pytest.raises(ValidationError, match="already uses this address"):
+            services.create_account(raw, password="Correct-Horse-9")
+        assert services.find(raw) is not None

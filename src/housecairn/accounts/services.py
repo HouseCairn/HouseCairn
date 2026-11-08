@@ -234,6 +234,16 @@ def delete_account(user: User, *, by_admin: User | None = None) -> None:
     if by_admin is not None and not is_instance_admin(by_admin):
         raise PermissionDenied
     with transaction.atomic():
+        # Lock the memberships of the account's homes, as `remove_member` and
+        # `change_role` do, so that a member leaving at the same moment is seen by the
+        # rules below. Always in the same order, so that two erasures cannot wait on
+        # each other.
+        homes = Membership.objects.filter(user=user).values("home_id")
+        list(
+            Membership.objects.select_for_update()
+            .filter(home_id__in=homes)
+            .order_by("home_id", "pk")
+        )
         if is_last_instance_admin(user):
             raise ValidationError(_("This is the only administrator of the instance."))
         blocking = homes_blocking_erasure(user)

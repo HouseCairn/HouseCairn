@@ -173,7 +173,13 @@ def create_account(raw: str, *, password: str) -> User:
         raise InstanceInvitation.DoesNotExist
     if User.objects.filter(email__iexact=invitation.email).exists():
         raise ValidationError(_("An account already uses this address: sign in."))
-    user = User.objects.create_user(email=invitation.email, password=password)
+    try:
+        # A savepoint: two submissions of the same link can both pass the check above,
+        # and the second one then meets the unique address.
+        with transaction.atomic():
+            user = User.objects.create_user(email=invitation.email, password=password)
+    except IntegrityError as exc:
+        raise ValidationError(_("An account already uses this address: sign in.")) from exc
     audit.record("account.created", actor=user, by="instance_invitation")
     accept(user, raw)
     return user
