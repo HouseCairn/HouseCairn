@@ -9,6 +9,8 @@ characters, so that a name or a note can never start a line of its own.
 import datetime
 import unicodedata
 
+from django.http import HttpResponse
+from django.utils.http import content_disposition_header
 from django.utils.text import slugify
 
 from housecairn.tasks.models import Contractor
@@ -82,3 +84,12 @@ def filename(contractor: Contractor) -> str:
     """A file name that is safe anywhere: ASCII letters, digits and hyphens, then .vcf."""
     stem = slugify(contractor.name)[:50].strip("-") or "contact"
     return f"{stem}.vcf"
+
+
+def response(contractor: Contractor) -> HttpResponse:
+    """The contact file as a download, never cached and never sniffed."""
+    reply = HttpResponse(render(contractor), content_type=CONTENT_TYPE)
+    reply["Content-Disposition"] = content_disposition_header(True, filename(contractor)) or ""
+    reply["Cache-Control"] = "private, no-store"
+    reply["X-Content-Type-Options"] = "nosniff"
+    return reply

@@ -10,8 +10,6 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
-from django.utils.http import content_disposition_header
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import FormView, TemplateView
@@ -116,18 +114,4 @@ class ContractorVcardView(HomeContractorsMixin, View):
     http_method_names = ["get", "head"]
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        return vcard_response(self.get_contractor())
-
-
-def vcard_response(contractor: Contractor) -> HttpResponse:
-    response = HttpResponse(vcard.render(contractor), content_type=vcard.CONTENT_TYPE)
-    response["Content-Disposition"] = (
-        content_disposition_header(True, vcard.filename(contractor)) or ""
-    )
-    response["Cache-Control"] = "private, no-store"
-    response["X-Content-Type-Options"] = "nosniff"
-    return response
-
-
-def contractor_url(name: str, **kwargs: object) -> str:
-    return reverse(f"tasks:contractor-{name}", kwargs=kwargs)
+        return vcard.response(self.get_contractor())

@@ -40,8 +40,7 @@ from housecairn.rooms.api import (
     _validation,
 )
 from housecairn.rooms.models import Item, Room
-from housecairn.tasks import agenda, durations, files, services
-from housecairn.tasks.contractor_views import vcard_response
+from housecairn.tasks import agenda, durations, files, services, vcard
 from housecairn.tasks.models import (
     CLOSED_STATUSES,
     OPEN_STATUSES,
@@ -161,7 +160,7 @@ class ContractorViewSet(
     @action(detail=True, methods=["get"], renderer_classes=[BinaryRenderer])
     def vcard(self, request: Request, *args: Any, **kwargs: Any) -> HttpResponseBase:
         """The contact file of the contractor (vCard 3.0), readable by every member."""
-        return vcard_response(self.get_object())
+        return vcard.response(self.get_object())
 
 
 # ---------- tasks ----------
