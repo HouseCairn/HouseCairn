@@ -1,0 +1,35 @@
+{% load i18n %}{# Photos as a grid, other files as a list. `images`, `documents`, `home`, `can_write`, `label`. #}
+{% if images %}
+  <ul class="photo-grid">
+    {% for attachment in images %}
+      <li class="photo">
+        <a href="{% url 'tasks:attachment' home_id=home.id attachment_id=attachment.id %}">
+          <img src="{% url 'tasks:attachment-thumbnail' home_id=home.id attachment_id=attachment.id %}" alt="{% blocktranslate with name=attachment.name %}Photo: {{ name }}{% endblocktranslate %}" loading="lazy" decoding="async">
+        </a>
+        <span class="photo-caption">{{ attachment.name }}</span>
+        {% if can_write %}
+          <form method="post" action="{% url 'tasks:attachment-delete' home_id=home.id attachment_id=attachment.id %}">
+            {% csrf_token %}
+            <button type="submit" class="link-button">{% translate "Delete" %}<span class="visually-hidden"> {{ attachment.name }}</span></button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% if documents %}
+  <ul class="file-list">
+    {% for attachment in documents %}
+      <li>
+        <a href="{% url 'tasks:attachment' home_id=home.id attachment_id=attachment.id %}" rel="noopener noreferrer">{{ attachment.name }}</a>
+        <span class="small">{{ attachment.size_bytes|filesizeformat }}</span>
+        {% if can_write %}
+          <form method="post" action="{% url 'tasks:attachment-delete' home_id=home.id attachment_id=attachment.id %}">
+            {% csrf_token %}
+            <button type="submit" class="link-button">{% translate "Delete" %}<span class="visually-hidden"> {{ attachment.name }}</span></button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}

@@ -6,6 +6,7 @@ from rest_framework.routers import SimpleRouter
 from housecairn.events.api import EventCreateView
 from housecairn.homes.api import AcceptInvitationView, HomeViewSet, InvitationViewSet, MemberViewSet
 from housecairn.rooms import api as rooms_api
+from housecairn.tasks import api as tasks_api
 
 app_name = "api-v1"
 
@@ -24,6 +25,13 @@ router.register(
 router.register(
     r"homes/(?P<home_id>[0-9a-f-]{36})/photos", rooms_api.PhotoViewSet, basename="home-photo"
 )
+for prefix, viewset, basename in (
+    ("tasks", tasks_api.TaskViewSet, "home-task"),
+    ("occurrences", tasks_api.OccurrenceViewSet, "home-occurrence"),
+    ("contractors", tasks_api.ContractorViewSet, "home-contractor"),
+    ("attachments", tasks_api.AttachmentViewSet, "home-attachment"),
+):
+    router.register(rf"homes/(?P<home_id>[0-9a-f-]{{36}})/{prefix}", viewset, basename=basename)
 
 urlpatterns = [
     *router.urls,

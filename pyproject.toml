@@ -33,6 +33,7 @@ dependencies = [
   "gunicorn>=23",
   "whitenoise>=6.9",
   "pillow>=12",
+  "markdown-it-py>=4",
 ]
 
 [project.optional-dependencies]

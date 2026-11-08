@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Tasks" %}{% endblock head_title %}
+{% block content %}
+  <h1>{% translate "Tasks" %}</h1>
+  {% if homes %}
+    <p class="small">{% translate "Choose the home whose tasks you want to open." %}</p>
+    <ul class="card-list">
+      {% for home in homes %}
+        <li>
+          <a class="row" href="{% url 'tasks:list' home_id=home.id %}">
+            <span class="row-body"><span class="row-title">{{ home.name }}</span></span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "You have no home to open yet." %}</p>
+    <a class="button button-secondary button-block" href="{% url 'homes:create' %}">{% translate "Add a home" %}</a>
+  {% endif %}
+{% endblock content %}

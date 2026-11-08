@@ -1362,3 +1362,618 @@ msgstr "Ce qui a été utilisé et posé dans cette pièce, pour le retrouver qu
 #: templates/rooms/search.html
 msgid "Nothing matches “%(query)s”."
 msgstr "Rien ne correspond à « %(query)s »."
+
+#: tasks/apps.py templates/rooms/item_detail.html
+#: templates/rooms/room_detail.html templates/shell/navigation.html
+#: templates/tasks/choose_home.html templates/tasks/task_detail.html
+#: templates/tasks/task_form.html templates/tasks/task_list.html
+msgid "Tasks"
+msgstr "Tâches"
+
+#: tasks/files.py
+msgid "This type of file is not accepted. Use a JPEG, PNG or WebP image, or a PDF, text, Word, Excel or OpenDocument file."
+msgstr "Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou WebP, ou un fichier PDF, texte, Word, Excel ou OpenDocument."
+
+#: tasks/forms.py
+msgid "Item"
+msgstr "Élément"
+
+#: tasks/forms.py templates/tasks/task_detail.html
+msgid "Due on"
+msgstr "Échéance"
+
+#: tasks/forms.py
+msgid "Season starts in"
+msgstr "La saison commence en"
+
+#: tasks/forms.py
+msgid "No season"
+msgstr "Pas de saison"
+
+#: tasks/forms.py
+msgid "Season ends in"
+msgstr "La saison finit en"
+
+#: tasks/forms.py
+msgid "Or a new contractor"
+msgstr "Ou un nouvel intervenant"
+
+#: tasks/forms.py
+msgid "Trade of the new contractor"
+msgstr "Métier du nouvel intervenant"
+
+#: tasks/forms.py templates/tasks/task_detail.html
+msgid "Photos and files"
+msgstr "Photos et fichiers"
+
+#: tasks/forms.py
+msgid "Markdown: how to do it, step by step. Links to web pages only."
+msgstr "Markdown : comment faire, pas à pas. Liens vers des pages web seulement."
+
+#: tasks/forms.py
+msgid "Choose a contractor or give a new one, not both."
+msgstr "Choisissez un intervenant ou donnez-en un nouveau, pas les deux."
+
+#: tasks/forms.py
+msgid "Note"
+msgstr "Note"
+
+#: tasks/forms.py
+msgid "New date"
+msgstr "Nouvelle date"
+
+#: tasks/forms.py
+msgid "Choose at least one file."
+msgstr "Choisissez au moins un fichier."
+
+#: tasks/models.py
+msgid "Low"
+msgstr "Basse"
+
+#: tasks/models.py
+msgid "Normal"
+msgstr "Normale"
+
+#: tasks/models.py
+msgid "High"
+msgstr "Haute"
+
+#: tasks/models.py tasks/templatetags/tasks_extras.py
+msgid "Once"
+msgstr "Une fois"
+
+#: tasks/models.py
+msgid "Fixed date"
+msgstr "Date fixe"
+
+#: tasks/models.py
+msgid "After the last time"
+msgstr "Après la dernière fois"
+
+#: tasks/models.py
+msgid "days"
+msgstr "jours"
+
+#: tasks/models.py
+msgid "weeks"
+msgstr "semaines"
+
+#: tasks/models.py
+msgid "months"
+msgstr "mois"
+
+#: tasks/models.py
+msgid "years"
+msgstr "ans"
+
+#: tasks/models.py
+msgid "Planned"
+msgstr "Prévue"
+
+#: tasks/models.py templates/tasks/task_detail.html
+#: templates/tasks/task_list.html
+msgctxt "task"
+msgid "Done"
+msgstr "Fait"
+
+#: tasks/models.py templates/tasks/task_detail.html
+msgid "Postponed"
+msgstr "Reportée"
+
+#: tasks/models.py
+msgid "Skipped"
+msgstr "Ignorée"
+
+#: tasks/models.py
+msgid "trade"
+msgstr "métier"
+
+#: tasks/models.py
+msgid "note"
+msgstr "note"
+
+#: tasks/models.py
+msgid "contractor"
+msgstr "intervenant"
+
+#: tasks/models.py
+msgid "contractors"
+msgstr "intervenants"
+
+#: tasks/models.py
+msgid "title"
+msgstr "titre"
+
+#: tasks/models.py
+msgid "priority"
+msgstr "priorité"
+
+#: tasks/models.py
+msgid "estimated duration (minutes)"
+msgstr "durée estimée (minutes)"
+
+#: tasks/models.py
+msgid "labour budget"
+msgstr "budget main d'œuvre"
+
+#: tasks/models.py
+msgid "material budget"
+msgstr "budget matériel"
+
+#: tasks/models.py
+msgid "procedure"
+msgstr "mode opératoire"
+
+#: tasks/models.py
+msgid "assignee"
+msgstr "responsable"
+
+#: tasks/models.py
+msgid "repeat"
+msgstr "répétition"
+
+#: tasks/models.py
+msgid "unit"
+msgstr "unité"
+
+#: tasks/models.py
+msgid "every"
+msgstr "tous les"
+
+#: tasks/models.py
+msgid "season starts in"
+msgstr "la saison commence en"
+
+#: tasks/models.py
+msgid "season ends in"
+msgstr "la saison finit en"
+
+#: tasks/models.py
+msgid "hide until this many days before"
+msgstr "masquer jusqu'à ce nombre de jours avant"
+
+#: tasks/models.py
+msgid "0 shows the task as soon as it exists."
+msgstr "0 affiche la tâche dès qu'elle existe."
+
+#: tasks/models.py
+msgid "task"
+msgstr "tâche"
+
+#: tasks/models.py
+msgid "tasks"
+msgstr "tâches"
+
+#: tasks/models.py
+msgid "This item is not in this home."
+msgstr "Cet élément n'est pas dans ce logement."
+
+#: tasks/models.py
+msgid "This item is not in this room."
+msgstr "Cet élément n'est pas dans cette pièce."
+
+#: tasks/models.py
+msgid "This contractor is not in this home."
+msgstr "Cet intervenant n'est pas dans ce logement."
+
+#: tasks/models.py
+msgid "This interval is out of range."
+msgstr "Cet intervalle est hors limites."
+
+#: tasks/models.py
+msgid "Give the first and the last month of the season."
+msgstr "Indiquez le premier et le dernier mois de la saison."
+
+#: tasks/models.py
+msgid "due on"
+msgstr "échéance"
+
+#: tasks/models.py
+msgid "status"
+msgstr "statut"
+
+#: tasks/models.py
+msgid "done on"
+msgstr "fait le"
+
+#: tasks/models.py
+msgid "actual cost"
+msgstr "coût réel"
+
+#: tasks/models.py
+msgid "occurrence"
+msgstr "occurrence"
+
+#: tasks/models.py
+msgid "occurrences"
+msgstr "occurrences"
+
+#: tasks/models.py
+msgid "attachment"
+msgstr "pièce jointe"
+
+#: tasks/models.py
+msgid "attachments"
+msgstr "pièces jointes"
+
+#: tasks/services.py
+msgid "This person is not a member of this home."
+msgstr "Cette personne n'est pas membre de ce logement."
+
+#: tasks/services.py
+msgid "A task that repeats on a fixed date needs a date."
+msgstr "Une tâche qui se répète à date fixe a besoin d'une date."
+
+#: tasks/services.py
+msgid "This occurrence is already closed."
+msgstr "Cette occurrence est déjà clôturée."
+
+#: tasks/services.py
+msgid "The date cannot be in the future."
+msgstr "La date ne peut pas être dans le futur."
+
+#: tasks/services.py
+msgid "Choose a date that is not in the past."
+msgstr "Choisissez une date qui n'est pas passée."
+
+#: tasks/services.py
+msgid "Only a task that was marked done or skipped can be undone."
+msgstr "Seule une tâche marquée comme faite ou ignorée peut être annulée."
+
+#: tasks/services.py
+msgid "The next occurrence has been changed since: it cannot be undone any more."
+msgstr "L'occurrence suivante a été modifiée depuis : l'annulation n'est plus possible."
+
+#: tasks/services.py
+msgid "The details can be filled in once the task is done."
+msgstr "Les détails se renseignent une fois la tâche faite."
+
+#: tasks/services.py
+msgid "This occurrence is not one of this task."
+msgstr "Cette occurrence n'appartient pas à cette tâche."
+
+#: tasks/services.py
+msgid "At most %(max)d attachments for a task."
+msgstr "%(max)d pièces jointes au plus pour une tâche."
+
+#: tasks/templatetags/tasks_extras.py
+#, python-format
+msgid "Every day"
+msgid_plural "Every %(n)d days"
+msgstr[0] "Tous les jours"
+msgstr[1] "Tous les %(n)d jours"
+
+#: tasks/templatetags/tasks_extras.py
+#, python-format
+msgid "Every week"
+msgid_plural "Every %(n)d weeks"
+msgstr[0] "Toutes les semaines"
+msgstr[1] "Toutes les %(n)d semaines"
+
+#: tasks/templatetags/tasks_extras.py
+#, python-format
+msgid "Every month"
+msgid_plural "Every %(n)d months"
+msgstr[0] "Tous les mois"
+msgstr[1] "Tous les %(n)d mois"
+
+#: tasks/templatetags/tasks_extras.py
+#, python-format
+msgid "Every year"
+msgid_plural "Every %(n)d years"
+msgstr[0] "Tous les ans"
+msgstr[1] "Tous les %(n)d ans"
+
+#: tasks/templatetags/tasks_extras.py
+#, python-format
+msgid "A day after the last time"
+msgid_plural "%(n)d days after the last time"
+msgstr[0] "Un jour après la dernière fois"
+msgstr[1] "%(n)d jours après la dernière fois"
+
+#: tasks/templatetags/tasks_extras.py
+#, python-format
+msgid "A week after the last time"
+msgid_plural "%(n)d weeks after the last time"
+msgstr[0] "Une semaine après la dernière fois"
+msgstr[1] "%(n)d semaines après la dernière fois"
+
+#: tasks/templatetags/tasks_extras.py
+#, python-format
+msgid "A month after the last time"
+msgid_plural "%(n)d months after the last time"
+msgstr[0] "Un mois après la dernière fois"
+msgstr[1] "%(n)d mois après la dernière fois"
+
+#: tasks/templatetags/tasks_extras.py
+#, python-format
+msgid "A year after the last time"
+msgid_plural "%(n)d years after the last time"
+msgstr[0] "Un an après la dernière fois"
+msgstr[1] "%(n)d ans après la dernière fois"
+
+#: tasks/templatetags/tasks_extras.py
+#, python-format
+msgid "from %(start)s to %(end)s"
+msgstr "de %(start)s à %(end)s"
+
+#: tasks/views.py
+msgid "Task added."
+msgstr "Tâche ajoutée."
+
+#: tasks/views.py
+#, python-format
+msgid "File not added: %(reason)s"
+msgstr "Fichier non ajouté : %(reason)s"
+
+#: tasks/views.py
+msgid "Task saved."
+msgstr "Tâche enregistrée."
+
+#: tasks/views.py
+msgid "Task deleted."
+msgstr "Tâche supprimée."
+
+#: tasks/views.py
+msgid "Undone."
+msgstr "Annulé."
+
+#: tasks/views.py
+msgid "Task postponed."
+msgstr "Tâche reportée."
+
+#: tasks/views.py
+msgid "Details saved."
+msgstr "Détails enregistrés."
+
+#: tasks/views.py
+msgid "Some files were added."
+msgstr "Une partie des fichiers a été ajoutée."
+
+#: tasks/views.py
+msgid "Files added."
+msgstr "Fichiers ajoutés."
+
+#: tasks/views.py
+msgid "File deleted."
+msgstr "Fichier supprimé."
+
+#: templates/rooms/item_detail.html templates/rooms/room_detail.html
+#: templates/tasks/_due.html
+msgid "No date"
+msgstr "Sans date"
+
+#: templates/rooms/item_detail.html templates/rooms/room_detail.html
+msgid "No task for this yet."
+msgstr "Aucune tâche pour l'instant."
+
+#: templates/rooms/item_detail.html templates/rooms/room_detail.html
+#: templates/tasks/task_form.html templates/tasks/task_list.html
+msgid "Add a task"
+msgstr "Ajouter une tâche"
+
+#: templates/tasks/_attachments.html
+msgid "Photo: %(name)s"
+msgstr "Photo : %(name)s"
+
+#: templates/tasks/_due.html
+msgid "%(counter)s day late"
+msgid_plural "%(counter)s days late"
+msgstr[0] "%(counter)s jour de retard"
+msgstr[1] "%(counter)s jours de retard"
+
+#: templates/tasks/_due.html
+msgid "Today"
+msgstr "Aujourd'hui"
+
+#: templates/tasks/_undo.html
+msgid "Marked done."
+msgstr "Marquée comme faite."
+
+#: templates/tasks/_undo.html
+msgid "Skipped."
+msgstr "Ignorée."
+
+#: templates/tasks/_undo.html templates/tasks/task_detail.html
+msgid "Undo"
+msgstr "Annuler"
+
+#: templates/tasks/attachment_form.html
+msgid "Add photos and files"
+msgstr "Ajouter des photos et des fichiers"
+
+#: templates/tasks/attachment_form.html
+msgid "Images (JPEG, PNG, WebP) and PDF, text, Word, Excel or OpenDocument files, up to %(size)s each. Location data and other information stored in an image are removed."
+msgstr "Images (JPEG, PNG, WebP) et fichiers PDF, texte, Word, Excel ou OpenDocument, jusqu'à %(size)s chacun. La position et les autres informations stockées dans une image sont supprimées."
+
+#: templates/tasks/choose_home.html
+msgid "Choose the home whose tasks you want to open."
+msgstr "Choisissez le logement dont vous voulez ouvrir les tâches."
+
+#: templates/tasks/completion_form.html
+msgid "Details of what was done"
+msgstr "Détails de ce qui a été fait"
+
+#: templates/tasks/confirm_delete.html
+msgid "The task, its history and its files disappear from the screens."
+msgstr "La tâche, son historique et ses fichiers disparaissent des écrans."
+
+#: templates/tasks/postpone_form.html templates/tasks/task_detail.html
+msgid "Postpone"
+msgstr "Reporter"
+
+#: templates/tasks/task_detail.html
+msgid "High priority"
+msgstr "Priorité haute"
+
+#: templates/tasks/task_detail.html
+msgid "Low priority"
+msgstr "Priorité basse"
+
+#: templates/tasks/task_detail.html
+msgid "assigned to %(person)s"
+msgstr "confiée à %(person)s"
+
+#: templates/tasks/task_detail.html
+msgid "Skip this time"
+msgstr "Ignorer cette fois"
+
+#: templates/tasks/task_detail.html templates/tasks/task_form.html
+msgid "Edit the task"
+msgstr "Modifier la tâche"
+
+#: templates/tasks/task_detail.html
+msgid "When"
+msgstr "Quand"
+
+#: templates/tasks/task_detail.html templates/tasks/task_form.html
+msgid "Repeat"
+msgstr "Répétition"
+
+#: templates/tasks/task_detail.html
+msgid "Postponed from"
+msgstr "Reportée depuis le"
+
+#: templates/tasks/task_detail.html
+msgid "Hidden until"
+msgstr "Masquée jusqu'à"
+
+#: templates/tasks/task_detail.html
+#, python-format
+msgid "%(counter)s day before the date"
+msgid_plural "%(counter)s days before the date"
+msgstr[0] "%(counter)s jour avant la date"
+msgstr[1] "%(counter)s jours avant la date"
+
+#: templates/tasks/task_detail.html
+msgid "Then"
+msgstr "Ensuite"
+
+#: templates/tasks/task_detail.html templates/tasks/task_form.html
+msgid "How to do it"
+msgstr "Comment faire"
+
+#: templates/tasks/task_detail.html
+msgid "Details"
+msgstr "Détails"
+
+#: templates/tasks/task_detail.html
+msgid "Estimated duration"
+msgstr "Durée estimée"
+
+#: templates/tasks/task_detail.html
+#, python-format
+msgid "%(minutes)s min"
+msgstr "%(minutes)s min"
+
+#: templates/tasks/task_detail.html
+msgid "Labour budget"
+msgstr "Budget main d'œuvre"
+
+#: templates/tasks/task_detail.html
+msgid "Material budget"
+msgstr "Budget matériel"
+
+#: templates/tasks/task_detail.html
+msgid "Contractor"
+msgstr "Intervenant"
+
+#: templates/tasks/task_detail.html
+msgid "Add photos or files"
+msgstr "Ajouter des photos ou des fichiers"
+
+#: templates/tasks/task_detail.html
+msgid "No file yet."
+msgstr "Aucun fichier pour l'instant."
+
+#: templates/tasks/task_detail.html
+msgid "History"
+msgstr "Historique"
+
+#: templates/tasks/task_form.html
+msgid "Who"
+msgstr "Qui"
+
+#: templates/tasks/task_form.html
+msgid "Time and budget"
+msgstr "Durée et budget"
+
+#: templates/tasks/task_form.html
+msgid "Add the task"
+msgstr "Ajouter la tâche"
+
+#: templates/tasks/task_form.html
+msgid "Delete the task"
+msgstr "Supprimer la tâche"
+
+#: templates/tasks/task_list.html
+msgid "Show"
+msgstr "Afficher"
+
+#: templates/tasks/task_list.html
+msgid "To do"
+msgstr "À faire"
+
+#: templates/tasks/task_list.html
+msgid "All rooms"
+msgstr "Toutes les pièces"
+
+#: templates/tasks/task_list.html
+msgid "Filter"
+msgstr "Filtrer"
+
+#: templates/tasks/task_list.html
+msgid "Pages"
+msgstr "Pages"
+
+#: templates/tasks/task_list.html
+msgid "Previous"
+msgstr "Précédent"
+
+#: templates/tasks/task_list.html
+#, python-format
+msgid "Page %(number)s of %(total)s"
+msgstr "Page %(number)s sur %(total)s"
+
+#: templates/tasks/task_list.html
+msgid "Next"
+msgstr "Suivant"
+
+#: templates/tasks/task_list.html
+msgid "Nothing to do. Add a task to start."
+msgstr "Rien à faire. Ajoutez une tâche pour commencer."
+
+#: templates/tasks/task_list.html
+msgid "Nothing done yet."
+msgstr "Rien de fait pour l'instant."
+
+#: templates/tasks/task_list.html
+#, python-format
+msgid "%(counter)s task is hidden until its date gets closer."
+msgid_plural "%(counter)s tasks are hidden until their date gets closer."
+msgstr[0] "%(counter)s tâche est masquée jusqu'à ce que sa date approche."
+msgstr[1] "%(counter)s tâches sont masquées jusqu'à ce que leur date approche."
+
+#: templates/tasks/task_list.html
+msgid "Show them"
+msgstr "Les afficher"

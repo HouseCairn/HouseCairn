@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% if task %}{% translate "Edit the task" %}{% else %}{% translate "Add a task" %}{% endif %}{% endblock head_title %}
+{% block content %}
+  {% if task %}
+    <a class="back-link" href="{% url 'tasks:detail' home_id=home.id task_id=task.id %}">{% include "components/icon.html" with name="chevron" %}{{ task.title }}</a>
+    <h1>{% translate "Edit the task" %}</h1>
+  {% else %}
+    <a class="back-link" href="{% url 'tasks:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Tasks" %}</a>
+    <h1>{% translate "Add a task" %}</h1>
+  {% endif %}
+  <form method="post"{% if form.uploads %} enctype="multipart/form-data"{% endif %}>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="card">
+      {% include "tasks/_field.html" with field=form.title %}
+      {% include "tasks/_field.html" with field=form.room %}
+      {% include "tasks/_field.html" with field=form.item %}
+      {% include "tasks/_field.html" with field=form.due_on %}
+    </div>
+    <details class="form-section"{% if form.repeat_mode.errors or form.repeat_interval.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeat_mode.value != "once" %} open{% endif %}>
+      <summary>{% translate "Repeat" %}</summary>
+      <div>
+        {% include "tasks/_field.html" with field=form.repeat_mode %}
+        {% include "tasks/_field.html" with field=form.repeat_interval %}
+        {% include "tasks/_field.html" with field=form.repeat_unit %}
+        {% include "tasks/_field.html" with field=form.season_start_month %}
+        {% include "tasks/_field.html" with field=form.season_end_month %}
+        {% include "tasks/_field.html" with field=form.hide_days_before %}
+      </div>
+    </details>
+    <details class="form-section"{% if form.assignee.errors or form.contractor.errors or form.new_contractor.errors %} open{% endif %}>
+      <summary>{% translate "Who" %}</summary>
+      <div>
+        {% include "tasks/_field.html" with field=form.priority %}
+        {% include "tasks/_field.html" with field=form.assignee %}
+        {% include "tasks/_field.html" with field=form.contractor %}
+        {% include "tasks/_field.html" with field=form.new_contractor %}
+        {% include "tasks/_field.html" with field=form.new_contractor_trade %}
+      </div>
+    </details>
+    <details class="form-section"{% if form.estimated_minutes.errors or form.labour_budget.errors or form.material_budget.errors %} open{% endif %}>
+      <summary>{% translate "Time and budget" %}</summary>
+      <div>
+        {% include "tasks/_field.html" with field=form.estimated_minutes %}
+        {% include "tasks/_field.html" with field=form.labour_budget %}
+        {% include "tasks/_field.html" with field=form.material_budget %}
+      </div>
+    </details>
+    <details class="form-section"{% if form.procedure.errors or form.notes.errors or form.uploads.errors %} open{% endif %}>
+      <summary>{% translate "How to do it" %}</summary>
+      <div>
+        {% include "tasks/_field.html" with field=form.procedure %}
+        {% include "tasks/_field.html" with field=form.notes %}
+        {% if form.uploads %}{% include "tasks/_field.html" with field=form.uploads %}{% endif %}
+      </div>
+    </details>
+    <button type="submit" class="button-block">{% if task %}{% translate "Save" %}{% else %}{% translate "Add the task" %}{% endif %}</button>
+  </form>
+  {% if task %}
+    <a class="button button-danger button-block" href="{% url 'tasks:delete' home_id=home.id task_id=task.id %}">{% translate "Delete the task" %}</a>
+  {% endif %}
+{% endblock content %}

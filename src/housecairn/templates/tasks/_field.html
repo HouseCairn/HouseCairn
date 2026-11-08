@@ -1,0 +1,2 @@
+{# One form field in the layout of `form.as_p` (the style sheet targets `form p`). `field`. #}
+<p>{{ field.errors }}{{ field.label_tag }}{{ field }}{% if field.help_text %}<span class="helptext">{{ field.help_text|safe }}</span>{% endif %}</p>

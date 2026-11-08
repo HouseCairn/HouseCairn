@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "housecairn.apitokens",
     "housecairn.events",
     "housecairn.rooms",
+    "housecairn.tasks",
 ]
 
 MIDDLEWARE = [

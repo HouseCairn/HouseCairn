@@ -5,9 +5,10 @@ web interface: every request only sees the homes of its user
 ([ADR 0004](../adr/0004-versioned-rest-api.md),
 [ADR 0006](../adr/0006-home-scoping.md)).
 
-- **JSON** for requests and responses, except the upload of a photo, which is
-  `multipart/form-data` (`POST /api/v1/homes/<home id>/photos/`), and the image
-  and thumbnail of a photo, which are served as images.
+- **JSON** for requests and responses, except the upload of a photo or of a file
+  of a task, which is `multipart/form-data` (`POST /api/v1/homes/<home id>/photos/`
+  and `.../attachments/`), and the image, thumbnail or file themselves, which are
+  served as they are.
 - **Versioned**: version 1 only gets additive changes; a breaking change will
   go to `/api/v2/`, served alongside version 1 for a deprecation period.
 - **Cursor pagination**, up to 200 items per page.
@@ -24,6 +25,22 @@ web interface: every request only sees the homes of its user
   `read` scope to read them and `write` to change them, and its user needs a role
   that writes. Rooms and items can be filtered with `q` (name); items with
   `room`; photos with `room`, `item` and `category`.
+- **Tasks** of a home: `/api/v1/homes/<home id>/tasks/`, `.../occurrences/`,
+  `.../contractors/` and `.../attachments/`
+  ([ADR 0031](../adr/0031-tasks-occurrences-and-recurrence.md),
+  [ADR 0033](../adr/0033-done-with-undo.md),
+  [ADR 0034](../adr/0034-task-attachments.md)). Only `title` is required to create
+  a task; `due_on` is the date of its open occurrence. Everything the screens do
+  is there: `POST .../occurrences/<id>/complete/` marks it done and creates the next
+  occurrence (the response holds both), `.../undo/` takes it back, `.../skip/` and
+  `.../postpone/` (body `{"due_on": "YYYY-MM-DD"}`) the other outcomes, and `PATCH`
+  fills in the date, real cost and note of what was done. Tasks are filtered with
+  `status` (`open`, `closed`), `room`, `item`, `assignee`, `due_before`, `due_after`
+  and `q`; occurrences with the same, plus `task`, `overdue=true` and `status`
+  (`planned`, `postponed`, `done`, `skipped`, `open`, `closed`). Occurrences come
+  oldest date first, the arrears on top, and the open ones hidden by their task
+  (masked until N days before) only appear with `include_hidden=1`. The scopes are
+  the same as for rooms: `read` to read, `write` to change, and a role that writes.
 
 The [reference](reference.md) lists every operation. It is generated from the
 OpenAPI 3.1 schema of the code at each build of this site:
