@@ -599,6 +599,13 @@ class PreferencesSerializer(serializers.ModelSerializer[DisplayPreference]):
             "language",
         ]
 
+    def to_representation(self, instance: DisplayPreference) -> dict[str, Any]:
+        data: dict[str, Any] = super().to_representation(instance)
+        # A value written behind the model's back is not a choice the instance ships.
+        if data["language"] not in {code for code, _name in settings.LANGUAGES}:
+            data["language"] = ""
+        return data
+
 
 class SectionSerializer(serializers.Serializer[Any]):
     key = serializers.CharField(

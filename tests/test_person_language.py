@@ -93,6 +93,17 @@ class TestPersonLanguage:
         assert api.patch(url, {"language": "de"}, format="json").status_code == 400
         assert api.patch(url, {"language": ""}, format="json").json()["language"] == ""
 
+    @pytest.mark.parametrize("stored", ["xx", "de", "../..", "FR"])
+    def test_the_api_reads_a_stored_invalid_language_as_automatic(
+        self, alice: User, stored: str
+    ) -> None:
+        agenda.update_preferences(alice, language="fr")
+        DisplayPreference.objects.filter(user_id=alice.pk).update(language=stored)
+        api = APIClient()
+        api.force_authenticate(alice)
+        url = reverse("api-v1:display-preferences")
+        assert api.get(url).json()["language"] == ""
+
     def test_the_default_of_the_instance_still_serves_those_without_a_choice(
         self, signed_in: Client, admin_user: User
     ) -> None:
