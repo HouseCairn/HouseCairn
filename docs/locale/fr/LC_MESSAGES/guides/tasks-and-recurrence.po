@@ -73,6 +73,12 @@ msgstr "Les mois font ce qu'on attend : une tâche fixée au 31 tombe le dernier
 msgid "A **season** limits the task to some months (April to October for the lawn, November to March for the heating, over the new year if needed). A date that falls outside the season moves to the first day of the next one."
 msgstr "Une **saison** limite la tâche à certains mois (d'avril à octobre pour la pelouse, de novembre à mars pour le chauffage, à cheval sur le nouvel an si besoin). Une date qui tombe hors saison passe au premier jour de la saison suivante."
 
+msgid "With **Fixed date**, the first day of a season is one more date of the series, not a new start: a monthly task set on 31 March with a season from March to May is due on 30 April and 31 May, then on 1 March of the next year (30 June is out of the season), then on 31 March, 30 April and 31 May again."
+msgstr "Avec **Date fixe**, le premier jour d'une saison est une date de plus de la série, pas un nouveau départ : une tâche mensuelle fixée au 31 mars avec une saison de mars à mai tombe le 30 avril et le 31 mai, puis le 1er mars de l'année suivante (le 30 juin est hors saison), puis de nouveau le 31 mars, le 30 avril et le 31 mai."
+
+msgid "Dates stay within 100 years of today: a task cannot be dated 1850 or 2300."
+msgstr "Les dates restent à moins de 100 ans d'aujourd'hui : une tâche ne peut pas être datée de 1850 ou de 2300."
+
 msgid "**Hide until** keeps a task off the list until a number of days before its date, for what you do not want to see a year ahead; the list tells how many tasks are hidden. Repeating on usage (litres, hours) or from a sensor does not exist yet."
 msgstr "**Masquer jusqu'à** garde une tâche hors de la liste jusqu'à un certain nombre de jours avant sa date, pour ce qu'on ne veut pas voir un an à l'avance ; la liste indique combien de tâches sont masquées. La répétition selon l'usage (litres, heures) ou depuis un capteur n'existe pas encore."
 

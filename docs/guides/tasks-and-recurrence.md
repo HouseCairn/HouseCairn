@@ -43,6 +43,13 @@ A **season** limits the task to some months (April to October for the lawn,
 November to March for the heating, over the new year if needed). A date that falls
 outside the season moves to the first day of the next one.
 
+With **Fixed date**, the first day of a season is one more date of the series, not a
+new start: a monthly task set on 31 March with a season from March to May is due on
+30 April and 31 May, then on 1 March of the next year (30 June is out of the season),
+then on 31 March, 30 April and 31 May again.
+
+Dates stay within 100 years of today: a task cannot be dated 1850 or 2300.
+
 **Hide until** keeps a task off the list until a number of days before its date,
 for what you do not want to see a year ahead; the list tells how many tasks are
 hidden. Repeating on usage (litres, hours) or from a sensor does not exist yet.
