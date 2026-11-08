@@ -40,10 +40,10 @@
         {% include "tasks/_field.html" with field=form.new_contractor_trade %}
       </div>
     </details>
-    <details class="form-section"{% if form.estimated_minutes.errors or form.labour_budget.errors or form.material_budget.errors %} open{% endif %}>
+    <details class="form-section"{% if form.duration_value.errors or form.duration_unit.errors or form.labour_budget.errors or form.material_budget.errors %} open{% endif %}>
       <summary>{% translate "Time and budget" %}</summary>
       <div>
-        {% include "tasks/_field.html" with field=form.estimated_minutes %}
+        {% include "tasks/_duration_field.html" %}
         {% include "tasks/_field.html" with field=form.labour_budget %}
         {% include "tasks/_field.html" with field=form.material_budget %}
       </div>

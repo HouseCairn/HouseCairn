@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from housecairn.accounts.models import User
 from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item
-from housecairn.tasks import files, services
+from housecairn.tasks import durations, files, services
 from housecairn.tasks.models import DisplayPreference, Occurrence, Season, Task
 
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
@@ -73,6 +73,12 @@ class TaskForm(forms.ModelForm[Task]):
         empty_value=None,
         help_text=_("Only used with the season Custom months."),
     )
+    duration_value = forms.IntegerField(
+        label=_("Estimated duration"), required=False, min_value=1, max_value=durations.MAX_MINUTES
+    )
+    duration_unit = forms.ChoiceField(
+        label=_("Unit"), choices=durations.UNIT_CHOICES, initial=durations.HOUR, required=False
+    )
     new_contractor = forms.CharField(label=_("Or a new contractor"), max_length=120, required=False)
     new_contractor_trade = forms.CharField(
         label=_("Trade of the new contractor"), max_length=120, required=False
@@ -100,7 +106,8 @@ class TaskForm(forms.ModelForm[Task]):
         "contractor",
         "new_contractor",
         "new_contractor_trade",
-        "estimated_minutes",
+        "duration_value",
+        "duration_unit",
         "labour_budget",
         "material_budget",
         "procedure",
@@ -121,7 +128,6 @@ class TaskForm(forms.ModelForm[Task]):
             "hide_days_before",
             "assignee",
             "contractor",
-            "estimated_minutes",
             "labour_budget",
             "material_budget",
             "procedure",
@@ -155,6 +161,10 @@ class TaskForm(forms.ModelForm[Task]):
         if self.instance.pk:
             current = services.open_occurrence_of(self.instance)
             self.initial.setdefault("due_on", current.due_on if current else None)
+            if self.instance.estimated_minutes:
+                value, unit = durations.split(self.instance.estimated_minutes)
+                self.initial.setdefault("duration_value", value)
+                self.initial.setdefault("duration_unit", unit)
 
     def _choices(self, name: str) -> forms.ModelChoiceField[Any]:
         field = self.fields[name]
@@ -163,6 +173,15 @@ class TaskForm(forms.ModelForm[Task]):
 
     def clean(self) -> dict[str, Any]:
         data: dict[str, Any] = super().clean() or {}
+        value, unit = data.pop("duration_value", None), data.pop("duration_unit", None)
+        minutes = None
+        if value is not None:
+            minutes = durations.to_minutes(value, unit or durations.HOUR)
+            if not durations.within_bounds(minutes):
+                self.add_error(
+                    "duration_value", _("Give a duration between a minute and thirty days.")
+                )
+        data["estimated_minutes"] = minutes
         if (
             not data.get("season")
             and data.get("season_start_month")

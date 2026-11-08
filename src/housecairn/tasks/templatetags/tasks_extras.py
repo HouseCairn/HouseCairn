@@ -9,7 +9,7 @@ from django.utils.translation import ngettext
 
 from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item, Room
-from housecairn.tasks import markup
+from housecairn.tasks import durations, markup
 from housecairn.tasks.models import OPEN_STATUSES, Occurrence, RepeatMode, Season, Task
 
 register = template.Library()
@@ -19,6 +19,12 @@ register = template.Library()
 def markdown(value: str) -> SafeString:
     """The procedure of a task as safe HTML (docs/adr/0031)."""
     return markup.render(value)
+
+
+@register.filter
+def duration(minutes: int | None) -> str:
+    """An estimated duration in minutes as people say it ("1 h 30", "2 days")."""
+    return durations.label(minutes) if minutes else ""
 
 
 @register.filter

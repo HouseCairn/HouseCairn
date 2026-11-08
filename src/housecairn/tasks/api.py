@@ -40,7 +40,7 @@ from housecairn.rooms.api import (
     _validation,
 )
 from housecairn.rooms.models import Item, Room
-from housecairn.tasks import agenda, files, services
+from housecairn.tasks import agenda, durations, files, services
 from housecairn.tasks.models import (
     CLOSED_STATUSES,
     OPEN_STATUSES,
@@ -147,6 +147,18 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
     assignee_name = serializers.SerializerMethodField(
         help_text="The name shown for the assignee (display name, never the address)."
     )
+    estimated_minutes = serializers.IntegerField(
+        required=False,
+        allow_null=True,
+        min_value=durations.MIN_MINUTES,
+        max_value=durations.MAX_MINUTES,
+        help_text="Estimated duration in minutes, from 1 to 43200 (thirty days). The screens "
+        "take a number and a unit and store minutes.",
+    )
+    estimated_text = serializers.SerializerMethodField(
+        help_text="The estimated duration as people read it, in the language of the request "
+        '("1 h 30", "2 days").'
+    )
     contractor = serializers.PrimaryKeyRelatedField(
         queryset=Contractor.objects.none(), required=False, allow_null=True
     )
@@ -181,6 +193,7 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
             "due_on",
             "open_occurrence",
             "estimated_minutes",
+            "estimated_text",
             "labour_budget",
             "material_budget",
             "notes",
@@ -211,6 +224,10 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
 
     def get_assignee_name(self, task: Task) -> str:
         return person_name(task.assignee)
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_estimated_text(self, task: Task) -> str:
+        return durations.label(task.estimated_minutes) if task.estimated_minutes else ""
 
 
 class TaskViewSet(

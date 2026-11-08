@@ -29,7 +29,7 @@ from housecairn.instance.config import instance_zone
 from housecairn.rooms import images
 from housecairn.rooms.models import Item, Room
 from housecairn.rooms.services import _read_upload
-from housecairn.tasks import files, recurrence
+from housecairn.tasks import durations, files, recurrence
 from housecairn.tasks.models import (
     MAX_ATTACHMENTS_PER_TASK,
     OPEN_STATUSES,
@@ -276,6 +276,15 @@ def resync_seasons(home: Home) -> int:
     return changed
 
 
+def _check_estimate(task: Task) -> None:
+    """The estimated duration is between a minute and thirty days (docs/adr/0045)."""
+    minutes = task.estimated_minutes
+    if minutes is not None and not durations.within_bounds(minutes):
+        raise ValidationError(
+            {"estimated_minutes": _("Give a duration between a minute and thirty days.")}
+        )
+
+
 def _check_links(home: Home, task: Task) -> None:
     """Room, item and assignee of the task belong to its home; the room follows the item."""
     if task.item is not None and not task.room_id:
@@ -310,6 +319,7 @@ def create_task(
     task = Task(home=home)
     _apply(task, TASK_FIELDS, fields)
     _sync_season(task, fields)
+    _check_estimate(task)
     _check_links(home, task)
     _check_date(due_on, "due_on")
     _check_due(task, due_on)
@@ -332,6 +342,7 @@ def update_task(
     _apply(task, TASK_FIELDS, changes)
     if _SEASON_FIELDS & set(changes):
         _sync_season(task, changes)
+    _check_estimate(task)
     current = open_occurrence_of(task)
     new_due = (current.due_on if current else None) if due_on is _UNSET else due_on
     _check_links(task.home, task)

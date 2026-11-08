@@ -1,0 +1,6 @@
+{# Estimated duration: a number and its unit side by side. `form`. #}
+<p>
+  {{ form.duration_value.errors }}{{ form.duration_unit.errors }}
+  <label for="{{ form.duration_value.id_for_label }}">{{ form.duration_value.label }}</label>
+  <span class="field-pair">{{ form.duration_value }} {{ form.duration_unit }}</span>
+</p>
