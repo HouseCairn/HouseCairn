@@ -45,9 +45,21 @@ what the person who types the URL chooses, and what the plugin fixes:
 | `signal(s)` | any | `POST <prefix>/v2/send` (signal-cli REST API) | host, prefix, numbers |
 | `matrix(s)` | any | Matrix client API (`POST` login and join, `PUT` the message), or with `mode=` a `POST` of the JSON of a webhook bridge | host, account, rooms; the webhook path |
 | `mmost(s)` | any | `POST <prefix>/hooks/<token>` with the JSON of Mattermost | host, prefix, token |
-| `apprise(s)` | any | `POST <prefix>/notify/<token>` (Apprise API) | host, prefix, token |
+| `apprise(s)` | any | `POST <prefix>/notify` (Apprise API), the token in the header `X-Apprise-Config-ID` | host, prefix, token |
 | `mailto(s)` | any | SMTP: one message, fixed headers | server, account, recipients |
 | `tgram`, `discord`, `slack`, `pover` | fixed (the public API) | `POST` to the API of the service | the tokens of the person's own account |
+
+The person also chooses the options of the URL that are still accepted, among them
+`format`, `overflow`, `mode` (Matrix), `smtp`, `from`, `to` (email), `attach`, `click`
+(ntfy), `icon_url` (Mattermost) and `avatar_url` (Discord), besides the settings of each
+service (a priority, tags). None of them sets the method of a request, or adds a header
+or a field of its own, beyond what the table above says: they set the format of the
+text, how a long message is split, the kind of Matrix server, the mail server and
+addresses, and values that the plugin puts in the body or in headers whose names it fixes
+itself (ntfy sends `click` as `X-Click` and `format=markdown` as `X-Markdown`; `method=` of
+the Apprise API only chooses between a JSON and a form body, always posted). So the owner
+of a channel may have an icon, an attachment or a link of their choice in their own
+messages: an address they typed for their own channel, which their app loads.
 
 No URL option sets the method, adds a header or adds a field: Apprise reads
 `+name=value` as an extra header, `-name` and `:name=value` as a field removed from or
@@ -121,10 +133,11 @@ escapes it for the format of each channel (HTML or Markdown, as the service expe
 title cannot change the markup of the message. The title of a task and the name of a home
 are put on one line first (each run of line breaks or control characters becomes a space),
 so neither can add a line of its own, such as a fake link under the real one. The title of
-a message is fixed. A message carries no image: Apprise would add the address of its icons
-on github.com (an avatar, a logo, a thumbnail), which the app of each person who receives
-it would then load, so the asset has no image address and `include_image`, `footer_logo`
-and `avatar` are off.
+a message is fixed. Apprise adds no image of its own: it would add the address of its
+icons on github.com (an avatar, a logo, a thumbnail), which the app of each person who
+receives it would then load, so the asset has no image address and `include_image`,
+`footer_logo` and `avatar` are off. An icon or an attachment that the owner of a channel
+set in its URL (`icon_url`, `avatar_url`, `attach`, `click`) is kept: see above.
 
 **Who is reminded.** The person in charge of the task, if their account is active, they
 may still write in the home and they have a channel on. Otherwise (nobody in charge, or a
