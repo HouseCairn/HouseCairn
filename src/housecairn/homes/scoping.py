@@ -4,7 +4,6 @@ from typing import Any
 from uuid import UUID
 
 from allauth.core.internal import ratelimit
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
 from django.http import HttpRequest, HttpResponse
@@ -22,6 +21,7 @@ from housecairn.accounts import services as account_services
 from housecairn.apitokens.models import ApiToken
 from housecairn.homes import emails, services, sso
 from housecairn.homes.models import Home, Invitation
+from housecairn.instance.config import get_setting
 
 
 def homes_for_request(request: HttpRequest | Request) -> models.QuerySet[Home]:
@@ -135,7 +135,7 @@ def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response |
 
 def site_url(request: HttpRequest | Request) -> str:
     """Scheme and host for links sent away from the site (docs/adr/0020)."""
-    configured: str = settings.HOUSECAIRN_SITE_URL
+    configured: str = get_setting("site_url")
     if configured:
         return configured
     return f"{request.scheme}://{request.get_host()}"

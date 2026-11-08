@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 01:03+0000\n"
+"POT-Creation-Date: 2026-11-08 01:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -40,8 +40,8 @@ msgstr "Les **comptes**, dans le site d'administration : activer ou désactiver 
 msgid "**Invitations to the instance**, at `/instance/` and in the API (`/api/v1/instance/invitations/`): an address receives a link by email, creates an account and then their own home. They need outgoing email. See [Instance administration](../screens/instance.md)."
 msgstr "Les **invitations à l'instance**, sur `/instance/` et dans l'API (`/api/v1/instance/invitations/`) : une adresse reçoit un lien par e-mail, crée un compte puis son propre logement. Elles nécessitent l'envoi d'e-mails. Voir [Administration de l'instance](../screens/instance.md)."
 
-msgid "**Providers and settings**: environment variables (see [Environment variables](variables.md)). Nothing is edited in the interface."
-msgstr "Les **fournisseurs et réglages** : variables d'environnement (voir [Variables d'environnement](variables.md)). Rien ne se modifie dans l'interface."
+msgid "**Settings**: sign-up, invitations, outgoing email and the public address, at `/instance/settings/` and in the API (`/api/v1/instance/settings/`), each paired with an environment variable that locks it (see [Settings](settings.md)). **Providers** and the other variables are set in the environment (see [Environment variables](variables.md))."
+msgstr "Les **réglages** : inscription, invitations, e-mail sortant et adresse publique, sur `/instance/settings/` et dans l'API (`/api/v1/instance/settings/`), chacun associé à une variable d'environnement qui le verrouille (voir [Réglages](settings.md)). Les **fournisseurs** et les autres variables se posent dans l'environnement (voir [Variables d'environnement](variables.md))."
 
 msgid "**Unlocking homes**: when a provider is removed from the configuration, the homes that required it stay locked. **Remove these requirements** on the instance page (or `POST /api/v1/instance/unlock/`) clears the rule of all of them, without showing which. An owner can also lift the rule of their own home from its locked page."
 msgstr "Le **déverrouillage des logements** : quand un fournisseur est retiré de la configuration, les logements qui l'exigeaient restent verrouillés. **Retirer ces exigences** sur la page de l'instance (ou `POST /api/v1/instance/unlock/`) efface la règle de tous, sans montrer lesquels. Un propriétaire peut aussi lever la règle de son propre logement depuis sa page verrouillée."
@@ -69,3 +69,7 @@ msgstr "Ce contre quoi cela ne protège pas"
 
 msgid "Whoever operates the machine reads the database and its backups, and can run `manage.py` (`changepassword`, `shell`): the guarantee is about the application, not about the host. Say so to the people who sign up (privacy policy, backups, who has access to the server)."
 msgstr "Qui exploite la machine lit la base de données et ses sauvegardes, et peut lancer `manage.py` (`changepassword`, `shell`) : la garantie porte sur l'application, pas sur l'hôte. Dites-le aux personnes qui s'inscrivent (politique de confidentialité, sauvegardes, qui a accès au serveur)."
+
+#~ msgid "**Providers and settings**: environment variables (see [Environment variables](variables.md)). Nothing is edited in the interface."
+#~ msgstr "Les **fournisseurs et réglages** : variables d'environnement (voir [Variables d'environnement](variables.md)). Rien ne se modifie dans l'interface."
+

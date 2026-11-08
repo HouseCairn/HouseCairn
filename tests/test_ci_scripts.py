@@ -1,12 +1,17 @@
 """Scripts run by the CI workflows (scripts/, docs/adr/0014)."""
 
+import http.server
+import json
 import os
 import subprocess
+import threading
+from collections.abc import Iterator
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 
-from scripts import check_external_urls, check_pr_title, check_signoff
+from scripts import check_external_urls, check_pr_title, check_signoff, merge_queue
 
 # Pull request titles
 
@@ -243,3 +248,311 @@ def test_local_and_non_web_files_pass(tmp_path: Path) -> None:
 
 def test_repository_has_no_external_url() -> None:
     assert check_external_urls.main([]) == 0
+
+
+# Merge queue entries (scripts/merge_queue.py, docs/adr/0040)
+
+_QUEUE_SHA = "929f8209d40f77f4abc622a499c93a83babdbe64"
+
+
+def _pull(**changes: object) -> dict[str, object]:
+    pull: dict[str, object] = {
+        "number": 104,
+        "state": "open",
+        "title": "feat: add yearly recurrence",
+        "user": {"login": "alice"},
+        "base": {"ref": "main", "sha": "b" * 40},
+        "head": {"sha": "h" * 40},
+        "labels": [{"name": "no-docs-needed"}],
+    }
+    pull.update(changes)
+    return pull
+
+
+def test_queue_branch_gives_the_pull_request_number() -> None:
+    ref = f"refs/heads/gh-readonly-queue/main/pr-104-{_QUEUE_SHA}"
+    assert merge_queue.pull_request_number(ref, "main") == 104
+
+
+@pytest.mark.parametrize(
+    "ref",
+    [
+        "",
+        "refs/heads/main",
+        f"refs/heads/feature/pr-104-{_QUEUE_SHA}",
+        f"refs/heads/gh-readonly-queue/release/pr-104-{_QUEUE_SHA}",
+        f"refs/heads/gh-readonly-queue/main/pr-0104-{_QUEUE_SHA}",
+        "refs/heads/gh-readonly-queue/main/pr-104-abc",
+        f"refs/heads/gh-readonly-queue/main/pr-104-{_QUEUE_SHA}\n",
+    ],
+)
+def test_other_references_are_refused(ref: str) -> None:
+    with pytest.raises(merge_queue.QueueError):
+        merge_queue.pull_request_number(ref, "main")
+
+
+def test_queued_pull_request_is_read_from_the_api() -> None:
+    urls: list[str] = []
+
+    def fetch(url: str) -> dict[str, object]:
+        urls.append(url)
+        return _pull()
+
+    ref = f"refs/heads/gh-readonly-queue/main/pr-104-{_QUEUE_SHA}"
+    pull = merge_queue.queued_pull_request(ref, "main", "o/r", "https://api.example.com", fetch)
+    assert urls == ["https://api.example.com/repos/o/r/pulls/104"]
+    assert pull == {
+        "number": 104,
+        "title": "feat: add yearly recurrence",
+        "author": "alice",
+        "base_sha": "b" * 40,
+        "head_sha": "h" * 40,
+        "labels": ["no-docs-needed"],
+    }
+
+
+@pytest.mark.parametrize(
+    "pull",
+    [_pull(state="closed"), _pull(base={"ref": "release", "sha": "b" * 40})],
+)
+def test_a_pull_request_not_open_against_the_base_is_refused(pull: dict[str, object]) -> None:
+    with pytest.raises(merge_queue.QueueError):
+        merge_queue.summary(pull, "main")
+
+
+def test_main_prints_the_pull_request_or_fails(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setenv("GITHUB_REPOSITORY", "o/r")
+    ref = f"refs/heads/gh-readonly-queue/main/pr-104-{_QUEUE_SHA}"
+    monkeypatch.setenv("MERGE_GROUP_HEAD_REF", ref)
+    assert merge_queue.main([], fetch=lambda url: _pull()) == 0
+    assert json.loads(capsys.readouterr().out)["number"] == 104
+    assert merge_queue.main([], fetch=lambda url: _pull(state="closed")) == 1
+    assert "not open" in capsys.readouterr().err
+    monkeypatch.setenv("MERGE_GROUP_HEAD_REF", "refs/heads/main")
+    assert merge_queue.main([], fetch=lambda url: _pull()) == 1
+
+
+# Every workflow of a required check also runs on the merge queue: a required
+# check that never reports on a queue entry blocks the queue (docs/adr/0040).
+_REQUIRED_CHECK_WORKFLOWS = (
+    "ci.yml",
+    "cla.yml",
+    "dco.yml",
+    "dependency-review.yml",
+    "docs-updated.yml",
+    "docs.yml",
+    "image.yml",
+    "pr-title.yml",
+    "zizmor.yml",
+)
+
+
+@pytest.mark.parametrize("name", _REQUIRED_CHECK_WORKFLOWS)
+def test_required_check_workflows_run_on_the_merge_queue(name: str) -> None:
+    workflow = Path(__file__).parent.parent / ".github" / "workflows" / name
+    text = workflow.read_text(encoding="utf-8")
+    on_block = text.split("\non:\n", 1)[1].split("\n\n", 1)[0]
+    assert "\n  merge_group:\n    types: [checks_requested]" in f"\n{on_block}"
+
+
+# Retries of the downloads made by the CI (.github/scripts/retry.sh)
+
+RETRY = Path(__file__).resolve().parents[1] / ".github" / "scripts" / "retry.sh"
+# Fails until it has been run `succeed_at` times, counting its runs in a file.
+FLAKY = 'n=$(($(cat "$1" 2>/dev/null || echo 0) + 1)); echo "$n" >"$1"; [ "$n" -ge "$2" ] || exit 7'
+
+
+def _retry(
+    tmp_path: Path, succeed_at: int, attempts: int
+) -> tuple[subprocess.CompletedProcess[str], int]:
+    counter = tmp_path / "runs"
+    result = subprocess.run(  # noqa: S603 - fixed program, test-controlled arguments
+        ["bash", str(RETRY), "bash", "-c", FLAKY, "flaky", str(counter), str(succeed_at)],  # noqa: S607
+        env={**os.environ, "RETRY_ATTEMPTS": str(attempts), "RETRY_DELAY": "0"},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result, int(counter.read_text())
+
+
+def test_retry_succeeds_after_transient_failures(tmp_path: Path) -> None:
+    result, runs = _retry(tmp_path, succeed_at=3, attempts=4)
+    assert (result.returncode, runs) == (0, 3)
+    assert "attempt 2 of 4" in result.stderr
+
+
+def test_retry_keeps_the_last_failure(tmp_path: Path) -> None:
+    result, runs = _retry(tmp_path, succeed_at=10, attempts=4)
+    assert (result.returncode, runs) == (7, 4)
+    assert "failed 4 times, last exit status 7" in result.stderr
+
+
+def test_retry_runs_a_successful_command_once(tmp_path: Path) -> None:
+    result, runs = _retry(tmp_path, succeed_at=1, attempts=4)
+    assert (result.returncode, runs, result.stderr) == (0, 1, "")
+
+
+def test_retry_needs_a_command() -> None:
+    result = subprocess.run(  # noqa: S603 - fixed program
+        ["bash", str(RETRY)],  # noqa: S607
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 2
+    assert "usage" in result.stderr
+
+
+# Tools taken from GitHub releases (.github/scripts/release-asset.sh)
+
+SCRIPTS = Path(__file__).resolve().parents[1] / ".github" / "scripts"
+RELEASE_ASSET = SCRIPTS / "release-asset.sh"
+IMAGE_WORKFLOW = Path(__file__).resolve().parents[1] / ".github" / "workflows" / "image.yml"
+_ASSET = b"archive content\n"
+
+
+class _Releases(http.server.BaseHTTPRequestHandler):
+    """A release API: tag v1 of o/r has asset 7, `tool.tar.gz`, served by a redirect."""
+
+    failures_left = 0
+    requests: ClassVar[list[tuple[str, str, str]]] = []
+
+    def do_GET(self) -> None:
+        type(self).requests.append(
+            (self.path, self.headers.get("Accept", ""), self.headers.get("Authorization", ""))
+        )
+        if type(self).failures_left > 0:
+            type(self).failures_left -= 1
+            self._answer(504, b"")
+        elif self.path == "/repos/o/r/releases/tags/v1":
+            assets = [{"id": 6, "name": "tool.tar.gz.sig"}, {"id": 7, "name": "tool.tar.gz"}]
+            self._answer(200, json.dumps({"tag_name": "v1", "assets": assets}).encode())
+        elif self.path == "/repos/o/r/releases/assets/7":
+            self.send_response(302)
+            self.send_header("Location", "/storage/tool.tar.gz")
+            self.end_headers()
+        elif self.path == "/storage/tool.tar.gz":
+            self._answer(200, _ASSET)
+        else:
+            self._answer(404, b"{}")
+
+    def _answer(self, status: int, body: bytes) -> None:
+        self.send_response(status)
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, format: str, *args: object) -> None:  # noqa: A002 - signature of the base class
+        pass
+
+
+@pytest.fixture
+def releases() -> Iterator[str]:
+    _Releases.failures_left = 0
+    _Releases.requests = []
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _Releases)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    yield f"http://127.0.0.1:{server.server_address[1]}"
+    server.shutdown()
+    server.server_close()
+
+
+def _release_asset(
+    api: str,
+    output: Path,
+    *args: str,
+    token: str | None = "test-token",  # noqa: S107 - test value
+) -> subprocess.CompletedProcess[str]:
+    env = {**os.environ, "GITHUB_API_URL": api, "RELEASE_ASSET_RETRY_DELAY": "1"}
+    env.pop("GITHUB_TOKEN", None)
+    if token is not None:
+        env["GITHUB_TOKEN"] = token
+    return subprocess.run(  # noqa: S603 - fixed program, test-controlled arguments
+        ["bash", str(RELEASE_ASSET), *(args or ("o/r", "v1", "tool.tar.gz")), str(output)],  # noqa: S607
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def test_release_asset_is_found_by_name_and_downloaded_through_the_api(
+    releases: str, tmp_path: Path
+) -> None:
+    output = tmp_path / "tool.tar.gz"
+    result = _release_asset(releases, output)
+    assert result.returncode == 0, result.stderr
+    assert output.read_bytes() == _ASSET
+    assert [(path, accept) for path, accept, _ in _Releases.requests] == [
+        ("/repos/o/r/releases/tags/v1", "application/vnd.github+json"),
+        ("/repos/o/r/releases/assets/7", "application/octet-stream"),
+        ("/storage/tool.tar.gz", "application/octet-stream"),
+    ]
+    assert _Releases.requests[0][2] == "Bearer test-token"
+    assert f"from {releases}/repos/o/r/releases/assets/7" in result.stdout
+    assert "test-token" not in result.stdout + result.stderr
+
+
+def test_release_asset_retries_a_504(releases: str, tmp_path: Path) -> None:
+    _Releases.failures_left = 2
+    output = tmp_path / "tool.tar.gz"
+    result = _release_asset(releases, output)
+    assert result.returncode == 0, result.stderr
+    assert output.read_bytes() == _ASSET
+    assert len(_Releases.requests) == 5
+
+
+@pytest.mark.parametrize(
+    "args",
+    [("o/r", "v1", "tool.tar"), ("o/r", "v2", "tool.tar.gz"), ("o/other", "v1", "tool.tar.gz")],
+)
+def test_release_asset_fails_without_that_asset(
+    releases: str, tmp_path: Path, args: tuple[str, str, str]
+) -> None:
+    output = tmp_path / "tool.tar.gz"
+    result = _release_asset(releases, output, *args)
+    assert result.returncode != 0
+    assert not output.exists()
+
+
+def test_release_asset_needs_a_token_and_four_arguments(releases: str, tmp_path: Path) -> None:
+    result = _release_asset(releases, tmp_path / "out", token=None)
+    assert result.returncode != 0
+    assert "GITHUB_TOKEN must be set" in result.stderr
+    assert _Releases.requests == []
+    usage = _release_asset(releases, tmp_path / "out", "o/r", "v1")
+    assert usage.returncode == 2
+    assert "usage" in usage.stderr
+
+
+def test_release_asset_keeps_the_last_error_fatal() -> None:
+    text = RELEASE_ASSET.read_text(encoding="utf-8")
+    assert "set -euo pipefail" in text
+    assert "-sSfL --retry 4" in text
+    assert "--retry-all-errors --retry-max-time 120" in text
+    assert '-H "Accept: application/octet-stream"' in text
+    assert "|| true" not in text
+    assert "releases/download" not in text.split("set -euo pipefail", 1)[1]
+
+
+def _grype_step() -> str:
+    text = IMAGE_WORKFLOW.read_text(encoding="utf-8")
+    return text.split("      - name: Install Grype (checksum verified)\n", 1)[1].split(
+        "\n      - ", 1
+    )[0]
+
+
+def test_grype_is_downloaded_through_the_api_then_checked() -> None:
+    step = _grype_step()
+    download = step.index(".github/scripts/release-asset.sh anchore/grype")
+    check = step.index('echo "${GRYPE_SHA256}  $archive" | sha256sum --check --strict')
+    extract = step.index('tar -xzf "$archive"')
+    assert download < check < extract
+    assert "GITHUB_TOKEN: ${{ github.token }}" in step
+    assert "github.com/anchore/grype/releases/download" not in step
+    assert "|| true" not in step
+    assert "continue-on-error" not in step

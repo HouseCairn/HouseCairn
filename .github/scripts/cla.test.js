@@ -23,11 +23,19 @@ function httpError(status) {
 }
 
 // In-memory stand-in for the parts of Octokit the module uses.
-function fakeGitHub({ branch = true, signatures = null, commits = [], opener = users.alice, conflicts = 0 } = {}) {
+function fakeGitHub({
+  branch = true,
+  signatures = null,
+  commits = [],
+  opener = users.alice,
+  conflicts = 0,
+  pull = { state: 'open', base: { ref: 'main' } },
+} = {}) {
   const state = {
     file: signatures === null ? null : { document: { version: 1, signatures }, sha: 'blob-0' },
     comments: [],
     statuses: [],
+    pulls: [],
     writes: [],
     conflictsLeft: conflicts,
     nextComment: 1000,
@@ -37,7 +45,10 @@ function fakeGitHub({ branch = true, signatures = null, commits = [], opener = u
     paginate: async (method, params) => method(params).then((r) => r.data),
     rest: {
       pulls: {
-        get: async () => ({ data: { number: 7, head: { sha: 'head-sha' }, user: opener } }),
+        get: async ({ pull_number: number }) => {
+          state.pulls.push(number);
+          return { data: { number, head: { sha: 'head-sha' }, user: opener, ...pull } };
+        },
         listCommits: async () => ({ data: commits }),
       },
       repos: {
@@ -114,6 +125,19 @@ function commentContext(user, body) {
 }
 
 const commitBy = (user, sha = `sha-${user.login}`) => ({ sha, author: user });
+
+const QUEUE_SHA = '929f8209d40f77f4abc622a499c93a83babdbe64';
+
+function mergeGroupContext(headRef = `refs/heads/gh-readonly-queue/main/pr-7-${QUEUE_SHA}`) {
+  return {
+    eventName: 'merge_group',
+    repo: { owner: 'HouseCairn', repo: 'HouseCairn' },
+    payload: {
+      merge_group: { head_ref: headRef, head_sha: 'queue-sha', base_sha: 'base-sha' },
+      repository: repoPayload,
+    },
+  };
+}
 
 test('the maintainer and bots are exempt', async () => {
   const { github, state } = fakeGitHub({
@@ -268,4 +292,42 @@ test('CONTRIBUTING.md and the workflow quote the same phrase', () => {
   const workflow = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'cla.yml'), 'utf8');
   assert.ok(workflow.includes(cla.PHRASE), 'cla.yml');
   assert.ok(fs.existsSync(path.join(ROOT, 'CLA.md')), 'CLA.md is the signed document');
+});
+
+test('a merge queue entry checks its pull request again and sets the status on the entry', async () => {
+  const { github, state } = fakeGitHub({ signatures: [], commits: [commitBy(users.alice)] });
+  const failed = await cla.run({ github, context: mergeGroupContext(), core: fakeCore() });
+  assert.equal(failed.ok, false);
+  assert.deepEqual(state.pulls, [7]);
+  assert.equal(state.statuses.at(-1).sha, 'queue-sha', 'the status is on the head of the entry');
+  assert.equal(state.statuses.at(-1).context, 'CLA');
+  assert.equal(state.statuses.at(-1).state, 'failure');
+  assert.equal(state.comments.length, 0, 'no comment from the queue');
+  assert.equal(state.writes.length, 0, 'no signature recorded from the queue');
+
+  const signed = fakeGitHub({ signatures: [{ login: 'alice', id: 101 }], commits: [commitBy(users.alice)] });
+  const result = await cla.run({ github: signed.github, context: mergeGroupContext(), core: fakeCore() });
+  assert.equal(result.ok, true);
+  assert.equal(signed.state.statuses.at(-1).sha, 'queue-sha');
+  assert.equal(signed.state.statuses.at(-1).state, 'success');
+});
+
+test('a merge queue entry that cannot be tied to an open pull request fails', async () => {
+  for (const [headRef, pull] of [
+    ['refs/heads/main', undefined],
+    [`refs/heads/gh-readonly-queue/release/pr-7-${QUEUE_SHA}`, undefined],
+    ['refs/heads/gh-readonly-queue/main/pr-7-abc', undefined],
+    [undefined, { state: 'closed', base: { ref: 'main' } }],
+    [undefined, { state: 'open', base: { ref: 'release' } }],
+  ]) {
+    const { github, state } = fakeGitHub({ signatures: [], commits: [commitBy(users.maintainer)], pull });
+    const core = fakeCore();
+    const result = await cla.run({ github, context: mergeGroupContext(headRef), core });
+    assert.equal(result, undefined);
+    assert.equal(state.statuses.at(-1).sha, 'queue-sha');
+    assert.equal(state.statuses.at(-1).state, 'failure');
+    assert.ok(core.failed, `the job fails for ${headRef ?? pull.state}`);
+  }
+  assert.equal(cla.queuedPullRequestNumber(`refs/heads/gh-readonly-queue/main/pr-104-${QUEUE_SHA}`, 'main'), 104);
+  assert.equal(cla.queuedPullRequestNumber(`refs/heads/gh-readonly-queue/main/pr-104-${QUEUE_SHA}`, 'dev'), undefined);
 });

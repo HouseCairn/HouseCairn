@@ -481,6 +481,7 @@ name = "housecairn"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [
+    { name = "cryptography" },
     { name = "django" },
     { name = "django-allauth", extra = ["mfa", "socialaccount"] },
     { name = "django-csp" },
@@ -525,6 +526,7 @@ docs = [
 
 [package.metadata]
 requires-dist = [
+    { name = "cryptography", specifier = ">=45" },
     { name = "django", specifier = ">=5.2.8,<5.3" },
     { name = "django-allauth", extras = ["mfa", "socialaccount"], specifier = ">=65.13" },
     { name = "django-csp", specifier = ">=4.0" },

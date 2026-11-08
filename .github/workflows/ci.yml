@@ -1,9 +1,12 @@
-# Lint, types, tests and Django checks (docs/adr/0014). Job names are the
-# status checks required on `main`: rename them only together with the ruleset.
+# Lint, types, tests and Django checks (docs/adr/0014), on every pull request
+# and merge queue entry (docs/adr/0040). Job names are the status checks
+# required on `main`: rename them only together with the ruleset.
 name: CI
 
 on:
   pull_request:
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
 
@@ -129,8 +132,10 @@ jobs:
           enable-cache: true
       - name: Install GNU gettext (translation scan)
         run: |
-          sudo apt-get update -q
-          sudo apt-get install -y -q --no-install-recommends gettext
+          # Each failed download is retried three times; the last failure
+          # still fails the step.
+          sudo apt-get -o Acquire::Retries=3 update -q
+          sudo apt-get -o Acquire::Retries=3 install -y -q --no-install-recommends gettext
       - name: Install locked dependencies (uv sync --locked)
         run: uv sync --locked
       - name: Migrations are up to date (makemigrations --check)

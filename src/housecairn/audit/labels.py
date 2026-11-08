@@ -28,6 +28,9 @@ LABELS: dict[str, Promise] = {
     "account.deleted": _("Account deleted"),
     "home.deleted": _("A home was deleted"),
     "homes.unlocked": _("Sign-in requirement removed from %(count)s homes"),
+    "settings.changed": _("Setting %(setting)s changed from %(old)s to %(new)s"),
+    "settings.secret_changed": _("Secret setting %(setting)s changed"),
+    "settings.reset": _("Setting %(setting)s reset to its default"),
     "admin.user_changed": _("Account changed in the administration site"),
     "admin.user_deleted": _("Account deleted in the administration site"),
 }

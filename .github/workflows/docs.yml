@@ -1,10 +1,13 @@
-# Documentation site (docs/adr/0016): build and check it on every pull request,
-# publish it to GitHub Pages (https://docs.housecairn.app) on `main`.
+# Documentation site (docs/adr/0016): build and check it on every pull request
+# and merge queue entry (docs/adr/0040), publish it to GitHub Pages
+# (https://docs.housecairn.app) on `main`.
 # Job names are status checks: rename them only together with the ruleset.
 name: Documentation
 
 on:
   pull_request:
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
   schedule:
@@ -106,8 +109,9 @@ jobs:
     # Not a required check, on purpose: it depends on eight sites we do not
     # control, so a passing outage there must not block every pull request. It
     # still fails visibly (red check on the pull request, red weekly run).
-    # Everything deterministic is in the `Documentation` job above.
-    if: github.event_name != 'push'
+    # Everything deterministic is in the `Documentation` job above. Not on the
+    # merge queue either: an outage elsewhere must not hold up the queue.
+    if: github.event_name == 'pull_request' || github.event_name == 'schedule'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:

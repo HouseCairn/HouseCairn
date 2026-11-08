@@ -21,4 +21,5 @@ urlpatterns = [
     ),
     path("unlock/", views.UnlockView.as_view(), name="unlock"),
     path("audit/", views.AuditView.as_view(), name="audit"),
+    path("settings/", views.SettingsView.as_view(), name="settings"),
 ]

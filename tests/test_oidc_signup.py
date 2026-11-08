@@ -358,7 +358,7 @@ class TestOpenSignup:
             cwd=pathlib.Path(__file__).resolve().parents[1],
         )
         assert result.returncode != 0
-        assert "HOUSECAIRN_OIDC_SIGNUP must be 'closed' or 'open'" in result.stderr
+        assert "HOUSECAIRN_OIDC_SIGNUP is not valid: expected one of closed, open" in result.stderr
 
 
 class TestProviderIdentity:

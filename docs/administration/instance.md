@@ -24,8 +24,10 @@ account: it sees the homes it belongs to, like anyone.
   (`/api/v1/instance/invitations/`): an address receives a link by email,
   creates an account and then their own home. They need outgoing email. See
   [Instance administration](../screens/instance.md).
-- **Providers and settings**: environment variables (see
-  [Environment variables](variables.md)). Nothing is edited in the interface.
+- **Settings**: sign-up, invitations, outgoing email and the public address, at
+  `/instance/settings/` and in the API (`/api/v1/instance/settings/`), each paired with an
+  environment variable that locks it (see [Settings](settings.md)). **Providers** and the
+  other variables are set in the environment (see [Environment variables](variables.md)).
 - **Unlocking homes**: when a provider is removed from the configuration, the
   homes that required it stay locked. **Remove these requirements** on the
   instance page (or `POST /api/v1/instance/unlock/`) clears the rule of all of

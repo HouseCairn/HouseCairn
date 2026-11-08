@@ -1,6 +1,7 @@
 # Environment variables
 
-Set them in `deploy/production.env`. The full list, with defaults, is in
+Set them in `deploy/production.env`. The ones marked in [Settings](settings.md) can also be
+changed in the interface; a variable that is set locks its field there. The full list, with defaults, is in
 [`deploy/production.env.example`](../../deploy/production.env.example) and
 [`.env.example`](../../.env.example).
 

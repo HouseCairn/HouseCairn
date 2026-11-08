@@ -15,8 +15,9 @@ import secrets
 import time
 from typing import Any
 
-from django.conf import settings
 from django.http import HttpRequest
+
+from housecairn.instance.config import get_setting
 
 SESSION_KEY = "housecairn_signup_challenge"
 # A challenge is valid for this long: the page was opened, the form filled in.
@@ -27,7 +28,7 @@ MAX_SOLUTION_LENGTH = 12
 def issue(request: HttpRequest) -> dict[str, Any]:
     """A new challenge for this visitor, replacing the previous one."""
     challenge = secrets.token_hex(16)
-    bits = int(settings.HOUSECAIRN_SIGNUP_POW_BITS)
+    bits = int(get_setting("signup_pow_bits"))
     request.session[SESSION_KEY] = {"challenge": challenge, "bits": bits, "at": time.time()}
     return {"challenge": challenge, "bits": bits}
 
