@@ -14,7 +14,10 @@ sending invitations, erasing an account
 | Erasing an account | 5 a minute per person |
 | Signing in, password reset | allauth's defaults |
 
-Beyond a limit, a page answers 429 and the API answers 429 too.
+Beyond a limit, the page for opening an invitation link, and allauth's pages
+(signing in, signing up, password reset), answer 429. Sending an invitation, to
+a home or to the instance, and erasing an account on the web stay on their page
+with a message saying to try again later. The API answers 429 for all of them.
 
 ## Which address
 
