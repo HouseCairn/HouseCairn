@@ -294,7 +294,10 @@ class InstanceSettingResetView(APIView):
             return refused
         if (conflict := _locked([key])) is not None:
             return conflict
-        settings_services.reset(request.user, key)  # type: ignore[arg-type]
+        try:
+            settings_services.reset(request.user, key)  # type: ignore[arg-type]
+        except DjangoValidationError as exc:
+            raise exceptions.ValidationError(exc.message_dict) from exc
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

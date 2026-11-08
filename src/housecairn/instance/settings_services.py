@@ -62,6 +62,13 @@ def _validate(changes: dict[str, Any]) -> dict[str, Any]:
 
 
 def _validate_together(clean: dict[str, Any]) -> dict[str, list[str]]:
+    """The rules between settings, on the state that `clean` would leave.
+
+    `clean` holds the values about to be in force (a change, or the value a reset falls
+    back to); the other settings keep the value they have now. Every write goes through
+    here, so that no change and no reset leaves an incoherent instance.
+    """
+
     def effective(key: str) -> Any:
         return clean[key] if key in clean else config.get_setting(key)
 
@@ -128,13 +135,21 @@ def update(actor: User, changes: dict[str, Any]) -> list[str]:
 
 
 def reset(actor: User, key: str) -> bool:
-    """Back to the default: the stored value is removed. True if there was one."""
+    """Back to the default: the stored value is removed. True if there was one.
+
+    The state it leaves is checked like a change: restoring no mail server while sign-up
+    is open (in the database or by variable) is refused with the same message.
+    """
     _require_admin(actor)
     setting = registry.SETTINGS.get(key)
     if setting is None:
         raise ValidationError({key: [_("Unknown setting.")]})
     if config.is_locked(key):
         raise ValidationError({key: [_locked_message(setting)]})
+    if config.source(key) == config.Source.DATABASE:
+        errors = _validate_together({key: config.without_database(key)})
+        if errors:
+            raise ValidationError(errors)
     with transaction.atomic():
         deleted, _unused = SettingValue.objects.filter(key=key).delete()
         if deleted:

@@ -91,6 +91,11 @@ def _static(setting: Setting) -> Any:
     return getattr(settings, setting.django_name)
 
 
+def without_database(key: str) -> Any:
+    """The value this setting would have with nothing stored: its variable, else its default."""
+    return _static(registry.SETTINGS[key])
+
+
 def _stored(setting: Setting, row: tuple[str, bool]) -> Any:
     value, is_secret = row
     if setting.secret:
