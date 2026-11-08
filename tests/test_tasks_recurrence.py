@@ -2,6 +2,7 @@
 
 import datetime
 import itertools
+import time
 import zoneinfo
 from unittest import mock
 
@@ -288,3 +289,32 @@ def test_after_the_last_time_is_never_before_the_completion(rule: Rule, done: D)
     )
     assert following is not None
     assert following > done
+
+
+@given(
+    rule=rules.filter(lambda rule: rule.mode == FIXED),
+    first=firsts,
+    gap=st.integers(min_value=0, max_value=5000),
+)
+def test_counting_from_near_the_reference_gives_the_dates_of_the_series_itself(
+    rule: Rule, first: D, gap: int
+) -> None:
+    """Starting the count close to the reference changes nothing: same date as from the anchor."""
+    after = first + datetime.timedelta(days=gap)
+    quick = recurrence.next_due(rule, anchor=first, due_on=after, done_on=after)
+    full = recurrence._series(rule, first).after(
+        datetime.datetime.combine(after, datetime.time()), inc=False
+    )
+    assert quick == recurrence._enter_season(rule, full.date())  # type: ignore[union-attr]
+
+
+def test_a_series_begun_a_century_ago_is_counted_from_its_recent_past() -> None:
+    """A daily task anchored on the oldest allowed date answers at once (docs/adr/0031)."""
+    started = D(1926, 6, 15)
+    rule = Rule(FIXED, DAY, 1)
+    began = time.perf_counter()
+    following = recurrence.next_due(
+        rule, anchor=started, due_on=D(2026, 6, 15), done_on=D(2026, 6, 15)
+    )
+    assert following == D(2026, 6, 16)
+    assert time.perf_counter() - began < 0.2

@@ -51,7 +51,10 @@ and carries the property tests.
   is stored on the task (`series_start`) because it carries the day of the month.
   The next date is the first date of the series strictly after both the due date
   and the day it was closed: a task done long after does not bring back each missed
-  date, the open occurrence is the arrears.
+  date, the open occurrence is the arrears. The count does not start at the anchor but
+  one interval before the reference date: a series is the anchor plus a whole number
+  of intervals, so the dates are the same and the cost no longer depends on the age
+  of the task. The day of the month still comes from the anchor.
 - *After the last time*: the closing day plus the interval, by `relativedelta`.
 
 **Month ends.** A series anchored on the 29th, 30th or 31st falls on the last day

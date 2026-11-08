@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models, transaction
@@ -59,11 +60,36 @@ RULE_FIELDS = frozenset(
 CONTRACTOR_FIELDS = frozenset({"name", "trade", "note"})
 COMPLETION_FIELDS = frozenset({"completed_on", "actual_cost", "completion_note"})
 _UNSET: Any = object()
+DATE_SPAN_YEARS = 100
 
 
 def today() -> datetime.date:
     """Today in the time zone of the instance (docs/adr/0032)."""
     return timezone.localdate()
+
+
+def date_bounds(day: datetime.date | None = None) -> tuple[datetime.date, datetime.date]:
+    """The earliest and the latest date a task can carry: `DATE_SPAN_YEARS` around `day` (today).
+
+    Every due, postponement, series start and completion date is held to this window
+    (docs/adr/0032): a date of year 1 is of no use and makes a series long to count.
+    """
+    day = day or today()
+    span = relativedelta(years=DATE_SPAN_YEARS)
+    return day - span, day + span
+
+
+def _check_date(value: datetime.date | None, field: str) -> None:
+    if value is None:
+        return
+    low, high = date_bounds()
+    if not low <= value <= high:
+        raise ValidationError(
+            {
+                field: _("Choose a date within %(years)d years of today.")
+                % {"years": DATE_SPAN_YEARS}
+            }
+        )
 
 
 def _require_write(actor: AnyUser, home: Home) -> None:
@@ -208,7 +234,10 @@ def _check_links(home: Home, task: Task) -> None:
 def _visible_from(task: Task, due_on: datetime.date | None) -> datetime.date | None:
     if due_on is None or not task.hide_days_before:
         return None
-    return due_on - datetime.timedelta(days=task.hide_days_before)
+    try:
+        return due_on - datetime.timedelta(days=task.hide_days_before)
+    except OverflowError:  # a date at the start of the calendar: shown from the first day
+        return datetime.date.min
 
 
 def _check_due(task: Task, due_on: datetime.date | None) -> None:
@@ -225,6 +254,7 @@ def create_task(
     task = Task(home=home)
     _apply(task, TASK_FIELDS, fields)
     _check_links(home, task)
+    _check_date(due_on, "due_on")
     _check_due(task, due_on)
     task.series_start = due_on
     task.full_clean()
@@ -245,6 +275,8 @@ def update_task(
     current = open_occurrence_of(task)
     new_due = (current.due_on if current else None) if due_on is _UNSET else due_on
     _check_links(task.home, task)
+    if due_on is not _UNSET:
+        _check_date(due_on, "due_on")
     _check_due(task, new_due)
     if RULE_FIELDS & set(changes) or due_on is not _UNSET:
         task.series_start = new_due
@@ -326,6 +358,7 @@ def _close(
     day = today()
     if on is not None and on > day:
         raise ValidationError({"completed_on": _("The date cannot be in the future.")})
+    _check_date(on, "completed_on")
     closed_on = on or day
     locked.status_before = locked.status
     locked.status = status
@@ -372,6 +405,7 @@ def postpone(actor: AnyUser, occurrence: Occurrence, to: datetime.date) -> Occur
     _require_open(locked)
     if to < today():
         raise ValidationError({"due_on": _("Choose a date that is not in the past.")})
+    _check_date(to, "due_on")
     if locked.postponed_from is None:
         locked.postponed_from = locked.due_on
     locked.due_on = to
@@ -427,6 +461,7 @@ def update_occurrence(actor: AnyUser, occurrence: Occurrence, **changes: Any) ->
     _apply(occurrence, COMPLETION_FIELDS, changes)
     if occurrence.completed_on and occurrence.completed_on > today():
         raise ValidationError({"completed_on": _("The date cannot be in the future.")})
+    _check_date(occurrence.completed_on, "completed_on")
     occurrence.full_clean()
     occurrence.save()
     return occurrence

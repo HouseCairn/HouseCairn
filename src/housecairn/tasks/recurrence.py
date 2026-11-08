@@ -91,8 +91,11 @@ def _delta(rule: Rule) -> relativedelta:
     return relativedelta(years=n)
 
 
-def _series(rule: Rule, anchor: datetime.date) -> rrule:
-    """The dates of a fixed rule, from its first date (the anchor).
+def _series(rule: Rule, anchor: datetime.date, start: datetime.date | None = None) -> rrule:
+    """The dates of a fixed rule, from its first date (the anchor), counted from `start`.
+
+    `start` is any date of the series (the anchor by default); the day of the month
+    always comes from the anchor, which a clamped `start` (the 28th for the 31st) lost.
 
     From the 29th of a month, a month is "the 29th, or the last day if earlier":
     the day is a set of two candidates and the first one that exists is kept
@@ -107,9 +110,35 @@ def _series(rule: Rule, anchor: datetime.date) -> rrule:
     return rrule(
         _FREQUENCY[rule.unit],
         interval=rule.interval,
-        dtstart=datetime.datetime.combine(anchor, datetime.time()),
+        dtstart=datetime.datetime.combine(start or anchor, datetime.time()),
         **extra,  # type: ignore[arg-type]
     )
+
+
+def _near(rule: Rule, anchor: datetime.date, after: datetime.date) -> datetime.date:
+    """A date of the series of `anchor` shortly before `after`, to count from there.
+
+    A series is the anchor plus a whole number of intervals, so any such date starts
+    the same series. One interval is kept before `after` so that no date is skipped.
+    Counting from the anchor of a task begun in 1900 would walk a century of days.
+    """
+    n = rule.interval
+    if rule.unit == DAY:
+        periods = (after - anchor).days // n
+    elif rule.unit == WEEK:
+        periods = (after - anchor).days // (7 * n)
+    elif rule.unit == MONTH:
+        periods = ((after.year - anchor.year) * 12 + after.month - anchor.month) // n
+    else:
+        periods = (after.year - anchor.year) // n
+    steps = max(periods - 1, 0) * n
+    delta = {
+        DAY: relativedelta(days=steps),
+        WEEK: relativedelta(weeks=steps),
+        MONTH: relativedelta(months=steps),
+        YEAR: relativedelta(years=steps),
+    }[rule.unit]
+    return anchor + delta
 
 
 def next_due(
@@ -135,8 +164,9 @@ def next_due(
             candidate = done_on + _delta(rule)
         else:
             after = max(due_on, done_on) if due_on else done_on
-            start = min(anchor or after, after)
-            found = _series(rule, start).after(
+            origin = anchor if anchor and anchor < after else after
+            start = _near(rule, origin, after)
+            found = _series(rule, origin, start).after(
                 datetime.datetime.combine(after, datetime.time()), inc=False
             )
             if found is None:  # pragma: no cover - the series is endless

@@ -2,6 +2,7 @@
 
 import datetime
 import json
+import time
 import zipfile
 from decimal import Decimal
 
@@ -369,6 +370,99 @@ class TestDoneAndUndo:
             services.update_occurrence(alice, done, completed_on=TODAY + DAY)
         with pytest.raises(ValueError, match="Cannot change"):
             services.update_occurrence(alice, done, status="planned")
+
+
+class TestDateBounds:
+    """Dates are held to 100 years around today: no input can make a series long to count."""
+
+    LOW = datetime.date(1926, 6, 15)
+    HIGH = datetime.date(2126, 6, 15)
+
+    def test_the_window_is_a_hundred_years_around_today(self) -> None:
+        assert services.date_bounds() == (self.LOW, self.HIGH)
+
+    @pytest.mark.parametrize("day", [datetime.date(1, 1, 1), datetime.date(1926, 6, 14)])
+    def test_create_and_update_refuse_a_date_before_the_window(
+        self, alice: User, alice_home: Home, day: datetime.date
+    ) -> None:
+        with pytest.raises(ValidationError, match="within 100 years"):
+            services.create_task(alice, alice_home, title="Old", due_on=day)
+        task = services.create_task(alice, alice_home, title="Ok", due_on=self.LOW)
+        with pytest.raises(ValidationError, match="within 100 years"):
+            services.update_task(alice, task, due_on=day)
+        with pytest.raises(ValidationError, match="within 100 years"):
+            services.create_task(
+                alice, alice_home, title="Far", due_on=self.HIGH + datetime.timedelta(days=1)
+            )
+
+    def test_the_sheet_of_a_daily_task_on_the_oldest_date_is_quick(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = services.create_task(
+            alice,
+            alice_home,
+            title="Daily",
+            due_on=self.LOW,
+            repeat_mode="fixed",
+            repeat_unit="day",
+            repeat_interval=1,
+        )
+        began = time.perf_counter()
+        dates = services.upcoming_dates(task)
+        assert dates == [self.LOW + datetime.timedelta(days=n) for n in (1, 2, 3)]
+        occurrence = services.open_occurrence_of(task)
+        assert occurrence is not None
+        services.complete(alice, occurrence)
+        assert time.perf_counter() - began < 0.2
+
+    def test_completion_and_postponement_dates_are_held_to_the_window(
+        self, alice: User, owner_occurrence: Occurrence
+    ) -> None:
+        with pytest.raises(ValidationError, match="within 100 years"):
+            services.complete(alice, owner_occurrence, on=datetime.date(1, 1, 1))
+        with pytest.raises(ValidationError, match="within 100 years"):
+            services.postpone(alice, owner_occurrence, self.HIGH + datetime.timedelta(days=1))
+        closing = services.complete(alice, owner_occurrence, on=self.LOW)
+        with pytest.raises(ValidationError, match="within 100 years"):
+            services.update_occurrence(
+                alice, closing.occurrence, completed_on=datetime.date(1, 1, 1)
+            )
+
+    def test_the_masking_delay_cannot_overflow(self, alice: User, alice_home: Home) -> None:
+        task = Task(hide_days_before=365)
+        assert services._visible_from(task, datetime.date.min) == datetime.date.min
+        made = services.create_task(
+            alice, alice_home, title="Hidden", due_on=self.LOW, hide_days_before=365
+        )
+        occurrence = services.open_occurrence_of(made)
+        assert occurrence is not None
+        assert occurrence.visible_from == self.LOW - datetime.timedelta(days=365)
+
+    def test_the_forms_show_the_message(
+        self, signed_in: Client, alice_home: Home, owner_task: Task, owner_occurrence: Occurrence
+    ) -> None:
+        form = {
+            "title": "Old",
+            "priority": "normal",
+            "repeat_mode": "once",
+            "repeat_interval": "1",
+            "repeat_unit": "month",
+            "hide_days_before": "0",
+            "due_on": "0001-01-01",
+        }
+        page = signed_in.post(url("create", alice_home), form)
+        assert page.status_code == 200
+        assert "within 100 years of today" in page.content.decode()
+        assert not Task.objects.filter(title="Old").exists()
+        page = signed_in.post(url("edit", alice_home, task_id=owner_task.id), form)
+        assert page.status_code == 200
+        assert "within 100 years of today" in page.content.decode()
+        page = signed_in.post(
+            url("postpone", alice_home, task_id=owner_task.id, occurrence_id=owner_occurrence.id),
+            {"due_on": "9000-01-01"},
+        )
+        assert page.status_code == 200
+        assert "within 100 years of today" in page.content.decode()
 
 
 class TestQueries:

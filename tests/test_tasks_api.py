@@ -1,6 +1,7 @@
 """API of tasks, occurrences and contractors: filters, scopes, roles, isolation."""
 
 import datetime
+import time
 import uuid
 from collections.abc import Callable
 from datetime import timedelta
@@ -179,6 +180,81 @@ class TestTasks:
     ) -> None:
         detail = api("task-detail", alice_home, task_id=owner_task.id)
         assert client_of_alice.put(detail, {"title": "x"}, format="json").status_code == 405
+
+
+class TestDateBounds:
+    """A date out of the window around today is a 400, never a long computation or a 500."""
+
+    def test_task_dates_out_of_the_window_are_refused(
+        self, client_of_alice: APIClient, alice_home: Home, owner_task: Task
+    ) -> None:
+        listing = api("task-list", alice_home)
+        for day in ("0001-01-01", "9999-12-31"):
+            refused = client_of_alice.post(listing, {"title": "x", "due_on": day}, format="json")
+            assert refused.status_code == 400, refused.content
+            assert "due_on" in refused.json()
+        detail = api("task-detail", alice_home, task_id=owner_task.id)
+        assert (
+            client_of_alice.patch(detail, {"due_on": "0001-01-01"}, format="json").status_code
+            == 400
+        )
+
+    def test_the_masking_delay_on_the_oldest_date_is_a_400_not_a_500(
+        self, client_of_alice: APIClient, alice_home: Home
+    ) -> None:
+        refused = client_of_alice.post(
+            api("task-list", alice_home),
+            {"title": "x", "due_on": "0001-01-02", "hide_days_before": 365},
+            format="json",
+        )
+        assert refused.status_code == 400, refused.content
+
+    def test_occurrence_dates_out_of_the_window_are_refused(
+        self, client_of_alice: APIClient, alice_home: Home, owner_occurrence: Occurrence
+    ) -> None:
+        complete = api("occurrence-complete", alice_home, occurrence_id=owner_occurrence.id)
+        assert (
+            client_of_alice.post(
+                complete, {"completed_on": "0001-01-01"}, format="json"
+            ).status_code
+            == 400
+        )
+        postpone = api("occurrence-postpone", alice_home, occurrence_id=owner_occurrence.id)
+        assert (
+            client_of_alice.post(postpone, {"due_on": "9999-01-01"}, format="json").status_code
+            == 400
+        )
+        done = client_of_alice.post(complete, {}, format="json")
+        assert done.status_code == 200
+        detail = api("occurrence-detail", alice_home, occurrence_id=owner_occurrence.id)
+        assert (
+            client_of_alice.patch(detail, {"completed_on": "0001-01-01"}, format="json").status_code
+            == 400
+        )
+
+    def test_the_sheet_of_a_daily_task_on_the_oldest_date_is_quick(
+        self, client_of_alice: APIClient, alice_home: Home
+    ) -> None:
+        low = services.date_bounds()[0]
+        created = client_of_alice.post(
+            api("task-list", alice_home),
+            {
+                "title": "Daily",
+                "due_on": str(low),
+                "repeat_mode": "fixed",
+                "repeat_unit": "day",
+                "repeat_interval": 1,
+            },
+            format="json",
+        )
+        assert created.status_code == 201, created.content
+        occurrence = created.json()["open_occurrence"]
+        began = time.perf_counter()
+        done = client_of_alice.post(
+            api("occurrence-complete", alice_home, occurrence_id=occurrence), {}, format="json"
+        )
+        assert done.status_code == 200
+        assert time.perf_counter() - began < 0.5
 
 
 class TestOccurrences:

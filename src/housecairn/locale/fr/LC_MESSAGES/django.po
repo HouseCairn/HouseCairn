@@ -2220,6 +2220,11 @@ msgid "The date cannot be in the future."
 msgstr "La date ne peut pas être dans le futur."
 
 #: tasks/services.py
+#, python-format
+msgid "Choose a date within %(years)d years of today."
+msgstr "Choisissez une date à moins de %(years)d ans d'aujourd'hui."
+
+#: tasks/services.py
 msgid "Choose a date that is not in the past."
 msgstr "Choisissez une date qui n'est pas passée."
 

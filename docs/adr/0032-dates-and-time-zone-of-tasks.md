@@ -20,6 +20,15 @@ change of clock cannot move a task, and no test needs to fake a zone to be right
 what is late, what a completion date defaults to and what "in the future" means.
 Instants (`created_at`, `updated_at`, `deleted_at`) stay in UTC.
 
+**Dates are held to a window of 100 years around today** (`services.date_bounds`,
+`DATE_SPAN_YEARS`): the due, postponement, series start and completion dates of a
+task, from the screens and from the API alike, because the rule lives in the service
+layer (ADR 0002). Outside of it the answer is a message (web) or a 400 (API). A
+date in year 1 serves no one and, before this bound, made a daily series long to
+count for whoever could write; the window follows the day, so it is checked at each
+write and a stored date is never re-validated. The masking delay (`visible_from`)
+stops at the first day of the calendar instead of overflowing.
+
 **Not one zone per home yet.** A home has no time zone field: adding one touches
 the `homes` app, and the instance of a household is in practice in one zone. The
 decision is reversible: `tasks.services.today()` is the single place that reads the
