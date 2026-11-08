@@ -124,8 +124,11 @@ def guarded() -> Iterator[_Guard]:
 
 
 def _asset() -> AppriseAsset:
-    # One service at a time, nothing on disk.
-    return AppriseAsset(async_mode=False, storage_mode="memory")
+    # One service at a time, nothing on disk, and no address of an image: Apprise links its
+    # icons on github.com, which the app of each person who receives a message would load.
+    return AppriseAsset(
+        async_mode=False, storage_mode="memory", image_url_mask="", image_url_logo=""
+    )
 
 
 def _plugin(url: str) -> Any:
@@ -164,6 +167,10 @@ def _plugin(url: str) -> Any:
     # `?retry=` and `?wait=` would call the service again, after the send gave up.
     plugin.retry = 0
     plugin.wait = 0.0
+    # No image in a message either, whatever the options say (see `_asset`).
+    for image in ("include_image", "footer_logo", "avatar"):
+        if hasattr(plugin, image):
+            setattr(plugin, image, False)
     return plugin
 
 

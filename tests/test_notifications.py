@@ -315,6 +315,54 @@ class TestOutgoingCalls:
         plugin = outbound._plugin("gotifys://gotify.example.com/token?retry=5&wait=30")
         assert (plugin.retry, plugin.wait) == (0, 0)
 
+    def test_the_asset_has_no_image_address(self) -> None:
+        plugin = apprise.Apprise.instantiate("discord://12345/abcdef", asset=outbound._asset())
+        assert plugin.image_url(apprise.NotifyType.INFO) is None
+        assert plugin.image_url(apprise.NotifyType.INFO, logo=True) is None
+
+    def test_the_image_options_are_off_whatever_the_address_says(self) -> None:
+        plugin = outbound._plugin("discord://12345/abcdef?image=yes&footer_logo=yes&avatar=yes")
+        assert (plugin.include_image, plugin.footer_logo, plugin.avatar) == (False, False, False)
+        for url in (
+            "ntfys://ntfy.example.com/t?image=yes",
+            "mmosts://chat.example.com/t?image=yes",
+        ):
+            assert outbound._plugin(url).include_image is False
+
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "ntfys://ntfy.example.com/topic",
+            "gotifys://gotify.example.com/token",
+            "signals://signal.example.com/+12025550100/+12025550101",
+            "matrixs://user:pass@matrix.example.com/!room:example.com",
+            "mmosts://chat.example.com/token",
+            "apprises://api.example.com/token",
+            "tgram://123456789:AAHexampleexampleexampleexampleexa/987654321",
+            "discord://12345/abcdef",
+            "slack://T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7FQ/#general",
+            "pover://uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        ],
+    )
+    def test_no_remote_image_in_a_message(self, monkeypatch: pytest.MonkeyPatch, url: str) -> None:
+        """Apprise links its icons on github.com: the receiving app would load them."""
+        payloads: list[str] = []
+
+        def capture(self: Any, method: str, url: str, **kwargs: Any) -> requests.Response:
+            payloads.append(json.dumps([kwargs.get("data"), kwargs.get("json")], default=str))
+            answer = requests.Response()
+            answer.status_code = 200
+            answer._content = b'{"ok": true, "id": 1, "access_token": "t", "room_id": "!r:x"}'
+            return answer
+
+        monkeypatch.setattr(requests.Session, "request", capture)
+        monkeypatch.setattr(outbound, "forbidden_address", lambda address: False)
+        outbound.send(outbound.seal(url), title="Fixed", body="Body")
+        assert payloads
+        for payload in payloads:
+            for image in ("githubusercontent", "github.com", ".png", "http"):
+                assert image not in payload
+
     def test_the_title_is_escaped_for_the_format_of_the_channel(
         self, sent: list[tuple[str, str, str]]
     ) -> None:
