@@ -500,7 +500,7 @@ class TestWebScreens:
             page = admin_client.get(url).text
             for name in ("pkce", "enabled"):
                 assert re.search(
-                    rf'<p><label for="id_{name}">[^<]+</label><input type="checkbox"[^>]*'
+                    rf'<p><label for="id_{name}">[^<:]+</label><input type="checkbox"[^>]*'
                     rf'id="id_{name}"[^>]*></p>\s*'
                     rf'<p class="small helptext" id="id_{name}_helptext">',
                     page,
