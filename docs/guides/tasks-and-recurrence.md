@@ -40,9 +40,11 @@ that are not leap years. With **Fixed date**, a task done very late does not bri
 back every date it missed: the next occurrence is the first date of the series after
 today, and the one not done yet stays on top of the list as arrears.
 
-A **season** limits the task to some months (April to October for the lawn,
-November to March for the heating, over the new year if needed). A date that falls
-outside the season moves to the first day of the next one.
+A **season** limits the task to some months. Pick a predefined one (spring, summer,
+autumn, winter or the heating season), which follows the hemisphere of the home, or
+**Custom months** (April to October for the lawn, November to March for the heating, over
+the new year if needed). A date that falls outside the season moves to the first day of the
+next one. The hemisphere is set on the page of the [home](../screens/home.md): never guessed.
 
 With **Fixed date**, the first day of a season is one more date of the series, not a
 new start: a monthly task set on 31 March with a season from March to May is due on
@@ -69,8 +71,16 @@ come with the stock, in a later version.
 
 ## Contractors
 
-Name the person or the company on the task: pick one that the home already knows or
-type a new name and trade in the form. The API also lists and edits them.
+Name the person or the company on the task, in one field: pick one that the home already
+knows from the suggestions, or type a new name, which creates the contractor when you save.
+Each contractor has a [sheet](../screens/contractor.md) (trade from a list, phone, email
+address, address, note, the tasks that name them) that downloads as a contact file (.vcf)
+to put in your phone. The API also lists and edits them.
+
+## Estimated duration and who does it
+
+The estimated duration is a number and a unit (minutes, hours or days). The person in
+charge is shown by their [display name](../screens/profile.md), never by their address.
 
 ## For scripts
 

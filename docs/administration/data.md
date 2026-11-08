@@ -25,8 +25,8 @@ The archive is a zip:
 | --- | --- |
 | `format`, `version` | `"housecairn-export"` and `1`. A change that removes or renames a key raises the version. |
 | `exported_at`, `application_version` | When, and by which version. |
-| `home` | `id`, `name`, `currency`, `required_provider`, `created_at`. |
-| `members` | `id`, `email`, `name`, `role`, `joined_at` of each member. |
+| `home` | `id`, `name`, `currency`, `hemisphere` (`north` or `south`), `required_provider`, `created_at`. |
+| `members` | `id`, `email`, `name` (the display name, else the full name, else the part of the address before the `@`), `role`, `joined_at` of each member. |
 | `pending_invitations` | `id`, `email`, `role`, `sent_at`, `expires_at`; never a link. |
 | `events` | `id`, `kind`, `payload`, `received_at` of the events received. |
 | `rooms` | `id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch and stock, floor and wall covering, memory notes). |
@@ -36,6 +36,8 @@ The archive is a zip:
 | `stock_items` | `id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`). |
 | `stock_suppliers` | `id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`. |
 | `stock_movements` | `id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`. |
+| `tasks` | `id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, the budgets, `notes`, `procedure`, `assignee`, `contractor` (an id), the repeat rule, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` or empty) with `season_start_month` and `season_end_month`, `hide_days_before`. |
+| `contractors` | `id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`. |
 | `files` | `path` and `size` of each file in `files/`. |
 
 Photos and the images attached to tasks are exported as they are stored, already

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 01:53+0000\n"
+"POT-Creation-Date: 2026-11-08 19:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -37,20 +37,20 @@ msgstr "Contenu"
 msgid "Repeat"
 msgstr "Répétition"
 
-msgid "**Once**, **Fixed date** (every N days, weeks, months or years from the first date) or **After the last time** (N units after the day it was done). A season (first and last month; November to March is fine) outside of which nothing falls, and the number of days before the date from which the task shows."
-msgstr "**Une fois**, **Date fixe** (tous les N jours, semaines, mois ou ans à partir de la première date) ou **Après la dernière fois** (N unités après le jour où elle a été faite). Une saison (premier et dernier mois ; de novembre à mars convient) hors de laquelle rien ne tombe, et le nombre de jours avant la date à partir duquel la tâche s'affiche."
+msgid "**Once**, **Fixed date** (every N days, weeks, months or years from the first date) or **After the last time** (N units after the day it was done). A **season** outside of which nothing falls (see below), and the number of days before the date from which the task shows."
+msgstr "**Une fois**, **Date fixe** (tous les N jours, semaines, mois ou années à partir de la première date) ou **Après la dernière fois** (N unités après le jour où elle a été faite). Une **saison** hors de laquelle rien ne tombe (voir plus bas), et le nombre de jours avant la date à partir duquel la tâche s'affiche."
 
 msgid "Who"
 msgstr "Qui"
 
-msgid "Priority, the person in charge (a member of the home) and the contractor: pick one of the home or type a new name and trade."
-msgstr "Priorité, la personne responsable (un membre du logement) et l'intervenant : choisissez-en un du logement ou saisissez un nouveau nom et un métier."
+msgid "Priority, the person in charge (a member of the home, shown by name) and the contractor, in one field: pick one of the home from the suggestions or type a new name, which is added to the contractors of the home when you save. Empty the field to remove the contractor."
+msgstr "Priorité, la personne responsable (un membre du logement, affiché par son nom) et l'intervenant, dans un seul champ : choisissez-en un du logement parmi les suggestions ou saisissez un nouveau nom, qui rejoint les intervenants du logement à l'enregistrement. Videz le champ pour retirer l'intervenant."
 
 msgid "Time and budget"
 msgstr "Durée et budget"
 
-msgid "Estimated duration in minutes, labour and material budgets, in the currency of the home."
-msgstr "Durée estimée en minutes, budgets main d'œuvre et matériel, dans la devise du logement."
+msgid "Estimated duration (a number and a unit: minutes, hours or days), labour and material budgets, in the currency of the home."
+msgstr "Durée estimée (un nombre et une unité : minutes, heures ou jours), budgets main d'œuvre et matériel, dans la devise du logement."
 
 msgid "How to do it"
 msgstr "Comment faire"
@@ -58,8 +58,27 @@ msgstr "Comment faire"
 msgid "The procedure in Markdown, notes and, when adding, photos and files."
 msgstr "Le mode opératoire en Markdown, des notes et, à l'ajout, des photos et des fichiers."
 
+msgid "Season"
+msgstr "Saison"
+
+msgid "A task can be limited to a season: **Spring**, **Summer**, **Autumn**, **Winter**, **Heating season** or **Custom months** (a first and a last month; November to March is fine). The predefined seasons follow the **hemisphere** of the home, which you set on the [home](home.md) page: in the northern hemisphere spring is March to May, summer June to August, autumn September to November, winter December to February and the heating season October to April; in the southern one they are shifted by six months. Changing the hemisphere of the home moves the tasks on a predefined season; a custom season keeps its months."
+msgstr "Une tâche peut être limitée à une saison : **Printemps**, **Été**, **Automne**, **Hiver**, **Saison de chauffe** ou **Mois personnalisés** (un premier et un dernier mois ; de novembre à mars est possible). Les saisons prédéfinies suivent l'**hémisphère** du logement, que vous réglez sur la page du [logement](home.md) : dans l'hémisphère nord, le printemps va de mars à mai, l'été de juin à août, l'automne de septembre à novembre, l'hiver de décembre à février et la saison de chauffe d'octobre à avril ; dans l'hémisphère sud, elles sont décalées de six mois. Changer l'hémisphère du logement déplace les tâches qui ont une saison prédéfinie ; une saison personnalisée garde ses mois."
+
+msgid "Estimated duration"
+msgstr "Durée estimée"
+
+msgid "A whole number and a unit, from 1 minute to 30 days; it is stored in minutes and shown as people say it: **45 min**, **1 h 30**, **2 days**."
+msgstr "Un nombre entier et une unité, de 1 minute à 30 jours ; elle est stockée en minutes et affichée comme on la dit : **45 min**, **1 h 30**, **2 jours**."
+
+msgid "Contractor"
+msgstr "Intervenant"
+
+msgid "The field has no list to scroll through: start typing and the contractors of the home are suggested (with their trade); without script, type the name. A name that is already in the home, whatever its case, picks that contractor; a new name creates one, which you complete on its [sheet](contractor.md)."
+msgstr "Le champ n'a pas de liste à faire défiler : commencez à saisir et les intervenants du logement sont suggérés (avec leur métier) ; sans script, saisissez le nom. Un nom que le logement connaît déjà, quelle que soit la casse, choisit cet intervenant ; un nouveau nom en crée un, que vous complétez sur sa [fiche](contractor.md)."
+
 msgid "Editing the date moves the occurrence that is open. Deleting the task, at the bottom of the edit form, asks for confirmation and removes the task, its history and its files from the screens."
 msgstr "Modifier la date déplace l'occurrence qui est ouverte. Supprimer la tâche, en bas du formulaire de modification, demande une confirmation et retire la tâche, son historique et ses fichiers des écrans."
 
 msgid "When you add files together with the task and one of them is refused, the task is created anyway and a message names the file and the reason."
 msgstr "Quand vous ajoutez des fichiers en même temps que la tâche et que l'un d'eux est refusé, la tâche est créée quand même et un message nomme le fichier et la raison."
+

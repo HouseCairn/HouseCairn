@@ -1,0 +1,36 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 19:40+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "How you are named to the other members of your homes, at `/me/profile/` (**More**, then **Profile**). One optional field:"
+msgstr "Comment vous êtes nommé auprès des autres membres de vos logements, sur `/me/profile/` (**Plus**, puis **Profil**). Un champ facultatif :"
+
+msgid "**Display name**: up to 60 characters, on one line. It is what people see on the tasks you are in charge of, in the [history](history.md), in [Today](today.md) and in the [household](household.md)."
+msgstr "**Nom d'affichage** : 60 caractères au plus, sur une ligne. C'est ce que voient les autres sur les tâches dont vous êtes responsable, dans l'[historique](history.md), dans [Aujourd'hui](today.md) et dans le [foyer](household.md)."
+
+msgid "Without a display name you are shown by your full name if you have one, and otherwise by the part of your email address before the `@`. Your whole address is never used to name you on those screens; it appears only where the address is the subject (your account, an invitation, the sheet of a member)."
+msgstr "Sans nom d'affichage, vous êtes affiché par votre nom complet si vous en avez un, et sinon par la partie de votre adresse e-mail avant le `@`. Votre adresse entière ne sert jamais à vous nommer sur ces écrans ; elle n'apparaît que là où l'adresse est le sujet (votre compte, une invitation, la fiche d'un membre)."
+
+msgid "The same field is in the [API](../api/index.md): `GET` and `PATCH /api/v1/me/`."
+msgstr "Le même champ est dans l'[API](../api/index.md) : `GET` et `PATCH /api/v1/me/`."
+

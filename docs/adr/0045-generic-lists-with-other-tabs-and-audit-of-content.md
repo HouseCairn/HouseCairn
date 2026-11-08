@@ -1,4 +1,4 @@
-# 0045. Generic lists with "Other", tabs, language of a person and audit of content
+# 0045. Generic lists with "Other", tabs, language of a person, seasons, contractors and audit of content
 
 - Status: accepted
 - Date: 2026-11-08
@@ -60,12 +60,79 @@ characters and on one line, and for a change the names of the fields that change
 their values. No note, cost, procedure, file name or file. The entries stay in the home's log
 (owners only) and go with the home.
 
+**Seasons and the hemisphere of the home.** A task limited to a season takes a `season`:
+`spring`, `summer`, `autumn`, `winter`, `heating` or `custom`, empty for the whole year. The
+predefined ones are whole months: spring March to May, summer June to August, autumn
+September to November, winter December to February, the heating season October to April, in
+the northern hemisphere, and the same shifted by six months in the southern one. The
+hemisphere is a field of the home (`north` by default, set on the home screen and by the
+API), never guessed from a place or a language, since a household decides it once and a
+guess would be wrong for part of the world. The months stay on the task
+(`season_start_month`, `season_end_month`) and always hold the window, so the recurrence
+engine and the Today query are unchanged: a predefined season writes the window of the
+hemisphere of the home when the task is saved, and changing the hemisphere rewrites the
+tasks of that home that use a predefined season (`resync_seasons`); a custom season keeps
+the months the person chose. Months sent without a season (a client older than this
+decision) make a custom one. The data migration is reversible: a window that is exactly a
+northern predefined season becomes it and any other window becomes a custom season; going
+back drops the `season`, and the months, which never left, are the window.
+
+**Display name.** The account has an optional `display_name` (60 characters, one line, no
+control or invisible character), edited on the profile screen and by `PATCH /api/v1/me/`.
+One helper, `accounts.names.person_name`, names a person everywhere: the display name, then
+the full name, then the part of the address before the `@`. A person is never shown by their
+whole address except where the address is the subject (their account, an invitation, the
+sheet of a member). The administration site still shows the display name read only and
+cannot take an account over (ADR 0022).
+
+**Estimated duration.** A number and a unit (minutes, hours, days) on the screens, minutes
+in the data and in the API, between one minute and thirty days; the service layer checks the
+bounds for every way in. The page shows it as people say it ("45 min", "1 h 30", "2 days"),
+and the form shows a stored value back in the biggest unit that holds it exactly.
+
+**Contractors.** A contractor belongs to one home and has a name (the only required field),
+a trade, a phone number, an email address, an address and a note. The trade is a code of a
+generic list (plumber, electrician, heating engineer, roofer, carpenter, painter, mason,
+gardener, locksmith, chimney sweep) or `other`, which requires `trade_other`, the trade in
+the person's own words; the text is dropped when a listed trade is chosen. The data
+migration is reversible: a trade written as free text becomes the code of the list when it
+is the same word in English or in French, whatever the case and the accents, and otherwise
+becomes `other` with the text kept; going back writes the English label, or the text kept.
+The task has one field for the contractor: the name is typed or picked from a `datalist` of
+the home (a browser feature, no script, which is a plain text field where it is not
+supported); a name the home already has, whatever its case, picks that contractor and a new
+one creates it when the task is saved. A reader of the home reads contractors and downloads
+the contact file; writing needs a role that writes; a contractor of another home is a 404,
+for the contact file too. Creating, changing and deleting one is recorded in the audit log
+by name (never the note or the contact details). The export and the erasure of a home cover
+the new fields.
+
+**Contact file.** `GET /h/<home>/contractors/<id>/contact.vcf` (and
+`.../contractors/<id>/vcard/` in the API) returns a vCard **3.0** (RFC 2426), as
+`text/vcard; charset=utf-8` with `Content-Disposition: attachment` and a file name made of
+ASCII letters, digits and hyphens. 3.0 and not 4.0 (RFC 6350): Apple Contacts and Google
+Contacts, which both export 3.0 themselves, Android, Outlook and Thunderbird all import it,
+while 4.0 is read with gaps by some of them, and nothing here needs what 4.0 adds (the
+properties used, `FN`, `N`, `TITLE`, `TEL`, `EMAIL`, `ADR`, `NOTE`, `UID` and `REV`, are the
+same in both). Every value is escaped (backslash, semicolon, comma, and a line break written
+`\n`), stripped of control and invisible characters, and lines are folded at 75 octets on
+character boundaries, so that a name or a note can never start a line of its own. The
+telephone number is checked on the way in (digits, spaces and `+ ( ) - . /`), which also
+keeps the `tel:` link of the sheet safe.
+
 ## Consequences
 
 - API clients that wrote `open_walls` or the `contract` field must use the new names; exports
   carry them too.
 - A list is not extensible by the household: a missing value is "Other" plus text. A list that
   grows is a change of the code, translated for all.
-- The contractor record (a trade list, a phone, an e-mail and an address, a vCard download),
-  the seasons of a task and the display of the person in charge by name follow in a separate
-  lot; this decision is completed there.
+- The household page and the member filters name people without their address; an
+  administrator who wants an address finds it on the sheet of the member (owners) or in the
+  administration site.
+- Two members who share a display name look alike in a list; the sheet of a member tells them
+  apart. The name is a courtesy, not an identity.
+- Changing the hemisphere moves the window of the tasks on a predefined season, not their due
+  dates: an occurrence already dated stays where it is.
+- A contractor is found by name inside a home. Two contractors with the same name stay
+  possible (edited by hand); the single field then picks the oldest, and the sheet of the
+  other is reached from the list.

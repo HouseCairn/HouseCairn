@@ -28,21 +28,30 @@ web interface: every request only sees the homes of its user
   `after` or `other`, [ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)).
   An item carries `contract_provider` and `contract_number`.
 - **Tasks** of a home: `/api/v1/homes/<home id>/tasks/`, `.../occurrences/`,
-  `.../contractors/` and `.../attachments/`
+  `.../contractors/` (name, `trade` from a list or `other` with `trade_other`, `phone`,
+  `email`, `address`, `note`; `GET .../contractors/<id>/vcard/` gives the contact file) and
+  `.../attachments/`
   ([ADR 0031](../adr/0031-tasks-occurrences-and-recurrence.md),
   [ADR 0033](../adr/0033-done-with-undo.md),
   [ADR 0034](../adr/0034-task-attachments.md)). Only `title` is required to create
-  a task; `due_on` is the date of its open occurrence. Everything the screens do
+  a task; `due_on` is the date of its open occurrence. `season` is `spring`, `summer`,
+  `autumn`, `winter`, `heating` (the months follow the `hemisphere` of the home), `custom`
+  (with `season_start_month` and `season_end_month`) or empty;
+  `estimated_minutes` is in minutes, from 1 to 43200, and `estimated_text` reads it;
+  `assignee_name` names the person in charge
+  ([ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)). Everything the screens do
   is there: `POST .../occurrences/<id>/complete/` marks it done and creates the next
   occurrence (the response holds both), `.../undo/` takes it back, `.../skip/` and
   `.../postpone/` (body `{"due_on": "YYYY-MM-DD"}`) the other outcomes, and `PATCH`
   fills in the date, real cost and note of what was done. Tasks are filtered with
   `status` (`open`, `closed`), `room`, `item`, `assignee`, `due_before`, `due_after`
-  and `q`; occurrences with the same, plus `task`, `overdue=true` and `status`
+  `contractor` and `q`; occurrences with the same, plus `task`, `overdue=true` and `status`
   (`planned`, `postponed`, `done`, `skipped`, `open`, `closed`). Occurrences come
   oldest date first, the arrears on top, and the open ones hidden by their task
   (masked until N days before) only appear with `include_hidden=1`. The scopes are
   the same as for rooms: `read` to read, `write` to change, and a role that writes.
+- **Me**: `GET` and `PATCH /api/v1/me/` read and change the `display_name` of the person
+  signed in (`email` and `id` are read only); `name` is the name shown for them.
 - **Today, My home, History and display preferences**
   ([ADR 0037](../adr/0037-today-my-home-history-and-display-preferences.md)):
   `GET /api/v1/homes/<home id>/today/` returns the sections of the Today screen as the

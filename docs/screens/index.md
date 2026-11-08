@@ -38,6 +38,10 @@ task
 task-form
 history
 display-preferences
+contractors
+contractor
+contractor-form
+profile
 stock
 stock-item
 stock-item-form
