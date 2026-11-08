@@ -1,0 +1,39 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 13:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Stock"
+msgstr "Matériel"
+
+msgid "The stock of a home, at `/h/<home id>/stock/`. **Stock** in the navigation opens it directly when you belong to a single home; with several homes, it first asks which one (`/stock/`). Each row shows the name of the item, its current quantity with its unit and where it is stored; a **Low** label appears when the quantity has fallen to the threshold or below. A row opens the [stock item](stock-item.md)."
+msgstr "Le matériel d'un logement, à `/h/<id du logement>/stock/`. **Matériel** dans la navigation l'ouvre directement quand vous appartenez à un seul logement ; avec plusieurs logements, il demande d'abord lequel (`/stock/`). Chaque ligne indique le nom de l'article, sa quantité actuelle avec son unité et son lieu de rangement ; la mention **Bas** apparaît quand la quantité est descendue au seuil ou en dessous. Une ligne ouvre l'[article](stock-item.md)."
+
+msgid "**Add a stock item** opens the [stock item form](stock-item-form.md). Only the name is required."
+msgstr "**Ajouter un article** ouvre le [formulaire d'article](stock-item-form.md). Seul le nom est requis."
+
+msgid "The search field looks for the text anywhere in the name, in the manufacturer reference or in the name or reference of a supplier, ignoring case: `/h/<home id>/stock/?q=<text>`."
+msgstr "Le champ de recherche cherche le texte n'importe où dans le nom, dans la référence fabricant ou dans le nom ou la référence d'un fournisseur, sans tenir compte de la casse : `/h/<id du logement>/stock/?q=<texte>`."
+
+msgid "**Low stock only** keeps the items at or below their threshold: `/h/<home id>/stock/?low=1`. An item with no threshold is never low."
+msgstr "**Stock bas seulement** ne garde que les articles au niveau de leur seuil ou en dessous : `/h/<id du logement>/stock/?low=1`. Un article sans seuil n'est jamais bas."
+
+msgid "Read-only members see the same list and none of the buttons that change it."
+msgstr "Les membres en lecture seule voient la même liste et aucun des boutons qui la modifient."
+

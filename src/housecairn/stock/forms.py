@@ -1,0 +1,80 @@
+"""Forms of the stock screens. Validation only; rules live in `services`."""
+
+from typing import Any
+
+from django import forms
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
+from housecairn.rooms.models import Item
+from housecairn.stock.models import Article, MovementKind, Supplier
+
+
+class ItemChoiceField(forms.ModelMultipleChoiceField[Item]):
+    def label_from_instance(self, obj: Any) -> str:
+        return f"{obj.room.name} · {obj.name}"
+
+
+class ArticleForm(forms.ModelForm[Article]):
+    """The article's own fields, its compatible items and the photo of its label."""
+
+    compatible_items = ItemChoiceField(
+        label=_("Compatible items"),
+        queryset=Item.objects.none(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        help_text=_("The equipment this fits, such as the boiler a filter is made for."),
+    )
+    label = forms.FileField(
+        label=_("Photo of the label"),
+        required=False,
+        widget=forms.ClearableFileInput(attrs={"accept": "image/jpeg,image/png,image/webp"}),
+    )
+    clear_label = forms.BooleanField(label=_("Remove the photo of the label"), required=False)
+
+    class Meta:
+        model = Article
+        fields = [
+            "name",
+            "manufacturer_reference",
+            "dimensions",
+            "storage_location",
+            "unit",
+            "threshold",
+            "compatible_items",
+            "notes",
+        ]
+        widgets = {"notes": forms.Textarea(attrs={"rows": 4})}
+
+    def __init__(self, *args: Any, items: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        field = self.fields["compatible_items"]
+        assert isinstance(field, forms.ModelMultipleChoiceField)  # noqa: S101 - narrows the type
+        field.queryset = items
+        if not (self.instance.pk and self.instance.label):
+            del self.fields["clear_label"]
+
+
+class SupplierForm(forms.ModelForm[Supplier]):
+    class Meta:
+        model = Supplier
+        fields = ["name", "reference", "url", "last_price"]
+
+
+class MovementForm(forms.Form):
+    """The quick form of the article page; the button pressed gives `kind`."""
+
+    kind = forms.ChoiceField(choices=MovementKind.choices)
+    quantity = forms.DecimalField(
+        label=_("Quantity"), min_value=0, max_digits=10, decimal_places=2, initial=1
+    )
+    occurred_on = forms.DateField(
+        label=_("Date"),
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+    )
+    note = forms.CharField(label=_("Note"), max_length=200, required=False)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["occurred_on"].initial = timezone.localdate()

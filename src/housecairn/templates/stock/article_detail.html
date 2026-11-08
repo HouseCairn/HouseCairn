@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{{ article.name }}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'stock:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Stock" %}</a>
+  <h1>{{ article.name }}</h1>
+  <section class="card">
+    <p class="stock-quantity">
+      <strong>{{ quantity|floatformat:"-2" }}</strong>{% if article.unit %} {{ article.unit }}{% endif %}
+      {% if low %}<span class="pill pill-warning">{% translate "Low stock" %}</span>{% endif %}
+    </p>
+    <dl class="facts">
+      {% if article.threshold is not None %}<div><dt>{% translate "Threshold" %}</dt><dd>{{ article.threshold|floatformat:"-2" }}</dd></div>{% endif %}
+      {% if article.manufacturer_reference %}<div><dt>{% translate "Manufacturer reference" %}</dt><dd class="mono">{{ article.manufacturer_reference }}</dd></div>{% endif %}
+      {% if article.dimensions %}<div><dt>{% translate "Dimensions" %}</dt><dd>{{ article.dimensions }}</dd></div>{% endif %}
+      {% if article.storage_location %}<div><dt>{% translate "Storage location" %}</dt><dd>{{ article.storage_location }}</dd></div>{% endif %}
+      {% if article.notes %}<div><dt>{% translate "Notes" %}</dt><dd class="prose">{{ article.notes|linebreaksbr }}</dd></div>{% endif %}
+    </dl>
+    {% if article.label %}
+      <p><img class="stock-label" src="{% url 'stock:label' home_id=home.id article_id=article.id %}" alt="{% blocktranslate with name=article.name %}Label of {{ name }}{% endblocktranslate %}" loading="lazy" decoding="async"></p>
+    {% endif %}
+    {% if can_write %}
+      <div class="button-row">
+        <a class="button button-secondary button-small" href="{% url 'stock:edit' home_id=home.id article_id=article.id %}">{% translate "Edit the stock item" %}</a>
+      </div>
+    {% endif %}
+  </section>
+
+  {% if can_write %}
+    <h2>{% translate "Record a movement" %}</h2>
+    <form method="post" action="{% url 'stock:movement-add' home_id=home.id article_id=article.id %}" class="card">
+      {% csrf_token %}
+      <p>{{ movement_form.quantity.label_tag }} {{ movement_form.quantity }}</p>
+      <p>{{ movement_form.occurred_on.label_tag }} {{ movement_form.occurred_on }}</p>
+      <p>{{ movement_form.note.label_tag }} {{ movement_form.note }}</p>
+      <div class="button-row">
+        <button type="submit" name="kind" value="entry">{% translate "Add to stock" %}</button>
+        <button type="submit" name="kind" value="exit" class="button-secondary">{% translate "Take from stock" %}</button>
+        <button type="submit" name="kind" value="inventory" class="button-secondary">{% translate "Set the count" %}</button>
+      </div>
+      <p class="small">{% translate "Set the count states what you counted on the shelf; the stock is corrected to it." %}</p>
+    </form>
+  {% endif %}
+
+  <h2>{% translate "Compatible items" %}</h2>
+  {% if compatible_items %}
+    <ul class="card-list">
+      {% for item in compatible_items %}
+        <li>
+          <a class="row" href="{% url 'rooms:item-detail' home_id=home.id item_id=item.id %}">
+            <span class="row-body">
+              <span class="row-title">{{ item.name }}</span>
+              <span class="row-text">{{ item.room.name }}</span>
+            </span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "No compatible item chosen." %}</p>
+  {% endif %}
+
+  <h2>{% translate "Suppliers" %}</h2>
+  {% if suppliers %}
+    <ul class="card-list">
+      {% for supplier in suppliers %}
+        <li class="card">
+          <p><strong>{{ supplier.name }}</strong></p>
+          <dl class="facts">
+            {% if supplier.reference %}<div><dt>{% translate "Supplier reference" %}</dt><dd class="mono">{{ supplier.reference }}</dd></div>{% endif %}
+            {% if supplier.last_price is not None %}<div><dt>{% translate "Last price paid" %}</dt><dd>{{ supplier.last_price|floatformat:2 }} {{ home.currency }}</dd></div>{% endif %}
+            {% if supplier.url %}<div><dt>{% translate "Purchase link" %}</dt><dd><a href="{{ supplier.url }}" rel="noopener noreferrer nofollow">{{ supplier.url }}</a></dd></div>{% endif %}
+          </dl>
+          {% if can_write %}
+            <a class="button button-secondary button-small" href="{% url 'stock:supplier-edit' home_id=home.id supplier_id=supplier.id %}">{% translate "Edit the supplier" %}<span class="visually-hidden"> {{ supplier.name }}</span></a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "No supplier yet." %}</p>
+  {% endif %}
+  {% if can_write %}
+    <a class="button button-secondary button-block" href="{% url 'stock:supplier-create' home_id=home.id article_id=article.id %}">{% translate "Add a supplier" %}</a>
+  {% endif %}
+
+  <h2>{% translate "Movements" %}</h2>
+  {% if movements %}
+    <ul class="card-list">
+      {% for movement in movements %}
+        <li class="row">
+          <span class="row-body">
+            <span class="row-title">{{ movement.get_kind_display }} · {% if movement.delta > 0 %}+{% endif %}{{ movement.delta|floatformat:"-2" }}{% if article.unit %} {{ article.unit }}{% endif %}</span>
+            <span class="row-text">{{ movement.occurred_on|date:"SHORT_DATE_FORMAT" }}{% if movement.kind == "inventory" %} · {% blocktranslate with count=movement.quantity|floatformat:"-2" %}counted {{ count }}{% endblocktranslate %}{% endif %}{% if movement.note %} · {{ movement.note }}{% endif %}</span>
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "No movement yet." %}</p>
+  {% endif %}
+{% endblock content %}

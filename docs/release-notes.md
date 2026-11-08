@@ -27,6 +27,11 @@ with it on the project's
   sign in, and the only administrator cannot be switched off in the administration site. See
   [Single sign-on](administration/oidc.md).
 
+- **Stock.** Keep track of spare parts and supplies: items with a threshold, suppliers
+  and an append-only ledger of movements from which the quantity is computed, a photo of
+  the label, and the equipment each item fits. Screens, API and a guide: see
+  [Stock and supplies](guides/stock.md). Label photos are stored in `/data/media/stock/`.
+
 ### Upgrade notes
 
 - **Environment variables are checked a little more strictly.** A boolean variable such as

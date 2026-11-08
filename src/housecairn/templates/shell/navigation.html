@@ -22,6 +22,11 @@
       </a>
     </li>
     <li>
+      <a class="nav-link" href="{{ stock_url }}"{% if nav_section == "stock" %} aria-current="page"{% endif %}>
+        {% include "components/icon.html" with name="stock" %}{% translate "Stock" %}
+      </a>
+    </li>
+    <li>
       <a class="nav-link" href="{% url 'more' %}"{% if nav_section == "more" %} aria-current="page"{% endif %}>
         {% include "components/icon.html" with name="more" %}{% translate "More" %}
       </a>

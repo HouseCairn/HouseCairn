@@ -41,6 +41,16 @@ web interface: every request only sees the homes of its user
   oldest date first, the arrears on top, and the open ones hidden by their task
   (masked until N days before) only appear with `include_hidden=1`. The scopes are
   the same as for rooms: `read` to read, `write` to change, and a role that writes.
+- **Stock** of a home: `/api/v1/homes/<home id>/articles/`, `.../suppliers/` and
+  `.../movements/` ([ADR 0038](../adr/0038-stock-suppliers-and-movements.md)). Only
+  `name` is required to create an article; its `quantity` is read-only, the sum of its
+  movements, and `low` tells whether it is at or below its `threshold`. A movement is
+  created with `POST` (`kind` is `entry`, `exit` or `inventory`, with a `quantity`) and
+  never changed or deleted. `compatible_items` takes item identifiers of the same home;
+  `label` (multipart) sets the photo of the label and `GET .../articles/<id>/label/`
+  returns it. Articles are filtered with `q` (name, manufacturer reference or supplier)
+  and `low=true`; suppliers and movements with `article`, movements also with `kind`. The
+  scopes are the same as for rooms.
 
 The [reference](reference.md) lists every operation. It is generated from the
 OpenAPI 3.1 schema of the code at each build of this site:
