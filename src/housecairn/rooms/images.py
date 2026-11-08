@@ -40,6 +40,8 @@ def _invalid() -> ValidationError:
 
 
 def _decode(data: bytes) -> Image.Image:
+    # The size is read from the header before decoding: a 40 megapixel image still costs
+    # a few seconds and several hundred MB (docs/adr/0030).
     try:
         image = Image.open(io.BytesIO(data), formats=list(FORMATS))
         if image.width * image.height > conf.MAX_PIXELS:

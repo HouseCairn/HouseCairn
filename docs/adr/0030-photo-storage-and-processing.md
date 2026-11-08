@@ -78,11 +78,10 @@ written, they are removed.
 - The database and `/data/media/` are backed up together (the backup
   documentation already lists both).
 - Encoding happens in the request, and a very large image takes noticeable time
-  to decode and write again. Measured on a PNG of 40
-  megapixels weighing 165 KB: about 3 seconds and a peak of about 370 MB of
-  memory; size the memory of the container for it, with room for several uploads
-  at once. A background task (ADR 0008) is the way out if
-  that proves too slow.
+  to decode and write again. Measured on a PNG of 40 megapixels weighing 165 KB:
+  about 3 seconds and a peak of about 370 MB of memory. Size the memory of the
+  container for it, with room for several uploads at once. A background task
+  (ADR 0008) is the way out if that proves too slow.
 - Uploads over 2.5 MB go through Django's temporary files, in the container's
   `/tmp` (a 64 MB tmpfs in the example deployment, ADR 0015): the default limit
   leaves room for several uploads at once.
