@@ -26,6 +26,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
+from housecairn.accounts.api import PersonOnlyToChange
 from housecairn.accounts.models import User
 from housecairn.accounts.names import person_name
 from housecairn.core.pagination import DefaultCursorPagination
@@ -762,8 +763,8 @@ class MyHomeView(APIView):
         return Response(DigestSerializer(digests, many=True, context={"request": request}).data)
 
 
-class PreferencesView(APIView):
-    """The display preferences of the caller, which only they can read or change."""
+class PreferencesView(PersonOnlyToChange, APIView):
+    """The display preferences of the caller. A token reads them; only the person changes them."""
 
     @extend_schema(responses=PreferencesSerializer)
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:

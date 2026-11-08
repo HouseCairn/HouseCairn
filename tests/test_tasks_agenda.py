@@ -567,6 +567,22 @@ class TestApi:
         assert api_client.get(api("display-preferences")).json()["horizon_days"] == 7
         assert agenda.preferences_of(bob).horizon_days == 7
 
+    def test_a_token_reads_the_preferences_and_cannot_change_them(
+        self, api_client: APIClient, alice: User, alice_home: Home
+    ) -> None:
+        _token, raw = token_services.issue_token(
+            alice,
+            name="t",
+            scopes=["read", "write"],
+            homes=[alice_home],
+            lifetime=timedelta(days=1),
+        )
+        api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
+        assert api_client.get(api("display-preferences")).status_code == 200
+        changed = api_client.patch(api("display-preferences"), {"horizon_days": 60}, format="json")
+        assert changed.status_code == 403
+        assert agenda.preferences_of(alice).horizon_days == 7
+
     def test_preferences_need_a_person(self, api_client: APIClient) -> None:
         assert api_client.get(api("display-preferences")).status_code in (401, 403)
 
@@ -677,12 +693,15 @@ class TestApi:
             == 403
         )
         writing = client(["write"])
+        # The preferences are the person's: a token reads them, whatever its scopes, and
+        # changes nothing.
         assert (
             writing.patch(
                 api("display-preferences"), {"show_season": False}, format="json"
             ).status_code
-            == 200
+            == 403
         )
+        assert agenda.preferences_of(alice).show_season is True
         assert writing.get(api("home-today", alice_home)).status_code == 403
         assert client(["events"]).get(api("my-home")).status_code == 403
 
