@@ -75,6 +75,7 @@ _invitation, raw = services.invite(
     user, homes[0], email="guest@example.com", role=Role.READ_ONLY,
     delivery=services.Delivery(),
 )
+print(homes[0].id)
 print(raw)
 """
 
@@ -84,10 +85,11 @@ def manage(env: dict[str, str], *args: str) -> None:
     subprocess.run(command, check=True, cwd=REPO_DIR, env=env, stdout=subprocess.DEVNULL)  # noqa: S603
 
 
-def seed(env: dict[str, str]) -> str:
+def seed(env: dict[str, str]) -> tuple[str, str]:
     """Create the demonstration account, homes, a second member and an invitation.
 
-    Generated data only. Returns the secret of the pending invitation, whose
+    Generated data only. Returns the identifier of the first home, whose pages
+    are reached by address, and the secret of the pending invitation, whose
     page is one of the screens.
     """
     manage(env, "migrate", "--noinput")
@@ -97,16 +99,18 @@ def seed(env: dict[str, str]) -> str:
     result = subprocess.run(  # noqa: S603
         command, check=True, cwd=REPO_DIR, env=seed_env, capture_output=True, text=True
     )
-    return result.stdout.strip().splitlines()[-1]
+    home_id, invitation = result.stdout.strip().splitlines()[-2:]
+    return home_id, invitation
 
 
 @contextmanager
-def server(env: dict[str, str], port: int) -> Any:
+def server(env: dict[str, str], port: int, log: Path) -> Any:
     command = [sys.executable, str(REPO_DIR / "manage.py"), "runserver", "--noreload"]
     command.append(f"127.0.0.1:{port}")
-    process = subprocess.Popen(  # noqa: S603
-        command, cwd=REPO_DIR, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
+    with log.open("wb") as server_log:
+        process = subprocess.Popen(  # noqa: S603
+            command, cwd=REPO_DIR, env=env, stdout=server_log, stderr=subprocess.STDOUT
+        )
     try:
         url = f"http://127.0.0.1:{port}"
         for _ in range(100):
@@ -130,7 +134,55 @@ def shoot(page: Any, name: str, language: str, device: str) -> None:
     print(f"Screenshot written: {path.relative_to(REPO_DIR)}")  # noqa: T201
 
 
-def take_all(base_url: str, password: str, invitation: str) -> int:
+def open_page(page: Any, url: str) -> None:
+    """Go to a known address and check that this page, not another, answered."""
+    response = page.goto(url)
+    if response is None or not response.ok:
+        status = "no response" if response is None else response.status
+        raise RuntimeError(f"{url}: {status}")
+    page.wait_for_url(url)
+
+
+def report_failure(page: Any, device: str, log: Path) -> None:
+    """Say where the page was when a step failed, and keep an image of it."""
+    path = OUTPUT_DIR / f"failure-{device}.png"
+    page.screenshot(path=str(path), full_page=True)
+    print(f"Failed on {page.url!r}, title {page.title()!r}; image: {path.name}", file=sys.stderr)  # noqa: T201
+    lines = log.read_text(errors="replace").splitlines()[-30:] if log.exists() else []
+    print("Last lines of the demonstration server:", *lines, sep="\n", file=sys.stderr)  # noqa: T201
+
+
+def signed_in_screens(
+    page: Any, base_url: str, password: str, home_id: str, language: str, device: str
+) -> None:
+    page.goto(f"{base_url}/accounts/login/")
+    shoot(page, "sign-in", language, device)
+    page.fill("input[name=login]", DEMO_EMAIL)
+    page.fill("input[name=password]", password)
+    page.click("form[action$='/accounts/login/'] button[type=submit]")
+    page.wait_for_url(f"{base_url}/h/")
+    shoot(page, "homes", language, device)
+    # Pages are reached by address, not by the text of a link: the navigation
+    # grows with the application, the addresses do not.
+    home_url = f"{base_url}/h/{home_id}/"
+    open_page(page, home_url)
+    shoot(page, "home", language, device)
+    page.goto(f"{base_url}/")
+    shoot(page, "start-page", language, device)
+    page.goto(f"{base_url}/more/")
+    shoot(page, "more", language, device)
+    page.goto(f"{base_url}/about/")
+    shoot(page, "about", language, device)
+    page.goto(f"{base_url}/h/new/")
+    shoot(page, "new-home", language, device)
+    open_page(page, f"{home_url}household/")
+    shoot(page, "household", language, device)
+    page.locator("a[href*='/household/members/']").nth(1).click()
+    page.wait_for_url("**/household/members/*/")
+    shoot(page, "member", language, device)
+
+
+def take_all(base_url: str, password: str, home_id: str, invitation: str, log: Path) -> int:
     # Imported here: only the docs dependency group provides Playwright.
     from playwright.sync_api import sync_playwright
 
@@ -141,32 +193,11 @@ def take_all(base_url: str, password: str, invitation: str) -> int:
             for device, options in DEVICES.items():
                 context = browser.new_context(locale=locale, color_scheme="light", **options)
                 page = context.new_page()
-                page.goto(f"{base_url}/accounts/login/")
-                shoot(page, "sign-in", language, device)
-                page.fill("input[name=login]", DEMO_EMAIL)
-                page.fill("input[name=password]", password)
-                page.click("form[action$='/accounts/login/'] button[type=submit]")
-                page.wait_for_url(f"{base_url}/h/")
-                shoot(page, "homes", language, device)
-                page.click(f"text={DEMO_HOMES[0]}")
-                page.wait_for_load_state()
-                shoot(page, "home", language, device)
-                page.goto(f"{base_url}/")
-                shoot(page, "start-page", language, device)
-                page.goto(f"{base_url}/more/")
-                shoot(page, "more", language, device)
-                page.goto(f"{base_url}/about/")
-                shoot(page, "about", language, device)
-                page.goto(f"{base_url}/h/new/")
-                shoot(page, "new-home", language, device)
-                page.goto(f"{base_url}/h/")
-                page.click(f"text={DEMO_HOMES[0]}")
-                page.click("a[href$='/household/']")
-                page.wait_for_load_state()
-                shoot(page, "household", language, device)
-                page.locator("a[href*='/household/members/']").nth(1).click()
-                page.wait_for_load_state()
-                shoot(page, "member", language, device)
+                try:
+                    signed_in_screens(page, base_url, password, home_id, language, device)
+                except Exception:
+                    report_failure(page, device, log)
+                    raise
                 context.close()
                 # The invitation page, as the invited person sees it: signed out.
                 context = browser.new_context(locale=locale, color_scheme="light", **options)
@@ -187,9 +218,10 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="housecairn-demo-") as directory:
         port = free_port()
         env = {**demo_environment(Path(directory), port), "DEMO_PASSWORD": password}
-        invitation = seed(env)
-        with server(env, port) as base_url:
-            taken = take_all(base_url, password, invitation)
+        home_id, invitation = seed(env)
+        log = Path(directory) / "server.log"
+        with server(env, port, log) as base_url:
+            taken = take_all(base_url, password, home_id, invitation, log)
     print(f"{taken} screenshots in {OUTPUT_DIR.relative_to(REPO_DIR)}.")  # noqa: T201
     return 0
 
