@@ -1,5 +1,7 @@
 """API of the signed-in person's own account: profile and erasure (docs/adr/0023, 0045)."""
 
+from typing import Any
+
 from django.core.exceptions import ValidationError as DjangoValidationError
 from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import exceptions, permissions, serializers, status
@@ -50,8 +52,8 @@ class MeView(APIView):
     every home of the person, which is wider than the one home a token can be tied to.
     """
 
-    def get_permissions(self) -> list[permissions.BasePermission]:
-        found = super().get_permissions()
+    def get_permissions(self) -> list[Any]:
+        found = list(super().get_permissions())
         if self.request.method not in permissions.SAFE_METHODS:
             found.append(SignedInPerson())
         return found
