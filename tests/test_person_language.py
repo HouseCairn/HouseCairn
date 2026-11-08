@@ -104,7 +104,7 @@ class TestPersonLanguage:
 class TestStoredLanguageIsCheckedAgain:
     """A value in the database that the instance does not ship never reaches a page."""
 
-    @pytest.mark.parametrize("stored", ["xx", "de", "../..", "fr\n", "fr\r\nX-Evil: 1", "FR"])
+    @pytest.mark.parametrize("stored", ["xx", "de", "../..", "fr\n", "fr\r\nX:1", "FR"])
     def test_pages_and_api_fall_back(
         self, signed_in: Client, alice: User, alice_home: Any, stored: str
     ) -> None:
