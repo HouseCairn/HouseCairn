@@ -70,6 +70,13 @@
       </span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>
+    <a class="row" href="{% url 'instance:providers' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Sign-in providers" %}</span>
+        <span class="row-text">{% translate "Single sign-on through OpenID Connect" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
     <a class="row" href="{% url 'instance:audit' %}">
       <span class="row-body">
         <span class="row-title">{% translate "Audit log" %}</span>

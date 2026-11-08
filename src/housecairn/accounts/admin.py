@@ -6,6 +6,7 @@ from django.contrib import admin, messages
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
 from django.http import HttpRequest
+from django.utils.translation import gettext as _
 
 from housecairn.accounts import services
 from housecairn.accounts.models import InstanceSetup, User
@@ -47,9 +48,27 @@ for _label in _UNREGISTERED:
 
 
 class AccountAdminForm(forms.ModelForm[User]):
+    """Refuses to switch off, or to take the role from, the only administrator (ADR 0041)."""
+
     class Meta:
         model = User
         fields = ("is_active", "is_staff", "is_superuser")
+
+    def clean(self) -> dict[str, Any]:
+        cleaned: dict[str, Any] = super().clean() or {}
+        user = User.objects.filter(pk=self.instance.pk).first()
+        still_admin = all(
+            cleaned.get(name, getattr(user, name, False))
+            for name in ("is_active", "is_staff", "is_superuser")
+        )
+        if user is not None and not still_admin and services.is_last_instance_admin(user):
+            raise ValidationError(
+                _(
+                    "This is the only administrator of the instance: make another account "
+                    "an administrator first."
+                )
+            )
+        return cleaned
 
 
 @admin.register(User)

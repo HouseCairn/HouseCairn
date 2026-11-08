@@ -22,4 +22,6 @@ urlpatterns = [
     path("unlock/", views.UnlockView.as_view(), name="unlock"),
     path("audit/", views.AuditView.as_view(), name="audit"),
     path("settings/", views.SettingsView.as_view(), name="settings"),
+    path("providers/", views.ProvidersView.as_view(), name="providers"),
+    path("providers/<slug:slug>/", views.ProviderView.as_view(), name="provider"),
 ]

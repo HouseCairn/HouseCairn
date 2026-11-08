@@ -32,6 +32,8 @@ PARITY: dict[str, tuple[str, ...]] = {
     "instance:unlock": ("api-v1:instance-unlock",),
     "instance:audit": ("api-v1:instance-audit-list",),
     "instance:settings": ("api-v1:instance-settings",),
+    "instance:providers": ("api-v1:instance-provider-list", "api-v1:instance-provider-check"),
+    "instance:provider": ("api-v1:instance-provider-detail", "api-v1:instance-provider-check"),
     # Creating the account of an instance invitation is account management, which the
     # API leaves to sign-in (see EXEMPT_MODULE_PREFIXES).
     "instance-invitation": ("api-v1:instance-invitation-list",),
@@ -80,6 +82,23 @@ PARITY: dict[str, tuple[str, ...]] = {
     "tasks:history": ("api-v1:home-occurrence-list", "api-v1:home-occurrence-cost"),
     "my-home": ("api-v1:my-home",),
     "display-preferences": ("api-v1:display-preferences",),
+    # Stock items, suppliers and movements (docs/adr/0038). The entry page only leads
+    # to the stock of a home, like the rooms one.
+    "stock": ("api-v1:home-list",),
+    "stock:list": ("api-v1:home-article-list",),
+    "stock:create": ("api-v1:home-article-list",),
+    "stock:detail": (
+        "api-v1:home-article-detail",
+        "api-v1:home-supplier-list",
+        "api-v1:home-movement-list",
+    ),
+    "stock:edit": ("api-v1:home-article-detail",),
+    "stock:delete": ("api-v1:home-article-detail",),
+    "stock:label": ("api-v1:home-article-label",),
+    "stock:movement-add": ("api-v1:home-movement-list",),
+    "stock:supplier-create": ("api-v1:home-supplier-list",),
+    "stock:supplier-edit": ("api-v1:home-supplier-detail",),
+    "stock:supplier-delete": ("api-v1:home-supplier-detail",),
     "tasks:attachment-add": ("api-v1:home-attachment-list",),
     "tasks:attachment": ("api-v1:home-attachment-content",),
     "tasks:attachment-thumbnail": ("api-v1:home-attachment-thumbnail",),

@@ -73,6 +73,9 @@ code,
 .mono {
   font-family: var(--hc-font-family-mono);
   font-size: 0.9em;
+  /* A long address or path breaks inside the card on a phone rather than overflow it;
+     break-word, unlike anywhere, leaves the width of flex and grid items as it was. */
+  overflow-wrap: break-word;
 }
 
 hr {

@@ -20,6 +20,7 @@ member
 invitation
 instance
 instance-settings
+sign-in-providers
 instance-invitation
 rooms
 room
@@ -36,6 +37,10 @@ task
 task-form
 history
 display-preferences
+stock
+stock-item
+stock-item-form
+supplier-form
 task-files
 more
 about

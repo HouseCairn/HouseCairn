@@ -107,6 +107,19 @@ def refuse(request: HttpRequest) -> ImmediateHttpResponse:
 class SocialAccountAdapter(DefaultSocialAccountAdapter):  # type: ignore[misc]
     """Called by allauth only for an identity that has no account yet."""
 
+    def list_apps(
+        self, request: HttpRequest | None, provider: str | None = None, client_id: str | None = None
+    ) -> list[Any]:
+        """The providers of the variables, then the enabled ones of the interface (ADR 0041).
+
+        allauth's own table of apps is not used (its secrets are in clear): providers set
+        in the interface come from `instance.providers`, read at each call.
+        """
+        from housecairn.instance import providers
+
+        apps: list[Any] = super().list_apps(request, provider=provider, client_id=client_id)
+        return apps + providers.social_apps(provider=provider, client_id=client_id)
+
     def is_open_for_signup(self, request: HttpRequest, sociallogin: SocialLogin) -> bool:
         if services.oidc_signup_decision(*provider_identity(sociallogin)) is Decision.REFUSED:
             raise refuse(request)

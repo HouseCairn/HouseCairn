@@ -156,6 +156,10 @@ def signed_in_screens(
     page: Any, base_url: str, password: str, home_id: str, language: str, device: str
 ) -> None:
     page.goto(f"{base_url}/accounts/login/")
+    # The passkey script of the page fetches a challenge, which opens a session. Sent
+    # with the form still in flight, its cookie can land after the one of the sign-in
+    # and sign the browser out on the next page: wait until the page is quiet.
+    page.wait_for_load_state("networkidle")
     shoot(page, "sign-in", language, device)
     page.fill("input[name=login]", DEMO_EMAIL)
     page.fill("input[name=password]", password)

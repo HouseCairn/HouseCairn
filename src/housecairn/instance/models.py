@@ -58,6 +58,36 @@ class InstanceInvitation(BaseModel):
         )
 
 
+class OidcProvider(BaseModel):
+    """A single sign-on provider declared in the interface (docs/adr/0041).
+
+    `slug` is the identifier django-allauth knows the provider by: it is in the redirect
+    URI, in the identities linked to it and in the rule of a home that requires it. It
+    never changes and is never given to another provider, even after deletion (the row
+    is only marked deleted), so that no new provider inherits those links. The client
+    secret is encrypted with the key of the instance settings (docs/adr/0035).
+    """
+
+    slug = models.SlugField(_("identifier"), max_length=32, unique=True)
+    name = models.CharField(_("name"), max_length=64)
+    issuer = models.CharField(_("issuer"), max_length=255)
+    client_id = models.CharField(_("client identifier"), max_length=255)
+    secret = models.TextField(_("client secret"), blank=True, default="")
+    pkce = models.BooleanField(_("PKCE"), default=True)
+    enabled = models.BooleanField(_("enabled"), default=False)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="+"
+    )
+
+    class Meta:
+        verbose_name = _("sign-in provider")
+        verbose_name_plural = _("sign-in providers")
+        ordering = ("created_at",)
+
+    def __str__(self) -> str:
+        return str(self.name)
+
+
 class SettingValue(models.Model):
     """A setting chosen in the interface (docs/adr/0035).
 

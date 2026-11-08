@@ -1,0 +1,57 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 13:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Stock and supplies"
+msgstr "Matériel et fournitures"
+
+msgid "The spare parts and supplies of the house: the filter that goes in the ventilation unit, the tin of paint of the living room, the batteries of the smoke detectors. This guide shows how to keep track of them. Every field is optional except the name."
+msgstr "Les pièces détachées et les fournitures de la maison : le filtre de la VMC, le pot de peinture du salon, les piles des détecteurs de fumée. Ce guide montre comment les suivre. Tous les champs sont facultatifs sauf le nom."
+
+msgid "Add a stock item"
+msgstr "Ajouter un article"
+
+msgid "Open **Stock** in the navigation, then **Add a stock item**. Give it a name and, if you have them at hand, the manufacturer reference, the dimensions, the unit and where it is kept. A photo of the label saves typing the reference now and finding it again later: HouseCairn keeps the picture and nothing else (the location and every other piece of information hidden in the file are removed)."
+msgstr "Ouvrez **Matériel** dans la navigation, puis **Ajouter un article**. Donnez-lui un nom et, si vous les avez sous la main, la référence fabricant, les dimensions, l'unité et l'endroit où il est rangé. Une photo de l'étiquette évite de recopier la référence maintenant et de la rechercher plus tard : HouseCairn garde l'image et rien d'autre (la position et toute autre information cachée dans le fichier sont supprimées)."
+
+msgid "Choose the **compatible items** when the part is made for a given piece of equipment, such as the boiler a filter fits. The link is shown on the page of the stock item; the page of the equipment itself does not show it yet."
+msgstr "Choisissez les **éléments compatibles** quand la pièce est faite pour un équipement précis, comme la chaudière à laquelle convient un filtre. Le lien s'affiche sur la page de l'article ; la page de l'équipement ne le montre pas encore."
+
+msgid "Count what you have"
+msgstr "Compter ce que l'on a"
+
+msgid "The quantity is never typed in: it is the sum of the movements. On the page of an item, enter a quantity and press **Add to stock** after a purchase, **Take from stock** when you use some, or **Set the count** after counting the shelf, which corrects the stock to what you counted. A movement is never edited; a mistake is corrected by another one, so the history always explains the figure."
+msgstr "La quantité ne se saisit jamais : c'est la somme des mouvements. Sur la page d'un article, saisissez une quantité et appuyez sur **Ajouter au stock** après un achat, **Sortir du stock** quand vous en utilisez, ou **Fixer le compte** après avoir compté l'étagère, ce qui corrige le stock à ce que vous avez compté. Un mouvement ne se modifie jamais ; une erreur se corrige par un autre mouvement, de sorte que l'historique explique toujours le chiffre."
+
+msgid "Set a **threshold** to see which items are running out: they carry a **Low** label, and **Low stock only** in the list keeps them."
+msgstr "Fixez un **seuil** pour voir quels articles s'épuisent : ils portent la mention **Bas**, et **Stock bas seulement** dans la liste les isole."
+
+msgid "Note where to buy"
+msgstr "Noter où acheter"
+
+msgid "Add one or more suppliers to an item: name, their reference, the purchase link and the last price paid, in the currency of the home. The link is only a link: HouseCairn makes no request to it and shows no preview. The search of the list also finds an item by the name of a supplier."
+msgstr "Ajoutez un ou plusieurs fournisseurs à un article : le nom, leur référence, le lien d'achat et le dernier prix payé, dans la devise du logement. Le lien n'est qu'un lien : HouseCairn ne lui envoie aucune requête et n'affiche aucun aperçu. La recherche de la liste trouve aussi un article par le nom d'un fournisseur."
+
+msgid "Share"
+msgstr "Partager"
+
+msgid "Everyone in the home sees the same stock; members and owners change it, read-only members change nothing. The same data is available to scripts through the [API](../api/index.md) (`articles`, `suppliers` and `movements`), with the `read` and `write` scopes of an API token. The stock is part of the [export of the home](../administration/data.md), label photos included, and is erased with it."
+msgstr "Tout le monde dans le logement voit le même matériel ; les membres et les propriétaires le modifient, les membres en lecture seule ne modifient rien. Les mêmes données sont disponibles pour les scripts par l'[API](../api/index.md) (`articles`, `suppliers` et `movements`), avec les portées `read` et `write` d'un jeton d'API. Le matériel fait partie de l'[export du logement](../administration/data.md), photos d'étiquettes comprises, et est effacé avec lui."
+

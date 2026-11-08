@@ -144,6 +144,13 @@ jobs:
               user, email='newcomer@example.com', send=lambda _invitation, secret: sent.append(secret)
           )
           open('$RUNNER_TEMP/instance-invitation-token', 'w').write(sent[0])
+          # A provider declared in the interface, for its own screen; left disabled, so
+          # that the sign-in screens stay as they are (made-up values).
+          from housecairn.instance import providers
+          providers.create(user, {
+              'slug': 'company', 'name': 'Example SSO', 'issuer': 'https://sso.example.com',
+              'client_id': 'housecairn', 'secret': 'made-up-value', 'enabled': False,
+          })
           "
           nohup uv run gunicorn housecairn.wsgi --bind 127.0.0.1:8000 > "$RUNNER_TEMP/shots-server.log" 2>&1 &
           for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/healthz && break; sleep 1; done

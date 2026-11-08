@@ -60,6 +60,8 @@ SCREENS = [
     ("instance", "/instance/", True),
     ("instance-audit", "/instance/audit/", True),
     ("instance-settings", "/instance/settings/", True),
+    ("instance-providers", "/instance/providers/", True),
+    ("instance-provider", "/instance/providers/company/", True),
     ("instance-invitation", "{instance_invitation}", False),
     # Rooms, items and photos (docs/adr/0029, 0030).
     ("rooms", "{home}rooms/", True),
