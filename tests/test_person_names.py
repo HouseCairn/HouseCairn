@@ -207,6 +207,8 @@ def _invisible() -> st.SearchStrategy[str]:
     return st.one_of(
         st.characters(categories=("Cc", "Cf", "Mn", "Me")),
         st.sampled_from(sorted(names._BLANK_GLYPHS)),
+        # Unassigned and default-ignorable: renderers hide them.
+        st.sampled_from(["\u2065", "\ufff0", "\U000e0080"]),
     )
 
 
@@ -226,6 +228,9 @@ class TestNameKey:
     @example(base="Sam", junk=["\u200d"], places=[1, 0, 0, 0])
     @example(base="0", junk=["\u0345"], places=[0, 0, 0, 0])  # case folding makes it a letter
     @example(base="Sam", junk=["\u3164", "\u2800", "\u0000"], places=[0, 3, 1, 0])
+    @example(base="Sam", junk=["\u20dd"], places=[1, 0, 0, 0])  # enclosing mark (Me)
+    @example(base="Sam", junk=["\u2065"], places=[2, 0, 0, 0])  # unassigned, ignorable
+    @example(base="Sam", junk=["\ufff0"], places=[3, 0, 0, 0])
     @settings(max_examples=300, deadline=None)
     def test_inserting_what_draws_nothing_changes_nothing(
         self, base: str, junk: list[str], places: list[int]
@@ -271,6 +276,8 @@ class TestTrimFillers:
             "Sam\u17b5",
             "\u034fSam\u034f",
             "\u2003Sam",
+            "Sam\ufff0",
+            "\u2065Sam",
         ],
     )
     def test_ends_lose_blanks_and_spaces_of_any_kind(self, value: str) -> None:
@@ -284,7 +291,15 @@ class TestTrimFillers:
             assert names.trim_fillers(f"\u3000{kept}\u00a0") == kept
 
 
-REVIEW_CASES = ["Sam\u17b4", "Sam\u17b5", "Sa\u034fm", "Sa\u200dm", "\uff33\uff41\uff4d"]
+REVIEW_CASES = [
+    "Sam\u17b4",
+    "Sam\u17b5",
+    "Sa\u034fm",
+    "Sa\u200dm",
+    "\uff33\uff41\uff4d",
+    "Sa\u2065m",
+    "Sam\ufff0",
+]
 
 
 class TestInvisibleTwins:

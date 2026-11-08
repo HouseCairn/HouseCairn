@@ -19,8 +19,9 @@ _BLANK_GLYPHS = frozenset("\u115f\u1160\u3164\uffa0\u2800\u180e\u17b4\u17b5\u034
 FILLERS = "\u3164\u115f\u1160\uffa0\u2800"
 _NOT_A_GLYPH = frozenset({"Zs", "Zl", "Zp", "Cc", "Cf", "Cs", "Co", "Cn", "Mn", "Me"})
 # What a comparison ignores: whatever changes nothing on screen (control, format, combining
-# marks) and the blank glyphs.
-_INVISIBLE = frozenset({"Cc", "Cf", "Mn", "Me"})
+# marks, unassigned code points such as the default-ignorable U+2065 or U+FFF0, which
+# renderers hide) and the blank glyphs.
+_INVISIBLE = frozenset({"Cc", "Cf", "Mn", "Me", "Cn"})
 
 
 def has_visible_glyph(value: str) -> bool:
@@ -32,7 +33,7 @@ def has_visible_glyph(value: str) -> bool:
 
 
 def _draws_nothing(char: str) -> bool:
-    return char in _BLANK_GLYPHS or char.isspace()
+    return char in _BLANK_GLYPHS or char.isspace() or unicodedata.category(char) == "Cn"
 
 
 def trim_fillers(value: str) -> str:
