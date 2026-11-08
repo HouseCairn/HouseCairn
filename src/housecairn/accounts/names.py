@@ -12,13 +12,15 @@ from typing import Any
 DISPLAY_NAME_MAX_LENGTH = 60
 
 # Letters and symbols that draw nothing: the Hangul fillers, the blank Braille pattern, the
-# Mongolian vowel separator. Space, format, control, unassigned and bare combining marks
-# are caught by their category.
-_BLANK_GLYPHS = frozenset("\u115f\u1160\u3164\uffa0\u2800\u180e\u17b4\u17b5")
-# The ones that fill a line without showing anything, which a name must not start or end
-# with, and which tell nothing apart when two names are compared.
+# Mongolian vowel separator, the Khmer inherent vowels, the combining grapheme joiner.
+# Space, format, control, unassigned and bare combining marks are caught by their category.
+_BLANK_GLYPHS = frozenset("\u115f\u1160\u3164\uffa0\u2800\u180e\u17b4\u17b5\u034f")
+# The ones that fill a line without showing anything, which a name must not start or end with.
 FILLERS = "\u3164\u115f\u1160\uffa0\u2800"
 _NOT_A_GLYPH = frozenset({"Zs", "Zl", "Zp", "Cc", "Cf", "Cs", "Co", "Cn", "Mn", "Me"})
+# What a comparison ignores: whatever changes nothing on screen (control, format, combining
+# marks) and the blank glyphs.
+_INVISIBLE = frozenset({"Cc", "Cf", "Mn", "Me"})
 
 
 def has_visible_glyph(value: str) -> bool:
@@ -29,14 +31,46 @@ def has_visible_glyph(value: str) -> bool:
     )
 
 
+def _draws_nothing(char: str) -> bool:
+    return char in _BLANK_GLYPHS or char.isspace()
+
+
 def trim_fillers(value: str) -> str:
-    """`value` without spaces and fillers at either end: "Sam" and "Sam\u3164" look alike."""
-    return value.strip(f"{FILLERS} \t\n\r")
+    """`value` without spaces and fillers at either end: "Sam" and "Sam\u3164" look alike.
+
+    Spaces are all of Unicode's (U+3000, U+00A0...). What sits inside the name stays: the
+    zero-width non-joiner of a Persian word and the joiners of a composed emoji are part of it.
+    """
+    start, end = 0, len(value)
+    while start < end and _draws_nothing(value[start]):
+        start += 1
+    while end > start and _draws_nothing(value[end - 1]):
+        end -= 1
+    return value[start:end]
+
+
+def _without_invisible(text: str) -> str:
+    return "".join(
+        c for c in text if c not in _BLANK_GLYPHS and unicodedata.category(c) not in _INVISIBLE
+    )
 
 
 def same_name_key(name: str) -> str:
-    """What two names are compared by: no case, no filler, since neither shows on screen."""
-    return "".join(c for c in name.casefold() if c not in FILLERS).strip()
+    """What two names are compared by: what shows on screen, without case or width.
+
+    Decomposed (compatibility forms: full-width letters, ligatures), case-folded, stripped of
+    whatever draws nothing (control and format characters, combining marks, the blank glyphs),
+    and with any run of spaces read as one. The removal comes before the case folding too:
+    folding turns the combining ypogegrammeni U+0345 into a letter, iota. The decomposition
+    comes first so that a mark inserted after a letter cannot fuse with it into a letter that
+    stays (e + U+0301 is one letter in NFC, and no mark is then left to remove).
+    Accents are therefore
+    no difference either: a courtesy, since the only cost is an address shown more often.
+    Look-alike letters of another alphabet are not caught (docs/adr/0045).
+    """
+    shown = _without_invisible(unicodedata.normalize("NFKD", name))
+    folded = unicodedata.normalize("NFKD", shown.casefold())
+    return " ".join(_without_invisible(folded).split())
 
 
 def looks_like_an_address(value: str) -> bool:

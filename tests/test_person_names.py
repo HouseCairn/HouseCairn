@@ -5,11 +5,14 @@ from collections.abc import Callable
 import pytest
 from django.test import Client
 from django.urls import reverse
+from hypothesis import example, given, settings
+from hypothesis import strategies as st
 from rest_framework.test import APIClient
 
 from housecairn.accounts import names
 from housecairn.accounts import services as account_services
 from housecairn.accounts.models import User
+from housecairn.homes import services as homes_services
 from housecairn.homes.models import Home, Membership, Role
 from housecairn.tasks import agenda, services
 from housecairn.tasks.models import Task
@@ -198,3 +201,144 @@ class TestLabelsIgnoreFillers:
         alice.refresh_from_db()
         bob.refresh_from_db()
         assert names.labels([alice, bob]) == {alice.pk: "Sam", bob.pk: "Sami"}
+
+
+def _invisible() -> st.SearchStrategy[str]:
+    return st.one_of(
+        st.characters(categories=("Cc", "Cf", "Mn", "Me")),
+        st.sampled_from(sorted(names._BLANK_GLYPHS)),
+    )
+
+
+class TestNameKey:
+    """`same_name_key` ignores what draws nothing and the width, never a visible letter."""
+
+    @given(
+        base=st.text(st.characters(categories=("Lu", "Ll", "Lo", "Nd")), min_size=1, max_size=12),
+        junk=st.lists(_invisible(), min_size=1, max_size=4),
+        places=st.lists(st.integers(min_value=0, max_value=12), min_size=4, max_size=4),
+    )
+    # Falsifying cases: a mark that fuses with the letter before it in NFC, joiners, fillers.
+    @example(base="e", junk=["\u0301"], places=[1, 0, 0, 0])
+    @example(base="Sam", junk=["\u17b4"], places=[3, 0, 0, 0])
+    @example(base="Sam", junk=["\u17b5"], places=[3, 0, 0, 0])
+    @example(base="Sam", junk=["\u034f"], places=[2, 0, 0, 0])
+    @example(base="Sam", junk=["\u200d"], places=[1, 0, 0, 0])
+    @example(base="0", junk=["\u0345"], places=[0, 0, 0, 0])  # case folding makes it a letter
+    @example(base="Sam", junk=["\u3164", "\u2800", "\u0000"], places=[0, 3, 1, 0])
+    @settings(max_examples=300, deadline=None)
+    def test_inserting_what_draws_nothing_changes_nothing(
+        self, base: str, junk: list[str], places: list[int]
+    ) -> None:
+        noisy = base
+        for char, at in zip(junk, places, strict=False):
+            at %= len(noisy) + 1
+            noisy = noisy[:at] + char + noisy[at:]
+        assert names.same_name_key(noisy) == names.same_name_key(base)
+
+    @given(st.text(st.characters(categories=("Lu", "Ll", "Nd")), min_size=1, max_size=12))
+    @example("Sam")
+    def test_the_full_width_form_is_the_same_name(self, text: str) -> None:
+        wide = "".join(chr(ord(c) + 0xFEE0) if "!" <= c <= "~" else c for c in text)
+        assert names.same_name_key(wide) == names.same_name_key(text)
+
+    @given(
+        st.text(st.sampled_from("abcdefghij"), min_size=1, max_size=8),
+        st.sampled_from("klmnopqrst"),
+        st.integers(0, 7),
+    )
+    @example("sam", "x", 1)
+    def test_a_visible_letter_is_a_difference(self, text: str, letter: str, at: int) -> None:
+        at %= len(text)
+        other = text[:at] + letter + text[at + 1 :]
+        assert names.same_name_key(other) != names.same_name_key(text)
+
+    def test_runs_of_spaces_are_one_space_and_the_ends_are_trimmed(self) -> None:
+        assert names.same_name_key("  Sam \u3000\u00a0 Lee\u2003") == "sam lee"
+
+    def test_a_cyrillic_look_alike_is_not_caught(self) -> None:
+        """Assumed (docs/adr/0045): the address in brackets is the only proof of identity."""
+        assert names.same_name_key("\u0405\u0430m") != names.same_name_key("Sam")
+
+
+class TestTrimFillers:
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "\u3000Sam\u3000",
+            "\u00a0Sam\u00a0",
+            "\u17b4Sam",
+            "Sam\u17b5",
+            "\u034fSam\u034f",
+            "\u2003Sam",
+        ],
+    )
+    def test_ends_lose_blanks_and_spaces_of_any_kind(self, value: str) -> None:
+        assert names.trim_fillers(value) == "Sam"
+
+    def test_the_inside_stays_with_its_joiners(self) -> None:
+        # A Persian word with a zero-width non-joiner inside it.
+        persian = "\u0645\u06cc\u200c\u062e\u0648\u0627\u0647\u0645"
+        family = "\U0001f469\u200d\U0001f467"  # emoji joined by a zero-width joiner
+        for kept in (persian, family, f"{persian} {family}"):
+            assert names.trim_fillers(f"\u3000{kept}\u00a0") == kept
+
+
+REVIEW_CASES = ["Sam\u17b4", "Sam\u17b5", "Sa\u034fm", "Sa\u200dm", "\uff33\uff41\uff4d"]
+
+
+class TestInvisibleTwins:
+    """Names that look like \"Sam\" are told apart by address in each list the review named."""
+
+    @pytest.fixture
+    def pair(
+        self,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        add_member: Callable[..., Membership],
+    ) -> tuple[User, User]:
+        add_member(alice_home, bob, Role.MEMBER)
+        return alice, bob
+
+    @pytest.mark.parametrize("twin", REVIEW_CASES)
+    def test_the_key_is_the_same(self, twin: str) -> None:
+        assert names.same_name_key(twin) == names.same_name_key("Sam")
+
+    @pytest.mark.parametrize("twin", REVIEW_CASES)
+    def test_assignee_and_done_by_show_the_address(
+        self, client: Client, pair: tuple[User, User], alice_home: Home, twin: str
+    ) -> None:
+        alice, bob = pair
+        User.objects.filter(pk=alice.pk).update(display_name="Sam")
+        User.objects.filter(pk=bob.pk).update(display_name=twin)
+        client.force_login(alice)
+        for name in ("create", "history"):
+            text = client.get(reverse(f"tasks:{name}", kwargs={"home_id": alice_home.id})).text
+            assert f"Sam ({alice.email})</option>" in text, name
+            assert f"({bob.email})</option>" in text, name
+
+    @pytest.mark.parametrize("twin", REVIEW_CASES)
+    def test_the_audit_log_web_and_api_show_the_address(
+        self,
+        client: Client,
+        api_client: APIClient,
+        pair: tuple[User, User],
+        alice_home: Home,
+        twin: str,
+    ) -> None:
+        alice, bob = pair
+        User.objects.filter(pk=alice.pk).update(display_name="Sam")
+        User.objects.filter(pk=bob.pk).update(display_name=twin)
+        membership = Membership.objects.get(user=bob, home=alice_home)
+        homes_services.change_role(alice, membership, Role.READ_ONLY)
+        client.force_login(alice)
+        web = client.get(reverse("homes:audit", kwargs={"home_id": alice_home.id})).text
+        assert f"Sam ({alice.email})" in web
+        assert f"({bob.email})" in web
+        api_client.force_authenticate(alice)
+        url = reverse("api-v1:home-audit", kwargs={"home_id": alice_home.id})
+        results = api_client.get(url).json()["results"]
+        entry = next(e for e in results if e["action"] == "member.role_changed")
+        assert entry["actor_name"] == f"Sam ({alice.email})"
+        assert entry["target_name"].endswith(f"({bob.email})")
