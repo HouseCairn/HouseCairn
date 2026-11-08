@@ -467,6 +467,12 @@ class TestScreens:
             {"today_group": "room", "horizon_days": "7", "next": "https://example.org/"},
         )
         assert response["Location"] == reverse("my-home")
+        for target in ("//\r", "/\\\n", "\\evil.example"):
+            response = signed_in.post(
+                reverse("display-preferences"),
+                {"today_group": "room", "horizon_days": "7", "next": target},
+            )
+            assert response["Location"] == reverse("my-home"), target
         bad = signed_in.post(
             reverse("display-preferences"), {"today_group": "none", "horizon_days": "7"}
         )

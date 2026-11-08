@@ -51,6 +51,14 @@ with it on the project's
   [Display preferences](screens/display-preferences.md), [Room](screens/room.md) and
   [Audit log of a home](screens/audit.md).
 
+### Fixed
+
+- **Return addresses with a control character.** A `next` address such as `//` followed by
+  a line break or a tab was accepted after sign-in and sent to the browser as `//%0D`, an
+  address whose host browsers refuse: the redirect failed. Every `next` (sign-in, sign-up,
+  invitations, display preferences, task buttons) now refuses a control or space character
+  and an address that starts with `//` or `\`, and falls back to the default page.
+
 ### Upgrade notes
 
 - **Photo categories and the contract of an item change shape.** The category `open_walls`
