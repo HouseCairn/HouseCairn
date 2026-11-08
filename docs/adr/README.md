@@ -44,3 +44,4 @@ later record supersedes it.
 | [0040](0040-merge-queue.md) | Merge queue, required checks on each queue entry | 2026-11-08 |
 | [0041](0041-sign-in-providers-in-the-interface.md) | Sign-in providers in the interface, last way to sign in | 2026-11-08 |
 | [0042](0042-rate-limits-quotas-language-and-instance-name.md) | Rate limits, quotas per home, language, time zone and name of the instance | 2026-11-08 |
+| [0045](0045-generic-lists-with-other-tabs-and-audit-of-content.md) | Generic lists with "Other", tabs, language of a person and audit of content | 2026-11-08 |

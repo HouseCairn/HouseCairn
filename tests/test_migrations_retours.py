@@ -83,3 +83,25 @@ def test_item_contract_goes_whole_to_the_provider_and_comes_back() -> None:
         assert items.get(name="Pump").contract == ""
     finally:
         to_latest()
+
+
+def test_the_language_of_a_person_can_be_undone_and_redone() -> None:
+    try:
+        call_command("migrate", "tasks", "0003_displaypreference", verbosity=0)
+        columns = {
+            c.name
+            for c in connection.introspection.get_table_description(
+                connection.cursor(), "tasks_displaypreference"
+            )
+        }
+        assert "language" not in columns
+        call_command("migrate", "tasks", verbosity=0)
+        columns = {
+            c.name
+            for c in connection.introspection.get_table_description(
+                connection.cursor(), "tasks_displaypreference"
+            )
+        }
+        assert "language" in columns
+    finally:
+        to_latest()

@@ -40,7 +40,23 @@ with it on the project's
   the label, and the equipment each item fits. Screens, API and a guide: see
   [Stock and supplies](guides/stock.md). Label photos are stored in `/data/media/stock/`.
 
+- **Feedback from the first tests.** Each person can choose their language in the display
+  preferences; the sub-navigation of the tasks, of a home and of the instance administration
+  is one set of tabs; the audit log of a home now records what people do to rooms, items,
+  tasks, photos and files, by title only, and explains itself when it is empty; a room is
+  created from its type, which fills in the name; the room memory explains each field; the
+  photos of a room are one list with a category (general, behind the walls, before, after,
+  other) that can be filtered; the brand of an item suggests the brands already entered in
+  the home, and its maintenance contract is a provider and a number. See
+  [Display preferences](screens/display-preferences.md), [Room](screens/room.md) and
+  [Audit log of a home](screens/audit.md).
+
 ### Upgrade notes
+
+- **Photo categories and the contract of an item change shape.** The category `open_walls`
+  of a photo is now `behind_walls`, in the API and in exports; the field `contract` of an
+  item is now `contract_provider` (the old text, whole) and `contract_number`, in the API
+  and in exports. The migrations are reversible. Clients of the API must use the new names.
 
 - **Each home now has quotas of files**: 5 GB and 5000 files by default, deleted files
   included until they are purged. Raise them in **Instance administration, Settings, Files of

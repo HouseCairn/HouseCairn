@@ -60,8 +60,8 @@ the files of a home (5 GB) and their number (5000). The same quotas apply to eve
 **Language** (section *Name, language and time zone*). The default language, `en` or `fr`
 (`HOUSECAIRN_DEFAULT_LANGUAGE`, default `en`), serves the people whose browser asks for no
 language the instance offers. The person's choice always wins: the language cookie, then
-the browser's `Accept-Language`, matched as Django does (`fr-CA` gives `fr`). There is no
-language preference stored on an account yet; when one comes, it goes before the browser.
+the browser's `Accept-Language`, matched as Django does (`fr-CA` gives `fr`). A person's own choice, saved in their
+display preferences, goes before the cookie and the browser (ADR 0045).
 An invitation email sent without the language of the person who invites uses the default.
 
 **Time zone**: an IANA zone (the variable `TIME_ZONE` of ADR 0012, default `UTC`), checked

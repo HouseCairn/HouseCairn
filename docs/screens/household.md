@@ -41,8 +41,7 @@ creates the account first. One invitation at a time per address.
 
 ## Audit log
 
-**Audit log**, under the invitations, lists who changed roles, invited,
-exported or set the sign-in rule in this home. See [Audit log of a
+The **Audit log** tab, for owners, lists who did what in this home. See [Audit log of a
 home](audit.md).
 
 ## Sign-in rule
