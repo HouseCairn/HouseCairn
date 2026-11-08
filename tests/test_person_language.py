@@ -1,10 +1,12 @@
 """The language a person chooses in their display preferences (docs/adr/0042)."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from typing import Any
 
 import pytest
 from django.test import Client
 from django.urls import reverse
+from django.utils import translation
 from rest_framework.test import APIClient
 
 from housecairn.accounts.models import User
@@ -14,6 +16,13 @@ from housecairn.tasks import agenda
 from housecairn.tasks.models import DisplayPreference
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture(autouse=True)
+def _back_to_english() -> Iterator[None]:
+    """A request activates the person's language for its thread: do not leak it to other tests."""
+    yield
+    translation.activate("en")
 
 
 @pytest.fixture
@@ -27,7 +36,7 @@ def admin_user(make_user: Callable[..., User]) -> User:
     return make_user("admin@example.com", is_staff=True, is_superuser=True)
 
 
-def page(client: Client, **headers: str) -> str:
+def page(client: Client, **headers: Any) -> str:
     return client.get(reverse("display-preferences"), **headers).content.decode()
 
 

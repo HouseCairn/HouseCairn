@@ -1,15 +1,11 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras %}
+{% load i18n tasks_extras tabs %}
 {% block head_title %}{% translate "Today" %}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
   <h1>{% translate "Today" %}</h1>
   {% include "tasks/_undo.html" %}
-  <p class="small today-bar">
-    <a href="{% url 'tasks:list' home_id=home.id %}">{% translate "All tasks" %}</a> ·
-    <a href="{% url 'tasks:history' home_id=home.id %}">{% translate "History" %}</a> ·
-    <a href="{% url 'display-preferences' %}?next={{ request.get_full_path|urlencode }}">{% translate "Display" %}</a>
-  </p>
+  {% tab_bar "tasks" %}
   {% for section in sections %}
     <section aria-labelledby="section-{{ forloop.counter }}">
       <h2 id="section-{{ forloop.counter }}"{% if section.key == "overdue" %} class="section-overdue"{% endif %}>

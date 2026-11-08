@@ -524,6 +524,7 @@ class TestApi:
             "show_overdue": True,
             "show_upcoming": True,
             "show_season": True,
+            "language": "",
         }
         assert [s["key"] for s in body["sections"]] == ["overdue", "today", "upcoming", "season"]
         overdue = body["sections"][0]

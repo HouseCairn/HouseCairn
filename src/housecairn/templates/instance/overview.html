@@ -1,9 +1,10 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n tabs %}
 {% block head_title %}{% translate "Instance administration" %}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{% url 'more' %}">{% include "components/icon.html" with name="chevron" %}{% translate "More" %}</a>
   <h1>{% translate "Instance administration" %}</h1>
+  {% tab_bar "instance" %}
   <p class="small">{% translate "You run this instance: accounts, invitations, sign-in providers. You see no home, no task and no document, and no member of a home you do not belong to." %}</p>
   <section class="card">
     <dl class="facts">
@@ -54,40 +55,12 @@
     </form>
   {% endif %}
 
-  <h2>{% translate "Accounts and settings" %}</h2>
+  <h2>{% translate "Accounts" %}</h2>
   <div class="list">
     <a class="row" href="{% url 'admin:accounts_user_changelist' %}">
       <span class="row-body">
         <span class="row-title">{% translate "Accounts" %}</span>
         <span class="row-text">{% translate "Deactivate, delete, set the administrators (administration site)" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    <a class="row" href="{% url 'instance:settings' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Settings" %}</span>
-        <span class="row-text">{% translate "Name, language, sign-up, invitations, email, rate limits, quotas" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    <a class="row" href="{% url 'instance:providers' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Sign-in providers" %}</span>
-        <span class="row-text">{% translate "Single sign-on through OpenID Connect" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    <a class="row" href="{% url 'instance:usage' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Files of the homes" %}</span>
-        <span class="row-text">{% translate "Space and files each home takes, against the quotas" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    <a class="row" href="{% url 'instance:audit' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Audit log" %}</span>
-        <span class="row-text">{% translate "Administration actions, invitations, accounts" %}</span>
       </span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>

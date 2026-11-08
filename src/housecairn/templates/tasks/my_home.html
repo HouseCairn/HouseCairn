@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras %}
+{% load i18n tasks_extras tabs %}
 {% block head_title %}{% translate "My home" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "My home" %}</h1>
@@ -16,11 +16,7 @@
   {% for digest in digests %}
     <section class="digest" aria-labelledby="digest-{{ forloop.counter }}">
       <h2 id="digest-{{ forloop.counter }}">{{ digest.home.name }}</h2>
-      <p class="small today-bar">
-        <a href="{% url 'tasks:today' home_id=digest.home.id %}">{% translate "Today" %}</a> ·
-        <a href="{% url 'tasks:list' home_id=digest.home.id %}">{% translate "All tasks" %}</a> ·
-        <a href="{% url 'tasks:history' home_id=digest.home.id %}">{% translate "History" %}</a>
-      </p>
+      {% with home=digest.home %}{% tab_bar "tasks" %}{% endwith %}
       {% if digest.empty %}
         <p class="empty">{% translate "Nothing needs you here." %}</p>
       {% endif %}

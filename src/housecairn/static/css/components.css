@@ -634,3 +634,47 @@ input.setting-locked {
   background: var(--hc-color-surface-muted);
   border-style: dashed;
 }
+
+/* ---------- tabs: the sub-navigation of an area (templates/components/tabs.html) ---------- */
+
+.tabs {
+  margin: 0 0 var(--hc-space-3);
+  border-bottom: 1px solid var(--hc-color-border);
+}
+
+.tabs-list {
+  display: flex;
+  gap: var(--hc-space-1);
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: thin;
+}
+
+.tabs-list li {
+  flex: none;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  min-height: var(--hc-layout-touch-target);
+  padding: var(--hc-space-2) var(--hc-space-3);
+  color: var(--hc-color-text-muted);
+  border-bottom: 3px solid transparent;
+  font-size: var(--hc-font-size-sm);
+  font-weight: var(--hc-font-weight-medium);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.tab:hover {
+  color: var(--hc-color-text);
+}
+
+.tab[aria-current="page"] {
+  color: var(--hc-color-primary);
+  border-bottom-color: var(--hc-color-accent);
+  font-weight: var(--hc-font-weight-bold);
+}

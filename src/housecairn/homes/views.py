@@ -135,6 +135,7 @@ class HomeAuditView(WebHomeScopedMixin, DetailView[Home]):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         entries = audit_services.home_log(self.request.user, self.object.id)
+        context["is_owner"] = True  # the log is for owners only: the tab bar shows its own tab
         context["page"] = Paginator(entries, self.paginate_by).get_page(
             self.request.GET.get("page")
         )
