@@ -1,8 +1,8 @@
 # Notifications
 
 HouseCairn reminds you of your tasks through the service you already read: ntfy, Telegram,
-Signal, Matrix, Gotify, email, Discord, Slack, Pushover, Mattermost, or any service with an
-[Apprise](https://github.com/caronc/apprise) API or a JSON webhook.
+Signal, Matrix, Gotify, email, Discord, Slack, Pushover, Mattermost, or an
+[Apprise](https://github.com/caronc/apprise) API server.
 
 ## Before you start
 
@@ -34,9 +34,10 @@ repeat the service's error, since it may carry your secrets.
 
 The address is encrypted, never shown again and never exported. Some addresses are refused:
 services that would run something on the server, write to its logs or open a raw
-connection, options that make the server read a file, and addresses of the server itself
-or of a cloud metadata service. Addresses of your local network are accepted, for a
-self-hosted ntfy or Gotify.
+connection, generic webhooks (`json://`, `xml://`, `form://`), options that make the server
+read a file or add headers or fields to the request (`+name`, `-name`, `:name`), and
+addresses of the server itself or of a cloud metadata service. Addresses of your local
+network are accepted, for a self-hosted ntfy or Gotify.
 
 ## Choose when
 

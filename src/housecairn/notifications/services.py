@@ -34,9 +34,13 @@ REFUSALS = {
     "invalid": gettext_lazy("This is not an Apprise address, such as ntfys://ntfy.sh/topic."),
     "scheme": gettext_lazy(
         "This kind of channel is not offered. Use ntfy, Gotify, Telegram, Signal, Matrix, "
-        "email, Discord, Slack, Pushover, Mattermost, Apprise API or JSON."
+        "email, Discord, Slack, Pushover, Mattermost or Apprise API."
     ),
     "options": gettext_lazy("These options make the instance read a file: remove them."),
+    "fields": gettext_lazy(
+        "Options that add headers or fields to the request (+name, -name, :name) are not "
+        "accepted: remove them."
+    ),
     "address": gettext_lazy("The instance does not send to this address."),
 }
 ADDED = gettext_lazy("Channel added. Send a test to check it.")

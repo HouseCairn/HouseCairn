@@ -11,7 +11,8 @@ from typing import Any
 
 import pytest
 import requests
-from apprise.plugins.custom_json import NotifyJSON
+from apprise.plugins.discord import NotifyDiscord
+from apprise.plugins.gotify import NotifyGotify
 from apprise.plugins.telegram import NotifyTelegram
 from django.db import connection
 from django.test import Client
@@ -44,15 +45,15 @@ def _on() -> Iterator[None]:
 
 @pytest.fixture
 def sent(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, str, str]]:
-    """What reached the Telegram and JSON plugins, without any network."""
+    """What reached the Telegram, Gotify and Discord plugins, without any network."""
     calls: list[tuple[str, str, str]] = []
 
     def fake(self: Any, body: str, title: str = "", **kwargs: Any) -> bool:
         calls.append((type(self).__name__, title, body))
         return True
 
-    monkeypatch.setattr(NotifyTelegram, "send", fake)
-    monkeypatch.setattr(NotifyJSON, "send", fake)
+    for plugin in (NotifyTelegram, NotifyGotify, NotifyDiscord):
+        monkeypatch.setattr(plugin, "send", fake)
     return calls
 
 
@@ -92,6 +93,13 @@ class TestAddresses:
             "dbus://",
             "file:///etc/passwd",
             "https://example.com/hook",
+            # Generic webhooks: their URL chooses the method, the headers and the fields.
+            "json://hooks.example.com/hook",
+            "jsons://hooks.example.com/admin/delete?method=DELETE",
+            "xml://hooks.example.com/hook",
+            "xmls://hooks.example.com/hook",
+            "form://hooks.example.com/hook",
+            "forms://hooks.example.com/hook",
             "not an address",
             "",
         ],
@@ -105,11 +113,11 @@ class TestAddresses:
     @pytest.mark.parametrize(
         "url",
         [
-            "jsons://127.0.0.1/hook",
-            "json://[::1]/hook",
+            "gotifys://127.0.0.1/token",
+            "ntfy://[::1]/topic",
             "ntfy://169.254.169.254/topic",
             "gotify://[::ffff:127.0.0.1]/token",
-            "json://0.0.0.0/hook",
+            "mmost://0.0.0.0/token",
         ],
     )
     def test_an_address_typed_as_is_is_checked(self, alice: User, url: str) -> None:
@@ -126,6 +134,31 @@ class TestAddresses:
     def test_options_that_read_a_file_are_refused(self, alice: User, url: str) -> None:
         with pytest.raises(services.ValidationError, match="read a file"):
             services.add_channel(alice, name="x", url=url)
+
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "apprises://api.example.com/token?+X-Admin=1",
+            "mailtos://user:pass@mail.example.com?to=a@example.com&+Bcc=b@example.com",
+            "ntfys://ntfy.example.com/topic?-message=1",
+            "discord://12345/abcdef?:content=x",
+            "gotifys://gotify.example.com/token?%2BX-Admin=1",
+        ],
+    )
+    def test_options_that_add_headers_or_fields_are_refused(self, alice: User, url: str) -> None:
+        with pytest.raises(services.ValidationError, match="headers or fields"):
+            services.add_channel(alice, name="x", url=url)
+
+    @pytest.mark.parametrize("scheme", ["json", "jsons", "xml", "xmls", "form", "forms"])
+    def test_a_stored_webhook_channel_is_not_sent_to(
+        self, monkeypatch: pytest.MonkeyPatch, scheme: str
+    ) -> None:
+        """A channel saved before its scheme left the list is refused when it is sent to."""
+        called: list[str] = []
+        monkeypatch.setattr(requests.Session, "request", lambda *a, **k: called.append("x"))
+        sealed = outbound.seal(f"{scheme}://hooks.example.com/hook")
+        assert outbound.send(sealed, title="t", body="b") is False
+        assert called == []
 
     def test_a_private_network_is_allowed(self, alice: User) -> None:
         added = services.add_channel(alice, name="ntfy", url="ntfy://172.16.5.20/house")
@@ -165,7 +198,7 @@ class TestOutgoingCalls:
         connected: list[Any] = []
         monkeypatch.setattr(socket.socket, "connect", lambda self, a: connected.append(a))
         refused = spy_refusals(monkeypatch)
-        sealed = outbound.seal("jsons://hooks.example.com/notify")
+        sealed = outbound.seal("gotifys://hooks.example.com/token")
         assert outbound.send(sealed, title="t", body="b") is False
         assert connected == []
         assert refused == [address]
@@ -211,11 +244,11 @@ class TestOutgoingCalls:
         # Loopback is refused, rightly: let it through for this test only.
         monkeypatch.setattr(outbound, "forbidden_address", lambda address: False)
         try:
-            sealed = outbound.seal(f"json://127.0.0.1:{server.server_port}/hook")
+            sealed = outbound.seal(f"gotify://127.0.0.1:{server.server_port}/hook/token")
             assert outbound.send(sealed, title="t", body="b") is False
         finally:
             server.shutdown()
-        assert hits == ["/hook"]
+        assert hits == ["/hook/message"]
         # Outside the guard, requests follows redirects as before.
         response = requests.Response()
         response.status_code, response.headers["Location"] = 302, "/next"
@@ -227,7 +260,7 @@ class TestOutgoingCalls:
         body = "<b>Paint</b> *the* [hall](javascript:alert(1)) & co"
         assert outbound.send(outbound.seal(URL), title="Fixed", body=body)
         assert outbound.send(
-            outbound.seal("json://hooks.example.com/x?format=markdown"), title="F", body=body
+            outbound.seal("discord://12345/abcdef?format=markdown"), title="F", body=body
         )
         (_, _, html), (_, _, markdown) = sent
         assert "<b>Paint" not in html

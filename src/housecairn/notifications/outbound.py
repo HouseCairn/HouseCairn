@@ -4,8 +4,11 @@ A channel makes the server call an address that a person typed. Apprise has no h
 that: each plugin opens its own connections. So:
 
 - only the schemes of `ALLOWED_SCHEMES` are accepted: services reached over HTTP(S) or
-  SMTP; nothing that runs a program, reads a local file or opens a raw socket;
-- a URL whose options make Apprise read a file (a template, a PGP key) is refused;
+  SMTP whose plugin fixes the method, the path and the format of each request; nothing
+  that runs a program, reads a local file or opens a raw socket, and no generic webhook
+  (`json`, `xml`, `form`), whose URL chooses the method, the headers and the fields;
+- a URL whose options make Apprise read a file (a template, a PGP key) is refused, and so
+  is one whose options add headers or fields to the request (`+name`, `-name`, `:name`);
 - while a message is sent, every name resolved in that thread is checked, and the
   connection can only go to the addresses that were checked: loopback, link-local (cloud
   metadata), multicast, unspecified and reserved addresses are refused, as for the test
@@ -28,20 +31,25 @@ from typing import Any
 import apprise
 import requests
 from apprise import AppriseAsset, AppriseAttachment, NotifyFormat
+from apprise.utils.parse import parse_qsd
 
 from housecairn.instance import crypto
 from housecairn.instance.providers import _forbidden_address as forbidden_address
 
 logger = logging.getLogger("housecairn.notifications")
 
-# Services reached over HTTP(S) or SMTP, each in its plain and its TLS form.
+# Services reached over HTTP(S) or SMTP, each in its plain and its TLS form, whose plugin
+# fixes the method, the path and the format of every request (docs/adr/0043 lists them).
 ALLOWED_SCHEMES = frozenset(
     {
         "ntfy", "ntfys", "gotify", "gotifys", "tgram", "signal", "signals", "matrix",
-        "matrixs", "mailto", "mailtos", "discord", "slack", "pover", "json", "jsons",
-        "apprise", "apprises", "mmost", "mmosts",
+        "matrixs", "mailto", "mailtos", "discord", "slack", "pover", "apprise", "apprises",
+        "mmost", "mmosts",
     }
 )  # fmt: skip
+# Query options that Apprise turns into extra headers (+), removed fields (-) or added
+# fields (:) of the request.
+EXTRA_PREFIXES = ("qsd+", "qsd-", "qsd:")
 TIMEOUT_SECONDS = 5.0
 MAX_URL_LENGTH = 2000
 
@@ -122,6 +130,9 @@ def _plugin(url: str) -> Any:
     scheme = url.split("://", 1)[0].lower() if "://" in url else ""
     if scheme not in ALLOWED_SCHEMES:
         raise RefusedError("scheme")
+    query = parse_qsd(url.split("?", 1)[1]) if "?" in url else {}  # type: ignore[no-untyped-call]
+    if any(query.get(extra) for extra in EXTRA_PREFIXES):
+        raise RefusedError("fields")
     plugin = apprise.Apprise.instantiate(url, asset=_asset())
     if plugin is None:
         raise RefusedError("invalid")

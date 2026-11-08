@@ -30,13 +30,33 @@ without their address. The audit log records nothing about channels. Apprise and
 write log lines that carry URLs, so their loggers are silenced; an error is logged by the
 class of the exception only.
 
-**A list of allowed schemes.** Only services reached over HTTP(S) or SMTP are accepted:
-`ntfy(s)`, `gotify(s)`, `tgram`, `signal(s)`, `matrix(s)`, `mailto(s)`, `discord`, `slack`,
-`pover`, `mmost(s)`, `json(s)` and `apprise(s)`. A plugin that runs something on the server
-(`dbus`, `windows`, `macosx`), writes to a local log (`syslog`), opens a raw socket
-(`rsyslog`, `mqtt` and the like) or reads a file is not offered. A URL whose options
-make a plugin read a local file (a `template=`, a PGP key) is refused. The test checks that
-the scheme parsed by Apprise is the one in the list, so an alias cannot bring another plugin.
+**A list of allowed schemes.** Only services reached over HTTP(S) or SMTP whose plugin
+fixes the method, the path and the format of every request are accepted. For each one,
+what the person who types the URL chooses, and what the plugin fixes:
+
+| Schemes | Host | Requests (fixed by the plugin) | Chosen by the person |
+| --- | --- | --- | --- |
+| `ntfy(s)` | any | `POST /` with the JSON of ntfy | host, port, topic (a field of the body) |
+| `gotify(s)` | any | `POST <prefix>/message` with the JSON of Gotify | host, path prefix, token |
+| `signal(s)` | any | `POST <prefix>/v2/send` (signal-cli REST API) | host, prefix, numbers |
+| `matrix(s)` | any | Matrix client API (`POST` login and join, `PUT` the message), or with `mode=` a `POST` of the JSON of a webhook bridge | host, account, rooms; the webhook path |
+| `mmost(s)` | any | `POST <prefix>/hooks/<token>` with the JSON of Mattermost | host, prefix, token |
+| `apprise(s)` | any | `POST <prefix>/notify/<token>` (Apprise API) | host, prefix, token |
+| `mailto(s)` | any | SMTP: one message, fixed headers | server, account, recipients |
+| `tgram`, `discord`, `slack`, `pover` | fixed (the public API) | `POST` to the API of the service | the tokens of the person's own account |
+
+No URL option sets the method, adds a header or adds a field: Apprise reads
+`+name=value` as an extra header, `-name` and `:name=value` as a field removed from or
+added to the body, so a URL with any of them is refused. The generic webhooks `json(s)`,
+`xml(s)` and `form(s)` are not offered: their URL chooses the method (`?method=DELETE`),
+the path, the headers and the fields, which would let any account send almost any HTTP
+request to the local network. A plugin that runs something on the server (`dbus`,
+`windows`, `macosx`), writes to a local log (`syslog`), opens a raw socket (`rsyslog`,
+`mqtt` and the like) or reads a file is not offered either. A URL whose options make a
+plugin read a local file (a `template=`, a PGP key) is refused. The test checks that the
+scheme parsed by Apprise is the one in the list, so an alias cannot bring another plugin.
+The list is checked again each time a message is sent: a channel saved under a scheme
+removed since is not called.
 
 **Outgoing calls.** Apprise has no hook for the connections of its plugins: each one calls
 `requests` or `smtplib` itself. What the instance controls, and how:
@@ -64,9 +84,10 @@ list of schemes keeps the plugins to ones that use `requests` or `smtplib`.
 **Private networks are allowed**, as in ADR 0041, and for the same reason: the services
 people self-host next to HouseCairn (ntfy, Gotify, a signal-cli bridge, a mail relay) run on
 the local network, and refusing it would refuse the main case. The cost is that a person
-with an account can make the instance send a POST to a private address and learn whether
-it answered with success. That is bounded: notifications are off until an administrator
-turns them on, a test is a fixed message to a fixed path of the plugin, its answer is one
+with an account can make the instance call a private address, with the requests of one of
+the plugins above, and learn whether it answered with success. That is bounded:
+notifications are off until an administrator turns them on, a test is a fixed message
+whose method, path suffix, headers and format are those of the plugin, its answer is one
 bit, and tests are limited. An administrator who does not want it leaves notifications off.
 
 **Messages.** A reminder says the title of the task, the home, the due date and a link to
