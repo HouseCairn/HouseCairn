@@ -6,3 +6,6 @@ class CoreConfig(AppConfig):
     name = "housecairn.core"
     label = "core"
     verbose_name = _("Core")
+
+    def ready(self) -> None:
+        from housecairn.core import checks  # noqa: F401

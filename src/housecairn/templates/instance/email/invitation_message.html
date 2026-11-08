@@ -1,0 +1,11 @@
+{% load i18n %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}">
+<head><meta charset="utf-8"><title>HouseCairn</title></head>
+<body>
+  <p>{% translate "You are invited to create an account on HouseCairn, the planner for home maintenance and renovation." %}</p>
+  <p><a href="{{ link }}">{% translate "Create your account" %}</a></p>
+  <p>{% blocktranslate with date=expires_at|date:"DATETIME_FORMAT" %}The link works once and expires on {{ date }}.{% endblocktranslate %}<br>{% translate "If you did not expect this invitation, ignore this message." %}</p>
+  <p>HouseCairn</p>
+</body>
+</html>

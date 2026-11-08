@@ -7,10 +7,23 @@
     <h1>{{ home.name }}</h1>
     <p class="lead">{% blocktranslate with provider=provider.name %}This home opens only after signing in through {{ provider }}.{% endblocktranslate %}</p>
     {% if provider_declared %}
-      <a class="button" href="{% url 'openid_connect_login' provider_id=provider.id %}?process=login&amp;next={{ request.path|urlencode }}">{% blocktranslate with provider=provider.name %}Continue with {{ provider }}{% endblocktranslate %}</a>
+      <form method="post" action="{% url 'openid_connect_login' provider_id=provider.id %}?process=login&amp;next={{ request.path|urlencode }}">
+        {% csrf_token %}
+        <button type="submit">{% blocktranslate with provider=provider.name %}Continue with {{ provider }}{% endblocktranslate %}</button>
+      </form>
       <p class="small">{% translate "If your account is not linked to this provider yet, link it first from your linked accounts." %} <a href="{% url 'socialaccount_connections' %}">{% translate "Linked accounts" %}</a></p>
     {% else %}
-      <p class="small">{% translate "This instance no longer offers this provider. Ask its administrator." %}</p>
+      {% if is_owner %}
+        <p class="small">{% translate "This instance no longer offers this provider, so nobody can open this home. As an owner, you can remove the requirement: members then sign in as usual." %}</p>
+        <form method="post" action="{% url 'homes:unlock' home_id=home.id %}">
+          {% csrf_token %}
+          <button type="submit">{% translate "Remove the sign-in requirement" %}</button>
+        </form>
+      {% else %}
+        <p class="small">{% translate "This instance no longer offers this provider. Ask an owner of the home, who can remove the requirement." %}</p>
+      {% endif %}
     {% endif %}
+    <p class="small">{% translate "Whatever the requirement, you can leave this home without signing in through the provider." %}</p>
+    <a class="button button-secondary" href="{% url 'homes:leave' home_id=home.id %}">{% translate "Leave this home" %}</a>
   </section>
 {% endblock content %}

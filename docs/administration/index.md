@@ -8,7 +8,12 @@ single sign-on, backups, updates and hardening.
 
 variables
 reverse-proxy
+rate-limits
 oidc
+instance
+sign-up
+email
+data
 backup
 update
 hardening

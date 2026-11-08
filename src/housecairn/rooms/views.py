@@ -42,8 +42,8 @@ class HomeRoomsMixin(WebHomeScopedMixin):
     require_write = False
     request: HttpRequest
 
-    def get_home(self) -> Home:
-        home = super().get_home()
+    def get_home(self, *, allow_locked: bool = False) -> Home:
+        home = super().get_home(allow_locked=allow_locked)
         if self.require_write and not home_services.can_write(self.request.user, home):
             raise PermissionDenied
         return home

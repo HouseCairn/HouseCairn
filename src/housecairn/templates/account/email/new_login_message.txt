@@ -1,0 +1,4 @@
+{% extends "account/email/base_notification.txt" %}
+{% load i18n %}
+
+{% block notification_message %}{% translate "Your account was just signed in from a browser or device we had not seen before." %}{% endblock notification_message %}

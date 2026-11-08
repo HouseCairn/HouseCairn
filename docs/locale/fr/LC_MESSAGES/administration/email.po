@@ -1,0 +1,134 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 01:03+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "HouseCairn sends email for invitations, address verification, password reset and security alerts. It is off until `EMAIL_HOST` is set."
+msgstr "HouseCairn envoie des e-mails pour les invitations, la vérification d'adresse, la réinitialisation du mot de passe et les alertes de sécurité. L'envoi est désactivé tant que `EMAIL_HOST` n'est pas renseigné."
+
+msgid "Variable"
+msgstr "Variable"
+
+msgid "Default"
+msgstr "Défaut"
+
+msgid "Purpose"
+msgstr "Usage"
+
+msgid "`EMAIL_HOST`"
+msgstr "`EMAIL_HOST`"
+
+msgid "(none)"
+msgstr "(aucun)"
+
+msgid "SMTP server. Empty: email is off."
+msgstr "Serveur SMTP. Vide : l'envoi d'e-mails est désactivé."
+
+msgid "`EMAIL_PORT`"
+msgstr "`EMAIL_PORT`"
+
+msgid "`587`"
+msgstr "`587`"
+
+msgid "Port of the server."
+msgstr "Port du serveur."
+
+msgid "`EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`"
+msgstr "`EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`"
+
+msgid "Credentials, if the server asks for them."
+msgstr "Identifiants, si le serveur les demande."
+
+msgid "`EMAIL_USE_TLS`"
+msgstr "`EMAIL_USE_TLS`"
+
+msgid "`true`"
+msgstr "`true`"
+
+msgid "STARTTLS on the connection (port 587)."
+msgstr "STARTTLS sur la connexion (port 587)."
+
+msgid "`EMAIL_USE_SSL`"
+msgstr "`EMAIL_USE_SSL`"
+
+msgid "`false`"
+msgstr "`false`"
+
+msgid "TLS from the first byte (port 465). Replaces `EMAIL_USE_TLS`."
+msgstr "TLS dès le premier octet (port 465). Remplace `EMAIL_USE_TLS`."
+
+msgid "`EMAIL_TIMEOUT`"
+msgstr "`EMAIL_TIMEOUT`"
+
+msgid "`15`"
+msgstr "`15`"
+
+msgid "Seconds to wait for the server: a server that does not answer must not hold a web process."
+msgstr "Secondes d'attente du serveur : un serveur qui ne répond pas ne doit pas bloquer un processus web."
+
+msgid "`DEFAULT_FROM_EMAIL`"
+msgstr "`DEFAULT_FROM_EMAIL`"
+
+msgid "`HouseCairn <noreply@localhost>`"
+msgstr "`HouseCairn <noreply@localhost>`"
+
+msgid "Sender; set it to an address of your domain."
+msgstr "Expéditeur ; indiquez une adresse de votre domaine."
+
+msgid "`HOUSECAIRN_SITE_URL`"
+msgstr "`HOUSECAIRN_SITE_URL`"
+
+msgid "Public address, for the links in emails. **Set it in production.**"
+msgstr "Adresse publique, pour les liens des e-mails. **Renseignez-la en production.**"
+
+msgid "Keep TLS on: sending credentials and messages in clear text is accepted by nothing here and by few servers. With a server on port 465 set `EMAIL_USE_SSL=true` and `EMAIL_PORT=465`."
+msgstr "Gardez TLS activé : envoyer des identifiants et des messages en clair n'est accepté par rien ici et par peu de serveurs. Avec un serveur sur le port 465, définissez `EMAIL_USE_SSL=true` et `EMAIL_PORT=465`."
+
+msgid "What is sent"
+msgstr "Ce qui est envoyé"
+
+msgid "Every message has a text and an HTML version, in the language of the person who triggered it (English or French), signed HouseCairn, with a subject that starts with `HouseCairn:`."
+msgstr "Chaque message a une version texte et une version HTML, dans la langue de la personne qui l'a déclenché (anglais ou français), signé HouseCairn, avec un objet qui commence par `HouseCairn:`."
+
+msgid "**Invitations** to a home and to the instance."
+msgstr "Les **invitations** à un logement et à l'instance."
+
+msgid "**Verification** of an address, and **password reset**."
+msgstr "La **vérification** d'une adresse, et la **réinitialisation du mot de passe**."
+
+msgid "**Security alerts**: password changed or set, address added, changed or removed, passkey or authenticator app added or removed, recovery codes generated, and **a sign-in from a browser the account had not seen**. The last one relies on a cookie that holds a random secret per browser; the account keeps only its digest, for at most 20 browsers. The first browser of an account raises no alert."
+msgstr "Les **alertes de sécurité** : mot de passe changé ou défini, adresse ajoutée, modifiée ou supprimée, clé d'accès ou application d'authentification ajoutée ou retirée, codes de récupération générés, et **une connexion depuis un navigateur que le compte n'avait pas encore vu**. Cette dernière repose sur un cookie qui contient un secret aléatoire par navigateur ; le compte n'en garde que l'empreinte, pour 20 navigateurs au plus. Le premier navigateur d'un compte ne déclenche aucune alerte."
+
+msgid "Without email"
+msgstr "Sans e-mail"
+
+msgid "Without `EMAIL_HOST`, or with a console or dummy backend, nothing is delivered. What depends on it is hidden or falls back: the *Forgot your password?* link and its pages (404), the page of email addresses, invitations to the instance, security alerts (not recorded either), and open sign-up (refused at start-up). An invitation to a home shows its link once to the owner, who passes it on; such a link cannot create an account."
+msgstr "Sans `EMAIL_HOST`, ou avec un moteur d'envoi console ou factice, rien n'est livré. Ce qui en dépend est masqué ou se replie : le lien *Mot de passe oublié ?* et ses pages (404), la page des adresses e-mail, les invitations à l'instance, les alertes de sécurité (elles ne sont pas non plus enregistrées) et l'inscription libre (refusée au démarrage). Une invitation à un logement affiche une seule fois son lien au propriétaire, qui le transmet ; un tel lien ne peut pas créer de compte."
+
+msgid "If the mail server fails, nothing breaks: an invitation stays saved and the page says the email could not be sent, a sign-in goes through, and the failure is logged without the address."
+msgstr "Si le serveur de messagerie tombe en panne, rien ne casse : une invitation reste enregistrée et la page indique que l'e-mail n'a pas pu être envoyé, une connexion aboutit, et l'échec est journalisé sans l'adresse."
+
+msgid "Links"
+msgstr "Liens"
+
+msgid "Links point to `HOUSECAIRN_SITE_URL`, including those of password reset and verification. Without it they take the `Host` of the request that triggered them, which `ALLOWED_HOSTS` limits but a permissive proxy can bend: `manage.py check --deploy` warns when `EMAIL_HOST` is set without it."
+msgstr "Les liens pointent vers `HOUSECAIRN_SITE_URL`, y compris ceux de la réinitialisation du mot de passe et de la vérification. Sans cette variable, ils prennent le `Host` de la requête qui les a déclenchés, que `ALLOWED_HOSTS` limite mais qu'un proxy permissif peut détourner : `manage.py check --deploy` avertit quand `EMAIL_HOST` est défini sans elle."

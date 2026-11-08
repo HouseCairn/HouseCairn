@@ -20,4 +20,15 @@
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>
   </div>
+  {% if role == "owner" %}
+    <h2>{% translate "Your data" %}</h2>
+    <div class="card">
+      <form method="post" action="{% url 'homes:export' home_id=home.id %}">
+        {% csrf_token %}
+        <button type="submit" class="button-secondary button-block">{% translate "Export all data" %}</button>
+        <p class="small">{% translate "One archive with everything of this home, in an open format." %}</p>
+      </form>
+    </div>
+    <a class="button button-danger button-block" href="{% url 'homes:delete' home_id=home.id %}">{% translate "Delete this home" %}</a>
+  {% endif %}
 {% endblock content %}

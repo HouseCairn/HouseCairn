@@ -1,0 +1,45 @@
+{% extends "account/base_entrance.html" %}
+{% comment %}
+  Adapted from django-allauth's account/signup.html (MIT licence), with the
+  anti-robot check of open sign-up: a proof of work the browser computes while
+  the form is filled in (static/js/pow.js, docs/adr/0024). Nothing inline, no
+  third-party service.
+{% endcomment %}
+{% load allauth i18n static %}
+{% block head_title %}{% translate "Create an account" %}{% endblock head_title %}
+{% block content %}
+  {% element h1 %}
+    {% translate "Create an account" %}
+  {% endelement %}
+  {% element p %}
+    {% translate "Already have an account?" %} <a href="{{ login_url }}">{% translate "Sign in" %}</a>
+  {% endelement %}
+  {% if not SOCIALACCOUNT_ONLY %}
+    {% url 'account_signup' as action_url %}
+    {% element form form=form method="post" action=action_url tags="entrance,signup" %}
+      {% slot body %}
+        {% csrf_token %}
+        {% element fields form=form unlabeled=True %}
+        {% endelement %}
+        {{ redirect_field }}
+        <p class="small" data-pow-status hidden role="status"
+           data-working="{% translate 'Checking that you are not a robot…' %}"
+           data-done="{% translate 'Check done: you can create the account.' %}"
+           data-unavailable="{% translate 'This check needs JavaScript and a secure connection (HTTPS).' %}"></p>
+        <noscript><p class="small">{% translate "This page needs JavaScript to check that you are not a robot." %}</p></noscript>
+      {% endslot %}
+      {% slot actions %}
+        {% element button tags="prominent,signup" type="submit" %}
+          {% translate "Create an account" %}
+        {% endelement %}
+      {% endslot %}
+    {% endelement %}
+  {% endif %}
+  {% if SOCIALACCOUNT_ENABLED %}
+    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+  {% endif %}
+{% endblock content %}
+{% block extra_body %}
+  {{ block.super }}
+  <script src="{% static 'js/pow.js' %}" data-worker="{% static 'js/pow-worker.js' %}" defer></script>
+{% endblock extra_body %}

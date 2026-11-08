@@ -230,6 +230,31 @@ class TestWeb:
         assert response["Location"] == reverse("homes:list")
         assert services.role_of(bob, alice_home) is None
 
+    def test_leaving_and_removing_are_confirmed_first(
+        self, client: Client, alice: User, bob: User, alice_home: Home, add_member: AddMember
+    ) -> None:
+        """A page asks first (GET changes nothing); only the POST acts."""
+        membership = add_member(alice_home, bob, Role.MEMBER)
+        client.force_login(alice)
+        remove = reverse(
+            "homes:member-remove", kwargs={"home_id": alice_home.id, "member_id": membership.id}
+        )
+        page = client.get(remove)
+        assert page.status_code == 200
+        assert "Remove this member?" in page.text
+        assert services.role_of(bob, alice_home) == Role.MEMBER
+        member_page = client.get(
+            reverse("homes:member", kwargs={"home_id": alice_home.id, "member_id": membership.id})
+        )
+        assert f'href="{remove}"' in member_page.text
+        client.force_login(bob)
+        leave = reverse("homes:leave", kwargs={"home_id": alice_home.id})
+        asked = client.get(leave)
+        assert "Leave this home?" in asked.text
+        assert services.role_of(bob, alice_home) == Role.MEMBER
+        client.post(leave)
+        assert services.role_of(bob, alice_home) is None
+
     def test_member_cannot_manage(
         self,
         client: Client,

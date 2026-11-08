@@ -122,7 +122,7 @@ class TestScreens:
         "mfa_index",
         "mfa_list_webauthn",
         "account_change_password",
-        "account_email",
+        "account_delete",
         "account_logout",
         "account_reauthenticate",
         "socialaccount_connections",
@@ -152,6 +152,42 @@ class TestScreens:
         assert response.status_code == 200, name
         self._check(response.text)
         assert 'class="nav"' in response.text
+
+    @pytest.mark.django_db
+    @override_settings(EMAIL_HOST="smtp.example.com", EMAIL_BACKEND=SMTP_BACKEND)
+    def test_signed_in_with_email(self, client: Client, alice: object) -> None:
+        client.force_login(alice)  # type: ignore[arg-type]
+        for name in ("account_email", "more"):
+            response = _page(client, name)
+            assert response.status_code == 200, name
+            self._check(response.text)
+        assert reverse("account_email") in _page(client, "more").text
+
+    @pytest.mark.django_db
+    def test_more_hides_the_email_page_without_email(self, client: Client, alice: object) -> None:
+        client.force_login(alice)  # type: ignore[arg-type]
+        assert reverse("account_email") not in _page(client, "more").text
+        assert client.get(reverse("account_email")).status_code == 404
+
+    @pytest.mark.django_db
+    def test_instance_and_audit_screens(
+        self, client: Client, alice: object, alice_home: Home
+    ) -> None:
+        from housecairn.accounts.models import User
+
+        admin = User.objects.create_superuser(email="admin@example.com", password="x" * 12)
+        client.force_login(admin)
+        for name in ("instance:overview", "instance:audit"):
+            response = _page(client, name)
+            assert response.status_code == 200, name
+            self._check(response.text)
+        assert reverse("instance:overview") in _page(client, "more").text
+        client.force_login(alice)  # type: ignore[arg-type]
+        assert reverse("instance:overview") not in _page(client, "more").text
+        for name in ("homes:audit", "homes:delete"):
+            response = _page(client, name, home_id=alice_home.id)
+            assert response.status_code == 200, name
+            self._check(response.text)
 
     @pytest.mark.django_db
     def test_home_detail(self, client: Client, alice: object, alice_home: Home) -> None:
@@ -373,7 +409,11 @@ class TestSignInPage:
             ]
         }
     }
-    BUTTON = r'<a class="button button-secondary" href="([^"]+)">([^<]+)</a>'
+    BUTTON = (
+        r'<form method="post" action="([^"]+)">\s*'
+        r'<input type="hidden" name="csrfmiddlewaretoken" value="[^"]+">\s*'
+        r'<button type="submit" class="button button-secondary">([^<]+)</button>'
+    )
 
     @pytest.mark.django_db
     def test_one_button_per_provider_labelled_continue_with_its_name(self, client: Client) -> None:

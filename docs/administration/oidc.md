@@ -26,7 +26,8 @@ in the code. Single sign-on is off until `OIDC_SERVER_URL` is set
    `/.well-known/openid-configuration` below it. `OIDC_PROVIDER_NAME` is the
    provider's name, for example `Company SSO` (`Single sign-on` by default);
    the sign-in page shows one button per provider, under the form, labelled
-   "Continue with" and that name.
+   "Continue with" and that name. A click on it goes straight to the
+   provider, with no intermediate confirmation page.
 3. Restart the container, then sign in right away with the address set in
    `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, which the provider must have verified.
 
@@ -65,5 +66,9 @@ is opened, by the web and by the API:
 
 A member whose account is not yet linked to the provider links it from the
 account pages, signed in, then signs in through the provider. If a provider is
-removed from the instance, the homes that require it stay locked: the
-administrator clears the rule of the home in the administration site.
+removed from the instance, the homes that require it stay locked until the
+rule is lifted. An owner opens the locked page and chooses **Remove the
+sign-in requirement** (it is offered only when the provider is no longer
+declared); or the administrator uses **Remove these requirements** on the
+[instance page](../screens/instance.md), which clears them all without showing
+any home. Leaving a locked home never needs the provider.
