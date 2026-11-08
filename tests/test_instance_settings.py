@@ -737,6 +737,45 @@ class TestWhoMayCome:
             assert str(bob_home.id) not in text
 
 
+class TestForgedRequests:
+    """A request from another site carries the session cookie but not the CSRF token."""
+
+    def test_the_screen_refuses_a_post_without_the_token(self, admin_user: User) -> None:
+        browser = Client(enforce_csrf_checks=True)
+        recent(browser, admin_user)
+        for data in (
+            {"section": "invitations", "invitation_lifetime_days": "30"},
+            {"section": "invitations", "reset": "invitation_lifetime_days"},
+            {"section": "email", "test_email": "1"},
+        ):
+            assert browser.post(reverse(WEB), data).status_code == 403
+        assert config.get_setting("invitation_lifetime_days") == 7
+        # The same browser, with the token the page gives, is let through.
+        browser.get(reverse(WEB))
+        token = browser.cookies["csrftoken"].value
+        response = browser.post(
+            reverse(WEB),
+            {"section": "invitations", "invitation_lifetime_days": "30"},
+            HTTP_X_CSRFTOKEN=token,
+        )
+        assert response.status_code == 302
+        assert config.get_setting("invitation_lifetime_days") == 30
+
+    def test_the_api_refuses_a_session_write_without_the_token(self, admin_user: User) -> None:
+        browser = APIClient(enforce_csrf_checks=True)
+        recent(browser, admin_user)
+        for response in (
+            browser.patch(reverse(API), {"invitation_lifetime_days": 30}, format="json"),
+            browser.delete(reverse("api-v1:instance-setting-reset", args=["email_port"])),
+            browser.post(reverse("api-v1:instance-email-test")),
+        ):
+            assert response.status_code == 403
+            assert "CSRF" in response.json()["detail"]
+        assert browser.get(reverse(API)).status_code == 200
+        assert not SettingValue.objects.exists()
+        assert not AuditEvent.objects.filter(action__startswith="settings.").exists()
+
+
 class TestRecentSignIn:
     def test_a_change_without_a_recent_sign_in_goes_to_the_confirmation(
         self, client: Client, admin_user: User
