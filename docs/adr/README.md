@@ -34,3 +34,5 @@ later record supersedes it.
 | [0029](0029-rooms-items-and-room-memory.md) | Rooms, items and room memory | 2026-11-08 |
 | [0030](0030-photo-storage-and-processing.md) | Photo storage and processing | 2026-11-08 |
 | [0035](0035-instance-settings-in-the-interface.md) | Instance settings in the interface, paired with environment variables | 2026-11-08 |
+| [0036](0036-export-rooms-photos-and-file-erasure.md) | Export of rooms and photos, erasure of files with the home | 2026-11-08 |
+| [0040](0040-merge-queue.md) | Merge queue, required checks on each queue entry | 2026-11-08 |

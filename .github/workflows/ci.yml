@@ -1,9 +1,12 @@
-# Lint, types, tests and Django checks (docs/adr/0014). Job names are the
-# status checks required on `main`: rename them only together with the ruleset.
+# Lint, types, tests and Django checks (docs/adr/0014), on every pull request
+# and merge queue entry (docs/adr/0040). Job names are the status checks
+# required on `main`: rename them only together with the ruleset.
 name: CI
 
 on:
   pull_request:
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
 

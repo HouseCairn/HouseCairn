@@ -43,4 +43,6 @@ These safeguards are described in
   unless a job needs more, and no workflow runs the code of a pull request with
   write access;
 - Dependabot proposes dependency updates weekly, only once a release has been
-  public for 7 days; security updates are not delayed.
+  public for 7 days; security updates are not delayed. The base image of the
+  container is the exception: it is checked daily, without that delay, and the
+  published image is scanned every day for fixable vulnerabilities.

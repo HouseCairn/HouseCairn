@@ -69,6 +69,8 @@ own tests in `tests/test_ci_scripts.py`.
 - **Merge commits are not checked for a sign-off.** They only bring in commits
   that are checked on their own; the sign-off check would otherwise fail on the
   merge commit created by GitHub's "Update branch" button.
+  Since ADR 0040, `main` is merged through the merge queue and branches no
+  longer need updating; such merge commits can still appear in a pull request.
 - **Bot commits are not checked for a sign-off in their own pull requests.**
   Dependabot signs off as `dependabot[bot] <support@github.com>`, not with its
   author address, so its pull requests could never pass. Commits authored by
@@ -181,7 +183,7 @@ taken has a license in this list.
 ### Dependency updates
 
 Dependabot (`.github/dependabot.yml`) checks weekly the `uv`, `github-actions`
-and `docker` ecosystems. Minor and patch updates are grouped per ecosystem;
+ecosystems, and daily the `docker` one (base image without cooldown, docs/adr/0015). Minor and patch updates are grouped per ecosystem;
 commits are prefixed `chore(deps)`. A cooldown of 7 days (`cooldown:
 default-days: 7`, supported for these three ecosystems by GitHub's Dependabot
 options reference) delays version updates until a release has been public for
@@ -209,6 +211,9 @@ every merge):
 - `Signed-off-by`
 - `CLA` (a commit status set by `cla.js`, not a job; add it last, once
   `cla.yml` is on `main` and the `cla-signatures` branch exists)
+
+Each of their workflows also runs on the merge queue, where the same names are
+required on every queue entry (ADR 0040).
 
 Not required: `CLA signatures` (the job that sets the `CLA` status; it runs on
 the default branch, not on the pull request head), `zizmor (code scanning)`

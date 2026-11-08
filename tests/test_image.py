@@ -76,6 +76,37 @@ def test_final_stage_is_unprivileged_and_healthchecked() -> None:
     assert 'org.opencontainers.image.licenses="AGPL-3.0-only"' in final
 
 
+def test_base_image_security_upgrades_have_a_floor() -> None:
+    # Each Debian package upgraded ahead of the base image must be checked
+    # against its fixed version, or a stale mirror would ship it unfixed.
+    final = (REPO / "Dockerfile").read_text().rsplit("\nFROM ", 1)[1]
+    packages = re.findall(r"--only-upgrade\s+([\w.+-]+(?:\s+[\w.+-]+)*)", final)
+    for package in " ".join(packages).split():
+        floor = rf"dpkg-query -W -f='\$\{{Version\}}' {re.escape(package)}\)\"\s*\\\n\s*ge '"
+        assert re.search(floor, final), package
+
+
+def test_published_image_scan_uses_the_same_grype_and_no_default_permissions() -> None:
+    workflows = REPO / ".github" / "workflows"
+    image = (workflows / "image.yml").read_text()
+    scan = (workflows / "image-scan.yml").read_text()
+    for name in ("GRYPE_VERSION", "GRYPE_SHA256"):
+        pin = re.search(rf'^  {name}: "?([^"\n]+)"?$', image, re.MULTILINE)
+        assert pin, name
+        assert re.search(rf'^  {name}: "?{re.escape(pin.group(1))}"?$', scan, re.MULTILINE), name
+    assert "--only-fixed --fail-on high" in scan
+    assert "continue-on-error" not in scan
+    assert "\npermissions: {}\n" in scan
+    assert "pull_request" not in scan
+
+
+def test_base_image_is_not_delayed_by_the_dependabot_cooldown() -> None:
+    config = (REPO / ".github" / "dependabot.yml").read_text()
+    docker = config.split("package-ecosystem: docker\n", 1)[1].split("  - package-ecosystem:", 1)[0]
+    assert "interval: daily" in docker
+    assert re.search(r"exclude:\s*\n\s*- python\b", docker)
+
+
 def test_build_context_lets_in_only_what_the_image_needs() -> None:
     lines = [
         line

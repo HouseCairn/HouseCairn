@@ -118,6 +118,13 @@ ADR 0001 is amended by this record:
 | `Container image (multi-arch build)` | pull request | `contents: read` | Builds `linux/amd64` and `linux/arm64` with provenance and SBOM, as the publication does, without pushing. |
 | `Publish image` | push to `main`, tag `v*`, after `Container image` passed | `contents: read`, `packages: write`, `id-token: write`, `attestations: write` | Builds and pushes both platforms to GHCR, then attests provenance and SBOMs. |
 
+### Workflow `image-scan.yml`
+
+| Job | Trigger | Permissions | What it does |
+| --- | --- | --- | --- |
+| `Published image scan` | daily, manual | none | Scans `ghcr.io/housecairn/housecairn:edge` (linux/amd64) with the same Grype release as `image.yml`; fails on a fixable high or critical vulnerability. Not a required check. |
+| `Published image scan (code scanning)` | after the scan | `security-events: write` | Uploads its SARIF (fixable findings only) to code scanning, category `container-image`. |
+
 **Multi-architecture**: QEMU emulation on the amd64 runner (the
 `tonistiigi/binfmt` image, pinned by digest, run with `docker run`) and a
 `docker-container` BuildKit builder (`moby/buildkit`, pinned by digest). The
@@ -224,7 +231,9 @@ Dependabot), `Publish image` (never runs on a pull request).
   package (its visibility and its link to the repository are set once, by the
   maintainer, after the first push).
 - A fixable high or critical vulnerability in the base image or a dependency
-  blocks pull requests until it is updated, which Dependabot proposes.
+  blocks pull requests until it is updated. Dependabot proposes the update
+  for a dependency; for a Debian package of the base image, see the
+  amendment of 2026-11-08 below.
 - The `X.Y` and `latest` tags move to the most recently published release,
   even if it is a patch of an older line.
 
@@ -249,3 +258,92 @@ The Dependabot rule is unchanged in substance: it ignores minor and major
 updates of the `python` image (a jump to 3.14 is a migration lot) and keeps the
 3.13.x patch releases. The three CVEs above stay reported until a Python line
 that fixes them is adopted; they are accepted until then.
+
+## Amendment, 2026-11-08: Debian security fixes ahead of the base image
+
+Debian published DSA-6613-1 for zlib (CVE-2026-76844 and CVE-2026-85091,
+high, plus CVE-2026-27171, medium), fixed in `1:1.3.dfsg+really1.3.1-1+deb13u1`
+in trixie-security. The pinned `python:3.13.18-slim-trixie` still had
+`1:1.3.dfsg+really1.3.1-1+b1`, so the `Container image` check failed on every
+pull request and on `main`, and no image could be published. No newer image of
+the 3.13 line carried the fix: the tag had been rebuilt the same day, but its
+amd64 and arm64 manifests were the same as those of the pinned digest (only
+riscv64 had changed), and their Debian sources point to a snapshot of
+2026-11-04, without the fix.
+
+The final stage therefore upgrades the named packages, and only those, from
+the base image's own trixie-security source (`apt-get install --only-upgrade`),
+then checks that the installed version is at least the fixed one, so that a
+mirror still serving the old package fails the build instead of shipping it.
+The step lists each package with its CVEs and fixed version.
+
+The compromise: the image no longer depends only on the base image digest and
+the lock file. Two builds of the same commit can get different versions of a
+listed package if Debian publishes a newer security update in between; the
+version can only go up, and never below the fixed one. Pinning the exact
+version was not chosen, for the reason the build stage already gives: a pinned
+Debian version leaves the mirrors at its next security update and breaks every
+build. Installing from a fixed `snapshot.debian.org` timestamp would be
+reproducible but makes every build depend on that service, slower and rate
+limited. A general `apt-get upgrade` was not chosen either: it would change
+every package of the base image, not just the ones a finding names. The
+blocking scan is unchanged (`--only-fixed --fail-on high`); nothing is ignored.
+
+The step is temporary per package: once Dependabot moves the `FROM` lines to a
+base image digest that carries the fix, the package leaves the list, and the
+step goes away when the list is empty.
+
+Dependabot could not have proposed this change. Its security updates follow
+the GitHub Advisory Database, which does not cover the Debian packages of an
+image, and no base image digest with the fix existed. When the Python image is
+rebuilt with it, the weekly schedule and the 7-day cooldown of the `docker`
+ecosystem delay the digest update by up to two weeks. The second amendment
+below applies the setting that removes that delay.
+
+## Amendment, 2026-11-08 (2): keeping the base image current
+
+Question asked: is the pinned base image the latest one, and does it stay so
+without intervention?
+
+**Finding.** The Docker Hub index of `python:3.13.18-slim-trixie` was
+republished on 2026-11-08 (digest `sha256:e48f59cd...`, the pin was
+`sha256:09a17cad...`). Only the riscv64 manifest changed: the amd64 manifest
+(`sha256:48d88481...`) and the arm64 manifest (`sha256:7e9b0661...`) are the same
+in both, built on 2026-11-05, with `zlib1g` `1:1.3.dfsg+really1.3.1-1+b1`, the
+vulnerable version (read from `/var/lib/dpkg/status` of the base layer). No
+newer `3.13.x-slim-trixie` exists. The pin is therefore not stale for the
+platforms the project ships, the base image cannot carry the zlib fix yet, and
+the `apt` step of the previous amendment stays, with its version floor and its
+guard test. The three fixable findings left on `main` after that step are not
+zlib: they are the Python interpreter itself (CVE-2025-15367, CVE-2026-116566,
+CVE-2026-103995, medium and low, fixed only in 3.15.0a6 and 3.16.0), accepted in
+the section "Move to Python 3.13" above.
+
+**Why no pull request proposed a newer base.** Dependabot checked the `docker`
+ecosystem weekly (Monday) with a 7-day cooldown, so a rebuild was proposed one
+to two weeks after its publication, and the first rebuild with the zlib fix may
+be proposed that late. Nothing scanned the published image between pushes.
+
+**Changes.**
+
+- The `docker` ecosystem is checked daily, and `python` is excluded from the
+  cooldown (`cooldown.exclude`): a rebuild of the base image is proposed the
+  day it is published, as a tag and digest update. The cooldown stays for the
+  other images of the Dockerfile (uv), for the `uv`, `github-actions` and
+  `docker-compose` ecosystems, which have no distribution of Debian fixes to
+  wait for. The pull request still has to pass every required check, so a base
+  image that breaks the build or brings a fixable high vulnerability does not
+  merge. A base image rebuilt by a compromised account would be proposed
+  without delay; the digest pin, the required checks and the maintainer's review
+  are the control, as for any pull request.
+- `.github/workflows/image-scan.yml` scans the published image
+  (`ghcr.io/housecairn/housecairn:edge`, linux/amd64) every day with the same
+  Grype release and the same rule as the `Container image` check
+  (`--only-fixed --fail-on high`). It fails visibly when a new fixable high or
+  critical vulnerability appears in what is published, and refreshes the code
+  scanning alerts of `main` (same category, `container-image`). It is not a
+  required check, runs without repository access (`permissions: {}` for the scan;
+  `security-events: write` only for the upload job) and publishes nothing. The
+  Grype pin is duplicated from `image.yml` and updated by hand, together.
+
+Nothing is ignored and the threshold of the blocking scan is unchanged.

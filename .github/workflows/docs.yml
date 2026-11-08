@@ -1,10 +1,13 @@
-# Documentation site (docs/adr/0016): build and check it on every pull request,
-# publish it to GitHub Pages (https://docs.housecairn.app) on `main`.
+# Documentation site (docs/adr/0016): build and check it on every pull request
+# and merge queue entry (docs/adr/0040), publish it to GitHub Pages
+# (https://docs.housecairn.app) on `main`.
 # Job names are status checks: rename them only together with the ruleset.
 name: Documentation
 
 on:
   pull_request:
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
   schedule:
@@ -58,11 +61,14 @@ jobs:
           ls -l docs/_generated/screenshots
 
       - name: Keep the screenshots with the run (review evidence)
+        # Also when the step above fails: the partial set and failure-*.png
+        # show the page where it stopped. No second error about missing files.
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: docs-screenshots
           path: docs/_generated/screenshots/*.png
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Strict build, English and French
@@ -71,12 +77,15 @@ jobs:
       - name: No external resource, internal links, API coverage
         run: uv run python scripts/check_docs_site.py docs/_build/site
 
-      - name: Contrast, keyboard focus, reduced motion, screenshots of the site
+      - id: design
+        name: Contrast, keyboard focus, reduced motion, screenshots of the site
         run: uv run python scripts/check_docs_design.py docs/_build/site --screenshots docs/_build/site-screenshots
 
       - name: Keep the screenshots of the site with the run (review evidence)
-        # Also when the check above fails: the images show what failed.
-        if: ${{ !cancelled() }}
+        # Also when the check above fails: the images show what failed. Not when
+        # an earlier step failed first: there are no images, and a second error
+        # about missing files would hide the first one.
+        if: ${{ !cancelled() && steps.design.conclusion != 'skipped' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: docs-site-screenshots
@@ -100,8 +109,9 @@ jobs:
     # Not a required check, on purpose: it depends on eight sites we do not
     # control, so a passing outage there must not block every pull request. It
     # still fails visibly (red check on the pull request, red weekly run).
-    # Everything deterministic is in the `Documentation` job above.
-    if: github.event_name != 'push'
+    # Everything deterministic is in the `Documentation` job above. Not on the
+    # merge queue either: an outage elsewhere must not hold up the queue.
+    if: github.event_name == 'pull_request' || github.event_name == 'schedule'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
