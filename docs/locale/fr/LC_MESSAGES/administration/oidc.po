@@ -70,6 +70,9 @@ msgstr "Règles qui protègent les comptes et les logements :"
 msgid "Once accounts are linked to a provider, its **issuer cannot change**: another issuer could sign in as them. Declare a new provider for the new issuer."
 msgstr "Dès que des comptes sont liés à un fournisseur, son **émetteur ne peut plus changer** : un autre émetteur pourrait se connecter à leur place. Déclarez un nouveau fournisseur pour le nouvel émetteur."
 
+msgid "A new **issuer clears the client secret**, unless you enter the secret again in the same change: at sign-in the secret is sent to the issuer, and it must not reach another one. An enabled provider keeps a secret: enter it again, or untick **Enabled** in the same change. A new client identifier alone keeps the secret."
+msgstr "Un nouvel **émetteur efface le secret client**, sauf si vous saisissez de nouveau le secret dans la même modification : à la connexion, le secret est envoyé à l'émetteur, et il ne doit pas en atteindre un autre. Un fournisseur activé garde un secret : saisissez-le de nouveau, ou décochez **Activé** dans la même modification. Un nouvel identifiant client seul garde le secret."
+
 msgid "A provider that **a home requires cannot be deleted**. Disable it: the homes then follow the way out described below."
 msgstr "Un fournisseur **exigé par un logement ne peut pas être supprimé**. Désactivez-le : les logements suivent alors la sortie décrite plus bas."
 

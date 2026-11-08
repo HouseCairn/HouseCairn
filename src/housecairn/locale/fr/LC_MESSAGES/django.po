@@ -320,6 +320,14 @@ msgstr "Fournisseur de connexion %(provider)s : secret client modifié"
 
 #: audit/labels.py
 #, python-format
+msgid ""
+"Sign-in provider %(provider)s: client secret cleared, the issuer changed"
+msgstr ""
+"Fournisseur de connexion %(provider)s : secret client effacé, l'émetteur a "
+"changé"
+
+#: audit/labels.py
+#, python-format
 msgid "Sign-in provider %(provider)s deleted"
 msgstr "Fournisseur de connexion %(provider)s supprimé"
 
@@ -807,6 +815,15 @@ msgid ""
 msgstr ""
 "C'est votre dernier moyen de connexion : définissez d'abord un mot de passe "
 "ou une clé d'accès, ou liez un autre fournisseur."
+
+#: instance/providers.py
+msgid ""
+"The client secret is not kept for another issuer: enter it again, or disable "
+"the provider to save the new issuer without a secret."
+msgstr ""
+"Le secret client n'est pas gardé pour un autre émetteur : saisissez-le de "
+"nouveau, ou désactivez le fournisseur pour enregistrer le nouvel émetteur "
+"sans secret."
 
 #: instance/providers.py
 msgid "The identifier of a provider never changes."

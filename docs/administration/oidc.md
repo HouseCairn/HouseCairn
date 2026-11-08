@@ -57,6 +57,10 @@ Rules that protect accounts and homes:
 
 - Once accounts are linked to a provider, its **issuer cannot change**: another issuer
   could sign in as them. Declare a new provider for the new issuer.
+- A new **issuer clears the client secret**, unless you enter the secret again in the same
+  change: at sign-in the secret is sent to the issuer, and it must not reach another one.
+  An enabled provider keeps a secret: enter it again, or untick **Enabled** in the same
+  change. A new client identifier alone keeps the secret.
 - A provider that **a home requires cannot be deleted**. Disable it: the homes then follow
   the way out described below.
 - You cannot disable or delete **your last way to sign in**: set a password or a passkey, or

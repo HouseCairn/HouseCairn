@@ -252,7 +252,7 @@ class TestTakeOver:
         self, admin_user: User, alice: User
     ) -> None:
         provider = declare(admin_user)
-        providers.update(admin_user, provider, {"issuer": "https://new.example.com"})
+        providers.update(admin_user, provider, {"issuer": "https://new.example.com", "secret": "s"})
         link(alice, "company")
         with pytest.raises(ValidationError, match="another issuer could sign in"):
             providers.update(admin_user, provider, {"issuer": "https://evil.example.com"})
@@ -262,6 +262,75 @@ class TestTakeOver:
     def test_an_identity_never_reaches_an_account_by_its_address(self, settings: Any) -> None:
         assert settings.SOCIALACCOUNT_EMAIL_AUTHENTICATION is False
         assert settings.SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT is False
+
+
+EVIL = "https://idp.attacker.example"
+
+
+class TestTheSecretStaysWithItsIssuer:
+    """At sign-in, allauth sends the client secret to the token endpoint the issuer names.
+
+    Another administrator who points the issuer elsewhere must not receive it.
+    """
+
+    def _app(self, slug: str = "company") -> Any:
+        return next((a for a in providers.social_apps() if a.provider_id == slug), None)
+
+    def test_a_new_issuer_clears_the_secret(self, admin_user: User) -> None:
+        provider = declare(admin_user, enabled=False)
+        assert providers.update(admin_user, provider, {"issuer": EVIL}) == ["secret", "issuer"]
+        provider.refresh_from_db()
+        assert provider.secret == ""
+        assert providers.describe(provider).secret_set is False
+        providers.update(admin_user, provider, {"enabled": True})
+        app = self._app()
+        assert (app.settings["server_url"], app.secret) == (EVIL, "")
+        cleared = AuditEvent.objects.get(action="provider.secret_cleared")
+        assert cleared.detail == {"provider": "company"}
+
+    def test_an_enabled_provider_is_not_left_without_it(self, admin_user: User) -> None:
+        provider = declare(admin_user)
+        with pytest.raises(ValidationError, match="not kept for another issuer") as raised:
+            providers.update(admin_user, provider, {"issuer": EVIL})
+        assert list(raised.value.message_dict) == ["secret"]
+        with pytest.raises(ValidationError, match="not kept for another issuer"):
+            providers.update(admin_user, provider, {"issuer": EVIL, "secret": ""})
+        provider.refresh_from_db()
+        assert (provider.issuer, providers.describe(provider).secret_set) == (ISSUER, True)
+        assert self._app().secret == SECRET
+        assert not AuditEvent.objects.filter(action="provider.secret_cleared").exists()
+
+    def test_a_secret_typed_again_is_kept(self, admin_user: User) -> None:
+        provider = declare(admin_user)
+        providers.update(admin_user, provider, {"issuer": EVIL, "secret": "new-secret"})
+        assert (self._app().settings["server_url"], self._app().secret) == (EVIL, "new-secret")
+        assert not AuditEvent.objects.filter(action="provider.secret_cleared").exists()
+
+    def test_the_same_issuer_or_another_client_keeps_it(self, admin_user: User) -> None:
+        provider = declare(admin_user)
+        assert providers.update(admin_user, provider, {"issuer": ISSUER + "/"}) == []
+        providers.update(admin_user, provider, {"client_id": "another-client"})
+        assert self._app().secret == SECRET
+
+    def test_web_and_api(self, admin_client: Client, admin_api: APIClient) -> None:
+        response = form(admin_client, reverse(LIST), slug="company", secret=SECRET)
+        assert response.status_code == 302
+        url = reverse("instance:provider", kwargs={"slug": "company"})
+        refused = form(admin_client, url, issuer=EVIL)
+        assert refused.status_code == 422
+        assert "not kept for another issuer" in refused.text
+        assert form(admin_client, url, issuer=EVIL, enabled=False).status_code == 302
+        detail = reverse("api-v1:instance-provider-detail", args=["company"])
+        assert admin_api.get(detail).json()["secret_set"] is False
+        assert "not set" in admin_client.get(url).text
+        admin_api.patch(detail, {"issuer": ISSUER, "secret": SECRET}, format="json")
+        response = admin_api.patch(detail, {"issuer": EVIL, "enabled": True}, format="json")
+        assert response.status_code == 400
+        assert "not kept for another issuer" in response.json()["secret"][0]
+        response = admin_api.patch(detail, {"issuer": EVIL, "enabled": False}, format="json")
+        assert (response.status_code, response.json()["secret_set"]) == (200, False)
+        response = admin_api.patch(detail, {"issuer": ISSUER, "secret": SECRET}, format="json")
+        assert (response.json()["issuer"], response.json()["secret_set"]) == (ISSUER, True)
 
 
 class TestLastWayToSignIn:
@@ -592,6 +661,16 @@ class TestSecretsStayInside:
         assert get_adapter().get_app(None, "company").secret == SECRET + "-api"
         actions = list(AuditEvent.objects.values_list("action", flat=True))
         assert actions.count("provider.secret_changed") == 2
+        # Pointed at another issuer, then enabled again: nothing is left for that issuer.
+        assert form(admin_client, url, issuer=EVIL, enabled=False).status_code == 302
+        providers.update(admin_user, OidcProvider.objects.get(), {"enabled": True})
+        assert get_adapter().get_app(None, "company").secret == ""
+        assert not OidcProvider.all_objects.exclude(secret="").exists()
+        for output in (
+            admin_client.get(reverse("instance:audit")).text,
+            admin_api.get(reverse("api-v1:instance-provider-detail", args=["company"])).text,
+        ):
+            assert SECRET not in output
 
     def test_an_unreadable_secret_is_said_not_fatal(
         self, admin_client: Client, admin_user: User

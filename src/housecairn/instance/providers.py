@@ -10,6 +10,9 @@ Rules that keep accounts and homes safe:
 - the identifier never changes and is never reused, even after deletion;
 - the issuer cannot change while identities are linked to the provider: a new issuer
   could assert the same subject as one of them and sign in as its account;
+- the client secret does not follow the provider to another issuer: a change of issuer
+  clears it unless it is typed again in the same request (the new issuer would otherwise
+  receive it at sign-in), and an enabled provider is not left without it;
 - a provider that a home requires cannot be deleted (disable it: the homes then follow the
   way out of docs/adr/0021);
 - the administrator who acts keeps a way to sign in: a usable password, a passkey, or an
@@ -341,6 +344,12 @@ LAST_WAY = gettext_lazy(
 )
 
 
+SECRET_FOR_NEW_ISSUER = gettext_lazy(
+    "The client secret is not kept for another issuer: enter it again, or disable the "
+    "provider to save the new issuer without a secret."
+)
+
+
 def _guard(actor: User, slug: str) -> None:
     if not keeps_a_way_to_sign_in(actor, without=slug):
         raise ValidationError({"enabled": [str(LAST_WAY)]})
@@ -406,7 +415,8 @@ def update(actor: User, provider: OidcProvider, changes: dict[str, Any]) -> list
     changed: list[str] = []
     with transaction.atomic():
         provider = OidcProvider.objects.select_for_update().get(pk=provider.pk)
-        if "issuer" in clean and clean["issuer"] != provider.issuer and _counts(provider.slug)[0]:
+        new_issuer = "issuer" in clean and clean["issuer"] != provider.issuer
+        if new_issuer and _counts(provider.slug)[0]:
             raise ValidationError(
                 {
                     "issuer": [
@@ -417,8 +427,17 @@ def update(actor: User, provider: OidcProvider, changes: dict[str, Any]) -> list
                     ]
                 }
             )
+        # The secret goes, at sign-in, to the token endpoint the issuer names: it never
+        # follows the provider to another issuer. Kept only if typed in the same request.
+        clear_secret = new_issuer and bool(provider.secret) and not clean.get("secret")
+        if clear_secret and clean.get("enabled", provider.enabled):
+            raise ValidationError({"secret": [str(SECRET_FOR_NEW_ISSUER)]})
         if clean.get("enabled") is False and provider.enabled:
             _guard(actor, provider.slug)
+        if clear_secret:
+            provider.secret = ""
+            changed.append("secret")
+            audit.record("provider.secret_cleared", actor=actor, provider=provider.slug)
         for field, value in clean.items():
             if field == "secret":
                 if value:

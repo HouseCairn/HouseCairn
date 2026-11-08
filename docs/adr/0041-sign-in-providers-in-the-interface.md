@@ -39,6 +39,23 @@ administrator declares a new provider, and each person links it. As before, no i
 reaches an account through a matching address (`SOCIALACCOUNT_EMAIL_AUTHENTICATION` and its
 auto-connect stay off).
 
+**The client secret stays with its issuer.** At sign-in, django-allauth reads the issuer's
+OpenID configuration and sends the client identifier and secret to the token endpoint it
+names. Were the secret kept across a change of issuer, an administrator who never saw it
+could point a provider without linked accounts at a host of their own, enable it, start a
+sign-in and receive the secret: write only would mean nothing. So a change of issuer clears
+the stored secret, unless the same request carries one (the form field, or `secret` in the
+API), and the audit log says "client secret cleared", without any value. An enabled provider
+is not left without its secret: the change is refused, on the secret field, until the secret
+is typed again or the provider is disabled in the same request. A refusal was chosen over
+disabling the provider on the quiet: that would hide a sign-in button people use, and could
+take away the last way to sign in of the administrator who acts. A provider without a secret
+may still be enabled afterwards: a public client with PKCE needs none, and the client
+identifier, which is not a secret, is then all the new issuer receives. A change of client
+identifier alone keeps the secret: the secret still goes only to the token endpoint of the
+same issuer, which issued it and already holds it. The issuer, not the client identifier,
+decides where the secret is sent; a wrong pair only makes sign-in fail at the provider.
+
 **A provider that a home requires cannot be deleted.** The refusal gives the number of homes
 and none of their names (ADR 0022). Disabling it is allowed: the homes then follow the way out
 of ADR 0021 (the owner removes the requirement, or the administrator clears every such rule
@@ -52,9 +69,9 @@ off nor lose `is_staff` or `is_superuser`; erasing that account was already refu
 
 **The client secret** is encrypted like the secrets of ADR 0035 (Fernet, key derived from
 `SECRET_KEY`), write only, never in the screen, the API, the audit log (only "client secret
-changed"), the exports or the logs. A secret the key can no longer read is shown as such and
-handed to django-allauth as empty, so that sign-in through that provider fails until the
-administrator enters it again. Deleting a provider wipes its secret.
+changed" or "client secret cleared"), the exports or the logs. A secret the key can no longer
+read is shown as such and handed to django-allauth as empty, so that sign-in through that
+provider fails until the administrator enters it again. Deleting a provider wipes its secret.
 
 **Content Security Policy.** The browser applies `form-action` to the redirect that follows a
 sign-in button. Each HTML response gets the origins (`https://host[:port]`) of the issuers of
@@ -84,7 +101,9 @@ That is accepted for an instance administrator, as ADR 0035 accepts the mail tes
 
 - Every write needs a recent sign-in (ADR 0035), through the web or the API, and goes to the
   audit log: added, each changed field with its old and new values, client secret changed,
-  deleted.
+  client secret cleared, deleted.
+- Moving an enabled provider to another issuer takes its secret in the same change; there is
+  no way to keep the old secret for the new issuer.
 - An administrator who signs in through one provider only must set a password or a passkey,
   or link another provider, before disabling it.
 - Moving a provider from the variables to the interface keeps its identifier only while the
