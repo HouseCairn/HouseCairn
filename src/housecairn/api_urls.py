@@ -42,6 +42,7 @@ for prefix, viewset, basename in (
     ("articles", stock_api.ArticleViewSet, "home-article"),
     ("suppliers", stock_api.SupplierViewSet, "home-supplier"),
     ("movements", stock_api.MovementViewSet, "home-movement"),
+    ("attachments", tasks_api.AttachmentViewSet, "home-attachment"),
 ):
     router.register(rf"homes/(?P<home_id>[0-9a-f-]{{36}})/{prefix}", viewset, basename=basename)
 

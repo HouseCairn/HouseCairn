@@ -49,8 +49,8 @@ msgstr "Les données, au format JSON (ci-dessous)."
 msgid "`files/`"
 msgstr "`files/`"
 
-msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`."
-msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`."
+msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, and the files of the tasks, under `files/attachments/`."
+msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, et les fichiers des tâches, sous `files/attachments/`."
 
 msgid "`README.txt`"
 msgstr "`README.txt`"
@@ -118,14 +118,20 @@ msgstr "`photos`"
 msgid "`id`, `room` or `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the photo in the archive (`files/photos/<id>.<extension>`, or `null` if the file is missing)."
 msgstr "`id`, `room` ou `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, et `file`, le chemin de la photo dans l'archive (`files/photos/<id>.<extension>`, ou `null` si le fichier manque)."
 
+msgid "`attachments`"
+msgstr "`attachments`"
+
+msgid "`id`, `task`, `occurrence` or `null`, `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the file in the archive (`files/attachments/<id>.<extension>`, or `null` if the file is missing)."
+msgstr "`id`, `task`, `occurrence` ou `null`, `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, et `file`, le chemin du fichier dans l'archive (`files/attachments/<id>.<extension>`, ou `null` si le fichier manque)."
+
 msgid "`files`"
 msgstr "`files`"
 
 msgid "`path` and `size` of each file in `files/`."
 msgstr "`path` et `size` de chaque fichier de `files/`."
 
-msgid "Photos are exported as they are stored, already stripped of their metadata at upload. Thumbnails are not exported, and neither is anything deleted. The archive has no size limit of its own: it is as large as the photos of the home (each is limited by `HOUSECAIRN_PHOTO_MAX_BYTES`)."
-msgstr "Les photos sont exportées telles qu'elles sont stockées, déjà dépouillées de leurs métadonnées au dépôt. Les miniatures ne sont pas exportées, ni rien de ce qui a été supprimé. L'archive n'a pas de plafond de taille propre : elle est aussi grosse que les photos du logement (chacune est limitée par `HOUSECAIRN_PHOTO_MAX_BYTES`)."
+msgid "Photos and the images attached to tasks are exported as they are stored, already stripped of their metadata at upload; the documents attached to tasks are exported as they were received. Thumbnails are not exported, and neither is anything deleted. The archive has no size limit of its own: it is as large as the files of the home (each is limited by `HOUSECAIRN_PHOTO_MAX_BYTES`)."
+msgstr "Les photos et les images jointes aux tâches sont exportées telles qu'elles sont stockées, déjà dépouillées de leurs métadonnées au dépôt ; les documents joints aux tâches sont exportés tels qu'ils ont été reçus. Les miniatures ne sont pas exportées, ni rien de ce qui a été supprimé. L'archive n'a pas de plafond de taille propre : elle est aussi grosse que les fichiers du logement (chacun est limité par `HOUSECAIRN_PHOTO_MAX_BYTES`)."
 
 msgid "Each lot that adds data adds its section here and to the archive. The archive holds the home it was made for and nothing of another."
 msgstr "Chaque lot qui ajoute des données ajoute sa section ici et dans l'archive. L'archive contient le logement pour lequel elle a été faite, et rien d'un autre."
@@ -136,8 +142,8 @@ msgstr "Suppression d'un logement"
 msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
 msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
 
-msgid "The photos are erased from the disk with the home, deleted ones included. If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`): remove that directory by hand."
-msgstr "Les photos sont effacées du disque avec le logement, celles déjà supprimées comprises. Si le disque refuse (droits, volume plein ou en lecture seule), le logement est quand même supprimé et l'erreur est journalisée par `housecairn.files` avec le chemin du répertoire (`photos/<id du logement>`) : supprimez ce répertoire à la main."
+msgid "The photos and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>` or `attachments/<home id>`): remove that directory by hand."
+msgstr "Les photos et les fichiers joints aux tâches sont effacés du disque avec le logement (photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est quand même supprimé et l'erreur est journalisée par `housecairn.files` avec le chemin du répertoire (`photos/<id du logement>` ou `attachments/<id du logement>`) : supprimez ce répertoire à la main."
 
 msgid "Erasure of an account"
 msgstr "Effacement d'un compte"

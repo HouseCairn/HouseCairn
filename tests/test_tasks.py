@@ -874,6 +874,7 @@ class TestScreens:
         edit = url("edit", alice_home, task_id=owner_task.id)
         page = signed_in.get(edit)
         assert page.status_code == 200
+        assert 'name="uploads"' not in page.content.decode()
         changed = signed_in.post(
             edit,
             {
@@ -1066,6 +1067,7 @@ class TestWebRolesAndIsolation:
                     occurrence_id=owner_occurrence.id,
                 ),
             ),
+            ("get", url("attachment-add", alice_home, task_id=owner_task.id)),
         ]
         for method, address in writes:
             assert getattr(client, method)(address).status_code == 403, address
@@ -1096,6 +1098,7 @@ class TestWebRolesAndIsolation:
                     task_id=owner_task.id,
                     occurrence_id=owner_occurrence.id,
                 ),
+                url("attachment-add", home, task_id=owner_task.id),
             ]
             for address in addresses:
                 assert client.get(address).status_code == 404, address

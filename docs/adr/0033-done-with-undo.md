@@ -26,7 +26,7 @@ the closing is deleted** (hard delete: it is derived data, nobody has seen it). 
 state before and after is identical, which the tests compare field by field.
 
 **Undo is refused when it would lose work.** If the occurrence created meanwhile has
-been postponed, noted, given a cost, or closed, the call fails with a
+been postponed, noted, given a cost, a photo, or closed, the call fails with a
 message and nothing changes. The successor is found through a one-to-one link
 (`follows`), so the undo is exact even if the due date was edited.
 
