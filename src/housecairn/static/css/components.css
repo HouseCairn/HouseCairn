@@ -563,6 +563,12 @@ form p > a,
   border-color: var(--hc-color-primary);
 }
 
+/* The ring is drawn inside, over the chip's own background, which is the focus colour: a ring of
+   that colour would not show (WCAG 2.4.7, 1.4.11). */
+.chip[aria-current="page"]:focus-visible {
+  outline-color: var(--hc-color-text-inverse);
+}
+
 /* ---------- code, tables ---------- */
 
 .code {
