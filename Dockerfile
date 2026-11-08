@@ -12,7 +12,7 @@ FROM ghcr.io/astral-sh/uv:0.13.7@sha256:96f40d3904aad8d0bd010539001d36c8e2188b98
 # ---------------------------------------------------------------------------
 # Build stage: dependencies, design tokens, translations, static files.
 # ---------------------------------------------------------------------------
-FROM python:3.13.18-slim-trixie@sha256:09a17cad02668ae61ece136b4fd36ac3849e14f670ebedb637ea3e15580525bc AS build
+FROM python:3.13.18-slim-trixie@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90 AS build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -64,7 +64,7 @@ RUN DEBUG=true .venv/bin/python manage.py build_design_tokens \
 # ---------------------------------------------------------------------------
 # Final stage.
 # ---------------------------------------------------------------------------
-FROM python:3.13.18-slim-trixie@sha256:09a17cad02668ae61ece136b4fd36ac3849e14f670ebedb637ea3e15580525bc
+FROM python:3.13.18-slim-trixie@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90
 
 # Debian security fixes that the base image does not carry yet (docs/adr/0015,
 # amendment of 2026-11-08). The Python image is rebuilt some days after a
