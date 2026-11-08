@@ -10,6 +10,7 @@ from housecairn.rooms.models import (
     Item,
     PhotoCategory,
     Room,
+    RoomKind,
     validate_links,
 )
 
@@ -17,10 +18,43 @@ _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
 
 
 class RoomForm(forms.ModelForm[Room]):
+    """The type comes first and fills the name in, which stays editable (docs/adr/0045).
+
+    `static/js/room-form.js` does the filling as the type is chosen; without script, a name
+    left empty takes the label of the type. "Other" has no label to offer: the name is then
+    the room's whole description.
+    """
+
     class Meta:
         model = Room
-        fields = ["name", "kind", "notes"]
+        fields = ["kind", "name", "notes"]
         widgets = {"notes": forms.Textarea(attrs={"rows": 4})}
+        help_texts = {
+            "kind": _(
+                "Sets the icon and the filters of the room and, later, the task templates "
+                "offered for it. Choose Other if none fits."
+            ),
+            "name": _("Fills in by itself from the type; change it to name the room."),
+        }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["name"].required = False
+        if self.instance._state.adding:
+            kind_field = self.fields["kind"]
+            assert isinstance(kind_field, forms.ChoiceField)  # noqa: S101 - narrows the type
+            kind_field.choices = [("", _("Choose a type")), *RoomKind.choices]
+            self.initial["kind"] = ""
+
+    def clean(self) -> dict[str, Any]:
+        data: dict[str, Any] = super().clean() or {}
+        kind = data.get("kind")
+        if not (data.get("name") or "").strip() and kind and "name" not in self.errors:
+            if kind == RoomKind.OTHER:
+                self.add_error("name", _("Give the room a name."))
+            else:
+                data["name"] = str(RoomKind(kind).label)
+        return data
 
 
 class RoomMemoryForm(forms.ModelForm[Room]):
@@ -37,6 +71,30 @@ class RoomMemoryForm(forms.ModelForm[Room]):
             "memory_notes",
         ]
         widgets = {"memory_notes": forms.Textarea(attrs={"rows": 4})}
+        help_texts = {
+            "paint_colour": _("The colour as you would ask for it. Example: warm white."),
+            "paint_brand": _("The make of the paint. Example: Acme Paints."),
+            "paint_reference": _(
+                "The reference or the colour code on the tin, to order the same one. "
+                "Example: AC-1042."
+            ),
+            "paint_batch": _(
+                "The batch number printed on the tin; shades can differ from one batch to "
+                "another. Example: L23-0457."
+            ),
+            "paint_stock": _("What is left of it and where. Example: half a tin, in the garage."),
+            "floor_covering": _(
+                "What covers the floor, with its make and reference if you know them. "
+                "Example: oak parquet, matt varnish."
+            ),
+            "wall_covering": _(
+                "What covers the walls, under the paint if any. Example: lining paper, then paint."
+            ),
+            "memory_notes": _(
+                "What the walls and floor hide, or anything else to remember about the work "
+                "done. Example: water pipe along the north wall, 30 cm above the floor."
+            ),
+        }
 
 
 def links_to_text(links: list[dict[str, str]]) -> str:

@@ -4,7 +4,7 @@
 {% block content %}
   <a class="back-link" href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}">{% include "components/icon.html" with name="chevron" %}{{ room.name }}</a>
   <h1>{% translate "Room memory" %}</h1>
-  <p class="small">{% translate "What was used and fitted in this room, to find it again when you need to touch up or replace it. Every field is optional." %}</p>
+  <p class="small">{% translate "The memory of a room keeps what you can no longer see once the work is finished: the paint, the floor and wall coverings, and what runs behind the walls. Every field is optional." %}</p>
   <form method="post" class="card">
     {% csrf_token %}
     {{ form.as_p }}

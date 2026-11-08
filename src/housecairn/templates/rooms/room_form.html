@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 {% block head_title %}{% if room %}{% translate "Edit the room" %}{% else %}{% translate "Add a room" %}{% endif %}{% endblock head_title %}
+{% block extra_head %}<script src="{% static 'js/room-form.js' %}" defer></script>{% endblock extra_head %}
 {% block content %}
   {% if room %}
     <a class="back-link" href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}">{% include "components/icon.html" with name="chevron" %}{{ room.name }}</a>
