@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 14:48+0000\n"
+"POT-Creation-Date: 2026-11-08 16:26+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -150,8 +150,8 @@ msgstr "Écriture"
 msgid "Post events"
 msgstr "Envoi d'événements"
 
-#: apitokens/models.py homes/models.py instance/models.py rooms/models.py
-#: stock/models.py tasks/models.py
+#: apitokens/models.py homes/models.py instance/models.py
+#: notifications/models.py rooms/models.py stock/models.py tasks/models.py
 msgid "name"
 msgstr "nom"
 
@@ -678,7 +678,7 @@ msgstr ""
 "Dans l'URI de redirection ; lettres minuscules, chiffres et tirets. Il ne "
 "change jamais et n'est jamais donné à un autre fournisseur."
 
-#: instance/forms.py
+#: instance/forms.py notifications/forms.py
 msgid "Name"
 msgstr "Nom"
 
@@ -715,7 +715,7 @@ msgstr "PKCE"
 msgid "Recommended; on by default."
 msgstr "Recommandé ; activé par défaut."
 
-#: instance/forms.py
+#: instance/forms.py notifications/forms.py
 msgid "Enabled"
 msgstr "Activé"
 
@@ -748,7 +748,7 @@ msgstr "identifiant client"
 msgid "client secret"
 msgstr "secret client"
 
-#: instance/models.py templates/instance/providers.html
+#: instance/models.py notifications/models.py templates/instance/providers.html
 msgid "enabled"
 msgstr "activé"
 
@@ -901,6 +901,12 @@ msgstr "Invitations"
 #: instance/registry.py templates/instance/overview.html
 msgid "Outgoing email"
 msgstr "E-mail sortant"
+
+#: instance/registry.py notifications/apps.py notifications/conf.py
+#: templates/core/more.html templates/notifications/channel.html
+#: templates/notifications/index.html
+msgid "Notifications"
+msgstr "Notifications"
 
 #: instance/registry.py
 msgid "Expected a whole number."
@@ -1252,6 +1258,206 @@ msgstr "Fournisseur enregistré."
 #: instance/views.py
 msgid "(none)"
 msgstr "(aucun)"
+
+#: notifications/conf.py
+msgid ""
+"People may add channels (ntfy, Telegram, email...) and receive reminders. "
+"Off: nothing is sent and no channel can be added or tested."
+msgstr ""
+"Chacun peut ajouter des canaux (ntfy, Telegram, e-mail…) et recevoir des "
+"rappels. Désactivé : rien n'est envoyé et aucun canal ne peut être ajouté ni "
+"testé."
+
+#: notifications/conf.py
+msgid "Check for reminders every (minutes)"
+msgstr "Chercher les rappels toutes les (minutes)"
+
+#: notifications/conf.py
+msgid ""
+"How often the background worker looks for reminders to send, from 1 to 60."
+msgstr ""
+"Fréquence à laquelle la tâche de fond cherche les rappels à envoyer, de 1 à "
+"60."
+
+#: notifications/forms.py
+msgid "Apprise address"
+msgstr "Adresse Apprise"
+
+#: notifications/forms.py
+msgid "Such as ntfys://ntfy.sh/my-topic or tgram://bot-token/chat-id."
+msgstr ""
+"Par exemple ntfys://ntfy.sh/mon-sujet ou tgram://jeton-du-bot/id-du-chat."
+
+#: notifications/models.py
+msgid "notification channel"
+msgstr "canal de notification"
+
+#: notifications/models.py
+msgid "notification channels"
+msgstr "canaux de notification"
+
+#: notifications/models.py
+msgid "first reminder (days before)"
+msgstr "premier rappel (jours avant)"
+
+#: notifications/models.py
+msgid "0 reminds on the day itself."
+msgstr "0 : rappel le jour même."
+
+#: notifications/models.py
+msgid "time of reminders"
+msgstr "heure des rappels"
+
+#: notifications/models.py
+msgid "Reminders and the daily summary go out from this time of day."
+msgstr "Les rappels et le résumé quotidien partent à partir de cette heure."
+
+#: notifications/models.py
+msgid "quiet hours from"
+msgstr "heures calmes de"
+
+#: notifications/models.py
+msgid "quiet hours until"
+msgstr "heures calmes jusqu'à"
+
+#: notifications/models.py
+msgid "daily summary"
+msgstr "résumé quotidien"
+
+#: notifications/models.py
+msgid "One message a day for every task to remind, instead of one per task."
+msgstr ""
+"Un seul message par jour pour toutes les tâches à rappeler, au lieu d'un par "
+"tâche."
+
+#: notifications/models.py
+msgid "language"
+msgstr "langue"
+
+#: notifications/models.py
+msgid "time zone"
+msgstr "fuseau horaire"
+
+#: notifications/models.py
+msgid "Empty: the time zone of the instance."
+msgstr "Vide : le fuseau horaire de l'instance."
+
+#: notifications/models.py
+msgid "notification preference"
+msgstr "préférence de notification"
+
+#: notifications/models.py
+msgid "notification preferences"
+msgstr "préférences de notification"
+
+#: notifications/models.py
+msgid "Reminder"
+msgstr "Rappel"
+
+#: notifications/models.py
+msgid "Daily summary"
+msgstr "Résumé quotidien"
+
+#: notifications/models.py
+msgid "notification sent"
+msgstr "notification envoyée"
+
+#: notifications/models.py
+msgid "notifications sent"
+msgstr "notifications envoyées"
+
+#: notifications/reminders.py
+#, python-format
+msgid "%(title)s, %(home)s, due %(date)s"
+msgstr "%(title)s, %(home)s, pour le %(date)s"
+
+#: notifications/reminders.py
+msgid "HouseCairn reminder"
+msgstr "Rappel HouseCairn"
+
+#: notifications/reminders.py
+#, python-format
+msgid "And %(n)d more."
+msgstr "Et %(n)d de plus."
+
+#: notifications/reminders.py
+msgid "HouseCairn: tasks to do"
+msgstr "HouseCairn : tâches à faire"
+
+#: notifications/services.py
+msgid "This is not an Apprise address, such as ntfys://ntfy.sh/topic."
+msgstr "Ce n'est pas une adresse Apprise, comme ntfys://ntfy.sh/sujet."
+
+#: notifications/services.py
+msgid ""
+"This kind of channel is not offered. Use ntfy, Gotify, Telegram, Signal, "
+"Matrix, email, Discord, Slack, Pushover, Mattermost, Apprise API or JSON."
+msgstr ""
+"Ce type de canal n'est pas proposé. Utilisez ntfy, Gotify, Telegram, Signal, "
+"Matrix, l'e-mail, Discord, Slack, Pushover, Mattermost, l'API Apprise ou "
+"JSON."
+
+#: notifications/services.py
+msgid "These options make the instance read a file: remove them."
+msgstr "Ces options font lire un fichier à l'instance : retirez-les."
+
+#: notifications/services.py
+msgid "The instance does not send to this address."
+msgstr "L'instance n'envoie pas à cette adresse."
+
+#: notifications/services.py
+msgid "Channel added. Send a test to check it."
+msgstr "Canal ajouté. Envoyez un test pour le vérifier."
+
+#: notifications/services.py
+msgid "Saved."
+msgstr "Enregistré."
+
+#: notifications/services.py
+msgid "Channel deleted."
+msgstr "Canal supprimé."
+
+#: notifications/services.py
+msgid "The test message was sent."
+msgstr "Le message de test a été envoyé."
+
+#: notifications/services.py
+msgid "The test message could not be sent: check the address and the service."
+msgstr ""
+"Le message de test n'a pas pu être envoyé : vérifiez l'adresse et le service."
+
+#: notifications/services.py
+msgid "Notifications are turned off on this instance."
+msgstr "Les notifications sont désactivées sur cette instance."
+
+#: notifications/services.py
+msgid "Give a name of 1 to 60 characters."
+msgstr "Donnez un nom de 1 à 60 caractères."
+
+#: notifications/services.py
+#, python-format
+msgid "At most %(n)d channels."
+msgstr "%(n)d canaux au plus."
+
+#: notifications/services.py
+msgid "Too many tests: wait a minute."
+msgstr "Trop de tests : attendez une minute."
+
+#: notifications/services.py
+msgid "HouseCairn test"
+msgstr "Test HouseCairn"
+
+#: notifications/services.py
+msgid "This channel receives the reminders of your tasks."
+msgstr "Ce canal reçoit les rappels de vos tâches."
+
+#: notifications/services.py
+msgid "Give the start and the end of the quiet hours, or neither."
+msgstr "Indiquez le début et la fin des heures calmes, ou aucun des deux."
+
+#: notifications/services.py
+msgid "Choose a time zone such as Europe/Paris."
+msgstr "Choisissez un fuseau horaire comme Europe/Paris."
 
 #: rooms/apps.py templates/rooms/choose_home.html
 #: templates/rooms/room_detail.html templates/rooms/room_form.html
@@ -2383,7 +2589,8 @@ msgid "Delete my account"
 msgstr "Supprimer mon compte"
 
 #: templates/accounts/delete.html templates/core/more.html
-#: templates/instance/overview.html templates/shell/navigation.html
+#: templates/instance/overview.html templates/notifications/index.html
+#: templates/shell/navigation.html
 msgid "More"
 msgstr "Plus"
 
@@ -2509,6 +2716,10 @@ msgstr "Préférences d'affichage"
 #: templates/core/more.html
 msgid "How the Today screen is laid out for you"
 msgstr "La disposition de l'écran Aujourd'hui pour vous"
+
+#: templates/core/more.html
+msgid "Where and when your reminders go"
+msgstr "Où et quand partent vos rappels"
 
 #: templates/core/more.html
 msgid "Account security"
@@ -2791,7 +3002,8 @@ msgstr ""
 "Réglez-le depuis une session connectée par ce fournisseur."
 
 #: templates/homes/household.html templates/instance/provider.html
-#: templates/instance/settings.html templates/rooms/item_form.html
+#: templates/instance/settings.html templates/notifications/channel.html
+#: templates/notifications/index.html templates/rooms/item_form.html
 #: templates/rooms/room_form.html templates/rooms/room_memory_form.html
 #: templates/stock/article_form.html templates/stock/supplier_form.html
 #: templates/tasks/completion_form.html templates/tasks/preferences.html
@@ -3251,6 +3463,68 @@ msgstr ""
 "Ces réglages ne passent que par des variables d'environnement : l'instance "
 "en a besoin avant d'avoir une base de données, ou ils pourraient vous "
 "enfermer dehors. Lecture seule ; aucun secret n'est affiché."
+
+#: templates/notifications/channel.html
+#, python-format
+msgid ""
+"%(service)s (%(scheme)s). The address is kept encrypted and is never shown "
+"again: to change it, delete this channel and add another."
+msgstr ""
+"%(service)s (%(scheme)s). L'adresse est conservée chiffrée et n'est plus "
+"jamais affichée : pour la changer, supprimez ce canal et ajoutez-en un autre."
+
+#: templates/notifications/channel.html
+msgid "Send a test message"
+msgstr "Envoyer un message de test"
+
+#: templates/notifications/channel.html
+msgid "Delete the channel"
+msgstr "Supprimer le canal"
+
+#: templates/notifications/index.html
+msgid ""
+"Notifications are turned off on this instance: its administrator can turn "
+"them on."
+msgstr ""
+"Les notifications sont désactivées sur cette instance : son administrateur "
+"peut les activer."
+
+#: templates/notifications/index.html
+msgid "Channels"
+msgstr "Canaux"
+
+#: templates/notifications/index.html
+msgid ""
+"Where your reminders go. Only you see your channels; their addresses are "
+"never shown again."
+msgstr ""
+"Là où partent vos rappels. Vous seul voyez vos canaux ; leurs adresses ne "
+"sont plus jamais affichées."
+
+#: templates/notifications/index.html
+msgctxt "channel"
+msgid "off"
+msgstr "désactivé"
+
+#: templates/notifications/index.html
+msgid "No channel yet."
+msgstr "Aucun canal pour l'instant."
+
+#: templates/notifications/index.html
+msgid "Add a channel"
+msgstr "Ajouter un canal"
+
+#: templates/notifications/index.html
+msgid "Add the channel"
+msgstr "Ajouter le canal"
+
+#: templates/notifications/index.html
+msgid "Reminders"
+msgstr "Rappels"
+
+#: templates/notifications/index.html
+msgid "Download my notification settings"
+msgstr "Télécharger mes réglages de notification"
 
 #: templates/rooms/_photos.html
 #, python-format

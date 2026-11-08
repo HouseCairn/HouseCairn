@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{{ channel.name }}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'notifications:index' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Notifications" %}</a>
+  <h1>{{ channel.name }}</h1>
+  <p class="small">{% blocktranslate with service=channel.service scheme=channel.scheme %}{{ service }} ({{ scheme }}). The address is kept encrypted and is never shown again: to change it, delete this channel and add another.{% endblocktranslate %}</p>
+  <form method="post" class="card" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button-block">{% translate "Save" %}</button>
+  </form>
+  <form method="post" action="{% url 'notifications:test' channel_id=channel.id %}">
+    {% csrf_token %}
+    <button type="submit" class="button-secondary button-block">{% translate "Send a test message" %}</button>
+  </form>
+  <form method="post" action="{% url 'notifications:delete' channel_id=channel.id %}">
+    {% csrf_token %}
+    <button type="submit" class="button-danger button-block">{% translate "Delete the channel" %}</button>
+  </form>
+{% endblock content %}

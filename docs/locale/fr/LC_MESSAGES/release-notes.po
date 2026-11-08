@@ -8,9 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 12:24+0000\n"
-
-"POT-Creation-Date: 2026-11-08 13:29+0000\n"
+"POT-Creation-Date: 2026-11-08 16:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -32,6 +30,9 @@ msgstr "Version à venir"
 
 msgid "New"
 msgstr "Nouveautés"
+
+msgid "**Notifications.** Each person adds their own channels (ntfy, Telegram, Signal, Matrix, Gotify, email and other Apprise services) on **More, Notifications**, tests them, and chooses when reminders come: days before the due date, time of day, quiet hours, a daily summary. Follow-ups come until the task is done, skipped or postponed, more often for a high priority. Addresses are encrypted and never shown again. Off by default: an administrator turns them on with `HOUSECAIRN_NOTIFICATIONS_ENABLED` or in the settings. See [Notifications](guides/notifications.md)."
+msgstr "**Notifications.** Chacun ajoute ses propres canaux (ntfy, Telegram, Signal, Matrix, Gotify, e-mail et les autres services d'Apprise) dans **Plus, Notifications**, les teste et choisit quand viennent les rappels : jours avant l'échéance, heure, heures calmes, résumé quotidien. Les relances continuent jusqu'à ce que la tâche soit faite, ignorée ou reportée, plus souvent pour une priorité haute. Les adresses sont chiffrées et ne sont plus jamais affichées. Désactivées par défaut : un administrateur les active par `HOUSECAIRN_NOTIFICATIONS_ENABLED` ou dans les réglages. Voir [Notifications](guides/notifications.md)."
 
 msgid "**Rooms, items and photos.** Describe the rooms of a home, what was used in them (the room memory), the equipment and surfaces they hold, and add photos. Screens, API and a guide: see [Rooms and items](guides/rooms-and-items.md). Photos are stored in `/data/media/photos/`, checked by their content and stripped of their metadata. The new variable `HOUSECAIRN_PHOTO_MAX_BYTES` sets the size limit of a photo (10 MB by default)."
 msgstr "**Pièces, éléments et photos.** Décrivez les pièces d'un logement, ce qui y a été utilisé (la mémoire de la pièce), les équipements et surfaces qu'elles contiennent, et ajoutez des photos. Écrans, API et un guide : voir [Pièces et éléments](guides/rooms-and-items.md). Les photos sont stockées dans `/data/media/photos/`, vérifiées d'après leur contenu et débarrassées de leurs métadonnées. La nouvelle variable `HOUSECAIRN_PHOTO_MAX_BYTES` fixe la taille maximale d'une photo (10 Mo par défaut)."

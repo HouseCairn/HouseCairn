@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     "housecairn.rooms",
     "housecairn.tasks",
     "housecairn.stock",
+    "housecairn.notifications",
 ]
 
 MIDDLEWARE = [
@@ -407,6 +408,9 @@ Q_CLUSTER = {
     "catch_up": False,
     "sync": env.bool("HOUSECAIRN_TASKS_SYNC", default=False),
 }
+# Notifications (docs/adr/0043): on or off, and how often the worker looks for reminders.
+HOUSECAIRN_NOTIFICATIONS_ENABLED: bool = _ENV.values["notifications_enabled"]
+HOUSECAIRN_NOTIFICATIONS_INTERVAL: int = _ENV.values["notifications_interval"]
 
 # API tokens (docs/adr/0007).
 HOUSECAIRN_API_TOKEN_DEFAULT_LIFETIME_DAYS: int = env.int(

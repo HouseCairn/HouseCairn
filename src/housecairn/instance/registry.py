@@ -45,6 +45,7 @@ class Section(StrEnum):
     SIGNUP = "signup"
     INVITATIONS = "invitations"
     EMAIL = "email"
+    NOTIFICATIONS = "notifications"
 
 
 SECTION_LABELS: dict[Section, Promise] = {
@@ -52,6 +53,7 @@ SECTION_LABELS: dict[Section, Promise] = {
     Section.SIGNUP: _("Sign-up"),
     Section.INVITATIONS: _("Invitations"),
     Section.EMAIL: _("Outgoing email"),
+    Section.NOTIFICATIONS: _("Notifications"),
 }
 
 
@@ -161,7 +163,7 @@ def _check_from(value: str) -> None:
         raise ValueError(_("Must be an address, such as HouseCairn <noreply@example.com>."))
 
 
-_SETTINGS = (
+_SETTINGS: tuple[Setting, ...] = (
     Setting(
         "site_url",
         "HOUSECAIRN_SITE_URL",
@@ -401,3 +403,10 @@ def read_environment(environ: dict[str, str] | None = None) -> Environment:
         else:
             values[setting.key] = setting.default
     return Environment(values, frozenset(locked))
+
+
+# Settings of other apps, declared next to their code (docs/adr/0043).
+from housecairn.notifications.conf import SETTINGS as _NOTIFICATIONS  # noqa: E402
+
+_SETTINGS += _NOTIFICATIONS
+SETTINGS.update({s.key: s for s in _NOTIFICATIONS})

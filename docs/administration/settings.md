@@ -43,6 +43,8 @@ sender, the sign-up rules, the invitation lifetime and the public address need n
 | SMTP password | `EMAIL_HOST_PASSWORD` | Outgoing email | (none) | At once |
 | SMTP timeout (seconds) | `EMAIL_TIMEOUT` | Outgoing email | `15` | At once |
 | Sender address | `DEFAULT_FROM_EMAIL` | Outgoing email | `HouseCairn <noreply@localhost>` | At once |
+| Notifications | `HOUSECAIRN_NOTIFICATIONS_ENABLED` | Notifications | `false` | At once |
+| Check for reminders every (minutes) | `HOUSECAIRN_NOTIFICATIONS_INTERVAL` | Notifications | `5` | At once |
 % settings-table:end
 
 The start-up checks (`manage.py check`, which `migrate` runs too) read the variables and the

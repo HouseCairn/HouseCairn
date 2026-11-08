@@ -25,6 +25,8 @@ changed in the interface; a variable that is set locks its field there. The full
 | `EMAIL_USE_SSL`, `EMAIL_TIMEOUT` | `false`, `15` | TLS from the first byte; seconds to wait for the server. See [Email](email.md). |
 | `HOUSECAIRN_SITE_URL` | (none: set it in production) | Public address of the instance, such as `https://home.example.com`, used for links in emails. Empty: the address of the request, checked against `ALLOWED_HOSTS`; `check --deploy` warns when `EMAIL_HOST` is set without it. |
 | `HOUSECAIRN_INVITATION_LIFETIME_DAYS` | `7` | Days an invitation link stays valid, from 1 to 90. |
+| `HOUSECAIRN_NOTIFICATIONS_ENABLED` | `false` | Reminders through Apprise channels; off, nothing is sent. See [Notifications](../guides/notifications.md). |
+| `HOUSECAIRN_NOTIFICATIONS_INTERVAL` | `5` | Minutes between two looks for reminders to send, from 1 to 60. |
 | `HOUSECAIRN_DOCS_URL` | `https://docs.housecairn.app` | Address of this documentation, used by the help link of each screen. |
 | `HOUSECAIRN_WEB_WORKERS` | `2` | Web server processes. |
 | `HOUSECAIRN_TASK_WORKERS` | `2` | Task worker processes. |

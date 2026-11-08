@@ -1,0 +1,69 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 16:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Where and when your reminders go, at `/me/notifications/` (**More**, then **Notifications**). Everything on this screen is yours alone: nobody else sees your channels, not even an administrator of the instance."
+msgstr "Où et quand partent vos rappels, sur `/me/notifications/` (**Plus**, puis **Notifications**). Tout ce qui est sur cet écran n'appartient qu'à vous : personne d'autre ne voit vos canaux, pas même un administrateur de l'instance."
+
+msgid "When the instance has notifications off, the screen says so and you cannot add or test a channel; its administrator turns them on in the [settings](instance-settings.md)."
+msgstr "Quand les notifications sont désactivées sur l'instance, l'écran le dit et vous ne pouvez ni ajouter ni tester un canal ; son administrateur les active dans les [réglages](instance-settings.md)."
+
+msgid "Channels"
+msgstr "Canaux"
+
+msgid "The list shows the name of each channel and the kind of service (`ntfy`, `tgram`, `mailto`...). **Add a channel** takes a name and an Apprise address, such as `ntfys://ntfy.sh/my-topic` or `tgram://bot-token/chat-id`: see the [guide](../guides/notifications.md) for the address of each service. The address is kept encrypted and never shown again, on this screen or anywhere else."
+msgstr "La liste montre le nom de chaque canal et le type de service (`ntfy`, `tgram`, `mailto`...). **Ajouter un canal** prend un nom et une adresse Apprise, comme `ntfys://ntfy.sh/mon-sujet` ou `tgram://jeton-du-bot/id-du-chat` : voir le [guide](../guides/notifications.md) pour l'adresse de chaque service. L'adresse est conservée chiffrée et n'est plus jamais affichée, ni sur cet écran ni ailleurs."
+
+msgid "Opening a channel lets you:"
+msgstr "Ouvrir un canal permet de :"
+
+msgid "rename it, or turn it off without deleting it (**Enabled**);"
+msgstr "le renommer, ou le désactiver sans le supprimer (**Activé**) ;"
+
+msgid "**Send a test message**: a real message to the service. The answer is either \"sent\" or \"could not be sent\", without the service's own message; five tests a minute;"
+msgstr "**Envoyer un message de test** : un vrai message au service. La réponse est « envoyé » ou « n'a pas pu être envoyé », sans le message du service ; cinq tests par minute ;"
+
+msgid "**Delete the channel**. To change an address, delete the channel and add another."
+msgstr "**Supprimer le canal**. Pour changer une adresse, supprimez le canal et ajoutez-en un autre."
+
+msgid "Reminders"
+msgstr "Rappels"
+
+msgid "**First reminder (days before)**: how many days before the due date the first reminder comes, from 0 (the day itself) to 30. One by default."
+msgstr "**Premier rappel (jours avant)** : combien de jours avant l'échéance vient le premier rappel, de 0 (le jour même) à 30. Un par défaut."
+
+msgid "**Time of reminders**: reminders and the daily summary go out from this time of day. 08:00 by default."
+msgstr "**Heure des rappels** : les rappels et le résumé quotidien partent à partir de cette heure. 08:00 par défaut."
+
+msgid "**Quiet hours from** and **until**: nothing is sent in between; what was due goes out at their end. They may run past midnight (22:00 to 07:00). Give both or neither."
+msgstr "**Heures calmes de** et **jusqu'à** : rien n'est envoyé entre les deux ; ce qui était dû part à leur fin. Elles peuvent passer minuit (22:00 à 07:00). Indiquez les deux ou aucune."
+
+msgid "**Daily summary**: one message a day for every task to remind, instead of one per task."
+msgstr "**Résumé quotidien** : un seul message par jour pour toutes les tâches à rappeler, au lieu d'un par tâche."
+
+msgid "**Language** of the messages, and **Time zone** of the times above (empty: the time zone of the instance)."
+msgstr "**Langue** des messages, et **Fuseau horaire** des heures ci-dessus (vide : le fuseau horaire de l'instance)."
+
+msgid "**Download my notification settings** gives your channels (name, kind of service, never the address) and these preferences as a JSON file. The same is in the [API](../api/index.md)."
+msgstr "**Télécharger mes réglages de notification** donne vos canaux (nom, type de service, jamais l'adresse) et ces préférences dans un fichier JSON. Le même contenu est dans l'[API](../api/index.md)."
+

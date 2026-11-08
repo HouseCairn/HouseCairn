@@ -19,6 +19,10 @@ email** (server, port, STARTTLS or TLS, user name, password, timeout, sender). *
 connection** checks the mail server with the settings in force and sends nothing.
 **Server** lists the variables that stay in the environment, read-only.
 
+**Notifications** turns reminders on or off for the whole instance (off by default) and sets
+how often the background worker looks for them, from 1 to 60 minutes (see
+[Notifications](../guides/notifications.md)). It shows no channel of anyone.
+
 Saving asks you to have signed in within the last five minutes; if you have not, you
 are sent to confirm your sign-in and then back here, and you make the change again.
 Every change is in the [audit log](instance.md).
