@@ -6,6 +6,11 @@
 // one comment) and writes three things: the signatures file on the
 // `cla-signatures` branch, one bot comment on the pull request, and the `CLA`
 // commit status on its head.
+//
+// On a merge queue entry (`merge_group`) it checks the queued pull request
+// again, with the signatures of that moment, and sets the `CLA` status on the
+// head of the entry, which is what the queue waits for. It writes nothing else
+// there: no signature can be recorded and no comment is posted (docs/adr/0040).
 'use strict';
 
 const crypto = require('node:crypto');
@@ -23,6 +28,8 @@ const STATUS_CONTEXT = 'CLA';
 const MARKER = '<!-- housecairn-cla -->';
 const BOT_LOGIN = 'github-actions[bot]';
 const MAX_ATTEMPTS = 5;
+// Branch of a merge queue entry: refs/heads/gh-readonly-queue/<base>/pr-<n>-<sha>.
+const QUEUE_REF = /^refs\/heads\/gh-readonly-queue\/(.+)\/pr-([1-9][0-9]*)-[0-9a-f]{40}$/;
 
 const exempt = new Set(EXEMPT.map((login) => login.toLowerCase()));
 
@@ -230,6 +237,56 @@ async function setStatus(github, repo, sha, state, description, url) {
   });
 }
 
+// Number of the pull request of a merge queue entry of `base`, or undefined.
+function queuedPullRequestNumber(headRef, base) {
+  const match = typeof headRef === 'string' ? QUEUE_REF.exec(headRef) : null;
+  if (!match || match[1] !== base) return undefined;
+  return Number(match[2]);
+}
+
+// The merge queue entry: the pull request it was built from, and the commit
+// that must carry the status. Statuses there are the only output.
+async function runMergeGroup({ github, context, core }) {
+  const repo = { owner: context.repo.owner, repo: context.repo.repo };
+  const group = context.payload.merge_group;
+  const base = context.payload.repository.default_branch;
+  const url =
+    `https://github.com/${repo.owner}/${repo.repo}/blob/${base}` +
+    '/CONTRIBUTING.md#before-your-pull-request-can-be-merged';
+  try {
+    const number = queuedPullRequestNumber(group.head_ref, base);
+    if (number === undefined) {
+      throw new Error(`${group.head_ref} is not a merge queue branch of ${base}.`);
+    }
+    const { data: pull } = await github.rest.pulls.get({ ...repo, pull_number: number });
+    if (pull.state !== 'open' || pull.base.ref !== base) {
+      throw new Error(`Pull request #${number} is not open against ${base}.`);
+    }
+    await ensureBranch(github, repo);
+    const { document } = await readSignatures(github, repo);
+    const commits = await github.paginate(github.rest.pulls.listCommits, {
+      ...repo,
+      pull_number: number,
+      per_page: 100,
+    });
+    const result = evaluate(requiredSigners(commits, pull.user), document);
+    await setStatus(github, repo, group.head_sha, result.ok ? 'success' : 'failure', describe(result), url);
+    core.info(`Merge queue entry of #${number}: ${describe(result)}`);
+    return result;
+  } catch (error) {
+    await setStatus(
+      github,
+      repo,
+      group.head_sha,
+      'failure',
+      'The CLA check could not run; see the CLA workflow log.',
+      url,
+    );
+    core.setFailed(error.message);
+    return undefined;
+  }
+}
+
 function pullRequestNumber(context) {
   if (context.eventName === 'pull_request_target') return context.payload.pull_request.number;
   if (context.eventName === 'issue_comment' && context.payload.issue && context.payload.issue.pull_request) {
@@ -239,6 +296,7 @@ function pullRequestNumber(context) {
 }
 
 async function run({ github, context, core }, options = {}) {
+  if (context.eventName === 'merge_group') return runMergeGroup({ github, context, core });
   const repo = { owner: context.repo.owner, repo: context.repo.repo };
   const number = pullRequestNumber(context);
   if (number === undefined) {
@@ -319,6 +377,7 @@ module.exports = {
   isExempt,
   isRecheck,
   isSignature,
+  queuedPullRequestNumber,
   recordSignature,
   requiredSigners,
   run,
