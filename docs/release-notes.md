@@ -59,7 +59,27 @@ with it on the project's
   [Display preferences](screens/display-preferences.md), [Room](screens/room.md) and
   [Audit log of a home](screens/audit.md).
 
+- **Seasons, display name, duration and contractors.** A task can be limited to a predefined
+  season (spring, summer, autumn, winter or the heating season) that follows the hemisphere
+  of the home, which you set on the home page, or to custom months; existing windows become
+  the matching season or a custom one. Each person can choose a display name on the new
+  [profile](screens/profile.md) screen and in the API (`/api/v1/me/`), and the person in
+  charge is shown by that name on every page, never by an address. The estimated duration
+  is a number and a unit (minutes, hours, days). A task has a single contractor field, and
+  each contractor has a [sheet](screens/contractor.md): trade from a list (plus Other),
+  phone, email address, address, note and the tasks that name them, downloadable as a
+  contact file (.vcf). Existing trades are matched to the list, otherwise kept under Other.
+  See [Tasks and recurrence](guides/tasks-and-recurrence.md).
+
 ### Fixed
+
+- **Display preferences in the API.** Changing one preference no longer fails because the
+  stored language is one the instance no longer ships: only the fields sent are checked.
+- **Hidden text in names and titles.** Tag characters that spell a regional flag stay
+  only inside the flag, joiners stay only between two visible characters, and the line and
+  paragraph separators go; a name made only of such characters is empty, not invisible.
+- **Room names in the API.** A room created or changed with an empty or invisible name takes
+  the label of its type, as on the screen, instead of an error.
 
 - **Return addresses with a control character.** A `next` address such as `//` followed by
   a line break or a tab was accepted after sign-in and sent to the browser as `//%0D`, an

@@ -22,7 +22,7 @@ from housecairn.accounts.models import User
 from housecairn.audit import models as audit_models
 from housecairn.audit import services as audit
 from housecairn.homes import files
-from housecairn.homes.models import WRITE_ROLES, Home, Invitation, Membership, Role
+from housecairn.homes.models import WRITE_ROLES, Hemisphere, Home, Invitation, Membership, Role
 from housecairn.instance.config import get_setting
 
 AnyUser = User | AnonymousUser
@@ -120,8 +120,10 @@ def _require_owner(user: AnyUser, home: Home) -> None:
 
 
 @transaction.atomic
-def create_home(owner: User, *, name: str, currency: str = "EUR") -> Home:
-    home = Home(name=name, currency=currency)
+def create_home(
+    owner: User, *, name: str, currency: str = "EUR", hemisphere: str = Hemisphere.NORTH
+) -> Home:
+    home = Home(name=name, currency=currency, hemisphere=hemisphere)
     home.full_clean()
     home.save()
     Membership.objects.create(home=home, user=owner, role=Role.OWNER)
@@ -129,17 +131,24 @@ def create_home(owner: User, *, name: str, currency: str = "EUR") -> Home:
     return home
 
 
+@transaction.atomic
 def update_home(actor: AnyUser, home: Home, **changes: Any) -> Home:
     if not can_write(actor, home):
         raise PermissionDenied
-    allowed = {"name", "currency"}
+    allowed = {"name", "currency", "hemisphere"}
     unknown = set(changes) - allowed
     if unknown:
         raise ValueError(f"Cannot change: {', '.join(sorted(unknown))}")
+    moved = "hemisphere" in changes and changes["hemisphere"] != home.hemisphere
     for field, value in changes.items():
         setattr(home, field, value)
     home.full_clean()
     home.save(update_fields=[*changes, "updated_at"])
+    if moved:
+        # The predefined seasons of the tasks follow the hemisphere (docs/adr/0045).
+        from housecairn.tasks import services as task_services  # imported late: tasks import homes
+
+        task_services.resync_seasons(home)
     return home
 
 

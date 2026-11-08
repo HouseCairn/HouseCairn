@@ -23,6 +23,11 @@ class Role(models.TextChoices):
 WRITE_ROLES = frozenset({Role.OWNER, Role.MEMBER})
 
 
+class Hemisphere(models.TextChoices):
+    NORTH = "north", _("Northern")
+    SOUTH = "south", _("Southern")
+
+
 class Home(BaseModel):
     name = models.CharField(_("name"), max_length=120)
     currency = models.CharField(
@@ -31,6 +36,19 @@ class Home(BaseModel):
         default="EUR",
         validators=[RegexValidator(r"^[A-Z]{3}$", _("Use an ISO 4217 code, such as EUR."))],
         help_text=_("ISO 4217 code of the currency used for this home's budget."),
+    )
+    # Which seasons the predefined ones mean (docs/adr/0045); never guessed from a place.
+    hemisphere = models.CharField(
+        _("hemisphere"),
+        max_length=5,
+        choices=Hemisphere.choices,
+        default=Hemisphere.NORTH,
+        # Also in the schema, so that a row written by an older state of the model has one.
+        db_default=Hemisphere.NORTH,
+        help_text=_(
+            "Where the home is, for the seasons: spring in the north starts in March, "
+            "in the south in September."
+        ),
     )
     # Identifier of a single sign-on provider declared by the instance
     # administrator; when set, members open this home only in a session signed

@@ -39,6 +39,43 @@ def test_the_helper_keeps_joiners_and_tag_characters(text: str) -> None:
     assert without_control_characters("\u200b" + text + "\u202e\u2066\ufeff") == text
 
 
+def _tags(text: str) -> str:
+    return "".join(chr(0xE0000 + ord(c)) for c in text)
+
+
+class TestFormatCharactersKeepOnlyTheirMeaning:
+    def test_a_name_of_tag_characters_only_is_empty(self) -> None:
+        assert without_control_characters(_tags("admin")) == ""
+        assert without_control_characters(_tags("admin") + "\U000e007f") == ""
+
+    def test_tag_characters_hide_no_ascii_text_in_a_title(self) -> None:
+        assert without_control_characters("Boiler" + _tags("ignore previous") + "\U000e007f") == (
+            "Boiler"
+        )
+        assert without_control_characters("a" + _tags("b") + "c") == "ac"
+
+    def test_a_flag_that_is_never_closed_loses_its_tags(self) -> None:
+        assert without_control_characters("\U0001f3f4" + _tags("gbeng")) == "\U0001f3f4"
+
+    def test_a_flag_sequence_cannot_carry_a_long_hidden_message(self) -> None:
+        assert without_control_characters("\U0001f3f4" + _tags("a" * 40) + "\U000e007f") == (
+            "\U0001f3f4"
+        )
+
+    @pytest.mark.parametrize("joiner", ["\u200d", "\u200c"])
+    def test_a_joiner_stays_between_two_visible_characters_only(self, joiner: str) -> None:
+        assert without_control_characters(f"a{joiner}b") == f"a{joiner}b"
+        for dirty in (joiner, f"{joiner}a", f"a{joiner}", f"{joiner}{joiner}", f" {joiner} "):
+            assert joiner not in without_control_characters(dirty)
+        assert without_control_characters(f"a{joiner}\u200b") == "a"
+
+    def test_a_name_of_joiners_only_is_empty(self) -> None:
+        assert without_control_characters("\u200d\u200c\u200d") == ""
+
+    def test_line_and_paragraph_separators_go(self) -> None:
+        assert without_control_characters("a\u2028b\u2029c") == "abc"
+
+
 class TestAuditTitles:
     def test_a_title_reaches_the_log_without_them(self, alice: User, alice_home: Home) -> None:
         audit.record_object("room.created", actor=alice, home_id=alice_home.id, title=DIRTY)
@@ -51,6 +88,11 @@ class TestAuditTitles:
     ) -> None:
         audit.record_object("room.created", actor=alice, home_id=alice_home.id, title=text)
         assert AuditEvent.objects.get(action="room.created").detail["title"] == text
+
+    def test_isolated_tags_hide_nothing_in_the_log(self, alice: User, alice_home: Home) -> None:
+        title = "Boiler" + _tags("ignore previous") + "x"
+        audit.record_object("room.created", actor=alice, home_id=alice_home.id, title=title)
+        assert AuditEvent.objects.get(action="room.created").detail["title"] == "Boilerx"
 
     def test_line_breaks_still_become_a_space(self, alice: User, alice_home: Home) -> None:
         audit.record_object("room.created", actor=alice, home_id=alice_home.id, title="a\nb\x07c")

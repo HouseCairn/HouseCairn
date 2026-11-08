@@ -1,10 +1,10 @@
-{% load i18n tasks_extras %}{# One open occurrence as a row, with Done in one tap when the person may write. `occurrence`, `home`, `today`, `can_write`; `request` is the page, which Done returns to. #}
+{% load i18n tasks_extras people %}{# One open occurrence as a row, with Done in one tap when the person may write. `occurrence`, `home`, `today`, `can_write`; `request` is the page, which Done returns to. #}
 <li class="task-row{% if occurrence|late_days:today %} task-row-overdue{% endif %}">
   <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
     <span class="row-body">
       <span class="row-title">{{ occurrence.task.title }}</span>
       <span class="row-text">
-        {% if occurrence.task.room %}{{ occurrence.task.room.name }}{% if occurrence.task.item %} · {{ occurrence.task.item.name }}{% endif %}{% elif occurrence.task.item %}{{ occurrence.task.item.name }}{% endif %}{% if show_person and occurrence.task.assignee %}{% if occurrence.task.room or occurrence.task.item %} · {% endif %}{% firstof occurrence.task.assignee.get_full_name occurrence.task.assignee.email %}{% endif %}
+        {% if occurrence.task.room %}{{ occurrence.task.room.name }}{% if occurrence.task.item %} · {{ occurrence.task.item.name }}{% endif %}{% elif occurrence.task.item %}{{ occurrence.task.item.name }}{% endif %}{% if show_person and occurrence.task.assignee %}{% if occurrence.task.room or occurrence.task.item %} · {% endif %}{{ occurrence.task.assignee|person }}{% endif %}
       </span>
       {% include "tasks/_due.html" %}
     </span>

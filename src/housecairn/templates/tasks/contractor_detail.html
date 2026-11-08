@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{{ contractor.name }}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'tasks:contractors' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Contractors" %}</a>
+  <h1>{{ contractor.name }}</h1>
+  <section class="card">
+    <dl class="facts">
+      {% if contractor.trade_label %}<div><dt>{% translate "Trade" %}</dt><dd>{{ contractor.trade_label }}</dd></div>{% endif %}
+      {% if contractor.phone %}<div><dt>{% translate "Phone" %}</dt><dd><a href="tel:{{ contractor.phone|urlencode }}">{{ contractor.phone }}</a></dd></div>{% endif %}
+      {% if contractor.email %}<div><dt>{% translate "Email address" %}</dt><dd><a href="mailto:{{ contractor.email|urlencode }}">{{ contractor.email }}</a></dd></div>{% endif %}
+      {% if contractor.address %}<div><dt>{% translate "Address" %}</dt><dd class="prose">{{ contractor.address|linebreaksbr }}</dd></div>{% endif %}
+      {% if contractor.note %}<div><dt>{% translate "Note" %}</dt><dd class="prose">{{ contractor.note|linebreaksbr }}</dd></div>{% endif %}
+    </dl>
+    <a class="button button-secondary button-block" href="{% url 'tasks:contractor-vcard' home_id=home.id contractor_id=contractor.id %}" download>{% translate "Download the contact (.vcf)" %}</a>
+  </section>
+  <h2>{% translate "Tasks" %}</h2>
+  {% if tasks %}
+    <ul class="card-list">
+      {% for task in tasks %}
+        <li>
+          <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=task.id %}">
+            <span class="row-body">
+              <span class="row-title">{{ task.title }}</span>
+              {% if task.room %}<span class="row-text">{{ task.room.name }}</span>{% endif %}
+            </span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "No task is linked to this contractor." %}</p>
+  {% endif %}
+  {% if can_write %}
+    <div class="button-row">
+      <a class="button" href="{% url 'tasks:contractor-edit' home_id=home.id contractor_id=contractor.id %}">{% translate "Edit" %}</a>
+      <a class="button button-danger" href="{% url 'tasks:contractor-delete' home_id=home.id contractor_id=contractor.id %}">{% translate "Delete" %}</a>
+    </div>
+  {% endif %}
+{% endblock content %}

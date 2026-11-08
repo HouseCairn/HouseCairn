@@ -16,6 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from housecairn.accounts.models import User
+from housecairn.accounts.names import person_name
 from housecairn.apitokens.models import ApiToken
 from housecairn.audit import services as audit_services
 from housecairn.audit.api import AuditEventSerializer
@@ -71,6 +72,7 @@ class HomeSerializer(serializers.ModelSerializer[Home]):
             "id",
             "name",
             "currency",
+            "hemisphere",
             "role",
             "required_provider",
             "locked",
@@ -123,6 +125,7 @@ class HomeViewSet(
                 self.request.user,
                 name=data["name"],
                 currency=data.get("currency", "EUR"),
+                hemisphere=data.get("hemisphere", "north"),
             )
         except DjangoValidationError as exc:
             raise _validation(exc) from exc
@@ -241,12 +244,18 @@ class HomeViewSet(
 
 
 class MemberUserSerializer(serializers.ModelSerializer[User]):
-    name = serializers.CharField(source="get_full_name", read_only=True)
+    name = serializers.SerializerMethodField(
+        help_text="The name shown for the person: the display name, then the full name, "
+        "then the part of the address before the @."
+    )
 
     class Meta:
         model = User
         fields = ["id", "email", "name"]
         read_only_fields = fields
+
+    def get_name(self, user: User) -> str:
+        return person_name(user)
 
 
 class MembershipSerializer(serializers.ModelSerializer[Membership]):

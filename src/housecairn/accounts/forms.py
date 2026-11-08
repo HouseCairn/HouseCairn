@@ -8,7 +8,7 @@ from django import forms
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from housecairn.accounts import antibot, services
+from housecairn.accounts import antibot, names, services
 from housecairn.homes.scoping import allow
 
 
@@ -28,6 +28,19 @@ class LoginForm(AllauthLoginForm):  # type: ignore[misc]
             # allauth links "Forgot your password?" under the field; the reset
             # mail could not be sent, so the link would lead nowhere useful.
             self.fields["password"].help_text = ""
+
+
+class ProfileForm(forms.Form):
+    """The only thing a person edits of their profile: how they are named (docs/adr/0045)."""
+
+    display_name = forms.CharField(
+        label=_("Display name"),
+        max_length=names.DISPLAY_NAME_MAX_LENGTH,
+        required=False,
+        help_text=_(
+            "How the other members of your homes see you, instead of your address. Optional."
+        ),
+    )
 
 
 class DeleteAccountForm(forms.Form):

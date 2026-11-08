@@ -128,7 +128,8 @@ class TestScreens:
         page = signed_in.get(reverse("homes:audit", kwargs={"home_id": alice_home.id}))
         content = page.content.decode()
         assert "Task added: Sweep the chimney" in content
-        assert "alice@example.com" in content
+        assert "alice" in content  # the name, as everywhere (ADR 0045)
+        assert "alice@example.com" not in content
 
     def test_the_empty_state_explains_what_will_be_found(
         self, signed_in: Client, alice_home: Home

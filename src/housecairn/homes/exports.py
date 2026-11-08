@@ -20,6 +20,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.text import slugify
 
+from housecairn.accounts.names import person_name
 from housecairn.homes import services
 from housecairn.homes.models import Home
 
@@ -56,7 +57,7 @@ def _members(home: Home) -> list[dict[str, Any]]:
         {
             "id": str(m.id),
             "email": m.user.email,
-            "name": m.user.get_full_name(),
+            "name": person_name(m.user),
             "role": m.role,
             "joined_at": m.created_at.isoformat(),
         }
@@ -99,6 +100,7 @@ def document(home: Home, files: list[ExportedFile]) -> dict[str, Any]:
             "id": str(home.id),
             "name": home.name,
             "currency": home.currency,
+            "hemisphere": home.hemisphere,
             "required_provider": home.required_provider,
             "created_at": home.created_at.isoformat(),
         },

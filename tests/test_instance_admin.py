@@ -149,6 +149,7 @@ class TestAccountsAreNotTakenOver:
                 "email": "taken@example.com",
                 "password": "pbkdf2_sha256$1$x$y",
                 "first_name": "Renamed",
+                "display_name": "Renamed",
                 "is_active": "on",
                 "date_joined_0": "2026-01-01",
                 "date_joined_1": "00:00:00",
@@ -159,6 +160,7 @@ class TestAccountsAreNotTakenOver:
         assert after.email == before.email
         assert after.password == before.password
         assert after.first_name == before.first_name
+        assert after.display_name == before.display_name
         assert not check_password("Hacked-Pass-123", after.password)
 
     def test_no_account_is_added_by_the_site(self, client: Client, admin_user: User) -> None:

@@ -19,6 +19,7 @@ from django.db.models.functions import Coalesce, TruncDate
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.accounts.names import person_name
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms.models import Item
@@ -65,7 +66,10 @@ def update_preferences(actor: AnyUser, **changes: Any) -> DisplayPreference:
     prefs, _created = DisplayPreference.objects.get_or_create(user=actor)
     for field, value in changes.items():
         setattr(prefs, field, value)
-    prefs.full_clean(exclude=["user"])
+    # Only what is sent is validated: a value stored behind the model's back (a language the
+    # instance no longer ships) must not refuse a change of something else.
+    untouched = [f.name for f in prefs._meta.fields if f.name not in changes]
+    prefs.full_clean(exclude=untouched)
     prefs.save()
     return prefs
 
@@ -99,7 +103,7 @@ def _room_name(occurrence: Occurrence) -> str:
 
 def _person(occurrence: Occurrence) -> str:
     who = occurrence.task.assignee
-    return (who.get_full_name() or who.email) if who else ""
+    return person_name(who) if who else ""
 
 
 def _grouped(rows: list[Occurrence], group: str, day: datetime.date) -> list[Section]:

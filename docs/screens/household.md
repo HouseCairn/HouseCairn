@@ -1,7 +1,8 @@
 # Household and roles
 
 The people of a home and what each may do, at `/h/<home id>/household/`. Open
-it from the page of the home. Every member sees the list; only owners invite
+it from the page of the home. People are listed by their [display name](profile.md); their
+address is on their own page. Every member sees the list; only owners invite
 people, change roles and set the sign-in rule.
 
 ## Roles

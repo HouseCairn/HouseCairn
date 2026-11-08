@@ -190,7 +190,9 @@ an instance administrator's included, is the same 404 as a channel that does not
 The Django administration site has no notification model. Through the API, an API token
 needs the `write` scope for every endpoint of notifications, reading included: a channel
 makes the server send messages, which a `read` token must not allow; an `events` token
-reaches nothing. Deleting an account deletes its channels, preferences and deliveries.
+reaches nothing. Adding, changing, deleting or testing a channel, and changing the
+preferences, are for the person signed in: a token gets a 403 there, whatever its scopes
+(ADR 0045). Deleting an account deletes its channels, preferences and deliveries.
 
 ## Consequences
 

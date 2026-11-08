@@ -1,14 +1,33 @@
 """Serializer of audit entries, shared by the home and instance endpoints."""
 
+from typing import Any
+
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
+from housecairn.accounts.names import person_name
+from housecairn.audit import services
 from housecairn.audit.models import AuditEvent
+
+
+class AuditEventListSerializer(serializers.ListSerializer[AuditEvent]):
+    """Names the people of a whole page at once, so that two of a name can be told apart."""
+
+    def to_representation(self, data: Any) -> Any:
+        items = data.all() if hasattr(data, "all") else data
+        return super().to_representation(services.name_people(items))
 
 
 class AuditEventSerializer(serializers.ModelSerializer[AuditEvent]):
     label = serializers.SerializerMethodField(  # type: ignore[assignment]
         help_text="The entry as a sentence, in the API language."
+    )
+    actor_name = serializers.SerializerMethodField(
+        help_text="The name shown for the person who acted (display name, never the address); "
+        "empty for a deleted account or the system."
+    )
+    target_name = serializers.SerializerMethodField(
+        help_text="The name shown for the person concerned; empty if there is none."
     )
     actor_email = serializers.EmailField(source="actor.email", read_only=True, default=None)
     target_email = serializers.EmailField(source="target_user.email", read_only=True, default=None)
@@ -21,11 +40,22 @@ class AuditEventSerializer(serializers.ModelSerializer[AuditEvent]):
             "scope",
             "action",
             "label",
+            "actor_name",
             "actor_email",
+            "target_name",
             "target_email",
             "detail",
         ]
         read_only_fields = fields
+        list_serializer_class = AuditEventListSerializer
+
+    @extend_schema_field(serializers.CharField())
+    def get_actor_name(self, entry: AuditEvent) -> str:
+        return getattr(entry, "actor_label", None) or person_name(entry.actor)
+
+    @extend_schema_field(serializers.CharField())
+    def get_target_name(self, entry: AuditEvent) -> str:
+        return getattr(entry, "target_label", None) or person_name(entry.target_user)
 
     @extend_schema_field(serializers.CharField())
     def get_label(self, entry: AuditEvent) -> str:

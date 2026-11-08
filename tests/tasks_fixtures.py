@@ -1,8 +1,10 @@
 """Fixtures of the tasks tests (loaded with `pytest_plugins`)."""
 
 import datetime
+from collections.abc import Iterator
 
 import pytest
+from django.utils import translation
 
 from housecairn.accounts.models import User
 from housecairn.homes.models import Home
@@ -13,6 +15,13 @@ from housecairn.tasks.models import Occurrence, Task
 pytest_plugins = ("tests.rooms_fixtures",)
 
 TODAY = datetime.date(2026, 6, 15)
+
+
+@pytest.fixture(autouse=True)
+def _english() -> Iterator[None]:
+    """Read labels in English whatever language an earlier test left active."""
+    with translation.override("en"):
+        yield
 
 
 @pytest.fixture

@@ -10,6 +10,7 @@ urlpatterns = [
     path("", views.HomeListView.as_view(), name="list"),
     path("new/", views.HomeCreateView.as_view(), name="create"),
     path("<uuid:home_id>/", views.HomeDetailView.as_view(), name="detail"),
+    path("<uuid:home_id>/edit/", views.HomeEditView.as_view(), name="edit"),
     path("<uuid:home_id>/household/", views.HouseholdView.as_view(), name="household"),
     path("<uuid:home_id>/export/", views.HomeExportView.as_view(), name="export"),
     path("<uuid:home_id>/delete/", views.HomeDeleteView.as_view(), name="delete"),
