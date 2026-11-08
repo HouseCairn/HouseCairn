@@ -10,6 +10,7 @@ from unittest import mock
 import pytest
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models
+from django.template.loader import render_to_string
 from django.test import Client
 from django.urls import reverse
 
@@ -690,6 +691,42 @@ class TestScreens:
         assert signed_in.post(undo, {"next": url("list", alice_home)}).status_code == 302
         assert state(owner_task) == before
 
+    def test_the_undo_banner_and_the_hidden_link_keep_the_filters(
+        self,
+        signed_in: Client,
+        alice: User,
+        alice_home: Home,
+        owner_task: Task,
+        owner_occurrence: Occurrence,
+        owner_room: Room,
+    ) -> None:
+        services.create_task(
+            alice,
+            alice_home,
+            title="Far off",
+            room=owner_room,
+            due_on=TODAY + 60 * DAY,
+            hide_days_before=7,
+        )
+        listing = f"{url('list', alice_home)}?room={owner_room.id}&page=1"
+        address = url(
+            "complete", alice_home, task_id=owner_task.id, occurrence_id=owner_occurrence.id
+        )
+        response = signed_in.post(address, {"next": listing})
+        page = signed_in.get(response["Location"]).content.decode()
+        undo_next = f'name="next" value="{url("list", alice_home)}?room={owner_room.id}&amp;page=1"'
+        assert undo_next in page
+        assert "undo=" not in page.split('name="next"')[1].split(">")[0]
+        assert f"?room={owner_room.id}&amp;page=1&amp;hidden=1" in page
+
+    def test_the_pages_keep_the_hidden_filter(
+        self, signed_in: Client, alice: User, alice_home: Home, owner_task: Task
+    ) -> None:
+        with mock.patch("housecairn.tasks.views.PAGE_SIZE", 1):
+            services.create_task(alice, alice_home, title="Second", due_on=TODAY + DAY)
+            page = signed_in.get(f"{url('list', alice_home)}?hidden=1").content.decode()
+        assert "&amp;hidden=1&amp;page=2" in page
+
     def test_the_return_address_must_be_on_this_site(
         self, signed_in: Client, alice_home: Home, owner_task: Task, owner_occurrence: Occurrence
     ) -> None:
@@ -1141,6 +1178,15 @@ class TestExportAndDeletion:
         assert not Occurrence.all_objects.filter(home_id=alice_home.id).exists()
         assert Task.objects.filter(id=theirs.id).exists()
         assert Occurrence.objects.filter(task=theirs).count() == 1
+
+
+class TestFieldTemplate:
+    def test_the_help_text_is_escaped(self, alice_home: Home) -> None:
+        form = TaskForm(home=alice_home)
+        form.fields["notes"].help_text = "<script>alert(1)</script> & more"
+        html = render_to_string("tasks/_field.html", {"field": form["notes"]})
+        assert "<script>" not in html
+        assert "&lt;script&gt;alert(1)&lt;/script&gt; &amp; more" in html
 
 
 class TestFrenchForm:

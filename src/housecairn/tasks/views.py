@@ -65,6 +65,14 @@ class HomeTasksMixin(HomeRoomsMixin):
         )
         return found.first() if self.can_write else None
 
+    def undo_return(self) -> str:
+        """The address of this page as it is, filters and page included, minus `?undo=`.
+
+        The banner sends it back as `next`, so that taking back a closing returns to the
+        same list and not to an unfiltered first page.
+        """
+        return _with_query(self.request.get_full_path(), ("undo",))
+
 
 def _url(name: str, **kwargs: object) -> str:
     return reverse(f"tasks:{name}", kwargs=kwargs)
@@ -80,12 +88,16 @@ def _back(request: HttpRequest, default: str) -> str:
     return default
 
 
+def _with_query(url: str, drop: tuple[str, ...], add: list[tuple[str, str]] | None = None) -> str:
+    """The address, without the query keys `drop` and with the pairs `add` at the end."""
+    parts = urlsplit(url)
+    query = [(k, v) for k, v in parse_qsl(parts.query) if k not in drop]
+    return urlunsplit(parts._replace(query=urlencode(query + (add or []))))
+
+
 def _with_undo(url: str, occurrence: Occurrence) -> str:
     """The address of the page, with `?undo=` naming the occurrence just closed."""
-    parts = urlsplit(url)
-    query = [(k, v) for k, v in parse_qsl(parts.query) if k != "undo"]
-    query.append(("undo", str(occurrence.id)))
-    return urlunsplit(parts._replace(query=urlencode(query)))
+    return _with_query(url, ("undo",), [("undo", str(occurrence.id))])
 
 
 def _errors(form: Any, exc: ValidationError) -> None:
@@ -131,7 +143,11 @@ class TaskListView(HomeTasksMixin, TemplateView):
                 room=room,
                 show_hidden=show_hidden,
                 hidden_count=hidden,
+                show_hidden_url=_with_query(
+                    self.request.get_full_path(), ("undo", "hidden"), [("hidden", "1")]
+                ),
                 undo=self.undo_banner(),
+                undo_return=self.undo_return(),
             ),
             **kwargs,
         )
@@ -230,6 +246,7 @@ class TaskDetailView(HomeTasksMixin, TemplateView):
                 today=services.today(),
                 next_dates=services.upcoming_dates(task),
                 undo=self.undo_banner(),
+                undo_return=self.undo_return(),
             ),
             **kwargs,
         )

@@ -4,7 +4,7 @@
     <span>{% if undo.status == "done" %}{% translate "Marked done." %}{% else %}{% translate "Skipped." %}{% endif %}</span>
     <form method="post" action="{% url 'tasks:undo' home_id=home.id task_id=undo.task_id occurrence_id=undo.id %}">
       {% csrf_token %}
-      <input type="hidden" name="next" value="{{ request.path }}">
+      <input type="hidden" name="next" value="{{ undo_return|default:request.path }}">
       <button type="submit" class="button-secondary button-small">{% translate "Undo" %}</button>
     </form>
   </div>

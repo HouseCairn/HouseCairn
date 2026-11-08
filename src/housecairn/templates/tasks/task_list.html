@@ -45,9 +45,9 @@
     </ul>
     {% if page.paginator.num_pages > 1 %}
       <nav class="button-row" aria-label="{% translate 'Pages' %}">
-        {% if page.has_previous %}<a class="button button-secondary button-small" href="?status={{ status }}{% if room %}&amp;room={{ room.id }}{% endif %}&amp;page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+        {% if page.has_previous %}<a class="button button-secondary button-small" href="?status={{ status }}{% if room %}&amp;room={{ room.id }}{% endif %}{% if show_hidden %}&amp;hidden=1{% endif %}&amp;page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
         <span class="small">{% blocktranslate with number=page.number total=page.paginator.num_pages %}Page {{ number }} of {{ total }}{% endblocktranslate %}</span>
-        {% if page.has_next %}<a class="button button-secondary button-small" href="?status={{ status }}{% if room %}&amp;room={{ room.id }}{% endif %}&amp;page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+        {% if page.has_next %}<a class="button button-secondary button-small" href="?status={{ status }}{% if room %}&amp;room={{ room.id }}{% endif %}{% if show_hidden %}&amp;hidden=1{% endif %}&amp;page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
       </nav>
     {% endif %}
   {% elif status == "open" %}
@@ -56,7 +56,7 @@
     <p class="empty">{% translate "Nothing done yet." %}</p>
   {% endif %}
   {% if hidden_count %}
-    <p class="small">{% blocktranslate count counter=hidden_count %}{{ counter }} task is hidden until its date gets closer.{% plural %}{{ counter }} tasks are hidden until their date gets closer.{% endblocktranslate %} <a href="?hidden=1">{% translate "Show them" %}</a></p>
+    <p class="small">{% blocktranslate count counter=hidden_count %}{{ counter }} task is hidden until its date gets closer.{% plural %}{{ counter }} tasks are hidden until their date gets closer.{% endblocktranslate %} <a href="{{ show_hidden_url }}">{% translate "Show them" %}</a></p>
   {% endif %}
   {% if can_write %}
     <a class="button button-block" href="{% url 'tasks:create' home_id=home.id %}{% if room %}?room={{ room.id }}{% endif %}">{% translate "Add a task" %}</a>
