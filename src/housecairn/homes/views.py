@@ -160,9 +160,6 @@ class HomeDeleteView(WebHomeScopedMixin, FormView[forms.DeleteHomeForm]):
     template_name = "homes/delete.html"
     form_class = forms.DeleteHomeForm
 
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
-        return super().dispatch(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         home = self.get_home()
