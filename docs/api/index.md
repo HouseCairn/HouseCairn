@@ -17,7 +17,9 @@ web interface: every request only sees the homes of its user
   scopes `read`, `write` and `events`, bound to one or more homes and expiring
   after 90 days by default
   ([ADR 0007](../adr/0007-authentication-and-api-tokens.md)). There is no
-  screen to create a token yet.
+  screen to create a token yet. An API token reads `GET /api/v1/me/` but cannot change the
+  account (`PATCH /api/v1/me/`, `POST /api/v1/account/delete/`): those are for the person
+  signed in.
 - **Rooms, items and photos** of a home: `/api/v1/homes/<home id>/rooms/`,
   `.../items/`, `.../photos/` and `.../search/?q=`, with the same rules as the
   screens ([ADR 0029](../adr/0029-rooms-items-and-room-memory.md),

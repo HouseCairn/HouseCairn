@@ -88,6 +88,12 @@ whole address except where the address is the subject (their account, an invitat
 sheet of a member). The administration site still shows the display name read only and
 cannot take an account over (ADR 0022).
 
+`GET /api/v1/me/` is open to an API token (it only names the person); `PATCH` is for the
+person signed in, as the erasure of the account is (`SignedInPerson`). The name shows in every
+home of the person, which is wider than the homes a token is tied to. Of the routes under
+`me/`, `home/` only reads. `display-preferences/` stays open to a token with the `write` scope: it sets how the person's own screens group and filter, which no other member
+sees.
+
 A display name is refused when it contains an `@` (in any width: the full-width form counts),
 which would pass for an address, or when nothing in it draws (spaces, the Hangul fillers
 U+115F, U+1160, U+3164 and U+FFA0, the blank Braille pattern U+2800, bare combining marks).
@@ -98,7 +104,10 @@ their address in brackets after it; a name that is alone shows no address.
 **Estimated duration.** A number and a unit (minutes, hours, days) on the screens, minutes
 in the data and in the API, between one minute and thirty days; the service layer checks the
 bounds for every way in. The page shows it as people say it ("45 min", "1 h 30", "2 days"),
-and the form shows a stored value back in the biggest unit that holds it exactly.
+and the form shows a stored value back in the biggest unit that holds it exactly. The bound
+is held when the duration is set or changed, not each time the task is saved: a task kept
+from before it (a duration of 0 was accepted) can be renamed or moved. The migration
+`0007_estimate_zero_unset` turns such a 0 into "no estimate"; undone, it leaves them unset.
 
 **Contractors.** A contractor belongs to one home and has a name (the only required field),
 a trade, a phone number, an email address, an address and a note. The trade is a code of a
@@ -111,7 +120,8 @@ becomes `other` with the text kept; going back writes the English label, or the 
 The task has one field for the contractor: the name is typed or picked from a `datalist` of
 the home (a browser feature, no script, which is a plain text field where it is not
 supported); a name the home already has, whatever its case, picks that contractor and a new
-one creates it when the task is saved. A reader of the home reads contractors and downloads
+one creates it when the task is saved, in the same transaction: a form that is refused
+leaves no contractor and no audit line. A reader of the home reads contractors and downloads
 the contact file; writing needs a role that writes; a contractor of another home is a 404,
 for the contact file too. Creating, changing and deleting one is recorded in the audit log
 by name (never the note or the contact details). The export and the erasure of a home cover

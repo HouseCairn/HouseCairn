@@ -140,6 +140,16 @@ msgstr ""
 "Ce compte est le seul propriétaire de %(count)s logement(s) qui ont d'autres "
 "membres : transférez d'abord la propriété ou supprimez le logement."
 
+#: accounts/services.py
+msgid "A display name cannot contain “@”: it would pass for an address."
+msgstr ""
+"Un nom d'affichage ne peut pas contenir « @ » : il passerait pour une "
+"adresse."
+
+#: accounts/services.py
+msgid "Give a name with at least one visible character."
+msgstr "Donnez un nom avec au moins un caractère visible."
+
 #: accounts/views.py
 msgid "Your account was deleted."
 msgstr "Votre compte a été supprimé."
