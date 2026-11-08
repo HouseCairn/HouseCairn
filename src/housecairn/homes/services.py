@@ -22,6 +22,7 @@ from django.utils.translation import gettext as _
 from housecairn.accounts.models import User
 from housecairn.audit import models as audit_models
 from housecairn.audit import services as audit
+from housecairn.homes import files
 from housecairn.homes.models import WRITE_ROLES, Home, Invitation, Membership, Role
 
 AnyUser = User | AnonymousUser
@@ -222,14 +223,7 @@ def erase_home(home: Home) -> None:
     ApiToken.objects.filter(pk__in=tokens, homes__isnull=True, revoked_at__isnull=True).update(
         revoked_at=timezone.now()
     )
-    transaction.on_commit(lambda: _remove_files(home_id))
-
-
-def _remove_files(home_id: UUID) -> None:
-    import shutil
-    from pathlib import Path
-
-    shutil.rmtree(Path(settings.MEDIA_ROOT) / "homes" / str(home_id), ignore_errors=True)
+    transaction.on_commit(lambda: files.erase_home_files(home_id))
 
 
 @transaction.atomic
