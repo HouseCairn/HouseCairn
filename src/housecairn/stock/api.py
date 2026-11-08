@@ -332,6 +332,12 @@ class MovementSerializer(serializers.ModelSerializer[Movement]):
         help_text="The amount added or taken; for an inventory, the quantity counted.",
     )
     occurred_on = serializers.DateField(required=False, help_text="Defaults to today.")
+    occurrence = serializers.UUIDField(
+        source="occurrence_id",
+        read_only=True,
+        allow_null=True,
+        help_text="The occurrence of a task whose closing, or taking back, wrote the line.",
+    )
 
     class Meta:
         model = Movement
@@ -343,6 +349,7 @@ class MovementSerializer(serializers.ModelSerializer[Movement]):
             "delta",
             "occurred_on",
             "note",
+            "occurrence",
             "created_at",
         ]
         read_only_fields = ["id", "delta", "created_at"]

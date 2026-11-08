@@ -1,6 +1,7 @@
 """Web views of tasks, occurrences and attachments. Rules live in `services`."""
 
 import datetime
+from collections.abc import Iterable
 from functools import cached_property
 from typing import Any, cast
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
@@ -428,9 +429,26 @@ class OccurrenceActionView(HomeTasksMixin, View):
         return redirect(_with_undo(target, banner) if banner else target)
 
 
+def short_message(short: Iterable[material_services.Shortage]) -> str:
+    """What the stock could not give when a task was marked done, one line."""
+    listed = ", ".join(
+        _("%(name)s: %(drawn)s of %(wanted)s")
+        % {
+            "name": s.article.name,
+            "drawn": stock_services.plain(s.drawn),
+            "wanted": stock_services.plain(s.wanted),
+        }
+        for s in short
+    )
+    return _("Not enough in stock, the stock is at zero: %(list)s.") % {"list": listed}
+
+
 class OccurrenceCompleteView(OccurrenceActionView):
     def act(self, occurrence: Occurrence) -> Occurrence:
-        return services.complete(self.request.user, occurrence).occurrence
+        closing = services.complete(self.request.user, occurrence)
+        if closing.short:
+            messages.warning(self.request, short_message(closing.short))
+        return closing.occurrence
 
 
 class OccurrenceSkipView(OccurrenceActionView):
@@ -478,7 +496,8 @@ class OccurrenceEditView(HomeTasksMixin, FormView[Any]):
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
-        kwargs["instance"] = self.get_occurrence()
+        occurrence = self.get_occurrence()
+        kwargs.update(instance=occurrence, draws=material_services.draws_of(occurrence))
         return kwargs
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -490,7 +509,9 @@ class OccurrenceEditView(HomeTasksMixin, FormView[Any]):
     def form_valid(self, form: forms.CompletionForm) -> HttpResponse:
         occurrence = self.get_occurrence()
         try:
-            services.update_occurrence(self.request.user, occurrence, **form.cleaned_data)
+            services.update_occurrence(
+                self.request.user, occurrence, used=form.used(), **form.completion()
+            )
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)

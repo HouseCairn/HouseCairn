@@ -187,7 +187,7 @@ class ArticleDetailView(HomeStockMixin, TemplateView):
                 quantity=quantity,
                 low=services.is_low(article, quantity),
                 suppliers=article.suppliers.all(),
-                movements=article.movements.all(),
+                movements=article.movements.select_related("occurrence__task"),
                 compatible_items=article.compatible_items.select_related("room").order_by(
                     "room__name", "name"
                 ),

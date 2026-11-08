@@ -88,6 +88,7 @@ def _movements(home: Home) -> list[dict[str, Any]]:
             "delta": str(m.delta),
             "occurred_on": m.occurred_on.isoformat(),
             "note": m.note,
+            "occurrence": str(m.occurrence_id) if m.occurrence_id else None,
             "created_at": m.created_at.isoformat(),
         }
         for m in Movement.objects.filter(home=home, article__deleted_at__isnull=True).order_by(

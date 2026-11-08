@@ -8,7 +8,7 @@ writing is checked here, by role: owners and members write, read-only reads.
 import datetime
 from collections.abc import Iterable
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
 from django.contrib.auth.models import AnonymousUser
@@ -27,6 +27,9 @@ from housecairn.homes.models import Home
 from housecairn.rooms import conf, images
 from housecairn.rooms.models import Item
 from housecairn.stock.models import Article, Movement, MovementKind, Supplier
+
+if TYPE_CHECKING:
+    from housecairn.tasks.models import Occurrence
 
 AnyUser = User | AnonymousUser
 
@@ -287,6 +290,38 @@ def delete_supplier(actor: AnyUser, supplier: Supplier) -> None:
 # ---------- movements ----------
 
 
+def _lock_stock(article: Article) -> Decimal:
+    """Lock the article row and read its stock, so that no two movements read the same one."""
+    Article.objects.select_for_update().get(pk=article.pk)
+    return quantity_of(article)
+
+
+def _append(
+    article: Article,
+    *,
+    kind: str,
+    quantity: Decimal,
+    delta: Decimal,
+    occurred_on: datetime.date | None,
+    note: str = "",
+    occurrence: "Occurrence | None" = None,
+) -> Movement:
+    movement = Movement(
+        home=article.home,
+        article=article,
+        kind=kind,
+        quantity=quantity,
+        delta=delta,
+        note=note,
+        occurrence=occurrence,
+    )
+    if occurred_on is not None:
+        movement.occurred_on = occurred_on
+    movement.full_clean()
+    movement.save()
+    return movement
+
+
 @transaction.atomic
 def record_movement(
     actor: AnyUser,
@@ -307,9 +342,7 @@ def record_movement(
         raise ValidationError({"kind": _("Choose entry, exit or inventory.")})
     if kind != MovementKind.INVENTORY and quantity <= _ZERO:
         raise ValidationError({"quantity": _("The quantity must be more than zero.")})
-    # Lock the article so that two movements at once cannot both read the same stock.
-    Article.objects.select_for_update().get(pk=article.pk)
-    current = quantity_of(article)
+    current = _lock_stock(article)
     if kind == MovementKind.ENTRY:
         delta = quantity
     elif kind == MovementKind.EXIT:
@@ -320,11 +353,62 @@ def record_movement(
         delta = -quantity
     else:
         delta = quantity - current
-    movement = Movement(
-        home=article.home, article=article, kind=kind, quantity=quantity, delta=delta, note=note
+    return _append(
+        article, kind=kind, quantity=quantity, delta=delta, occurred_on=occurred_on, note=note
     )
-    if occurred_on is not None:
-        movement.occurred_on = occurred_on
-    movement.full_clean()
-    movement.save()
-    return movement
+
+
+@transaction.atomic
+def draw_for_task(
+    actor: AnyUser,
+    article: Article,
+    wanted: Decimal,
+    *,
+    occurrence: "Occurrence",
+    occurred_on: datetime.date | None = None,
+) -> Decimal:
+    """Take up to `wanted` of the article for a task that is done; return what was taken.
+
+    The one place where an exit is not refused for lack of stock (docs/adr/0046): marking a
+    task done is never blocked, so the stock goes down to zero and the caller says how much
+    is missing. Locks the article like `record_movement`.
+    """
+    _require_write(actor, article.home)
+    if wanted <= _ZERO:
+        return _ZERO
+    available = _lock_stock(article)
+    taken = min(wanted, max(available, _ZERO))
+    if taken > _ZERO:
+        _append(
+            article,
+            kind=MovementKind.EXIT,
+            quantity=taken,
+            delta=-taken,
+            occurred_on=occurred_on,
+            occurrence=occurrence,
+        )
+    return taken
+
+
+@transaction.atomic
+def give_back_for_task(
+    actor: AnyUser,
+    article: Article,
+    quantity: Decimal,
+    *,
+    occurrence: "Occurrence",
+    occurred_on: datetime.date | None = None,
+) -> None:
+    """Put back what a task took (it was undone, or less was used): an entry, never an erasure."""
+    _require_write(actor, article.home)
+    if quantity <= _ZERO:
+        return
+    _lock_stock(article)
+    _append(
+        article,
+        kind=MovementKind.ENTRY,
+        quantity=quantity,
+        delta=quantity,
+        occurred_on=occurred_on,
+        occurrence=occurrence,
+    )

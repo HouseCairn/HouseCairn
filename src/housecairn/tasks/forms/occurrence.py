@@ -1,8 +1,12 @@
 """Forms of an occurrence: completion, postponement, attachments."""
 
+from collections.abc import Iterable
+from decimal import Decimal
 from typing import Any
+from uuid import UUID
 
 from django import forms
+from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
 from housecairn.tasks import files
@@ -11,9 +15,7 @@ from housecairn.tasks.forms.fields import (
     MultipleFileField,
     MultipleFileInput,
 )
-from housecairn.tasks.models import (
-    Occurrence,
-)
+from housecairn.tasks.models import MaterialDraw, Occurrence
 
 
 class CompletionForm(forms.ModelForm[Occurrence]):
@@ -27,6 +29,44 @@ class CompletionForm(forms.ModelForm[Occurrence]):
             "completion_note": forms.Textarea(attrs={"rows": 3}),
         }
         labels = {"completion_note": _("Note")}
+
+    USED_PREFIX = "used_"
+
+    def __init__(self, *args: Any, draws: Iterable[MaterialDraw] = (), **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        # One field per stock item the closing took: the quantity really used.
+        for draw in draws:
+            name = f"{self.USED_PREFIX}{draw.article_id}"
+            label = gettext("Used: %(name)s") % {"name": draw.article.name}
+            if draw.article.unit_label:
+                label = f"{label} ({draw.article.unit_label})"
+            self.fields[name] = forms.DecimalField(
+                label=label,
+                min_value=Decimal("0"),
+                max_digits=10,
+                decimal_places=2,
+                initial=draw.wanted,
+                required=False,
+                help_text=gettext("Taken from the stock when the task was marked done.")
+                if not self.used_fields()
+                else "",
+            )
+
+    def used_fields(self) -> list[str]:
+        return [name for name in self.fields if name.startswith(self.USED_PREFIX)]
+
+    def used(self) -> dict[UUID, Decimal]:
+        """The quantities entered for the stock items, by article; an empty field is left alone."""
+        found = {}
+        for name in self.used_fields():
+            value = self.cleaned_data.get(name)
+            if value is not None:
+                found[UUID(name.removeprefix(self.USED_PREFIX))] = value
+        return found
+
+    def completion(self) -> dict[str, Any]:
+        """The details of the occurrence itself, without the stock items."""
+        return {k: v for k, v in self.cleaned_data.items() if k not in self.used_fields()}
 
 
 class PostponeForm(forms.Form):

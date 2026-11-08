@@ -116,6 +116,15 @@ class Movement(HomeOwnedModel):
     delta = quantity_field(_("change"), editable=False)
     occurred_on = models.DateField(_("date"), default=timezone.localdate)
     note = models.CharField(_("note"), max_length=200, blank=True)
+    # The occurrence of a task whose closing (or taking back) wrote this line (docs/adr/0046).
+    occurrence = models.ForeignKey(
+        "tasks.Occurrence",
+        null=True,
+        blank=True,
+        editable=False,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
 
     class Meta:
         verbose_name = _("movement")

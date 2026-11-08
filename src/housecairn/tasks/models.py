@@ -370,6 +370,45 @@ class Occurrence(HomeOwnedModel):
         return self.is_open and self.due_on is not None and self.due_on < today
 
 
+class MaterialDraw(HomeOwnedModel):
+    """What a closed occurrence took from the stock for one article (docs/adr/0046).
+
+    `wanted` is the quantity the occurrence is held to have used (the plan when it was marked
+    done, then what was entered when completing it); `drawn` is what the stock could give
+    (never more than it held). The ledger lines themselves are in `stock.Movement`, which
+    point back to the occurrence. Taking the closing back ends the draw.
+    """
+
+    occurrence = models.ForeignKey(Occurrence, on_delete=models.CASCADE, related_name="draws")
+    article = models.ForeignKey("stock.Article", on_delete=models.CASCADE, related_name="+")
+    wanted = models.DecimalField(_("quantity used"), max_digits=10, decimal_places=2)
+    drawn = models.DecimalField(_("quantity taken from the stock"), max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = _("stock draw")
+        verbose_name_plural = _("stock draws")
+        ordering = ["created_at", "id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["occurrence", "article"],
+                condition=models.Q(deleted_at__isnull=True),
+                name="one_draw_per_article_and_occurrence",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(wanted__gte=0, drawn__gte=0, drawn__lte=models.F("wanted")),
+                name="draw_between_zero_and_wanted",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.article_id} {self.drawn}/{self.wanted}"
+
+    @property
+    def missing(self) -> Decimal:
+        """What the stock could not give."""
+        return self.wanted - self.drawn
+
+
 class TodayGroup(models.TextChoices):
     URGENCY = "urgency", _("Urgency")
     ROOM = "room", _("Room")

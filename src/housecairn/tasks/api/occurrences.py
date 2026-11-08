@@ -1,5 +1,7 @@
 """API v1 of occurrences (docs/adr/0004, 0031, 0033)."""
 
+from collections.abc import Iterable
+from decimal import Decimal
 from typing import Any
 
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -9,6 +11,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
     OpenApiParameter,
     extend_schema,
+    extend_schema_field,
 )
 from rest_framework import exceptions, mixins, serializers, viewsets
 from rest_framework.decorators import action
@@ -22,11 +25,12 @@ from housecairn.rooms.api import (
     _uuid_param,
     _validation,
 )
-from housecairn.tasks import agenda, services
+from housecairn.tasks import agenda, materials, services
 from housecairn.tasks.api.common import _FAR, DATE_PARAMS, _date_param
 from housecairn.tasks.models import (
     CLOSED_STATUSES,
     OPEN_STATUSES,
+    MaterialDraw,
     Occurrence,
     Status,
 )
@@ -44,6 +48,48 @@ class OccurrencePagination(DefaultCursorPagination):
         return tuple(super().get_ordering(request, queryset, view))
 
 
+class DrawSerializer(serializers.Serializer[Any]):
+    """What an occurrence took from the stock for one stock item (docs/adr/0046)."""
+
+    article = serializers.UUIDField()
+    article_name = serializers.CharField()
+    unit = serializers.CharField()
+    wanted = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text="The quantity the occurrence is held to have used.",
+    )
+    drawn = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text="What the stock could give: never more than it held.",
+    )
+    missing = serializers.DecimalField(
+        max_digits=10, decimal_places=2, help_text="`wanted` minus `drawn`: what the stock lacked."
+    )
+
+
+class UsedSerializer(serializers.Serializer[Any]):
+    article = serializers.UUIDField(help_text="A stock item the occurrence took.")
+    quantity = serializers.DecimalField(
+        max_digits=10, decimal_places=2, min_value=Decimal("0"), help_text="Really used."
+    )
+
+
+def _draw_rows(draws: Iterable[MaterialDraw | materials.Shortage]) -> list[dict[str, Any]]:
+    return [
+        {
+            "article": d.article.id,
+            "article_name": d.article.name,
+            "unit": d.article.unit_label,
+            "wanted": d.wanted,
+            "drawn": d.drawn,
+            "missing": d.missing,
+        }
+        for d in draws
+    ]
+
+
 class OccurrenceSerializer(serializers.ModelSerializer[Occurrence]):
     task_title = serializers.CharField(source="task.title", read_only=True)
     room = serializers.UUIDField(source="task.room_id", read_only=True, allow_null=True)
@@ -56,6 +102,16 @@ class OccurrenceSerializer(serializers.ModelSerializer[Occurrence]):
         help_text="The name shown for the assignee of the task."
     )
     is_overdue = serializers.SerializerMethodField()
+    stock = serializers.SerializerMethodField(
+        help_text="What a done occurrence took from the stock, per stock item."
+    )
+    used = UsedSerializer(
+        many=True,
+        write_only=True,
+        required=False,
+        help_text="With `PATCH`: the quantity really used of the stock items taken; the stock "
+        "follows by entries or exits.",
+    )
 
     class Meta:
         model = Occurrence
@@ -76,6 +132,8 @@ class OccurrenceSerializer(serializers.ModelSerializer[Occurrence]):
             "actual_cost",
             "completion_note",
             "is_overdue",
+            "stock",
+            "used",
             "created_at",
             "updated_at",
         ]
@@ -98,6 +156,14 @@ class OccurrenceSerializer(serializers.ModelSerializer[Occurrence]):
 
     def get_is_overdue(self, occurrence: Occurrence) -> bool:
         return occurrence.is_overdue(services.today())
+
+    @extend_schema_field(DrawSerializer(many=True))
+    def get_stock(self, occurrence: Occurrence) -> list[dict[str, Any]]:
+        if occurrence.status != Status.DONE:
+            return []
+        prefetched = getattr(occurrence, "draw_lines", None)
+        rows = _draw_rows(prefetched if prefetched is not None else materials.draws_of(occurrence))
+        return list(DrawSerializer(rows, many=True).data)
 
 
 class CompleteSerializer(serializers.Serializer[Any]):
@@ -123,6 +189,11 @@ class CostSerializer(serializers.Serializer[Any]):
 class ClosingSerializer(serializers.Serializer[Any]):
     occurrence = OccurrenceSerializer()
     next = OccurrenceSerializer(allow_null=True, help_text="The occurrence created; null if none.")
+    short = DrawSerializer(
+        many=True,
+        help_text="The stock items the stock could not give in full: the closing went through, "
+        "the stock is at zero for them (docs/adr/0046).",
+    )
 
 
 class OccurrenceViewSet(
@@ -147,9 +218,21 @@ class OccurrenceViewSet(
     http_method_names = ["get", "post", "patch", "head", "options"]
 
     def get_queryset(self) -> models.QuerySet[Occurrence]:
-        rows = services.occurrences_of(self.get_home()).annotate(
-            sort_due=Coalesce("due_on", models.Value(_FAR)),
-            closed_on=Coalesce("completed_on", TruncDate("updated_at")),
+        rows = (
+            services.occurrences_of(self.get_home())
+            .annotate(
+                sort_due=Coalesce("due_on", models.Value(_FAR)),
+                closed_on=Coalesce("completed_on", TruncDate("updated_at")),
+            )
+            .prefetch_related(
+                models.Prefetch(
+                    "draws",
+                    queryset=MaterialDraw.objects.filter(
+                        article__deleted_at__isnull=True
+                    ).select_related("article"),
+                    to_attr="draw_lines",
+                )
+            )
         )
         params = self.request.query_params
         for name, field in (
@@ -257,10 +340,18 @@ class OccurrenceViewSet(
         occurrence = self.get_object()
         serializer = self.get_serializer(occurrence, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
+        data = dict(serializer.validated_data)
+        used = data.pop("used", None)
         try:
-            services.update_occurrence(request.user, occurrence, **serializer.validated_data)
+            services.update_occurrence(
+                request.user,
+                occurrence,
+                used=None if used is None else {u["article"]: u["quantity"] for u in used},
+                **data,
+            )
         except DjangoValidationError as exc:
             raise _validation(exc) from exc
+        occurrence.draw_lines = list(materials.draws_of(occurrence))  # type: ignore[attr-defined]
         return Response(self.get_serializer(occurrence).data)
 
     def _closing(self, request: Request, closing: services.Closing) -> Response:
@@ -271,6 +362,7 @@ class OccurrenceViewSet(
                 "next": OccurrenceSerializer(closing.next, context=context).data
                 if closing.next
                 else None,
+                "short": DrawSerializer(_draw_rows(closing.short), many=True).data,
             }
         )
 
