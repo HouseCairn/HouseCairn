@@ -1,30 +1,50 @@
 # The pull request title becomes the squash commit message on `main`: it must
 # follow Conventional Commits (docs/adr/0014). Runs on `pull_request` with a
 # read-only token; the title only reaches the script through the environment.
+#
+# On a merge queue entry the title is read again from the API, as it is at that
+# moment: a title edited after the pull request was queued is still checked
+# before it reaches `main` (scripts/merge_queue.py, docs/adr/0040).
 name: Pull request title
 
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
+  merge_group:
+    types: [checks_requested]
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  # A merge queue entry has no pull request number: its own branch is its group.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   pr-title:
     name: Conventional Commits title
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    permissions:
+      contents: read # check out the repository
+      pull-requests: read # merge queue: read the queued pull request
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Check the title
+        if: github.event_name == 'pull_request'
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: python3 scripts/check_pr_title.py
+      - name: Check the title of the queued pull request
+        if: github.event_name == 'merge_group'
+        env:
+          MERGE_GROUP_HEAD_REF: ${{ github.event.merge_group.head_ref }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/merge_queue.py >"$RUNNER_TEMP/pull.json"
+          echo "Queued pull request #$(jq -r .number "$RUNNER_TEMP/pull.json")"
+          PR_TITLE=$(jq -r .title "$RUNNER_TEMP/pull.json") python3 scripts/check_pr_title.py

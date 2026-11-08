@@ -1,4 +1,5 @@
-# Static analysis of the GitHub Actions workflows with zizmor (docs/adr/0014).
+# Static analysis of the GitHub Actions workflows with zizmor (docs/adr/0014),
+# also on every merge queue entry (docs/adr/0040).
 # The "zizmor" job is the blocking check: it fails on any finding of medium
 # severity or more. The "zizmor (code scanning)" job publishes every finding to
 # the Security tab, which needs a write permission the blocking job does not get.
@@ -6,6 +7,8 @@ name: zizmor
 
 on:
   pull_request:
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
 
