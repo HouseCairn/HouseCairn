@@ -37,8 +37,10 @@ answer says when it was cut.
 - **Done and Undo** are the existing buttons of `tasks` (ADR 0033), posted from the calendar
   with a `next` address; the page that comes back shows the undo banner. A reader sees the
   tasks and no button (and a POST is still a 403 in the service).
-- **The person of a task** is shown by their name; a person with no name is "A member". An email
-  address is never shown (rule of the maintainer).
+- **The person of a task** is named by the helper of ADR 0045 (`accounts.names.person_name`:
+  the display name, then the full name, then the part of the address before the "@"), and two
+  people of the same name in the filter are told apart by `labels`. The whole email address is
+  never shown. The feed carries no person at all.
 
 **The feed.**
 

@@ -5,8 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 22:31+0000\n"
-"POT-Creation-Date: 2026-11-08 21:17+0000\n"
+"POT-Creation-Date: 2026-11-08 23:22+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -535,10 +534,6 @@ msgstr "flux de calendrier"
 #: calendar/models.py
 msgid "calendar feeds"
 msgstr "flux de calendrier"
-
-#: calendar/services.py
-msgid "A member"
-msgstr "Un membre"
 
 #: calendar/views.py
 msgid "Week"
@@ -2757,7 +2752,7 @@ msgstr "mois"
 msgid "years"
 msgstr "ans"
 
-#: tasks/models.py templates/calendar/calendar.html
+#: tasks/models.py
 msgid "Spring"
 msgstr "Printemps"
 
@@ -2781,7 +2776,7 @@ msgstr "Saison de chauffe"
 msgid "Custom months"
 msgstr "Mois personnalisés"
 
-#: tasks/models.py
+#: tasks/models.py templates/calendar/calendar.html
 msgid "Planned"
 msgstr "Prévue"
 

@@ -171,6 +171,19 @@ class TestRange:
         alice.save()
         (entry,) = services.entries(alice, [alice_home], TODAY, TODAY).entries
         assert entry.person == "Alex Martin"
+        alice.display_name = "Lex"
+        alice.save()
+        (entry,) = services.entries(alice, [alice_home], TODAY, TODAY).entries
+        assert entry.person == "Lex"
+
+    def test_two_people_of_the_same_name_are_told_apart_in_the_filter(
+        self, alice: User, alice_home: Home, member: User
+    ) -> None:
+        alice.display_name = member.display_name = "Sam"
+        alice.save()
+        member.save()
+        names = [name for _id, name in services.people_of([alice_home])]
+        assert sorted(names) == sorted([f"Sam ({alice.email})", f"Sam ({member.email})"])
 
 
 class TestFeedSecret:

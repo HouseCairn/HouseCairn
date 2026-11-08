@@ -17,9 +17,9 @@ from uuid import UUID
 from django.db import models
 from django.db.models.functions import Coalesce
 from django.utils import timezone
-from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.accounts.names import labels, person_name
 from housecairn.calendar.models import Feed  # noqa: F401 - the app's models are loaded
 from housecairn.core.text import without_control_characters
 from housecairn.homes.models import WRITE_ROLES, Home, Membership
@@ -79,13 +79,6 @@ class Filters:
     room: UUID | None = None
     person: UUID | str | None = None  # an identifier, or NOBODY
     priority: str = ""
-
-
-def person_name(user: User | None) -> str:
-    """The name a person goes by; never their email address."""
-    if user is None:
-        return ""
-    return user.get_full_name().strip() or _("A member")
 
 
 def clean_title(title: str) -> str:
@@ -237,10 +230,11 @@ def filters_from(params: Any, *, strict: bool = False) -> Filters:
 
 def people_of(homes: Sequence[Home]) -> list[tuple[Any, str]]:
     """The members of `homes` as (identifier, name), by name: the choices of the person filter."""
-    seen: dict[Any, str] = {}
-    for membership in Membership.objects.filter(home__in=homes).select_related("user"):
-        seen.setdefault(membership.user_id, person_name(membership.user))
-    return sorted(seen.items(), key=lambda pair: pair[1].casefold())
+    users = {
+        membership.user_id: membership.user
+        for membership in Membership.objects.filter(home__in=homes).select_related("user")
+    }
+    return sorted(labels(users.values()).items(), key=lambda pair: pair[1].casefold())
 
 
 def counts_of(items: Iterable[Entry]) -> dict[str, int]:
