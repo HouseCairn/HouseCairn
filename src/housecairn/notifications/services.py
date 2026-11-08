@@ -43,6 +43,10 @@ REFUSALS = {
     ),
     "address": gettext_lazy("The instance does not send to this address."),
 }
+ADDRESS_FIXED = gettext_lazy(
+    "The address of a channel cannot change: delete the channel and add another."
+)
+FIELD_FIXED = gettext_lazy("This field cannot be changed.")
 ADDED = gettext_lazy("Channel added. Send a test to check it.")
 SAVED = gettext_lazy("Saved.")
 DELETED = gettext_lazy("Channel deleted.")
@@ -175,6 +179,7 @@ def update_preferences(actor: AnyUser, **changes: Any) -> Preference:
     if unknown:
         raise ValueError(f"Cannot change: {', '.join(sorted(unknown))}")
     prefs = preferences_of(user)
+    before = (prefs.pk is not None and prefs.digest, prefs.send_at, prefs.time_zone)
     for field, value in changes.items():
         setattr(prefs, field, value)
     errors: dict[str, list[str]] = {}
@@ -186,6 +191,10 @@ def update_preferences(actor: AnyUser, **changes: Any) -> Preference:
         raise ValidationError(errors)
     prefs.full_clean(exclude=["user"])
     prefs.save()
+    if prefs.digest and before != (True, prefs.send_at, prefs.time_zone):
+        from housecairn.notifications import reminders  # it imports this module
+
+        reminders.skip_pending_digest(user, prefs)
     return prefs
 
 

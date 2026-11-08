@@ -203,6 +203,55 @@ class TestQuietHoursAndSummary:
         assert reminders.dispatch(at(next_day, 17)) == 0
         assert reminders.dispatch(at(next_day, 18)) == 1
 
+    @pytest.mark.parametrize("change", ["turn on", "move the time"])
+    def test_a_summary_set_before_its_time_goes_out_once_that_day(
+        self,
+        alice: User,
+        make_task: Callable[..., Occurrence],
+        due: datetime.date,
+        outbox: Any,
+        monkeypatch: pytest.MonkeyPatch,
+        change: str,
+    ) -> None:
+        """Set at 03:00 for 08:00, a task already due for a reminder: not the summary of the
+        day before at once and again at 08:00, but one summary at 08:00."""
+        reachable(alice, days_before=1, digest=change != "turn on", send_at=datetime.time(2, 0))
+        make_task()
+        monkeypatch.setattr(reminders.timezone, "now", lambda: at(due, 3))
+        if change == "turn on":
+            services.update_preferences(alice, digest=True, send_at=datetime.time(8, 0))
+        else:
+            services.update_preferences(alice, send_at=datetime.time(8, 0))
+        assert reminders.dispatch(at(due, 3)) == 0
+        assert reminders.dispatch(at(due, 7, 59)) == 0
+        assert reminders.dispatch(at(due, 8, 5)) == 1
+        assert reminders.dispatch(at(due, 20)) == 0
+        assert len(outbox) == 1
+
+    def test_saving_the_same_summary_settings_skips_nothing(
+        self,
+        alice: User,
+        make_task: Callable[..., Occurrence],
+        due: datetime.date,
+        outbox: Any,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """A summary delayed past midnight by quiet hours is still sent after a save."""
+        reachable(
+            alice,
+            days_before=1,
+            digest=True,
+            send_at=datetime.time(23, 0),
+            quiet_start=datetime.time(22, 0),
+            quiet_end=datetime.time(7, 0),
+        )
+        make_task()
+        before = due - datetime.timedelta(days=1)
+        assert reminders.dispatch(at(before, 23, 30)) == 0  # quiet
+        monkeypatch.setattr(reminders.timezone, "now", lambda: at(due, 3))
+        services.update_preferences(alice, days_before=1, digest=True)
+        assert reminders.dispatch(at(due, 7)) == 1  # the summary of the day before
+
     def test_quiet_hours_delay_the_summary(
         self, alice: User, make_task: Callable[..., Occurrence], due: datetime.date, outbox: Any
     ) -> None:

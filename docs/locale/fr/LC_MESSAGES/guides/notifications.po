@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 17:56+0000\n"
+"POT-Creation-Date: 2026-11-08 18:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -61,14 +61,14 @@ msgstr "`gotifys://gotify.example.com/jeton-de-l-application`"
 msgid "Telegram"
 msgstr "Telegram"
 
-msgid "`tgram://bot-token/chat-id`"
-msgstr "`tgram://jeton-du-bot/id-du-chat`"
+msgid "`tgram://123456789:bot-token/111222333`"
+msgstr "`tgram://123456789:jeton-du-bot/111222333`"
 
 msgid "Signal (signal-cli REST API)"
 msgstr "Signal (API REST de signal-cli)"
 
-msgid "`signals://signal.example.com/from-number/to-number`"
-msgstr "`signals://signal.example.com/numero-emetteur/numero-destinataire`"
+msgid "`signals://signal.example.com/+15555550100/+15555550101`"
+msgstr "`signals://signal.example.com/+15555550100/+15555550101`"
 
 msgid "Matrix"
 msgstr "Matrix"
@@ -81,6 +81,9 @@ msgstr "E-mail"
 
 msgid "`mailtos://user:password@mail.example.com?to=me@example.com`"
 msgstr "`mailtos://utilisateur:mot-de-passe@mail.example.com?to=moi@example.com`"
+
+msgid "For Telegram, put the token that BotFather gave the bot (digits, a colon, then letters) and the number of the chat; for Signal, the number registered with signal-cli, then the number to send to, both in international format."
+msgstr "Pour Telegram, mettez le jeton que BotFather a donné au bot (des chiffres, deux-points, puis des lettres) et le numéro du chat ; pour Signal, le numéro enregistré auprès de signal-cli, puis le numéro destinataire, tous deux au format international."
 
 msgid "The Apprise documentation lists the options of each service. Then open the channel and **Send a test message**. If it does not arrive, check the address: the screen does not repeat the service's error, since it may carry your secrets. HouseCairn waits at most eight seconds per channel, for a test as for a reminder: a service slower than that counts as not reached."
 msgstr "La documentation d'Apprise donne les options de chaque service. Ouvrez ensuite le canal et **Envoyer un message de test**. S'il n'arrive pas, vérifiez l'adresse : l'écran ne répète pas l'erreur du service, qui peut contenir vos secrets. HouseCairn attend au plus huit secondes par canal, pour un test comme pour un rappel : un service plus lent compte comme non joint."
@@ -103,9 +106,12 @@ msgstr "Puis une relance vient chaque jour pour une priorité haute, tous les tr
 msgid "**Quiet hours**: nothing is sent between the two times; what was due goes out at their end."
 msgstr "**Heures calmes** : rien n'est envoyé entre les deux heures ; ce qui était dû part à leur fin."
 
-msgid "**Daily summary**: one message a day with every task to remind, instead of one each."
-msgstr "**Résumé quotidien** : un seul message par jour avec toutes les tâches à rappeler, au lieu d'un par tâche."
+msgid "**Daily summary**: one message a day with every task to remind, instead of one each. Turned on before the time of reminders, the first one comes at that time."
+msgstr "**Résumé quotidien** : un seul message par jour avec toutes les tâches à rappeler, au lieu d'un par tâche. Activé avant l'heure des rappels, le premier arrive à cette heure-là."
 
 msgid "Each reminder is sent once, even if the worker runs twice at the same time. When a service fails, the reminder is not sent again; the next follow-up is."
 msgstr "Chaque rappel n'est envoyé qu'une fois, même si la tâche de fond tourne deux fois en même temps. Quand un service échoue, le rappel n'est pas renvoyé ; la relance suivante l'est."
+
+#~ msgid "`signals://signal.example.com/from-number/to-number`"
+#~ msgstr "`signals://signal.example.com/numero-emetteur/numero-destinataire`"
 

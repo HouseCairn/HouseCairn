@@ -23,10 +23,14 @@ and its Apprise address. Some examples, with `example.com` standing for your ser
 | --- | --- |
 | ntfy | `ntfys://ntfy.example.com/my-topic` |
 | Gotify | `gotifys://gotify.example.com/app-token` |
-| Telegram | `tgram://bot-token/chat-id` |
-| Signal (signal-cli REST API) | `signals://signal.example.com/from-number/to-number` |
+| Telegram | `tgram://123456789:bot-token/111222333` |
+| Signal (signal-cli REST API) | `signals://signal.example.com/+15555550100/+15555550101` |
 | Matrix | `matrixs://user:password@matrix.example.com/#room:example.com` |
 | Email | `mailtos://user:password@mail.example.com?to=me@example.com` |
+
+For Telegram, put the token that BotFather gave the bot (digits, a colon, then letters)
+and the number of the chat; for Signal, the number registered with signal-cli, then the
+number to send to, both in international format.
 
 The Apprise documentation lists the options of each service. Then open the channel and
 **Send a test message**. If it does not arrive, check the address: the screen does not
@@ -57,6 +61,7 @@ and has a channel on. A reader of the home receives nothing.
 - **Quiet hours**: nothing is sent between the two times; what was due goes out at their
   end.
 - **Daily summary**: one message a day with every task to remind, instead of one each.
+  Turned on before the time of reminders, the first one comes at that time.
 
 Each reminder is sent once, even if the worker runs twice at the same time. When a service
 fails, the reminder is not sent again; the next follow-up is.

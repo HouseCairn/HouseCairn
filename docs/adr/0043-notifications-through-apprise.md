@@ -26,7 +26,8 @@ this record needs (a total timeout per call, `retry` and `wait` on each plugin).
 **The address is a secret.** It is encrypted with `instance.crypto`, the key derived from
 `SECRET_KEY` (ADR 0035), and decrypted only in `notifications.outbound`, at the moment of
 sending. It is write-only: the form field is a password field that is never rendered back,
-the API field is `write_only`, and the address cannot be changed (delete and add again).
+the API field is `write_only`, and the address cannot be changed (delete and add again; a
+`PATCH` that sends it is a 400, not a 200 that ignores it).
 What is shown of a channel is its name, its scheme and the name of the service, never a
 host: the host of a Telegram URL is part of its bot token. The export lists channels
 without their address. The audit log records nothing about channels. Apprise and urllib3
@@ -129,7 +130,10 @@ normal one and every week for a low one, while the occurrence is open. Done and 
 close it, so the reminders stop. Postponing moves the due date: the reminders start again
 from the new date. During the quiet hours of a person, which may run past midnight,
 nothing is sent; what was due is sent at the first run after them. With the daily summary
-on, one message a day groups every task to remind, from `send_at`.
+on, one message a day groups every task to remind, from `send_at`. The summary of a day is
+due from `send_at` that day until `send_at` the next, so that quiet hours delay it without
+skipping it; turning it on, or moving its time or time zone, before `send_at` marks the
+summary of the day before as done, so the first one goes out at `send_at`, once.
 
 **Once only.** Each message has a key: the occurrence, its due date and the number of the
 follow-up, or the day of a summary. It is claimed by inserting a `Delivery` row before

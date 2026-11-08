@@ -66,6 +66,25 @@ def first_reminder(due_on: datetime.date, prefs: Preference) -> datetime.datetim
     return datetime.datetime.combine(day, prefs.send_at, tzinfo=zone_of(prefs))
 
 
+def digest_day(prefs: Preference, local: datetime.datetime) -> datetime.date:
+    """The day whose summary is due at `local`: the summary of a day is due from `send_at`
+    that day until `send_at` the next, so quiet hours delay it, they never skip it."""
+    shift = datetime.timedelta(hours=prefs.send_at.hour, minutes=prefs.send_at.minute)
+    return (local.replace(tzinfo=None) - shift).date()
+
+
+def skip_pending_digest(
+    user: User, prefs: Preference, now: datetime.datetime | None = None
+) -> None:
+    """When the summary is turned on, or its time or time zone changes, before `send_at`:
+    the summary still due is that of the day before, which the person never asked for. It
+    is marked as claimed, so the first summary goes out at `send_at`, once."""
+    local = (now or timezone.now()).astimezone(zone_of(prefs))
+    day = digest_day(prefs, local)
+    if day < local.date():
+        Delivery.objects.get_or_create(user=user, kind=Kind.DIGEST, key=day.isoformat())
+
+
 def _link(occurrence: Occurrence) -> str:
     site = str(get_setting("site_url") or "").rstrip("/")
     if not site:
@@ -212,10 +231,7 @@ def dispatch(now: datetime.datetime | None = None) -> int:
         local = now.astimezone(zone_of(pref))
         if is_quiet(pref, local):
             continue
-        # The summary of a day is due from `send_at` that day until `send_at` the next:
-        # quiet hours delay it, they never skip it.
-        shift = datetime.timedelta(hours=pref.send_at.hour, minutes=pref.send_at.minute)
-        day = (local.replace(tzinfo=None) - shift).date()
+        day = digest_day(pref, local)
         message = digest_message(found, pref)
         claimed += _deliver(
             users[user_id], Kind.DIGEST, day.isoformat(), message, channels[user_id]

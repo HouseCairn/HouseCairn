@@ -13,7 +13,7 @@ class ChannelForm(forms.Form):
         label=_("Apprise address"),
         max_length=2000,
         widget=forms.PasswordInput(render_value=False, attrs={"autocomplete": "off"}),
-        help_text=_("Such as ntfys://ntfy.sh/my-topic or tgram://bot-token/chat-id."),
+        help_text=_("Such as ntfys://ntfy.sh/my-topic or tgram://123456789:bot-token/111222333."),
     )
 
 

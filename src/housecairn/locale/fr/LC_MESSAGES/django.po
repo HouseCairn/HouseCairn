@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 17:49+0000\n"
+"POT-Creation-Date: 2026-11-08 18:09+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -1479,9 +1479,11 @@ msgid "Apprise address"
 msgstr "Adresse Apprise"
 
 #: notifications/forms.py
-msgid "Such as ntfys://ntfy.sh/my-topic or tgram://bot-token/chat-id."
+msgid ""
+"Such as ntfys://ntfy.sh/my-topic or tgram://123456789:bot-token/111222333."
 msgstr ""
-"Par exemple ntfys://ntfy.sh/mon-sujet ou tgram://jeton-du-bot/id-du-chat."
+"Par exemple ntfys://ntfy.sh/mon-sujet ou tgram://123456789:jeton-du-"
+"bot/111222333."
 
 #: notifications/models.py
 msgid "notification channel"
@@ -1606,6 +1608,17 @@ msgstr ""
 #: notifications/services.py
 msgid "The instance does not send to this address."
 msgstr "L'instance n'envoie pas à cette adresse."
+
+#: notifications/services.py
+msgid ""
+"The address of a channel cannot change: delete the channel and add another."
+msgstr ""
+"L'adresse d'un canal ne peut pas changer : supprimez le canal et ajoutez-en "
+"un autre."
+
+#: notifications/services.py
+msgid "This field cannot be changed."
+msgstr "Ce champ ne peut pas être modifié."
 
 #: notifications/services.py
 msgid "Channel added. Send a test to check it."

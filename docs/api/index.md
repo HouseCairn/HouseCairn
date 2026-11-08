@@ -64,9 +64,10 @@ web interface: every request only sees the homes of its user
 - **Notifications** of the caller
   ([ADR 0043](../adr/0043-notifications-through-apprise.md)):
   `/api/v1/me/notification-channels/` lists, adds (`name` and `url`, an Apprise address),
-  renames or turns off (`PATCH` of `name`, `enabled`) and deletes the caller's channels;
-  `url` is write-only and never returned. `POST .../<id>/test/` sends a real test message
-  and answers `{"ok": true|false, "detail": ...}` with a fixed sentence. `GET` and `PATCH
+  renames or turns off (`PATCH` of `name`, `enabled`; any other field, `url` included, is
+  a 400) and deletes the caller's channels; `url` is write-only and never returned.
+  `POST .../<id>/test/` sends a real test message and answers
+  `{"ok": true|false, "detail": ...}` with a fixed sentence. `GET` and `PATCH
   /api/v1/me/notification-preferences/` the reminders (`days_before`, `send_at`,
   `quiet_start`, `quiet_end`, `digest`, `language`, `time_zone`), and `GET
   /api/v1/me/notifications-export/` both, without any address. Every endpoint needs a

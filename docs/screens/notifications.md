@@ -11,7 +11,7 @@ channel; its administrator turns them on in the [settings](instance-settings.md)
 
 The list shows the name of each channel and the kind of service (`ntfy`, `tgram`,
 `mailto`...). **Add a channel** takes a name and an Apprise address, such as
-`ntfys://ntfy.sh/my-topic` or `tgram://bot-token/chat-id`: see the
+`ntfys://ntfy.sh/my-topic` or `tgram://123456789:bot-token/111222333`: see the
 [guide](../guides/notifications.md) for the address of each service. The address is
 kept encrypted and never shown again, on this screen or anywhere else.
 

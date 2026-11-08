@@ -92,6 +92,15 @@ class ChannelViewSet(
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         channel = self.get_object()
         serializer = ChannelUpdateSerializer(data=request.data)
+        # A field that cannot change is refused, not ignored: a 200 would say it changed.
+        fixed = sorted(set(request.data) - set(serializer.fields))
+        if fixed:
+            raise exceptions.ValidationError(
+                {
+                    f: [str(services.ADDRESS_FIXED if f == "url" else services.FIELD_FIXED)]
+                    for f in fixed
+                }
+            )
         serializer.is_valid(raise_exception=True)
         try:
             services.update_channel(request.user, channel, **serializer.validated_data)

@@ -10,6 +10,7 @@ import socket
 import threading
 import time
 from collections.abc import Callable, Iterator
+from pathlib import Path
 from typing import Any
 
 import apprise
@@ -23,7 +24,7 @@ from django.db import connection
 from django.test import Client
 from django.test.utils import override_settings
 from django.urls import reverse
-from django.utils import timezone
+from django.utils import timezone, translation
 from rest_framework.test import APIClient
 
 from housecairn.accounts import services as account_services
@@ -32,7 +33,7 @@ from housecairn.apitokens import services as token_services
 from housecairn.audit.models import AuditEvent
 from housecairn.homes.models import Home
 from housecairn.instance import config
-from housecairn.notifications import outbound, reminders, services
+from housecairn.notifications import forms, outbound, reminders, services
 from housecairn.notifications.models import Channel, Delivery
 from housecairn.tasks import services as task_services
 from tests.test_instance_settings import recent
@@ -166,6 +167,33 @@ class TestAddresses:
         sealed = outbound.seal(f"{scheme}://hooks.example.com/hook")
         assert outbound.send(sealed, title="t", body="b") is False
         assert called == []
+
+    def test_the_examples_of_the_documentation_are_accepted(self) -> None:
+        """Pasted as they are, every example address of the guide, the screen and the form."""
+        docs = Path(__file__).resolve().parents[1] / "docs"
+        texts = []
+        for page in ("guides/notifications", "screens/notifications"):
+            texts.append((docs / f"{page}.md").read_text(encoding="utf-8"))
+            catalog = (docs / "locale/fr/LC_MESSAGES" / f"{page}.po").read_text(encoding="utf-8")
+            # Without the comments, where gettext keeps the entries of removed strings.
+            texts.extend(line for line in catalog.splitlines() if not line.startswith("#"))
+        help_text = forms.ChannelForm.base_fields["url"].help_text
+        for language in ("en", "fr"):
+            with translation.override(language):
+                texts.append(str(help_text))
+                texts.append(str(services.REFUSALS["invalid"]))
+        examples = {
+            match.rstrip(".")
+            for text in texts
+            for match in re.findall(r"\b[a-z]+://[^\s`\"]+", text)
+            if not match.startswith(("http://", "https://"))
+        }
+        assert len(examples) >= 10
+        for example in sorted(examples):
+            try:
+                outbound.parse(example)
+            except outbound.RefusedError as refused:
+                pytest.fail(f"{example}: {refused}")
 
     def test_a_private_network_is_allowed(self, alice: User) -> None:
         added = services.add_channel(alice, name="ntfy", url="ntfy://172.16.5.20/house")
@@ -660,8 +688,13 @@ class TestWebAndApi:
         assert (
             api_client.patch(detail, {"enabled": False}, format="json").json()["enabled"] is False
         )
-        assert api_client.patch(detail, {"url": "ntfy://x/y"}, format="json").status_code == 200
+        moved = api_client.patch(detail, {"url": "ntfy://x/y", "name": "New"}, format="json")
+        assert moved.status_code == 400
+        assert set(moved.json()) == {"url"}
+        assert "delete the channel" in moved.json()["url"][0]
+        assert api_client.patch(detail, {"scheme": "ntfy"}, format="json").status_code == 400
         assert TOKEN in outbound.crypto.decrypt(Channel.objects.get().url)
+        assert Channel.objects.get().name == "Phone"
         prefs = reverse("api-v1:notification-preferences")
         changed = api_client.patch(
             prefs,
