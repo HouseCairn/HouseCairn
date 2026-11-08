@@ -2,6 +2,7 @@
 
 from collections.abc import Callable
 
+from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 from django.utils import translation
 
@@ -14,6 +15,8 @@ class PersonLanguageMiddleware:
     It runs after authentication, so after the locale middleware has chosen from the
     request; it only overrides that choice, from the next page on, when the person saved one.
     A request authenticated by an API token is not known here: it keeps the language it asks for.
+    The stored value is checked again against the languages the instance ships: a value written
+    behind the model's back (a restore, a script) falls back to the choice already made.
     """
 
     def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
@@ -27,7 +30,7 @@ class PersonLanguageMiddleware:
                 .values_list("language", flat=True)
                 .first()
             )
-            if chosen:
+            if chosen and chosen in {code for code, _name in settings.LANGUAGES}:
                 translation.activate(chosen)
                 request.LANGUAGE_CODE = translation.get_language()
         return self.get_response(request)

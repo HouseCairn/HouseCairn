@@ -99,3 +99,38 @@ class TestPersonLanguage:
         instance_services.update(admin_user, {"default_language": "fr"})
         assert config.get_setting("default_language") == "fr"
         assert "Display preferences" not in page(signed_in, HTTP_ACCEPT_LANGUAGE="de")
+
+
+class TestStoredLanguageIsCheckedAgain:
+    """A value in the database that the instance does not ship never reaches a page."""
+
+    @pytest.mark.parametrize("stored", ["xx", "de", "../..", "fr\n", "fr\r\nX-Evil: 1", "FR"])
+    def test_pages_and_api_fall_back(
+        self, signed_in: Client, alice: User, alice_home: Any, stored: str
+    ) -> None:
+        agenda.update_preferences(alice, language="fr")
+        DisplayPreference.objects.filter(user_id=alice.pk).update(language=stored)
+        assert DisplayPreference.objects.get(user_id=alice.pk).language == stored
+        home = alice_home
+        urls = {
+            "display-preferences": reverse("display-preferences"),
+            "today": reverse("tasks:today", kwargs={"home_id": home.id}),
+        }
+        for name, url in urls.items():
+            response = signed_in.get(url, HTTP_ACCEPT_LANGUAGE="en")
+            assert response.status_code == 200, name
+            content = response.content.decode()
+            assert 'lang="en"' in content, name
+            assert 'lang="xx"' not in content
+            assert 'lang="de"' not in content
+        api = signed_in.get(reverse("api-v1:display-preferences"), HTTP_ACCEPT_LANGUAGE="en")
+        assert api.status_code == 200
+
+    def test_the_fallback_is_the_choice_of_the_locale_middleware(
+        self, signed_in: Client, alice: User
+    ) -> None:
+        agenda.update_preferences(alice, language="fr")
+        DisplayPreference.objects.filter(user_id=alice.pk).update(language="xx")
+        response = signed_in.get(reverse("display-preferences"), HTTP_ACCEPT_LANGUAGE="fr")
+        assert response.status_code == 200
+        assert 'lang="fr"' in response.content.decode()
