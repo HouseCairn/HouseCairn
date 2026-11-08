@@ -20,6 +20,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms import conf, images
@@ -271,14 +272,15 @@ def add_photo(
         height=processed.height,
     )
     photo.full_clean(exclude=["image", "thumbnail"])
-    photo.image.save(processed.extension, ContentFile(processed.data), save=False)
-    photo.thumbnail.save("-thumb.jpg", ContentFile(processed.thumbnail), save=False)
-    try:
-        photo.save()
-    except Exception:
-        photo.image.delete(save=False)
-        photo.thumbnail.delete(save=False)
-        raise
+    with quotas.room_for(home, size=len(processed.data) + len(processed.thumbnail)):
+        photo.image.save(processed.extension, ContentFile(processed.data), save=False)
+        photo.thumbnail.save("-thumb.jpg", ContentFile(processed.thumbnail), save=False)
+        try:
+            photo.save()
+        except Exception:
+            photo.image.delete(save=False)
+            photo.thumbnail.delete(save=False)
+            raise
     return photo
 
 

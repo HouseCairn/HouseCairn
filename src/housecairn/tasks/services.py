@@ -21,8 +21,10 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership
+from housecairn.instance.config import instance_zone
 from housecairn.rooms import images
 from housecairn.rooms.models import Item, Room
 from housecairn.rooms.services import _read_upload
@@ -74,8 +76,8 @@ DATE_SPAN_YEARS = 100
 
 
 def today() -> datetime.date:
-    """Today in the time zone of the instance (docs/adr/0032)."""
-    return timezone.localdate()
+    """Today in the time zone of the instance (docs/adr/0032, 0042), in a worker too."""
+    return timezone.localdate(timezone=instance_zone())
 
 
 def date_bounds(day: datetime.date | None = None) -> tuple[datetime.date, datetime.date]:
@@ -574,15 +576,16 @@ def add_attachment(
         )
         stored, thumbnail, extension = processed.data, processed.thumbnail, processed.extension
     attachment.full_clean(exclude=["file", "thumbnail"])
-    attachment.file.save(extension, ContentFile(stored), save=False)
-    if thumbnail is not None:
-        attachment.thumbnail.save("-thumb.jpg", ContentFile(thumbnail), save=False)
-    try:
-        attachment.save()
-    except Exception:
-        attachment.file.delete(save=False)
-        attachment.thumbnail.delete(save=False)
-        raise
+    with quotas.room_for(task.home, size=len(stored) + len(thumbnail or b"")):
+        attachment.file.save(extension, ContentFile(stored), save=False)
+        if thumbnail is not None:
+            attachment.thumbnail.save("-thumb.jpg", ContentFile(thumbnail), save=False)
+        try:
+            attachment.save()
+        except Exception:
+            attachment.file.delete(save=False)
+            attachment.thumbnail.delete(save=False)
+            raise
     return attachment
 
 

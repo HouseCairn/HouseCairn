@@ -107,11 +107,16 @@ class TestSizeLimit:
         ):
             services.add_photo(alice, room=owner_room, upload=upload_without_size)
 
-    def test_the_default_limit_and_the_environment(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.delenv("HOUSECAIRN_PHOTO_MAX_BYTES", raising=False)
+    def test_the_default_limit_and_the_environment(self) -> None:
+        from housecairn.instance import registry
+
         assert conf.photo_max_bytes() == 10 * 1024 * 1024
-        monkeypatch.setenv("HOUSECAIRN_PHOTO_MAX_BYTES", "2000000")
-        assert conf.photo_max_bytes() == 2_000_000
+        # The variable is read when Django starts, like every instance setting (ADR 0042).
+        read = registry.read_environment({"HOUSECAIRN_PHOTO_MAX_BYTES": "2000000"})
+        assert read.values["file_max_bytes"] == 2_000_000
+        assert "file_max_bytes" in read.locked
+        with pytest.raises(ImproperlyConfigured, match="HOUSECAIRN_PHOTO_MAX_BYTES"):
+            registry.read_environment({"HOUSECAIRN_PHOTO_MAX_BYTES": "5"})
 
     @pytest.mark.parametrize("value", ["lots", "5", "999999999999"])
     def test_an_unusable_limit_is_an_error(self, value: str) -> None:

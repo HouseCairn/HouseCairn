@@ -31,6 +31,7 @@ PARITY: dict[str, tuple[str, ...]] = {
     "instance:invitation-revoke": ("api-v1:instance-invitation-detail",),
     "instance:unlock": ("api-v1:instance-unlock",),
     "instance:audit": ("api-v1:instance-audit-list",),
+    "instance:usage": ("api-v1:instance-usage",),
     "instance:settings": ("api-v1:instance-settings",),
     "instance:providers": ("api-v1:instance-provider-list", "api-v1:instance-provider-check"),
     "instance:provider": ("api-v1:instance-provider-detail", "api-v1:instance-provider-check"),

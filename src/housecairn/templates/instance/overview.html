@@ -66,7 +66,7 @@
     <a class="row" href="{% url 'instance:settings' %}">
       <span class="row-body">
         <span class="row-title">{% translate "Settings" %}</span>
-        <span class="row-text">{% translate "Sign-up, invitations, outgoing email, public address" %}</span>
+        <span class="row-text">{% translate "Name, language, sign-up, invitations, email, rate limits, quotas" %}</span>
       </span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>
@@ -74,6 +74,13 @@
       <span class="row-body">
         <span class="row-title">{% translate "Sign-in providers" %}</span>
         <span class="row-text">{% translate "Single sign-on through OpenID Connect" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+    <a class="row" href="{% url 'instance:usage' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Files of the homes" %}</span>
+        <span class="row-text">{% translate "Space and files each home takes, against the quotas" %}</span>
       </span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>

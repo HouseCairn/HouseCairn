@@ -1,13 +1,10 @@
 """Configuration of the rooms app (docs/adr/0030).
 
-The size limit of a photo is read here, from `settings.HOUSECAIRN_PHOTO_MAX_BYTES`
-if a deployment or a test sets it, else from the environment variable of the same
-name, else the default. Reading it on use keeps the value testable.
+The size limit of a file is the instance setting `file_max_bytes` (docs/adr/0042): the
+variable `HOUSECAIRN_PHOTO_MAX_BYTES`, read when Django starts, else the value set in
+the interface, else 10 MB. It is read on use, so that a change applies without a restart.
 """
 
-import os
-
-from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 PHOTO_MAX_BYTES_VARIABLE = "HOUSECAIRN_PHOTO_MAX_BYTES"
@@ -25,10 +22,10 @@ MULTIPART_OVERHEAD = 256 * 1024
 
 
 def photo_max_bytes() -> int:
-    """Largest accepted photo, in bytes; ImproperlyConfigured when the value is unusable."""
-    raw = getattr(settings, PHOTO_MAX_BYTES_VARIABLE, None)
-    if raw is None:
-        raw = os.environ.get(PHOTO_MAX_BYTES_VARIABLE, "").strip() or DEFAULT_PHOTO_MAX_BYTES
+    """Largest accepted file, in bytes; ImproperlyConfigured when the value is unusable."""
+    from housecairn.instance.config import get_setting
+
+    raw = get_setting("file_max_bytes")
     try:
         value = int(raw)
     except (TypeError, ValueError) as exc:

@@ -1,6 +1,6 @@
-{% load i18n %}{% autoescape off %}{% translate "Hello from HouseCairn!" %}
+{% load i18n %}{% autoescape off %}{% instance_name as name %}{% blocktranslate %}Hello from {{ name }}!{% endblocktranslate %}
 
 {% block content %}{% endblock content %}
 
-{% translate "Thank you for using HouseCairn." %}
+{% blocktranslate %}Thank you for using {{ name }}.{% endblocktranslate %}
 {% endautoescape %}

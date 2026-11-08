@@ -27,8 +27,8 @@ from housecairn.accounts import services as account_services
 from housecairn.accounts.models import User
 from housecairn.audit import services as audit
 from housecairn.core.help import docs_page_url
+from housecairn.homes import quotas, sso
 from housecairn.homes import services as home_services
-from housecairn.homes import sso
 from housecairn.homes.forms import InvitationSignupForm
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import allow
@@ -160,6 +160,22 @@ class AuditView(InstanceAdminMixin, TemplateView):
         log = audit.instance_log(self.request.user)
         page = Paginator(log, self.paginate_by).get_page(self.request.GET.get("page"))
         context["page"] = page
+        return context
+
+
+class UsageView(InstanceAdminMixin, TemplateView):
+    """Space and files each home takes, against the quotas (docs/adr/0042).
+
+    A home is its identifier and its numbers: no name, no member, no file (docs/adr/0022).
+    """
+
+    template_name = "instance/usage.html"
+    paginate_by = 50
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        page = Paginator(quotas.by_home(), self.paginate_by).get_page(self.request.GET.get("page"))
+        context.update(page=page, limits=quotas.limits())
         return context
 
 

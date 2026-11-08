@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 15:04+0000\n"
+"POT-Creation-Date: 2026-11-08 15:36+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -498,6 +498,25 @@ msgstr "invitation"
 msgid "invitations"
 msgstr "invitations"
 
+#: homes/quotas.py
+#, python-format
+msgid ""
+"This home already holds %(count)d files, its limit: delete some, or ask the "
+"administrator of the instance for more."
+msgstr ""
+"Ce logement contient déjà %(count)d fichiers, sa limite : supprimez-en, ou "
+"demandez-en davantage à l'administrateur de l'instance."
+
+#: homes/quotas.py
+#, python-format
+msgid ""
+"There is no room left for this file: the files of this home take %(used)s of "
+"%(limit)s. Delete some, or ask the administrator of the instance for more."
+msgstr ""
+"Il ne reste pas de place pour ce fichier : les fichiers de ce logement "
+"occupent %(used)s sur %(limit)s. Supprimez-en, ou demandez-en davantage à "
+"l'administrateur de l'instance."
+
 #: homes/scoping.py
 #, python-format
 msgid "This home requires signing in through %(provider)s."
@@ -895,6 +914,10 @@ msgid "Public address"
 msgstr "Adresse publique"
 
 #: instance/registry.py
+msgid "Name, language and time zone"
+msgstr "Nom, langue et fuseau horaire"
+
+#: instance/registry.py
 msgid "Sign-up"
 msgstr "Inscription"
 
@@ -905,6 +928,14 @@ msgstr "Invitations"
 #: instance/registry.py templates/instance/overview.html
 msgid "Outgoing email"
 msgstr "E-mail sortant"
+
+#: instance/registry.py
+msgid "Rate limits"
+msgstr "Limites de débit"
+
+#: instance/registry.py
+msgid "Files of a home"
+msgstr "Fichiers d'un logement"
 
 #: instance/registry.py
 msgid "Expected a whole number."
@@ -941,6 +972,15 @@ msgstr "Doit être une adresse http:// ou https:// sans chemin."
 #: instance/registry.py
 msgid "Must be a host name or an address."
 msgstr "Doit être un nom d'hôte ou une adresse."
+
+#: instance/registry.py
+#, python-brace-format
+msgid "At most {n} characters, without control characters."
+msgstr "Au plus {n} caractères, sans caractère de contrôle."
+
+#: instance/registry.py
+msgid "Must be a time zone of the IANA database, such as Europe/Paris."
+msgstr "Doit être un fuseau horaire de la base IANA, tel que Europe/Paris."
 
 #: instance/registry.py
 msgid "Must be an address, such as HouseCairn <noreply@example.com>."
@@ -1089,6 +1129,147 @@ msgstr ""
 "com>."
 
 #: instance/registry.py
+msgid "Name of the instance"
+msgstr "Nom de l'instance"
+
+#: instance/registry.py
+msgid ""
+"In the app bar, the title of the pages and the emails, at most 64 "
+"characters. Empty: HouseCairn."
+msgstr ""
+"Dans la barre de l'application, le titre des pages et les e-mails, au plus "
+"64 caractères. Vide : HouseCairn."
+
+#: instance/registry.py
+msgid "Default language"
+msgstr "Langue par défaut"
+
+#: instance/registry.py
+msgid ""
+"en or fr. For people whose browser asks for no language the instance offers; "
+"the language a browser asks for always wins."
+msgstr ""
+"en ou fr. Pour les personnes dont le navigateur ne demande aucune langue "
+"proposée par l'instance ; la langue que demande un navigateur l'emporte "
+"toujours."
+
+#: instance/registry.py
+msgid "Time zone"
+msgstr "Fuseau horaire"
+
+#: instance/registry.py
+msgid ""
+"Of the households, such as Europe/Paris: it decides what today is, and so "
+"what is late. Times are stored in UTC."
+msgstr ""
+"Celui des foyers, tel que Europe/Paris : il décide du jour d'aujourd'hui, "
+"donc de ce qui est en retard. Les heures sont enregistrées en UTC."
+
+#: instance/registry.py
+msgid "Sign-ins a minute"
+msgstr "Connexions par minute"
+
+#: instance/registry.py
+msgid "Per client address, from 1 to 1000."
+msgstr "Par adresse client, de 1 à 1000."
+
+#: instance/registry.py
+msgid "Failed sign-ins in five minutes"
+msgstr "Connexions échouées en cinq minutes"
+
+#: instance/registry.py
+msgid "Per account, from 1 to 100; then the account waits."
+msgstr "Par compte, de 1 à 100 ; ensuite le compte attend."
+
+#: instance/registry.py
+msgid "Sign-ups a minute"
+msgstr "Inscriptions par minute"
+
+#: instance/registry.py
+msgid "Sign-ups a day"
+msgstr "Inscriptions par jour"
+
+#: instance/registry.py
+msgid "Per client address, from 1 to 100000; not less than a minute's."
+msgstr "Par adresse client, de 1 à 100000 ; pas moins que par minute."
+
+#: instance/registry.py
+msgid "Password reset requests a minute"
+msgstr "Demandes de réinitialisation du mot de passe par minute"
+
+#: instance/registry.py
+msgid "Per client address, from 1 to 1000; an address gets at most 5 a minute."
+msgstr ""
+"Par adresse client, de 1 à 1000 ; une adresse e-mail en reçoit au plus 5 par "
+"minute."
+
+#: instance/registry.py
+msgid "Invitations sent a minute"
+msgstr "Invitations envoyées par minute"
+
+#: instance/registry.py
+msgid "Per person, to a home or to the instance, from 1 to 1000."
+msgstr "Par personne, à un logement ou à l'instance, de 1 à 1000."
+
+#: instance/registry.py
+msgid "Invitations sent a day"
+msgstr "Invitations envoyées par jour"
+
+#: instance/registry.py
+msgid "Per person, from 1 to 100000; not less than a minute's."
+msgstr "Par personne, de 1 à 100000 ; pas moins que par minute."
+
+#: instance/registry.py
+msgid "Invitation links opened a minute"
+msgstr "Liens d'invitation ouverts par minute"
+
+#: instance/registry.py
+msgid "Tests of the mail server or of an issuer a minute"
+msgstr "Tests du serveur de messagerie ou d'un émetteur par minute"
+
+#: instance/registry.py
+msgid "Per administrator, from 1 to 60."
+msgstr "Par administrateur, de 1 à 60."
+
+#: instance/registry.py
+msgid "Largest file (bytes)"
+msgstr "Fichier le plus gros (octets)"
+
+#: instance/registry.py
+msgid ""
+"A photo or an attachment, as sent, from 10240 (10 KB) to 104857600 (100 MB); "
+"10485760 is 10 MB."
+msgstr ""
+"Une photo ou une pièce jointe, telle qu'envoyée, de 10240 (10 Ko) à "
+"104857600 (100 Mo) ; 10485760 vaut 10 Mo."
+
+#: instance/registry.py
+msgid "Space for the files of a home (MB)"
+msgstr "Espace des fichiers d'un logement (Mo)"
+
+#: instance/registry.py
+msgid ""
+"Photos, attachments and their thumbnails, deleted ones included until they "
+"are purged; from 1 to 1048576 (1 TB)."
+msgstr ""
+"Photos, pièces jointes et leurs miniatures, y compris celles supprimées "
+"jusqu'à leur purge ; de 1 à 1048576 (1 To)."
+
+#: instance/registry.py
+#, fuzzy
+#| msgid "Files of a home"
+msgid "Number of files of a home"
+msgstr "Fichiers d'un logement"
+
+#: instance/registry.py
+msgid ""
+"Photos and attachments, deleted ones included until they are purged; 1 to "
+"1000000."
+msgstr ""
+"Photos et pièces jointes, y compris celles supprimées jusqu'à leur purge ; "
+"de 1 à 1000000."
+
+#: instance/registry.py
 msgid "Secret key of the instance"
 msgstr "Clé secrète de l'instance"
 
@@ -1153,6 +1334,10 @@ msgid ""
 msgstr ""
 "L'inscription ouverte vérifie les adresses par e-mail : renseignez d'abord "
 "le serveur SMTP, ou laissez l'inscription fermée."
+
+#: instance/settings_services.py
+msgid "A day cannot allow fewer than a minute."
+msgstr "Une journée ne peut pas autoriser moins qu'une minute."
 
 #: instance/settings_services.py
 msgid "Connected to the mail server."
@@ -2314,12 +2499,14 @@ msgstr ""
 "cela continue, prévenez l'administrateur de cette instance."
 
 #: templates/account/email/base_message.txt
-msgid "Hello from HouseCairn!"
-msgstr "Bonjour de la part de HouseCairn !"
+#, python-format
+msgid "Hello from %(name)s!"
+msgstr "Bonjour de la part de %(name)s !"
 
 #: templates/account/email/base_message.txt
-msgid "Thank you for using HouseCairn."
-msgstr "Merci d'utiliser HouseCairn."
+#, python-format
+msgid "Thank you for using %(name)s."
+msgstr "Merci d'utiliser %(name)s."
 
 #: templates/account/email/new_login_message.txt
 msgid ""
@@ -2462,8 +2649,8 @@ msgstr "compte supprimé ou système"
 msgid "Nothing recorded yet."
 msgstr "Rien n'est encore enregistré."
 
-#: templates/audit/_pager.html templates/tasks/history.html
-#: templates/tasks/task_list.html
+#: templates/audit/_pager.html templates/instance/usage.html
+#: templates/tasks/history.html templates/tasks/task_list.html
 msgid "Pages"
 msgstr "Pages"
 
@@ -2532,7 +2719,7 @@ msgstr "Clés d'accès, application d'authentification, codes de récupération"
 
 #: templates/core/more.html templates/instance/audit.html
 #: templates/instance/overview.html templates/instance/providers.html
-#: templates/instance/settings.html
+#: templates/instance/settings.html templates/instance/usage.html
 msgid "Instance administration"
 msgstr "Administration de l'instance"
 
@@ -2669,8 +2856,8 @@ msgstr ""
 
 #: templates/homes/email/invitation_subject.txt
 #, python-format
-msgid "HouseCairn: you are invited to %(home)s"
-msgstr "HouseCairn : vous êtes invité à %(home)s"
+msgid "%(name)s: you are invited to %(home)s"
+msgstr "%(name)s : vous êtes invité à %(home)s"
 
 #: templates/homes/home_detail.html
 msgid "Your role"
@@ -2977,8 +3164,9 @@ msgid "Open this link to create your account:"
 msgstr "Ouvrez ce lien pour créer votre compte :"
 
 #: templates/instance/email/invitation_subject.txt
-msgid "HouseCairn: you are invited to create an account"
-msgstr "HouseCairn : vous êtes invité à créer un compte"
+#, python-format
+msgid "%(name)s: you are invited to create an account"
+msgstr "%(name)s : vous êtes invité à créer un compte"
 
 #: templates/instance/invitation.html
 msgid "Create your HouseCairn account"
@@ -3080,12 +3268,21 @@ msgstr ""
 "Désactiver, supprimer, définir les administrateurs (site d'administration)"
 
 #: templates/instance/overview.html
-msgid "Sign-up, invitations, outgoing email, public address"
-msgstr "Inscription, invitations, e-mail sortant, adresse publique"
+msgid "Name, language, sign-up, invitations, email, rate limits, quotas"
+msgstr ""
+"Nom, langue, inscription, invitations, e-mail, limites de débit, quotas"
 
 #: templates/instance/overview.html
 msgid "Single sign-on through OpenID Connect"
 msgstr "Authentification unique par OpenID Connect"
+
+#: templates/instance/overview.html templates/instance/usage.html
+msgid "Files of the homes"
+msgstr "Fichiers des logements"
+
+#: templates/instance/overview.html
+msgid "Space and files each home takes, against the quotas"
+msgstr "Espace et fichiers de chaque logement, au regard des quotas"
 
 #: templates/instance/overview.html
 msgid "Administration actions, invitations, accounts"
@@ -3263,6 +3460,41 @@ msgstr ""
 "Ces réglages ne passent que par des variables d'environnement : l'instance "
 "en a besoin avant d'avoir une base de données, ou ils pourraient vous "
 "enfermer dehors. Lecture seule ; aucun secret n'est affiché."
+
+#: templates/instance/usage.html
+#, python-format
+msgid ""
+"Each home may hold %(files)s files taking %(space)s, deleted files included "
+"until they are purged. A home is shown by its identifier and its numbers "
+"only: you see no name, no member and no file."
+msgstr ""
+"Chaque logement peut contenir %(files)s fichiers occupant %(space)s, "
+"fichiers supprimés compris jusqu'à leur purge. Un logement n'apparaît que "
+"par son identifiant et ses chiffres : vous ne voyez ni nom, ni membre, ni "
+"fichier."
+
+#: templates/instance/usage.html
+msgid "Change the quotas"
+msgstr "Modifier les quotas"
+
+#: templates/instance/usage.html
+#, python-format
+msgid "%(space)s in %(files)s files, %(percent)s %% of the quota"
+msgstr "%(space)s en %(files)s fichiers, %(percent)s %% du quota"
+
+#: templates/instance/usage.html
+msgid "No home yet."
+msgstr "Aucun logement pour l'instant."
+
+#: templates/instance/usage.html templates/tasks/history.html
+#: templates/tasks/task_list.html
+msgid "Previous"
+msgstr "Précédent"
+
+#: templates/instance/usage.html templates/tasks/history.html
+#: templates/tasks/task_list.html
+msgid "Next"
+msgstr "Suivant"
 
 #: templates/rooms/_photos.html
 #, python-format
@@ -3807,17 +4039,9 @@ msgstr[0] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrée"
 msgstr[1] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrées"
 
 #: templates/tasks/history.html templates/tasks/task_list.html
-msgid "Previous"
-msgstr "Précédent"
-
-#: templates/tasks/history.html templates/tasks/task_list.html
 #, python-format
 msgid "Page %(number)s of %(total)s"
 msgstr "Page %(number)s sur %(total)s"
-
-#: templates/tasks/history.html templates/tasks/task_list.html
-msgid "Next"
-msgstr "Suivant"
 
 #: templates/tasks/history.html
 msgid "Nothing matches."

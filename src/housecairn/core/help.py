@@ -33,6 +33,7 @@ HELP_PAGES: dict[str, str] = {
     "instance:invitation-revoke": "screens/instance/",
     "instance:unlock": "screens/instance/",
     "instance:audit": "screens/instance/",
+    "instance:usage": "screens/instance-usage/",
     "instance:settings": "screens/instance-settings/",
     "instance:providers": "screens/sign-in-providers/",
     "instance:provider": "screens/sign-in-providers/",

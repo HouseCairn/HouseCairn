@@ -1,11 +1,11 @@
 {% load i18n %}<!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE }}">
-<head><meta charset="utf-8"><title>HouseCairn</title></head>
+<head><meta charset="utf-8"><title>{% instance_name %}</title></head>
 <body>
   <p>{% blocktranslate with home=home_name role=role %}You are invited to join the home "{{ home }}" on HouseCairn, as {{ role }}.{% endblocktranslate %}</p>
   <p><a href="{{ link }}">{% translate "Accept the invitation" %}</a></p>
   <p>{% blocktranslate with date=expires_at|date:"DATETIME_FORMAT" %}The link works once and expires on {{ date }}.{% endblocktranslate %}<br>{% translate "If you did not expect this invitation, ignore this message." %}</p>
-  <p>HouseCairn</p>
+  <p>{% instance_name %}</p>
 </body>
 </html>
