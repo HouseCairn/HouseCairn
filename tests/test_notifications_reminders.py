@@ -10,6 +10,7 @@ from typing import Any
 
 import pytest
 from apprise.plugins.telegram import NotifyTelegram
+from django.conf import settings
 from django.test.utils import override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -17,8 +18,8 @@ from django.utils import timezone
 from housecairn.accounts.models import User
 from housecairn.homes.models import Home, Membership, Role
 from housecairn.instance import config
-from housecairn.notifications import reminders, services, tasks
-from housecairn.notifications.models import Delivery, Preference
+from housecairn.notifications import outbound, reminders, services, tasks
+from housecairn.notifications.models import MAX_CHANNELS, Delivery, Preference
 from housecairn.tasks import services as task_services
 from housecairn.tasks.models import Occurrence, Task
 
@@ -306,6 +307,50 @@ class TestOnceOnly:
         )
         assert reminders.dispatch(at(due, 8)) == 0
         assert outbox == []
+
+    @pytest.mark.parametrize("digest", [False, True])
+    def test_a_long_run_leaves_the_rest_to_the_next_one(
+        self,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        make_task: Callable[..., Occurrence],
+        due: datetime.date,
+        add_member: Callable[[Home, User, Role], Membership],
+        monkeypatch: pytest.MonkeyPatch,
+        digest: bool,
+    ) -> None:
+        """Each send takes 100 s of the clock (130 s for a summary): a run starts no message
+        after RUN_SECONDS, and the next runs send the rest, each message once, none lost."""
+        add_member(alice_home, bob, Role.MEMBER)
+        reachable(alice, days_before=0, digest=digest)
+        reachable(bob, days_before=0, digest=digest)
+        for title in ("One", "Two", "Three"):
+            make_task(title)
+        clock = [0.0]
+        sends: list[str] = []
+
+        def slow_send(sealed: str, *, title: str, body: str) -> bool:
+            sends.append(body)
+            clock[0] += 130 if digest else 100
+            return True
+
+        monkeypatch.setattr(reminders, "_clock", lambda: clock[0], raising=False)
+        monkeypatch.setattr(reminders.outbound, "send", slow_send)
+        runs = [reminders.dispatch(at(due, 8, minute)) for minute in range(0, 25, 5)]
+        # Six reminders (three tasks, two writers), two a run; or two summaries, one a run.
+        assert runs == ([1, 1, 0, 0, 0] if digest else [2, 2, 2, 0, 0])
+        assert len(sends) == Delivery.objects.count() == (2 if digest else 6)
+        assert Delivery.objects.filter(sent=True).count() == len(sends)
+        if digest:
+            assert all(body.count("\n\n") == 2 for body in sends)  # three tasks in each
+
+    def test_the_longest_run_fits_the_timeout_of_the_worker(self) -> None:
+        assert reminders.RUN_SECONDS < 300
+        assert reminders.LONGEST_RUN_SECONDS == (
+            reminders.RUN_SECONDS + MAX_CHANNELS * (outbound.SEND_SECONDS + 1)
+        )
+        assert settings.Q_CLUSTER["timeout"] > reminders.LONGEST_RUN_SECONDS
 
 
 class TestRecipients:

@@ -154,7 +154,17 @@ removed.
 **In the background.** `notifications.tasks.dispatch` runs in the django-q2 worker already
 in the container (ADR 0008), from a `Schedule` created after `migrate` and kept at the
 interval of the settings by each run, so a change applies without a restart. No new
-process and no separate decision record.
+process and no separate decision record. A run sends one message after the other, and each
+send to a channel may take its eight seconds, so a run starts no new message after two
+minutes (`RUN_SECONDS`): what is left is not claimed, and the next run sends it under the
+same key, once (unless the next follow-up or summary became due meanwhile: then that one
+goes out instead, as for a message due during quiet hours). A message started goes to
+every channel of the person (ten at most), so a run lasts at most two minutes plus ten
+sends, under four minutes (`LONGEST_RUN_SECONDS`), within the five minutes django-q2 gives
+a task before stopping it; a run stopped there would lose the messages it had claimed and
+not sent yet. A capped run was chosen over writing an unbounded duration down: the number
+of messages of a run grows with the homes and the tasks of the instance, the timeout of
+the worker does not.
 
 **Settings** (ADR 0035): `notifications_enabled` (`HOUSECAIRN_NOTIFICATIONS_ENABLED`, off
 by default) and `notifications_interval` (`HOUSECAIRN_NOTIFICATIONS_INTERVAL`, 5 minutes,

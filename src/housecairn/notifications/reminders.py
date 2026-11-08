@@ -14,11 +14,17 @@ Each message has a key (occurrence, due date, follow-up number; or the day of a 
 It is claimed by inserting a `Delivery` row before anything is sent: the unique constraint
 lets one worker only send it, even when two runs cross. A message claimed and not sent (the
 service failed, the worker stopped) is not tried again; the next follow-up is.
+
+A run starts no new message after `RUN_SECONDS`: what is left is not claimed, so the next
+run sends it, under the same key. With `MAX_CHANNELS` channels a person, each given up
+after `outbound.SEND_SECONDS`, a run lasts at most `LONGEST_RUN_SECONDS` (`RUN_SECONDS`
+plus one message), within the five minutes django-q2 gives a task (`Q_CLUSTER["timeout"]`).
 """
 
 import datetime
 import logging
 import re
+import time
 import zoneinfo
 from collections import defaultdict
 from typing import Any
@@ -32,7 +38,7 @@ from housecairn.accounts.models import User
 from housecairn.homes.models import WRITE_ROLES, Membership
 from housecairn.instance.config import get_setting, instance_zone
 from housecairn.notifications import outbound, services
-from housecairn.notifications.models import Channel, Delivery, Kind, Preference
+from housecairn.notifications.models import MAX_CHANNELS, Channel, Delivery, Kind, Preference
 from housecairn.tasks.models import OPEN_STATUSES, Occurrence
 
 logger = logging.getLogger("housecairn.notifications")
@@ -41,6 +47,12 @@ FOLLOW_UP_DAYS = {"high": 1, "normal": 3, "low": 7}
 MAX_DAYS_BEFORE = 30
 KEEP_DELIVERIES_DAYS = 90
 DIGEST_LIMIT = 30
+# No new message after this many seconds of a run (see the docstring of the module).
+RUN_SECONDS = 120.0
+# The longest a run can last, then: the last message started, to every channel of a person,
+# with a second per send for the grace of Apprise and the closing of its connections.
+LONGEST_RUN_SECONDS = RUN_SECONDS + MAX_CHANNELS * (outbound.SEND_SECONDS + 1)
+_clock = time.monotonic
 
 
 def zone_of(prefs: Preference) -> datetime.tzinfo:
@@ -168,6 +180,11 @@ def dispatch(now: datetime.datetime | None = None) -> int:
     if not services.is_enabled():
         return 0
     now = now or timezone.now()
+    started = _clock()
+
+    def out_of_time() -> bool:
+        return _clock() - started >= RUN_SECONDS
+
     Delivery.objects.filter(
         claimed_at__lt=now - datetime.timedelta(days=KEEP_DELIVERIES_DAYS)
     ).delete()
@@ -204,10 +221,13 @@ def dispatch(now: datetime.datetime | None = None) -> int:
     )
     claimed = 0
     digests: dict[Any, list[Occurrence]] = defaultdict(list)
+    stopped = False
     for occurrence in rows:
         due_on = occurrence.due_on
         if due_on is None:
             continue
+        if stopped:
+            break
         for user_id in _recipients(occurrence, writers, set(channels)):
             pref = prefs_of(user_id)
             local = now.astimezone(zone_of(pref))
@@ -222,6 +242,9 @@ def dispatch(now: datetime.datetime | None = None) -> int:
             step = datetime.timedelta(days=FOLLOW_UP_DAYS.get(occurrence.task.priority, 3))
             number = (local - start) // step
             key = f"{occurrence.id}:{due_on.isoformat()}:{number}"
+            if out_of_time():
+                stopped = True  # left unclaimed: the next run sends it
+                break
             message = reminder_message(occurrence, pref)
             claimed += _deliver(
                 users[user_id], Kind.REMINDER, key, message, channels[user_id], occurrence
@@ -231,6 +254,8 @@ def dispatch(now: datetime.datetime | None = None) -> int:
         local = now.astimezone(zone_of(pref))
         if is_quiet(pref, local):
             continue
+        if stopped or out_of_time():
+            break
         day = digest_day(pref, local)
         message = digest_message(found, pref)
         claimed += _deliver(
