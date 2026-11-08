@@ -55,10 +55,20 @@ variable is shown as "set". Secrets never go to the audit log, the API, the expo
 **Changing a setting** needs an instance administrator, signed in within
 `ACCOUNT_REAUTHENTICATION_TIMEOUT` (five minutes), through the web or the API (never an API
 token). A value is checked for its kind and range, and together (open sign-up is refused
-without a mail server). It is written in the audit log with the setting and the old and new
-values, except a secret. The mail test opens a connection and closes it, is rate limited
-and never required. Re-authentication does not replay a form: a secret typed in it must not
-be stored in the session.
+without a mail server). Restoring a default is checked the same way, on the state it would
+leave: the mail server cannot be removed while sign-up is open, in the database or by
+variable. It is written in the audit log with the setting and the old and new values, except
+a secret. Re-authentication does not replay a form: a secret typed in it must not be stored in
+the session. An account with no password, passkey or authenticator (single sign-on only) has
+nothing to re-authenticate with: as django-allauth does, its session counts as recent, so for
+such an administrator the five-minute rule does not apply and only the identity provider's
+session policy protects the settings.
+
+**The mail test** opens a connection to the server and port in force and closes it; it is
+never required. Since an administrator chooses that host and port, and the answer tells a
+refused login, a TLS failure and no answer apart, it lets an administrator probe a host and
+port from the instance's network. That is accepted: it is kept to instance administrators
+(no member, no API token) and limited to five tests a minute per administrator.
 
 **Left in the environment**: everything needed before a database exists or able to lock
 the administrator out: `SECRET_KEY`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `DATABASE_URL`,
@@ -73,7 +83,10 @@ a test fails when it differs from the registry.
 
 - A setting added to the registry without its documentation row fails the tests.
 - Each request refreshes the snapshot when it is old: a query every five seconds per process.
-- A database that cannot be read (before `migrate`) falls back to variables and defaults.
-- Checks of `manage.py check` read the variables and defaults only, not the database.
+- A database that cannot be read keeps the last values read in that process; before any
+  (before `migrate`), it falls back to variables and defaults.
+- Checks of `manage.py check` read the variables and defaults, except `housecairn.E001` (open
+  sign-up by variable without a mail server), which also counts a mail server stored in the
+  database; the rules between settings keep that server while sign-up is open.
 - The "last way to sign in" guard has nothing to protect yet: it comes with the
   single sign-on providers.

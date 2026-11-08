@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 02:45+0000\n"
+"POT-Creation-Date: 2026-11-08 02:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -188,8 +188,8 @@ msgstr "`DEFAULT_FROM_EMAIL`"
 msgid "`HouseCairn <noreply@localhost>`"
 msgstr "`HouseCairn <noreply@localhost>`"
 
-msgid "`manage.py check --deploy` reads the variables and the defaults, not the database: a setting chosen in the interface is checked when it is saved, not at start-up."
-msgstr "`manage.py check --deploy` lit les variables et les défauts, pas la base de données : un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."
+msgid "The start-up checks (`manage.py check`, which `migrate` runs too) read the variables and the defaults, with one exception: `housecairn.E001`, which stops the start when `HOUSECAIRN_SIGNUP_OPEN` opens sign-up without a mail server, also counts a mail server chosen in the interface. That is why the interface refuses to remove that server, or restore its default, while sign-up is open. Otherwise a setting chosen in the interface is checked when it is saved, not at start-up."
+msgstr "Les contrôles de démarrage (`manage.py check`, que `migrate` lance aussi) lisent les variables et les défauts, à une exception près : `housecairn.E001`, qui arrête le démarrage quand `HOUSECAIRN_SIGNUP_OPEN` ouvre l'inscription sans serveur de messagerie, tient compte aussi d'un serveur de messagerie choisi dans l'interface. C'est pourquoi l'interface refuse de retirer ce serveur, ou de rétablir son défaut, tant que l'inscription est ouverte. Pour le reste, un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."
 
 msgid "The list of settings is the same one the API returns (`GET /api/v1/instance/settings/`, with the variable, the default and the source of each)."
 msgstr "La liste des réglages est celle que renvoie l'API (`GET /api/v1/instance/settings/`, avec la variable, le défaut et l'origine de chacun)."
@@ -206,8 +206,14 @@ msgstr "Ce qu'exige la modification d'un réglage"
 msgid "You must be an instance administrator, and signed in recently (five minutes): the interface sends you to confirm your sign-in, and the API answers `403` with the code `reauthentication_required`. An API token never serves these endpoints."
 msgstr "Il faut être administrateur de l'instance et s'être connecté récemment (cinq minutes) : l'interface vous envoie confirmer votre connexion, et l'API répond `403` avec le code `reauthentication_required`. Un jeton d'API ne sert jamais ces points d'accès."
 
-msgid "A value that is not valid is refused with a message. Open sign-up is refused while no mail server is set. The **Test the connection** button opens a connection to the mail server and closes it; it is never required to save."
-msgstr "Une valeur invalide est refusée avec un message. L'inscription ouverte est refusée tant qu'aucun serveur de messagerie n'est renseigné. Le bouton **Tester la connexion** ouvre une connexion au serveur de messagerie puis la ferme ; il n'est jamais obligatoire pour enregistrer."
+msgid "An administrator who signs in through single sign-on only (no password, passkey or authenticator app in HouseCairn) has nothing to confirm a sign-in with: as in django-allauth, their session always counts as recent, and only the session rules of the identity provider apply. To have the five-minute rule, give that account a password or a passkey."
+msgstr "Un administrateur qui se connecte seulement par authentification unique (ni mot de passe, ni clé d'accès, ni application d'authentification dans HouseCairn) n'a rien pour confirmer sa connexion : comme dans django-allauth, sa session compte toujours comme récente, et seules les règles de session du fournisseur d'identité s'appliquent. Pour bénéficier de la règle des cinq minutes, donnez à ce compte un mot de passe ou une clé d'accès."
+
+msgid "A value that is not valid is refused with a message. Open sign-up is refused while no mail server is set, and so is removing the mail server, or restoring its default, while sign-up is open. The **Test the connection** button opens a connection to the mail server and closes it; it is never required to save."
+msgstr "Une valeur invalide est refusée avec un message. L'inscription ouverte est refusée tant qu'aucun serveur de messagerie n'est renseigné, de même que retirer le serveur de messagerie, ou rétablir son défaut, tant que l'inscription est ouverte. Le bouton **Tester la connexion** ouvre une connexion au serveur de messagerie puis la ferme ; il n'est jamais obligatoire pour enregistrer."
+
+msgid "That button connects, from the instance's own network, to the server and port in force, which an administrator can set to any host, and tells apart a refused login, a failed TLS and no answer: an administrator can use it to probe a host and port. It is kept to instance administrators and limited to five tests a minute for each."
+msgstr "Ce bouton se connecte, depuis le réseau de l'instance, au serveur et au port en vigueur, qu'un administrateur peut faire pointer vers n'importe quel hôte, et distingue un identifiant refusé, un échec TLS et une absence de réponse : un administrateur peut s'en servir pour sonder un hôte et un port. Il est réservé aux administrateurs de l'instance et limité à cinq essais par minute pour chacun."
 
 msgid "Each change is written to the instance's [audit log](../screens/instance.md) with who made it, the setting and the old and new values; for a secret, only that it changed."
 msgstr "Chaque modification est inscrite au [journal d'audit](../screens/instance.md) de l'instance avec son auteur, le réglage et les anciennes et nouvelles valeurs ; pour un secret, seulement le fait qu'il a changé."
@@ -268,4 +274,7 @@ msgstr "La partie **Serveur** les affiche toutes sauf `HOUSECAIRN_WEB_WORKERS` :
 
 msgid "Single sign-on providers (`OIDC_*`), the rate limits, the default language and time zone and the name of the instance are not in the interface yet: they stay variables, see [Environment variables](variables.md)."
 msgstr "Les fournisseurs d'authentification unique (`OIDC_*`), les limites de débit, la langue et le fuseau horaire par défaut et le nom de l'instance ne sont pas encore dans l'interface : ils restent des variables, voir [Variables d'environnement](variables.md)."
+
+#~ msgid "`manage.py check --deploy` reads the variables and the defaults, not the database: a setting chosen in the interface is checked when it is saved, not at start-up."
+#~ msgstr "`manage.py check --deploy` lit les variables et les défauts, pas la base de données : un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."
 

@@ -45,8 +45,12 @@ sender, the sign-up rules, the invitation lifetime and the public address need n
 | Sender address | `DEFAULT_FROM_EMAIL` | Outgoing email | `HouseCairn <noreply@localhost>` | At once |
 % settings-table:end
 
-`manage.py check --deploy` reads the variables and the defaults, not the database: a setting
-chosen in the interface is checked when it is saved, not at start-up.
+The start-up checks (`manage.py check`, which `migrate` runs too) read the variables and the
+defaults, with one exception: `housecairn.E001`, which stops the start when
+`HOUSECAIRN_SIGNUP_OPEN` opens sign-up without a mail server, also counts a mail server chosen
+in the interface. That is why the interface refuses to remove that server, or restore its
+default, while sign-up is open. Otherwise a setting chosen in the interface is checked when it
+is saved, not at start-up.
 
 The list of settings is the same one the API returns
 (`GET /api/v1/instance/settings/`, with the variable, the default and the source of each).
@@ -66,9 +70,19 @@ the secrets. A password set by `EMAIL_HOST_PASSWORD` is shown as "set", without 
 - You must be an instance administrator, and signed in recently (five minutes): the
   interface sends you to confirm your sign-in, and the API answers `403` with the code
   `reauthentication_required`. An API token never serves these endpoints.
+- An administrator who signs in through single sign-on only (no password, passkey or
+  authenticator app in HouseCairn) has nothing to confirm a sign-in with: as in
+  django-allauth, their session always counts as recent, and only the session rules of the
+  identity provider apply. To have the five-minute rule, give that account a password or a
+  passkey.
 - A value that is not valid is refused with a message. Open sign-up is refused while no
-  mail server is set. The **Test the connection** button opens a connection to the mail
+  mail server is set, and so is removing the mail server, or restoring its default, while
+  sign-up is open. The **Test the connection** button opens a connection to the mail
   server and closes it; it is never required to save.
+- That button connects, from the instance's own network, to the server and port in force,
+  which an administrator can set to any host, and tells apart a refused login, a failed TLS
+  and no answer: an administrator can use it to probe a host and port. It is kept to
+  instance administrators and limited to five tests a minute for each.
 - Each change is written to the instance's [audit log](../screens/instance.md) with who
   made it, the setting and the old and new values; for a secret, only that it changed.
 
