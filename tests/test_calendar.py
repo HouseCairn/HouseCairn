@@ -328,6 +328,22 @@ class TestFeedSecret:
         with pytest.raises(PermissionDenied):
             feeds.create_feed(alice)
 
+    def test_the_combined_feed_of_an_inactive_account_stops_too(
+        self, anonymous: Client, alice: User, alice_home: Home
+    ) -> None:
+        # Only the account's state closes it: the person is still in the home.
+        combined, raw = feeds.create_feed(alice)
+        assert combined.home_id is None
+        make_task(alice, alice_home, "Filter", 0)
+        assert get_feed(anonymous, raw).status_code == 200
+        alice.is_active = False
+        alice.save()
+        unknown = get_feed(anonymous, "x" * 43)
+        stopped = get_feed(anonymous, raw)
+        assert stopped.status_code == 404
+        assert stopped.content == unknown.content
+        assert b"Filter" not in stopped.content
+
     def test_a_home_that_later_requires_a_provider_stops_its_feed(
         self, anonymous: Client, alice_home: Home, feed: tuple[Feed, str]
     ) -> None:
