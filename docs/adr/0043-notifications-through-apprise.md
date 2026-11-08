@@ -70,9 +70,12 @@ removed since is not called.
   hence no DNS rebinding between the check and the call. Outside a send, resolution is left
   as it was.
 - *Addresses.* The same rule as the test of an identity provider (ADR 0041): loopback,
-  link-local (cloud metadata services), multicast, unspecified and reserved addresses are
-  refused, an IPv6 address that carries an IPv4 one is judged by that IPv4 address, and an
-  address typed as is in the URL is refused when the channel is added.
+  link-local, multicast, unspecified and reserved addresses are refused, an IPv6 address
+  that carries an IPv4 one is judged by that IPv4 address, and an address typed as is in
+  the URL is refused when the channel is added. The metadata services of cloud providers
+  are refused too, although private networks are allowed: `169.254.169.254` (link-local
+  already), `100.100.100.200` (Alibaba Cloud), `192.0.0.192` (Oracle Cloud) and
+  `fd00:ec2::254` (AWS in IPv6), also when an IPv6 address carries one of them.
 - *Redirects.* `requests` follows none while a message is sent: the 3xx answer counts as a
   failure.
 - *Certificates* are verified, whatever `?verify=` says.
@@ -98,7 +101,8 @@ with an account can make the instance call a private address, with the requests 
 the plugins above, and learn whether it answered with success. That is bounded:
 notifications are off until an administrator turns them on, a test is a fixed message
 whose method, path suffix, headers and format are those of the plugin, its answer is one
-bit, and tests are limited. An administrator who does not want it leaves notifications off.
+bit, and tests are limited. An administrator who does not want it leaves notifications off;
+the [hardening](../administration/hardening.md) page says so.
 
 **Messages.** A reminder says the title of the task, the home, the due date and a link to
 the task (when the public address is set): no note, procedure, cost or file leaves the
@@ -107,10 +111,10 @@ escapes it for the format of each channel (HTML or Markdown, as the service expe
 title cannot change the markup of the message. The title of a task and the name of a home
 are put on one line first (each run of line breaks or control characters becomes a space),
 so neither can add a line of its own, such as a fake link under the real one. The title of
-a message is fixed. A message
-carries no image: Apprise would add the address of its icons on github.com (an avatar, a
-logo, a thumbnail), which the app of each person who receives it would then load, so the
-asset has no image address and `include_image`, `footer_logo` and `avatar` are off.
+a message is fixed. A message carries no image: Apprise would add the address of its icons
+on github.com (an avatar, a logo, a thumbnail), which the app of each person who receives
+it would then load, so the asset has no image address and `include_image`, `footer_logo`
+and `avatar` are off.
 
 **Who is reminded.** The person in charge of the task, if their account is active, they
 may still write in the home and they have a channel on. Otherwise (nobody in charge, or a

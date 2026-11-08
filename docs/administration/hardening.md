@@ -25,4 +25,13 @@ docker run -d --name housecairn \
 nothing else; the image's `HEALTHCHECK` calls it.
 
 HouseCairn makes no outgoing connection unless you configure one (single
-sign-on, later the integrations), and sends no telemetry.
+sign-on, notifications, later the integrations), and sends no telemetry.
+
+Turning [notifications](../guides/notifications.md) on lets every account make the
+server call the addresses it types, your local network included, since a self-hosted
+ntfy or Gotify lives there. The server only speaks the protocols of the services it
+offers (no generic webhook, no header or field added by the address), refuses itself,
+link-local addresses and the metadata services of cloud providers, gives up after eight
+seconds per channel, and allows five tests a minute per person; each test tells the person
+only whether the message was sent. If your local network holds services that must not
+receive such calls, leave notifications off, or keep the server out of that network.

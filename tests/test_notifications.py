@@ -2,6 +2,7 @@
 
 import datetime
 import http.server
+import ipaddress
 import json
 import logging
 import re
@@ -206,6 +207,37 @@ class TestOutgoingCalls:
         assert outbound.send(sealed, title="t", body="b") is False
         assert connected == []
         assert refused == [address]
+
+    @pytest.mark.parametrize(
+        "address",
+        [
+            "169.254.169.254",
+            "100.100.100.200",
+            "192.0.0.192",
+            "fd00:ec2::254",
+            "::ffff:100.100.100.200",
+            "64:ff9b::c000:c0",
+        ],
+    )
+    def test_cloud_metadata_is_refused_though_private_networks_are_not(
+        self, alice: User, monkeypatch: pytest.MonkeyPatch, address: str
+    ) -> None:
+        literal = f"[{address}]" if ":" in address else address
+        with pytest.raises(services.ValidationError, match="does not send to this address"):
+            services.add_channel(alice, name="x", url=f"ntfy://{literal}/topic")
+        family = socket.AF_INET6 if ":" in address else socket.AF_INET
+        monkeypatch.setattr(
+            outbound,
+            "_resolve",
+            lambda *a, **k: [(family, socket.SOCK_STREAM, 6, "", (address, 443))],
+        )
+        connected: list[Any] = []
+        monkeypatch.setattr(socket.socket, "connect", lambda self, a: connected.append(a))
+        assert (
+            outbound.send(outbound.seal("ntfys://ntfy.example.com/t"), title="t", body="b") is False
+        )
+        assert connected == []
+        assert not outbound.refused(ipaddress.ip_address("100.100.100.201"))
 
     def test_the_guard_only_acts_while_sending(self, monkeypatch: pytest.MonkeyPatch) -> None:
         outbound.install()

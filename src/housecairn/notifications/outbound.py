@@ -10,9 +10,10 @@ that: each plugin opens its own connections. So:
 - a URL whose options make Apprise read a file (a template, a PGP key) is refused, and so
   is one whose options add headers or fields to the request (`+name`, `-name`, `:name`);
 - while a message is sent, every name resolved in that thread is checked, and the
-  connection can only go to the addresses that were checked: loopback, link-local (cloud
-  metadata), multicast, unspecified and reserved addresses are refused, as for the test
-  of an identity provider (docs/adr/0041); no HTTP redirect is followed;
+  connection can only go to the addresses that were checked: loopback, link-local,
+  multicast, unspecified and reserved addresses are refused, as for the test of an
+  identity provider (docs/adr/0041), and so are the metadata services of cloud providers
+  (`METADATA_ADDRESSES`), private networks being allowed; no HTTP redirect is followed;
 - certificates are verified; each wait of a connection lasts five seconds at most, and a
   send to one channel gives up after `SEND_SECONDS` in all, however slowly the server
   answers; Apprise does not retry;
@@ -36,6 +37,7 @@ from apprise import AppriseAsset, AppriseAttachment, NotifyFormat
 from apprise.utils.parse import parse_qsd
 
 from housecairn.instance import crypto
+from housecairn.instance.providers import _embedded_ipv4
 from housecairn.instance.providers import _forbidden_address as forbidden_address
 
 logger = logging.getLogger("housecairn.notifications")
@@ -56,6 +58,12 @@ EXTRA_PREFIXES = ("qsd+", "qsd-", "qsd:")
 TIMEOUT_SECONDS = 5.0
 SEND_SECONDS = 8.0
 MAX_URL_LENGTH = 2000
+# Metadata services of cloud providers, refused even though private networks are allowed:
+# AWS, Azure, GCP and others (link-local, refused anyway), Alibaba, Oracle, AWS in IPv6.
+METADATA_ADDRESSES = frozenset(
+    ipaddress.ip_address(a)
+    for a in ("169.254.169.254", "100.100.100.200", "192.0.0.192", "fd00:ec2::254")
+)
 
 
 class RefusedError(ValueError):
@@ -80,13 +88,22 @@ _guard: contextvars.ContextVar[_Guard | None] = contextvars.ContextVar("guard", 
 _resolve = socket.getaddrinfo
 
 
+def refused(address: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
+    """True for an address refused to the test of an identity provider (docs/adr/0041) and
+    for the metadata service of a cloud provider, also carried by an IPv6 address."""
+    if forbidden_address(address):
+        return True
+    embedded = _embedded_ipv4(address) if isinstance(address, ipaddress.IPv6Address) else None
+    return address in METADATA_ADDRESSES or embedded in METADATA_ADDRESSES
+
+
 def _guarded_getaddrinfo(host: Any, port: Any, *args: Any, **kwargs: Any) -> Any:
     infos = _resolve(host, port, *args, **kwargs)
     guard = _guard.get()
     if guard is not None:
         for info in infos:
             address = ipaddress.ip_address(str(info[4][0]).split("%", 1)[0])
-            if forbidden_address(address):
+            if refused(address):
                 guard.blocked = True
                 raise OSError("address refused by the instance")
     return infos
@@ -159,7 +176,7 @@ def _plugin(url: str) -> Any:
             literal = ipaddress.ip_address(host.strip("[]"))
         except ValueError:
             literal = None
-        if literal is not None and forbidden_address(literal):
+        if literal is not None and refused(literal):
             raise RefusedError("address")
     plugin.verify_certificate = True
     plugin.socket_connect_timeout = TIMEOUT_SECONDS
