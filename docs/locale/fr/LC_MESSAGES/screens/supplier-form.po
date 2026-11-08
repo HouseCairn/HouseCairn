@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 13:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Add or edit a supplier"
+msgstr "Ajouter ou modifier un fournisseur"
+
+msgid "The form to add a supplier to a [stock item](stock-item.md), at `/h/<home id>/stock/<item id>/suppliers/new/`, and to edit one, at `/h/<home id>/stock/suppliers/<supplier id>/edit/`."
+msgstr "Le formulaire pour ajouter un fournisseur à un [article](stock-item.md), à `/h/<id du logement>/stock/<id de l'article>/suppliers/new/`, et pour en modifier un, à `/h/<id du logement>/stock/suppliers/<id du fournisseur>/edit/`."
+
+msgid "Field"
+msgstr "Champ"
+
+msgid "Content"
+msgstr "Contenu"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Required, 120 characters at most."
+msgstr "Requis, 120 caractères au plus."
+
+msgid "Supplier reference"
+msgstr "Référence fournisseur"
+
+msgid "The reference in their catalogue."
+msgstr "La référence dans leur catalogue."
+
+msgid "Purchase link"
+msgstr "Lien d'achat"
+
+msgid "An `http` or `https` address; any other kind (such as `javascript:`) is refused. HouseCairn never opens it."
+msgstr "Une adresse `http` ou `https` ; tout autre genre (comme `javascript:`) est refusé. HouseCairn ne l'ouvre jamais."
+
+msgid "Last price paid"
+msgstr "Dernier prix payé"
+
+msgid "In the currency of the home."
+msgstr "Dans la devise du logement."
+
+msgid "An item can have several suppliers. **Delete the supplier**, at the bottom of the edit form, asks for confirmation and removes it."
+msgstr "Un article peut avoir plusieurs fournisseurs. **Supprimer le fournisseur**, en bas du formulaire de modification, demande confirmation et le retire."
+

@@ -9,4 +9,5 @@ follow the screens to plan them. Until then, see
 
 rooms-and-items
 tasks-and-recurrence
+stock
 ```
