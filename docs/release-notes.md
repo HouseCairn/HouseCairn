@@ -31,9 +31,17 @@ with it on the project's
 - **Sign-in providers in the interface.** An instance administrator can declare OpenID
   Connect providers on **Instance administration, Sign-in providers**, or by the API, next to
   the one the `OIDC_*` variables set, which stays read only. A **Test the issuer** button
-  reads the provider's configuration. The administrator cannot remove their own last way to
-  sign in, and the only administrator cannot be switched off in the administration site. See
+  reads the provider's configuration. A new issuer clears the client secret unless it is
+  entered again. The administrator cannot remove nor change their own last way to sign in,
+  and the only administrator cannot be switched off in the administration site. See
   [Single sign-on](administration/oidc.md).
+
+- **Rate limits, quotas, language, time zone and name of the instance.** An instance
+  administrator can change the rate limits, the quotas of files of each home, the default
+  language, the time zone and the name of the instance in the interface, each paired with
+  its variable like the other settings. Quotas apply to every way to add a photo, an
+  attachment or a label, and **Files of the homes** shows what each home takes, without its
+  content. See [Settings](administration/settings.md).
 
 - **Stock.** Keep track of spare parts and supplies: items with a threshold, suppliers
   and an append-only ledger of movements from which the quantity is computed, a photo of
@@ -41,6 +49,11 @@ with it on the project's
   [Stock and supplies](guides/stock.md). Label photos are stored in `/data/media/stock/`.
 
 ### Upgrade notes
+
+- **Each home now has quotas of files**: 5 GB and 5000 files by default, deleted files
+  included until they are purged. Raise them in **Instance administration, Settings, Files of
+  a home**, or with `HOUSECAIRN_HOME_STORAGE_MB` and `HOUSECAIRN_HOME_MAX_FILES`.
+  `HOUSECAIRN_PHOTO_MAX_BYTES` and `TIME_ZONE` keep their meaning; set, they lock their field.
 
 - **Environment variables are checked a little more strictly.** A boolean variable such as
   `HOUSECAIRN_SIGNUP_OPEN` or `EMAIL_USE_TLS` must be `true` or `false` (also `1`, `0`, `yes`,

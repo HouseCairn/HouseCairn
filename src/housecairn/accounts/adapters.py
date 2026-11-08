@@ -17,7 +17,7 @@ from django.template.response import TemplateResponse
 from housecairn.accounts import services
 from housecairn.accounts.models import User
 from housecairn.accounts.services import Decision
-from housecairn.instance.config import get_setting
+from housecairn.instance.config import get_setting, instance_name
 
 logger = logging.getLogger("housecairn.security")
 
@@ -69,6 +69,14 @@ class AccountAdapter(DefaultAccountAdapter):  # type: ignore[misc]
             )
             message.attach_alternative(html, "text/html")
         return message
+
+    def format_email_subject(self, subject: str) -> str:
+        """The name of the instance, then the subject (docs/adr/0042).
+
+        The name is a single line (`registry`), so it cannot add a header; Django also
+        refuses a subject with a line break.
+        """
+        return f"{instance_name()}: {subject}"
 
     def is_safe_url(self, url: str | None) -> bool:
         # allauth 65.21 parses `next` with urlparse before Django checks it, and

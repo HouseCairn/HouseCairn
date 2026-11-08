@@ -11,6 +11,7 @@ import json
 import logging
 import threading
 import time
+import zoneinfo
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -221,3 +222,16 @@ def _follow(
 def refresh() -> None:
     """Load the snapshot if it is missing or old, and apply what follows from it."""
     _current()
+
+
+def instance_zone() -> zoneinfo.ZoneInfo:
+    """The time zone of the instance (docs/adr/0042); UTC if the one in force is unknown."""
+    try:
+        return zoneinfo.ZoneInfo(str(get_setting("time_zone")))
+    except (zoneinfo.ZoneInfoNotFoundError, ValueError):
+        return zoneinfo.ZoneInfo("UTC")
+
+
+def instance_name() -> str:
+    """The name of the instance, or the product name when it is empty (docs/adr/0042)."""
+    return str(get_setting("instance_name")).strip() or registry.PRODUCT_NAME

@@ -27,7 +27,7 @@ from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
 from housecairn.homes.models import WRITE_ROLES, Membership
-from housecairn.instance.config import get_setting
+from housecairn.instance.config import get_setting, instance_zone
 from housecairn.notifications import outbound, services
 from housecairn.notifications.models import Channel, Delivery, Kind, Preference
 from housecairn.tasks.models import OPEN_STATUSES, Occurrence
@@ -46,7 +46,7 @@ def zone_of(prefs: Preference) -> datetime.tzinfo:
             return zoneinfo.ZoneInfo(prefs.time_zone)
         except (zoneinfo.ZoneInfoNotFoundError, ValueError):
             pass
-    return timezone.get_default_timezone()
+    return instance_zone()
 
 
 def is_quiet(prefs: Preference, local: datetime.datetime) -> bool:
@@ -154,7 +154,9 @@ def dispatch(now: datetime.datetime | None = None) -> int:
     def prefs_of(user_id: Any) -> Preference:
         return prefs.get(user_id) or Preference(user=users[user_id])
 
-    horizon = timezone.localdate(now) + datetime.timedelta(days=MAX_DAYS_BEFORE + 1)
+    horizon = timezone.localdate(now, instance_zone()) + datetime.timedelta(
+        days=MAX_DAYS_BEFORE + 1
+    )
     rows = (
         Occurrence.objects.filter(
             home_id__in=writers,

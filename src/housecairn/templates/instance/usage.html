@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Files of the homes" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'instance:overview' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Instance administration" %}</a>
+  <h1>{% translate "Files of the homes" %}</h1>
+  <p class="small">{% blocktranslate with space=limits.bytes|filesizeformat files=limits.files %}Each home may hold {{ files }} files taking {{ space }}, deleted files included until they are purged. A home is shown by its identifier and its numbers only: you see no name, no member and no file.{% endblocktranslate %} <a href="{% url 'instance:settings' %}#files">{% translate "Change the quotas" %}</a></p>
+  {% for row in page %}
+    <section class="card">
+      <p class="row-title"><code>{{ row.id }}</code></p>
+      <p class="row-text">{% blocktranslate with space=row.bytes|filesizeformat files=row.files percent=row.percent %}{{ space }} in {{ files }} files, {{ percent }} % of the quota{% endblocktranslate %}</p>
+    </section>
+  {% empty %}
+    <p class="small card">{% translate "No home yet." %}</p>
+  {% endfor %}
+  {% if page.has_other_pages %}
+    <nav class="button-row" aria-label="{% translate 'Pages' %}">
+      {% if page.has_previous %}<a class="button button-secondary button-small" href="?page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+      {% if page.has_next %}<a class="button button-secondary button-small" href="?page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% endblock content %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 01:03+0000\n"
+"POT-Creation-Date: 2026-11-08 15:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -40,5 +40,9 @@ msgstr "**Logements verrouillés par un fournisseur retiré** : quand l'instance
 msgid "**Accounts** opens the administration site, where accounts are deactivated, deleted and made administrators (the address of an account and its password cannot be changed there, and no account is created there). Deleting an account follows the rules of erasure: the only administrator, and the only owner of a home with other members, cannot be deleted."
 msgstr "**Comptes** ouvre le site d'administration, où l'on désactive et supprime des comptes et où l'on nomme des administrateurs (l'adresse d'un compte et son mot de passe ne s'y modifient pas, et aucun compte n'y est créé). La suppression d'un compte suit les règles d'effacement : l'unique administrateur, et l'unique propriétaire d'un logement qui a d'autres membres, ne peuvent pas être supprimés."
 
+msgid "**Files of the homes**: the space and the number of files each home takes, against the quotas, by identifier only (see [Files of the homes](instance-usage.md))."
+msgstr "**Fichiers des logements** : l'espace et le nombre de fichiers qu'occupe chaque logement, au regard des quotas, par son seul identifiant (voir [Fichiers des logements](instance-usage.md))."
+
 msgid "**Audit log**: administration actions, invitations to the instance, accounts created or erased, homes unlocked, homes deleted (without the name), each with who did it and when. It holds nothing about the inside of a home."
 msgstr "**Journal d'audit** : actions d'administration, invitations à l'instance, comptes créés ou effacés, logements déverrouillés, logements supprimés (sans le nom), chacune avec qui l'a faite et quand. Il ne contient rien sur l'intérieur d'un logement."
+

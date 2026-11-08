@@ -2,7 +2,6 @@
 
 from collections.abc import Callable
 
-from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.http import HttpRequest
 from django.template.loader import render_to_string
@@ -11,6 +10,7 @@ from django.utils import translation
 from rest_framework.request import Request
 
 from housecairn.homes.scoping import site_url
+from housecairn.instance.config import get_setting
 from housecairn.instance.models import InstanceInvitation
 
 
@@ -19,7 +19,7 @@ def invitation_link(base_url: str, raw: str) -> str:
 
 
 def send_invitation(invitation: InstanceInvitation, link: str, *, language: str | None) -> None:
-    with translation.override(language or settings.LANGUAGE_CODE):
+    with translation.override(language or get_setting("default_language")):
         context = {"link": link, "expires_at": invitation.expires_at}
         subject = " ".join(
             render_to_string("instance/email/invitation_subject.txt", context).split()

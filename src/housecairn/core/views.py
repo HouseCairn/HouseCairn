@@ -1,3 +1,4 @@
+import json
 from importlib import metadata
 from typing import Any
 
@@ -12,6 +13,7 @@ from django.views.decorators.http import require_safe
 from django.views.generic import TemplateView
 
 from housecairn.core import services
+from housecairn.instance.config import instance_name
 
 
 class IndexView(TemplateView):
@@ -48,7 +50,7 @@ def healthz(request: HttpRequest) -> HttpResponse:
 
 @cache_control(max_age=3600, public=True)
 @require_safe
-def manifest(request: HttpRequest) -> JsonResponse:
+def manifest(request: HttpRequest) -> HttpResponse:
     """Web app manifest: name, colours and icons, so the app can be added to a home screen."""
     icons = [
         {
@@ -59,8 +61,9 @@ def manifest(request: HttpRequest) -> JsonResponse:
         for size in (192, 512)
     ]
     data = {
-        "name": "HouseCairn",
-        "short_name": "HouseCairn",
+        # The name of the instance (docs/adr/0042); JSON escapes it.
+        "name": instance_name(),
+        "short_name": instance_name(),
         "description": _("What needs doing in the house, where, when, with what and for how much."),
         "lang": request.LANGUAGE_CODE,
         "start_url": reverse("index"),
@@ -70,5 +73,8 @@ def manifest(request: HttpRequest) -> JsonResponse:
         "theme_color": "#F7F5F1",
         "icons": icons,
     }
-    response = JsonResponse(data, content_type="application/manifest+json")
-    return response
+    # Escaped like `json_script`: the name of the instance is chosen by an administrator.
+    body = json.dumps(data).translate(
+        {ord("<"): "\\u003c", ord(">"): "\\u003e", ord("&"): "\\u0026"}
+    )
+    return HttpResponse(body, content_type="application/manifest+json")

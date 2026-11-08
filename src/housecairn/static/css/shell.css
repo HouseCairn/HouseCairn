@@ -52,6 +52,22 @@
   letter-spacing: -0.01em;
 }
 
+/* The name of an instance that has its own, under the logo where the logo shows. */
+.brand-instance {
+  display: none;
+  font-size: var(--hc-font-size-sm);
+  font-weight: var(--hc-font-weight-heavy);
+  overflow-wrap: anywhere;
+}
+
+.no-nav .brand-named {
+  flex-direction: column;
+}
+
+.no-nav .brand-instance {
+  display: block;
+}
+
 .appbar-actions {
   display: flex;
   align-items: center;
@@ -207,6 +223,17 @@
 
   .has-nav .brand-logo {
     display: block;
+  }
+
+  .has-nav .brand-named {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .has-nav .brand-instance {
+    display: block;
+    max-width: 100%;
   }
 
   .has-nav .nav {

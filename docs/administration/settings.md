@@ -21,8 +21,9 @@ locked. A variable set to an empty value counts as not set, so a Compose file th
 
 ```{note}
 Every change takes effect at once on the process that saves it, and within a few seconds on
-the others (each process reloads the stored values every five seconds). The mail server, the
-sender, the sign-up rules, the invitation lifetime and the public address need no restart.
+the others (each process reloads the stored values every five seconds). No setting needs a
+restart: the mail server, the sign-up rules, the rate limits, the quotas, the language, the
+time zone and the name of the instance included.
 ```
 
 % settings-table:start
@@ -43,6 +44,21 @@ sender, the sign-up rules, the invitation lifetime and the public address need n
 | SMTP password | `EMAIL_HOST_PASSWORD` | Outgoing email | (none) | At once |
 | SMTP timeout (seconds) | `EMAIL_TIMEOUT` | Outgoing email | `15` | At once |
 | Sender address | `DEFAULT_FROM_EMAIL` | Outgoing email | `HouseCairn <noreply@localhost>` | At once |
+| Name of the instance | `HOUSECAIRN_INSTANCE_NAME` | Name, language and time zone | `HouseCairn` | At once |
+| Default language | `HOUSECAIRN_DEFAULT_LANGUAGE` | Name, language and time zone | `en` | At once |
+| Time zone | `TIME_ZONE` | Name, language and time zone | `UTC` | At once |
+| Sign-ins a minute | `HOUSECAIRN_RATELIMIT_LOGIN` | Rate limits | `30` | At once |
+| Failed sign-ins in five minutes | `HOUSECAIRN_RATELIMIT_LOGIN_FAILURES` | Rate limits | `5` | At once |
+| Sign-ups a minute | `HOUSECAIRN_RATELIMIT_SIGNUP` | Rate limits | `10` | At once |
+| Sign-ups a day | `HOUSECAIRN_RATELIMIT_SIGNUP_DAY` | Rate limits | `60` | At once |
+| Password reset requests a minute | `HOUSECAIRN_RATELIMIT_PASSWORD_RESET` | Rate limits | `20` | At once |
+| Invitations sent a minute | `HOUSECAIRN_RATELIMIT_INVITATIONS` | Rate limits | `10` | At once |
+| Invitations sent a day | `HOUSECAIRN_RATELIMIT_INVITATIONS_DAY` | Rate limits | `50` | At once |
+| Invitation links opened a minute | `HOUSECAIRN_RATELIMIT_INVITATION_LINKS` | Rate limits | `30` | At once |
+| Tests of the mail server or of an issuer a minute | `HOUSECAIRN_RATELIMIT_TESTS` | Rate limits | `5` | At once |
+| Largest file (bytes) | `HOUSECAIRN_PHOTO_MAX_BYTES` | Files of a home | `10485760` | At once |
+| Space for the files of a home (MB) | `HOUSECAIRN_HOME_STORAGE_MB` | Files of a home | `5120` | At once |
+| Number of files of a home | `HOUSECAIRN_HOME_MAX_FILES` | Files of a home | `5000` | At once |
 | Notifications | `HOUSECAIRN_NOTIFICATIONS_ENABLED` | Notifications | `false` | At once |
 | Check for reminders every (minutes) | `HOUSECAIRN_NOTIFICATIONS_INTERVAL` | Notifications | `5` | At once |
 % settings-table:end
@@ -107,6 +123,24 @@ screen shows them read-only, without secrets.
 The **Server** part shows all of them except `HOUSECAIRN_WEB_WORKERS`: only the container's
 start-up program reads it, to start that many web processes; the application itself does not.
 
-Single sign-on providers (`OIDC_*`), the rate limits, the default language and time zone and the
-name of the instance are not in the interface yet: they stay variables, see
-[Environment variables](variables.md).
+The single sign-on provider of the `OIDC_*` variables stays a variable; others are declared in
+the interface (see [Single sign-on](oidc.md)).
+
+## Rate limits, quotas, language, time zone and name
+
+- **Rate limits**: see [Rate limits](rate-limits.md). Each is a whole number within bounds:
+  none can be set to 0 nor switched off, and a day cannot allow fewer than a minute.
+- **Files of a home**: the largest file (in bytes, as `HOUSECAIRN_PHOTO_MAX_BYTES` always was),
+  the space and the number of files each home may hold. They are measured on disk, thumbnails
+  and deleted files included until they are purged, and checked by every way to add a photo,
+  an attachment or a label, in the screens and the API. Over a quota, the upload is refused
+  with a message that gives the numbers. **Instance administration, Files of the homes**
+  shows what each home takes, by its identifier only (see
+  [Files of the homes](../screens/instance-usage.md)).
+- **Default language**: the language of people whose browser asks for none that the instance
+  offers. The language a person's browser asks for always wins.
+- **Time zone**: an IANA zone such as `Europe/Paris`. It decides what today is, and so which
+  tasks are late, in the screens and in the background tasks alike.
+- **Name of the instance**: in the app bar, the title of the pages and the emails, at most 64
+  characters on one line. Empty, the product name is shown. See
+  [ADR 0042](../adr/0042-rate-limits-quotas-language-and-instance-name.md).

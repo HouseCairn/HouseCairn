@@ -15,6 +15,7 @@ from housecairn.instance.api import (
     InstanceProviderView,
     InstanceSettingResetView,
     InstanceSettingsView,
+    InstanceUsageView,
     UnlockHomesView,
 )
 from housecairn.rooms import api as rooms_api
@@ -74,6 +75,7 @@ urlpatterns = [
         name="instance-provider-check",
     ),
     path("instance/unlock/", UnlockHomesView.as_view(), name="instance-unlock"),
+    path("instance/usage/", InstanceUsageView.as_view(), name="instance-usage"),
     path("account/delete/", AccountDeleteView.as_view(), name="account-delete"),
     path("me/home/", tasks_api.MyHomeView.as_view(), name="my-home"),
     path(

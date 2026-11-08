@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 16:33+0000\n"
+"POT-Creation-Date: 2026-11-08 16:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -94,8 +94,53 @@ msgstr "`TIME_ZONE`"
 msgid "`UTC`"
 msgstr "`UTC`"
 
-msgid "Time zone of the instance."
-msgstr "Fuseau horaire de l'instance."
+msgid "Time zone of the households, such as `Europe/Paris`: it decides what today is. Also in the interface."
+msgstr "Fuseau horaire des foyers, tel que `Europe/Paris` : il décide du jour d'aujourd'hui. Aussi dans l'interface."
+
+msgid "`HOUSECAIRN_DEFAULT_LANGUAGE`"
+msgstr "`HOUSECAIRN_DEFAULT_LANGUAGE`"
+
+msgid "`en`"
+msgstr "`en`"
+
+msgid "`en` or `fr`, for browsers that ask for no language the instance offers. Also in the interface."
+msgstr "`en` ou `fr`, pour les navigateurs qui ne demandent aucune langue proposée par l'instance. Aussi dans l'interface."
+
+msgid "`HOUSECAIRN_INSTANCE_NAME`"
+msgstr "`HOUSECAIRN_INSTANCE_NAME`"
+
+msgid "`HouseCairn`"
+msgstr "`HouseCairn`"
+
+msgid "Name in the app bar, the page titles and the emails, at most 64 characters. Also in the interface."
+msgstr "Nom dans la barre de l'application, le titre des pages et les e-mails, au plus 64 caractères. Aussi dans l'interface."
+
+msgid "`HOUSECAIRN_PHOTO_MAX_BYTES`"
+msgstr "`HOUSECAIRN_PHOTO_MAX_BYTES`"
+
+msgid "`10485760`"
+msgstr "`10485760`"
+
+msgid "Largest photo or attachment, in bytes, from 10240 to 104857600. Also in the interface."
+msgstr "Photo ou pièce jointe la plus grosse, en octets, de 10240 à 104857600. Aussi dans l'interface."
+
+msgid "`HOUSECAIRN_HOME_STORAGE_MB`, `HOUSECAIRN_HOME_MAX_FILES`"
+msgstr "`HOUSECAIRN_HOME_STORAGE_MB`, `HOUSECAIRN_HOME_MAX_FILES`"
+
+msgid "`5120`, `5000`"
+msgstr "`5120`, `5000`"
+
+msgid "Space (MB) and number of files each home may hold. Also in the interface."
+msgstr "Espace (Mo) et nombre de fichiers que chaque logement peut contenir. Aussi dans l'interface."
+
+msgid "`HOUSECAIRN_RATELIMIT_*`"
+msgstr "`HOUSECAIRN_RATELIMIT_*`"
+
+msgid "see [Rate limits](rate-limits.md)"
+msgstr "voir [Limites de débit](rate-limits.md)"
+
+msgid "The rate limits, one variable each. Also in the interface."
+msgstr "Les limites de débit, une variable chacune. Aussi dans l'interface."
 
 msgid "`HOUSECAIRN_SIGNUP_OPEN`"
 msgstr "`HOUSECAIRN_SIGNUP_OPEN`"
@@ -285,4 +330,7 @@ msgstr "Un serveur PostgreSQL existant convient aussi : pointez `DATABASE_URL` v
 
 #~ msgid "Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. Set it when `ALLOWED_HOSTS` lists several names, so that every email uses the public one."
 #~ msgstr "Les liens des courriels pointent vers `HOUSECAIRN_SITE_URL` quand elle est renseignée. Renseignez-la quand `ALLOWED_HOSTS` liste plusieurs noms, pour que chaque courriel utilise le nom public."
+
+#~ msgid "Time zone of the instance."
+#~ msgstr "Fuseau horaire de l'instance."
 

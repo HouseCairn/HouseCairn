@@ -21,6 +21,7 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms import conf, images
@@ -170,8 +171,15 @@ def _clear_label(article: Article) -> None:
 
 
 def _write_label(article: Article, processed: images.ProcessedPhoto) -> None:
-    _clear_label(article)
-    article.label.save(processed.extension, ContentFile(processed.data), save=False)
+    # A new label replaces the old one: one more file only when there was none.
+    try:
+        with quotas.room_for(
+            article.home, size=len(processed.data), new_files=0 if article.label else 1
+        ):
+            _clear_label(article)
+            article.label.save(processed.extension, ContentFile(processed.data), save=False)
+    except ValidationError as exc:
+        raise ValidationError({"label": exc.messages}) from exc
     article.label_content_type = processed.content_type
 
 

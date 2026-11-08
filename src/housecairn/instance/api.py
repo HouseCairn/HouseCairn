@@ -22,7 +22,7 @@ from housecairn.apitokens.models import ApiToken
 from housecairn.audit import services as audit
 from housecairn.audit.api import AuditEventSerializer
 from housecairn.audit.models import AuditEvent
-from housecairn.homes import sso
+from housecairn.homes import quotas, sso
 from housecairn.homes.scoping import allow
 from housecairn.instance import config, emails, providers, registry, services, settings_services
 from housecairn.instance.models import InstanceInvitation, OidcProvider
@@ -139,6 +139,51 @@ class UnlockHomesView(APIView):
         except PermissionDenied as exc:  # pragma: no cover - the permission class refuses first
             raise exceptions.PermissionDenied() from exc
         return Response({"unlocked": count})
+
+
+class InstanceUsageView(APIView):
+    """Space and files each home takes, against the quotas (docs/adr/0042).
+
+    A home is its identifier and its numbers only: no name, member or file.
+    """
+
+    permission_classes = [InstanceAdminOnly]
+
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                "HomesUsage",
+                {
+                    "limits": inline_serializer(
+                        "HomeQuotas",
+                        {"bytes": serializers.IntegerField(), "files": serializers.IntegerField()},
+                    ),
+                    "homes": serializers.ListField(
+                        child=inline_serializer(
+                            "HomeUsage",
+                            {
+                                "id": serializers.UUIDField(),
+                                "bytes": serializers.IntegerField(),
+                                "files": serializers.IntegerField(),
+                                "percent": serializers.IntegerField(),
+                            },
+                        )
+                    ),
+                },
+            )
+        },
+    )
+    def get(self, request: Request) -> Response:
+        allowed = quotas.limits()
+        return Response(
+            {
+                "limits": {"bytes": allowed.bytes, "files": allowed.files},
+                "homes": [
+                    {"id": row.id, "bytes": row.bytes, "files": row.files, "percent": row.percent}
+                    for row in quotas.by_home()
+                ],
+            }
+        )
 
 
 def _setting_field(setting: registry.Setting) -> serializers.Field[Any, Any, Any, Any]:

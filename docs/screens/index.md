@@ -20,6 +20,7 @@ member
 invitation
 instance
 instance-settings
+instance-usage
 sign-in-providers
 instance-invitation
 rooms

@@ -1,1 +1,1 @@
-{% load i18n %}{% autoescape off %}{% translate "HouseCairn: you are invited to create an account" %}{% endautoescape %}
+{% load i18n %}{% autoescape off %}{% instance_name as name %}{% blocktranslate %}{{ name }}: you are invited to create an account{% endblocktranslate %}{% endautoescape %}
