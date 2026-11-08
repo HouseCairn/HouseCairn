@@ -18,7 +18,10 @@ name, the sealed Apprise URL, its scheme and service name, on or off), `Preferen
 (first reminder, time of day, quiet hours, daily summary, language, time zone) and
 `Delivery` (one row per message claimed). No home owns a channel. No file of another app
 changed, apart from one-line hooks (navigation, URLs, settings, the registry of settings).
-One new runtime dependency, `apprise`, is added to the list of ADR 0001.
+One new runtime dependency, `apprise`, is added to the list of ADR 0001. The lock holds
+2.1.0 (published on 2026-10-24): 2.2.0 came out the day this record was written, inside the
+seven days that ADR 0014 waits before taking a new version, and 2.1.0 already has what
+this record needs (a total timeout per call, `retry` and `wait` on each plugin).
 
 **The address is a secret.** It is encrypted with `instance.crypto`, the key derived from
 `SECRET_KEY` (ADR 0035), and decrypted only in `notifications.outbound`, at the moment of
