@@ -305,7 +305,9 @@ def _reopen(task: Task, due_on: datetime.date | None) -> None:
     closing; a task that never had a date stays without one.
     """
     last = (
-        task.occurrences.filter(status__in=[Status.DONE, Status.SKIPPED])
+        task.occurrences.filter(
+            status__in=[Status.DONE, Status.SKIPPED], next_occurrence__isnull=True
+        )
         .order_by("-completed_on", "-updated_at", "-id")
         .first()
     )
@@ -315,8 +317,6 @@ def _reopen(task: Task, due_on: datetime.date | None) -> None:
         )
         task.series_start = due_on
         task.save(update_fields=["series_start", "updated_at"])
-    if last is not None and Occurrence.all_objects.filter(follows=last).exists():
-        last = None  # `follows` is one to one: it already has a successor on record
     Occurrence.objects.create(
         home=task.home,
         task=task,

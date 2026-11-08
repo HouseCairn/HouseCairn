@@ -563,6 +563,21 @@ class TestComesBack:
         assert Occurrence.objects.filter(task=task).count() == 1
         assert services.open_occurrence_of(task) == closed
 
+    def test_the_chain_continues_from_the_last_closing(self, alice: User, alice_home: Home) -> None:
+        task = services.create_task(
+            alice, alice_home, title="Chain", due_on=TODAY - DAY, repeat_mode="after_last"
+        )
+        first = services.open_occurrence_of(task)
+        assert first is not None
+        second = services.complete(alice, first).next
+        assert second is not None
+        services.update_task(alice, task, repeat_mode="once")
+        services.complete(alice, second)
+        services.update_task(alice, task, due_on=D(2027, 1, 1), repeat_mode="once")
+        reopened = services.open_occurrence_of(task)
+        assert reopened is not None
+        assert reopened.follows_id == second.id
+
     def test_the_screen_gives_the_task_its_date(
         self, signed_in: Client, alice: User, alice_home: Home
     ) -> None:
