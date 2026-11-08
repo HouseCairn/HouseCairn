@@ -20,6 +20,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.audit import services as audit
 from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
@@ -128,6 +129,7 @@ def create_room(actor: AnyUser, home: Home, **fields: Any) -> Room:
     room.position = 0 if last is None else last + 1
     room.full_clean()
     room.save()
+    audit.record_object("room.created", actor=actor, home_id=home.id, title=room.name)
     return room
 
 
@@ -136,6 +138,9 @@ def update_room(actor: AnyUser, room: Room, **changes: Any) -> Room:
     _apply(room, ROOM_FIELDS | MEMORY_FIELDS, changes)
     room.full_clean()
     room.save()
+    audit.record_object(
+        "room.updated", actor=actor, home_id=room.home_id, title=room.name, fields=sorted(changes)
+    )
     return room
 
 
@@ -146,6 +151,7 @@ def delete_room(actor: AnyUser, room: Room) -> None:
     _soft_delete(Photo.objects.filter(models.Q(room=room) | models.Q(item__room=room)))
     _soft_delete(Item.objects.filter(room=room))
     room.soft_delete()
+    audit.record_object("room.deleted", actor=actor, home_id=room.home_id, title=room.name)
 
 
 @transaction.atomic
@@ -193,6 +199,7 @@ def create_item(actor: AnyUser, room: Room, **fields: Any) -> Item:
     _apply(item, ITEM_FIELDS, fields)
     item.full_clean()
     item.save()
+    audit.record_object("item.created", actor=actor, home_id=item.home_id, title=item.name)
     return item
 
 
@@ -206,6 +213,13 @@ def update_item(actor: AnyUser, item: Item, *, room: Room | None = None, **chang
         item.room = room
     item.full_clean()
     item.save()
+    audit.record_object(
+        "item.updated",
+        actor=actor,
+        home_id=item.home_id,
+        title=item.name,
+        fields=sorted([*changes, *(["room"] if room is not None else [])]),
+    )
     return item
 
 
@@ -214,6 +228,7 @@ def delete_item(actor: AnyUser, item: Item) -> None:
     _require_write(actor, item.home)
     _soft_delete(Photo.objects.filter(item=item))
     item.soft_delete()
+    audit.record_object("item.deleted", actor=actor, home_id=item.home_id, title=item.name)
 
 
 # ---------- photos ----------
@@ -281,6 +296,13 @@ def add_photo(
             photo.image.delete(save=False)
             photo.thumbnail.delete(save=False)
             raise
+    audit.record_object(
+        "photo.added",
+        actor=actor,
+        home_id=home.id,
+        title=(room or item).name,  # type: ignore[union-attr]
+        kind="room" if room is not None else "item",
+    )
     return photo
 
 
@@ -296,6 +318,14 @@ def delete_photo(actor: AnyUser, photo: Photo) -> None:
     """Soft-delete: the file stays on disk until the purge of deleted records."""
     _require_write(actor, photo.home)
     photo.soft_delete()
+    target = photo.room or photo.item
+    audit.record_object(
+        "photo.deleted",
+        actor=actor,
+        home_id=photo.home_id,
+        title=target.name if target is not None else "",
+        kind="room" if photo.room_id else "item",
+    )
 
 
 def photos_for(target: Room | Item) -> models.QuerySet[Photo]:

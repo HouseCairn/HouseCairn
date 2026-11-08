@@ -5,7 +5,8 @@
   <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
   <h1>{% translate "Audit log" %}</h1>
   {% tab_bar "home" %}
-  <p class="small">{% translate "Who changed what in this home: roles, invitations, the sign-in rule, exports. Only owners see it, and it holds no tasks, documents or notes." %}</p>
-  {% include "audit/_entries.html" with entries=page %}
+  <p class="small">{% translate "Who did what in this home and when: rooms, items, tasks, photos and files added, changed or deleted, roles, invitations, the sign-in rule, exports. Each entry names what it concerns by its title only. Only owners see it, and it holds no note, cost, file or procedure." %}</p>
+  {% translate "Nothing recorded yet. As people add, change or delete rooms, items, tasks, photos and files, or change roles and invitations, each action appears here with who did it and when, naming what it concerns by its title." as empty_text %}
+  {% include "audit/_entries.html" with entries=page empty_text=empty_text %}
   {% include "audit/_pager.html" %}
 {% endblock content %}
