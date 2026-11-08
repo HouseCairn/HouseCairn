@@ -1,0 +1,83 @@
+# Spike only (spike/base-images/README.md): the application on Google's
+# distroless Python image for Debian 13. Not the production image: that one is
+# the Dockerfile at the root of the repository, unchanged by this spike.
+#
+# Three stages: the static files and translations are built exactly as in
+# production (python slim, GNU gettext); the virtual environment is built on
+# debian:trixie-slim with Debian's own python3.13, the interpreter distroless
+# ships, so that the venv's interpreter path and ABI match the final image;
+# the final stage has no shell, no package manager and no pip.
+
+FROM ghcr.io/astral-sh/uv:0.13.7@sha256:96f40d3904aad8d0bd010539001d36c8e2188b981e1334471a90c4a1d93bb490 AS uv
+
+# --- Static files, design tokens, translations (as in production) ----------
+FROM python:3.13.18-slim-trixie@sha256:09a17cad02668ae61ece136b4fd36ac3849e14f670ebedb637ea3e15580525bc AS assets
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gettext \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=uv /uv /usr/local/bin/uv
+ENV UV_PROJECT_ENVIRONMENT=/app/.venv \
+    UV_PYTHON=/usr/local/bin/python3.13 \
+    UV_PYTHON_DOWNLOADS=never \
+    UV_LINK_MODE=copy \
+    UV_NO_CACHE=1
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev --no-install-project
+COPY LICENSE NOTICE manage.py ./
+COPY design/ design/
+COPY src/ src/
+RUN DEBUG=true .venv/bin/python manage.py build_design_tokens \
+    && DEBUG=true .venv/bin/python manage.py compilemessages --ignore=.venv \
+    && DEBUG=false SECRET_KEY=build-time-only-not-a-secret HOUSECAIRN_DATA_DIR=/tmp/build-data \
+        STATIC_ROOT=/app/static .venv/bin/python manage.py collectstatic --noinput \
+    && .venv/bin/python -m compileall -q src
+
+# --- Virtual environment for Debian's python3.13 ---------------------------
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS deps
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3.13 \
+    && rm -rf /var/lib/apt/lists/* \
+    && install -d -m 0700 /empty-data
+COPY --from=uv /uv /usr/local/bin/uv
+ENV UV_PROJECT_ENVIRONMENT=/app/.venv \
+    UV_PYTHON=/usr/bin/python3.13 \
+    UV_PYTHON_DOWNLOADS=never \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_NO_CACHE=1
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev --extra postgres --no-install-project
+
+# --- Final stage ------------------------------------------------------------
+FROM gcr.io/distroless/python3-debian13:nonroot@sha256:1c32c3720dc4c7f0c7dbe998737f32c200add6511eca7cec705008be488b87d6
+
+COPY --from=deps /app/.venv /app/.venv
+COPY --from=assets /app/src /app/src
+COPY --from=assets /app/static /app/static
+COPY --from=assets /app/LICENSE /app/NOTICE /app/
+# No shell to run mkdir or chown: the data directory comes from a build stage.
+COPY --from=deps --chown=10001:10001 /empty-data /data
+
+ENV PATH=/app/.venv/bin:/usr/local/bin:/usr/bin:/bin \
+    PYTHONPATH=/app/src \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    DJANGO_SETTINGS_MODULE=housecairn.settings \
+    HOUSECAIRN_DATA_DIR=/data \
+    STATIC_ROOT=/app/static
+
+# Same numeric identity as production, so existing volumes keep working. It
+# has no entry in distroless' /etc/passwd (which only knows root and nonroot).
+USER 10001:10001
+WORKDIR /app
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --start-interval=2s --retries=3 \
+    CMD ["python", "-m", "housecairn.entrypoint", "healthcheck"]
+ENTRYPOINT ["python", "-m", "housecairn.entrypoint"]
+CMD ["run"]

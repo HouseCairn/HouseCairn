@@ -1,0 +1,132 @@
+# Spike only (spike/base-images/README.md): build the application on several
+# base images and measure each one. Started by hand, or by a push to the spike
+# branch. Publishes nothing: no registry login, no push, read-only token. Not a
+# required check, and independent of the Image workflow (image.yml).
+name: Spike base images
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [hermes/2026-11-08-spike-base-images]
+    paths:
+      - .github/workflows/spike-base-images.yml
+      - spike/base-images/**
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Same Grype as image.yml; Syft of the same release train. Archives pinned
+  # by the SHA-256 published with each release.
+  GRYPE_VERSION: "0.121.0"
+  SYFT_VERSION: "1.55.0"
+
+jobs:
+  measure:
+    name: Measure ${{ matrix.candidate }} (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [current, distroless, wolfi, chainguard]
+        arch: [amd64, arm64]
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+            grype_sha256: 64e07133d3486115de647a66581461dccf5c732748a0a3119077395565f15519
+            syft_sha256: bb65249542db5fedeeb4d3f9b018b75e7264dbfbbb10486f044581a92f90490d
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            grype_sha256: 86f570f75ca947ea3dd6486309232bcff6d78e44ba081ae75ab14eab72be3dae
+            syft_sha256: 929bd163db2d7cd2255d3bcb8967208079813d7b46b0c952f7b794d8e2c7d304
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    permissions:
+      contents: read # check out the repository
+    services:
+      postgres:
+        # Same image and digest as the PostgreSQL tests of ci.yml.
+        image: postgres:18.6-alpine3.24@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395
+        env:
+          POSTGRES_USER: housecairn
+          POSTGRES_DB: housecairn
+          # Throwaway database of a disposable runner, reachable from this job only.
+          POSTGRES_PASSWORD: spike-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U housecairn -d housecairn"
+          --health-interval 2s --health-timeout 5s --health-retries 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Grype and Syft (checksums verified)
+        env:
+          ARCH: ${{ matrix.arch }}
+          GRYPE_SHA256: ${{ matrix.grype_sha256 }}
+          SYFT_SHA256: ${{ matrix.syft_sha256 }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          curl -sSfL -o "$RUNNER_TEMP/grype.tar.gz" \
+            "https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_linux_${ARCH}.tar.gz"
+          curl -sSfL -o "$RUNNER_TEMP/syft.tar.gz" \
+            "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_${ARCH}.tar.gz"
+          echo "${GRYPE_SHA256}  $RUNNER_TEMP/grype.tar.gz" | sha256sum --check --strict
+          echo "${SYFT_SHA256}  $RUNNER_TEMP/syft.tar.gz" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/grype.tar.gz" -C "$RUNNER_TEMP/bin" grype
+          tar -xzf "$RUNNER_TEMP/syft.tar.gz" -C "$RUNNER_TEMP/bin" syft
+          "$RUNNER_TEMP/bin/grype" version
+          "$RUNNER_TEMP/bin/syft" version
+
+      - name: Build and measure
+        env:
+          CANDIDATE: ${{ matrix.candidate }}
+          PG_URL: postgres://housecairn:spike-only@pg.internal:5432/housecairn
+        run: |
+          GRYPE="$RUNNER_TEMP/bin/grype" SYFT="$RUNNER_TEMP/bin/syft" \
+            spike/base-images/measure.sh "$CANDIDATE" spike-results
+
+      - name: Keep the measurements
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: spike-${{ matrix.candidate }}-${{ matrix.arch }}
+          path: spike-results/
+          retention-days: 30
+
+  report:
+    name: Report
+    needs: measure
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read # check out the repository (report script)
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download the measurements
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: spike-*
+          path: spike-results
+          merge-multiple: true
+      - name: Write the report
+        run: |
+          python3 spike/base-images/report.py spike-results | tee spike-results/report.md
+          cat spike-results/report.md >>"$GITHUB_STEP_SUMMARY"
+      - name: Keep the report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: spike-base-images-report
+          path: |
+            spike-results/report.md
+            spike-results/*.json
+          retention-days: 30
