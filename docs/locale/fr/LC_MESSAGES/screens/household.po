@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 00:04+0000\n"
+"POT-Creation-Date: 2026-11-08 14:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -24,9 +24,6 @@ msgstr "Foyer et rôles"
 
 msgid "The people of a home and what each may do, at `/h/<home id>/household/`. Open it from the page of the home. Every member sees the list; only owners invite people, change roles and set the sign-in rule."
 msgstr "Les personnes d'un logement et ce que chacune peut faire, sur `/h/<home id>/household/`. Ouvrez-le depuis la page du logement. Chaque membre voit la liste ; seuls les propriétaires invitent, changent les rôles et règlent l'exigence de connexion."
-
-msgid "The household of a home, with its members and a pending invitation, on a computer."
-msgstr "Le foyer d'un logement, avec ses membres et une invitation en attente, sur ordinateur."
 
 msgid "Roles"
 msgstr "Rôles"
@@ -87,4 +84,7 @@ msgstr "Exigence de connexion"
 
 msgid "When the instance offers single sign-on, an owner can require that members open this home only after signing in through one of its providers, such as Company SSO. A password, a passkey or an API token alone then no longer opens the home. Set the rule from a session signed in through that provider; the homes list marks the homes it locks. If the instance stops offering that provider, the page that asks for it offers owners **Remove the sign-in requirement**."
 msgstr "Quand l'instance propose l'authentification unique, un propriétaire peut exiger que les membres n'ouvrent ce logement qu'après s'être connectés par l'un de ses fournisseurs, par exemple Company SSO. Un mot de passe, une clé d'accès ou un jeton d'API seuls n'ouvrent alors plus le logement. Réglez cette exigence depuis une session connectée par ce fournisseur ; la liste des logements signale ceux qu'elle verrouille. Si l'instance cesse de proposer ce fournisseur, la page qui le demande propose aux propriétaires **Retirer l'exigence de connexion**."
+
+#~ msgid "The household of a home, with its members and a pending invitation, on a computer."
+#~ msgstr "Le foyer d'un logement, avec ses membres et une invitation en attente, sur ordinateur."
 

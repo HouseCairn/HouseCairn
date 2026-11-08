@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 22:45+0000\n"
+"POT-Creation-Date: 2026-11-08 14:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -25,9 +25,9 @@ msgstr "Logements"
 msgid "The list of the homes you belong to, at `/h/`. Each name opens the page of that home; **Add a home** creates a new one. A home that requires signing in through a provider you did not use in this session is marked, for example \"Company SSO required\"."
 msgstr "La liste des logements dont vous êtes membre, sur `/h/`. Chaque nom ouvre la page du logement ; **Ajouter un logement** en crée un. Un logement qui exige une connexion par un fournisseur que vous n'avez pas utilisé dans cette session est signalé, par exemple « Company SSO exigé »."
 
-msgid "The list of homes, on a computer."
-msgstr "La liste des logements, sur ordinateur."
-
 #~ msgid "The list of the homes you belong to, at `/h/`. Each name opens the page of that home. There is no screen to create a home yet."
 #~ msgstr "La liste des logements dont vous êtes membre, sur `/h/`. Chaque nom ouvre la page de ce logement. Il n'existe pas encore d'écran pour créer un logement."
+
+#~ msgid "The list of homes, on a computer."
+#~ msgstr "La liste des logements, sur ordinateur."
 

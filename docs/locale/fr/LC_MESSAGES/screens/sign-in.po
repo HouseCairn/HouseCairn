@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 20:34+0000\n"
+"POT-Creation-Date: 2026-11-08 14:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -24,9 +24,6 @@ msgstr "Connexion"
 
 msgid "The page is the form, with your email address and password, and under it one button for the single sign-on provider, if the instance has one. Nothing else: no list of options."
 msgstr "La page est le formulaire, avec votre adresse e-mail et votre mot de passe, et dessous un bouton pour le fournisseur d'authentification unique, si l'instance en a un. Rien d'autre : pas de liste d'options."
-
-msgid "The sign-in page, on a phone."
-msgstr "La page de connexion, sur téléphone."
 
 msgid "With a passkey"
 msgstr "Avec une clé d'accès"
@@ -60,4 +57,7 @@ msgstr "Un lien d'inscription n'apparaît que lorsque l'inscription locale est o
 
 #~ msgid "Sign in with the email address and password of a local account, with a passkey, or through single sign-on when the instance has an OpenID Connect provider ([Single sign-on](../administration/oidc.md)). A link to sign up appears only when local sign-up is open (`HOUSECAIRN_SIGNUP_OPEN=true`)."
 #~ msgstr "Connectez-vous avec l'adresse e-mail et le mot de passe d'un compte local, avec une passkey, ou par authentification unique quand l'instance a un fournisseur OpenID Connect ([Authentification unique](../administration/oidc.md)). Un lien d'inscription n'apparaît que lorsque l'inscription locale est ouverte (`HOUSECAIRN_SIGNUP_OPEN=true`)."
+
+#~ msgid "The sign-in page, on a phone."
+#~ msgstr "La page de connexion, sur téléphone."
 

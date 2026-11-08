@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 00:04+0000\n"
+"POT-Creation-Date: 2026-11-08 14:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -25,9 +25,6 @@ msgstr "Invitation"
 msgid "The page an invitation link opens, at `/invitations/<link>/`. It names the home and the role you are invited with."
 msgstr "La page qu'ouvre un lien d'invitation, sur `/invitations/<link>/`. Elle nomme le logement et le rôle avec lequel vous êtes invité."
 
-msgid "The invitation page, with the form to create an account, on a phone."
-msgstr "La page d'invitation, avec le formulaire de création de compte, sur téléphone."
-
 msgid "**No account yet**: choose a password and **Create the account and join**. The account takes the invited address, which the link has just proved. This works for a link that came by email; a link the person who invited you passed on by hand cannot create an account (the page says so, and says nothing about whether the address has one): sign in with the invited address, or ask an administrator of the instance."
 msgstr "**Pas encore de compte** : choisissez un mot de passe et **Créer le compte et rejoindre**. Le compte prend l'adresse invitée, que le lien vient de prouver. Cela fonctionne pour un lien arrivé par e-mail ; un lien que la personne qui vous a invité a transmis à la main ne peut pas créer de compte (la page le dit, et ne dit rien sur le fait que l'adresse en ait un) : connectez-vous avec l'adresse invitée, ou demandez à un administrateur de l'instance."
 
@@ -39,4 +36,7 @@ msgstr "Le lien ne sert qu'une fois. Un lien déjà utilisé, révoqué, remplac
 
 #~ msgid "**No account yet**: choose a password and **Create the account and join**. The account takes the invited address."
 #~ msgstr "**Pas encore de compte** : choisissez un mot de passe, puis **Créer le compte et rejoindre**. Le compte prend l'adresse invitée."
+
+#~ msgid "The invitation page, with the form to create an account, on a phone."
+#~ msgstr "La page d'invitation, avec le formulaire de création de compte, sur téléphone."
 

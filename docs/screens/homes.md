@@ -4,8 +4,3 @@ The list of the homes you belong to, at `/h/`. Each name opens the page of
 that home; **Add a home** creates a new one. A home that requires signing in
 through a provider you did not use in this session is marked, for example
 "Company SSO required".
-
-```{image} /_generated/screenshots/homes-desktop.png
-:alt: The list of homes, on a computer.
-:class: screenshot
-```

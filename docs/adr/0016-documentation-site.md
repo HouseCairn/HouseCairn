@@ -364,3 +364,28 @@ and AA rules) was run once outside the repository on all 102 pages, light and
 dark, computer and phone: no violation after the script above. axe-core is not
 added as a dependency: it would bring an npm toolchain into the job for a check
 the script above already makes on the criteria that the design can break.
+
+## Amendment, 2026-11-08: no screenshots in CI
+
+The CI takes no screenshot any more, for the site or for review, until one
+dedicated change before the first public release. The step that photographed a
+demonstration instance (`scripts/docs_screenshots.py`) failed intermittently:
+the session was lost after signing in on the phone pass, and the page then timed
+out. As a required check, it held up unrelated pull requests.
+
+- The `Documentation` job keeps its name, the strict build in both languages,
+  `check_docs_site.py`, `check_docs_design.py` (contrast, focus, motion) and the
+  tests. It no longer starts the demonstration instance, takes or uploads the
+  `docs-screenshots` images, or writes the `docs-site-screenshots` images of the
+  built site. The browser stays: `check_docs_design.py` needs it.
+- `Documentation (external links)` no longer installs the browser nor takes
+  screenshots: the build has no image to embed.
+- The pages no longer embed `/_generated/screenshots/` images; the
+  `img.screenshot` styles and the extension that counts a translated alternative
+  text as translated stay for the dedicated change.
+- `scripts/docs_screenshots.py` is removed; it stays in the history of the
+  repository for that change. Playwright stays in the `docs` group: the design
+  checks and the passkey sign-in of `ui.yml` use it.
+
+The sections "Screenshots" and "Workflows" above and the screenshots of
+`check_docs_design.py` describe the state before this amendment.

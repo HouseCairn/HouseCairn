@@ -51,25 +51,8 @@ jobs:
 
       - name: Install the browser (playwright install)
         # Official command of the Playwright version in uv.lock; the browser
-        # is only used on a local demonstration server (docs/adr/0016).
+        # opens the built site for the design checks below (docs/adr/0016).
         run: uv run playwright install --with-deps --only-shell --no-progress chromium
-
-      - name: Screenshots of a demonstration instance
-        run: |
-          uv run python scripts/docs_screenshots.py
-          echo "Screenshots:"
-          ls -l docs/_generated/screenshots
-
-      - name: Keep the screenshots with the run (review evidence)
-        # Also when the step above fails: the partial set and failure-*.png
-        # show the page where it stopped. No second error about missing files.
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: docs-screenshots
-          path: docs/_generated/screenshots/*.png
-          if-no-files-found: warn
-          retention-days: 30
 
       - name: Strict build, English and French
         run: uv run python scripts/build_docs.py
@@ -77,21 +60,8 @@ jobs:
       - name: No external resource, internal links, API coverage
         run: uv run python scripts/check_docs_site.py docs/_build/site
 
-      - id: design
-        name: Contrast, keyboard focus, reduced motion, screenshots of the site
-        run: uv run python scripts/check_docs_design.py docs/_build/site --screenshots docs/_build/site-screenshots
-
-      - name: Keep the screenshots of the site with the run (review evidence)
-        # Also when the check above fails: the images show what failed. Not when
-        # an earlier step failed first: there are no images, and a second error
-        # about missing files would hide the first one.
-        if: ${{ !cancelled() && steps.design.conclusion != 'skipped' }}
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: docs-site-screenshots
-          path: docs/_build/site-screenshots/*.png
-          if-no-files-found: error
-          retention-days: 30
+      - name: Contrast, keyboard focus, reduced motion
+        run: uv run python scripts/check_docs_design.py docs/_build/site
 
       - name: Tests of the site, of its help links and of its scripts
         env:
@@ -131,13 +101,6 @@ jobs:
 
       - name: Install locked dependencies with the docs group (uv sync --locked)
         run: uv sync --locked --group docs
-
-      - name: Install the browser (playwright install)
-        # The pages embed the screenshots, so the build needs them (docs/adr/0016).
-        run: uv run playwright install --with-deps --only-shell --no-progress chromium
-
-      - name: Screenshots of a demonstration instance
-        run: uv run python scripts/docs_screenshots.py
 
       - name: External links (sphinx linkcheck)
         run: uv run python scripts/build_docs.py --linkcheck

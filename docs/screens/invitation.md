@@ -3,12 +3,6 @@
 The page an invitation link opens, at `/invitations/<link>/`. It names the home
 and the role you are invited with.
 
-```{image} /_generated/screenshots/invitation-mobile.png
-:alt: The invitation page, with the form to create an account, on a phone.
-:class: screenshot
-:width: 320px
-```
-
 - **No account yet**: choose a password and **Create the account and join**.
   The account takes the invited address, which the link has just proved. This
   works for a link that came by email; a link the person who invited you

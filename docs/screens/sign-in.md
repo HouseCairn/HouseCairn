@@ -4,12 +4,6 @@ The page is the form, with your email address and password, and under it one
 button for the single sign-on provider, if the instance has one. Nothing else:
 no list of options.
 
-```{image} /_generated/screenshots/sign-in-mobile.png
-:alt: The sign-in page, on a phone.
-:class: screenshot
-:width: 320px
-```
-
 ## With a passkey
 
 There is no passkey button. Tap or click the email field: if you registered a
