@@ -415,6 +415,7 @@ class TestScreens:
         assert "100.00 EUR" in content
         filtered = signed_in.get(web("history", past), {"q": "washer", "status": "done"})
         assert "Fix the tap" in filtered.content.decode()
+        assert "Living room · Pipes Ltd · alice@example.com" in content
         assert "Paint the hall" not in filtered.content.decode()
         nothing = signed_in.get(web("history", past), {"q": "zzz"}).content.decode()
         assert "Nothing matches." in nothing

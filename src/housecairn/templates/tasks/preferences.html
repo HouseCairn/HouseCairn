@@ -9,17 +9,15 @@
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}">
     {{ form.non_field_errors }}
-    <fieldset>
+    <fieldset class="pref-group">
       <legend>{% translate "Group by" %}</legend>
       {{ form.today_group.errors }}
-      {% for radio in form.today_group %}<p>{{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></p>{% endfor %}
+      {% for radio in form.today_group %}<p><label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>{{ radio.tag }}</p>{% endfor %}
     </fieldset>
     {% include "tasks/_field.html" with field=form.horizon_days %}
-    <fieldset>
+    <fieldset class="pref-group">
       <legend>{% translate "Sections" %}</legend>
-      {% include "tasks/_field.html" with field=form.show_overdue %}
-      {% include "tasks/_field.html" with field=form.show_upcoming %}
-      {% include "tasks/_field.html" with field=form.show_season %}
+      {% for field in sections %}<p>{{ field.errors }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</p>{% endfor %}
     </fieldset>
     <button type="submit" class="button-block">{% translate "Save" %}</button>
   </form>

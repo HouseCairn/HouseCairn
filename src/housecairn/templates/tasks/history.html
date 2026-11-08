@@ -69,9 +69,7 @@
           <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
             <span class="row-body">
               <span class="row-title">{{ occurrence.task.title }}</span>
-              <span class="row-text">
-                {% if occurrence.task.room %}{{ occurrence.task.room.name }}{% if occurrence.task.item %} · {{ occurrence.task.item.name }}{% endif %}{% elif occurrence.task.item %}{{ occurrence.task.item.name }}{% endif %}{% if occurrence.task.contractor %} · {{ occurrence.task.contractor.name }}{% endif %}{% if occurrence.completed_by %} · {% firstof occurrence.completed_by.get_full_name occurrence.completed_by.email %}{% endif %}
-              </span>
+              <span class="row-text">{{ occurrence|where_and_who }}</span>
               <span class="pill {% if occurrence.status == 'done' %}pill-success{% else %}pill-ghost{% endif %}">{{ occurrence.get_status_display }} · {{ occurrence.closed_on|date:"SHORT_DATE_FORMAT" }}</span>
               {% if occurrence.actual_cost is not None %}<span class="row-text">{{ occurrence.actual_cost }} {{ home.currency }}</span>{% endif %}
             </span>

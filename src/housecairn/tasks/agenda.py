@@ -264,8 +264,10 @@ def history(home: Home, selection: HistoryFilter) -> models.QuerySet[Occurrence]
 
     A skipped occurrence has no completion date: the day it was closed stands for it.
     """
-    rows = services.occurrences_of(home).annotate(
-        closed_on=Coalesce("completed_on", TruncDate("updated_at"))
+    rows = (
+        services.occurrences_of(home)
+        .select_related("task__contractor", "completed_by")
+        .annotate(closed_on=Coalesce("completed_on", TruncDate("updated_at")))
     )
     rows = rows.filter(status__in=CLOSED_STATUSES)
     if selection.status in ("done", "skipped"):

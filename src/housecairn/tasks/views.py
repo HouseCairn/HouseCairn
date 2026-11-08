@@ -503,7 +503,10 @@ class PreferencesView(LoginRequiredMixin, FormView[Any]):
         return reverse("my-home")
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        return super().get_context_data(next=self._next(), **kwargs)
+        context = super().get_context_data(next=self._next(), **kwargs)
+        form = context["form"]
+        context["sections"] = [form["show_overdue"], form["show_upcoming"], form["show_season"]]
+        return context
 
     def form_valid(self, form: forms.PreferencesForm) -> HttpResponse:
         agenda.update_preferences(self.request.user, **form.cleaned_data)
