@@ -25,6 +25,51 @@ _FREQUENCY: dict[str, Any] = {DAY: DAILY, WEEK: WEEKLY, MONTH: MONTHLY, YEAR: YE
 MAX_INTERVAL = {DAY: 18_250, WEEK: 2_600, MONTH: 600, YEAR: 50}
 
 
+# Predefined seasons, as the months they cover in the northern hemisphere (docs/adr/0045).
+# Meteorological seasons by whole months; the heating season runs from October to April.
+SPRING, SUMMER, AUTUMN, WINTER, HEATING, CUSTOM = (
+    "spring",
+    "summer",
+    "autumn",
+    "winter",
+    "heating",
+    "custom",
+)
+NORTH, SOUTH = "north", "south"
+_NORTH_WINDOWS: dict[str, tuple[int, int]] = {
+    SPRING: (3, 5),
+    SUMMER: (6, 8),
+    AUTUMN: (9, 11),
+    WINTER: (12, 2),
+    HEATING: (10, 4),
+}
+PREDEFINED_SEASONS = tuple(_NORTH_WINDOWS)
+
+
+def season_window(season: str, hemisphere: str = NORTH) -> tuple[int, int] | None:
+    """First and last month of a predefined season in a hemisphere; None for any other value.
+
+    The southern hemisphere is the northern one shifted by six months: its summer is
+    December to February, its heating season April to October.
+    """
+    window = _NORTH_WINDOWS.get(season)
+    if window is None or hemisphere not in (NORTH, SOUTH):
+        return None
+    if hemisphere == NORTH:
+        return window
+    return ((window[0] + 5) % 12 + 1, (window[1] + 5) % 12 + 1)
+
+
+def season_named(start: int | None, end: int | None) -> str:
+    """The predefined season (northern hemisphere) that exactly covers these months, or custom."""
+    if start is None or end is None:
+        return ""
+    for season, window in _NORTH_WINDOWS.items():
+        if window == (start, end):
+            return season
+    return CUSTOM
+
+
 @dataclass(frozen=True)
 class Rule:
     """How a task comes back.

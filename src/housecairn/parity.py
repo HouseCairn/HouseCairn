@@ -14,6 +14,7 @@ PARITY: dict[str, tuple[str, ...]] = {
     "homes:list": ("api-v1:home-list",),
     "homes:create": ("api-v1:home-list",),
     "homes:detail": ("api-v1:home-detail",),
+    "homes:edit": ("api-v1:home-detail",),
     "homes:household": ("api-v1:home-member-list", "api-v1:home-invitation-list"),
     "homes:invite": ("api-v1:home-invitation-list",),
     "homes:invitation-resend": ("api-v1:home-invitation-resend",),

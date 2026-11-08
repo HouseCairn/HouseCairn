@@ -13,7 +13,7 @@ from housecairn.homes.sso import Provider
 class HomeForm(forms.ModelForm[Home]):
     class Meta:
         model = Home
-        fields = ["name", "currency"]
+        fields = ["name", "currency", "hemisphere"]
 
 
 class InviteForm(forms.Form):

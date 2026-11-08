@@ -37,6 +37,7 @@ from housecairn.tasks.models import (
     Contractor,
     Occurrence,
     RepeatMode,
+    Season,
     Status,
     Task,
 )
@@ -62,14 +63,23 @@ TASK_FIELDS = frozenset(
         "repeat_mode",
         "repeat_unit",
         "repeat_interval",
+        "season",
         "season_start_month",
         "season_end_month",
         "hide_days_before",
     }
 )
 RULE_FIELDS = frozenset(
-    {"repeat_mode", "repeat_unit", "repeat_interval", "season_start_month", "season_end_month"}
+    {
+        "repeat_mode",
+        "repeat_unit",
+        "repeat_interval",
+        "season",
+        "season_start_month",
+        "season_end_month",
+    }
 )
+_SEASON_FIELDS = frozenset({"season", "season_start_month", "season_end_month"})
 CONTRACTOR_FIELDS = frozenset({"name", "trade", "note"})
 COMPLETION_FIELDS = frozenset({"completed_on", "actual_cost", "completion_note"})
 _UNSET: Any = object()
@@ -237,6 +247,35 @@ def delete_contractor(actor: AnyUser, contractor: Contractor) -> None:
 # ---------- tasks ----------
 
 
+def _sync_season(task: Task, changes: dict[str, Any]) -> None:
+    """Make the months of the task agree with its season (docs/adr/0045).
+
+    A predefined season takes the window of the hemisphere of the home. Months given without
+    a season (a client that predates seasons) make a custom one; no season means no months.
+    """
+    if "season" not in changes and {"season_start_month", "season_end_month"} & set(changes):
+        given = task.season_start_month is not None or task.season_end_month is not None
+        task.season = Season.CUSTOM if given else ""
+    window = recurrence.season_window(task.season, task.home.hemisphere)
+    if window is not None:
+        task.season_start_month, task.season_end_month = window
+    elif not task.season:
+        task.season_start_month = task.season_end_month = None
+
+
+@transaction.atomic
+def resync_seasons(home: Home) -> int:
+    """Give the tasks of a home on a predefined season the window of its hemisphere."""
+    changed = 0
+    for task in Task.objects.filter(home=home, season__in=recurrence.PREDEFINED_SEASONS):
+        window = recurrence.season_window(task.season, home.hemisphere)
+        if window is not None and window != (task.season_start_month, task.season_end_month):
+            task.season_start_month, task.season_end_month = window
+            task.save(update_fields=["season_start_month", "season_end_month", "updated_at"])
+            changed += 1
+    return changed
+
+
 def _check_links(home: Home, task: Task) -> None:
     """Room, item and assignee of the task belong to its home; the room follows the item."""
     if task.item is not None and not task.room_id:
@@ -270,6 +309,7 @@ def create_task(
     _require_write(actor, home)
     task = Task(home=home)
     _apply(task, TASK_FIELDS, fields)
+    _sync_season(task, fields)
     _check_links(home, task)
     _check_date(due_on, "due_on")
     _check_due(task, due_on)
@@ -290,6 +330,8 @@ def update_task(
     """Change a task. `due_on`, if given, moves the occurrence that is open."""
     _require_write(actor, task.home)
     _apply(task, TASK_FIELDS, changes)
+    if _SEASON_FIELDS & set(changes):
+        _sync_season(task, changes)
     current = open_occurrence_of(task)
     new_due = (current.due_on if current else None) if due_on is _UNSET else due_on
     _check_links(task.home, task)

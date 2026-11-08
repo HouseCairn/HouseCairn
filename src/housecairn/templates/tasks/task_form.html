@@ -18,12 +18,13 @@
       {% include "tasks/_field.html" with field=form.item %}
       {% include "tasks/_field.html" with field=form.due_on %}
     </div>
-    <details class="form-section"{% if form.repeat_mode.errors or form.repeat_interval.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeat_mode.value != "once" %} open{% endif %}>
+    <details class="form-section"{% if form.repeat_mode.errors or form.repeat_interval.errors or form.season.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeat_mode.value != "once" %} open{% endif %}>
       <summary>{% translate "Repeat" %}</summary>
       <div>
         {% include "tasks/_field.html" with field=form.repeat_mode %}
         {% include "tasks/_field.html" with field=form.repeat_interval %}
         {% include "tasks/_field.html" with field=form.repeat_unit %}
+        {% include "tasks/_field.html" with field=form.season %}
         {% include "tasks/_field.html" with field=form.season_start_month %}
         {% include "tasks/_field.html" with field=form.season_end_month %}
         {% include "tasks/_field.html" with field=form.hide_days_before %}

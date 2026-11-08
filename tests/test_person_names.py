@@ -31,9 +31,7 @@ def shared_task(
     occurrence = services.open_occurrence_of(task)
     assert occurrence is not None
     services.complete(bob, occurrence)
-    services.create_task(
-        alice, alice_home, title="Clean the gutters", assignee=bob, due_on=TODAY
-    )
+    services.create_task(alice, alice_home, title="Clean the gutters", assignee=bob, due_on=TODAY)
     return task
 
 

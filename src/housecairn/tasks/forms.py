@@ -11,7 +11,7 @@ from housecairn.accounts.models import User
 from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item
 from housecairn.tasks import files, services
-from housecairn.tasks.models import DisplayPreference, Occurrence, Task
+from housecairn.tasks.models import DisplayPreference, Occurrence, Season, Task
 
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
 
@@ -53,19 +53,25 @@ class TaskForm(forms.ModelForm[Task]):
     item = ItemChoiceField(label=_("Item"), queryset=Item.objects.none(), required=False)
 
     due_on = forms.DateField(label=_("Due on"), required=False, widget=_DATE)
-    season_start_month = forms.TypedChoiceField(
-        label=_("Season starts in"),
+    season = forms.ChoiceField(
+        label=_("Season"),
         required=False,
-        choices=[("", _("No season")), *MONTHS.items()],
-        coerce=int,
-        empty_value=None,
+        choices=[("", _("All year")), *Season.choices],
     )
-    season_end_month = forms.TypedChoiceField(
-        label=_("Season ends in"),
+    season_start_month = forms.TypedChoiceField(
+        label=_("Custom season starts in"),
         required=False,
         choices=[("", "—"), *MONTHS.items()],
         coerce=int,
         empty_value=None,
+    )
+    season_end_month = forms.TypedChoiceField(
+        label=_("Custom season ends in"),
+        required=False,
+        choices=[("", "—"), *MONTHS.items()],
+        coerce=int,
+        empty_value=None,
+        help_text=_("Only used with the season Custom months."),
     )
     new_contractor = forms.CharField(label=_("Or a new contractor"), max_length=120, required=False)
     new_contractor_trade = forms.CharField(
@@ -86,6 +92,7 @@ class TaskForm(forms.ModelForm[Task]):
         "repeat_mode",
         "repeat_interval",
         "repeat_unit",
+        "season",
         "season_start_month",
         "season_end_month",
         "hide_days_before",
@@ -136,6 +143,11 @@ class TaskForm(forms.ModelForm[Task]):
         self._choices("assignee").queryset = services.members_for_forms(home)
         self._choices("contractor").queryset = services.contractors_of(home)
         self.fields["contractor"].required = False
+        hemisphere = home.get_hemisphere_display().lower()
+        self.fields["season"].help_text = _(
+            "The season follows the hemisphere of the home (%(hemisphere)s): change it in the "
+            "settings of the home."
+        ) % {"hemisphere": hemisphere}
         for name in ("room", "item", "assignee", "contractor"):
             self.fields[name].empty_label = "—"  # type: ignore[attr-defined]
         if not with_files:
@@ -151,6 +163,17 @@ class TaskForm(forms.ModelForm[Task]):
 
     def clean(self) -> dict[str, Any]:
         data: dict[str, Any] = super().clean() or {}
+        if (
+            not data.get("season")
+            and data.get("season_start_month")
+            and data.get("season_end_month")
+        ):
+            data["season"] = Season.CUSTOM  # months given without a season: a custom one
+        if data.get("season") != Season.CUSTOM:
+            # The months are the person's own only for a custom season.
+            data["season_start_month"] = data["season_end_month"] = None
+        elif data.get("season_start_month") is None or data.get("season_end_month") is None:
+            self.add_error("season_start_month", _("Give the first and the last month."))
         if data.get("new_contractor") and data.get("contractor"):
             self.add_error("new_contractor", _("Choose a contractor or give a new one, not both."))
         return data

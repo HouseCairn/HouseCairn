@@ -72,6 +72,7 @@ class HomeSerializer(serializers.ModelSerializer[Home]):
             "id",
             "name",
             "currency",
+            "hemisphere",
             "role",
             "required_provider",
             "locked",
@@ -124,6 +125,7 @@ class HomeViewSet(
                 self.request.user,
                 name=data["name"],
                 currency=data.get("currency", "EUR"),
+                hemisphere=data.get("hemisphere", "north"),
             )
         except DjangoValidationError as exc:
             raise _validation(exc) from exc

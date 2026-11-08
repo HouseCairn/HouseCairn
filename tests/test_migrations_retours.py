@@ -105,3 +105,42 @@ def test_the_language_of_a_person_can_be_undone_and_redone() -> None:
         assert "language" in columns
     finally:
         to_latest()
+
+
+def test_a_window_becomes_a_predefined_season_or_a_custom_one() -> None:
+    try:
+        apps = apps_at(("tasks", "0004_displaypreference_language"))
+        home = make_home(apps)
+        task_model = apps.get_model("tasks", "Task")
+        windows = {
+            "Mow": (6, 8),
+            "Heat": (10, 4),
+            "Prune": (2, 3),
+            "Garden": (4, 10),
+            "Dust": (None, None),
+        }
+        for title, (start, end) in windows.items():
+            task_model.objects.create(
+                home=home, title=title, season_start_month=start, season_end_month=end
+            )
+        apps = apps_at(("tasks", "0005_task_season"))
+        seasons = dict(apps.get_model("tasks", "Task").objects.values_list("title", "season"))
+        assert seasons == {
+            "Mow": "summer",
+            "Heat": "heating",
+            "Prune": "custom",
+            "Garden": "custom",
+            "Dust": "",
+        }
+        apps = apps_at(("tasks", "0004_displaypreference_language"))
+        months = {
+            title: (start, end)
+            for title, start, end in apps.get_model("tasks", "Task").objects.values_list(
+                "title", "season_start_month", "season_end_month"
+            )
+        }
+        assert months == windows
+        apps = apps_at(("tasks", "0005_task_season"))
+        assert apps.get_model("tasks", "Task").objects.count() == len(windows)
+    finally:
+        to_latest()

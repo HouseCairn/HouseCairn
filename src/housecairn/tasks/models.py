@@ -52,6 +52,17 @@ class RepeatUnit(models.TextChoices):
     YEAR = recurrence.YEAR, _("years")
 
 
+class Season(models.TextChoices):
+    """Predefined seasons follow the hemisphere of the home; Custom takes its own months."""
+
+    SPRING = recurrence.SPRING, _("Spring")
+    SUMMER = recurrence.SUMMER, _("Summer")
+    AUTUMN = recurrence.AUTUMN, _("Autumn")
+    WINTER = recurrence.WINTER, _("Winter")
+    HEATING = recurrence.HEATING, _("Heating season")
+    CUSTOM = recurrence.CUSTOM, _("Custom months")
+
+
 class Status(models.TextChoices):
     PLANNED = "planned", _("Planned")
     DONE = "done", pgettext_lazy("task", "Done")
@@ -141,6 +152,12 @@ class Task(HomeOwnedModel):
     repeat_interval = models.PositiveIntegerField(
         _("every"), default=1, validators=[MinValueValidator(1)]
     )
+    # The season the task is limited to; empty: the whole year. The months below always hold
+    # the window: those of the predefined season in the hemisphere of the home (kept up to
+    # date when the hemisphere changes), or the person's own for a custom one.
+    season = models.CharField(
+        _("season"), max_length=10, choices=Season.choices, blank=True, default=""
+    )
     season_start_month = models.PositiveSmallIntegerField(
         _("season starts in"), null=True, blank=True
     )
@@ -203,7 +220,7 @@ class Task(HomeOwnedModel):
         found = recurrence.problems(self.rule)
         if "interval" in found:
             errors["repeat_interval"] = _("This interval is out of range.")
-        if "season" in found:
+        if "season" in found or (self.season == Season.CUSTOM and self.season_start_month is None):
             errors["season_start_month"] = _("Give the first and the last month of the season.")
         if errors:
             raise ValidationError(errors)

@@ -10,7 +10,7 @@ from django.utils.translation import ngettext
 from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item, Room
 from housecairn.tasks import markup
-from housecairn.tasks.models import OPEN_STATUSES, Occurrence, RepeatMode, Task
+from housecairn.tasks.models import OPEN_STATUSES, Occurrence, RepeatMode, Season, Task
 
 register = template.Library()
 
@@ -58,6 +58,8 @@ def repeat_summary(task: Task) -> str:
             "year": ngettext("A year after the last time", "%(n)d years after the last time", n),
         }[unit] % {"n": n}
     if task.season_start_month and task.season_end_month:
+        if task.season and task.season != Season.CUSTOM:
+            text += ", " + str(Season(task.season).label)
         text += ", " + _("from %(start)s to %(end)s") % {
             "start": MONTHS[task.season_start_month],
             "end": MONTHS[task.season_end_month],

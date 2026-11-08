@@ -71,6 +71,7 @@ class HomeCreateView(LoginRequiredMixin, FormView[forms.HomeForm]):
             self.request.user,  # type: ignore[arg-type]
             name=form.cleaned_data["name"],
             currency=form.cleaned_data["currency"],
+            hemisphere=form.cleaned_data["hemisphere"],
         )
         return redirect("homes:detail", home_id=home.id)
 
@@ -86,7 +87,30 @@ class HomeDetailView(WebHomeScopedMixin, DetailView[Home]):
         context = super().get_context_data(**kwargs)
         context["role"] = services.role_of(self.request.user, self.object)
         context["member_count"] = services.members(self.object).count()
+        context["can_write"] = services.can_write(self.request.user, self.object)
         return context
+
+
+class HomeEditView(WebHomeScopedMixin, FormView[forms.HomeForm]):
+    """Name, currency and hemisphere of the home, for those who may write in it."""
+
+    template_name = "homes/home_form.html"
+    form_class = forms.HomeForm
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        home = self.get_home()
+        if not services.can_write(self.request.user, home):
+            raise PermissionDenied
+        return {**super().get_form_kwargs(), "instance": home}
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        return super().get_context_data(home=self.get_home(), editing=True, **kwargs)
+
+    def form_valid(self, form: forms.HomeForm) -> HttpResponse:
+        home = self.get_home()
+        services.update_home(self.request.user, home, **form.cleaned_data)
+        messages.success(self.request, _("Home saved."))
+        return redirect("homes:detail", home_id=home.id)
 
 
 class HouseholdView(WebHomeScopedMixin, DetailView[Home]):

@@ -16,6 +16,7 @@ HELP_PAGES: dict[str, str] = {
     "homes:list": "screens/homes/",
     "homes:create": "screens/new-home/",
     "homes:detail": "screens/home/",
+    "homes:edit": "screens/home/",
     "homes:household": "screens/household/",
     "homes:invite": "screens/household/",
     "homes:invitation-resend": "screens/household/",

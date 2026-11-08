@@ -46,6 +46,7 @@ def _tasks(home: Home) -> list[dict[str, Any]]:
             "repeat_mode": t.repeat_mode,
             "repeat_unit": t.repeat_unit,
             "repeat_interval": t.repeat_interval,
+            "season": t.season,
             "season_start_month": t.season_start_month,
             "season_end_month": t.season_end_month,
             "hide_days_before": t.hide_days_before,

@@ -100,6 +100,7 @@ def document(home: Home, files: list[ExportedFile]) -> dict[str, Any]:
             "id": str(home.id),
             "name": home.name,
             "currency": home.currency,
+            "hemisphere": home.hemisphere,
             "required_provider": home.required_provider,
             "created_at": home.created_at.isoformat(),
         },

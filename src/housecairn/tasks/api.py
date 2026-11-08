@@ -48,6 +48,7 @@ from housecairn.tasks.models import (
     Contractor,
     DisplayPreference,
     Occurrence,
+    Season,
     Status,
     Task,
 )
@@ -149,6 +150,13 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
     contractor = serializers.PrimaryKeyRelatedField(
         queryset=Contractor.objects.none(), required=False, allow_null=True
     )
+    season = serializers.ChoiceField(
+        choices=[("", "all year"), *Season.choices],
+        required=False,
+        help_text="`spring`, `summer`, `autumn`, `winter` and `heating` follow the hemisphere "
+        "of the home and set the two months below; `custom` takes the months given; empty is "
+        "the whole year. Months given without a season make a custom one.",
+    )
     due_on = serializers.DateField(
         source="open_due_on",
         required=False,
@@ -183,6 +191,7 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
             "repeat_mode",
             "repeat_unit",
             "repeat_interval",
+            "season",
             "season_start_month",
             "season_end_month",
             "hide_days_before",
@@ -199,7 +208,6 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
             self.fields["item"].queryset = Item.objects.filter(home=home)  # type: ignore[attr-defined]
             self.fields["assignee"].queryset = services.members_for_forms(home)  # type: ignore[attr-defined]
             self.fields["contractor"].queryset = Contractor.objects.filter(home=home)  # type: ignore[attr-defined]
-
 
     def get_assignee_name(self, task: Task) -> str:
         return person_name(task.assignee)

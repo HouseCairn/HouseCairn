@@ -48,7 +48,9 @@ class MeView(APIView):
 
     @extend_schema(responses=MeSerializer)
     def get(self, request: Request) -> Response:
-        return Response(MeSerializer(request.user).data)
+        user = request.user
+        assert isinstance(user, User)  # noqa: S101 - authentication ran
+        return Response(MeSerializer(user).data)
 
     @extend_schema(request=MeSerializer, responses=MeSerializer)
     def patch(self, request: Request) -> Response:
