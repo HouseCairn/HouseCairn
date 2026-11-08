@@ -23,7 +23,7 @@ msgid "History"
 msgstr "Historique"
 
 msgid "What was done or skipped in a home, at `/h/<home id>/history/`, the most recent first. Each row shows the task, where it is, the contractor and who closed it, the outcome with its date, and the real cost when one was entered. A row opens the [task](task.md)."
-msgstr "Ce qui a été fait ou ignoré dans un logement, sur `/h/<home id>/history/`, le plus récent d'abord. Chaque ligne montre la tâche, où elle se trouve, l'intervenant et qui l'a fermée, l'issue avec sa date, et le coût réel quand il a été saisi. Une ligne ouvre la [tâche](task.md)."
+msgstr "Ce qui a été fait ou ignoré dans un logement, sur `/h/<home id>/history/`, le plus récent d'abord. Chaque ligne montre la tâche, où elle se trouve, l'intervenant et qui l'a fermée, le résultat avec sa date, et le coût réel quand il a été saisi. Une ligne ouvre la [tâche](task.md)."
 
 msgid "The form at the top narrows the list; all fields are optional:"
 msgstr "Le formulaire du haut restreint la liste ; tous les champs sont facultatifs :"
@@ -35,7 +35,7 @@ msgid "**Room**, **Item**, **Contractor** and **Done by**."
 msgstr "**Pièce**, **Élément**, **Intervenant** et **Fait par**."
 
 msgid "**Outcome**: done or skipped."
-msgstr "**Issue** : faite ou ignorée."
+msgstr "**Résultat** : faite ou ignorée."
 
 msgid "**From** and **To**: the dates it was closed. A skipped occurrence has no completion date, so the day it was skipped is used."
 msgstr "**Du** et **Au** : les dates de clôture. Une occurrence ignorée n'a pas de date de réalisation : le jour où elle a été ignorée est utilisé."

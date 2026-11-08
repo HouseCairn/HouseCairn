@@ -3178,7 +3178,7 @@ msgid "Done by"
 msgstr "Fait par"
 
 msgid "Outcome"
-msgstr "Issue"
+msgstr "Résultat"
 
 msgid "Done or skipped"
 msgstr "Faites ou ignorées"

@@ -14,7 +14,7 @@
       {{ form.today_group.errors }}
       {% for radio in form.today_group %}<p><label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>{{ radio.tag }}</p>{% endfor %}
     </fieldset>
-    {% include "tasks/_field.html" with field=form.horizon_days %}
+    <p>{{ form.horizon_days.errors }}<label for="{{ form.horizon_days.id_for_label }}">{{ form.horizon_days.label }}</label>{{ form.horizon_days }}</p>
     <fieldset class="pref-group">
       <legend>{% translate "Sections" %}</legend>
       {% for field in sections %}<p>{{ field.errors }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</p>{% endfor %}
