@@ -1,0 +1,104 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 02:12+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Tasks and recurrence"
+msgstr "Tâches et récurrence"
+
+msgid "A task is something to do in the home: check the smoke detector, repaint the living room. Only the title is required; you can add the room, the item, a date, a budget and a procedure when you have them. This guide shows how a task comes back and how to close it."
+msgstr "Une tâche est quelque chose à faire dans le logement : vérifier le détecteur de fumée, repeindre le salon. Seul le titre est requis ; vous pouvez ajouter la pièce, l'élément, une date, un budget et un mode opératoire quand vous les avez. Ce guide montre comment une tâche revient et comment la clore."
+
+msgid "Add a task"
+msgstr "Ajouter une tâche"
+
+msgid "**Tasks** in the navigation, then **Add a task**. From the page of a room or of an item, **Add a task** already knows where the task belongs. Everything else is in the sections of the [form](../screens/task-form.md), opened only when needed."
+msgstr "**Tâches** dans la navigation, puis **Ajouter une tâche**. Depuis la page d'une pièce ou d'un élément, **Ajouter une tâche** sait déjà où la tâche se range. Le reste est dans les sections du [formulaire](../screens/task-form.md), qui ne s'ouvrent qu'au besoin."
+
+msgid "Done, in one tap"
+msgstr "Fait, en un geste"
+
+msgid "**Done** is on every row of the list and on the page of every task, one-time or repeating. The occurrence is closed today and, if the task repeats, the next one appears at once. A banner offers **Undo**: it brings the task back exactly as it was and removes the occurrence that was created. Once you have worked on that next occurrence (postponed it, written a note, done it), **Undo** is no longer possible for the previous one."
+msgstr "**Fait** est sur chaque ligne de la liste et sur la page de chaque tâche, ponctuelle ou répétée. L'occurrence est close aujourd'hui et, si la tâche se répète, la suivante apparaît aussitôt. Un bandeau propose **Annuler** : il remet la tâche exactement comme elle était et supprime l'occurrence qui a été créée. Dès que vous avez travaillé sur cette occurrence suivante (reportée, annotée, faite), **Annuler** n'est plus possible pour la précédente."
+
+msgid "The real date, the cost and a note can be filled in afterwards, from **Details** in the history of the task. **Skip this time** closes an occurrence without doing it, for a season where the chore does not apply, and also creates the next one. **Postpone** moves the date; the occurrence stays on the list as *postponed*."
+msgstr "La date réelle, le coût et une note peuvent se renseigner ensuite, depuis **Détails** dans l'historique de la tâche. **Ignorer cette fois** clôt une occurrence sans la faire, pour une saison où la corvée ne s'applique pas, et crée aussi la suivante. **Reporter** déplace la date ; l'occurrence reste dans la liste, en *reportée*."
+
+msgid "How a task repeats"
+msgstr "Comment une tâche se répète"
+
+msgid "Mode"
+msgstr "Mode"
+
+msgid "The next date is"
+msgstr "La date suivante est"
+
+msgid "Once"
+msgstr "Une fois"
+
+msgid "None: the task is finished when done."
+msgstr "Aucune : la tâche est terminée quand elle est faite."
+
+msgid "Fixed date"
+msgstr "Date fixe"
+
+msgid "The next date of the series that starts at the first date, for example the 15th of every month."
+msgstr "La date suivante de la série qui part de la première date, par exemple le 15 de chaque mois."
+
+msgid "After the last time"
+msgstr "Après la dernière fois"
+
+msgid "The day it was done plus the interval: a filter changed on 3 March, every 6 months, is due again on 3 September."
+msgstr "Le jour où elle a été faite plus l'intervalle : un filtre changé le 3 mars, tous les 6 mois, revient le 3 septembre."
+
+msgid "The months do what you would expect: a task set on the 31st falls on the last day of the shorter months, and a task set on 29 February falls on 28 February in the years that are not leap years. With **Fixed date**, a task done very late does not bring back every date it missed: the next occurrence is the first date of the series after today, and the one not done yet stays on top of the list as arrears."
+msgstr "Les mois font ce qu'on attend : une tâche fixée au 31 tombe le dernier jour des mois plus courts, et une tâche fixée au 29 février tombe le 28 février les années qui ne sont pas bissextiles. Avec **Date fixe**, une tâche faite très en retard ne ramène pas toutes les dates manquées : l'occurrence suivante est la première date de la série après aujourd'hui, et celle qui n'est pas faite reste en tête de la liste, comme arriéré."
+
+msgid "A **season** limits the task to some months (April to October for the lawn, November to March for the heating, over the new year if needed). A date that falls outside the season moves to the first day of the next one."
+msgstr "Une **saison** limite la tâche à certains mois (d'avril à octobre pour la pelouse, de novembre à mars pour le chauffage, à cheval sur le nouvel an si besoin). Une date qui tombe hors saison passe au premier jour de la saison suivante."
+
+msgid "With **Fixed date**, the first day of a season is one more date of the series, not a new start: a monthly task set on 31 March with a season from March to May is due on 30 April and 31 May, then on 1 March of the next year (30 June is out of the season), then on 31 March, 30 April and 31 May again."
+msgstr "Avec **Date fixe**, le premier jour d'une saison est une date de plus de la série, pas un nouveau départ : une tâche mensuelle fixée au 31 mars avec une saison de mars à mai tombe le 30 avril et le 31 mai, puis le 1er mars de l'année suivante (le 30 juin est hors saison), puis de nouveau le 31 mars, le 30 avril et le 31 mai."
+
+msgid "Dates stay within 100 years of today: a task cannot be dated 1850 or 2300."
+msgstr "Les dates restent à moins de 100 ans d'aujourd'hui : une tâche ne peut pas être datée de 1850 ou de 2300."
+
+msgid "**Hide until** keeps a task off the list until a number of days before its date, for what you do not want to see a year ahead; the list tells how many tasks are hidden. Repeating on usage (litres, hours) or from a sensor does not exist yet."
+msgstr "**Masquer jusqu'à** garde une tâche hors de la liste jusqu'à un certain nombre de jours avant sa date, pour ce qu'on ne veut pas voir un an à l'avance ; la liste indique combien de tâches sont masquées. La répétition selon l'usage (litres, heures) ou depuis un capteur n'existe pas encore."
+
+msgid "Dates are days, with no time of day, so a change to summer or winter time never moves a task. \"Today\" is the day in the time zone of the instance (`TIME_ZONE`, see [Variables](../administration/variables.md))."
+msgstr "Les dates sont des jours, sans heure, donc un passage à l'heure d'été ou d'hiver ne déplace jamais une tâche. « Aujourd'hui » est le jour dans le fuseau horaire de l'instance (`TIME_ZONE`, voir [Variables](../administration/variables.md))."
+
+msgid "Procedure and budget"
+msgstr "Mode opératoire et budget"
+
+msgid "The **How to do it** text is written in Markdown (titles, lists, bold, links to web pages) and shown on the page of the task, safely: HTML is not interpreted and images are not loaded. The budgets (labour, materials) are the planned amounts; the real cost is entered when the task is done. The materials with their quantities come with the stock, in a later version."
+msgstr "Le texte **Comment faire** s'écrit en Markdown (titres, listes, gras, liens vers des pages web) et s'affiche sur la page de la tâche, sans risque : le HTML n'est pas interprété et les images ne sont pas chargées. Les budgets (main d'œuvre, matériel) sont les montants prévus ; le coût réel se saisit quand la tâche est faite. Le matériel avec ses quantités viendra avec le stock, dans une version ultérieure."
+
+msgid "Contractors"
+msgstr "Intervenants"
+
+msgid "Name the person or the company on the task: pick one that the home already knows or type a new name and trade in the form. The API also lists and edits them."
+msgstr "Nommez la personne ou l'entreprise sur la tâche : choisissez un intervenant que le logement connaît déjà ou saisissez un nouveau nom et un métier dans le formulaire. L'API les liste et les modifie aussi."
+
+msgid "For scripts"
+msgstr "Pour les scripts"
+
+msgid "Everything above is available through the [API](../api/index.md): tasks, occurrences (with `complete`, `undo`, `skip` and `postpone`) and contractors."
+msgstr "Tout ce qui précède est disponible par l'[API](../api/index.md) : tâches, occurrences (avec `complete`, `undo`, `skip` et `postpone`) et intervenants."

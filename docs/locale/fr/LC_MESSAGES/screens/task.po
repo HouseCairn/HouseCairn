@@ -1,0 +1,53 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 02:12+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Task"
+msgstr "Tâche"
+
+msgid "One task, at `/h/<home id>/tasks/<task id>/`. The address never changes."
+msgstr "Une tâche, sur `/h/<home id>/tasks/<task id>/`. L'adresse ne change jamais."
+
+msgid "**The top card** shows the state of the occurrence to do now (late, today, the date, postponed), the priority, how the task repeats, the title, the room and the item (both link to their page) and the person it is assigned to. Its buttons:"
+msgstr "**La carte du haut** montre l'état de l'occurrence à faire maintenant (en retard, aujourd'hui, la date, reportée), la priorité, la façon dont la tâche se répète, le titre, la pièce et l'élément (tous deux renvoient vers leur page) et la personne à qui elle est confiée. Ses boutons :"
+
+msgid "**Done**: the occurrence is closed today and, if the task repeats, the next one is created. A banner offers **Undo**, which brings back the occurrence and removes the one that was created."
+msgstr "**Fait** : l'occurrence est close aujourd'hui et, si la tâche se répète, la suivante est créée. Un bandeau propose **Annuler**, qui remet l'occurrence et supprime celle qui a été créée."
+
+msgid "**Postpone** asks for a new date, which cannot be in the past. The occurrence keeps the status *postponed* and the page shows the date it was moved from."
+msgstr "**Reporter** demande une nouvelle date, qui ne peut pas être passée. L'occurrence garde le statut *reportée* et la page indique la date d'où elle a été déplacée."
+
+msgid "**Skip this time** closes the occurrence without doing it; the next one is created as for **Done**, and **Undo** is offered too."
+msgstr "**Ignorer cette fois** clôt l'occurrence sans la faire ; la suivante est créée comme pour **Fait**, et **Annuler** est proposé aussi."
+
+msgid "**Edit the task** opens the [task form](task-form.md)."
+msgstr "**Modifier la tâche** ouvre le [formulaire de tâche](task-form.md)."
+
+msgid "When a task done once has been closed, the card shows its outcome and **Undo** reopens it."
+msgstr "Quand une tâche ponctuelle a été close, la carte montre son issue et **Annuler** la rouvre."
+
+msgid "**When** gives the rule of repetition, the date, the masking delay and the next three dates, were each occurrence done on time. **How to do it** shows the procedure written in Markdown: the text is shown as written (HTML is not interpreted), links to web pages are kept, images are never loaded. **Details** lists the estimated duration, the budgets, the contractor and the notes."
+msgstr "**Quand** donne la règle de répétition, la date, le délai de masquage et les trois dates suivantes, si chaque occurrence était faite à temps. **Comment faire** montre le mode opératoire écrit en Markdown : le texte est affiché tel qu'écrit (le HTML n'est pas interprété), les liens vers des pages web sont conservés, les images ne sont jamais chargées. **Détails** liste la durée estimée, les budgets, l'intervenant et les notes."
+
+msgid "**History** lists the occurrences done or skipped, the most recent first, with the real cost and the note. **Details** on a row opens a form to fill in or correct what is known of that time: the date it was done (not in the future), the real cost and a note. Changing the date does not move the occurrence created after it. Once the next occurrence has been changed (postponed, noted or done), **Undo** is refused for the one before it, because it would lose that work."
+msgstr "**Historique** liste les occurrences faites ou ignorées, la plus récente d'abord, avec le coût réel et la note. **Détails** sur une ligne ouvre un formulaire pour renseigner ou corriger ce qui est connu de cette fois : la date à laquelle elle a été faite (pas dans le futur), le coût réel et une note. Changer la date ne déplace pas l'occurrence créée après elle. Dès que l'occurrence suivante a été modifiée (reportée, annotée ou faite), **Annuler** est refusé pour celle d'avant, car il perdrait ce travail."
+
+msgid "Read-only members see everything and none of the buttons."
+msgstr "Les membres en lecture seule voient tout et n'ont aucun bouton."

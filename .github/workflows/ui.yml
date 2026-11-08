@@ -112,6 +112,32 @@ jobs:
               user, room=living, caption='North wall', category='open_walls',
               upload=SimpleUploadedFile('wall.png', picture.getvalue()),
           )
+          # Tasks for the task screens (made-up data): one late, one repeating, one done.
+          import datetime
+          from housecairn.tasks import services as tasks
+          item = rooms.items_of(home).get(name='Wood stove')
+          today = datetime.date.today()
+          tasks.create_task(
+              user, home, title='Change the smoke detector battery', room=living, item=item,
+              priority='high', due_on=today - datetime.timedelta(days=2),
+              repeat_mode='after_last', repeat_unit='year', repeat_interval=1,
+              estimated_minutes=10, material_budget='4.50', assignee=other,
+              procedure='1. Open the cover.\n2. Replace the **9 V battery**.\n3. Press the test button.',
+          )
+          tasks.create_task(
+              user, home, title='Sweep the chimney', room=living, item=item,
+              due_on=today + datetime.timedelta(days=30), repeat_mode='fixed',
+              repeat_unit='year', hide_days_before=14,
+          )
+          tasks.create_task(
+              user, home, title='Mow the lawn', due_on=today + datetime.timedelta(days=3),
+              repeat_mode='fixed', repeat_unit='week', season_start_month=4, season_end_month=10,
+          )
+          tasks.create_task(user, home, title='Order paint for the hall')
+          finished = tasks.create_task(
+              user, home, title='Bleed the radiators', due_on=today - datetime.timedelta(days=9),
+          )
+          tasks.complete(user, tasks.open_occurrence_of(finished), actual_cost='0')
           from housecairn.instance import services as instance_services
           sent = []
           instance_services.invite(

@@ -72,6 +72,13 @@ SCREENS = [
     ("item-form", "{room}items/new/", True),
     ("photo-form", "{room}photos/new/", True),
     ("search", "{home}search/?q=stove", True),
+    # Tasks and occurrences (docs/adr/0031 to 0033).
+    ("tasks", "{home}tasks/", True),
+    ("tasks-done", "{home}tasks/?status=done", True),
+    ("task", "{task}", True),
+    ("task-form", "{home}tasks/new/", True),
+    ("task-edit", "{task}edit/", True),
+    ("task-postpone", "{task}postpone/", True),
 ]
 NOT_FOUND = {"not-found", "invitation-invalid"}
 
@@ -83,7 +90,7 @@ def resolve(page: Page, base: str, path: str, invitations: tuple[str, str]) -> s
         return path.replace("{invitation}", f"/invitations/{invitation}/")
     if "{instance_invitation}" in path:
         return path.replace("{instance_invitation}", f"/join/{instance_invitation}/")
-    placeholders = ("{home}", "{member}", "{room}", "{item}")
+    placeholders = ("{home}", "{member}", "{room}", "{item}", "{task}")
     if not any(placeholder in path for placeholder in placeholders):
         return path
     homes = page.request.get(f"{base}/api/v1/homes/").json()["results"]
@@ -93,6 +100,15 @@ def resolve(page: Page, base: str, path: str, invitations: tuple[str, str]) -> s
         members = page.request.get(f"{base}/api/v1/homes/{home['id']}/members/").json()
         other = next(m for m in members["results"] if m["user"]["email"] != EMAIL)
         return f"{home_path}household/members/{other['id']}/"
+    if "{task}" in path:
+        tasks = page.request.get(f"{base}/api/v1/homes/{home['id']}/tasks/?status=open").json()
+        task = next(
+            t for t in tasks["results"] if t["title"] == "Change the smoke detector battery"
+        )
+        occurrence = task["open_occurrence"]
+        return path.replace("{task}", f"{home_path}tasks/{task['id']}/").replace(
+            "postpone/", f"occurrences/{occurrence}/postpone/"
+        )
     if "{room}" in path or "{item}" in path:
         rooms = page.request.get(f"{base}/api/v1/homes/{home['id']}/rooms/").json()["results"]
         room = next(r for r in rooms if r["name"] == "Living room")

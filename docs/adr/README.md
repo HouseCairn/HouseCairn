@@ -33,6 +33,9 @@ later record supersedes it.
 | [0025](0025-rate-limit-counters-and-workers.md) | Rate-limit counters and several web processes | 2026-11-08 |
 | [0029](0029-rooms-items-and-room-memory.md) | Rooms, items and room memory | 2026-11-08 |
 | [0030](0030-photo-storage-and-processing.md) | Photo storage and processing | 2026-11-08 |
+| [0031](0031-tasks-occurrences-and-recurrence.md) | Tasks, occurrences and recurrence | 2026-11-08 |
+| [0032](0032-dates-and-time-zone-of-tasks.md) | Dates and time zone of tasks | 2026-11-08 |
+| [0033](0033-done-with-undo.md) | "Done" in one gesture, with undo | 2026-11-08 |
 | [0035](0035-instance-settings-in-the-interface.md) | Instance settings in the interface, paired with environment variables | 2026-11-08 |
 | [0036](0036-export-rooms-photos-and-file-erasure.md) | Export of rooms and photos, erasure of files with the home | 2026-11-08 |
 | [0040](0040-merge-queue.md) | Merge queue, required checks on each queue entry | 2026-11-08 |
