@@ -1,6 +1,7 @@
 """The display name of a person: the helper, the profile screen, the API (docs/adr/0045)."""
 
 from collections.abc import Callable
+from datetime import timedelta
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -9,8 +10,10 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from housecairn.accounts import services
+from housecairn.apitokens import services as token_services
 from housecairn.accounts.models import User
 from housecairn.accounts.names import person_name
+from housecairn.homes.models import Home
 
 pytestmark = pytest.mark.django_db
 
@@ -118,3 +121,32 @@ class TestApi:
 
     def test_it_needs_authentication(self, api_client: APIClient) -> None:
         assert api_client.get(reverse("api-v1:me")).status_code in (401, 403)
+
+
+class TestApiTokens:
+    """A token stands for an integration tied to some homes: the account is not its business."""
+
+    def _client(self, alice: User, home: Home, scopes: list[str]) -> APIClient:
+        _token, raw = token_services.issue_token(
+            alice, name="t", scopes=scopes, homes=[home], lifetime=timedelta(days=1)
+        )
+        found = APIClient()
+        found.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
+        return found
+
+    def test_a_write_token_cannot_rename_the_account(self, alice: User, alice_home: Home) -> None:
+        writing = self._client(alice, alice_home, ["read", "write"])
+        response = writing.patch(reverse("api-v1:me"), {"display_name": "Mallory"}, format="json")
+        assert response.status_code == 403
+        alice.refresh_from_db()
+        assert alice.display_name == ""
+
+    def test_a_token_still_reads_the_account(self, alice: User, alice_home: Home) -> None:
+        reading = self._client(alice, alice_home, ["read"])
+        assert reading.get(reverse("api-v1:me")).status_code == 200
+
+    def test_the_person_signed_in_still_renames_it(self, alice: User) -> None:
+        signed_in = APIClient()
+        signed_in.force_authenticate(alice)
+        response = signed_in.patch(reverse("api-v1:me"), {"display_name": "Ally"}, format="json")
+        assert response.status_code == 200

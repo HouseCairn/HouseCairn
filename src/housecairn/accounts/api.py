@@ -16,7 +16,7 @@ from housecairn.homes.scoping import allow
 class SignedInPerson(permissions.BasePermission):
     """A person signed in: an API token, which stands for an integration, is not one."""
 
-    message = "Erasing an account needs the person signed in; API tokens cannot."
+    message = "This changes the account itself and needs the person signed in; API tokens cannot."
 
     def has_permission(self, request: Request, view: object) -> bool:
         return bool(request.user.is_authenticated) and not isinstance(request.auth, ApiToken)
@@ -44,7 +44,17 @@ class MeSerializer(serializers.ModelSerializer[User]):
 
 
 class MeView(APIView):
-    """The signed-in person: who they are, and how they are named."""
+    """The signed-in person: who they are, and how they are named.
+
+    An API token may read it. Changing it is for the person signed in: the name is seen in
+    every home of the person, which is wider than the one home a token can be tied to.
+    """
+
+    def get_permissions(self) -> list[permissions.BasePermission]:
+        found = super().get_permissions()
+        if self.request.method not in permissions.SAFE_METHODS:
+            found.append(SignedInPerson())
+        return found
 
     @extend_schema(responses=MeSerializer)
     def get(self, request: Request) -> Response:
