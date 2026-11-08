@@ -751,6 +751,15 @@ class TestScreens:
         response = signed_in.post(address, {"next": "https://evil.example.com/x"})
         assert response["Location"].startswith(f"/h/{alice_home.id}/tasks/{owner_task.id}/")
 
+    def test_a_return_address_with_a_control_character_is_refused(
+        self, signed_in: Client, alice_home: Home, owner_task: Task, owner_occurrence: Occurrence
+    ) -> None:
+        address = url(
+            "complete", alice_home, task_id=owner_task.id, occurrence_id=owner_occurrence.id
+        )
+        response = signed_in.post(address, {"next": "//\r"})
+        assert response["Location"].startswith(f"/h/{alice_home.id}/tasks/{owner_task.id}/")
+
     def test_a_second_tap_shows_the_reason(
         self, signed_in: Client, alice_home: Home, owner_task: Task, owner_occurrence: Occurrence
     ) -> None:

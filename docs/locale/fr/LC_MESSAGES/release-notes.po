@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 16:45+0000\n"
+"POT-Creation-Date: 2026-11-08 17:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -48,6 +48,12 @@ msgstr "**Limites de débit, quotas, langue, fuseau horaire et nom de l'instance
 
 msgid "**Stock.** Keep track of spare parts and supplies: items with a threshold, suppliers and an append-only ledger of movements from which the quantity is computed, a photo of the label, and the equipment each item fits. Screens, API and a guide: see [Stock and supplies](guides/stock.md). Label photos are stored in `/data/media/stock/`."
 msgstr "**Matériel.** Suivez les pièces détachées et les fournitures : des articles avec un seuil, des fournisseurs et un registre de mouvements en ajout seul dont la quantité est calculée, une photo de l'étiquette et les équipements auxquels chaque article convient. Écrans, API et un guide : voir [Matériel et fournitures](guides/stock.md). Les photos d'étiquettes sont stockées dans `/data/media/stock/`."
+
+msgid "Fixed"
+msgstr "Corrigé"
+
+msgid "**Return addresses with a control character.** A `next` address such as `//` followed by a line break or a tab was accepted after sign-in and sent to the browser as `//%0D`, an address whose host browsers refuse: the redirect failed. Every `next` (sign-in, sign-up, invitations, display preferences, task buttons) now refuses a control or space character and an address that starts with `//` or `\\`, and falls back to the default page."
+msgstr "**Adresses de retour avec un caractère de contrôle.** Une adresse `next` telle que `//` suivie d'un saut de ligne ou d'une tabulation était acceptée après la connexion et envoyée au navigateur sous la forme `//%0D`, une adresse dont les navigateurs refusent l'hôte : la redirection échouait. Toute adresse `next` (connexion, inscription, invitations, préférences d'affichage, boutons des tâches) refuse désormais un caractère de contrôle ou d'espace et une adresse qui commence par `//` ou `\\`, et renvoie vers la page par défaut."
 
 msgid "Upgrade notes"
 msgstr "Notes de mise à jour"
