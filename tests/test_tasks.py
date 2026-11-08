@@ -465,6 +465,99 @@ class TestDateBounds:
         assert "within 100 years of today" in page.content.decode()
 
 
+class TestComesBack:
+    """A task done for good returns when it gets a date or a rule (docs/adr/0031)."""
+
+    def done_once(self, alice: User, alice_home: Home) -> Task:
+        task = services.create_task(alice, alice_home, title="Sweep", due_on=TODAY)
+        occurrence = services.open_occurrence_of(task)
+        assert occurrence is not None
+        services.complete(alice, occurrence)
+        assert services.open_occurrence_of(task) is None
+        return task
+
+    def test_a_done_task_made_yearly_with_a_date_gets_its_occurrence(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = self.done_once(alice, alice_home)
+        services.update_task(
+            alice,
+            task,
+            due_on=D(2027, 3, 1),
+            repeat_mode="fixed",
+            repeat_unit="year",
+            repeat_interval=1,
+        )
+        current = services.open_occurrence_of(task)
+        assert current is not None
+        assert current.due_on == D(2027, 3, 1)
+        assert task.series_start == D(2027, 3, 1)
+        assert Occurrence.objects.filter(task=task).count() == 2
+        # and it goes on: done, the next year is there
+        assert services.complete(alice, current, on=TODAY).next.due_on == D(2028, 3, 1)  # type: ignore[union-attr]
+
+    def test_a_date_alone_brings_it_back(self, alice: User, alice_home: Home) -> None:
+        task = self.done_once(alice, alice_home)
+        services.update_task(alice, task, due_on=D(2026, 9, 1))
+        current = services.open_occurrence_of(task)
+        assert current is not None
+        assert current.due_on == D(2026, 9, 1)
+
+    def test_a_rule_without_a_date_counts_from_the_last_time(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = self.done_once(alice, alice_home)
+        services.update_task(
+            alice, task, repeat_mode="after_last", repeat_unit="month", repeat_interval=6
+        )
+        current = services.open_occurrence_of(task)
+        assert current is not None
+        assert current.due_on == D(2026, 12, 15)
+
+    def test_a_fixed_rule_without_a_date_is_refused(self, alice: User, alice_home: Home) -> None:
+        task = self.done_once(alice, alice_home)
+        with pytest.raises(ValidationError):
+            services.update_task(alice, task, repeat_mode="fixed")
+        assert services.open_occurrence_of(task) is None
+
+    def test_a_title_change_leaves_a_done_task_done(self, alice: User, alice_home: Home) -> None:
+        task = self.done_once(alice, alice_home)
+        services.update_task(alice, task, title="Sweep the yard")
+        assert services.open_occurrence_of(task) is None
+
+    def test_undo_of_the_last_closing_removes_the_one_that_came_back(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = self.done_once(alice, alice_home)
+        services.update_task(alice, task, due_on=D(2027, 3, 1))
+        closed = Occurrence.objects.get(task=task, status=Status.DONE)
+        services.undo(alice, closed)
+        assert Occurrence.objects.filter(task=task).count() == 1
+        assert services.open_occurrence_of(task) == closed
+
+    def test_the_screen_gives_the_task_its_date(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        task = self.done_once(alice, alice_home)
+        response = signed_in.post(
+            url("edit", alice_home, task_id=task.id),
+            {
+                "title": "Sweep",
+                "priority": "normal",
+                "repeat_mode": "fixed",
+                "repeat_interval": "1",
+                "repeat_unit": "year",
+                "hide_days_before": "0",
+                "due_on": "2027-03-01",
+            },
+        )
+        assert response.status_code == 302
+        current = services.open_occurrence_of(task)
+        assert current is not None
+        assert current.due_on == D(2027, 3, 1)
+        assert "2027" in signed_in.get(response["Location"]).content.decode()
+
+
 class TestQueries:
     def test_arrears_stay_on_top_and_undated_come_last(self, alice: User, alice_home: Home) -> None:
         late = services.create_task(alice, alice_home, title="late", due_on=TODAY - 10 * DAY)

@@ -282,7 +282,11 @@ def update_task(
         task.series_start = new_due
     task.full_clean()
     task.save()
-    if current is not None and (due_on is not _UNSET or "hide_days_before" in changes):
+    if current is None:
+        # A task that was done for good comes back when it gets a date or a rule.
+        if new_due is not None or task.repeats:
+            _reopen(task, new_due)
+    elif due_on is not _UNSET or "hide_days_before" in changes:
         current.due_on = new_due
         current.visible_from = _visible_from(task, new_due)
         if due_on is not _UNSET and current.status == Status.POSTPONED:
@@ -292,6 +296,34 @@ def update_task(
             update_fields=["due_on", "visible_from", "status", "postponed_from", "updated_at"]
         )
     return task
+
+
+def _reopen(task: Task, due_on: datetime.date | None) -> None:
+    """Give a task with no open occurrence the one it lacks (docs/adr/0031).
+
+    With no date given, a rule that counts from the last time starts from the last
+    closing; a task that never had a date stays without one.
+    """
+    last = (
+        task.occurrences.filter(status__in=[Status.DONE, Status.SKIPPED])
+        .order_by("-completed_on", "-updated_at", "-id")
+        .first()
+    )
+    if due_on is None and last is not None and last.completed_on is not None:
+        due_on = recurrence.next_due(
+            task.rule, anchor=None, due_on=last.due_on, done_on=last.completed_on
+        )
+        task.series_start = due_on
+        task.save(update_fields=["series_start", "updated_at"])
+    if last is not None and Occurrence.all_objects.filter(follows=last).exists():
+        last = None  # `follows` is one to one: it already has a successor on record
+    Occurrence.objects.create(
+        home=task.home,
+        task=task,
+        due_on=due_on,
+        visible_from=_visible_from(task, due_on),
+        follows=last,
+    )
 
 
 @transaction.atomic

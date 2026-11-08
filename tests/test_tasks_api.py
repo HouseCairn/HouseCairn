@@ -257,6 +257,39 @@ class TestDateBounds:
         assert time.perf_counter() - began < 0.5
 
 
+class TestComesBack:
+    def test_a_done_task_given_a_date_and_a_rule_gets_its_occurrence(
+        self, client_of_alice: APIClient, alice_home: Home, alice: User
+    ) -> None:
+        created = client_of_alice.post(
+            api("task-list", alice_home),
+            {"title": "Sweep", "due_on": str(TODAY)},
+            format="json",
+        ).json()
+        done = client_of_alice.post(
+            api("occurrence-complete", alice_home, occurrence_id=created["open_occurrence"]),
+            {},
+            format="json",
+        )
+        assert done.status_code == 200
+        detail = api("task-detail", alice_home, task_id=created["id"])
+        assert client_of_alice.get(detail).json()["open_occurrence"] is None
+        patched = client_of_alice.patch(
+            detail,
+            {
+                "due_on": "2027-03-01",
+                "repeat_mode": "fixed",
+                "repeat_unit": "year",
+                "repeat_interval": 1,
+            },
+            format="json",
+        )
+        assert patched.status_code == 200, patched.content
+        body = patched.json()
+        assert body["open_occurrence"] is not None
+        assert body["due_on"] == "2027-03-01"
+
+
 class TestOccurrences:
     def test_done_creates_the_next_and_undo_takes_it_back(
         self,
