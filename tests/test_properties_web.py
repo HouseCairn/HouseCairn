@@ -10,10 +10,12 @@ starts from, so they do not depend on the order.
 import json
 import re
 from typing import Any
+from urllib.parse import urlsplit
 
 import pytest
 from allauth.socialaccount.models import SocialAccount, SocialLogin
-from django.test import Client
+from django.http import HttpResponseRedirect
+from django.test import Client, RequestFactory
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from hypothesis import HealthCheck, example, given, settings
@@ -24,6 +26,7 @@ from housecairn.accounts.adapters import provider_identity
 from housecairn.accounts.models import User
 from housecairn.apitokens.models import Scope
 from housecairn.apitokens.services import issue_token
+from housecairn.core.redirects import is_safe_redirect
 from housecairn.homes.models import Home
 
 # Fixtures are created once per test and shared by its examples, on purpose.
@@ -167,6 +170,15 @@ next_values = st.text(max_size=40) | st.builds(
 @given(target=next_values, signed_in=st.booleans())
 # Found by the `dev` profile: allauth's urlparse raised ValueError (a 500).
 @example(target="//[", signed_in=False)
+# Found in CI: Python strips "\r", "\n" and "\t" before parsing (bpo-43882), so Django
+# saw a path; the browser received "//%0D", a scheme-relative address.
+@example(target="//\r", signed_in=True)
+@example(target="//\n", signed_in=True)
+@example(target="//\t", signed_in=True)
+@example(target="/\t/evil.example", signed_in=True)
+@example(target="/\\\r", signed_in=True)
+@example(target="\\\\/\n", signed_in=True)
+@example(target="\\/\x00", signed_in=True)
 def test_sign_in_never_redirects_to_another_host(
     client: Client, alice: User, target: str, signed_in: bool
 ) -> None:
@@ -180,3 +192,19 @@ def test_sign_in_never_redirects_to_another_host(
     if response.status_code == 302:
         location = response["Location"]
         assert url_has_allowed_host_and_scheme(location, allowed_hosts={"testserver"}), location
+        assert not location.startswith(("//", "\\")), location
+
+
+@given(target=next_values)
+@example(target="//\r")
+@example(target="/\\\r")
+@example(target="\uff0f\uff0fevil.example")
+def test_an_accepted_next_stays_on_this_site(target: str) -> None:
+    """Every `next` the shared rule accepts is sent as an address on this host only."""
+    request = RequestFactory().get("/")
+    if not is_safe_redirect(target, request):
+        return
+    location = HttpResponseRedirect(target)["Location"]
+    assert not location.startswith(("//", "\\")), location
+    assert urlsplit(location).netloc in {"", "testserver"}, location
+    assert not re.search(r"%(0[0-9A-F]|1[0-9A-F]|7F|20)", location, re.IGNORECASE), location

@@ -40,6 +40,14 @@ with it on the project's
   the label, and the equipment each item fits. Screens, API and a guide: see
   [Stock and supplies](guides/stock.md). Label photos are stored in `/data/media/stock/`.
 
+### Fixed
+
+- **Return addresses with a control character.** A `next` address such as `//` followed by
+  a line break or a tab was accepted after sign-in and sent to the browser as `//%0D`, an
+  address whose host browsers refuse: the redirect failed. Every `next` (sign-in, sign-up,
+  invitations, display preferences, task buttons) now refuses a control or space character
+  and an address that starts with `//` or `\`, and falls back to the default page.
+
 ### Upgrade notes
 
 - **Each home now has quotas of files**: 5 GB and 5000 files by default, deleted files

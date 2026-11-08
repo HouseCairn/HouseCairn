@@ -55,7 +55,12 @@ find it again by itself. The first runs found four: OIDC claims that are not a
 JSON object raised an exception during sign-in; a `next` address such as `//[`
 made the sign-in page fail (allauth parses it before Django checks it);
 `image_tags.py` accepted a ref or a SHA followed by a line break; and
-`check_external_urls.py` missed URLs with a port, a query or no path.
+`check_external_urls.py` missed URLs with a port, a query or no path. A fifth
+came later, from the `dev` profile during a review: a `next` such as `//\r` was accepted
+(Python's `urlsplit` drops tabs and line breaks before Django reads the
+address) and sent as `Location: //%0D`, a scheme-relative address. Every
+`next` now passes one shared rule first, `housecairn.core.redirects`, and the
+inputs stay as explicit examples.
 
 ## Consequences
 
