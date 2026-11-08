@@ -33,13 +33,19 @@ jobs:
         candidate: [current, distroless, wolfi, chainguard]
         arch: [amd64, arm64]
         include:
+          # Release assets by their API id (the github.com/.../releases/download
+          # links answered 504 when this spike ran), then checked by SHA-256.
           - arch: amd64
             runner: ubuntu-24.04
+            grype_asset: 657365424
             grype_sha256: 64e07133d3486115de647a66581461dccf5c732748a0a3119077395565f15519
+            syft_asset: 657153873
             syft_sha256: bb65249542db5fedeeb4d3f9b018b75e7264dbfbbb10486f044581a92f90490d
           - arch: arm64
             runner: ubuntu-24.04-arm
+            grype_asset: 657365425
             grype_sha256: 86f570f75ca947ea3dd6486309232bcff6d78e44ba081ae75ab14eab72be3dae
+            syft_asset: 657153891
             syft_sha256: 929bd163db2d7cd2255d3bcb8967208079813d7b46b0c952f7b794d8e2c7d304
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 40
@@ -67,15 +73,16 @@ jobs:
 
       - name: Install Grype and Syft (checksums verified)
         env:
-          ARCH: ${{ matrix.arch }}
+          GRYPE_ASSET: ${{ matrix.grype_asset }}
           GRYPE_SHA256: ${{ matrix.grype_sha256 }}
+          SYFT_ASSET: ${{ matrix.syft_asset }}
           SYFT_SHA256: ${{ matrix.syft_sha256 }}
         run: |
           mkdir -p "$RUNNER_TEMP/bin"
-          curl -sSfL -o "$RUNNER_TEMP/grype.tar.gz" \
-            "https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_linux_${ARCH}.tar.gz"
-          curl -sSfL -o "$RUNNER_TEMP/syft.tar.gz" \
-            "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_${ARCH}.tar.gz"
+          curl -sSfL --retry 3 -H 'Accept: application/octet-stream' -o "$RUNNER_TEMP/grype.tar.gz" \
+            "https://api.github.com/repos/anchore/grype/releases/assets/${GRYPE_ASSET}"
+          curl -sSfL --retry 3 -H 'Accept: application/octet-stream' -o "$RUNNER_TEMP/syft.tar.gz" \
+            "https://api.github.com/repos/anchore/syft/releases/assets/${SYFT_ASSET}"
           echo "${GRYPE_SHA256}  $RUNNER_TEMP/grype.tar.gz" | sha256sum --check --strict
           echo "${SYFT_SHA256}  $RUNNER_TEMP/syft.tar.gz" | sha256sum --check --strict
           tar -xzf "$RUNNER_TEMP/grype.tar.gz" -C "$RUNNER_TEMP/bin" grype
