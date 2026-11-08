@@ -30,6 +30,12 @@ and the `Content-Type` sent by the client are never read. A text, HTML or SVG
 file renamed `.jpg`, a truncated image, any other format (GIF, BMP, TIFF, HEIC)
 and an image of more than 40 megapixels are refused with a validation error.
 
+**Multi-picture JPEG is accepted.** Phones in portrait or HDR mode (iPhone, some
+Samsung models) send a JPEG with several images, which Pillow opens as `MPO`. It
+is treated as a JPEG: only its first image, the photo, is decoded and written
+again, so the auxiliary images, the depth map, the gain map and all metadata are
+dropped like those of any other upload.
+
 **The image is written again.** After a full decode, the orientation is applied
 to the pixels and the image is encoded from them in the same format (JPEG at
 quality 85, PNG, WebP at quality 85), reduced to 2,560 pixels on its longest
@@ -72,7 +78,10 @@ written, they are removed.
 - The database and `/data/media/` are backed up together (the backup
   documentation already lists both).
 - Encoding happens in the request, and a very large image takes noticeable time
-  to decode and write again. A background task (ADR 0008) is the way out if
+  to decode and write again. Measured on a PNG of 40
+  megapixels weighing 165 KB: about 3 seconds and a peak of about 370 MB of
+  memory; size the memory of the container for it, with room for several uploads
+  at once. A background task (ADR 0008) is the way out if
   that proves too slow.
 - Uploads over 2.5 MB go through Django's temporary files, in the container's
   `/tmp` (a 64 MB tmpfs in the example deployment, ADR 0015): the default limit

@@ -1,7 +1,8 @@
 """Checking and re-encoding an uploaded photo (docs/adr/0030).
 
-The type is decided by decoding the content, restricted to JPEG, PNG and WebP: the
-file name and the header sent by the client are never looked at. The image is then
+The type is decided by decoding the content, restricted to JPEG (multi-picture JPEG
+included), PNG and WebP: the file name and the header sent by the client are never
+looked at. The image is then
 decoded in full, turned upright, and written again from its pixels, so that nothing
 of the original file survives: EXIF (location included), XMP, comments and any
 bytes appended or hidden in the file are gone. Only the colour profile is kept.
@@ -48,7 +49,7 @@ def _decode(data: bytes) -> Image.Image:
         raise
     except (UnidentifiedImageError, Image.DecompressionBombError, OSError, SyntaxError, ValueError):
         raise _invalid() from None
-    if image.format not in FORMATS:  # pragma: no cover - `formats` already restricts it
+    if image.format not in (*FORMATS, "MPO"):  # pragma: no cover - `formats` restricts it
         raise _invalid()
     return image
 
@@ -72,7 +73,9 @@ def _flatten(image: Image.Image) -> Image.Image:
 def process(data: bytes) -> ProcessedPhoto:
     """Validate and re-encode; raises ValidationError for anything but a decodable image."""
     original = _decode(data)
-    fmt = str(original.format)
+    # A multi-picture JPEG (phones in portrait or HDR) opens as "MPO": it is a JPEG whose
+    # first image is the photo. Re-encoding keeps that image only.
+    fmt = "JPEG" if original.format == "MPO" else str(original.format)
     profile = original.info.get("icc_profile")
     upright = ImageOps.exif_transpose(original)
     # Keep nothing from the file but the colour profile and, for a palette image, the

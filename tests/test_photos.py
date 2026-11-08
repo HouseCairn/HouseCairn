@@ -15,7 +15,7 @@ from housecairn.accounts.models import User
 from housecairn.homes.models import Home
 from housecairn.rooms import conf, images, services
 from housecairn.rooms.models import Item, Photo, Room
-from tests.rooms_support import image_bytes, noise_image, upload
+from tests.rooms_support import GPS, image_bytes, noise_image, upload
 
 pytest_plugins = ("tests.rooms_fixtures",)
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("media_root")]
@@ -145,6 +145,40 @@ class TestMetadata:
         assert b"Test camera" not in data
         assert b"secret comment" not in data
         assert "comment" not in after.info
+
+    def test_a_multi_picture_jpeg_is_accepted_as_its_first_image(
+        self, alice: User, owner_room: Room
+    ) -> None:
+        """Phones in portrait or HDR send an MPO: a JPEG with auxiliary images."""
+        exif = Image.Exif()
+        exif[0x010F] = "Test camera"
+        exif[0x8825] = GPS
+        buffer = io.BytesIO()
+        Image.new("RGB", (64, 48), "red").save(
+            buffer,
+            format="MPO",
+            save_all=True,
+            append_images=[Image.new("RGB", (32, 24), "blue")],
+            exif=exif,
+        )
+        original = buffer.getvalue()
+        before = Image.open(io.BytesIO(original))
+        assert before.format == "MPO"
+        assert getattr(before, "n_frames", 1) == 2
+        assert dict(before.getexif().get_ifd(0x8825))
+
+        photo = services.add_photo(alice, room=owner_room, upload=upload(original))
+
+        data = stored(photo)
+        after = Image.open(io.BytesIO(data))
+        assert photo.content_type == "image/jpeg"
+        assert after.format == "JPEG"  # a plain JPEG, not an MPO
+        assert getattr(after, "n_frames", 1) == 1
+        assert after.size == (64, 48)
+        assert len(after.getexif()) == 0
+        assert not dict(after.getexif().get_ifd(0x8825))
+        assert b"Test camera" not in data
+        assert b"MPF" not in data  # the multi-picture index is gone
 
     @pytest.mark.parametrize("fmt", ["PNG", "WEBP"])
     def test_other_formats_keep_nothing_either(
