@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 01:59+0000\n"
+"POT-Creation-Date: 2026-11-08 02:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -188,6 +188,9 @@ msgstr "`DEFAULT_FROM_EMAIL`"
 msgid "`HouseCairn <noreply@localhost>`"
 msgstr "`HouseCairn <noreply@localhost>`"
 
+msgid "`manage.py check --deploy` reads the variables and the defaults, not the database: a setting chosen in the interface is checked when it is saved, not at start-up."
+msgstr "`manage.py check --deploy` lit les variables et les défauts, pas la base de données : un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."
+
 msgid "The list of settings is the same one the API returns (`GET /api/v1/instance/settings/`, with the variable, the default and the source of each)."
 msgstr "La liste des réglages est celle que renvoie l'API (`GET /api/v1/instance/settings/`, avec la variable, le défaut et l'origine de chacun)."
 
@@ -260,8 +263,9 @@ msgstr "`HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`"
 msgid "Decides who may become the first administrator."
 msgstr "Décide qui peut devenir le premier administrateur."
 
+msgid "The **Server** part shows all of them except `HOUSECAIRN_WEB_WORKERS`: only the container's start-up program reads it, to start that many web processes; the application itself does not."
+msgstr "La partie **Serveur** les affiche toutes sauf `HOUSECAIRN_WEB_WORKERS` : seul le programme de démarrage du conteneur la lit, pour lancer autant de processus web ; l'application elle-même ne la lit pas."
+
 msgid "Single sign-on providers (`OIDC_*`), the rate limits, the default language and time zone and the name of the instance are not in the interface yet: they stay variables, see [Environment variables](variables.md)."
 msgstr "Les fournisseurs d'authentification unique (`OIDC_*`), les limites de débit, la langue et le fuseau horaire par défaut et le nom de l'instance ne sont pas encore dans l'interface : ils restent des variables, voir [Variables d'environnement](variables.md)."
 
-msgid "`manage.py check --deploy` reads the variables and the defaults, not the database: a setting chosen in the interface is checked when it is saved, not at start-up."
-msgstr "`manage.py check --deploy` lit les variables et les défauts, pas la base de données : un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."

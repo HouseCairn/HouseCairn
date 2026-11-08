@@ -31,9 +31,9 @@
               <p>
                 <label for="locked-{{ key }}">{{ item.setting.label }}</label>
                 {% if item.setting.kind == "boolean" %}
-                  <input type="checkbox" id="locked-{{ key }}" disabled {% if item.state.value %}checked{% endif %} aria-describedby="env-{{ key }}">
+                  <input type="checkbox" class="setting-locked" id="locked-{{ key }}" disabled {% if item.state.value %}checked{% endif %} aria-describedby="env-{{ key }}">
                 {% else %}
-                  <input type="text" id="locked-{{ key }}" value="{{ item.shown }}" readonly aria-readonly="true" aria-describedby="env-{{ key }}">
+                  <input type="text" class="setting-locked" id="locked-{{ key }}" value="{{ item.shown }}" readonly aria-readonly="true" aria-describedby="env-{{ key }}">
                 {% endif %}
               </p>
               <p class="small helptext" id="env-{{ key }}">

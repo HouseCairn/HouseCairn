@@ -118,6 +118,13 @@
   font-size: var(--hc-font-size-sm);
 }
 
+.facts dt,
+.facts dd {
+  /* Long names and lists (a variable name, proxy addresses) wrap on a phone. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .facts dd {
   margin: 0;
   font-weight: var(--hc-font-weight-medium);
@@ -617,9 +624,9 @@ td {
   height: 4.5rem;
 }
 
-/* A setting that an environment variable fixes: shown as it is, not editable. */
-input[readonly],
-input:disabled {
+/* A setting that an environment variable fixes: shown as it is, not editable. Only the
+   locked fields of the settings screen: other disabled fields keep the browser's look. */
+input.setting-locked {
   color: var(--hc-color-text-muted);
   background: var(--hc-color-surface-muted);
   border-style: dashed;

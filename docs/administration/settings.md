@@ -88,6 +88,9 @@ screen shows them read-only, without secrets.
 | `HOUSECAIRN_TASK_WORKERS`, `HOUSECAIRN_WEB_WORKERS` | Fixed when the processes start. |
 | `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL` | Decides who may become the first administrator. |
 
+The **Server** part shows all of them except `HOUSECAIRN_WEB_WORKERS`: only the container's
+start-up program reads it, to start that many web processes; the application itself does not.
+
 Single sign-on providers (`OIDC_*`), the rate limits, the default language and time zone and the
 name of the instance are not in the interface yet: they stay variables, see
 [Environment variables](variables.md).
