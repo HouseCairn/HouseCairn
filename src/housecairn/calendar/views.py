@@ -6,7 +6,6 @@ it out; Done and Undo are the buttons of the tasks, which return to the page the
 
 import calendar as pycalendar
 import datetime
-import hashlib
 from typing import Any
 from urllib.parse import urlencode
 from uuid import UUID
@@ -315,8 +314,7 @@ def feed(request: HttpRequest, token: str) -> HttpResponse:
     found = feeds.find_feed(token)
     if found is None:
         return _neutral_not_found()
-    body = ics.render(found, site_url(request))
-    etag = '"' + hashlib.sha256(body).hexdigest()[:32] + '"'
+    body, etag = ics.cached_render(found, site_url(request))
     if etag in parse_etags(request.headers.get("If-None-Match", "")):
         response: HttpResponse = HttpResponseNotModified()
     else:

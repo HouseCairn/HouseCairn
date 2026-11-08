@@ -7,8 +7,11 @@ note, cost, procedure, attachment, person or email address.
 """
 
 import datetime
+import hashlib
 from typing import Any
 
+from django.core.cache import cache
+from django.db.models import Count, Max
 from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
@@ -18,13 +21,16 @@ from icalendar import Calendar, Event
 from housecairn.calendar import services
 from housecairn.calendar.feeds import feed_homes
 from housecairn.calendar.models import Feed
+from housecairn.homes.models import Home
 from housecairn.instance.config import instance_name
 from housecairn.notifications import services as notification_services
-from housecairn.tasks.models import Status
+from housecairn.rooms.models import Room
+from housecairn.tasks.models import Occurrence, Status, Task
 
 PAST_DAYS = 30
 FUTURE_DAYS = 365
 REFRESH = datetime.timedelta(hours=6)
+CACHE_SECONDS = 300  # a rendered document and its ETag, per feed (docs/adr/0052)
 _STATUS_ICS = {Status.SKIPPED: "CANCELLED"}
 
 
@@ -114,3 +120,64 @@ def render(feed: Feed, base_url: str, *, now: datetime.datetime | None = None) -
             if uid is not None:
                 calendar.add_component(_event(entry, base_url, uid))
         return bytes(calendar.to_ical())
+
+
+def etag_of(body: bytes) -> str:
+    return '"' + hashlib.sha256(body).hexdigest()[:32] + '"'
+
+
+def _stamp(model: Any, homes: list[Any]) -> str:
+    """How many rows (deleted ones included) and the last change, in a single query."""
+    found = model.all_objects.filter(home__in=homes).aggregate(
+        n=Count("pk"), last=Max("updated_at")
+    )
+    return f"{found['n']}:{found['last'].isoformat() if found['last'] else '-'}"
+
+
+def _fingerprint(feed: Feed, base_url: str, now: datetime.datetime | None) -> str:
+    """Everything the document is made of, read in five small queries instead of rendered.
+
+    The tasks, occurrences, rooms and homes of the feed (count and last `updated_at`: a
+    creation, an edit, a soft deletion and a hard deletion all change one of the two), the homes
+    it covers, the day, and the language and time zone of the person. Computed in the database, so
+    every worker of the server sees the same value and a change made through any of them
+    invalidates the document at once; nothing in `tasks` is touched.
+    """
+    user = feed.user
+    homes: list[Any] = [feed.home] if feed.home else list(feed_homes(user))
+    ids = sorted(str(h.pk) for h in homes)
+    parts = [
+        str(feed.pk),
+        base_url,
+        ",".join(ids),
+        str(services.zone_of(user)),
+        notification_services.preferences_of(user).language,
+        services.today_of(user, now).isoformat(),
+        instance_name(),
+        _stamp(Task, homes),
+        _stamp(Occurrence, homes),
+        _stamp(Room, homes),
+        str(Home.all_objects.filter(pk__in=ids).aggregate(last=Max("updated_at"))["last"]),
+    ]
+    return hashlib.sha256("\n".join(parts).encode()).hexdigest()
+
+
+def cached_render(
+    feed: Feed, base_url: str, *, now: datetime.datetime | None = None
+) -> tuple[bytes, str]:
+    """The document and its ETag, kept five minutes per feed and content.
+
+    Rendering 500 repeating tasks takes seconds and an ETag needs the whole body, so a client
+    that polls would pay for it each time. The key is a fingerprint of the data (see above), so
+    a change shows at once; the five minutes only bound what the fingerprint cannot see (a bulk
+    update that skips `updated_at`, the name of the instance). A revoked or unknown secret never
+    gets here: the feed is looked up first.
+    """
+    key = "calendar:feed:" + _fingerprint(feed, base_url, now)
+    hit = cache.get(key)
+    if hit is not None:
+        return hit  # type: ignore[no-any-return]
+    body = render(feed, base_url, now=now)
+    value = (body, etag_of(body))
+    cache.set(key, value, CACHE_SECONDS)
+    return value

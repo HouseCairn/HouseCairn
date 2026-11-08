@@ -15,7 +15,9 @@ are on, which may not be the one your calendar application can reach.
 
 The feed is **read only** and **updates by itself** as tasks change, but each application polls
 at its own pace: HouseCairn asks for a refresh every six hours, and applications are free to
-ignore it. Google Calendar in particular can take many hours to show a change.
+ignore it. Google Calendar in particular can take many hours to show a change. On the
+HouseCairn side a change shows in the feed at once; the document is only kept for five minutes
+at most, to spare the server when an application polls often.
 
 ## What a feed holds
 

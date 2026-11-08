@@ -26,6 +26,7 @@ from housecairn.homes import exports
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Role
 from housecairn.notifications.models import Preference
+from housecairn.rooms import services as room_services
 from housecairn.rooms.models import Room
 from housecairn.tasks import services as task_services
 from housecairn.tasks.models import Occurrence, Priority, Task
@@ -668,6 +669,145 @@ class TestIcs:
             (event,) = events_of(body)
             assert event["DTSTART"].dt == datetime.date(2026, 6, 20)
             assert event["DTEND"].dt == datetime.date(2026, 6, 21)
+
+
+class TestFeedCache:
+    """A document and its ETag are kept for a few minutes per feed, and never stale."""
+
+    @pytest.fixture
+    def renders(self, monkeypatch: pytest.MonkeyPatch) -> list[int]:
+        calls: list[int] = []
+        real = ics.render
+
+        def counting(*args: Any, **kwargs: Any) -> bytes:
+            calls.append(1)
+            return real(*args, **kwargs)
+
+        monkeypatch.setattr(ics, "render", counting)
+        return calls
+
+    def test_a_second_request_is_not_rendered_again_and_a_304_needs_no_rendering(
+        self, anonymous: Client, alice: User, alice_home: Home, feed: Any, renders: list[int]
+    ) -> None:
+        make_task(alice, alice_home, "Boiler", 0, repeat_mode="fixed", repeat_unit="week")
+        first = get_feed(anonymous, feed[1])
+        second = get_feed(anonymous, feed[1])
+        assert len(renders) == 1
+        assert first.content == second.content
+        assert first["ETag"] == second["ETag"]
+        again = get_feed(anonymous, feed[1], HTTP_IF_NONE_MATCH=first["ETag"])
+        assert again.status_code == 304
+        assert len(renders) == 1
+
+    def test_the_hit_costs_a_fixed_number_of_queries_whatever_the_number_of_tasks(
+        self, anonymous: Client, alice: User, alice_home: Home, feed: Any
+    ) -> None:
+        def hit() -> int:
+            get_feed(anonymous, feed[1])
+            with CaptureQueriesContext(connection) as queries:
+                get_feed(anonymous, feed[1])
+            return len(queries)
+
+        make_task(alice, alice_home, "One", 0, repeat_mode="fixed", repeat_unit="week")
+        few = hit()
+        for n in range(25):
+            make_task(alice, alice_home, f"Task {n}", n, repeat_mode="fixed", repeat_unit="month")
+        assert hit() == few <= 12
+
+    @pytest.mark.parametrize(
+        "change",
+        ["title", "done", "postpone", "delete", "new", "room", "home"],
+    )
+    def test_a_change_of_the_home_shows_at_once(
+        self,
+        anonymous: Client,
+        alice: User,
+        alice_home: Home,
+        owner_room: Any,
+        feed: Any,
+        renders: list[int],
+        change: str,
+    ) -> None:
+        task = make_task(alice, alice_home, "Boiler", 3, room=owner_room)
+        before = get_feed(anonymous, feed[1])
+        if change == "title":
+            task_services.update_task(alice, task, title="Heat pump")
+        elif change == "done":
+            task_services.complete(alice, occurrence_of(task))
+        elif change == "postpone":
+            task_services.postpone(alice, occurrence_of(task), TODAY + 9 * DAY)
+        elif change == "delete":
+            task_services.delete_task(alice, task)
+        elif change == "new":
+            make_task(alice, alice_home, "Gutters", 1)
+        elif change == "room":
+            room_services.update_room(alice, owner_room, name="Cellar")
+        else:
+            home_services.update_home(alice, alice_home, name="Cottage")
+        after = get_feed(anonymous, feed[1])
+        assert len(renders) == 2
+        assert after.content != before.content
+        assert after["ETag"] != before["ETag"]
+
+    def test_a_revoked_feed_is_never_served_from_the_cache(
+        self, anonymous: Client, alice: User, alice_home: Home, feed: Any
+    ) -> None:
+        make_task(alice, alice_home, "Boiler", 0)
+        assert get_feed(anonymous, feed[1]).status_code == 200
+        feeds.revoke_feed(alice, feed[0])
+        assert get_feed(anonymous, feed[1]).status_code == 404
+
+    def test_a_regenerated_address_replaces_the_old_one_at_once(
+        self, anonymous: Client, alice: User, alice_home: Home, feed: Any
+    ) -> None:
+        make_task(alice, alice_home, "Boiler", 0)
+        assert get_feed(anonymous, feed[1]).status_code == 200
+        _feed, new = feeds.regenerate_feed(alice, feed[0])
+        assert get_feed(anonymous, feed[1]).status_code == 404
+        assert get_feed(anonymous, new).status_code == 200
+
+    def test_two_feeds_never_share_a_document(
+        self, anonymous: Client, alice: User, alice_home: Home, bob: User, bob_home: Home, feed: Any
+    ) -> None:
+        make_task(alice, alice_home, "Alice only", 0)
+        make_task(bob, bob_home, "Bob only", 0)
+        _bobs, raw = feeds.create_feed(bob, bob_home)
+        assert b"Alice only" in get_feed(anonymous, feed[1]).content
+        mine = get_feed(anonymous, raw).content
+        assert b"Bob only" in mine
+        assert b"Alice only" not in mine
+
+    def test_the_document_is_kept_five_minutes_at_most(
+        self, monkeypatch: pytest.MonkeyPatch, anonymous: Client, alice: User, alice_home: Home
+    ) -> None:
+        timeouts: list[int] = []
+        real = ics.cache.set
+
+        def record(key: str, value: Any, timeout: int | None = None) -> None:
+            if key.startswith("calendar:feed:"):
+                timeouts.append(timeout or 0)
+            real(key, value, timeout)
+
+        monkeypatch.setattr(ics.cache, "set", record)
+        _feed, raw = feeds.create_feed(alice, alice_home)
+        get_feed(anonymous, raw)
+        assert timeouts == [300]
+
+    def test_another_day_is_another_document(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        alice: User,
+        alice_home: Home,
+        feed: Any,
+        renders: list[int],
+    ) -> None:
+        monkeypatch.setattr(services, "today_of", lambda user, now=None: now.date())  # type: ignore[union-attr]
+        make_task(alice, alice_home, "Boiler", 0)
+        ics.cached_render(feed[0], "https://h.example.com", now=_utc(2026, 6, 15, 10))
+        ics.cached_render(feed[0], "https://h.example.com", now=_utc(2026, 6, 15, 11))
+        assert len(renders) == 1
+        ics.cached_render(feed[0], "https://h.example.com", now=_utc(2026, 6, 16, 10))
+        assert len(renders) == 2
 
 
 def first_task_id(event: Any) -> str:

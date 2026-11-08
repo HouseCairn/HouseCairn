@@ -93,6 +93,19 @@ is the earliest are projected, and the answer says it was cut.
   `If-None-Match` answers 304. `Cache-Control: private, max-age=900`, `Referrer-Policy:
   no-referrer`, `X-Robots-Tag: noindex`. `REFRESH-INTERVAL` and `X-PUBLISHED-TTL` suggest six
   hours; calendar applications are free to ignore them.
+- **Cost and cache.** Measured on 500 repeating tasks: a document of 2 MB in 2.9 s, and an
+  `ETag` needs the whole body, so a client that polls paid that every time. The document and its
+  `ETag` are kept for five minutes (`CACHE_SECONDS`, the Django cache) per feed and content. The
+  key is a fingerprint read from the database in five small queries: the count and the last
+  `updated_at` of the tasks, occurrences and rooms of the homes of the feed (deleted rows
+  included), the last change of the homes, the homes themselves, the day, the language and
+  time zone of the person, the address of the site and the name of the instance. So a change shows
+  at once and for every worker of the server (the default cache is per process, which is why the
+  invalidation is not a signal handler that would only reach the worker that saw the write), and
+  nothing in `tasks` changes. The five minutes only bound what the fingerprint cannot see: a bulk
+  update that skips `updated_at`. The feed is looked up before the cache, so a revoked, regenerated
+  or left-home address never gets a cached document. A hit answers `If-None-Match` with a 304
+  without rendering.
 - **Format and escaping.** The document is written by the `icalendar` library, which escapes
   commas, semicolons, backslashes and line breaks and folds lines at 75 octets. Titles are also
   reduced to one line of printable characters first. A test puts `\r\nBEGIN:VEVENT` and
