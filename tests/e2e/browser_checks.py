@@ -20,7 +20,6 @@ from pathlib import Path
 from typing import Any
 
 from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
-from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 EMAIL = "demo@example.com"
 PASSWORD = "correct-horse-battery-staple"  # throwaway account of the CI instance

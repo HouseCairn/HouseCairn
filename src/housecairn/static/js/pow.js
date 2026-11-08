@@ -6,6 +6,7 @@
  * that many zero bits, then puts n in the field. The server checks it with one
  * hash. The submit button waits for it. No inline script, no third-party code;
  * SubtleCrypto needs a secure context (HTTPS, or localhost).
+ * The search itself is in pow-worker.js.
  */
 (function () {
   'use strict'
@@ -25,38 +26,22 @@
   }
   const hold = (held) => buttons.forEach((b) => { b.disabled = held })
 
-  if (!window.crypto || !window.crypto.subtle) {
+  const workerUrl = document.currentScript && document.currentScript.dataset.worker
+  if (!window.Worker || !window.crypto || !window.crypto.subtle || !workerUrl) {
     say('unavailable')
     return
   }
   hold(true)
   say('working')
 
-  function zeroBits (bytes) {
-    let bits = 0
-    for (const byte of bytes) {
-      if (byte === 0) {
-        bits += 8
-        continue
-      }
-      return bits + Math.clz32(byte) - 24
-    }
-    return bits
-  }
-
-  async function solve (challenge, wanted) {
-    const encoder = new TextEncoder()
-    for (let n = 0; ; n++) {
-      const digest = await window.crypto.subtle.digest('SHA-256', encoder.encode(challenge + ':' + n))
-      if (zeroBits(new Uint8Array(digest)) >= wanted) {
-        return String(n)
-      }
-    }
-  }
-
-  solve(field.dataset.challenge, parseInt(field.dataset.bits, 10)).then((n) => {
-    field.value = n
+  // The search runs in a worker, away from the page (static/js/pow-worker.js).
+  const worker = new Worker(workerUrl)
+  worker.onmessage = (event) => {
+    field.value = event.data
+    worker.terminate()
     hold(false)
     say('done')
-  })
+  }
+  worker.onerror = () => say('unavailable')
+  worker.postMessage({ challenge: field.dataset.challenge, bits: parseInt(field.dataset.bits, 10) })
 })()

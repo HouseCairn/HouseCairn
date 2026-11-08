@@ -102,6 +102,7 @@ class TestProofOfWork:
         assert len(challenge) == 32
         assert bits == 8
         assert "js/pow.js" in page
+        assert "js/pow-worker.js" in page
         assert "data-pow-status" in page
 
     def test_a_solved_challenge_creates_the_account_pending_verification(

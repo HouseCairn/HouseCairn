@@ -41,5 +41,5 @@
 {% endblock content %}
 {% block extra_body %}
   {{ block.super }}
-  <script src="{% static 'js/pow.js' %}" defer></script>
+  <script src="{% static 'js/pow.js' %}" data-worker="{% static 'js/pow-worker.js' %}" defer></script>
 {% endblock extra_body %}
