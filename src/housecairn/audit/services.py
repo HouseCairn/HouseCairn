@@ -9,6 +9,7 @@ from django.db import models
 
 from housecairn.accounts.models import User
 from housecairn.audit.models import AuditEvent, Scope
+from housecairn.core.text import without_control_characters
 
 # Keys `detail` may carry. A value is short and says nothing of a home's content.
 ALLOWED_DETAIL = frozenset(
@@ -60,7 +61,7 @@ def record_object(
     The title is the name a person gave it (a room, a task); never a note, a cost, a file or
     a procedure. `fields` may list the names of what changed, never their values.
     """
-    shown = " ".join(str(title).split())[:TITLE_MAX_LENGTH]
+    shown = without_control_characters(" ".join(str(title).split()))[:TITLE_MAX_LENGTH]
     return record(action, actor=actor, home_id=home_id, title=shown, **detail)
 
 

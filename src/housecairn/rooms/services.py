@@ -21,6 +21,7 @@ from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
 from housecairn.audit import services as audit
+from housecairn.core.text import without_control_characters
 from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
@@ -70,11 +71,21 @@ def _soft_delete(rows: models.QuerySet[Any]) -> None:
     rows.update(deleted_at=timezone.now())
 
 
+# Free text on one line: control and format characters are dropped. Notes keep their line breaks.
+SINGLE_LINE_FIELDS = (ROOM_FIELDS | MEMORY_FIELDS | ITEM_FIELDS | {"caption"}) - {
+    "notes",
+    "memory_notes",
+    "links",
+}
+
+
 def _apply(instance: models.Model, allowed: frozenset[str], changes: dict[str, Any]) -> None:
     unknown = set(changes) - allowed
     if unknown:
         raise ValueError(f"Cannot change: {', '.join(sorted(unknown))}")
     for field, value in changes.items():
+        if field in SINGLE_LINE_FIELDS and isinstance(value, str):
+            value = without_control_characters(value)
         setattr(instance, field, value)
 
 
@@ -291,7 +302,7 @@ def add_photo(
         home=home,
         room=room,
         item=item,
-        caption=caption,
+        caption=without_control_characters(caption),
         category=category,
         content_type=processed.content_type,
         size_bytes=len(processed.data),
