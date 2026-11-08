@@ -15,8 +15,11 @@ homes
 new-home
 home
 household
+audit
 member
 invitation
+instance
+instance-invitation
 more
 about
 ```

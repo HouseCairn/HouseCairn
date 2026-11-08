@@ -1,0 +1,87 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 00:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Rate limits"
+msgstr "Limites de débit"
+
+msgid "Attempts that can be guessed or abused are limited per client address (or per person when signed in): signing in, signing up, opening invitation links, sending invitations, erasing an account ([ADR 0025](../adr/0025-rate-limit-counters-and-workers.md))."
+msgstr "Les tentatives qu'on peut deviner ou dont on peut abuser sont limitées par adresse client (ou par personne quand elle est connectée) : connexion, inscription, ouverture des liens d'invitation, envoi d'invitations, effacement d'un compte ([ADR 0025](../adr/0025-rate-limit-counters-and-workers.md))."
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Limit"
+msgstr "Limite"
+
+msgid "Opening or accepting an invitation link"
+msgstr "Ouvrir ou accepter un lien d'invitation"
+
+msgid "30 a minute per client address"
+msgstr "30 par minute par adresse client"
+
+msgid "Sending or sending again an invitation to a home"
+msgstr "Envoyer ou renvoyer une invitation à un logement"
+
+msgid "10 a minute and 50 a day per person"
+msgstr "10 par minute et 50 par jour par personne"
+
+msgid "Inviting to the instance"
+msgstr "Inviter à l'instance"
+
+msgid "10 a minute and 50 a day per administrator"
+msgstr "10 par minute et 50 par jour par administrateur"
+
+msgid "Signing up"
+msgstr "S'inscrire"
+
+msgid "10 a minute and 60 a day per client address"
+msgstr "10 par minute et 60 par jour par adresse client"
+
+msgid "Erasing an account"
+msgstr "Effacer un compte"
+
+msgid "5 a minute per person"
+msgstr "5 par minute par personne"
+
+msgid "Signing in, password reset"
+msgstr "Connexion, réinitialisation du mot de passe"
+
+msgid "allauth's defaults"
+msgstr "valeurs par défaut d'allauth"
+
+msgid "Beyond a limit, a page answers 429 and the API answers 429 too."
+msgstr "Au-delà d'une limite, une page répond 429 et l'API répond aussi 429."
+
+msgid "Which address"
+msgstr "Quelle adresse"
+
+msgid "The client address is `REMOTE_ADDR`. Behind a reverse proxy it is the address the proxy reports in `X-Forwarded-For`, and only when the proxy is listed in `HOUSECAIRN_FORWARDED_ALLOW_IPS`; from any other peer the header is dropped, and HouseCairn never reads it itself. A client that forges the header does not change the address it is counted under. See [Reverse proxy](reverse-proxy.md)."
+msgstr "L'adresse client est `REMOTE_ADDR`. Derrière un proxy inverse, c'est l'adresse que le proxy indique dans `X-Forwarded-For`, et seulement quand le proxy figure dans `HOUSECAIRN_FORWARDED_ALLOW_IPS` ; de tout autre pair, l'en-tête est ignoré, et HouseCairn ne le lit jamais lui-même. Un client qui falsifie l'en-tête ne change pas l'adresse sous laquelle il est compté. Voir [Proxy inverse](reverse-proxy.md)."
+
+msgid "Per process, or shared"
+msgstr "Par processus, ou partagés"
+
+msgid "The counters live in a cache. The default is in the memory of each web process, so with `HOUSECAIRN_WEB_WORKERS=2` each process counts alone and a limit can be up to twice as loose. To share the counters between the web processes, point `HOUSECAIRN_CACHE_URL` at a shared cache:"
+msgstr "Les compteurs vivent dans un cache. Par défaut, il est dans la mémoire de chaque processus web : avec `HOUSECAIRN_WEB_WORKERS=2`, chaque processus compte seul et une limite peut être jusqu'à deux fois plus lâche. Pour partager les compteurs entre les processus web, faites pointer `HOUSECAIRN_CACHE_URL` vers un cache partagé :"
+
+msgid "keeps them in the database (the table is created at start-up, with SQLite or PostgreSQL). A Redis or Memcached URL works as well. The limits still are a brake: the verification of addresses and the anti-robot check are the other barriers of open sign-up."
+msgstr "les conserve dans la base de données (la table est créée au démarrage, avec SQLite ou PostgreSQL). Une URL Redis ou Memcached fonctionne aussi. Les limites restent un frein : la vérification des adresses et le contrôle anti-robot sont les autres barrières de l'inscription libre."
+

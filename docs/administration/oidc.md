@@ -65,5 +65,9 @@ is opened, by the web and by the API:
 
 A member whose account is not yet linked to the provider links it from the
 account pages, signed in, then signs in through the provider. If a provider is
-removed from the instance, the homes that require it stay locked: the
-administrator clears the rule of the home in the administration site.
+removed from the instance, the homes that require it stay locked until the
+rule is lifted. An owner opens the locked page and chooses **Remove the
+sign-in requirement** (it is offered only when the provider is no longer
+declared); or the administrator uses **Remove these requirements** on the
+[instance page](../screens/instance.md), which clears them all without showing
+any home. Leaving a locked home never needs the provider.

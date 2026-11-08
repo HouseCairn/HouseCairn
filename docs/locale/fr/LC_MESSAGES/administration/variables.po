@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 22:45+0000\n"
+"POT-Creation-Date: 2026-11-08 00:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -100,8 +100,41 @@ msgstr "Fuseau horaire de l'instance."
 msgid "`HOUSECAIRN_SIGNUP_OPEN`"
 msgstr "`HOUSECAIRN_SIGNUP_OPEN`"
 
-msgid "Allow local sign-up from the web page."
-msgstr "Autorise l'inscription locale depuis la page web."
+msgid "Allow local sign-up from the web page; needs email. See [Open sign-up](sign-up.md)."
+msgstr "Autorise l'inscription locale depuis la page web ; nécessite l'envoi d'e-mails. Voir [Inscription libre](sign-up.md)."
+
+msgid "`HOUSECAIRN_SIGNUP_POW_BITS`"
+msgstr "`HOUSECAIRN_SIGNUP_POW_BITS`"
+
+msgid "`16`"
+msgstr "`16`"
+
+msgid "Work of the anti-robot check of sign-up, from 8 to 24 bits."
+msgstr "Difficulté du contrôle anti-robot de l'inscription, de 8 à 24 bits."
+
+msgid "`HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS`, `HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS`"
+msgstr "`HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS`, `HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS`"
+
+msgid "Comma-separated domains that may, or may not, sign up."
+msgstr "Domaines séparés par des virgules qui peuvent, ou non, s'inscrire."
+
+msgid "`ACCOUNT_EMAIL_VERIFICATION`"
+msgstr "`ACCOUNT_EMAIL_VERIFICATION`"
+
+msgid "`optional`, `mandatory` with open sign-up"
+msgstr "`optional`, `mandatory` avec l'inscription libre"
+
+msgid "Whether an address must be verified before sign-in."
+msgstr "Indique si une adresse doit être vérifiée avant la connexion."
+
+msgid "`HOUSECAIRN_CACHE_URL`"
+msgstr "`HOUSECAIRN_CACHE_URL`"
+
+msgid "`locmemcache://housecairn`"
+msgstr "`locmemcache://housecairn`"
+
+msgid "Cache of the rate-limit counters; `dbcache://housecairn_cache` shares them between web processes. See [Rate limits](rate-limits.md)."
+msgstr "Cache des compteurs de limite de débit ; `dbcache://housecairn_cache` les partage entre les processus web. Voir [Limites de débit](rate-limits.md)."
 
 msgid "`OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`"
 msgstr "`OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`"
@@ -121,14 +154,26 @@ msgstr "Qui peut obtenir un compte par l'authentification unique."
 msgid "`EMAIL_HOST`"
 msgstr "`EMAIL_HOST`"
 
-msgid "Outgoing mail server (SMTP); email is off while it is empty. See Email below."
-msgstr "Serveur de courriel sortant (SMTP) ; le courriel est désactivé tant qu'il est vide. Voir Courriel ci-dessous."
+msgid "Outgoing mail server (SMTP); email is off while it is empty. See [Email](email.md)."
+msgstr "Serveur d'envoi d'e-mails (SMTP) ; l'envoi est désactivé tant qu'il est vide. Voir [E-mail](email.md)."
+
+msgid "`EMAIL_USE_SSL`, `EMAIL_TIMEOUT`"
+msgstr "`EMAIL_USE_SSL`, `EMAIL_TIMEOUT`"
+
+msgid "`false`, `15`"
+msgstr "`false`, `15`"
+
+msgid "TLS from the first byte; seconds to wait for the server. See [Email](email.md)."
+msgstr "TLS dès le premier octet ; secondes d'attente du serveur. Voir [E-mail](email.md)."
 
 msgid "`HOUSECAIRN_SITE_URL`"
 msgstr "`HOUSECAIRN_SITE_URL`"
 
-msgid "Public address of the instance, such as `https://home.example.com`, used for links in emails. Empty: the address of the request, checked against `ALLOWED_HOSTS`."
-msgstr "Adresse publique de l'instance, par exemple `https://home.example.com`, utilisée pour les liens des courriels. Vide : l'adresse de la requête, contrôlée par `ALLOWED_HOSTS`."
+msgid "(none: set it in production)"
+msgstr "(aucun : à renseigner en production)"
+
+msgid "Public address of the instance, such as `https://home.example.com`, used for links in emails. Empty: the address of the request, checked against `ALLOWED_HOSTS`; `check --deploy` warns when `EMAIL_HOST` is set without it."
+msgstr "Adresse publique de l'instance, par exemple `https://home.example.com`, utilisée pour les liens des e-mails. Vide : l'adresse de la requête, contrôlée par `ALLOWED_HOSTS` ; `check --deploy` avertit quand `EMAIL_HOST` est défini sans elle."
 
 msgid "`HOUSECAIRN_INVITATION_LIFETIME_DAYS`"
 msgstr "`HOUSECAIRN_INVITATION_LIFETIME_DAYS`"
@@ -196,14 +241,11 @@ msgstr "Définies dans l'image, à ne pas modifier : `HOUSECAIRN_DATA_DIR=/data`
 msgid "Email"
 msgstr "Courriel"
 
-msgid "HouseCairn sends email to reset a forgotten password and to deliver invitations to a home. Set `EMAIL_HOST` to your SMTP server to turn it on, with `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`) and `DEFAULT_FROM_EMAIL` (`HouseCairn <noreply@localhost>`) as needed."
-msgstr "HouseCairn envoie des courriels pour réinitialiser un mot de passe oublié et pour remettre les invitations à un logement. Renseignez `EMAIL_HOST` avec votre serveur SMTP pour l'activer, avec au besoin `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`) et `DEFAULT_FROM_EMAIL` (`HouseCairn <noreply@localhost>`)."
+msgid "HouseCairn sends email for invitations, address verification, password reset and security alerts. Set `EMAIL_HOST` to your SMTP server to turn it on, with `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`), `EMAIL_USE_SSL`, `EMAIL_TIMEOUT` and `DEFAULT_FROM_EMAIL`. All of it is on the [Email](email.md) page, with what becomes of the features that need a mailbox when there is none."
+msgstr "HouseCairn envoie des e-mails pour les invitations, la vérification d'adresse, la réinitialisation du mot de passe et les alertes de sécurité. Renseignez `EMAIL_HOST` avec votre serveur SMTP pour l'activer, avec `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`), `EMAIL_USE_SSL`, `EMAIL_TIMEOUT` et `DEFAULT_FROM_EMAIL`. Tout est détaillé sur la page [E-mail](email.md), avec ce que deviennent les fonctions qui exigent une boîte aux lettres quand il n'y en a pas."
 
-msgid "Without `EMAIL_HOST`, or with a console or dummy email backend, nothing could be delivered: the *Forgot your password?* link is hidden and the reset page answers 404, and inviting someone shows the invitation link once to the owner, who passes it on."
-msgstr "Sans `EMAIL_HOST`, ou avec un moteur de courriel console ou factice, rien ne pourrait être livré : le lien *Mot de passe oublié ?* est masqué, la page de réinitialisation répond 404, et une invitation affiche son lien une fois au propriétaire, qui le transmet."
-
-msgid "Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. Set it when `ALLOWED_HOSTS` lists several names, so that every email uses the public one."
-msgstr "Les liens des courriels pointent vers `HOUSECAIRN_SITE_URL` quand elle est renseignée. Renseignez-la quand `ALLOWED_HOSTS` liste plusieurs noms, pour que chaque courriel utilise le nom public."
+msgid "Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. **Set it in production.** Without it, a link takes the host of the request that triggered it: `ALLOWED_HOSTS` limits that to the names the instance answers to, but a proxy that lets a request choose its host, or several names in `ALLOWED_HOSTS`, can make a link point where you did not intend. `manage.py check --deploy` reports `EMAIL_HOST` set without `HOUSECAIRN_SITE_URL`."
+msgstr "Les liens des e-mails pointent vers `HOUSECAIRN_SITE_URL` quand elle est définie. **Renseignez-la en production.** Sans elle, un lien prend l'hôte de la requête qui l'a déclenché : `ALLOWED_HOSTS` le limite aux noms auxquels l'instance répond, mais un proxy qui laisse une requête choisir son hôte, ou plusieurs noms dans `ALLOWED_HOSTS`, peut faire pointer un lien là où vous ne le vouliez pas. `manage.py check --deploy` signale `EMAIL_HOST` défini sans `HOUSECAIRN_SITE_URL`."
 
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
@@ -222,4 +264,10 @@ msgstr "Décommentez `depends_on` dans le service `housecairn`, puis `docker com
 
 msgid "An existing PostgreSQL server works too: set `DATABASE_URL` to it."
 msgstr "Un serveur PostgreSQL existant convient aussi : pointez `DATABASE_URL` vers lui."
+
+#~ msgid "Without `EMAIL_HOST`, or with a console or dummy email backend, nothing could be delivered: the *Forgot your password?* link is hidden and the reset page answers 404, and inviting someone shows the invitation link once to the owner, who passes it on."
+#~ msgstr "Sans `EMAIL_HOST`, ou avec un moteur de courriel console ou factice, rien ne pourrait être livré : le lien *Mot de passe oublié ?* est masqué, la page de réinitialisation répond 404, et une invitation affiche son lien une fois au propriétaire, qui le transmet."
+
+#~ msgid "Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. Set it when `ALLOWED_HOSTS` lists several names, so that every email uses the public one."
+#~ msgstr "Les liens des courriels pointent vers `HOUSECAIRN_SITE_URL` quand elle est renseignée. Renseignez-la quand `ALLOWED_HOSTS` liste plusieurs noms, pour que chaque courriel utilise le nom public."
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 22:45+0000\n"
+"POT-Creation-Date: 2026-11-08 00:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -73,6 +73,6 @@ msgstr "l'API répond `403` avec `\"code\": \"sso_required\"` et l'identifiant d
 msgid "API tokens never open such a home, since a token is not a sign-in through the provider."
 msgstr "les jetons d'API n'ouvrent jamais un tel logement : un jeton n'est pas une connexion par le fournisseur."
 
-msgid "A member whose account is not yet linked to the provider links it from the account pages, signed in, then signs in through the provider. If a provider is removed from the instance, the homes that require it stay locked: the administrator clears the rule of the home in the administration site."
-msgstr "Un membre dont le compte n'est pas encore lié au fournisseur le lie depuis les pages du compte, une fois connecté, puis se connecte par le fournisseur. Si un fournisseur est retiré de l'instance, les logements qui l'exigent restent verrouillés : l'administrateur efface la règle du logement dans le site d'administration."
+msgid "A member whose account is not yet linked to the provider links it from the account pages, signed in, then signs in through the provider. If a provider is removed from the instance, the homes that require it stay locked until the rule is lifted. An owner opens the locked page and chooses **Remove the sign-in requirement** (it is offered only when the provider is no longer declared); or the administrator uses **Remove these requirements** on the [instance page](../screens/instance.md), which clears them all without showing any home. Leaving a locked home never needs the provider."
+msgstr "Un membre dont le compte n'est pas encore lié au fournisseur le lie depuis les pages du compte, une fois connecté, puis se connecte par le fournisseur. Si un fournisseur est retiré de l'instance, les logements qui l'exigent restent verrouillés jusqu'à la levée de la règle. Un propriétaire ouvre la page verrouillée et choisit **Retirer l'exigence de connexion** (proposé seulement quand le fournisseur n'est plus déclaré) ; ou l'administrateur utilise **Retirer ces exigences** sur la [page de l'instance](../screens/instance.md), qui les efface toutes sans montrer aucun logement. Quitter un logement verrouillé n'exige jamais le fournisseur."
 

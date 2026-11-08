@@ -27,3 +27,7 @@ later record supersedes it.
 | [0019](0019-property-based-tests.md) | Property-based tests with Hypothesis | 2026-11-07 |
 | [0020](0020-household-roles-and-invitations.md) | Household roles and invitations | 2026-11-07 |
 | [0021](0021-per-home-single-sign-on.md) | Single sign-on required per home | 2026-11-07 |
+| [0022](0022-instance-administrator-without-content.md) | Instance administrator without access to content | 2026-11-08 |
+| [0023](0023-audit-log-export-erasure-and-email-alerts.md) | Audit log, export, erasure and security emails | 2026-11-08 |
+| [0024](0024-open-sign-up-and-anti-robot-check.md) | Open sign-up and its anti-robot check | 2026-11-08 |
+| [0025](0025-rate-limit-counters-and-workers.md) | Rate-limit counters and several web processes | 2026-11-08 |

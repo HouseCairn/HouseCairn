@@ -1,0 +1,54 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 00:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Open sign-up"
+msgstr "Inscription libre"
+
+msgid "By default nobody can create an account: people come in by invitation, from an owner of a home or from the administrator of the instance. You may open sign-up to everyone with `HOUSECAIRN_SIGNUP_OPEN=true` ([ADR 0024](../adr/0024-open-sign-up-and-anti-robot-check.md)). Do it once the instance is run in earnest: open sign-up invites robots."
+msgstr "Par défaut, personne ne peut créer de compte : on entre sur invitation, d'un propriétaire de logement ou de l'administrateur de l'instance. Vous pouvez ouvrir l'inscription à tout le monde avec `HOUSECAIRN_SIGNUP_OPEN=true` ([ADR 0024](../adr/0024-open-sign-up-and-anti-robot-check.md)). Faites-le quand l'instance est exploitée pour de bon : l'inscription libre attire les robots."
+
+msgid "What opening sign-up needs"
+msgstr "Ce qu'il faut pour ouvrir l'inscription"
+
+msgid "**Outgoing email.** Each address is verified by email before the account can sign in (`ACCOUNT_EMAIL_VERIFICATION` is `mandatory` then). Without `EMAIL_HOST`, the instance refuses to start (`housecairn.E001`). See [Email](email.md)."
+msgstr "**L'envoi d'e-mails.** Chaque adresse est vérifiée par e-mail avant que le compte puisse se connecter (`ACCOUNT_EMAIL_VERIFICATION` vaut alors `mandatory`). Sans `EMAIL_HOST`, l'instance refuse de démarrer (`housecairn.E001`). Voir [E-mail](email.md)."
+
+msgid "**HTTPS**, for the anti-robot check below to run in the browser."
+msgstr "**HTTPS**, pour que le contrôle anti-robot ci-dessous s'exécute dans le navigateur."
+
+msgid "What protects it"
+msgstr "Ce qui la protège"
+
+msgid "**Proof of work.** The sign-up page asks the browser for a small computation while the form is filled in, and the button waits for it. It costs a robot work for each account and needs nothing from the person, and no third-party service. `HOUSECAIRN_SIGNUP_POW_BITS` sets the work: `16` (the default) takes a second or a few, `8` to `24` are accepted, each bit doubling it. A challenge works once, for the visitor it was given to, for 30 minutes. It needs JavaScript and a secure connection: the page says so otherwise."
+msgstr "**Preuve de travail.** La page d'inscription demande au navigateur un petit calcul pendant que le formulaire est rempli, et le bouton l'attend. Cela coûte du travail à un robot pour chaque compte, ne demande rien à la personne et n'utilise aucun service tiers. `HOUSECAIRN_SIGNUP_POW_BITS` règle le travail : `16` (le défaut) prend une seconde ou quelques-unes, `8` à `24` sont acceptés, chaque bit doublant le travail. Un défi ne fonctionne qu'une fois, pour le visiteur à qui il a été donné, pendant 30 minutes. Il faut JavaScript et une connexion sécurisée : sinon la page le dit."
+
+msgid "**Rate limit**: the sign-up page answers 429 beyond 10 attempts a minute and 60 a day from one client address. See [Rate limits](rate-limits.md)."
+msgstr "**Limite de débit** : la page d'inscription répond 429 au-delà de 10 tentatives par minute et 60 par jour depuis une même adresse client. Voir [Limites de débit](rate-limits.md)."
+
+msgid "**Domains.** `HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS` (comma-separated: only these domains, subdomains included) and `HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS` (never these). Neither list applies to people who are invited, nor to accounts the administrator creates. They apply to open sign-up through single sign-on too (`HOUSECAIRN_OIDC_SIGNUP=open`)."
+msgstr "**Domaines.** `HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS` (séparés par des virgules : seulement ces domaines, sous-domaines compris) et `HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS` (jamais ceux-là). Aucune des deux listes ne s'applique aux personnes invitées, ni aux comptes que l'administrateur crée. Elles s'appliquent aussi à l'inscription libre par authentification unique (`HOUSECAIRN_OIDC_SIGNUP=open`)."
+
+msgid "**No enumeration.** Signing up with an address that already has an account answers exactly as for a new address, and the existing account is told by email. Password reset answers alike."
+msgstr "**Pas d'énumération.** S'inscrire avec une adresse qui a déjà un compte reçoit exactement la même réponse que pour une nouvelle adresse, et le compte existant en est averti par e-mail. La réinitialisation du mot de passe répond de la même façon."
+
+msgid "None of this stops an attacker with computing power and many addresses; they make bulk sign-up cost something. If abuse comes, close sign-up and invite."
+msgstr "Rien de tout cela n'arrête un attaquant disposant de puissance de calcul et de nombreuses adresses ; ces mesures donnent un coût à l'inscription en masse. Si des abus surviennent, fermez l'inscription et passez par l'invitation."
+

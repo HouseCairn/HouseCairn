@@ -1,0 +1,36 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 00:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Instance invitation"
+msgstr "Invitation à l'instance"
+
+msgid "The page an invitation to the instance opens, at `/join/<link>/`. The link comes by email from the administrator of the instance and invites you to create an account, without any home: you create your first home afterwards."
+msgstr "La page qu'ouvre une invitation à l'instance, sur `/join/<link>/`. Le lien arrive par e-mail de la part de l'administrateur de l'instance et vous invite à créer un compte, sans aucun logement : vous créez votre premier logement ensuite."
+
+msgid "**No account yet**: choose a password and **Create the account**. The account takes the invited address, which the link has just proved."
+msgstr "**Pas encore de compte** : choisissez un mot de passe et **Créer le compte**. Le compte prend l'adresse invitée, que le lien vient de prouver."
+
+msgid "**An account already**: **Sign in**, then come back to the link and **Accept the invitation**. You can also continue with the instance's single sign-on, if the provider confirms the invited address."
+msgstr "**Déjà un compte** : **Se connecter**, puis revenez au lien et **Accepter l'invitation**. Vous pouvez aussi continuer avec l'authentification unique de l'instance, si le fournisseur confirme l'adresse invitée."
+
+msgid "The link works once. A link that was used, revoked, replaced by a newer one or has expired opens a page saying it no longer works, without any detail: ask the administrator to send it again. Opening links is limited per client address."
+msgstr "Le lien ne fonctionne qu'une fois. Un lien déjà utilisé, révoqué, remplacé par un plus récent ou expiré ouvre une page disant qu'il ne fonctionne plus, sans aucun détail : demandez à l'administrateur de le renvoyer. L'ouverture des liens est limitée par adresse client."
+

@@ -40,24 +40,46 @@ person and their API tokens stop seeing the home on the next request.
   forwarded or stolen link is useless to another account; the acceptance locks
   the invitation row, so two simultaneous acceptances use it once. Someone
   already a member keeps their role.
+- **Which links prove the address.** A link that went to the address by email
+  and was shown to nobody proves, by being opened, that whoever opens it holds
+  the mailbox: accepting it marks the account's address verified (and creates
+  the account, verified, if there is none). A link the owner handed over (the
+  instance sends no email) proves nothing about the address. It therefore
+  **never creates an account** and never verifies an address: the visitor is
+  shown the same page whether or not an account uses the address, asked to
+  sign in with the invited address, and told that an account is otherwise
+  created by the administrator or once the instance sends email. Otherwise the
+  owner holding the link could create the invitee's account with a password of
+  their own, or learn by trying whether it exists. An existing account whose
+  address equals the invited one can accept such a link, as before: the owner
+  typed that address, and a link that creates nothing and verifies nothing
+  gives the account nothing it did not have.
 - When sign-up is closed, the invitation is the way in: the invitation page
-  creates the account (password checked by the usual validators) with the
-  invited address, then accepts. Through OIDC, `has_invitation` lets an
-  identity sign up when a pending invitation exists for an address the
-  provider asserts as verified; such accounts have no administration right.
+  of an emailed link creates the account (password checked by the usual
+  validators) with the invited address, then accepts. Through OIDC,
+  `has_invitation` lets an identity sign up when a pending invitation exists
+  for an address the provider asserts as verified; such accounts have no
+  administration right.
+- **One pending invitation per address and home**, in Python and by a partial
+  unique constraint on the lower-cased address in the database
+  (`unique_pending_invitation`): of two simultaneous requests, one fails. A
+  lapsed invitation is revoked when a new one is made for its address.
 - **Delivery.** With outgoing email (`EMAIL_HOST` and a delivering backend),
   the link is emailed, in plain text and HTML, in the inviter's language, and
-  never shown to the inviter; opening it then proves the address, so the new
-  account's address is marked verified. Without email, the link is shown once
-  to the inviter (and returned once by the API), and the address is not marked
-  verified. Links use `HOUSECAIRN_SITE_URL`, else the request's host, which
-  `ALLOWED_HOSTS` has checked. The subject is folded to one line, so a home's
-  name cannot add a header.
+  never shown to the inviter. Without email, the link is shown once to the
+  inviter (and returned once by the API). The email is sent after the
+  invitation is saved, outside any transaction of ours: if the mail server
+  fails, the invitation stays, the failure is logged without the address, and
+  the owner is told to send it again (a warning in the interface, a 503 with
+  `code: delivery_failed` and the invitation `id` in the API). Links use
+  `HOUSECAIRN_SITE_URL`, else the request's host, which `ALLOWED_HOSTS` has
+  checked; `check --deploy` warns when email is on without it. The subject is
+  folded to one line, so a home's name cannot add a header.
 - **No enumeration.** Inviting answers the same, sends the same email and
-  stores the same row whether or not the address has an account. On the
-  invitation page, whoever holds the link (the invited address) may learn
+  stores the same row whether or not the address has an account. On the page
+  of an emailed link, whoever holds it is the mailbox's owner and may learn
   that an account uses that address: it is the one piece of information the
-  invitation is about.
+  invitation is about. A handed-over link tells nobody anything (above).
 - **Rate limits**, by django-allauth's limiter and cache, configured in
   `ACCOUNT_RATE_LIMITS`: `housecairn_invite` (10 a minute and 50 a day per
   person) for creating and sending again; `housecairn_invitation` (30 a minute
@@ -77,11 +99,12 @@ account management does (ADR 0003).
 
 ## Consequences
 
-- Rate limits use Django's cache. The default local-memory cache counts per
-  process: with several web workers, a limit is per worker. A shared cache can
-  be configured later without changing the code.
-- The instance administrator's own invitations (to create a home on the
-  instance) and the administrator's lack of access to content come with the
-  next part of this lot.
+- Rate limits use Django's cache, per process by default; ADR 0025 describes
+  how to share the counters.
+- The administrator's invitations to the instance and the administrator's lack
+  of access to content are ADR 0022; the audit of roles and invitations is
+  ADR 0023.
+- Leaving a home never needs the sign-in provider the home requires
+  (ADR 0021), and removing a member or leaving asks for confirmation first.
 - Owners see members' addresses; members see each other's, as a household
   does.
