@@ -30,7 +30,9 @@ and its Apprise address. Some examples, with `example.com` standing for your ser
 
 The Apprise documentation lists the options of each service. Then open the channel and
 **Send a test message**. If it does not arrive, check the address: the screen does not
-repeat the service's error, since it may carry your secrets.
+repeat the service's error, since it may carry your secrets. HouseCairn waits at most eight
+seconds per channel, for a test as for a reminder: a service slower than that counts as
+not reached.
 
 The address is encrypted, never shown again and never exported. Some addresses are refused:
 services that would run something on the server, write to its logs or open a raw

@@ -1,11 +1,13 @@
 """Notification channels: sealed addresses, outgoing calls, isolation, API (docs/adr/0043)."""
 
+import datetime
 import http.server
 import json
 import logging
 import re
 import socket
 import threading
+import time
 from collections.abc import Callable, Iterator
 from typing import Any
 
@@ -18,6 +20,7 @@ from django.db import connection
 from django.test import Client
 from django.test.utils import override_settings
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from housecairn.accounts import services as account_services
@@ -26,8 +29,9 @@ from housecairn.apitokens import services as token_services
 from housecairn.audit.models import AuditEvent
 from housecairn.homes.models import Home
 from housecairn.instance import config
-from housecairn.notifications import outbound, services
+from housecairn.notifications import outbound, reminders, services
 from housecairn.notifications.models import Channel, Delivery
+from housecairn.tasks import services as task_services
 from tests.test_instance_settings import recent
 
 pytestmark = pytest.mark.django_db
@@ -253,6 +257,63 @@ class TestOutgoingCalls:
         response = requests.Response()
         response.status_code, response.headers["Location"] = 302, "/next"
         assert requests.Session().get_redirect_target(response) == "/next"
+
+    @pytest.fixture
+    def slow_server(self, monkeypatch: pytest.MonkeyPatch) -> Iterator[int]:
+        """A server that answers one byte every tenth of a second: about 20 s in all."""
+        stop = threading.Event()
+
+        class Slow(http.server.BaseHTTPRequestHandler):
+            def do_POST(self) -> None:
+                self.rfile.read(int(self.headers.get("Content-Length") or 0))
+                answer = b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n"
+                answer += b"Content-Length: 160\r\n\r\n" + b'{"id": 1}'.ljust(160)
+                for byte in answer:
+                    if stop.wait(0.1):
+                        return
+                    self.wfile.write(bytes([byte]))
+                    self.wfile.flush()
+
+            def log_message(self, *args: Any) -> None:
+                pass
+
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Slow)
+        server.daemon_threads = True
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        # Loopback is refused, rightly: let it through for this test only.
+        monkeypatch.setattr(outbound, "forbidden_address", lambda address: False)
+        monkeypatch.setattr(outbound, "SEND_SECONDS", 1.0, raising=False)
+        try:
+            yield server.server_port
+        finally:
+            stop.set()
+            server.shutdown()
+            server.server_close()
+
+    def test_a_slow_server_holds_a_send_for_the_total_delay_only(self, slow_server: int) -> None:
+        sealed = outbound.seal(f"gotify://127.0.0.1:{slow_server}/token")
+        started = time.monotonic()
+        assert outbound.send(sealed, title="t", body="b") is False
+        assert time.monotonic() - started < 3
+
+    def test_the_test_button_and_the_reminders_wait_the_total_delay_only(
+        self, slow_server: int, alice: User, alice_home: Home
+    ) -> None:
+        channel = services.add_channel(
+            alice, name="Slow", url=f"gotify://127.0.0.1:{slow_server}/token"
+        )
+        started = time.monotonic()
+        assert services.test_channel(alice, channel) is False
+        assert time.monotonic() - started < 3
+        task_services.create_task(alice, alice_home, title="Filter", due_on=task_services.today())
+        started = time.monotonic()
+        assert reminders.dispatch(timezone.now() + datetime.timedelta(days=1)) == 1
+        assert time.monotonic() - started < 3
+        assert Delivery.objects.get().sent is False
+
+    def test_apprise_does_not_retry(self) -> None:
+        plugin = outbound._plugin("gotifys://gotify.example.com/token?retry=5&wait=30")
+        assert (plugin.retry, plugin.wait) == (0, 0)
 
     def test_the_title_is_escaped_for_the_format_of_the_channel(
         self, sent: list[tuple[str, str, str]]

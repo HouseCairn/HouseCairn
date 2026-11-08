@@ -19,7 +19,8 @@ Opening a channel lets you:
 
 - rename it, or turn it off without deleting it (**Enabled**);
 - **Send a test message**: a real message to the service. The answer is either "sent" or
-  "could not be sent", without the service's own message; five tests a minute;
+  "could not be sent", without the service's own message, after eight seconds at most;
+  five tests a minute;
 - **Delete the channel**. To change an address, delete the channel and add another.
 
 ## Reminders

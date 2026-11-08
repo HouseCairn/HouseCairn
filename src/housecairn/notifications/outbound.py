@@ -13,7 +13,9 @@ that: each plugin opens its own connections. So:
   connection can only go to the addresses that were checked: loopback, link-local (cloud
   metadata), multicast, unspecified and reserved addresses are refused, as for the test
   of an identity provider (docs/adr/0041); no HTTP redirect is followed;
-- certificates are verified and every connection waits five seconds at most;
+- certificates are verified; each wait of a connection lasts five seconds at most, and a
+  send to one channel gives up after `SEND_SECONDS` in all, however slowly the server
+  answers; Apprise does not retry;
 - Apprise and urllib3 do not log: their messages carry the URLs, hence the secrets.
 
 Nothing outside this module decrypts a channel's address.
@@ -50,7 +52,9 @@ ALLOWED_SCHEMES = frozenset(
 # Query options that Apprise turns into extra headers (+), removed fields (-) or added
 # fields (:) of the request.
 EXTRA_PREFIXES = ("qsd+", "qsd-", "qsd:")
+# Each wait of a socket (connect, read), and the whole send to one channel.
 TIMEOUT_SECONDS = 5.0
+SEND_SECONDS = 8.0
 MAX_URL_LENGTH = 2000
 
 
@@ -157,6 +161,9 @@ def _plugin(url: str) -> Any:
     plugin.verify_certificate = True
     plugin.socket_connect_timeout = TIMEOUT_SECONDS
     plugin.socket_read_timeout = TIMEOUT_SECONDS
+    # `?retry=` and `?wait=` would call the service again, after the send gave up.
+    plugin.retry = 0
+    plugin.wait = 0.0
     return plugin
 
 
@@ -182,13 +189,22 @@ def send(sealed: str, *, title: str, body: str) -> bool:
 
     Apprise escapes the plain text for the format of the channel (HTML, Markdown), so a
     title typed by a person cannot change the markup of the message.
+
+    The call returns within `SEND_SECONDS`: Apprise runs the plugin in its own thread and
+    stops waiting for it then (the message counts as not sent). A server that keeps the
+    connection open longer only keeps that thread busy, until it closes the connection or
+    stays silent for `TIMEOUT_SECONDS`.
     """
     try:
         plugin = _plugin(crypto.decrypt(sealed))
         sender = apprise.Apprise(asset=_asset())
         sender.add(plugin)
         with guarded():
-            return bool(sender.notify(body=body, title=title, body_format=NotifyFormat.TEXT))
+            return bool(
+                sender.notify(
+                    body=body, title=title, body_format=NotifyFormat.TEXT, timeout=SEND_SECONDS
+                )
+            )
     except Exception as exc:  # a plugin may raise anything; its message may carry the URL
         logger.warning("A notification could not be sent (%s).", type(exc).__name__)
         return False

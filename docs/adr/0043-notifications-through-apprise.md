@@ -72,7 +72,14 @@ removed since is not called.
   address typed as is in the URL is refused when the channel is added.
 - *Redirects.* `requests` follows none while a message is sent: the 3xx answer counts as a
   failure.
-- *Certificates* are verified; every connection waits five seconds at most.
+- *Certificates* are verified, whatever `?verify=` says.
+- *Delays.* Each wait of a socket (connecting, reading) lasts five seconds at most, and a
+  message to one channel gives up after eight seconds in all (`notify(timeout=8)`): a
+  server that answers one byte at a time cannot hold the test button, which runs in a web
+  worker, nor the background run, which sends one message after the other. Past that
+  delay the message counts as not sent; Apprise stops waiting for the thread of the plugin,
+  which ends when the server closes the connection or stays silent for five seconds.
+  `?retry=` and `?wait=` are ignored: a channel is called once per message.
 - *What the person sees.* The test button sends a real message and answers one of two
   fixed sentences, sent or not sent, never the service's answer or error. Five tests a
   minute per person.
