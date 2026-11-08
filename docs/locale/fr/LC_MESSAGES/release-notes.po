@@ -8,9 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 12:24+0000\n"
-
-"POT-Creation-Date: 2026-11-08 13:29+0000\n"
+"POT-Creation-Date: 2026-11-08 15:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -42,11 +40,17 @@ msgstr "**Réglages de l'instance dans l'interface.** L'inscription, les invitat
 msgid "**Sign-in providers in the interface.** An instance administrator can declare OpenID Connect providers on **Instance administration, Sign-in providers**, or by the API, next to the one the `OIDC_*` variables set, which stays read only. A **Test the issuer** button reads the provider's configuration. A new issuer clears the client secret unless it is entered again. The administrator cannot remove nor change their own last way to sign in, and the only administrator cannot be switched off in the administration site. See [Single sign-on](administration/oidc.md)."
 msgstr "**Fournisseurs de connexion dans l'interface.** Un administrateur d'instance peut déclarer des fournisseurs OpenID Connect dans **Administration de l'instance, Fournisseurs de connexion**, ou par l'API, à côté de celui que définissent les variables `OIDC_*`, qui reste en lecture seule. Un bouton **Tester l'émetteur** lit la configuration du fournisseur. Un nouvel émetteur efface le secret client, sauf s'il est saisi de nouveau. L'administrateur ne peut ni retirer ni modifier son propre dernier moyen de connexion, et le seul administrateur ne peut pas être désactivé dans le site d'administration. Voir [Authentification unique](administration/oidc.md)."
 
+msgid "**Rate limits, quotas, language, time zone and name of the instance.** An instance administrator can change the rate limits, the quotas of files of each home, the default language, the time zone and the name of the instance in the interface, each paired with its variable like the other settings. Quotas apply to every way to add a photo, an attachment or a label, and **Files of the homes** shows what each home takes, without its content. See [Settings](administration/settings.md)."
+msgstr "**Limites de débit, quotas, langue, fuseau horaire et nom de l'instance.** Un administrateur d'instance peut modifier dans l'interface les limites de débit, les quotas de fichiers de chaque logement, la langue par défaut, le fuseau horaire et le nom de l'instance, chacun associé à sa variable comme les autres réglages. Les quotas s'appliquent à chaque façon d'ajouter une photo, une pièce jointe ou une étiquette, et **Fichiers des logements** montre ce qu'occupe chaque logement, sans son contenu. Voir [Réglages](administration/settings.md)."
+
 msgid "**Stock.** Keep track of spare parts and supplies: items with a threshold, suppliers and an append-only ledger of movements from which the quantity is computed, a photo of the label, and the equipment each item fits. Screens, API and a guide: see [Stock and supplies](guides/stock.md). Label photos are stored in `/data/media/stock/`."
 msgstr "**Matériel.** Suivez les pièces détachées et les fournitures : des articles avec un seuil, des fournisseurs et un registre de mouvements en ajout seul dont la quantité est calculée, une photo de l'étiquette et les équipements auxquels chaque article convient. Écrans, API et un guide : voir [Matériel et fournitures](guides/stock.md). Les photos d'étiquettes sont stockées dans `/data/media/stock/`."
 
 msgid "Upgrade notes"
 msgstr "Notes de mise à jour"
+
+msgid "**Each home now has quotas of files**: 5 GB and 5000 files by default, deleted files included until they are purged. Raise them in **Instance administration, Settings, Files of a home**, or with `HOUSECAIRN_HOME_STORAGE_MB` and `HOUSECAIRN_HOME_MAX_FILES`. `HOUSECAIRN_PHOTO_MAX_BYTES` and `TIME_ZONE` keep their meaning; set, they lock their field."
+msgstr "**Chaque logement a désormais des quotas de fichiers** : 5 Go et 5000 fichiers par défaut, fichiers supprimés compris jusqu'à leur purge. Relevez-les dans **Administration de l'instance, Réglages, Fichiers d'un logement**, ou avec `HOUSECAIRN_HOME_STORAGE_MB` et `HOUSECAIRN_HOME_MAX_FILES`. `HOUSECAIRN_PHOTO_MAX_BYTES` et `TIME_ZONE` gardent leur sens ; posées, elles verrouillent leur champ."
 
 msgid "**Environment variables are checked a little more strictly.** A boolean variable such as `HOUSECAIRN_SIGNUP_OPEN` or `EMAIL_USE_TLS` must be `true` or `false` (also `1`, `0`, `yes`, `no`, `on`, `off`); another word used to count as `false` and now stops the start-up with a message. `EMAIL_PORT` and `EMAIL_TIMEOUT` must be in range, and the domain lists must hold domain names. A variable set to an empty value now counts as not set."
 msgstr "**Les variables d'environnement sont contrôlées un peu plus strictement.** Une variable booléenne telle que `HOUSECAIRN_SIGNUP_OPEN` ou `EMAIL_USE_TLS` doit valoir `true` ou `false` (ou `1`, `0`, `yes`, `no`, `on`, `off`) ; un autre mot comptait comme `false` et arrête désormais le démarrage avec un message. `EMAIL_PORT` et `EMAIL_TIMEOUT` doivent être dans leur plage, et les listes de domaines ne doivent contenir que des noms de domaine. Une variable posée à une valeur vide compte désormais comme non posée."

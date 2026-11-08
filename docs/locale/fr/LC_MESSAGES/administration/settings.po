@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 02:47+0000\n"
+"POT-Creation-Date: 2026-11-08 15:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -41,8 +41,8 @@ msgstr "Une instance configurée uniquement par variables, comme avant, se compo
 msgid "The table"
 msgstr "Le tableau"
 
-msgid "Every change takes effect at once on the process that saves it, and within a few seconds on the others (each process reloads the stored values every five seconds). The mail server, the sender, the sign-up rules, the invitation lifetime and the public address need no restart."
-msgstr "Chaque modification prend effet tout de suite sur le processus qui l'enregistre, et en quelques secondes sur les autres (chaque processus recharge les valeurs enregistrées toutes les cinq secondes). Le serveur de messagerie, l'expéditeur, les règles d'inscription, la durée des invitations et l'adresse publique ne demandent aucun redémarrage."
+msgid "Every change takes effect at once on the process that saves it, and within a few seconds on the others (each process reloads the stored values every five seconds). No setting needs a restart: the mail server, the sign-up rules, the rate limits, the quotas, the language, the time zone and the name of the instance included."
+msgstr "Chaque modification prend effet immédiatement sur le processus qui l'enregistre, et en quelques secondes sur les autres (chaque processus relit les valeurs enregistrées toutes les cinq secondes). Aucun réglage ne demande de redémarrage, y compris le serveur de messagerie, les règles d'inscription, les limites de débit, les quotas, la langue, le fuseau horaire et le nom de l'instance."
 
 msgid "Setting"
 msgstr "Réglage"
@@ -188,6 +188,141 @@ msgstr "`DEFAULT_FROM_EMAIL`"
 msgid "`HouseCairn <noreply@localhost>`"
 msgstr "`HouseCairn <noreply@localhost>`"
 
+msgid "Name of the instance"
+msgstr "Nom de l'instance"
+
+msgid "`HOUSECAIRN_INSTANCE_NAME`"
+msgstr "`HOUSECAIRN_INSTANCE_NAME`"
+
+msgid "Name, language and time zone"
+msgstr "Nom, langue et fuseau horaire"
+
+msgid "`HouseCairn`"
+msgstr "`HouseCairn`"
+
+msgid "Default language"
+msgstr "Langue par défaut"
+
+msgid "`HOUSECAIRN_DEFAULT_LANGUAGE`"
+msgstr "`HOUSECAIRN_DEFAULT_LANGUAGE`"
+
+msgid "`en`"
+msgstr "`en`"
+
+msgid "Time zone"
+msgstr "Fuseau horaire"
+
+msgid "`TIME_ZONE`"
+msgstr "`TIME_ZONE`"
+
+msgid "`UTC`"
+msgstr "`UTC`"
+
+msgid "Sign-ins a minute"
+msgstr "Connexions par minute"
+
+msgid "`HOUSECAIRN_RATELIMIT_LOGIN`"
+msgstr "`HOUSECAIRN_RATELIMIT_LOGIN`"
+
+msgid "Rate limits"
+msgstr "Limites de débit"
+
+msgid "`30`"
+msgstr "`30`"
+
+msgid "Failed sign-ins in five minutes"
+msgstr "Connexions échouées en cinq minutes"
+
+msgid "`HOUSECAIRN_RATELIMIT_LOGIN_FAILURES`"
+msgstr "`HOUSECAIRN_RATELIMIT_LOGIN_FAILURES`"
+
+msgid "`5`"
+msgstr "`5`"
+
+msgid "Sign-ups a minute"
+msgstr "Inscriptions par minute"
+
+msgid "`HOUSECAIRN_RATELIMIT_SIGNUP`"
+msgstr "`HOUSECAIRN_RATELIMIT_SIGNUP`"
+
+msgid "`10`"
+msgstr "`10`"
+
+msgid "Sign-ups a day"
+msgstr "Inscriptions par jour"
+
+msgid "`HOUSECAIRN_RATELIMIT_SIGNUP_DAY`"
+msgstr "`HOUSECAIRN_RATELIMIT_SIGNUP_DAY`"
+
+msgid "`60`"
+msgstr "`60`"
+
+msgid "Password reset requests a minute"
+msgstr "Demandes de réinitialisation du mot de passe par minute"
+
+msgid "`HOUSECAIRN_RATELIMIT_PASSWORD_RESET`"
+msgstr "`HOUSECAIRN_RATELIMIT_PASSWORD_RESET`"
+
+msgid "`20`"
+msgstr "`20`"
+
+msgid "Invitations sent a minute"
+msgstr "Invitations envoyées par minute"
+
+msgid "`HOUSECAIRN_RATELIMIT_INVITATIONS`"
+msgstr "`HOUSECAIRN_RATELIMIT_INVITATIONS`"
+
+msgid "Invitations sent a day"
+msgstr "Invitations envoyées par jour"
+
+msgid "`HOUSECAIRN_RATELIMIT_INVITATIONS_DAY`"
+msgstr "`HOUSECAIRN_RATELIMIT_INVITATIONS_DAY`"
+
+msgid "`50`"
+msgstr "`50`"
+
+msgid "Invitation links opened a minute"
+msgstr "Liens d'invitation ouverts par minute"
+
+msgid "`HOUSECAIRN_RATELIMIT_INVITATION_LINKS`"
+msgstr "`HOUSECAIRN_RATELIMIT_INVITATION_LINKS`"
+
+msgid "Tests of the mail server or of an issuer a minute"
+msgstr "Tests du serveur de messagerie ou d'un émetteur par minute"
+
+msgid "`HOUSECAIRN_RATELIMIT_TESTS`"
+msgstr "`HOUSECAIRN_RATELIMIT_TESTS`"
+
+msgid "Largest file (bytes)"
+msgstr "Fichier le plus gros (octets)"
+
+msgid "`HOUSECAIRN_PHOTO_MAX_BYTES`"
+msgstr "`HOUSECAIRN_PHOTO_MAX_BYTES`"
+
+msgid "Files of a home"
+msgstr "Fichiers d'un logement"
+
+msgid "`10485760`"
+msgstr "`10485760`"
+
+msgid "Space for the files of a home (MB)"
+msgstr "Espace des fichiers d'un logement (Mo)"
+
+msgid "`HOUSECAIRN_HOME_STORAGE_MB`"
+msgstr "`HOUSECAIRN_HOME_STORAGE_MB`"
+
+msgid "`5120`"
+msgstr "`5120`"
+
+msgid "Number of files of a home"
+msgstr "Nombre de fichiers d'un logement"
+
+msgid "`HOUSECAIRN_HOME_MAX_FILES`"
+msgstr "`HOUSECAIRN_HOME_MAX_FILES`"
+
+msgid "`5000`"
+msgstr "`5000`"
+
 msgid "The start-up checks (`manage.py check`, which `migrate` runs too) read the variables and the defaults, with one exception: `housecairn.E001`, which stops the start when `HOUSECAIRN_SIGNUP_OPEN` opens sign-up without a mail server, also counts a mail server chosen in the interface. That is why the interface refuses to remove that server, or restore its default, while sign-up is open. Otherwise a setting chosen in the interface is checked when it is saved, not at start-up."
 msgstr "Les contrôles de démarrage (`manage.py check`, que `migrate` lance aussi) lisent les variables et les défauts, à une exception près : `housecairn.E001`, qui arrête le démarrage quand `HOUSECAIRN_SIGNUP_OPEN` ouvre l'inscription sans serveur de messagerie, tient compte aussi d'un serveur de messagerie choisi dans l'interface. C'est pourquoi l'interface refuse de retirer ce serveur, ou de rétablir son défaut, tant que l'inscription est ouverte. Pour le reste, un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."
 
@@ -272,9 +407,30 @@ msgstr "Décide qui peut devenir le premier administrateur."
 msgid "The **Server** part shows all of them except `HOUSECAIRN_WEB_WORKERS`: only the container's start-up program reads it, to start that many web processes; the application itself does not."
 msgstr "La partie **Serveur** les affiche toutes sauf `HOUSECAIRN_WEB_WORKERS` : seul le programme de démarrage du conteneur la lit, pour lancer autant de processus web ; l'application elle-même ne la lit pas."
 
-msgid "Single sign-on providers (`OIDC_*`), the rate limits, the default language and time zone and the name of the instance are not in the interface yet: they stay variables, see [Environment variables](variables.md)."
-msgstr "Les fournisseurs d'authentification unique (`OIDC_*`), les limites de débit, la langue et le fuseau horaire par défaut et le nom de l'instance ne sont pas encore dans l'interface : ils restent des variables, voir [Variables d'environnement](variables.md)."
+msgid "The single sign-on provider of the `OIDC_*` variables stays a variable; others are declared in the interface (see [Single sign-on](oidc.md))."
+msgstr "Le fournisseur d'authentification unique des variables `OIDC_*` reste une variable ; les autres se déclarent dans l'interface (voir [Authentification unique](oidc.md))."
+
+msgid "Rate limits, quotas, language, time zone and name"
+msgstr "Limites de débit, quotas, langue, fuseau horaire et nom"
+
+msgid "**Rate limits**: see [Rate limits](rate-limits.md). Each is a whole number within bounds: none can be set to 0 nor switched off, and a day cannot allow fewer than a minute."
+msgstr "**Limites de débit** : voir [Limites de débit](rate-limits.md). Chacune est un nombre entier borné : aucune ne peut valoir 0 ni être supprimée, et une journée ne peut pas autoriser moins qu'une minute."
+
+msgid "**Files of a home**: the largest file (in bytes, as `HOUSECAIRN_PHOTO_MAX_BYTES` always was), the space and the number of files each home may hold. They are measured on disk, thumbnails and deleted files included until they are purged, and checked by every way to add a photo, an attachment or a label, in the screens and the API. Over a quota, the upload is refused with a message that gives the numbers. **Instance administration, Files of the homes** shows what each home takes, by its identifier only (see [Files of the homes](../screens/instance-usage.md))."
+msgstr "**Fichiers d'un logement** : le fichier le plus gros (en octets, comme l'a toujours été `HOUSECAIRN_PHOTO_MAX_BYTES`), l'espace et le nombre de fichiers que chaque logement peut contenir. Ils sont mesurés sur le disque, miniatures et fichiers supprimés compris jusqu'à leur purge, et contrôlés par chaque façon d'ajouter une photo, une pièce jointe ou une étiquette, dans les écrans comme dans l'API. Au-delà d'un quota, l'envoi est refusé avec un message qui donne les chiffres. **Administration de l'instance, Fichiers des logements** montre ce qu'occupe chaque logement, par son seul identifiant (voir [Fichiers des logements](../screens/instance-usage.md))."
+
+msgid "**Default language**: the language of people whose browser asks for none that the instance offers. The language a person's browser asks for always wins."
+msgstr "**Langue par défaut** : la langue des personnes dont le navigateur n'en demande aucune que l'instance propose. La langue que demande le navigateur d'une personne l'emporte toujours."
+
+msgid "**Time zone**: an IANA zone such as `Europe/Paris`. It decides what today is, and so which tasks are late, in the screens and in the background tasks alike."
+msgstr "**Fuseau horaire** : un fuseau IANA tel que `Europe/Paris`. Il décide du jour d'aujourd'hui, donc des tâches en retard, dans les écrans comme dans les tâches de fond."
+
+msgid "**Name of the instance**: in the app bar, the title of the pages and the emails, at most 64 characters on one line. Empty, the product name is shown. See [ADR 0042](../adr/0042-rate-limits-quotas-language-and-instance-name.md)."
+msgstr "**Nom de l'instance** : dans la barre de l'application, le titre des pages et les e-mails, au plus 64 caractères sur une ligne. Vide, le nom du produit s'affiche. Voir [ADR 0042](../adr/0042-rate-limits-quotas-language-and-instance-name.md)."
 
 #~ msgid "`manage.py check --deploy` reads the variables and the defaults, not the database: a setting chosen in the interface is checked when it is saved, not at start-up."
 #~ msgstr "`manage.py check --deploy` lit les variables et les défauts, pas la base de données : un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."
+
+#~ msgid "Single sign-on providers (`OIDC_*`), the rate limits, the default language and time zone and the name of the instance are not in the interface yet: they stay variables, see [Environment variables](variables.md)."
+#~ msgstr "Les fournisseurs d'authentification unique (`OIDC_*`), les limites de débit, la langue et le fuseau horaire par défaut et le nom de l'instance ne sont pas encore dans l'interface : ils restent des variables, voir [Variables d'environnement](variables.md)."
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 01:09+0000\n"
+"POT-Creation-Date: 2026-11-08 15:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -28,26 +28,29 @@ msgstr "Les tentatives qu'on peut deviner ou dont on peut abuser sont limitées 
 msgid "Action"
 msgstr "Action"
 
-msgid "Limit"
-msgstr "Limite"
+msgid "Limit (default)"
+msgstr "Limite (par défaut)"
 
-msgid "Opening or accepting an invitation link"
-msgstr "Ouvrir ou accepter un lien d'invitation"
+msgid "Variable"
+msgstr "Variable"
+
+msgid "Signing in"
+msgstr "Connexion"
 
 msgid "30 a minute per client address"
 msgstr "30 par minute par adresse client"
 
-msgid "Sending or sending again an invitation to a home"
-msgstr "Envoyer ou renvoyer une invitation à un logement"
+msgid "`HOUSECAIRN_RATELIMIT_LOGIN`"
+msgstr "`HOUSECAIRN_RATELIMIT_LOGIN`"
 
-msgid "10 a minute and 50 a day per person"
-msgstr "10 par minute et 50 par jour par personne"
+msgid "Failed sign-ins"
+msgstr "Connexions échouées"
 
-msgid "Inviting to the instance"
-msgstr "Inviter à l'instance"
+msgid "5 in five minutes per account, and 10 a minute per client address"
+msgstr "5 en cinq minutes par compte, et 10 par minute par adresse client"
 
-msgid "10 a minute and 50 a day per administrator"
-msgstr "10 par minute et 50 par jour par administrateur"
+msgid "`HOUSECAIRN_RATELIMIT_LOGIN_FAILURES`"
+msgstr "`HOUSECAIRN_RATELIMIT_LOGIN_FAILURES`"
 
 msgid "Signing up"
 msgstr "S'inscrire"
@@ -55,17 +58,53 @@ msgstr "S'inscrire"
 msgid "10 a minute and 60 a day per client address"
 msgstr "10 par minute et 60 par jour par adresse client"
 
+msgid "`HOUSECAIRN_RATELIMIT_SIGNUP`, `HOUSECAIRN_RATELIMIT_SIGNUP_DAY`"
+msgstr "`HOUSECAIRN_RATELIMIT_SIGNUP`, `HOUSECAIRN_RATELIMIT_SIGNUP_DAY`"
+
+msgid "Asking for a password reset"
+msgstr "Demande de réinitialisation du mot de passe"
+
+msgid "20 a minute per client address, and 5 a minute per address"
+msgstr "20 par minute par adresse client, et 5 par minute par adresse e-mail"
+
+msgid "`HOUSECAIRN_RATELIMIT_PASSWORD_RESET`"
+msgstr "`HOUSECAIRN_RATELIMIT_PASSWORD_RESET`"
+
+msgid "Sending or sending again an invitation, to a home or to the instance"
+msgstr "Envoi ou renvoi d'une invitation, à un logement ou à l'instance"
+
+msgid "10 a minute and 50 a day per person"
+msgstr "10 par minute et 50 par jour par personne"
+
+msgid "`HOUSECAIRN_RATELIMIT_INVITATIONS`, `HOUSECAIRN_RATELIMIT_INVITATIONS_DAY`"
+msgstr "`HOUSECAIRN_RATELIMIT_INVITATIONS`, `HOUSECAIRN_RATELIMIT_INVITATIONS_DAY`"
+
+msgid "Opening or accepting an invitation link"
+msgstr "Ouvrir ou accepter un lien d'invitation"
+
+msgid "`HOUSECAIRN_RATELIMIT_INVITATION_LINKS`"
+msgstr "`HOUSECAIRN_RATELIMIT_INVITATION_LINKS`"
+
+msgid "Testing the mail server or an issuer"
+msgstr "Test du serveur de messagerie ou d'un émetteur"
+
+msgid "5 a minute per administrator"
+msgstr "5 par minute par administrateur"
+
+msgid "`HOUSECAIRN_RATELIMIT_TESTS`"
+msgstr "`HOUSECAIRN_RATELIMIT_TESTS`"
+
 msgid "Erasing an account"
 msgstr "Effacer un compte"
 
 msgid "5 a minute per person"
 msgstr "5 par minute par personne"
 
-msgid "Signing in, password reset"
-msgstr "Connexion, réinitialisation du mot de passe"
+msgid "(fixed)"
+msgstr "(fixe)"
 
-msgid "allauth's defaults"
-msgstr "valeurs par défaut d'allauth"
+msgid "Each limit is a setting of the instance: change it on **Instance administration, Settings**, in the **Rate limits** section, or by its variable, which then locks the field (see [Settings](settings.md)). A limit goes from 1 to 1000 a minute (100 000 a day, 60 tests a minute): it can be loosened or tightened, never switched off. A change applies within a few seconds, without a restart, and starts that limit's counters again."
+msgstr "Chaque limite est un réglage de l'instance : modifiez-la dans **Administration de l'instance, Réglages**, section **Limites de débit**, ou par sa variable, qui verrouille alors le champ (voir [Réglages](settings.md)). Une limite va de 1 à 1000 par minute (100 000 par jour, 60 tests par minute) : on peut l'assouplir ou la resserrer, jamais la supprimer. Une modification s'applique en quelques secondes, sans redémarrage, et remet à zéro les compteurs de cette limite."
 
 msgid "Beyond a limit, the page for opening an invitation link, and allauth's pages (signing in, signing up, password reset), answer 429. Sending an invitation, to a home or to the instance, and erasing an account on the web stay on their page with a message saying to try again later. The API answers 429 for all of them."
 msgstr "Au-delà d'une limite, la page d'ouverture d'un lien d'invitation et les pages d'allauth (connexion, inscription, réinitialisation du mot de passe) répondent 429. L'envoi d'une invitation, à un logement ou à l'instance, et l'effacement d'un compte sur le web restent sur leur page avec un message qui dit de réessayer plus tard. L'API répond 429 dans tous les cas."
@@ -84,3 +123,10 @@ msgstr "Les compteurs vivent dans un cache. Par défaut, il est dans la mémoire
 
 msgid "keeps them in the database (the table is created at start-up, with SQLite or PostgreSQL). A Redis or Memcached URL works as well. The limits still are a brake: the verification of addresses and the anti-robot check are the other barriers of open sign-up."
 msgstr "les conserve dans la base de données (la table est créée au démarrage, avec SQLite ou PostgreSQL). Une URL Redis ou Memcached fonctionne aussi. Les limites restent un frein : la vérification des adresses et le contrôle anti-robot sont les autres barrières de l'inscription libre."
+
+#~ msgid "Limit"
+#~ msgstr "Limite"
+
+#~ msgid "Inviting to the instance"
+#~ msgstr "Inviter à l'instance"
+

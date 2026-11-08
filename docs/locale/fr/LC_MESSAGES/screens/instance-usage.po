@@ -1,0 +1,33 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 15:35+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Files of the homes"
+msgstr "Fichiers des logements"
+
+msgid "The space and the number of files each home takes, at `/instance/usage/`, reached from **Instance administration**. Administrators only; anyone else gets a 404."
+msgstr "L'espace et le nombre de fichiers qu'occupe chaque logement, à `/instance/usage/`, depuis **Administration de l'instance**. Réservé aux administrateurs ; toute autre personne reçoit une 404."
+
+msgid "Each home is shown by its identifier, with the space its files take, their number and the share of the quota closer to its limit; the fullest come first. Photos, attachments, labels and their thumbnails count, and so do deleted files until they are purged. You see no name, no member and no file: the identifier only tells homes apart (see [Instance administrator](../administration/instance.md))."
+msgstr "Chaque logement apparaît par son identifiant, avec l'espace qu'occupent ses fichiers, leur nombre et la part du quota le plus proche de sa limite ; les plus pleins d'abord. Photos, pièces jointes, étiquettes et leurs miniatures comptent, ainsi que les fichiers supprimés jusqu'à leur purge. Vous ne voyez ni nom, ni membre, ni fichier : l'identifiant sert seulement à distinguer les logements (voir [Administrateur de l'instance](../administration/instance.md))."
+
+msgid "The quotas are settings of the instance, in the **Files of a home** section of [Instance settings](instance-settings.md). The API gives the same numbers at `GET /api/v1/instance/usage/`."
+msgstr "Les quotas sont des réglages de l'instance, dans la section **Fichiers d'un logement** des [Réglages de l'instance](instance-settings.md). L'API donne les mêmes chiffres à `GET /api/v1/instance/usage/`."
+
