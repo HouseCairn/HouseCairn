@@ -482,8 +482,11 @@ class TestWebScreen:
 
         page = admin_client.get(reverse(WEB)).text
         assert settings.SECRET_KEY not in page
-        assert "sqlite3" in page
-        assert ":memory:" not in page
+        engine = str(settings.DATABASES["default"]["ENGINE"]).rsplit(".", 1)[-1]
+        assert engine in page
+        for part in ("NAME", "HOST", "PASSWORD"):
+            value = str(settings.DATABASES["default"].get(part) or "")
+            assert not value or value not in page
 
     def test_save_a_section_then_restore_a_default(self, admin_client: Client) -> None:
         response = post(admin_client, "invitations", invitation_lifetime_days="30")
