@@ -336,9 +336,7 @@ class SettingsView(InstanceAdminMixin, TemplateView):
             form.is_valid()
             for setting in locked_sent:
                 form.add_error(None, services_settings.locked_message(setting))
-            return self.render_to_response(
-                self.get_context_data(bound={section: form}), status=409
-            )
+            return self.render_to_response(self.get_context_data(bound={section: form}), status=409)
         if form.is_valid():
             try:
                 changed = services_settings.update(actor, form.changes())
