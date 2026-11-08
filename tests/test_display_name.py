@@ -110,6 +110,39 @@ class TestMisleadingNames:
         assert services.set_display_name(alice, value).display_name == value
 
 
+FILLED = ["Sam\u3164", "\u3164Sam", "Sam\u115f", "\u2800Sam\u2800", "\uffa0 Sam \u1160"]
+
+
+class TestFillers:
+    """A filler at either end draws a gap, so it is removed: "Sam" and "Sam\u3164" are one name."""
+
+    @pytest.mark.parametrize("value", FILLED)
+    def test_the_service_removes_them_at_either_end(self, alice: User, value: str) -> None:
+        assert services.set_display_name(alice, value).display_name == "Sam"
+        alice.refresh_from_db()
+        assert alice.display_name == "Sam"
+
+    @pytest.mark.parametrize("value", FILLED)
+    def test_the_screen_and_the_api_keep_the_clean_name(
+        self, client: Client, api_client: APIClient, alice: User, value: str
+    ) -> None:
+        client.force_login(alice)
+        assert client.post(reverse("profile"), {"display_name": value}).status_code == 302
+        alice.refresh_from_db()
+        assert alice.display_name == "Sam"
+        api_client.force_authenticate(alice)
+        answer = api_client.patch(reverse("api-v1:me"), {"display_name": value}, format="json")
+        assert (answer.status_code, answer.json()["display_name"]) == (200, "Sam")
+
+    def test_a_filler_inside_the_name_stays(self, alice: User) -> None:
+        assert services.set_display_name(alice, "Sa\u3164m").display_name == "Sa\u3164m"
+
+    def test_a_name_saved_before_is_shown_without_them(self, alice: User) -> None:
+        User.objects.filter(pk=alice.pk).update(display_name="Sam\u3164")
+        alice.refresh_from_db()
+        assert person_name(alice) == "Sam"
+
+
 class TestScreen:
     def test_the_profile_screen_changes_it(self, client: Client, alice: User) -> None:
         client.force_login(alice)

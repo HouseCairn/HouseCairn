@@ -7,6 +7,7 @@ from django.test import Client
 from django.urls import reverse
 from rest_framework.test import APIClient
 
+from housecairn.accounts import names
 from housecairn.accounts import services as account_services
 from housecairn.accounts.models import User
 from housecairn.homes.models import Home, Membership, Role
@@ -174,3 +175,26 @@ class TestSameName:
             text = client.get(reverse(f"tasks:{name}", kwargs={"home_id": alice_home.id})).text
             assert ">Bobby</option>" in text
             assert "bob@example.com" not in text
+
+
+class TestLabelsIgnoreFillers:
+    """Two names the same on screen are told apart, whatever hides in them."""
+
+    @pytest.mark.parametrize("other", ["Sam\u3164", "\u3164sam", "S\u115fAM", "Sam\u2800", "sam"])
+    def test_a_filler_or_the_case_is_no_difference(
+        self, alice: User, bob: User, other: str
+    ) -> None:
+        User.objects.filter(pk=alice.pk).update(display_name="Sam")
+        User.objects.filter(pk=bob.pk).update(display_name=other)
+        alice.refresh_from_db()
+        bob.refresh_from_db()
+        shown = names.labels([alice, bob])
+        assert shown[alice.pk] == f"Sam ({alice.email})"
+        assert shown[bob.pk].endswith(f"({bob.email})")
+
+    def test_different_names_stay_alone(self, alice: User, bob: User) -> None:
+        User.objects.filter(pk=alice.pk).update(display_name="Sam")
+        User.objects.filter(pk=bob.pk).update(display_name="Sami\u3164")
+        alice.refresh_from_db()
+        bob.refresh_from_db()
+        assert names.labels([alice, bob]) == {alice.pk: "Sam", bob.pk: "Sami"}

@@ -339,13 +339,16 @@ def set_display_name(user: User, value: str) -> User:
 
     One line, no control character, 60 characters at most, and not misleading: no "@" (it
     would pass for an address) and something that draws (a name of fillers is no name).
-    Empty is allowed: the person is then named as before they chose.
+    Fillers at either end are removed. Empty is allowed: the person is then named as before
+    they chose.
     """
     cleaned = " ".join(without_control_characters(" ".join(str(value).split())).split())
     if names.looks_like_an_address(cleaned):
         raise ValidationError(_("A display name cannot contain “@”: it would pass for an address."))
     if cleaned and not names.has_visible_glyph(cleaned):
         raise ValidationError(_("Give a name with at least one visible character."))
+    # A filler at either end draws a gap: "Sam" and "Sam\u3164" would look like two people.
+    cleaned = names.trim_fillers(cleaned)
     user.display_name = cleaned
     user.full_clean(exclude=[f.name for f in user._meta.fields if f.name != "display_name"])
     user.save(update_fields=["display_name", "updated_at"])
