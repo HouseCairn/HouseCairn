@@ -61,6 +61,12 @@ own tests in `tests/test_ci_scripts.py`.
   or digest is verified after the download as before, and the last failure
   still fails the step. Actions and tools that download by themselves keep
   their own retries; the default CodeQL setup has none the repository can set.
+- A tool taken from a GitHub release is downloaded through the REST API
+  (`.github/scripts/release-asset.sh`: asset id read from the release by its
+  tag and file name, then `Accept: application/octet-stream`), not from
+  `github.com/<owner>/<repository>/releases/download/`, which answered 504 for
+  minutes on 2026-11-08 while the API served the same file. Same curl retries,
+  same checksum after the download.
 
 ### Exceptions
 
