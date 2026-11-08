@@ -5,14 +5,22 @@ person when signed in): signing in, signing up, opening invitation links,
 sending invitations, erasing an account
 ([ADR 0025](../adr/0025-rate-limit-counters-and-workers.md)).
 
-| Action | Limit |
-| --- | --- |
-| Opening or accepting an invitation link | 30 a minute per client address |
-| Sending or sending again an invitation to a home | 10 a minute and 50 a day per person |
-| Inviting to the instance | 10 a minute and 50 a day per administrator |
-| Signing up | 10 a minute and 60 a day per client address |
-| Erasing an account | 5 a minute per person |
-| Signing in, password reset | allauth's defaults |
+| Action | Limit (default) | Variable |
+| --- | --- | --- |
+| Signing in | 30 a minute per client address | `HOUSECAIRN_RATELIMIT_LOGIN` |
+| Failed sign-ins | 5 in five minutes per account, and 10 a minute per client address | `HOUSECAIRN_RATELIMIT_LOGIN_FAILURES` |
+| Signing up | 10 a minute and 60 a day per client address | `HOUSECAIRN_RATELIMIT_SIGNUP`, `HOUSECAIRN_RATELIMIT_SIGNUP_DAY` |
+| Asking for a password reset | 20 a minute per client address, and 5 a minute per address | `HOUSECAIRN_RATELIMIT_PASSWORD_RESET` |
+| Sending or sending again an invitation, to a home or to the instance | 10 a minute and 50 a day per person | `HOUSECAIRN_RATELIMIT_INVITATIONS`, `HOUSECAIRN_RATELIMIT_INVITATIONS_DAY` |
+| Opening or accepting an invitation link | 30 a minute per client address | `HOUSECAIRN_RATELIMIT_INVITATION_LINKS` |
+| Testing the mail server or an issuer | 5 a minute per administrator | `HOUSECAIRN_RATELIMIT_TESTS` |
+| Erasing an account | 5 a minute per person | (fixed) |
+
+Each limit is a setting of the instance: change it on **Instance administration, Settings**,
+in the **Rate limits** section, or by its variable, which then locks the field (see
+[Settings](settings.md)). A limit goes from 1 to 1000 a minute (100 000 a day, 60 tests a
+minute): it can be loosened or tightened, never switched off. A change applies within a few
+seconds, without a restart, and starts that limit's counters again.
 
 Beyond a limit, the page for opening an invitation link, and allauth's pages
 (signing in, signing up, password reset), answer 429. Sending an invitation, to

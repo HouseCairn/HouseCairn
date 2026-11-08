@@ -26,6 +26,8 @@ invitations, never a home, a member of a home, a task or a document (see
   cannot be changed there, and no account is created there). Deleting an account follows
   the rules of erasure: the only administrator, and the only owner of a home
   with other members, cannot be deleted.
+- **Files of the homes**: the space and the number of files each home takes, against the
+  quotas, by identifier only (see [Files of the homes](instance-usage.md)).
 - **Audit log**: administration actions, invitations to the instance, accounts
   created or erased, homes unlocked, homes deleted (without the name), each
   with who did it and when. It holds nothing about the inside of a home.

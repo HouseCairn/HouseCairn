@@ -1256,10 +1256,8 @@ msgstr ""
 "jusqu'à leur purge ; de 1 à 1048576 (1 To)."
 
 #: instance/registry.py
-#, fuzzy
-#| msgid "Files of a home"
 msgid "Number of files of a home"
-msgstr "Fichiers d'un logement"
+msgstr "Nombre de fichiers d'un logement"
 
 #: instance/registry.py
 msgid ""
