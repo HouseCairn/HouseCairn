@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 EMAIL = "demo@example.com"
 PASSWORD = "correct-horse-battery-staple"  # throwaway account of the CI instance
@@ -118,6 +119,7 @@ def capture(browser: Browser, base: str, out: Path, invitations: tuple[str, str]
                     session = context.storage_state()
                 path = resolve(page, base, path, invitations)
                 response = page.goto(f"{base}{path}")
+                say(f"{device}-{language}-{name}")
                 page.wait_for_load_state("networkidle")
                 expected = 404 if name in NOT_FOUND else 200
                 if response is None or response.status != expected:
