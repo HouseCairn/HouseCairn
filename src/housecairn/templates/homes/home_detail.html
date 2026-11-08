@@ -1,9 +1,10 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n tabs %}
 {% block head_title %}{{ home.name }}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{% url 'homes:list' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Homes" %}</a>
   <h1>{{ home.name }}</h1>
+  {% tab_bar "home" %}
   <section class="card">
     <dl class="facts">
       <div><dt>{% translate "Your role" %}</dt><dd>{{ role.label }}</dd></div>

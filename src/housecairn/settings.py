@@ -14,7 +14,6 @@ import django_stubs_ext
 import environ
 from csp.constants import NONE, SELF
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.translation import gettext_lazy as _
 
 from housecairn.core.proxy import TrustedProxies
 from housecairn.instance import registry
@@ -101,6 +100,8 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "housecairn.accounts.middleware.DeviceCookieMiddleware",
+    # After authentication: a person's saved language wins over the browser's (docs/adr/0042).
+    "housecairn.tasks.middleware.PersonLanguageMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -169,7 +170,8 @@ AUTHENTICATION_BACKENDS = [
 
 # Internationalization: English is the source language, French ships with V1.
 LANGUAGE_CODE = "en"
-LANGUAGES = [("en", _("English")), ("fr", _("French"))]
+# Each language is named in itself, whatever the language of the page: never translated.
+LANGUAGES = [("en", "English"), ("fr", "Français")]
 LOCALE_PATHS = [BASE_DIR / "locale"]
 USE_I18N = True
 # The time zone of the households (docs/adr/0032, 0042): the variable, else UTC. The

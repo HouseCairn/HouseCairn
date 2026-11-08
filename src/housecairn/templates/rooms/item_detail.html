@@ -22,10 +22,10 @@
           </dd>
         </div>
       {% endif %}
-      {% if item.contract or item.contract_url %}
+      {% if item.contract_provider or item.contract_number or item.contract_url %}
         <div>
           <dt>{% translate "Maintenance contract" %}</dt>
-          <dd>{{ item.contract }}{% if item.contract_url %}{% if item.contract %} · {% endif %}<a href="{{ item.contract_url }}" rel="noopener noreferrer nofollow">{% translate "open the contract" %}</a>{% endif %}</dd>
+          <dd>{{ item.contract_provider }}{% if item.contract_provider and item.contract_number %} · {% endif %}{% if item.contract_number %}{% translate "no." %} <span class="mono">{{ item.contract_number }}</span>{% endif %}{% if item.contract_url %}{% if item.contract_provider or item.contract_number %} · {% endif %}<a href="{{ item.contract_url }}" rel="noopener noreferrer nofollow">{% translate "open the contract" %}</a>{% endif %}</dd>
         </div>
       {% endif %}
       {% if item.notes %}<div><dt>{% translate "Notes" %}</dt><dd class="prose">{{ item.notes|linebreaksbr }}</dd></div>{% endif %}

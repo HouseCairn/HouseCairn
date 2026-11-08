@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 15:36+0000\n"
+"POT-Creation-Date: 2026-11-08 16:53+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -195,8 +195,8 @@ msgstr "Un jeton a besoin d'au moins une portée."
 msgid "A token is bound to at least one home."
 msgstr "Un jeton est lié à au moins un logement."
 
-#: audit/apps.py templates/homes/audit.html templates/homes/household.html
-#: templates/instance/audit.html templates/instance/overview.html
+#: audit/apps.py core/templatetags/tabs.py templates/homes/audit.html
+#: templates/instance/audit.html
 msgid "Audit log"
 msgstr "Journal d'audit"
 
@@ -251,6 +251,71 @@ msgstr "Exigence de connexion retirée"
 #: audit/labels.py
 msgid "Home exported"
 msgstr "Logement exporté"
+
+#: audit/labels.py
+#, python-format
+msgid "Room added: %(title)s"
+msgstr "Pièce ajoutée : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Room changed: %(title)s"
+msgstr "Pièce modifiée : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Room deleted: %(title)s"
+msgstr "Pièce supprimée : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Item added: %(title)s"
+msgstr "Élément ajouté : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Item changed: %(title)s"
+msgstr "Élément modifié : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Item deleted: %(title)s"
+msgstr "Élément supprimé : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Task added: %(title)s"
+msgstr "Tâche ajoutée : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Task changed: %(title)s"
+msgstr "Tâche modifiée : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Task deleted: %(title)s"
+msgstr "Tâche supprimée : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Photo added to %(title)s"
+msgstr "Photo ajoutée à %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Photo deleted from %(title)s"
+msgstr "Photo supprimée de %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "File added to the task %(title)s"
+msgstr "Fichier ajouté à la tâche %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "File deleted from the task %(title)s"
+msgstr "Fichier supprimé de la tâche %(title)s"
 
 #: audit/labels.py
 msgid "Instance invitation sent"
@@ -339,7 +404,8 @@ msgstr "Compte modifié dans le site d'administration"
 msgid "Account deleted in the administration site"
 msgstr "Compte supprimé dans le site d'administration"
 
-#: audit/models.py templates/shell/navigation.html templates/tasks/my_home.html
+#: audit/models.py core/templatetags/tabs.py templates/shell/navigation.html
+#: templates/tasks/my_home.html
 msgid "Home"
 msgstr "Accueil"
 
@@ -370,6 +436,60 @@ msgstr "Cœur"
 #: core/models.py
 msgid "deleted at"
 msgstr "supprimé le"
+
+#: core/templatetags/tabs.py tasks/agenda.py templates/tasks/_due.html
+#: templates/tasks/today.html
+msgid "Today"
+msgstr "Aujourd'hui"
+
+#: core/templatetags/tabs.py
+msgid "All tasks"
+msgstr "Toutes les tâches"
+
+#: core/templatetags/tabs.py templates/tasks/history.html
+#: templates/tasks/task_detail.html
+msgid "History"
+msgstr "Historique"
+
+#: core/templatetags/tabs.py templates/core/more.html
+#: templates/tasks/my_home.html templates/tasks/preferences.html
+msgid "Display preferences"
+msgstr "Préférences d'affichage"
+
+#: core/templatetags/tabs.py
+msgid "Overview"
+msgstr "Vue d'ensemble"
+
+#: core/templatetags/tabs.py templates/homes/home_detail.html
+#: templates/homes/household.html templates/homes/member.html
+msgid "Household and roles"
+msgstr "Foyer et rôles"
+
+#: core/templatetags/tabs.py templates/core/more.html
+#: templates/homes/home_detail.html
+msgid "Settings"
+msgstr "Réglages"
+
+#: core/templatetags/tabs.py templates/instance/overview.html
+#: templates/instance/provider.html templates/instance/providers.html
+msgid "Sign-in providers"
+msgstr "Fournisseurs de connexion"
+
+#: core/templatetags/tabs.py templates/instance/usage.html
+msgid "Files of the homes"
+msgstr "Fichiers des logements"
+
+#: core/templatetags/tabs.py tasks/apps.py templates/rooms/item_detail.html
+#: templates/rooms/room_detail.html templates/shell/navigation.html
+#: templates/tasks/choose_home.html templates/tasks/task_detail.html
+#: templates/tasks/task_form.html templates/tasks/task_list.html
+msgid "Tasks"
+msgstr "Tâches"
+
+#: core/templatetags/tabs.py templates/core/more.html
+#: templates/instance/overview.html
+msgid "Instance administration"
+msgstr "Administration de l'instance"
 
 #: core/views.py templates/core/index.html
 msgid "What needs doing in the house, where, when, with what and for how much."
@@ -1455,6 +1575,79 @@ msgstr "(aucun)"
 msgid "Rooms"
 msgstr "Pièces"
 
+#: rooms/forms.py
+msgid ""
+"Sets the icon and the filters of the room and, later, the task templates "
+"offered for it. Choose Other if none fits."
+msgstr ""
+"Détermine l'icône et les filtres de la pièce et, plus tard, les modèles de "
+"tâches proposés pour elle. Choisissez Autre si aucun ne convient."
+
+#: rooms/forms.py
+msgid "Fills in by itself from the type; change it to name the room."
+msgstr ""
+"Se remplit tout seul d'après le type ; modifiez-le pour nommer la pièce."
+
+#: rooms/forms.py
+msgid "Choose a type"
+msgstr "Choisissez un type"
+
+#: rooms/forms.py
+msgid "Give the room a name."
+msgstr "Donnez un nom à la pièce."
+
+#: rooms/forms.py
+msgid "The colour as you would ask for it. Example: warm white."
+msgstr "La couleur comme vous la demanderiez. Exemple : blanc chaud."
+
+#: rooms/forms.py
+msgid "The make of the paint. Example: Acme Paints."
+msgstr "La marque de la peinture. Exemple : Peintures Acme."
+
+#: rooms/forms.py
+msgid ""
+"The reference or the colour code on the tin, to order the same one. Example: "
+"AC-1042."
+msgstr ""
+"La référence ou le code couleur inscrit sur le pot, pour recommander la "
+"même. Exemple : AC-1042."
+
+#: rooms/forms.py
+msgid ""
+"The batch number printed on the tin; shades can differ from one batch to "
+"another. Example: L23-0457."
+msgstr ""
+"Le numéro de lot imprimé sur le pot ; les teintes peuvent différer d'un lot "
+"à l'autre. Exemple : L23-0457."
+
+#: rooms/forms.py
+msgid "What is left of it and where. Example: half a tin, in the garage."
+msgstr "Ce qu'il en reste et où. Exemple : un demi-pot, dans le garage."
+
+#: rooms/forms.py
+msgid ""
+"What covers the floor, with its make and reference if you know them. "
+"Example: oak parquet, matt varnish."
+msgstr ""
+"Ce qui recouvre le sol, avec sa marque et sa référence si vous les "
+"connaissez. Exemple : parquet en chêne, vernis mat."
+
+#: rooms/forms.py
+msgid ""
+"What covers the walls, under the paint if any. Example: lining paper, then "
+"paint."
+msgstr ""
+"Ce qui recouvre les murs, sous la peinture le cas échéant. Exemple : papier "
+"de doublage, puis peinture."
+
+#: rooms/forms.py
+msgid ""
+"What the walls and floor hide, or anything else to remember about the work "
+"done. Example: water pipe along the north wall, 30 cm above the floor."
+msgstr ""
+"Ce que cachent les murs et le sol, ou tout autre souvenir des travaux faits. "
+"Exemple : canalisation d'eau le long du mur nord, à 30 cm du sol."
+
 #: rooms/forms.py tasks/forms.py tasks/models.py templates/tasks/history.html
 #: templates/tasks/task_list.html
 msgid "Room"
@@ -1472,7 +1665,7 @@ msgstr "Liens"
 msgid "One per line: the address, then a label if you like."
 msgstr "Un par ligne : l'adresse, puis une étiquette si vous le souhaitez."
 
-#: rooms/forms.py rooms/models.py
+#: rooms/forms.py
 msgid "Photo"
 msgstr "Photo"
 
@@ -1483,6 +1676,15 @@ msgstr "Légende"
 #: rooms/forms.py
 msgid "Category"
 msgstr "Catégorie"
+
+#: rooms/forms.py
+msgid ""
+"Behind the walls: pipes and cables photographed before the wall is closed, "
+"to know where not to drill. Other: say what it is in the caption."
+msgstr ""
+"Derrière les murs : tuyaux et câbles photographiés avant la fermeture du "
+"mur, pour savoir où ne pas percer. Autre : précisez de quoi il s'agit dans "
+"la légende."
 
 #: rooms/images.py
 msgid "This file is not a valid JPEG, PNG or WebP image."
@@ -1642,12 +1844,20 @@ msgid "warranty ends on"
 msgstr "fin de garantie"
 
 #: rooms/models.py
-msgid "maintenance contract"
-msgstr "contrat d'entretien"
+msgid "maintenance contract: provider"
+msgstr "contrat d'entretien : prestataire"
 
 #: rooms/models.py
-msgid "Who services it, and the contract number if any."
-msgstr "Qui l'entretient, et le numéro de contrat s'il y en a un."
+msgid "Who services it. Example: Acme Heating."
+msgstr "Qui l'entretient. Exemple : Acme Chauffage."
+
+#: rooms/models.py
+msgid "maintenance contract: number"
+msgstr "contrat d'entretien : numéro"
+
+#: rooms/models.py
+msgid "The number to quote when you call them. Example: C-2024-0187."
+msgstr "Le numéro à donner quand vous les appelez. Exemple : C-2024-0187."
 
 #: rooms/models.py
 msgid "contract link"
@@ -1669,9 +1879,29 @@ msgstr "éléments"
 msgid "This room is not in this home."
 msgstr "Cette pièce n'est pas dans ce logement."
 
-#: rooms/models.py templates/rooms/room_detail.html
-msgid "Open walls"
-msgstr "Murs ouverts"
+#: rooms/models.py
+msgid "General"
+msgstr "Général"
+
+#: rooms/models.py
+msgid "Behind the walls"
+msgstr "Derrière les murs"
+
+#: rooms/models.py
+msgid "Before the work"
+msgstr "Avant les travaux"
+
+#: rooms/models.py
+msgid "After the work"
+msgstr "Après les travaux"
+
+#: rooms/models.py
+msgid ""
+"Pipes and cables photographed before the wall is closed, to know where not "
+"to drill."
+msgstr ""
+"Tuyaux et câbles photographiés avant la fermeture du mur, pour savoir où ne "
+"pas percer."
 
 #: rooms/models.py
 msgid "category"
@@ -1754,14 +1984,6 @@ msgstr "Photo ajoutée."
 #: rooms/views.py
 msgid "Photo deleted."
 msgstr "Photo supprimée."
-
-#: settings.py
-msgid "English"
-msgstr "Anglais"
-
-#: settings.py
-msgid "French"
-msgstr "Français"
 
 #: stock/apps.py templates/shell/navigation.html
 #: templates/stock/article_detail.html templates/stock/article_form.html
@@ -1958,12 +2180,6 @@ msgstr "Aucune pièce"
 msgid "Nobody yet"
 msgstr "Personne pour l'instant"
 
-#: tasks/agenda.py templates/tasks/_due.html templates/tasks/history.html
-#: templates/tasks/my_home.html templates/tasks/task_list.html
-#: templates/tasks/today.html
-msgid "Today"
-msgstr "Aujourd'hui"
-
 #: tasks/agenda.py
 msgid "Coming up"
 msgstr "À venir"
@@ -1975,13 +2191,6 @@ msgstr "En retard"
 #: tasks/agenda.py
 msgid "In season"
 msgstr "De saison"
-
-#: tasks/apps.py templates/rooms/item_detail.html
-#: templates/rooms/room_detail.html templates/shell/navigation.html
-#: templates/tasks/choose_home.html templates/tasks/task_detail.html
-#: templates/tasks/task_form.html templates/tasks/task_list.html
-msgid "Tasks"
-msgstr "Tâches"
 
 #: tasks/files.py
 msgid ""
@@ -2037,8 +2246,26 @@ msgid "New date"
 msgstr "Nouvelle date"
 
 #: tasks/forms.py
+msgid "Language"
+msgstr "Langue"
+
+#: tasks/forms.py
+msgid "Automatic (browser, then instance default)"
+msgstr "Automatique (navigateur, puis défaut de l'instance)"
+
+#: tasks/forms.py
+msgid "Applies to every page you open, on every device you sign in from."
+msgstr ""
+"S'applique à toutes les pages que vous ouvrez, sur tous les appareils où "
+"vous vous connectez."
+
+#: tasks/forms.py
 msgid "Choose at least one file."
 msgstr "Choisissez au moins un fichier."
+
+#: tasks/models.py
+msgid "This language is not offered."
+msgstr "Cette langue n'est pas proposée."
 
 #: tasks/models.py templates/stock/article_list.html
 msgid "Low"
@@ -2262,6 +2489,10 @@ msgstr "à venir"
 #: tasks/models.py
 msgid "in season"
 msgstr "de saison"
+
+#: tasks/models.py
+msgid "language"
+msgstr "langue"
 
 #: tasks/models.py
 msgid "display preference"
@@ -2580,7 +2811,9 @@ msgid "Delete my account"
 msgstr "Supprimer mon compte"
 
 #: templates/accounts/delete.html templates/core/more.html
-#: templates/instance/overview.html templates/shell/navigation.html
+#: templates/instance/audit.html templates/instance/overview.html
+#: templates/instance/providers.html templates/instance/settings.html
+#: templates/instance/usage.html templates/shell/navigation.html
 msgid "More"
 msgstr "Plus"
 
@@ -2693,16 +2926,6 @@ msgstr "Bienvenue"
 msgid "Go to my homes"
 msgstr "Voir mes logements"
 
-#: templates/core/more.html templates/homes/home_detail.html
-#: templates/instance/overview.html
-msgid "Settings"
-msgstr "Réglages"
-
-#: templates/core/more.html templates/tasks/my_home.html
-#: templates/tasks/preferences.html
-msgid "Display preferences"
-msgstr "Préférences d'affichage"
-
 #: templates/core/more.html
 msgid "How the Today screen is laid out for you"
 msgstr "La disposition de l'écran Aujourd'hui pour vous"
@@ -2714,12 +2937,6 @@ msgstr "Sécurité du compte"
 #: templates/core/more.html
 msgid "Passkeys, authenticator app, recovery codes"
 msgstr "Clés d'accès, application d'authentification, codes de récupération"
-
-#: templates/core/more.html templates/instance/audit.html
-#: templates/instance/overview.html templates/instance/providers.html
-#: templates/instance/settings.html templates/instance/usage.html
-msgid "Instance administration"
-msgstr "Administration de l'instance"
 
 #: templates/core/more.html
 msgid "Accounts, invitations, audit log"
@@ -2765,19 +2982,29 @@ msgstr "membre · tâches, projets, réalisation"
 msgid "read only · sees the home, changes nothing"
 msgstr "lecture seule · voit le logement, ne modifie rien"
 
-#: templates/homes/audit.html templates/homes/home_detail.html
-#: templates/homes/household.html templates/homes/member.html
-msgid "Household and roles"
-msgstr "Foyer et rôles"
+#: templates/homes/audit.html
+msgid ""
+"Who did what in this home and when: rooms, items, tasks, photos and files "
+"added, changed or deleted, roles, invitations, the sign-in rule, exports. "
+"Each entry names what it concerns by its title only. Only owners see it, and "
+"it holds no note, cost, file or procedure."
+msgstr ""
+"Qui a fait quoi dans ce logement et quand : pièces, éléments, tâches, photos "
+"et fichiers ajoutés, modifiés ou supprimés, rôles, invitations, règle de "
+"connexion, exports. Chaque entrée désigne son objet par son titre seulement. "
+"Seuls les propriétaires le voient, et il ne contient ni note, ni coût, ni "
+"fichier, ni mode opératoire."
 
 #: templates/homes/audit.html
 msgid ""
-"Who changed what in this home: roles, invitations, the sign-in rule, "
-"exports. Only owners see it, and it holds no tasks, documents or notes."
+"Nothing recorded yet. As people add, change or delete rooms, items, tasks, "
+"photos and files, or change roles and invitations, each action appears here "
+"with who did it and when, naming what it concerns by its title."
 msgstr ""
-"Qui a modifié quoi dans ce logement : rôles, invitations, règle de "
-"connexion, exports. Seuls les propriétaires le voient, et il ne contient ni "
-"tâches, ni documents, ni notes."
+"Rien d'enregistré pour l'instant. Quand quelqu'un ajoute, modifie ou "
+"supprime des pièces, des éléments, des tâches, des photos ou des fichiers, "
+"ou change des rôles ou des invitations, chaque action apparaît ici avec son "
+"auteur et sa date, l'objet étant désigné par son titre."
 
 #: templates/homes/confirm.html templates/rooms/confirm_delete.html
 #: templates/stock/confirm_delete.html templates/tasks/confirm_delete.html
@@ -2968,10 +3195,6 @@ msgstr "Renvoyer"
 #: templates/homes/household.html templates/instance/overview.html
 msgid "Revoke"
 msgstr "Révoquer"
-
-#: templates/homes/household.html
-msgid "Roles, invitations, sign-in rule, export"
-msgstr "Rôles, invitations, règle de connexion, export"
 
 #: templates/homes/household.html
 msgid "Sign-in"
@@ -3204,11 +3427,6 @@ msgstr "configuré"
 msgid "not configured"
 msgstr "non configuré"
 
-#: templates/instance/overview.html templates/instance/provider.html
-#: templates/instance/providers.html
-msgid "Sign-in providers"
-msgstr "Fournisseurs de connexion"
-
 #: templates/instance/overview.html
 msgid "none"
 msgstr "aucun"
@@ -3257,34 +3475,9 @@ msgid "Remove these requirements"
 msgstr "Retirer ces exigences"
 
 #: templates/instance/overview.html
-msgid "Accounts and settings"
-msgstr "Comptes et réglages"
-
-#: templates/instance/overview.html
 msgid "Deactivate, delete, set the administrators (administration site)"
 msgstr ""
 "Désactiver, supprimer, définir les administrateurs (site d'administration)"
-
-#: templates/instance/overview.html
-msgid "Name, language, sign-up, invitations, email, rate limits, quotas"
-msgstr ""
-"Nom, langue, inscription, invitations, e-mail, limites de débit, quotas"
-
-#: templates/instance/overview.html
-msgid "Single sign-on through OpenID Connect"
-msgstr "Authentification unique par OpenID Connect"
-
-#: templates/instance/overview.html templates/instance/usage.html
-msgid "Files of the homes"
-msgstr "Fichiers des logements"
-
-#: templates/instance/overview.html
-msgid "Space and files each home takes, against the quotas"
-msgstr "Espace et fichiers de chaque logement, au regard des quotas"
-
-#: templates/instance/overview.html
-msgid "Administration actions, invitations, accounts"
-msgstr "Actions d'administration, invitations, comptes"
 
 #: templates/instance/provider.html
 msgid "Redirect URI"
@@ -3544,6 +3737,10 @@ msgid "Maintenance contract"
 msgstr "Contrat d'entretien"
 
 #: templates/rooms/item_detail.html
+msgid "no."
+msgstr "n°"
+
+#: templates/rooms/item_detail.html
 msgid "open the contract"
 msgstr "ouvrir le contrat"
 
@@ -3659,22 +3856,27 @@ msgstr "Notes de mémoire"
 
 #: templates/rooms/room_detail.html
 msgid ""
-"Nothing noted yet: paint, floor and wall coverings, and photos of the open "
+"Nothing noted yet: paint, floor and wall coverings, and what runs behind the "
 "walls."
 msgstr ""
-"Rien de noté pour l'instant : peinture, revêtements de sol et de mur, et "
-"photos des murs ouverts."
+"Rien de noté pour l'instant : peinture, revêtements de sol et de murs, et ce "
+"qui passe derrière les murs."
 
 #: templates/rooms/room_detail.html
 msgid "Edit the memory"
 msgstr "Modifier la mémoire"
 
 #: templates/rooms/room_detail.html
-msgid ""
-"Photos taken before closing a wall or a duct: where the cables and pipes run."
-msgstr ""
-"Photos prises avant de fermer un mur ou une gaine : où passent les câbles et "
-"les tuyaux."
+msgid "Photo categories"
+msgstr "Catégories de photos"
+
+#: templates/rooms/room_detail.html
+msgid "All"
+msgstr "Toutes"
+
+#: templates/rooms/room_detail.html
+msgid "No photo in this category."
+msgstr "Aucune photo dans cette catégorie."
 
 #: templates/rooms/room_detail.html templates/rooms/search.html
 msgid "Items"
@@ -3741,11 +3943,13 @@ msgstr "Changer l'ordre"
 
 #: templates/rooms/room_memory_form.html
 msgid ""
-"What was used and fitted in this room, to find it again when you need to "
-"touch up or replace it. Every field is optional."
+"The memory of a room keeps what you can no longer see once the work is "
+"finished: the paint, the floor and wall coverings, and what runs behind the "
+"walls. Every field is optional."
 msgstr ""
-"Ce qui a été utilisé et posé dans cette pièce, pour le retrouver quand il "
-"faudra faire des retouches ou le remplacer. Tous les champs sont facultatifs."
+"La mémoire d'une pièce garde ce qu'on ne voit plus une fois les travaux "
+"finis : la peinture, les revêtements de sol et de murs, et ce qui passe "
+"derrière les murs. Tous les champs sont facultatifs."
 
 #: templates/rooms/search.html
 #, python-format
@@ -3967,12 +4171,6 @@ msgstr "Détails de ce qui a été fait"
 msgid "The task, its history and its files disappear from the screens."
 msgstr "La tâche, son historique et ses fichiers disparaissent des écrans."
 
-#: templates/tasks/history.html templates/tasks/my_home.html
-#: templates/tasks/task_detail.html templates/tasks/task_list.html
-#: templates/tasks/today.html
-msgid "History"
-msgstr "Historique"
-
 #: templates/tasks/history.html
 msgid "Filters"
 msgstr "Filtres"
@@ -4060,10 +4258,6 @@ msgstr "Tous mes logements"
 #: templates/tasks/my_home.html templates/tasks/task_list.html
 msgid "Show"
 msgstr "Afficher"
-
-#: templates/tasks/my_home.html templates/tasks/today.html
-msgid "All tasks"
-msgstr "Toutes les tâches"
 
 #: templates/tasks/my_home.html
 msgid "Nothing needs you here."
@@ -4229,10 +4423,6 @@ msgstr[1] "%(counter)s tâches sont masquées jusqu'à ce que leur date approche
 #: templates/tasks/task_list.html
 msgid "Show them"
 msgstr "Les afficher"
-
-#: templates/tasks/today.html
-msgid "Display"
-msgstr "Affichage"
 
 #: templates/tasks/today.html
 msgid "Nothing to do for now."

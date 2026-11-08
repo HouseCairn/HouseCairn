@@ -16,8 +16,8 @@ done in one tap, for every task, and a banner offers **Undo** right after.
   [Tasks and recurrence](../guides/tasks-and-recurrence.md)). The page tells how
   many are hidden and **Show them** lists them anyway.
 - The list shows 30 rows at a time.
-- **Today** and **History** above the selectors open the [Today](today.md) screen and
-  the [history](history.md).
+- The **tabs** above the selectors open [Today](today.md), the [history](history.md) and
+  the [display preferences](display-preferences.md); the current tab is marked.
 - **Add a task** opens the [task form](task-form.md).
 
 Read-only members see the same list and none of the buttons that change it.

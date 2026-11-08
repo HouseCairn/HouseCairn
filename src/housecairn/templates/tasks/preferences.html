@@ -1,9 +1,10 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n tabs %}
 {% block head_title %}{% translate "Display preferences" %}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{{ next }}">{% include "components/icon.html" with name="chevron" %}{% translate "Back" %}</a>
   <h1>{% translate "Display preferences" %}</h1>
+  {% tab_bar "tasks" %}
   <p class="small">{% translate "How the Today screen is laid out for you. Other people of your homes keep their own." %}</p>
   <form method="post" novalidate>
     {% csrf_token %}
@@ -19,6 +20,7 @@
       <legend>{% translate "Sections" %}</legend>
       {% for field in sections %}<p>{{ field.errors }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</p>{% endfor %}
     </fieldset>
+    <p>{{ form.language.errors }}<label for="{{ form.language.id_for_label }}">{{ form.language.label }}</label>{{ form.language }}<span class="small">{{ form.language.help_text }}</span></p>
     <button type="submit" class="button-block">{% translate "Save" %}</button>
   </form>
 {% endblock content %}

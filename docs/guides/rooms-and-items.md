@@ -18,14 +18,15 @@ garden or the cellar is a room like any other.
 On the page of a room, **Edit the memory** keeps what you would otherwise search
 for later: the paint (colour, brand, reference, batch, how much is left and where),
 the floor and wall coverings, and free notes. Take photos before closing a wall or a
-duct and add them under **Open walls**: in ten years, they tell where the cables
-run.
+duct and add them with the category **Behind the walls**: in ten years, they tell
+where the cables run and where not to drill. The photos of a room are one list, and
+the chips above it keep one category.
 
 ## Add the items
 
 **Add an item** on the page of a room. Note the brand, the model, the serial
 number, the installation date and the end of the warranty, the maintenance contract
-and a link to it, and any link worth keeping, such as the manual online. The item
+(who services it, and its number) and a link to it, and any link worth keeping, such as the manual online. The item
 page shows a label that tells whether the warranty is still running.
 
 If you put an item in the wrong room, edit it and choose another room: the item

@@ -312,9 +312,9 @@ class TestStorage:
 
     def test_update_and_delete(self, alice: User, owner_room: Room) -> None:
         photo = services.add_photo(alice, room=owner_room, upload=upload(image_bytes()))
-        services.update_photo(alice, photo, caption="North wall", category="open_walls")
+        services.update_photo(alice, photo, caption="North wall", category="behind_walls")
         photo.refresh_from_db()
-        assert (photo.caption, photo.category) == ("North wall", "open_walls")
+        assert (photo.caption, photo.category) == ("North wall", "behind_walls")
         services.delete_photo(alice, photo)
         assert not Photo.objects.exists()
         assert str(photo) == "North wall"
@@ -395,6 +395,62 @@ class TestServing:
         assert signed_in.get(url("photo", alice_home, photo_id=photo.id)).status_code == 404
 
 
+class TestOneList:
+    """A room has one list of photos, each with its category, filtered by category."""
+
+    @pytest.fixture
+    def three(self, alice: User, owner_room: Room) -> None:
+        for category, caption in [
+            ("general", "Overview"),
+            ("behind_walls", "Pipe north"),
+            ("before", "Bare plaster"),
+        ]:
+            services.add_photo(
+                alice,
+                room=owner_room,
+                upload=upload(image_bytes()),
+                caption=caption,
+                category=category,
+            )
+
+    def test_every_photo_is_in_the_one_list_with_its_category(
+        self, signed_in: Client, alice_home: Home, owner_room: Room, three: None
+    ) -> None:
+        page = signed_in.get(url("detail", alice_home, room_id=owner_room.id)).text
+        for caption in ("Overview", "Pipe north", "Bare plaster"):
+            assert caption in page
+        assert page.count('class="photo-category"') == 3
+        assert "Open walls" not in page
+        assert "Behind the walls" in page
+        assert "Before the work" in page
+
+    def test_the_list_filters_by_category_and_explains_behind_the_walls(
+        self, signed_in: Client, alice_home: Home, owner_room: Room, three: None
+    ) -> None:
+        base = url("detail", alice_home, room_id=owner_room.id)
+        walls = signed_in.get(base, {"category": "behind_walls"}).text
+        assert "Pipe north" in walls
+        assert "Overview" not in walls
+        assert "where not to drill" in walls
+        assert 'aria-current="page"' in walls
+        # A category nobody uses, or a made-up one, shows the whole list or nothing.
+        assert "No photo in this category." in signed_in.get(base, {"category": "after"}).text
+        assert "Overview" in signed_in.get(base, {"category": "nonsense"}).text
+
+    def test_the_form_explains_behind_the_walls(
+        self, signed_in: Client, alice_home: Home, owner_room: Room
+    ) -> None:
+        page = signed_in.get(url("room-photo-add", alice_home, room_id=owner_room.id)).text
+        assert "where not to drill" in page
+        for label in ("General", "Behind the walls", "Before the work", "After the work", "Other"):
+            assert f">{label}</option>" in page
+
+    def test_the_category_filter_is_the_api_filter_too(
+        self, alice: User, owner_room: Room, three: None
+    ) -> None:
+        assert services.photos_for(owner_room).filter(category="before").count() == 1
+
+
 class TestScreens:
     def test_upload_to_a_room_and_an_item(
         self, signed_in: Client, alice_home: Home, owner_room: Room, owner_item: Item
@@ -403,12 +459,12 @@ class TestScreens:
         assert "up to 10" in signed_in.get(room_form).text
         response = signed_in.post(
             room_form,
-            {"file": upload(image_bytes()), "caption": "North wall", "category": "open_walls"},
+            {"file": upload(image_bytes()), "caption": "North wall", "category": "behind_walls"},
         )
         assert response["Location"] == url("detail", alice_home, room_id=owner_room.id)
         page = signed_in.get(response["Location"])
         assert "North wall" in page.text
-        assert "Open walls" in page.text
+        assert "Behind the walls" in page.text
         item_form = url("item-photo-add", alice_home, item_id=owner_item.id)
         response = signed_in.post(item_form, {"file": upload(image_bytes()), "category": "general"})
         assert response["Location"] == url("item-detail", alice_home, item_id=owner_item.id)

@@ -11,5 +11,5 @@
     {% endfor %}
   </ul>
 {% else %}
-  <p class="empty">{% translate "Nothing recorded yet." %}</p>
+  <p class="empty">{% if empty_text %}{{ empty_text }}{% else %}{% translate "Nothing recorded yet." %}{% endif %}</p>
 {% endif %}

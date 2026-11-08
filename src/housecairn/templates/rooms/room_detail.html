@@ -30,7 +30,7 @@
         {% if room.memory_notes %}<div><dt>{% translate "Memory notes" %}</dt><dd class="prose">{{ room.memory_notes|linebreaksbr }}</dd></div>{% endif %}
       </dl>
     {% else %}
-      <p class="small">{% translate "Nothing noted yet: paint, floor and wall coverings, and photos of the open walls." %}</p>
+      <p class="small">{% translate "Nothing noted yet: paint, floor and wall coverings, and what runs behind the walls." %}</p>
     {% endif %}
     {% if can_write %}
       <div class="button-row">
@@ -39,20 +39,24 @@
     {% endif %}
   </section>
 
-  <h2>{% translate "Open walls" %}</h2>
-  {% if open_wall_photos %}
-    {% include "rooms/_photos.html" with photos=open_wall_photos label=room.name %}
-  {% else %}
-    <p class="small">{% translate "Photos taken before closing a wall or a duct: where the cables and pipes run." %}</p>
-  {% endif %}
-
   <h2>{% translate "Photos" %}</h2>
+  {% if categories %}
+    <nav class="chips" aria-label="{% translate 'Photo categories' %}">
+      <a class="chip" href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}"{% if not category %} aria-current="page"{% endif %}>{% translate "All" %}</a>
+      {% for value, name in categories %}
+        <a class="chip" href="?category={{ value }}"{% if category == value %} aria-current="page"{% endif %}>{{ name }}</a>
+      {% endfor %}
+    </nav>
+  {% endif %}
+  {% if category == "behind_walls" %}<p class="small">{{ behind_walls_help }}</p>{% endif %}
   {% if photos %}
     {% include "rooms/_photos.html" with photos=photos label=room.name %}
+  {% elif category %}
+    <p class="empty">{% translate "No photo in this category." %}</p>
   {% endif %}
   {% if can_write %}
     <a class="button button-secondary button-block" href="{% url 'rooms:room-photo-add' home_id=home.id room_id=room.id %}">{% translate "Add a photo" %}</a>
-  {% elif not photos and not open_wall_photos %}
+  {% elif not categories %}
     <p class="empty">{% translate "No photo yet." %}</p>
   {% endif %}
 

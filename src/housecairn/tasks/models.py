@@ -22,6 +22,14 @@ from housecairn.tasks import recurrence
 from housecairn.tasks.storage import attachment_storage
 
 PROCEDURE_MAX_LENGTH = 20000
+
+
+def validate_language(value: str) -> None:
+    """A language the instance ships; empty means "follow the browser" (docs/adr/0042)."""
+    if value and value not in {code for code, _name in settings.LANGUAGES}:
+        raise ValidationError(_("This language is not offered."), code="invalid_language")
+
+
 MAX_ATTACHMENTS_PER_TASK = 30
 
 
@@ -286,6 +294,10 @@ class DisplayPreference(BaseModel):
     show_overdue = models.BooleanField(_("overdue"), default=True)
     show_upcoming = models.BooleanField(_("coming up"), default=True)
     show_season = models.BooleanField(_("in season"), default=True)
+    # Empty: follow the browser, then the default of the instance (docs/adr/0042).
+    language = models.CharField(
+        _("language"), max_length=8, blank=True, default="", validators=[validate_language]
+    )
 
     class Meta:
         verbose_name = _("display preference")

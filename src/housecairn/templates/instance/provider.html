@@ -1,9 +1,10 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n tabs %}
 {% block head_title %}{{ provider.name }}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{% url 'instance:providers' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Sign-in providers" %}</a>
   <h1>{{ provider.name }}</h1>
+  {% tab_bar "instance" %}
   <section class="card">
     <dl class="facts">
       <div><dt>{% translate "Identifier" %}</dt><dd><code>{{ provider.slug }}</code></dd></div>

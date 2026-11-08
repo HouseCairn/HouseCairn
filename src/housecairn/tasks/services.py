@@ -21,6 +21,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.audit import services as audit
 from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership
@@ -278,6 +279,7 @@ def create_task(
     Occurrence.objects.create(
         home=home, task=task, due_on=due_on, visible_from=_visible_from(task, due_on)
     )
+    audit.record_object("task.created", actor=actor, home_id=home.id, title=task.title)
     return task
 
 
@@ -311,6 +313,10 @@ def update_task(
         current.save(
             update_fields=["due_on", "visible_from", "status", "postponed_from", "updated_at"]
         )
+    changed = sorted([*changes, *([] if due_on is _UNSET else ["due_on"])])
+    audit.record_object(
+        "task.updated", actor=actor, home_id=task.home_id, title=task.title, fields=changed
+    )
     return task
 
 
@@ -352,6 +358,7 @@ def delete_task(actor: AnyUser, task: Task) -> None:
     Attachment.objects.filter(task=task).update(deleted_at=now)
     task.soft_delete()
     _erase_files(doomed)
+    audit.record_object("task.deleted", actor=actor, home_id=task.home_id, title=task.title)
 
 
 # ---------- occurrences ----------
@@ -586,6 +593,7 @@ def add_attachment(
             attachment.file.delete(save=False)
             attachment.thumbnail.delete(save=False)
             raise
+    audit.record_object("attachment.added", actor=actor, home_id=task.home_id, title=task.title)
     return attachment
 
 
@@ -610,6 +618,12 @@ def delete_attachment(actor: AnyUser, attachment: Attachment) -> None:
     _require_write(actor, attachment.home)
     attachment.soft_delete()
     _erase_files([attachment])
+    audit.record_object(
+        "attachment.deleted",
+        actor=actor,
+        home_id=attachment.home_id,
+        title=attachment.task.title,
+    )
 
 
 def _erase_files(attachments: list[Attachment]) -> None:
