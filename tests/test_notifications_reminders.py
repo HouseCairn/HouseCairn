@@ -378,7 +378,7 @@ class TestMessage:
         outbox: list[tuple[str, str]],
     ) -> None:
         reachable(alice, days_before=0)
-        occurrence = make_task(notes="Secret note", procedure="Step one", labour_budget=120)
+        occurrence = make_task(notes="Secret note", procedure="Step one", labour_budget="7777.77")
         with override_settings(HOUSECAIRN_SITE_URL="https://home.example.com"):
             reminders.dispatch(at(due, 8))
         ((title, body),) = outbox
@@ -389,7 +389,17 @@ class TestMessage:
             "tasks:detail", kwargs={"home_id": occurrence.home_id, "task_id": occurrence.task_id}
         )
         assert f"https://home.example.com{link}" in body
-        for private in ("Secret note", "Step one", "120"):
+        assert str(occurrence.task.labour_budget) == "7777.77"
+        # The cost in every way a locale writes it; none of them can be part of a UUID.
+        for private in (
+            "Secret note",
+            "Step one",
+            "7777.77",
+            "7777,77",
+            "7,777",
+            "7 777",
+            "7\xa0777",
+        ):
             assert private not in body
 
     @pytest.mark.parametrize("separator", ["\n", "\r\n", "\r", "\x0b", "\x85", "\u2028", "\u2029"])
