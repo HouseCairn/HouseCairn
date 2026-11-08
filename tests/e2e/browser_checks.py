@@ -71,13 +71,14 @@ SCREENS = [
     ("item-form", "{room}items/new/", True),
     ("photo-form", "{room}photos/new/", True),
     ("search", "{home}search/?q=stove", True),
-    # Tasks and occurrences (docs/adr/0031 to 0033).
+    # Tasks, occurrences and attachments (docs/adr/0031 to 0034).
     ("tasks", "{home}tasks/", True),
     ("tasks-done", "{home}tasks/?status=done", True),
     ("task", "{task}", True),
     ("task-form", "{home}tasks/new/", True),
     ("task-edit", "{task}edit/", True),
     ("task-postpone", "{task}postpone/", True),
+    ("task-files", "{task}attachments/new/", True),
 ]
 NOT_FOUND = {"not-found", "invitation-invalid"}
 

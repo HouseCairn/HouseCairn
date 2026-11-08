@@ -1,4 +1,4 @@
-"""Web views of tasks and occurrences. Rules live in `services`."""
+"""Web views of tasks, occurrences and attachments. Rules live in `services`."""
 
 import datetime
 from typing import Any
@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse
+from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -18,10 +19,12 @@ from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from housecairn.homes.scoping import open_homes_for_request
+from housecairn.rooms import conf
 from housecairn.rooms.models import Item, Room
 from housecairn.rooms.views import HomeRoomsMixin
 from housecairn.tasks import forms, services
-from housecairn.tasks.models import Occurrence, Status, Task
+from housecairn.tasks.files import attachment_response
+from housecairn.tasks.models import Attachment, Occurrence, Status, Task
 
 PAGE_SIZE = 30
 
@@ -168,20 +171,22 @@ class TaskFormMixin(HomeTasksMixin, FormView[Any]):
     require_write = True
     template_name = "tasks/task_form.html"
     form_class = forms.TaskForm
+    with_files = True
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
-        kwargs.update(home=self.home)
+        kwargs.update(home=self.home, with_files=self.with_files)
         return kwargs
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         return super().get_context_data(**self.page(), **kwargs)
 
     def split(self, form: forms.TaskForm) -> tuple[dict[str, Any], dict[str, Any]]:
-        """Fields of the task, and the rest (date, new contractor)."""
+        """Fields of the task, and the rest (date, new contractor, files)."""
         data = dict(form.cleaned_data)
         extra = {
-            key: data.pop(key, None) for key in ("due_on", "new_contractor", "new_contractor_trade")
+            key: data.pop(key, None)
+            for key in ("due_on", "new_contractor", "new_contractor_trade", "uploads")
         }
         return data, extra
 
@@ -222,7 +227,15 @@ class TaskCreateView(TaskFormMixin):
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)
+        refused = []
+        for upload in extra["uploads"] or []:
+            try:
+                services.add_attachment(self.request.user, task, upload=upload)
+            except ValidationError as exc:
+                refused.append(f"{upload.name}: {' '.join(exc.messages)}")
         messages.success(self.request, _("Task added."))
+        for line in refused:
+            messages.error(self.request, _("File not added: %(reason)s") % {"reason": line})
         return redirect("tasks:detail", home_id=self.home.id, task_id=task.id)
 
 
@@ -237,6 +250,7 @@ class TaskDetailView(HomeTasksMixin, TemplateView):
             .filter(task=task, status__in=[Status.DONE, Status.SKIPPED])
             .order_by("-completed_on", "-updated_at", "-id")[:20]
         )
+        attachments = list(task.attachments.all())
         return super().get_context_data(
             **self.page(
                 task=task,
@@ -245,6 +259,8 @@ class TaskDetailView(HomeTasksMixin, TemplateView):
                 history=closed,
                 today=services.today(),
                 next_dates=services.upcoming_dates(task),
+                images=[a for a in attachments if a.is_image],
+                documents=[a for a in attachments if not a.is_image],
                 undo=self.undo_banner(),
                 undo_return=self.undo_return(),
             ),
@@ -253,6 +269,8 @@ class TaskDetailView(HomeTasksMixin, TemplateView):
 
 
 class TaskEditView(TaskFormMixin):
+    with_files = False
+
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         kwargs["instance"] = self.get_task()
@@ -387,3 +405,70 @@ class OccurrenceEditView(HomeTasksMixin, FormView[Any]):
             return self.form_invalid(form)
         messages.success(self.request, _("Details saved."))
         return redirect("tasks:detail", home_id=self.home.id, task_id=occurrence.task_id)
+
+
+# ---------- attachments ----------
+
+
+class AttachmentAddView(HomeTasksMixin, FormView[Any]):
+    require_write = True
+    template_name = "tasks/attachment_form.html"
+    form_class = forms.AttachmentForm
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        # Refuse an oversized body before reading any of it (files of a few MB each).
+        declared = int(request.META.get("CONTENT_LENGTH") or 0)
+        if declared > conf.photo_max_bytes() * 5 + conf.MULTIPART_OVERHEAD:
+            return HttpResponse(_("This file is too large."), status=413, content_type="text/plain")
+        return super().post(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        return super().get_context_data(
+            **self.page(task=self.get_task(), max_bytes=conf.photo_max_bytes()), **kwargs
+        )
+
+    def form_valid(self, form: forms.AttachmentForm) -> HttpResponse:
+        task = self.get_task()
+        added = 0
+        for upload in form.cleaned_data["uploads"]:
+            try:
+                services.add_attachment(self.request.user, task, upload=upload)
+                added += 1
+            except ValidationError as exc:
+                form.add_error("uploads", f"{upload.name}: {' '.join(exc.messages)}")
+        if form.errors:
+            if added:
+                messages.success(self.request, _("Some files were added."))
+            return self.form_invalid(form)
+        messages.success(self.request, _("Files added."))
+        return redirect("tasks:detail", home_id=self.home.id, task_id=task.id)
+
+
+class AttachmentFileView(HomeTasksMixin, View):
+    """The file itself, or the thumbnail of an image: only to the members of its home."""
+
+    thumbnail = False
+    http_method_names = ["get", "head"]
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
+        attachment = get_object_or_404(
+            services.attachments_of(self.home), id=self.kwargs["attachment_id"]
+        )
+        return attachment_response(attachment, thumbnail=self.thumbnail)
+
+
+class AttachmentThumbnailView(AttachmentFileView):
+    thumbnail = True
+
+
+class AttachmentDeleteView(HomeTasksMixin, View):
+    require_write = True
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        attachment: Attachment = get_object_or_404(
+            services.attachments_of(self.home), id=self.kwargs["attachment_id"]
+        )
+        services.delete_attachment(request.user, attachment)
+        messages.success(request, _("File deleted."))
+        return redirect("tasks:detail", home_id=self.home.id, task_id=attachment.task_id)
