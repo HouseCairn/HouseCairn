@@ -35,7 +35,7 @@ is the earliest are projected, and the answer says it was cut.
   `tasks.recurrence.next_due` (python-dateutil's RFC 5545 engine, the one that creates the next
   occurrence), were each occurrence closed on its due date, season included. Nothing is
   written. At most 400 steps per task and 1 000 tasks per range. A projected entry is
-  `planned`, flagged `projected`, and has no Done button. Its identity is its task and its date.
+  `planned`, flagged `projected`, and has no Done button. Its identity is its task and its date (see Identity below).
 - **Statuses in words**, on every screen: planned, done, postponed, skipped, and "forecast".
   Colour is never the only carrier; a skipped task is also struck through.
 - **Done and Undo** are the existing buttons of `tasks` (ADR 0033), posted from the calendar
@@ -77,8 +77,18 @@ is the earliest are projected, and the answer says it was cut.
   before today to one year after, today being the day in the time zone of the person (their
   notification setting, else the instance's, ADR 0032). `X-WR-TIMEZONE` says which; the
   language is the person's too. A change of clock cannot move an all-day event.
-- **Identity.** `UID` is `<occurrence id>@housecairn` for an occurrence, and
-  `<task id>-<date>@housecairn` for one not created yet. `DTSTAMP` is the last change of the
+- **Identity.** `UID` is `<task id>-<date>@housecairn` for every event, forecast or recorded, so
+  a forecast that becomes an occurrence is the same event for the calendar application, which
+  updates it instead of deleting one and adding another. Choice (a) of the review, made without
+  touching `tasks`: the date is `postponed_from` when the occurrence was postponed (the date it
+  was first due, kept through several postponements), else its day. A postponed occurrence thus
+  keeps the identity of its first date and its event moves. Where the identity cannot follow:
+  a task repeating "after the last time", closed on a day other than its due date, gets a next
+  date different from the forecast; the old forecast event goes away and the new date has a new
+  event (a forecast is a guess, and its date was the only thing it had). If an edit of the due
+  date clears `postponed_from`, the event likewise becomes the one of its new date. Two events
+  never share a `UID`: an occurrence that would repeat one takes `<occurrence id>@housecairn`,
+  and a forecast that meets a recorded identity is not written. `DTSTAMP` is the last change of the
   row, so the same data gives the same bytes: the `ETag` is a digest of the body and
   `If-None-Match` answers 304. `Cache-Control: private, max-age=900`, `Referrer-Policy:
   no-referrer`, `X-Robots-Tag: noindex`. `REFRESH-INTERVAL` and `X-PUBLISHED-TTL` suggest six

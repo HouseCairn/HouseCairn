@@ -402,20 +402,70 @@ class TestIcs:
         assert first == second
         assert len(set(first)) == len(first)
 
-    def test_a_projected_date_keeps_its_uid_once_the_occurrence_exists(
+    @staticmethod
+    def uids(client: Client, raw: str) -> dict[datetime.date, list[str]]:
+        found: dict[datetime.date, list[str]] = {}
+        for event in events_of(get_feed(client, raw).content):
+            found.setdefault(event["DTSTART"].dt, []).append(str(event["UID"]))
+        return found
+
+    def test_a_forecast_keeps_its_uid_once_the_occurrence_exists(
         self, anonymous: Client, alice: User, alice_home: Home, feed: Any
     ) -> None:
         task = make_task(alice, alice_home, "Filter", 0, repeat_mode="fixed", repeat_unit="week")
-        projected = {
-            str(e["UID"]): e["DTSTART"].dt for e in events_of(get_feed(anonymous, feed[1]).content)
-        }
+        before = self.uids(anonymous, feed[1])
+        assert before[TODAY + 7 * DAY] == [f"{task.id}-{TODAY + 7 * DAY}@housecairn"]
         task_services.complete(alice, occurrence_of(task))
-        after = {
-            str(e["UID"]): e["DTSTART"].dt for e in events_of(get_feed(anonymous, feed[1]).content)
-        }
-        # The closed occurrence keeps its identity; the next dates are the same days.
-        assert set(projected.values()) <= set(after.values()) | {TODAY}
-        assert len(after) == len(set(after))
+        after = self.uids(anonymous, feed[1])
+        # Each date keeps the identity it had, the closed occurrence included, and the next
+        # occurrence (now recorded in the database) is the same event as its forecast.
+        assert after == before
+        assert occurrence_of(task).due_on == TODAY + 7 * DAY
+
+    def test_a_postponed_occurrence_keeps_the_uid_of_its_first_date(
+        self, anonymous: Client, alice: User, alice_home: Home, feed: Any
+    ) -> None:
+        task = make_task(alice, alice_home, "Filter", 3)
+        (uid,) = self.uids(anonymous, feed[1])[TODAY + 3 * DAY]
+        task_services.postpone(alice, occurrence_of(task), TODAY + 10 * DAY)
+        after = self.uids(anonymous, feed[1])
+        assert after == {TODAY + 10 * DAY: [uid]}
+        task_services.complete(alice, occurrence_of(task))
+        assert self.uids(anonymous, feed[1]) == {TODAY + 10 * DAY: [uid]}
+
+    def test_a_forecast_that_misses_its_date_is_replaced_by_the_real_one_without_a_duplicate(
+        self, anonymous: Client, alice: User, alice_home: Home, feed: Any
+    ) -> None:
+        # Repeating a week after the last time: closing two days early moves the next date, so
+        # the forecast event of the old date goes (its identity cannot follow a date that no
+        # longer exists) and the new date has its own; no date holds two events.
+        task = make_task(
+            alice, alice_home, "Filter", 0, repeat_mode="after_last", repeat_unit="week"
+        )
+        before = self.uids(anonymous, feed[1])
+        task_services.complete(alice, occurrence_of(task), on=TODAY - 2 * DAY)
+        after = self.uids(anonymous, feed[1])
+        assert occurrence_of(task).due_on == TODAY + 5 * DAY
+        assert TODAY + 7 * DAY not in after
+        assert all(len(uids) == 1 for uids in after.values())
+        assert before[TODAY + 7 * DAY] != after[TODAY + 5 * DAY]
+
+    def test_two_occurrences_of_a_task_never_share_a_uid(
+        self, anonymous: Client, alice: User, alice_home: Home, feed: Any
+    ) -> None:
+        task = make_task(alice, alice_home, "Filter", 0, repeat_mode="fixed", repeat_unit="week")
+        # A closed occurrence postponed from the date of a forecast: the identity is taken once.
+        Occurrence.objects.create(
+            home=alice_home,
+            task=task,
+            due_on=TODAY + 2 * DAY,
+            postponed_from=TODAY + 7 * DAY,
+            status="done",
+            completed_on=TODAY + 2 * DAY,
+        )
+        uids = [str(e["UID"]) for e in events_of(get_feed(anonymous, feed[1]).content)]
+        assert len(uids) == len(set(uids))
+        assert f"{task.id}-{TODAY + 7 * DAY}@housecairn" in uids
 
     @pytest.mark.parametrize(
         "title",

@@ -24,6 +24,12 @@ room, date, status (planned, done, postponed, skipped, forecast) and a link to t
 date is an all-day event, without a time. It holds no note, cost, procedure, file, person or
 email address, and it is not an API token: it opens this feed and nothing else.
 
+An event keeps its identity when the task moves on: the forecast of a repeating task becomes
+the real occurrence when the previous one is done, and a postponed task keeps the identity of
+the date it was first due, so your calendar application updates the event instead of showing a
+new one. One case makes a new event: a task that repeats a set time after the last one, done on
+a day other than its due date, gets a next date that was not the forecast one.
+
 It follows the time zone and language you chose in
 [Notifications](../screens/notifications.md) (the time zone of the instance when empty).
 

@@ -29,13 +29,33 @@ _STATUS_ICS = {Status.SKIPPED: "CANCELLED"}
 
 
 def uid_of(entry: services.Entry) -> str:
-    """Stable for an occurrence; for one not created yet, from its task and its date."""
-    if entry.occurrence_id is not None:
-        return f"{entry.occurrence_id}@housecairn"
-    return f"{entry.task_id}-{entry.day.isoformat()}@housecairn"
+    """`<task id>-<date>@housecairn`, for a forecast and for the occurrence that replaces it.
+
+    The date is the one the occurrence was first due on (`postponed_from` when it was
+    postponed), so a forecast that becomes an occurrence, and an occurrence that is postponed,
+    keep their identity: the calendar application moves or updates the event, it does not
+    delete one and create another.
+    """
+    return f"{entry.task_id}-{entry.identity_day.isoformat()}@housecairn"
 
 
-def _event(entry: services.Entry, base_url: str) -> Event:
+def _unique_uid(entry: services.Entry, seen: set[str]) -> str | None:
+    """The identity above, unless another event of the document already has it.
+
+    Two occurrences of a task can share a first date (a postponement that lands back on the
+    date of the next occurrence): the second one then takes its own id, which is unique. A
+    forecast that meets an existing identity is dropped: the recorded occurrence stands.
+    """
+    uid = uid_of(entry)
+    if uid in seen:
+        if entry.occurrence_id is None:
+            return None
+        uid = f"{entry.occurrence_id}@housecairn"
+    seen.add(uid)
+    return uid
+
+
+def _event(entry: services.Entry, base_url: str, uid: str) -> Event:
     status = str(Status(entry.status).label)
     home = services.clean_title(entry.home.name)
     summary = entry.title
@@ -46,7 +66,7 @@ def _event(entry: services.Entry, base_url: str) -> Event:
     if entry.room:
         lines.append(_("Room") + ": " + services.clean_title(entry.room))
     event = Event()
-    event.add("uid", uid_of(entry))
+    event.add("uid", uid)
     event.add("dtstamp", entry.updated_at.astimezone(datetime.UTC))
     event.add("dtstart", entry.day)
     event.add("dtend", entry.day + datetime.timedelta(days=1))
@@ -88,6 +108,9 @@ def render(feed: Feed, base_url: str, *, now: datetime.datetime | None = None) -
         calendar.add("x-wr-timezone", str(zone))
         calendar.add("refresh-interval", REFRESH, parameters={"VALUE": "DURATION"})
         calendar.add("x-published-ttl", REFRESH)
+        seen: set[str] = set()
         for entry in result.entries:
-            calendar.add_component(_event(entry, base_url))
+            uid = _unique_uid(entry, seen)
+            if uid is not None:
+                calendar.add_component(_event(entry, base_url, uid))
         return bytes(calendar.to_ical())

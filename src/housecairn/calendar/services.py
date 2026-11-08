@@ -56,6 +56,13 @@ class Entry:
     priority: str
     can_write: bool
     updated_at: datetime.datetime
+    # The date the occurrence was first due, when it was postponed: its calendar identity.
+    first_due: datetime.date | None = None
+
+    @property
+    def identity_day(self) -> datetime.date:
+        """The date in the identity of the entry: where it first stood, so a move keeps it."""
+        return self.first_due or self.day
 
     @property
     def is_open(self) -> bool:
@@ -177,6 +184,7 @@ def entries(
             priority=task.priority,
             can_write=roles.get(occurrence.home_id) in WRITE_ROLES,
             updated_at=occurrence.updated_at,
+            first_due=None if projected else occurrence.postponed_from,
         )
 
     def forecast(occurrence: Occurrence) -> Iterator[Entry]:
