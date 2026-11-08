@@ -101,6 +101,8 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "housecairn.accounts.middleware.DeviceCookieMiddleware",
+    # After authentication: a person's saved language wins over the browser's (docs/adr/0042).
+    "housecairn.tasks.middleware.PersonLanguageMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",

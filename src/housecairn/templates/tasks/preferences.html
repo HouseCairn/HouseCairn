@@ -19,6 +19,7 @@
       <legend>{% translate "Sections" %}</legend>
       {% for field in sections %}<p>{{ field.errors }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</p>{% endfor %}
     </fieldset>
+    <p>{{ form.language.errors }}<label for="{{ form.language.id_for_label }}">{{ form.language.label }}</label>{{ form.language }}<span class="small">{{ form.language.help_text }}</span></p>
     <button type="submit" class="button-block">{% translate "Save" %}</button>
   </form>
 {% endblock content %}
