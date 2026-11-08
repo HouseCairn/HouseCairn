@@ -29,7 +29,7 @@ def needs_email(view: Callable[..., HttpResponse]) -> Callable[..., HttpResponse
     return guarded
 
 
-class LoginView(allauth_views.LoginView):
+class LoginView(allauth_views.LoginView):  # type: ignore[misc]
     """allauth's sign-in page, which opens the session before the page can ask for anything.
 
     The page fetches a passkey challenge as soon as it loads (docs/adr/0018), and that
