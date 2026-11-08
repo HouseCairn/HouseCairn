@@ -60,5 +60,10 @@ by the `icalendar` library in the tests.
   account is deactivated or deleted, or when the home is deleted.
 - A home that requires a sign-in provider has no feed, since the address cannot prove which
   provider opened a session.
+- The address is in the URL, so it can end up in logs. HouseCairn masks it itself: its access
+  log and its warnings write `/calendar/feed/***.ics`. **Your reverse proxy writes it too**, and
+  HouseCairn cannot change that: turn off or mask the access log of that path there (nginx
+  example in [Reverse proxy](../administration/reverse-proxy.md)). Treat any log that held an
+  address as a leak and regenerate the address.
 - The address is rate limited (60 requests a minute per client address). An unknown address
   and a revoked one get the same answer.

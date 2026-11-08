@@ -111,8 +111,14 @@ the secret or its digest. Erasing a home or an account removes them.
 ## Consequences
 
 - The address is a bearer secret: whoever has it reads the feed until it is regenerated or
-  revoked. It travels in the URL, so access logs of a reverse proxy may keep it; the
-  documentation says to treat it as a password.
+  revoked. It travels in the URL, so logs may keep it. The application masks it itself: the
+  access log of gunicorn through a logger class (`core.gunicorn_logging`, which redacts every
+  text atom of the line, whatever the format) and a filter on the console handler for the
+  `django.request` warning of a 4xx (`core.log_redaction`); a test reads both, and gunicorn was
+  run for real once to see the line. A format string alone cannot do it: it prints the request
+  line as received. The reverse proxy writes the path too and is not ours to change; the
+  guides say to switch off or mask its log for that path (nginx example) and to treat a log
+  that held an address as a leak.
 - A feed shows the home to anybody the address is given to, readers included; a reader can
   have one.
 - Not done here: a feed limited to the tasks assigned to the person, `VALARM` reminders (the

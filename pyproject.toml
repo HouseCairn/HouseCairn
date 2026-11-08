@@ -115,6 +115,7 @@ module = [
   "allauth.*",
   "django_q.*",
   "environ.*",
+  "gunicorn.*",
   "csp.*",
   "drf_spectacular.*",
   "drf_spectacular_sidecar.*",

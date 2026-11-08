@@ -449,6 +449,8 @@ if urlsplit(HOUSECAIRN_DOCS_URL).scheme not in {"http", "https"}:
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    # The address of a calendar feed is a secret: django.request writes the path of a 4xx.
+    "filters": {"feed_secrets": {"()": "housecairn.core.log_redaction.RedactFeedAddresses"}},
+    "handlers": {"console": {"class": "logging.StreamHandler", "filters": ["feed_secrets"]}},
     "root": {"handlers": ["console"], "level": env.str("LOG_LEVEL", default="INFO")},
 }

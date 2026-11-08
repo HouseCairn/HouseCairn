@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 23:29+0000\n"
+"POT-Creation-Date: 2026-11-08 23:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -81,6 +81,9 @@ msgstr "Un flux cesse de fonctionner quand la personne quitte le logement (le fl
 
 msgid "A home that requires a sign-in provider has no feed, since the address cannot prove which provider opened a session."
 msgstr "Un logement qui exige un fournisseur de connexion n'a pas de flux, car l'adresse ne peut pas prouver quel fournisseur a ouvert une session."
+
+msgid "The address is in the URL, so it can end up in logs. HouseCairn masks it itself: its access log and its warnings write `/calendar/feed/***.ics`. **Your reverse proxy writes it too**, and HouseCairn cannot change that: turn off or mask the access log of that path there (nginx example in [Reverse proxy](../administration/reverse-proxy.md)). Treat any log that held an address as a leak and regenerate the address."
+msgstr "L'adresse figure dans l'URL, elle peut donc finir dans des journaux. HouseCairn la masque lui-même : son journal d'accès et ses avertissements écrivent `/calendar/feed/***.ics`. **Votre proxy inverse l'écrit aussi**, et HouseCairn ne peut pas le changer : coupez ou masquez le journal d'accès de ce chemin chez lui (exemple nginx dans [Reverse proxy](../administration/reverse-proxy.md)). Considérez tout journal qui a contenu une adresse comme une fuite et renouvelez l'adresse."
 
 msgid "The address is rate limited (60 requests a minute per client address). An unknown address and a revoked one get the same answer."
 msgstr "L'adresse est soumise à une limite de débit (60 requêtes par minute et par adresse client). Une adresse inconnue et une adresse révoquée reçoivent la même réponse."
