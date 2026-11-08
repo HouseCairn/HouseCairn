@@ -141,7 +141,7 @@ def build_archive(home: Home) -> tuple[IO[bytes], str]:
 
 def media_directory(home: Home) -> Path:
     """Where the files of a home are kept (used by the lots that store files)."""
-    return Path(settings.MEDIA_ROOT) / "homes" / str(home.id)
+    return Path(settings.MEDIA_ROOT) / "homes" / str(home.id)  # see homes.files for the others
 
 
 def export_home(actor: Any, home: Home) -> tuple[IO[bytes], str]:

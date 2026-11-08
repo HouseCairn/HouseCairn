@@ -8,4 +8,8 @@ class RoomsConfig(AppConfig):
     verbose_name = _("Rooms")
 
     def ready(self) -> None:
-        from housecairn.rooms import checks  # noqa: F401 - registers the system check
+        from housecairn.homes import files
+        from housecairn.rooms import checks, exports  # noqa: F401 - registers the system check
+
+        exports.register()
+        files.register_media_folder("photos")
