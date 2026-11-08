@@ -8,6 +8,8 @@ for owners, the **Audit log**; they are the same on those three pages.
 When the home requires signing in through a provider and your session did not,
 the page asks you to continue with that provider instead.
 
+Under **Settings**, a row leads to the [QR labels](qr-labels.md) of the home.
+
 ## Your data
 
 Owners see two more actions at the bottom of the page.

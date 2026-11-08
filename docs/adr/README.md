@@ -46,3 +46,4 @@ later record supersedes it.
 | [0042](0042-rate-limits-quotas-language-and-instance-name.md) | Rate limits, quotas per home, language, time zone and name of the instance | 2026-11-08 |
 | [0043](0043-notifications-through-apprise.md) | Notifications through Apprise: channels of a person, reminders, quiet hours | 2026-11-08 |
 | [0045](0045-generic-lists-with-other-tabs-and-audit-of-content.md) | Generic lists with "Other", tabs, language of a person and audit of content | 2026-11-08 |
+| [0047](0047-qr-labels.md) | QR labels: an opaque code and a PDF made on the server | 2026-11-08 |

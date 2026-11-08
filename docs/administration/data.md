@@ -16,7 +16,7 @@ The archive is a zip:
 | Part | Content |
 | --- | --- |
 | `export.json` | The data, as JSON (below). |
-| `files/` | The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, and the photos of the labels of stock items, under `files/stock/`. |
+| `files/` | The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`. |
 | `README.txt` | A reminder of the format. |
 
 `export.json` is versioned. Version `1` has these keys:
@@ -36,6 +36,7 @@ The archive is a zip:
 | `stock_items` | `id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`). |
 | `stock_suppliers` | `id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`. |
 | `stock_movements` | `id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`. |
+| `labels` | `id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing. |
 | `files` | `path` and `size` of each file in `files/`. |
 
 Photos and the images attached to tasks are exported as they are stored, already
@@ -56,11 +57,11 @@ home is revoked. **There is no grace period and no way back**: export first.
 The audit log of the instance records that a home was deleted, without its
 name.
 
-The photos, the labels of stock items and the files attached to tasks are erased from the disk with the home
+The photos, the labels of stock items, and the files attached to tasks are erased from the disk with the home
 (photos deleted one by one included). If the disk refuses (permissions, a full or
 read-only volume), the home is still deleted and the error is logged by
 `housecairn.files` with the path of the directory (`photos/<home id>`,
-`attachments/<home id>` or `stock/<home id>`): remove that directory by hand.
+`attachments/<home id>`, or `stock/<home id>`): remove that directory by hand.
 
 ## Erasure of an account
 

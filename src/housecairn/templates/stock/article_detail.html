@@ -24,6 +24,7 @@
         <a class="button button-secondary button-small" href="{% url 'stock:edit' home_id=home.id article_id=article.id %}">{% translate "Edit the stock item" %}</a>
       </div>
     {% endif %}
+    <div class="button-row">{% load labels_extras %}{% object_tools "article" article %}</div>
   </section>
 
   {% if can_write %}

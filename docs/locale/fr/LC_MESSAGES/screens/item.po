@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 00:13+0000\n"
+"POT-Creation-Date: 2026-11-08 22:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -31,6 +31,12 @@ msgstr "La page montre ce que vous avez noté : marque et modèle, numéro de s�
 msgid "The maintenance log and the cost of ownership of an item arrive with the tasks: there is no tab for them yet."
 msgstr "Le journal d'entretien et le coût de possession d'un élément arrivent avec les tâches : il n'y a pas encore d'onglet pour eux."
 
+msgid "**QR label** opens the [label](qr-label.md) of this item; **Make a QR label** makes it when there is none, for members who may write. Read-only members see the label and print it."
+msgstr "**Étiquette QR** ouvre l'[étiquette](qr-label.md) de cet élément ; **Créer une étiquette QR** la crée quand il n'y en a pas, pour les membres qui peuvent écrire. Les membres en lecture seule voient l'étiquette et l'impriment."
+
 msgid "**Delete the item** (in the edit form) asks for confirmation. Members and owners change the item; read-only members see it all and change nothing."
 msgstr "**Supprimer l'élément** (dans le formulaire de modification) demande confirmation. Les membres et les propriétaires modifient l'élément ; les membres en lecture seule voient tout et ne modifient rien."
+
+#~ msgid "**QR label** and **Report a problem** sit under the facts. **QR label** opens the [label](qr-label.md) of this item; **Make a QR label** makes it when there is none, for members who may write. **Report a problem** opens the [report form](report-form.md) with the **Where?** list already filled in with this item; every member sees it, read-only members included."
+#~ msgstr "**Étiquette QR** et **Signaler un problème** se trouvent sous les informations. **Étiquette QR** ouvre l'[étiquette](qr-label.md) de cet élément ; **Créer une étiquette QR** la crée quand il n'y en a pas, pour les membres qui peuvent écrire. **Signaler un problème** ouvre le [formulaire de signalement](report-form.md) avec la liste **Où ?** déjà remplie avec cet élément ; tous les membres le voient, lecteurs compris."
 

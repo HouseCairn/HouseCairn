@@ -35,6 +35,7 @@
         <a class="button button-secondary button-small" href="{% url 'rooms:item-edit' home_id=home.id item_id=item.id %}">{% translate "Edit the item" %}</a>
       </div>
     {% endif %}
+    <div class="button-row">{% load labels_extras %}{% object_tools "item" item %}</div>
   </section>
 
   {% if item.links %}

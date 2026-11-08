@@ -44,6 +44,8 @@ stock-item
 stock-item-form
 supplier-form
 task-files
+qr-labels
+qr-label
 more
 about
 ```

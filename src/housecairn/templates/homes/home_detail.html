@@ -13,6 +13,7 @@
   </section>
   <h2>{% translate "Settings" %}</h2>
   <div class="list">
+    {% load labels_extras %}{% labels_row home %}
     <a class="row" href="{% url 'homes:household' home_id=home.id %}">
       <span class="row-body">
         <span class="row-title">{% translate "Household and roles" %}</span>

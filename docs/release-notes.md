@@ -8,6 +8,15 @@ with it on the project's
 
 ### New
 
+- **QR labels.** Print stickers that open a room, an item or a stock item: a PDF made by
+  the server, as an A4 sheet of 3 by 8 labels or a 62 mm roll for a label printer. The
+  code on a sticker is a random identifier of 128 bits that names nothing; a sticker
+  opens the page of the object for the members of the home and answers the same "Page
+  not found" to everyone else, and it can be revoked or replaced. Labels are in the API,
+  in the export of a home and are erased with it. Set `HOUSECAIRN_SITE_URL` before
+  printing: the address is on the stickers. See [QR labels](guides/qr-labels.md). New
+  dependency: ReportLab ([ADR 0047](adr/0047-qr-labels.md)).
+
 - **Notifications.** Each person adds their own channels (ntfy, Telegram, Signal, Matrix,
   Gotify, email and other Apprise services) on **More, Notifications**, tests them, and
   chooses when reminders come: days before the due date, time of day, quiet hours, a daily
