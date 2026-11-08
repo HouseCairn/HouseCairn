@@ -552,6 +552,11 @@ form p > a,
   text-decoration: none;
 }
 
+/* .chips scrolls sideways, which clips anything outside its box: draw the ring inside. */
+.chip:focus-visible {
+  outline-offset: -3px;
+}
+
 .chip[aria-current="page"] {
   color: var(--hc-color-text-inverse);
   background: var(--hc-color-primary);
@@ -671,6 +676,11 @@ input.setting-locked {
 
 .tab:hover {
   color: var(--hc-color-text);
+}
+
+/* .tabs-list scrolls sideways, which clips anything outside its box: draw the ring inside. */
+.tab:focus-visible {
+  outline-offset: -3px;
 }
 
 .tab[aria-current="page"] {
