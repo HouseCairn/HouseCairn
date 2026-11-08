@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load i18n tasks_extras %}
+{% block head_title %}{% translate "My home" %}{% endblock head_title %}
+{% block content %}
+  <h1>{% translate "My home" %}</h1>
+  {% if homes|length > 1 %}
+    <form method="get" class="filter-row" role="search">
+      <label class="visually-hidden" for="filter-home">{% translate "Home" %}</label>
+      <select id="filter-home" name="home">
+        <option value="">{% translate "All my homes" %}</option>
+        {% for candidate in homes %}<option value="{{ candidate.id }}"{% if chosen and chosen.id == candidate.id %} selected{% endif %}>{{ candidate.name }}</option>{% endfor %}
+      </select>
+      <button type="submit" class="button-secondary button-small">{% translate "Show" %}</button>
+    </form>
+  {% endif %}
+  {% for digest in digests %}
+    <section class="digest" aria-labelledby="digest-{{ forloop.counter }}">
+      <h2 id="digest-{{ forloop.counter }}">{{ digest.home.name }}</h2>
+      <p class="small today-bar">
+        <a href="{% url 'tasks:today' home_id=digest.home.id %}">{% translate "Today" %}</a> ·
+        <a href="{% url 'tasks:list' home_id=digest.home.id %}">{% translate "All tasks" %}</a> ·
+        <a href="{% url 'tasks:history' home_id=digest.home.id %}">{% translate "History" %}</a>
+      </p>
+      {% if digest.empty %}
+        <p class="empty">{% translate "Nothing needs you here." %}</p>
+      {% endif %}
+      {% if digest.mine %}
+        <h3>{% translate "Assigned to me" %}</h3>
+        <ul class="task-list">{% for occurrence in digest.mine %}{% include "tasks/_compact_row.html" with home=digest.home %}{% endfor %}</ul>
+      {% endif %}
+      {% if digest.overdue %}
+        <h3 class="section-overdue">{% translate "Overdue in the home" %}</h3>
+        <ul class="task-list">{% for occurrence in digest.overdue %}{% include "tasks/_compact_row.html" with home=digest.home %}{% endfor %}</ul>
+      {% endif %}
+      {% if digest.unassigned %}
+        <h3>{% translate "Nobody has taken these" %}</h3>
+        <ul class="task-list">{% for occurrence in digest.unassigned %}{% include "tasks/_compact_row.html" with home=digest.home %}{% endfor %}</ul>
+      {% endif %}
+      {% if digest.warranties %}
+        <h3>{% translate "Warranties ending soon" %}</h3>
+        <ul class="task-list">
+          {% for item in digest.warranties %}
+            <li class="task-row">
+              <a class="row" href="{% url 'rooms:item-detail' home_id=digest.home.id item_id=item.id %}">
+                <span class="row-body">
+                  <span class="row-title">{{ item.name }}</span>
+                  <span class="row-text">{{ item.room.name }}</span>
+                  <span class="pill pill-warning">{% blocktranslate with date=item.warranty_ends_on|date:"SHORT_DATE_FORMAT" %}ends {{ date }}{% endblocktranslate %}</span>
+                </span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
+  {% empty %}
+    <p class="empty">{% translate "You have no home to open yet." %}</p>
+    <a class="button button-secondary button-block" href="{% url 'homes:create' %}">{% translate "Add a home" %}</a>
+  {% endfor %}
+  <p class="small"><a href="{% url 'display-preferences' %}?next={{ request.get_full_path|urlencode }}">{% translate "Display preferences" %}</a></p>
+{% endblock content %}

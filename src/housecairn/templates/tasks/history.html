@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load i18n tasks_extras %}
+{% block head_title %}{% translate "History" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'tasks:today' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Today" %}</a>
+  <h1>{% translate "History" %}</h1>
+  <form method="get" class="history-filters" role="search">
+    <details class="history-filter-fields"{% if filtered %} open{% endif %}>
+      <summary>{% translate "Filters" %}</summary>
+      <div class="history-filter-grid">
+    <p>
+      <label for="filter-q">{% translate "Search" %}</label>
+      <input id="filter-q" type="search" name="q" value="{{ selection.query }}" maxlength="200">
+    </p>
+    <p>
+      <label for="filter-room">{% translate "Room" %}</label>
+      <select id="filter-room" name="room">
+        <option value="">{% translate "All rooms" %}</option>
+        {% for candidate in rooms %}<option value="{{ candidate.id }}"{% if selection.room == candidate.id %} selected{% endif %}>{{ candidate.name }}</option>{% endfor %}
+      </select>
+    </p>
+    <p>
+      <label for="filter-item">{% translate "Item" %}</label>
+      <select id="filter-item" name="item">
+        <option value="">{% translate "All items" %}</option>
+        {% for candidate in items %}<option value="{{ candidate.id }}"{% if selection.item == candidate.id %} selected{% endif %}>{{ candidate.room.name }} · {{ candidate.name }}</option>{% endfor %}
+      </select>
+    </p>
+    <p>
+      <label for="filter-contractor">{% translate "Contractor" %}</label>
+      <select id="filter-contractor" name="contractor">
+        <option value="">{% translate "Everyone" %}</option>
+        {% for candidate in contractors %}<option value="{{ candidate.id }}"{% if selection.contractor == candidate.id %} selected{% endif %}>{{ candidate.name }}</option>{% endfor %}
+      </select>
+    </p>
+    <p>
+      <label for="filter-person">{% translate "Done by" %}</label>
+      <select id="filter-person" name="person">
+        <option value="">{% translate "Everyone" %}</option>
+        {% for candidate in members %}<option value="{{ candidate.id }}"{% if selection.person == candidate.id %} selected{% endif %}>{% firstof candidate.get_full_name candidate.email %}</option>{% endfor %}
+      </select>
+    </p>
+    <p>
+      <label for="filter-status">{% translate "Outcome" %}</label>
+      <select id="filter-status" name="status">
+        <option value="">{% translate "Done or skipped" %}</option>
+        <option value="done"{% if selection.status == "done" %} selected{% endif %}>{% translate "Done" context "task" %}</option>
+        <option value="skipped"{% if selection.status == "skipped" %} selected{% endif %}>{% translate "Skipped" %}</option>
+      </select>
+    </p>
+    <p>
+      <label for="filter-after">{% translate "From" %}</label>
+      <input id="filter-after" type="date" name="after" value="{{ selection.after|date:'Y-m-d' }}">
+    </p>
+    <p>
+      <label for="filter-before">{% translate "To" %}</label>
+      <input id="filter-before" type="date" name="before" value="{{ selection.before|date:'Y-m-d' }}">
+    </p>
+      </div>
+    <div class="button-row">
+      <button type="submit" class="button-secondary">{% translate "Filter" %}</button>
+      {% if filtered %}<a class="button button-secondary" href="{% url 'tasks:history' home_id=home.id %}">{% translate "Clear" %}</a>{% endif %}
+    </div>
+    </details>
+  </form>
+  <p class="history-total" role="status">
+    {% blocktranslate count counter=cost.count %}{{ counter }} entry{% plural %}{{ counter }} entries{% endblocktranslate %}
+    {% if cost.with_cost %} · {% blocktranslate with total=cost.total currency=home.currency count counter=cost.with_cost %}real cost: {{ total }} {{ currency }}, entered on {{ counter }} entry{% plural %}real cost: {{ total }} {{ currency }}, entered on {{ counter }} entries{% endblocktranslate %}{% endif %}
+  </p>
+  {% if page %}
+    <ul class="task-list">
+      {% for occurrence in page %}
+        <li class="task-row">
+          <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
+            <span class="row-body">
+              <span class="row-title">{{ occurrence.task.title }}</span>
+              <span class="row-text">{{ occurrence|where_and_who }}</span>
+              <span class="pill {% if occurrence.status == 'done' %}pill-success{% else %}pill-ghost{% endif %}">{{ occurrence.get_status_display }} · {{ occurrence.closed_on|date:"SHORT_DATE_FORMAT" }}</span>
+              {% if occurrence.actual_cost is not None %}<span class="row-text">{{ occurrence.actual_cost }} {{ home.currency }}</span>{% endif %}
+            </span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+    {% if page.paginator.num_pages > 1 %}
+      <nav class="button-row" aria-label="{% translate 'Pages' %}">
+        {% if page.has_previous %}<a class="button button-secondary button-small" href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+        <span class="small">{% blocktranslate with number=page.number total=page.paginator.num_pages %}Page {{ number }} of {{ total }}{% endblocktranslate %}</span>
+        {% if page.has_next %}<a class="button button-secondary button-small" href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="empty">{% if filtered %}{% translate "Nothing matches." %}{% else %}{% translate "Nothing done yet." %}{% endif %}</p>
+  {% endif %}
+{% endblock content %}

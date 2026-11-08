@@ -78,3 +78,18 @@ def open_occurrences_for(target: Room | Item) -> list[Occurrence]:
         **{field: target},
     ).select_related("task")
     return list(rows.order_by(F("due_on").asc(nulls_last=True), "created_at", "id")[:20])
+
+
+@register.filter
+def where_and_who(occurrence: Occurrence) -> str:
+    """Where a closed occurrence happened and who was involved, in one line for History."""
+    task = occurrence.task
+    parts = [
+        task.room.name if task.room else "",
+        task.item.name if task.item else "",
+        task.contractor.name if task.contractor else "",
+        (occurrence.completed_by.get_full_name() or occurrence.completed_by.email)
+        if occurrence.completed_by
+        else "",
+    ]
+    return " · ".join(part for part in parts if part)
