@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 16:53+0000\n"
+"POT-Creation-Date: 2026-11-08 19:37+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -24,6 +24,19 @@ msgstr ""
 #: accounts/apps.py templates/instance/overview.html
 msgid "Accounts"
 msgstr "Comptes"
+
+#: accounts/forms.py
+#| msgid "Display preferences"
+msgid "Display name"
+msgstr "Nom d'affichage"
+
+#: accounts/forms.py
+msgid ""
+"How the other members of your homes see you, instead of your address. "
+"Optional."
+msgstr ""
+"Comment les autres membres de vos logements vous voient, à la place de votre "
+"adresse. Facultatif."
 
 #: accounts/forms.py
 msgid "Type your email address to confirm"
@@ -57,13 +70,22 @@ msgstr ""
 "La vérification que vous n'êtes pas un robot n'a pas abouti. Attendez-la "
 "quelques secondes sur la page, avec JavaScript activé, puis réessayez."
 
-#: accounts/models.py homes/models.py instance/models.py
+#: accounts/models.py homes/models.py instance/models.py tasks/models.py
 msgid "email address"
 msgstr "adresse e-mail"
 
 #: accounts/models.py core/models.py
 msgid "updated at"
 msgstr "modifié le"
+
+#: accounts/models.py
+#| msgid "display preference"
+msgid "display name"
+msgstr "nom d'affichage"
+
+#: accounts/models.py
+msgid "How the other members of your homes see you. Optional."
+msgstr "Comment les autres membres de vos logements vous voient. Facultatif."
 
 #: accounts/models.py
 msgid "user"
@@ -121,6 +143,11 @@ msgstr ""
 #: accounts/views.py
 msgid "Your account was deleted."
 msgstr "Votre compte a été supprimé."
+
+#: accounts/views.py
+#| msgid "Provider saved."
+msgid "Profile saved."
+msgstr "Profil enregistré."
 
 #: apitokens/admin.py
 msgid "Revoke selected tokens"
@@ -281,6 +308,21 @@ msgstr "Élément modifié : %(title)s"
 #, python-format
 msgid "Item deleted: %(title)s"
 msgstr "Élément supprimé : %(title)s"
+
+#: audit/labels.py
+#| msgid "Room added: %(title)s"
+msgid "Contractor added: %(title)s"
+msgstr "Intervenant ajouté : %(title)s"
+
+#: audit/labels.py
+#| msgid "Room changed: %(title)s"
+msgid "Contractor changed: %(title)s"
+msgstr "Intervenant modifié : %(title)s"
+
+#: audit/labels.py
+#| msgid "Room deleted: %(title)s"
+msgid "Contractor deleted: %(title)s"
+msgstr "Intervenant supprimé : %(title)s"
 
 #: audit/labels.py
 #, python-format
@@ -451,6 +493,12 @@ msgstr "Toutes les tâches"
 msgid "History"
 msgstr "Historique"
 
+#: core/templatetags/tabs.py templates/tasks/contractor_detail.html
+#: templates/tasks/contractor_form.html templates/tasks/contractor_list.html
+#| msgid "Contractor"
+msgid "Contractors"
+msgstr "Intervenants"
+
 #: core/templatetags/tabs.py templates/core/more.html
 #: templates/tasks/my_home.html templates/tasks/preferences.html
 msgid "Display preferences"
@@ -481,8 +529,9 @@ msgstr "Fichiers des logements"
 
 #: core/templatetags/tabs.py tasks/apps.py templates/rooms/item_detail.html
 #: templates/rooms/room_detail.html templates/shell/navigation.html
-#: templates/tasks/choose_home.html templates/tasks/task_detail.html
-#: templates/tasks/task_form.html templates/tasks/task_list.html
+#: templates/tasks/choose_home.html templates/tasks/contractor_detail.html
+#: templates/tasks/task_detail.html templates/tasks/task_form.html
+#: templates/tasks/task_list.html
 msgid "Tasks"
 msgstr "Tâches"
 
@@ -527,6 +576,7 @@ msgid "Homes"
 msgstr "Logements"
 
 #: homes/forms.py instance/forms.py templates/homes/member.html
+#: templates/tasks/contractor_detail.html
 msgid "Email address"
 msgstr "Adresse e-mail"
 
@@ -571,6 +621,16 @@ msgid "Read only"
 msgstr "Lecture seule"
 
 #: homes/models.py
+#| msgid "Other"
+msgid "Northern"
+msgstr "Nord"
+
+#: homes/models.py
+#| msgid "Other"
+msgid "Southern"
+msgstr "Sud"
+
+#: homes/models.py
 msgid "currency"
 msgstr "devise"
 
@@ -581,6 +641,18 @@ msgstr "Utilisez un code ISO 4217, par exemple EUR."
 #: homes/models.py
 msgid "ISO 4217 code of the currency used for this home's budget."
 msgstr "Code ISO 4217 de la devise du budget de ce logement."
+
+#: homes/models.py
+msgid "hemisphere"
+msgstr "hémisphère"
+
+#: homes/models.py
+msgid ""
+"Where the home is, for the seasons: spring in the north starts in March, in "
+"the south in September."
+msgstr ""
+"Où se trouve le logement, pour les saisons : le printemps commence en mars "
+"dans l'hémisphère nord, en septembre dans l'hémisphère sud."
 
 #: homes/models.py
 msgid "required sign-in provider"
@@ -703,6 +775,11 @@ msgstr ""
 #: homes/services.py
 msgid "An account already uses this address: sign in to accept."
 msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter."
+
+#: homes/views.py
+#| msgid "Room saved."
+msgid "Home saved."
+msgstr "Logement enregistré."
 
 #: homes/views.py
 msgid "The home was deleted."
@@ -1592,7 +1669,7 @@ msgstr ""
 msgid "Choose a type"
 msgstr "Choisissez un type"
 
-#: rooms/forms.py
+#: rooms/forms.py rooms/services.py
 msgid "Give the room a name."
 msgstr "Donnez un nom à la pièce."
 
@@ -1755,7 +1832,7 @@ msgstr "Grenier"
 msgid "Outdoor"
 msgstr "Extérieur"
 
-#: rooms/models.py
+#: rooms/models.py tasks/models.py
 msgid "Other"
 msgstr "Autre"
 
@@ -2017,7 +2094,7 @@ msgstr "Quantité"
 msgid "Date"
 msgstr "Date"
 
-#: stock/forms.py tasks/forms.py
+#: stock/forms.py tasks/forms.py templates/tasks/contractor_detail.html
 msgid "Note"
 msgstr "Note"
 
@@ -2192,6 +2269,48 @@ msgstr "En retard"
 msgid "In season"
 msgstr "De saison"
 
+#: tasks/contractor_views.py
+#| msgid "Contractor"
+msgid "Contractor added."
+msgstr "Intervenant ajouté."
+
+#: tasks/contractor_views.py
+#| msgid "Contractor"
+msgid "Contractor saved."
+msgstr "Intervenant enregistré."
+
+#: tasks/contractor_views.py
+#| msgid "Photo deleted."
+msgid "Contractor deleted."
+msgstr "Intervenant supprimé."
+
+#: tasks/durations.py
+#| msgid "%(minutes)s min"
+msgid "minutes"
+msgstr "minutes"
+
+#: tasks/durations.py
+msgid "hours"
+msgstr "heures"
+
+#: tasks/durations.py tasks/models.py
+msgid "days"
+msgstr "jours"
+
+#: tasks/durations.py
+#| msgid "%(minutes)s min"
+msgid "%(n)d min"
+msgid_plural "%(n)d min"
+msgstr[0] "%(n)d min"
+msgstr[1] "%(n)d min"
+
+#: tasks/durations.py
+#, python-format
+msgid "%(n)d day"
+msgid_plural "%(n)d days"
+msgstr[0] "%(n)d jour"
+msgstr[1] "%(n)d jours"
+
 #: tasks/files.py
 msgid ""
 "This type of file is not accepted. Use a JPEG, PNG or WebP image, or a PDF, "
@@ -2199,6 +2318,11 @@ msgid ""
 msgstr ""
 "Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou WebP, "
 "ou un fichier PDF, texte, Word, Excel ou OpenDocument."
+
+#: tasks/forms.py
+#| msgid "assignee"
+msgid "Assignee"
+msgstr "Responsable"
 
 #: tasks/forms.py templates/tasks/history.html
 msgid "Item"
@@ -2209,24 +2333,48 @@ msgid "Due on"
 msgstr "Échéance"
 
 #: tasks/forms.py
-msgid "Season starts in"
-msgstr "La saison commence en"
+#| msgid "In season"
+msgid "Season"
+msgstr "Saison"
 
 #: tasks/forms.py
-msgid "No season"
-msgstr "Pas de saison"
+#| msgid "years"
+msgid "All year"
+msgstr "Toute l'année"
 
 #: tasks/forms.py
-msgid "Season ends in"
-msgstr "La saison finit en"
+#| msgid "season starts in"
+msgid "Custom season starts in"
+msgstr "La saison personnalisée commence en"
 
 #: tasks/forms.py
-msgid "Or a new contractor"
-msgstr "Ou un nouvel intervenant"
+#| msgid "season ends in"
+msgid "Custom season ends in"
+msgstr "La saison personnalisée finit en"
 
 #: tasks/forms.py
-msgid "Trade of the new contractor"
-msgstr "Métier du nouvel intervenant"
+msgid "Only used with the season Custom months."
+msgstr "Utilisé seulement avec la saison « Mois personnalisés »."
+
+#: tasks/forms.py templates/tasks/task_detail.html
+msgid "Estimated duration"
+msgstr "Durée estimée"
+
+#: tasks/forms.py
+msgid "Unit"
+msgstr "Unité"
+
+#: tasks/forms.py templates/tasks/history.html templates/tasks/task_detail.html
+msgid "Contractor"
+msgstr "Intervenant"
+
+#: tasks/forms.py
+msgid ""
+"Pick one from the suggestions or type a new name: it joins the contractors "
+"of the home when you save."
+msgstr ""
+"Choisissez parmi les suggestions ou saisissez un nouveau nom : il rejoint "
+"les intervenants du logement à l'enregistrement."
 
 #: tasks/forms.py templates/tasks/task_detail.html
 msgid "Photos and files"
@@ -2238,8 +2386,22 @@ msgstr ""
 "Markdown : comment faire, pas à pas. Liens vers des pages web seulement."
 
 #: tasks/forms.py
-msgid "Choose a contractor or give a new one, not both."
-msgstr "Choisissez un intervenant ou donnez-en un nouveau, pas les deux."
+#, python-format
+msgid ""
+"The season follows the hemisphere of the home (%(hemisphere)s): change it in "
+"the settings of the home."
+msgstr ""
+"La saison suit l'hémisphère du logement (%(hemisphere)s) : modifiez-le dans "
+"les réglages du logement."
+
+#: tasks/forms.py tasks/services.py
+msgid "Give a duration between a minute and thirty days."
+msgstr "Indiquez une durée comprise entre une minute et trente jours."
+
+#: tasks/forms.py
+#| msgid "Give the first and the last month of the season."
+msgid "Give the first and the last month."
+msgstr "Indiquez le premier et le dernier mois."
 
 #: tasks/forms.py
 msgid "New date"
@@ -2292,10 +2454,6 @@ msgid "After the last time"
 msgstr "Après la dernière fois"
 
 #: tasks/models.py
-msgid "days"
-msgstr "jours"
-
-#: tasks/models.py
 msgid "weeks"
 msgstr "semaines"
 
@@ -2306,6 +2464,32 @@ msgstr "mois"
 #: tasks/models.py
 msgid "years"
 msgstr "ans"
+
+#: tasks/models.py
+msgid "Spring"
+msgstr "Printemps"
+
+#: tasks/models.py
+msgid "Summer"
+msgstr "Été"
+
+#: tasks/models.py
+msgid "Autumn"
+msgstr "Automne"
+
+#: tasks/models.py
+msgid "Winter"
+msgstr "Hiver"
+
+#: tasks/models.py
+#| msgid "in season"
+msgid "Heating season"
+msgstr "Saison de chauffe"
+
+#: tasks/models.py
+#| msgid "2 months"
+msgid "Custom months"
+msgstr "Mois personnalisés"
 
 #: tasks/models.py
 msgid "Planned"
@@ -2327,8 +2511,73 @@ msgid "Skipped"
 msgstr "Ignorée"
 
 #: tasks/models.py
+#| msgid "Member"
+msgid "Plumber"
+msgstr "Plombier"
+
+#: tasks/models.py
+msgid "Electrician"
+msgstr "Électricien"
+
+#: tasks/models.py
+msgid "Heating engineer"
+msgstr "Chauffagiste"
+
+#: tasks/models.py
+msgid "Roofer"
+msgstr "Couvreur"
+
+#: tasks/models.py
+msgid "Carpenter"
+msgstr "Menuisier"
+
+#: tasks/models.py
+#| msgid "Paint brand"
+msgid "Painter"
+msgstr "Peintre"
+
+#: tasks/models.py
+msgid "Mason"
+msgstr "Maçon"
+
+#: tasks/models.py
+#| msgid "General"
+msgid "Gardener"
+msgstr "Jardinier"
+
+#: tasks/models.py
+msgid "Locksmith"
+msgstr "Serrurier"
+
+#: tasks/models.py
+msgid "Chimney sweep"
+msgstr "Ramoneur"
+
+#: tasks/models.py
 msgid "trade"
 msgstr "métier"
+
+#: tasks/models.py
+#| msgid "trade"
+msgid "which trade"
+msgstr "quel métier"
+
+#: tasks/models.py
+msgid "Only with the trade Other. Example: Pool maintenance."
+msgstr "Seulement avec le métier Autre. Exemple : entretien de piscine."
+
+#: tasks/models.py
+msgid "phone"
+msgstr "téléphone"
+
+#: tasks/models.py
+msgid "Digits, spaces and + ( ) - . / only."
+msgstr "Chiffres, espaces et + ( ) - . / seulement."
+
+#: tasks/models.py
+#| msgid "email address"
+msgid "address"
+msgstr "adresse"
 
 #: tasks/models.py
 msgid "contractor"
@@ -2337,6 +2586,10 @@ msgstr "intervenant"
 #: tasks/models.py
 msgid "contractors"
 msgstr "intervenants"
+
+#: tasks/models.py
+msgid "Say which trade."
+msgstr "Dites de quel métier il s'agit."
 
 #: tasks/models.py
 msgid "title"
@@ -2373,6 +2626,11 @@ msgstr "répétition"
 #: tasks/models.py
 msgid "every"
 msgstr "tous les"
+
+#: tasks/models.py
+#| msgid "In season"
+msgid "season"
+msgstr "saison"
 
 #: tasks/models.py
 msgid "season starts in"
@@ -2810,10 +3068,11 @@ msgstr ""
 msgid "Delete my account"
 msgstr "Supprimer mon compte"
 
-#: templates/accounts/delete.html templates/core/more.html
-#: templates/instance/audit.html templates/instance/overview.html
-#: templates/instance/providers.html templates/instance/settings.html
-#: templates/instance/usage.html templates/shell/navigation.html
+#: templates/accounts/delete.html templates/accounts/profile.html
+#: templates/core/more.html templates/instance/audit.html
+#: templates/instance/overview.html templates/instance/providers.html
+#: templates/instance/settings.html templates/instance/usage.html
+#: templates/shell/navigation.html
 msgid "More"
 msgstr "Plus"
 
@@ -2865,6 +3124,30 @@ msgstr ""
 #: templates/homes/invitation_invalid.html
 msgid "Back to sign-in"
 msgstr "Retour à la connexion"
+
+#: templates/accounts/profile.html templates/core/more.html
+msgid "Profile"
+msgstr "Profil"
+
+#: templates/accounts/profile.html
+msgid ""
+"Your display name is what the other members of your homes see: on tasks you "
+"are in charge of, in the history and in the household. Without one, the "
+"first part of your address is shown."
+msgstr ""
+"Votre nom d'affichage est ce que les autres membres de vos logements "
+"voient : sur les tâches dont vous êtes responsable, dans l'historique et "
+"dans le foyer. Sans nom, le début de votre adresse est affiché."
+
+#: templates/accounts/profile.html templates/homes/home_form.html
+#: templates/homes/household.html templates/instance/provider.html
+#: templates/instance/settings.html templates/rooms/item_form.html
+#: templates/rooms/room_form.html templates/rooms/room_memory_form.html
+#: templates/stock/article_form.html templates/stock/supplier_form.html
+#: templates/tasks/completion_form.html templates/tasks/contractor_form.html
+#: templates/tasks/preferences.html templates/tasks/task_form.html
+msgid "Save"
+msgstr "Enregistrer"
 
 #: templates/allauth/elements/provider.html templates/homes/invitation.html
 #: templates/homes/sso_required.html templates/instance/invitation.html
@@ -2925,6 +3208,11 @@ msgstr "Bienvenue"
 #: templates/core/index.html
 msgid "Go to my homes"
 msgstr "Voir mes logements"
+
+#: templates/core/more.html
+#| msgid "Your data"
+msgid "Your display name"
+msgstr "Votre nom d'affichage"
 
 #: templates/core/more.html
 msgid "How the Today screen is laid out for you"
@@ -3008,6 +3296,7 @@ msgstr ""
 
 #: templates/homes/confirm.html templates/rooms/confirm_delete.html
 #: templates/stock/confirm_delete.html templates/tasks/confirm_delete.html
+#: templates/tasks/contractor_confirm_delete.html
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -3093,6 +3382,22 @@ msgid "Currency"
 msgstr "Devise"
 
 #: templates/homes/home_detail.html
+msgid "Hemisphere"
+msgstr "Hémisphère"
+
+#: templates/homes/home_detail.html
+msgid "Name, currency and hemisphere"
+msgstr "Nom, devise et hémisphère"
+
+#: templates/homes/home_detail.html
+msgid ""
+"The hemisphere decides what spring, summer and the other seasons mean for "
+"the tasks"
+msgstr ""
+"L'hémisphère décide ce que veulent dire le printemps, l'été et les autres "
+"saisons pour les tâches"
+
+#: templates/homes/home_detail.html
 #, python-format
 msgid "%(counter)s person"
 msgid_plural "%(counter)s people"
@@ -3107,6 +3412,11 @@ msgstr "Vos données"
 msgid "One archive with everything of this home, in an open format."
 msgstr ""
 "Une archive avec tout le contenu de ce logement, dans un format ouvert."
+
+#: templates/homes/home_form.html
+#| msgid "Edit the room"
+msgid "Edit the home"
+msgstr "Modifier le logement"
 
 #: templates/homes/home_form.html templates/homes/home_list.html
 #: templates/rooms/choose_home.html templates/stock/choose_home.html
@@ -3209,15 +3519,6 @@ msgstr ""
 "Quand un fournisseur est exigé, les membres n'ouvrent ce logement qu'après "
 "s'être connectés par lui, pas avec un mot de passe ou une passkey seuls. "
 "Réglez-le depuis une session connectée par ce fournisseur."
-
-#: templates/homes/household.html templates/instance/provider.html
-#: templates/instance/settings.html templates/rooms/item_form.html
-#: templates/rooms/room_form.html templates/rooms/room_memory_form.html
-#: templates/stock/article_form.html templates/stock/supplier_form.html
-#: templates/tasks/completion_form.html templates/tasks/preferences.html
-#: templates/tasks/task_form.html
-msgid "Save"
-msgstr "Enregistrer"
 
 #: templates/homes/household.html
 #, python-format
@@ -3528,6 +3829,8 @@ msgstr ""
 #: templates/instance/provider.html templates/rooms/_photos.html
 #: templates/rooms/confirm_delete.html templates/stock/confirm_delete.html
 #: templates/tasks/_attachments.html templates/tasks/confirm_delete.html
+#: templates/tasks/contractor_confirm_delete.html
+#: templates/tasks/contractor_detail.html
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -3707,6 +4010,7 @@ msgstr "Vous n'avez pas encore de logement à ouvrir."
 
 #: templates/rooms/confirm_delete.html templates/stock/confirm_delete.html
 #: templates/tasks/confirm_delete.html
+#: templates/tasks/contractor_confirm_delete.html
 #, python-format
 msgid "Delete %(name)s?"
 msgstr "Supprimer %(name)s ?"
@@ -4171,6 +4475,61 @@ msgstr "Détails de ce qui a été fait"
 msgid "The task, its history and its files disappear from the screens."
 msgstr "La tâche, son historique et ses fichiers disparaissent des écrans."
 
+#: templates/tasks/contractor_confirm_delete.html
+msgid ""
+"The contractor disappears from the screens. The tasks that named them stay, "
+"without a contractor."
+msgstr ""
+"L'intervenant disparaît des écrans. Les tâches qui le nommaient restent, "
+"sans intervenant."
+
+#: templates/tasks/contractor_detail.html
+#| msgid "trade"
+msgid "Trade"
+msgstr "Métier"
+
+#: templates/tasks/contractor_detail.html
+msgid "Phone"
+msgstr "Téléphone"
+
+#: templates/tasks/contractor_detail.html
+#| msgid "email address"
+msgid "Address"
+msgstr "Adresse"
+
+#: templates/tasks/contractor_detail.html
+#| msgid "open the contract"
+msgid "Download the contact (.vcf)"
+msgstr "Télécharger la fiche contact (.vcf)"
+
+#: templates/tasks/contractor_detail.html
+#| msgid "No photo in this category."
+msgid "No task is linked to this contractor."
+msgstr "Aucune tâche n'est liée à cet intervenant."
+
+#: templates/tasks/contractor_detail.html
+msgid "Edit"
+msgstr "Modifier"
+
+#: templates/tasks/contractor_form.html
+#| msgid "open the contract"
+msgid "Edit the contractor"
+msgstr "Modifier l'intervenant"
+
+#: templates/tasks/contractor_form.html templates/tasks/contractor_list.html
+#| msgid "contractor"
+msgid "Add a contractor"
+msgstr "Ajouter un intervenant"
+
+#: templates/tasks/contractor_list.html
+msgid ""
+"No contractor yet. People and companies who work in this home, with their "
+"trade and how to reach them, are kept here."
+msgstr ""
+"Aucun intervenant pour l'instant. Les personnes et les entreprises qui "
+"travaillent dans ce logement, avec leur métier et le moyen de les joindre, "
+"sont gardées ici."
+
 #: templates/tasks/history.html
 msgid "Filters"
 msgstr "Filtres"
@@ -4182,10 +4541,6 @@ msgstr "Toutes les pièces"
 #: templates/tasks/history.html
 msgid "All items"
 msgstr "Tous les éléments"
-
-#: templates/tasks/history.html templates/tasks/task_detail.html
-msgid "Contractor"
-msgstr "Intervenant"
 
 #: templates/tasks/history.html
 msgid "Everyone"
@@ -4363,15 +4718,6 @@ msgstr "Comment faire"
 #: templates/tasks/task_detail.html
 msgid "Details"
 msgstr "Détails"
-
-#: templates/tasks/task_detail.html
-msgid "Estimated duration"
-msgstr "Durée estimée"
-
-#: templates/tasks/task_detail.html
-#, python-format
-msgid "%(minutes)s min"
-msgstr "%(minutes)s min"
 
 #: templates/tasks/task_detail.html
 msgid "Labour budget"
