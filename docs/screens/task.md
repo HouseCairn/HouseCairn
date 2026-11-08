@@ -23,13 +23,13 @@ three dates, were each occurrence done on time. **How to do it** shows the
 procedure written in Markdown: the text is shown as written (HTML is not
 interpreted), links to web pages are kept, images are never loaded.
 **Details** lists the estimated duration, the budgets, the contractor and the
-notes.
+notes. **Photos and files** are described on the [files page](task-files.md).
 
 **History** lists the occurrences done or skipped, the most recent first, with the
 real cost and the note. **Details** on a row opens a form to fill in or correct what
 is known of that time: the date it was done (not in the future), the real cost
 and a note. Changing the date does not move the occurrence created after it.
-Once the next occurrence has been changed (postponed, noted or done),
+Once the next occurrence has been changed (postponed, noted, given a photo or done),
 **Undo** is refused for the one before it, because it would lose that work.
 
 Read-only members see everything and none of the buttons.

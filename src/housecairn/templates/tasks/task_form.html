@@ -9,7 +9,7 @@
     <a class="back-link" href="{% url 'tasks:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Tasks" %}</a>
     <h1>{% translate "Add a task" %}</h1>
   {% endif %}
-  <form method="post">
+  <form method="post"{% if form.uploads %} enctype="multipart/form-data"{% endif %}>
     {% csrf_token %}
     {{ form.non_field_errors }}
     <div class="card">
@@ -47,11 +47,12 @@
         {% include "tasks/_field.html" with field=form.material_budget %}
       </div>
     </details>
-    <details class="form-section"{% if form.procedure.errors or form.notes.errors %} open{% endif %}>
+    <details class="form-section"{% if form.procedure.errors or form.notes.errors or form.uploads.errors %} open{% endif %}>
       <summary>{% translate "How to do it" %}</summary>
       <div>
         {% include "tasks/_field.html" with field=form.procedure %}
         {% include "tasks/_field.html" with field=form.notes %}
+        {% if form.uploads %}{% include "tasks/_field.html" with field=form.uploads %}{% endif %}
       </div>
     </details>
     <button type="submit" class="button-block">{% if task %}{% translate "Save" %}{% else %}{% translate "Add the task" %}{% endif %}</button>
