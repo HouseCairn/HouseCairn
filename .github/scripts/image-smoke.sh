@@ -65,6 +65,8 @@ ENV_ARGS=(
 
 if [ "$DB" = postgresql ]; then
   PG_PASSWORD=$(od -An -tx1 -N16 /dev/urandom | tr -d ' \n')
+  # Pulled first, with retries; `docker run` then uses the local image.
+  "$(dirname "$0")/retry.sh" docker pull -q "$PG_IMAGE" >/dev/null
   docker run -d --name "$PG_NAME" --network "$NETWORK" \
     -e POSTGRES_USER=housecairn -e POSTGRES_DB=housecairn \
     -e POSTGRES_PASSWORD="$PG_PASSWORD" "$PG_IMAGE" >/dev/null

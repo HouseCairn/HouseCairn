@@ -53,6 +53,14 @@ own tests in `tests/test_ci_scripts.py`.
   signatures from concurrent writes is described under "Record" below).
 - No `pull_request_target` workflow checks out or runs the code of a pull
   request. The only `pull_request_target` workflow is `cla.yml`, see below.
+- A download made by a workflow step is retried on transient errors, so that a
+  5xx answer of a registry or of GitHub's release storage does not fail a
+  check: `curl --retry 4 --retry-delay 5 --retry-all-errors --retry-max-time
+  120 --fail`, `apt-get -o Acquire::Retries=3`, and `.github/scripts/retry.sh`
+  (at most 4 attempts, 5, 10 and 20 s apart) for `docker pull`. The checksum
+  or digest is verified after the download as before, and the last failure
+  still fails the step. Actions and tools that download by themselves keep
+  their own retries; the default CodeQL setup has none the repository can set.
 
 ### Exceptions
 

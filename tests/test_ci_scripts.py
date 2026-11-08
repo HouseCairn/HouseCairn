@@ -243,3 +243,52 @@ def test_local_and_non_web_files_pass(tmp_path: Path) -> None:
 
 def test_repository_has_no_external_url() -> None:
     assert check_external_urls.main([]) == 0
+
+
+# Retries of the downloads made by the CI (.github/scripts/retry.sh)
+
+RETRY = Path(__file__).resolve().parents[1] / ".github" / "scripts" / "retry.sh"
+# Fails until it has been run `succeed_at` times, counting its runs in a file.
+FLAKY = 'n=$(($(cat "$1" 2>/dev/null || echo 0) + 1)); echo "$n" >"$1"; [ "$n" -ge "$2" ] || exit 7'
+
+
+def _retry(
+    tmp_path: Path, succeed_at: int, attempts: int
+) -> tuple[subprocess.CompletedProcess[str], int]:
+    counter = tmp_path / "runs"
+    result = subprocess.run(  # noqa: S603 - fixed program, test-controlled arguments
+        ["bash", str(RETRY), "bash", "-c", FLAKY, "flaky", str(counter), str(succeed_at)],  # noqa: S607
+        env={**os.environ, "RETRY_ATTEMPTS": str(attempts), "RETRY_DELAY": "0"},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result, int(counter.read_text())
+
+
+def test_retry_succeeds_after_transient_failures(tmp_path: Path) -> None:
+    result, runs = _retry(tmp_path, succeed_at=3, attempts=4)
+    assert (result.returncode, runs) == (0, 3)
+    assert "attempt 2 of 4" in result.stderr
+
+
+def test_retry_keeps_the_last_failure(tmp_path: Path) -> None:
+    result, runs = _retry(tmp_path, succeed_at=10, attempts=4)
+    assert (result.returncode, runs) == (7, 4)
+    assert "failed 4 times, last exit status 7" in result.stderr
+
+
+def test_retry_runs_a_successful_command_once(tmp_path: Path) -> None:
+    result, runs = _retry(tmp_path, succeed_at=1, attempts=4)
+    assert (result.returncode, runs, result.stderr) == (0, 1, "")
+
+
+def test_retry_needs_a_command() -> None:
+    result = subprocess.run(  # noqa: S603 - fixed program
+        ["bash", str(RETRY)],  # noqa: S607
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 2
+    assert "usage" in result.stderr
