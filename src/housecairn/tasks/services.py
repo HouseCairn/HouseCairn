@@ -334,9 +334,15 @@ def resync_seasons(home: Home) -> int:
     return changed
 
 
-def _check_estimate(task: Task) -> None:
-    """The estimated duration is between a minute and thirty days (docs/adr/0045)."""
+def _check_estimate(task: Task, *, before: int | None = None, creating: bool = True) -> None:
+    """The estimated duration is between a minute and thirty days (docs/adr/0045).
+
+    Held only when it is set or changed: a task kept from before the bound (a duration of 0
+    was accepted) can still be edited for something else.
+    """
     minutes = task.estimated_minutes
+    if not creating and minutes == before:
+        return
     if minutes is not None and not durations.within_bounds(minutes):
         raise ValidationError(
             {"estimated_minutes": _("Give a duration between a minute and thirty days.")}
@@ -397,10 +403,11 @@ def update_task(
 ) -> Task:
     """Change a task. `due_on`, if given, moves the occurrence that is open."""
     _require_write(actor, task.home)
+    estimate_before = task.estimated_minutes
     _apply(task, TASK_FIELDS, changes)
     if _SEASON_FIELDS & set(changes):
         _sync_season(task, changes)
-    _check_estimate(task)
+    _check_estimate(task, before=estimate_before, creating=False)
     current = open_occurrence_of(task)
     new_due = (current.due_on if current else None) if due_on is _UNSET else due_on
     _check_links(task.home, task)

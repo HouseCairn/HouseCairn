@@ -188,3 +188,28 @@ def test_a_trade_becomes_one_of_the_list_or_other_and_comes_back() -> None:
         assert apps.get_model("tasks", "Contractor").objects.count() == len(trades)
     finally:
         to_latest()
+
+
+def test_a_duration_of_zero_becomes_unset_and_the_rest_is_kept() -> None:
+    try:
+        apps = apps_at(("tasks", "0006_contractor_record"))
+        home = make_home(apps)
+        task_model = apps.get_model("tasks", "Task")
+        for title, minutes in (("None", None), ("Zero", 0), ("Ninety", 90)):
+            task_model.objects.create(home=home, title=title, estimated_minutes=minutes)
+        apps = apps_at(("tasks", "0007_estimate_zero_unset"))
+        tasks = apps.get_model("tasks", "Task").objects
+        assert dict(tasks.values_list("title", "estimated_minutes")) == {
+            "None": None,
+            "Zero": None,
+            "Ninety": 90,
+        }
+        # Undone, then done again: nothing else is touched.
+        apps = apps_at(("tasks", "0006_contractor_record"))
+        tasks = apps.get_model("tasks", "Task").objects
+        assert tasks.get(title="Ninety").estimated_minutes == 90
+        assert tasks.count() == 3
+        apps = apps_at(("tasks", "0007_estimate_zero_unset"))
+        assert apps.get_model("tasks", "Task").objects.get(title="Zero").estimated_minutes is None
+    finally:
+        to_latest()

@@ -87,6 +87,24 @@ class TestService:
         task.refresh_from_db()
         assert task.estimated_minutes is None
 
+    def test_a_task_kept_at_zero_can_be_edited_for_something_else(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = services.create_task(alice, alice_home, title="Old")
+        Task.objects.filter(pk=task.pk).update(estimated_minutes=0)  # accepted before the bound
+        task.refresh_from_db()
+        services.update_task(alice, task, title="Renamed")
+        task.refresh_from_db()
+        assert (task.title, task.estimated_minutes) == ("Renamed", 0)
+
+    def test_the_bound_still_holds_when_the_duration_changes(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = services.create_task(alice, alice_home, title="x", estimated_minutes=30)
+        with pytest.raises(ValidationError) as caught:
+            services.update_task(alice, task, estimated_minutes=0)
+        assert "estimated_minutes" in caught.value.message_dict
+
 
 class TestScreens:
     @pytest.mark.parametrize(
@@ -156,3 +174,18 @@ class TestApi:
         response = api_client.post(url, {"title": "x", "estimated_minutes": minutes}, format="json")
         assert response.status_code == 400
         assert "estimated_minutes" in response.json()
+
+    def test_a_task_kept_at_zero_takes_a_patch_of_another_field(
+        self, api_client: APIClient, alice: User, alice_home: Home
+    ) -> None:
+        task = services.create_task(alice, alice_home, title="Old")
+        Task.objects.filter(pk=task.pk).update(estimated_minutes=0)
+        api_client.force_authenticate(alice)
+        url = reverse(
+            "api-v1:home-task-detail", kwargs={"home_id": alice_home.id, "task_id": task.id}
+        )
+        response = api_client.patch(url, {"title": "Renamed"}, format="json")
+        assert response.status_code == 200, response.content
+        assert response.json()["title"] == "Renamed"
+        # Sending a duration of 0 is still refused: the bound holds for what is written.
+        assert api_client.patch(url, {"estimated_minutes": 0}, format="json").status_code == 400
