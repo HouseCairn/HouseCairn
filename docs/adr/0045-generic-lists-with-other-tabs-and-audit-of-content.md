@@ -111,12 +111,31 @@ messages; the display preferences are the person's own layout.
 A display name is refused when it contains an `@` (in any width: the full-width form counts),
 which would pass for an address, or when nothing in it draws (spaces, the Hangul fillers
 U+115F, U+1160, U+3164 and U+FFA0, the blank Braille pattern U+2800, bare combining marks). Those fillers,
-and spaces, are removed at either end of a name that has something else (`Sam` followed by
-U+3164 is `Sam`); inside a name they stay. Emptying it stays possible. In a list where one
+the Khmer inherent vowels U+17B4 and U+17B5, the combining grapheme joiner U+034F and
+spaces of any kind (U+3000, U+00A0...) are removed at either end of a name that has
+something else (`Sam` followed by U+3164 is `Sam`); inside a name they stay, so a Persian
+word with its zero-width non-joiner and a composed emoji with its joiners are kept as typed. Emptying it stays possible. In a list where one
 picks a person (the assignee of a task, the "Done by" filter of the history) and in the
-audit logs of a home and of the instance, two members of the same name, compared without
-case and without the fillers, show their address in brackets after it; a name that is
-alone shows no address.
+audit logs of a home and of the instance, two members of the same name show their address
+in brackets after it; a name that is alone shows no address.
+
+**Comparing names.** The rule is a principle, not a list: two names are the same when they
+look the same on screen, and what does not change the display does not count. The key
+(`accounts.names.same_name_key`) decomposes the name (NFKD, so that full-width letters and
+ligatures become plain ones), folds the case, drops every character of the Unicode categories
+Cc, Cf, Mn and Me and the blank glyphs (the Hangul fillers, U+2800, U+17B4, U+17B5, U+034F,
+U+180E), and reads any run of spaces as one. The decomposition comes before the removal so
+that a mark inserted after a letter cannot fuse with it into a letter that stays; the price
+is that accents do not count either (`José` and `Jose` get their address shown), which costs
+an address shown more often and never less. A property test inserts any such characters
+anywhere in a name and checks that the key does not move.
+
+**What is not compared: look-alikes of another alphabet.** A Cyrillic `Ѕаm` is a different
+name from `Sam` for this rule, as is any letter that merely resembles another. Telling them
+apart needs a confusables table that keeps growing, and a rule by list is a race against
+the next character. The name is a courtesy, not an identity: the address in brackets when
+two names coincide, and the role, are the only proof of who a person is, and nothing in the
+application relies on a display name for access.
 
 **Estimated duration.** A number and a unit (minutes, hours, days) on the screens, minutes
 in the data and in the API, between one minute and thirty days; the service layer checks the
