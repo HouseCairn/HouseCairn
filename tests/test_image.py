@@ -76,6 +76,16 @@ def test_final_stage_is_unprivileged_and_healthchecked() -> None:
     assert 'org.opencontainers.image.licenses="AGPL-3.0-only"' in final
 
 
+def test_base_image_security_upgrades_have_a_floor() -> None:
+    # Each Debian package upgraded ahead of the base image must be checked
+    # against its fixed version, or a stale mirror would ship it unfixed.
+    final = (REPO / "Dockerfile").read_text().rsplit("\nFROM ", 1)[1]
+    packages = re.findall(r"--only-upgrade\s+([\w.+-]+(?:\s+[\w.+-]+)*)", final)
+    for package in " ".join(packages).split():
+        floor = rf"dpkg-query -W -f='\$\{{Version\}}' {re.escape(package)}\)\"\s*\\\n\s*ge '"
+        assert re.search(floor, final), package
+
+
 def test_build_context_lets_in_only_what_the_image_needs() -> None:
     lines = [
         line
