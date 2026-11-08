@@ -101,11 +101,12 @@ def resolve(page: Page, base: str, path: str, invitations: tuple[str, str]) -> s
         return f"{home_path}household/members/{other['id']}/"
     if "{task}" in path:
         tasks = page.request.get(f"{base}/api/v1/homes/{home['id']}/tasks/?status=open").json()
-        task = next(t for t in tasks["results"] if t["title"] == "Change the smoke detector battery")
+        task = next(
+            t for t in tasks["results"] if t["title"] == "Change the smoke detector battery"
+        )
         occurrence = task["open_occurrence"]
-        return (
-            path.replace("{task}", f"{home_path}tasks/{task['id']}/")
-            .replace("postpone/", f"occurrences/{occurrence}/postpone/")
+        return path.replace("{task}", f"{home_path}tasks/{task['id']}/").replace(
+            "postpone/", f"occurrences/{occurrence}/postpone/"
         )
     if "{room}" in path or "{item}" in path:
         rooms = page.request.get(f"{base}/api/v1/homes/{home['id']}/rooms/").json()["results"]
