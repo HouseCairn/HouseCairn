@@ -1,0 +1,117 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 18:13+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "HouseCairn reminds you of your tasks through the service you already read: ntfy, Telegram, Signal, Matrix, Gotify, email, Discord, Slack, Pushover, Mattermost, or an [Apprise](https://github.com/caronc/apprise) API server."
+msgstr "HouseCairn vous rappelle vos tâches par le service que vous lisez déjà : ntfy, Telegram, Signal, Matrix, Gotify, e-mail, Discord, Slack, Pushover, Mattermost, ou un serveur d'API [Apprise](https://github.com/caronc/apprise)."
+
+msgid "Before you start"
+msgstr "Avant de commencer"
+
+msgid "Notifications are off on a new instance. An instance administrator turns them on in **Instance administration, Settings, Notifications**, or with the variable `HOUSECAIRN_NOTIFICATIONS_ENABLED=true` (see [Settings](../administration/settings.md)). The background worker of the container then looks for reminders every five minutes."
+msgstr "Les notifications sont désactivées sur une nouvelle instance. Un administrateur de l'instance les active dans **Administration de l'instance, Réglages, Notifications**, ou par la variable `HOUSECAIRN_NOTIFICATIONS_ENABLED=true` (voir [Réglages](../administration/settings.md)). La tâche de fond du conteneur cherche alors les rappels toutes les cinq minutes."
+
+msgid "Links to tasks in the messages need the public address of the instance (`HOUSECAIRN_SITE_URL`). Without it, the message has no link."
+msgstr "Les liens vers les tâches dans les messages demandent l'adresse publique de l'instance (`HOUSECAIRN_SITE_URL`). Sans elle, le message n'a pas de lien."
+
+msgid "Add a channel"
+msgstr "Ajouter un canal"
+
+msgid "Open **More**, then [Notifications](../screens/notifications.md). Give the channel a name and its Apprise address. Some examples, with `example.com` standing for your server:"
+msgstr "Ouvrez **Plus**, puis [Notifications](../screens/notifications.md). Donnez au canal un nom et son adresse Apprise. Quelques exemples, où `example.com` tient lieu de votre serveur :"
+
+msgid "Service"
+msgstr "Service"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "ntfy"
+msgstr "ntfy"
+
+msgid "`ntfys://ntfy.example.com/my-topic`"
+msgstr "`ntfys://ntfy.example.com/mon-sujet`"
+
+msgid "Gotify"
+msgstr "Gotify"
+
+msgid "`gotifys://gotify.example.com/app-token`"
+msgstr "`gotifys://gotify.example.com/jeton-de-l-application`"
+
+msgid "Telegram"
+msgstr "Telegram"
+
+msgid "`tgram://123456789:bot-token/111222333`"
+msgstr "`tgram://123456789:jeton-du-bot/111222333`"
+
+msgid "Signal (signal-cli REST API)"
+msgstr "Signal (API REST de signal-cli)"
+
+msgid "`signals://signal.example.com/+15555550100/+15555550101`"
+msgstr "`signals://signal.example.com/+15555550100/+15555550101`"
+
+msgid "Matrix"
+msgstr "Matrix"
+
+msgid "`matrixs://user:password@matrix.example.com/#room:example.com`"
+msgstr "`matrixs://utilisateur:mot-de-passe@matrix.example.com/#salon:example.com`"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "`mailtos://user:password@mail.example.com?to=me@example.com`"
+msgstr "`mailtos://utilisateur:mot-de-passe@mail.example.com?to=moi@example.com`"
+
+msgid "For Telegram, put the token that BotFather gave the bot (digits, a colon, then letters) and the number of the chat; for Signal, the number registered with signal-cli, then the number to send to, both in international format."
+msgstr "Pour Telegram, mettez le jeton que BotFather a donné au bot (des chiffres, deux-points, puis des lettres) et le numéro du chat ; pour Signal, le numéro enregistré auprès de signal-cli, puis le numéro destinataire, tous deux au format international."
+
+msgid "The Apprise documentation lists the options of each service. Then open the channel and **Send a test message**. If it does not arrive, check the address: the screen does not repeat the service's error, since it may carry your secrets. HouseCairn waits at most eight seconds per channel, for a test as for a reminder: a service slower than that counts as not reached."
+msgstr "La documentation d'Apprise donne les options de chaque service. Ouvrez ensuite le canal et **Envoyer un message de test**. S'il n'arrive pas, vérifiez l'adresse : l'écran ne répète pas l'erreur du service, qui peut contenir vos secrets. HouseCairn attend au plus huit secondes par canal, pour un test comme pour un rappel : un service plus lent compte comme non joint."
+
+msgid "The address is encrypted, never shown again and never exported. Some addresses are refused: services that would run something on the server, write to its logs or open a raw connection, generic webhooks (`json://`, `xml://`, `form://`), options that make the server read a file or add headers or fields to the request (`+name`, `-name`, `:name`), and addresses of the server itself or of a cloud metadata service. Addresses of your local network are accepted, for a self-hosted ntfy or Gotify."
+msgstr "L'adresse est chiffrée, n'est plus jamais affichée ni exportée. Certaines adresses sont refusées : les services qui exécuteraient quelque chose sur le serveur, écriraient dans ses journaux ou ouvriraient une connexion brute, les webhooks génériques (`json://`, `xml://`, `form://`), les options qui font lire un fichier au serveur ou ajoutent des en-têtes ou des champs à la requête (`+nom`, `-nom`, `:nom`), et les adresses du serveur lui-même ou d'un service de métadonnées du cloud. Les adresses de votre réseau local sont acceptées, pour un ntfy ou un Gotify auto-hébergé."
+
+msgid "Choose when"
+msgstr "Choisir quand"
+
+msgid "A reminder says the title of the task, the home, the due date and a link: nothing else of the task leaves HouseCairn. It goes to the person in charge of the task. When nobody is, or when that person cannot receive it (they only read the home now, have no channel on, or their account is deactivated), it goes to every member of the home who may change it and has a channel on. A reader of the home receives nothing."
+msgstr "Un rappel donne le titre de la tâche, le logement, l'échéance et un lien : rien d'autre de la tâche ne sort de HouseCairn. Il va au responsable de la tâche. S'il n'y en a pas, ou si cette personne ne peut pas le recevoir (elle ne fait plus que lire le logement, n'a aucun canal actif ou son compte est désactivé), il va à chaque membre du logement qui peut modifier la tâche et a un canal actif. Un lecteur du logement ne reçoit rien."
+
+msgid "The first reminder comes one day before the due date by default, from 08:00 in your time zone. Change both in **Reminders**."
+msgstr "Le premier rappel vient par défaut un jour avant l'échéance, à partir de 08:00 dans votre fuseau horaire. Changez les deux dans **Rappels**."
+
+msgid "Then a follow-up comes every day for a high priority, every three days for a normal one, every week for a low one, until the task is done or skipped. Postponing it stops them until the new date."
+msgstr "Puis une relance vient chaque jour pour une priorité haute, tous les trois jours pour une normale, chaque semaine pour une basse, jusqu'à ce que la tâche soit faite ou ignorée. La reporter les arrête jusqu'à la nouvelle date."
+
+msgid "**Quiet hours**: nothing is sent between the two times; what was due goes out at their end."
+msgstr "**Heures calmes** : rien n'est envoyé entre les deux heures ; ce qui était dû part à leur fin."
+
+msgid "**Daily summary**: one message a day with every task to remind, instead of one each. Turned on before the time of reminders, the first one comes at that time."
+msgstr "**Résumé quotidien** : un seul message par jour avec toutes les tâches à rappeler, au lieu d'un par tâche. Activé avant l'heure des rappels, le premier arrive à cette heure-là."
+
+msgid "Each reminder is sent once, even if the worker runs twice at the same time. When a service fails, the reminder is not sent again; the next follow-up is."
+msgstr "Chaque rappel n'est envoyé qu'une fois, même si la tâche de fond tourne deux fois en même temps. Quand un service échoue, le rappel n'est pas renvoyé ; la relance suivante l'est."
+
+#~ msgid "`signals://signal.example.com/from-number/to-number`"
+#~ msgstr "`signals://signal.example.com/numero-emetteur/numero-destinataire`"
+

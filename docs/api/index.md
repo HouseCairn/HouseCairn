@@ -64,6 +64,17 @@ web interface: every request only sees the homes of its user
   returns it. Articles are filtered with `q` (name, manufacturer reference or supplier)
   and `low=true`; suppliers and movements with `article`, movements also with `kind`. The
   scopes are the same as for rooms.
+- **Notifications** of the caller
+  ([ADR 0043](../adr/0043-notifications-through-apprise.md)):
+  `/api/v1/me/notification-channels/` lists, adds (`name` and `url`, an Apprise address),
+  renames or turns off (`PATCH` of `name`, `enabled`; any other field, `url` included, is
+  a 400) and deletes the caller's channels; `url` is write-only and never returned.
+  `POST .../<id>/test/` sends a real test message and answers
+  `{"ok": true|false, "detail": ...}` with a fixed sentence. `GET` and `PATCH
+  /api/v1/me/notification-preferences/` the reminders (`days_before`, `send_at`,
+  `quiet_start`, `quiet_end`, `digest`, `language`, `time_zone`), and `GET
+  /api/v1/me/notifications-export/` both, without any address. Every endpoint needs a
+  token with the `write` scope, reading included; someone else's channel is a 404.
 
 The [reference](reference.md) lists every operation. It is generated from the
 OpenAPI 3.1 schema of the code at each build of this site:

@@ -8,6 +8,14 @@ with it on the project's
 
 ### New
 
+- **Notifications.** Each person adds their own channels (ntfy, Telegram, Signal, Matrix,
+  Gotify, email and other Apprise services) on **More, Notifications**, tests them, and
+  chooses when reminders come: days before the due date, time of day, quiet hours, a daily
+  summary. Follow-ups come until the task is done, skipped or postponed, more often for a
+  high priority. Addresses are encrypted and never shown again. Off by default: an
+  administrator turns them on with `HOUSECAIRN_NOTIFICATIONS_ENABLED` or in the settings.
+  See [Notifications](guides/notifications.md).
+
 - **Rooms, items and photos.** Describe the rooms of a home, what was used in
   them (the room memory), the equipment and surfaces they hold, and add photos.
   Screens, API and a guide: see [Rooms and items](guides/rooms-and-items.md).

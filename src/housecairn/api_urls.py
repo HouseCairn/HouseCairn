@@ -1,6 +1,6 @@
 """API v1 routes (docs/adr/0004). Mounted at /api/v1/ with the namespace "api-v1"."""
 
-from django.urls import path
+from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
 from housecairn.accounts.api import AccountDeleteView
@@ -86,4 +86,5 @@ urlpatterns = [
     path("homes/<uuid:home_id>/events/", EventCreateView.as_view(), name="home-events"),
     path("homes/<uuid:home_id>/search/", rooms_api.SearchView.as_view(), name="home-search"),
     path("invitations/accept/", AcceptInvitationView.as_view(), name="invitation-accept"),
+    path("", include("housecairn.notifications.api_urls")),  # docs/adr/0043
 ]

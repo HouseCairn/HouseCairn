@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 16:56+0000\n"
+"POT-Creation-Date: 2026-11-08 18:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -185,6 +185,10 @@ msgstr ""
 "articles se filtrent avec `q` (nom, référence fabricant ou fournisseur) et "
 "`low=true` ; les fournisseurs et les mouvements avec `article`, les "
 "mouvements aussi avec `kind`. Les portées sont les mêmes que pour les pièces."
+
+#, python-brace-format
+msgid "**Notifications** of the caller ([ADR 0043](../adr/0043-notifications-through-apprise.md)): `/api/v1/me/notification-channels/` lists, adds (`name` and `url`, an Apprise address), renames or turns off (`PATCH` of `name`, `enabled`; any other field, `url` included, is a 400) and deletes the caller's channels; `url` is write-only and never returned. `POST .../<id>/test/` sends a real test message and answers `{\"ok\": true|false, \"detail\": ...}` with a fixed sentence. `GET` and `PATCH /api/v1/me/notification-preferences/` the reminders (`days_before`, `send_at`, `quiet_start`, `quiet_end`, `digest`, `language`, `time_zone`), and `GET /api/v1/me/notifications-export/` both, without any address. Every endpoint needs a token with the `write` scope, reading included; someone else's channel is a 404."
+msgstr "**Notifications** de l'appelant ([ADR 0043](../adr/0043-notifications-through-apprise.md)) : `/api/v1/me/notification-channels/` liste, ajoute (`name` et `url`, une adresse Apprise), renomme ou désactive (`PATCH` de `name`, `enabled` ; tout autre champ, `url` compris, est une 400) et supprime les canaux de l'appelant ; `url` est en écriture seule et n'est jamais renvoyé. `POST .../<id>/test/` envoie un vrai message de test et répond `{\"ok\": true|false, \"detail\": ...}` avec une phrase fixe. `GET` et `PATCH /api/v1/me/notification-preferences/` les rappels (`days_before`, `send_at`, `quiet_start`, `quiet_end`, `digest`, `language`, `time_zone`), et `GET /api/v1/me/notifications-export/` les deux, sans aucune adresse. Chaque point d'accès demande un jeton de portée `write`, lecture comprise ; le canal de quelqu'un d'autre est une 404."
 
 #, python-brace-format
 msgid ""

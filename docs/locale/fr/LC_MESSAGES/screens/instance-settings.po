@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 15:35+0000\n"
+"POT-Creation-Date: 2026-11-08 16:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -39,6 +39,9 @@ msgstr "**Secret** (le mot de passe SMTP) : écriture seule. L'écran dit si un 
 
 msgid "Sections: **Public address**, **Name, language and time zone** (name of the instance, default language, time zone), **Sign-up** (open sign-up, sign-up through single sign-on, allowed and blocked domains, anti-robot work), **Invitations** (lifetime), **Outgoing email** (server, port, STARTTLS or TLS, user name, password, timeout, sender), **Rate limits** (see [Rate limits](../administration/rate-limits.md)) and **Files of a home** (largest file, space and number of files of each home). **Test the connection** checks the mail server with the settings in force and sends nothing. **Server** lists the variables that stay in the environment, read-only."
 msgstr "Sections : **Adresse publique**, **Nom, langue et fuseau horaire** (nom de l'instance, langue par défaut, fuseau horaire), **Inscription** (inscription ouverte, inscription par authentification unique, domaines autorisés et bloqués, travail anti-robot), **Invitations** (durée de validité), **E-mail sortant** (serveur, port, STARTTLS ou TLS, nom d'utilisateur, mot de passe, délai, expéditeur), **Limites de débit** (voir [Limites de débit](../administration/rate-limits.md)) et **Fichiers d'un logement** (fichier le plus gros, espace et nombre de fichiers de chaque logement). **Tester la connexion** vérifie le serveur de messagerie avec les réglages en vigueur et n'envoie rien. **Serveur** liste les variables qui restent dans l'environnement, en lecture seule."
+
+msgid "**Notifications** turns reminders on or off for the whole instance (off by default) and sets how often the background worker looks for them, from 1 to 60 minutes (see [Notifications](../guides/notifications.md)). It shows no channel of anyone."
+msgstr "**Notifications** active ou désactive les rappels pour toute l'instance (désactivés par défaut) et fixe la fréquence à laquelle la tâche de fond les cherche, de 1 à 60 minutes (voir [Notifications](../guides/notifications.md)). Elle ne montre le canal de personne."
 
 msgid "Saving asks you to have signed in within the last five minutes; if you have not, you are sent to confirm your sign-in and then back here, and you make the change again. Every change is in the [audit log](instance.md)."
 msgstr "Enregistrer exige de s'être connecté dans les cinq dernières minutes ; sinon, vous êtes envoyé confirmer votre connexion puis ramené ici, et vous refaites la modification. Chaque modification figure au [journal d'audit](instance.md)."
