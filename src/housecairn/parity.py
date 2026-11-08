@@ -75,6 +75,23 @@ PARITY: dict[str, tuple[str, ...]] = {
     "tasks:skip": ("api-v1:home-occurrence-skip",),
     "tasks:postpone": ("api-v1:home-occurrence-postpone",),
     "tasks:occurrence-edit": ("api-v1:home-occurrence-detail",),
+    # Stock items, suppliers and movements (docs/adr/0038). The entry page only leads
+    # to the stock of a home, like the rooms one.
+    "stock": ("api-v1:home-list",),
+    "stock:list": ("api-v1:home-article-list",),
+    "stock:create": ("api-v1:home-article-list",),
+    "stock:detail": (
+        "api-v1:home-article-detail",
+        "api-v1:home-supplier-list",
+        "api-v1:home-movement-list",
+    ),
+    "stock:edit": ("api-v1:home-article-detail",),
+    "stock:delete": ("api-v1:home-article-detail",),
+    "stock:label": ("api-v1:home-article-label",),
+    "stock:movement-add": ("api-v1:home-movement-list",),
+    "stock:supplier-create": ("api-v1:home-supplier-list",),
+    "stock:supplier-edit": ("api-v1:home-supplier-detail",),
+    "stock:supplier-delete": ("api-v1:home-supplier-detail",),
 }
 
 # Web routes without business function, with the reason.
