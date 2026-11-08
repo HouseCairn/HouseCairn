@@ -1125,6 +1125,23 @@ class TestApi:
         (row,) = client.get(self.url(), {"from": str(TODAY), "to": str(TODAY)}).json()["results"]
         assert row["can_complete"] is True
 
+    def test_a_token_can_complete_only_with_the_write_scope(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        make_task(alice, alice_home, "Boiler", 0)
+        client = APIClient()
+        seen = {}
+        for scopes in (["read"], ["read", "write"]):
+            _token, raw = token_services.issue_token(
+                alice, name="ci", scopes=scopes, homes=[alice_home]
+            )
+            client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
+            (row,) = client.get(self.url(), {"from": str(TODAY), "to": str(TODAY)}).json()[
+                "results"
+            ]
+            seen[tuple(scopes)] = row["can_complete"]
+        assert seen == {("read",): False, ("read", "write"): True}
+
     def test_feeds_by_the_api_for_a_session_and_never_for_a_token(
         self, alice: User, alice_home: Home
     ) -> None:

@@ -4,6 +4,7 @@ The range is read through the same function as the screens. Feeds are the caller
 only a person signed in with a session reaches them: a token, of whatever scope, is refused.
 """
 
+import dataclasses
 import datetime
 from typing import Any
 
@@ -17,7 +18,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from housecairn.apitokens.models import ApiToken
+from housecairn.apitokens.models import ApiToken, Scope
 from housecairn.calendar import feeds, services
 from housecairn.calendar.models import Feed
 from housecairn.homes.scoping import open_homes_for_request, site_url
@@ -46,7 +47,10 @@ class EntrySerializer(serializers.Serializer[Any]):
     person = serializers.CharField(help_text="Display name of the person in charge, or empty.")
     priority = serializers.ChoiceField(choices=Priority.choices)
     can_complete = serializers.BooleanField(
-        help_text="Open, created, and the caller may change it (a reader may not)."
+        help_text=(
+            "Open, created, and the caller may change it: a reader may not, and neither may "
+            "a token without the `write` scope."
+        )
     )
 
 
@@ -97,11 +101,15 @@ class CalendarView(APIView):
             if not homes:
                 raise exceptions.NotFound
         result = services.entries(request.user, homes, bounds["from"], bounds["to"], filters)  # type: ignore[arg-type]
+        entries = result.entries
+        if isinstance(request.auth, ApiToken) and not request.auth.has_scope(Scope.WRITE):
+            # The role of the person would allow it, the token does not: nothing to complete.
+            entries = [dataclasses.replace(e, can_write=False) for e in entries]
         payload = {
             "start": bounds["from"],
             "end": bounds["to"],
             "truncated": result.truncated,
-            "results": result.entries,
+            "results": entries,
         }
         return Response(CalendarSerializer(payload).data)
 

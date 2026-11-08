@@ -105,7 +105,7 @@ web interface: every request only sees the homes of its user
   tasks, cut the answer, always on the farthest dates) with the filters `home`, `room`, `person` (an id, or `none`) and `priority`. Dates of a
   task that repeats and has no occurrence yet are returned with `projected: true` and
   `occurrence: null`. A token needs the `read` scope and only sees the homes it is bound to;
-  `can_complete` is false for a reader. `/api/v1/me/calendar-feeds/` lists, creates (`home`, or
+  `can_complete` is false for a reader and for a token without the `write` scope. `/api/v1/me/calendar-feeds/` lists, creates (`home`, or
   empty for all homes), regenerates (`POST .../<id>/regenerate/`) and deletes the caller's
   [feeds](../guides/calendar.md); the secret `url` is in the answer that creates or regenerates a
   feed and nowhere else. These endpoints are for a person signed in: **an API token of any
