@@ -68,7 +68,6 @@ class TestAdmin:
         "url",
         [
             "admin:accounts_user_changelist",
-            "admin:accounts_user_add",
             "admin:apitokens_apitoken_changelist",
         ],
     )

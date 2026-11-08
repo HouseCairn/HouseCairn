@@ -1405,9 +1405,9 @@ msgstr "La personne reçoit par e-mail un lien qui ne fonctionne qu'une fois. El
 
 #: templates/instance/overview.html:26
 msgid ""
-"This instance cannot send email, so it cannot invite by link. Create "
-"accounts in the administration site, or set up outgoing email."
-msgstr "Cette instance ne peut pas envoyer d'e-mail, donc elle ne peut pas inviter par lien. Créez les comptes dans le site d'administration, ou configurez l'e-mail sortant."
+"This instance cannot send email, so it cannot invite by link. Set up "
+"outgoing email to invite people."
+msgstr "Cette instance ne peut pas envoyer d'e-mail, donc elle ne peut pas inviter par lien. Configurez l'e-mail sortant pour inviter des personnes."
 
 #: templates/instance/overview.html:49
 msgid "Homes locked by a removed provider"
@@ -1433,8 +1433,8 @@ msgid "Accounts and settings"
 msgstr "Comptes et réglages"
 
 #: templates/instance/overview.html:62
-msgid "Create, deactivate, set the administrators (administration site)"
-msgstr "Créer, désactiver, définir les administrateurs (site d'administration)"
+msgid "Deactivate, delete, set the administrators (administration site)"
+msgstr "Désactiver, supprimer, définir les administrateurs (site d'administration)"
 
 #: templates/instance/overview.html:69
 msgid "Administration actions, invitations, accounts"

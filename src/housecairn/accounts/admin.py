@@ -1,43 +1,97 @@
 from typing import Any
 
+from django import forms
+from django.apps import apps
 from django.contrib import admin, messages
-from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
 from django.http import HttpRequest
-from django.utils.translation import gettext_lazy as _
 
 from housecairn.accounts import services
 from housecairn.accounts.models import InstanceSetup, User
 from housecairn.audit import services as audit
 
+# Models other apps put on the administration site. None of them stays: each one
+# either holds a secret or lets an administrator take an account over (docs/adr/0022).
+#   allauth.account    EmailAddress: add a verified address, then reset the password
+#   allauth.mfa        Authenticator: the TOTP secret and the recovery codes
+#   allauth.socialaccount  SocialAccount: link an identity to any account;
+#                      SocialApp: the provider's client secret, or another provider;
+#                      SocialToken: the provider's access and refresh tokens
+#   django_q           Schedule: names any function to run; Success, Failure, OrmQ:
+#                      keep the arguments and results of every task
+#   django.contrib.auth  Group: permissions that mean nothing here (an administrator
+#                      is_staff and is_superuser)
+# Sessions are not registered by Django and ApiToken is read-only (apitokens.admin).
+_UNREGISTERED = (
+    "account.EmailAddress",
+    "account.EmailConfirmation",
+    "mfa.Authenticator",
+    "socialaccount.SocialAccount",
+    "socialaccount.SocialApp",
+    "socialaccount.SocialToken",
+    "usersessions.UserSession",
+    "django_q.Schedule",
+    "django_q.Success",
+    "django_q.Failure",
+    "django_q.OrmQ",
+    "auth.Group",
+)
+for _label in _UNREGISTERED:
+    try:
+        _model = apps.get_model(_label)
+    except LookupError:
+        continue
+    if admin.site.is_registered(_model):
+        admin.site.unregister(_model)
+
+
+class AccountAdminForm(forms.ModelForm[User]):
+    class Meta:
+        model = User
+        fields = ("is_active", "is_staff", "is_superuser")
+
 
 @admin.register(User)
-class UserAdmin(DjangoUserAdmin[User]):
-    """Accounts: the administrator's job. Changes and deletions are audited, and a
-    deletion follows the same rules as erasure by the person (last owner, last
-    administrator)."""
+class UserAdmin(admin.ModelAdmin[User]):
+    """Accounts: what an administrator may do, and no more.
 
+    An administrator switches an account on or off, grants or withdraws the
+    administrator role, and deletes an account by the same rules as erasure by the
+    person (last owner, last administrator). Every change is audited. There is no
+    password, no address and no credential here, and no way to add an account (an
+    account is created by an instance invitation): being able to set either would
+    be taking the account over (docs/adr/0022).
+    """
+
+    form = AccountAdminForm
     ordering = ("email",)
     list_display = ("email", "first_name", "last_name", "is_staff", "is_active")
     search_fields = ("email", "first_name", "last_name")
-    fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        (
-            _("Permissions"),
-            {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")},
-        ),
-        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+    fields = (
+        "email",
+        "first_name",
+        "last_name",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "last_login",
+        "date_joined",
     )
-    add_fieldsets = ((None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),)
+    readonly_fields = ("email", "first_name", "last_name", "last_login", "date_joined")
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        return False
 
     def save_model(self, request: HttpRequest, obj: User, form: Any, change: bool) -> None:
         super().save_model(request, obj, form, change)
-        if change:
-            audit.record("admin.user_changed", actor=request.user, target=obj)
-        else:
-            audit.record("account.created", actor=request.user, target=obj, by="administrator")
+        if form.changed_data:
+            audit.record(
+                "admin.user_changed",
+                actor=request.user,
+                target=obj,
+                fields=sorted(form.changed_data),
+            )
 
     def delete_model(self, request: HttpRequest, obj: User) -> None:
         self._delete(request, obj)

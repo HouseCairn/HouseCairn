@@ -9,12 +9,15 @@ from collections.abc import Callable
 
 import pytest
 from django.contrib import admin
+from django.contrib.auth.hashers import check_password
 from django.test import Client
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from housecairn.accounts.models import User
+from housecairn.accounts.models import InstanceSetup, User
 from housecairn.apitokens import services as token_services
+from housecairn.apitokens.models import ApiToken
+from housecairn.audit.models import AuditEvent
 from housecairn.events.models import Event
 from housecairn.homes import services
 from housecairn.homes.models import Home, HomeOwnedModel, Invitation, Membership
@@ -98,6 +101,186 @@ class TestAdminSite:
         assert page.status_code == 200
         assert SECRET_NAME not in page.text
         assert "bob@example.com" in page.text
+
+
+class TestAccountsAreNotTakenOver:
+    """The administrator cannot take an account: no password, no address, no
+    credential, no identity, no session to set or read (docs/adr/0022)."""
+
+    def test_the_password_page_is_gone(self, client: Client, admin_user: User, bob: User) -> None:
+        # Django's own address (`<id>/password/`) used to show a form that sets any
+        # account's password. Now nothing answers it with a form; the unknown path
+        # leads back to the index, and the password stays what it was.
+        client.force_login(admin_user)
+        before = User.objects.get(pk=bob.pk).password
+        for url in (
+            f"/admin/accounts/user/{bob.pk}/password/",
+            f"/admin/accounts/user/{bob.pk}/password",
+        ):
+            page = client.get(url, follow=True)
+            assert 'name="password1"' not in page.text, url
+            posted = client.post(
+                url,
+                {"password1": "Hacked-Pass-123", "password2": "Hacked-Pass-123"},
+                follow=True,
+            )
+            assert 'name="password1"' not in posted.text, url
+        assert User.objects.get(pk=bob.pk).password == before
+        assert not check_password("Hacked-Pass-123", User.objects.get(pk=bob.pk).password)
+        with pytest.raises(Exception, match="not a valid view function"):
+            reverse("admin:accounts_user_password_change", args=[bob.pk])
+
+    def test_the_form_of_an_account_offers_no_password_and_no_link_to_one(
+        self, client: Client, admin_user: User, bob: User
+    ) -> None:
+        client.force_login(admin_user)
+        body = client.get(reverse("admin:accounts_user_change", args=[bob.pk])).text
+        assert 'name="password' not in body
+        assert f"{bob.pk}/password" not in body
+
+    def test_a_post_changes_neither_the_address_nor_the_password(
+        self, client: Client, admin_user: User, bob: User
+    ) -> None:
+        client.force_login(admin_user)
+        before = User.objects.get(pk=bob.pk)
+        response = client.post(
+            reverse("admin:accounts_user_change", args=[bob.pk]),
+            {
+                "email": "taken@example.com",
+                "password": "pbkdf2_sha256$1$x$y",
+                "first_name": "Renamed",
+                "is_active": "on",
+                "date_joined_0": "2026-01-01",
+                "date_joined_1": "00:00:00",
+            },
+        )
+        assert response.status_code in (200, 302)
+        after = User.objects.get(pk=bob.pk)
+        assert after.email == before.email
+        assert after.password == before.password
+        assert after.first_name == before.first_name
+        assert not check_password("Hacked-Pass-123", after.password)
+
+    def test_no_account_is_added_by_the_site(self, client: Client, admin_user: User) -> None:
+        client.force_login(admin_user)
+        url = reverse("admin:accounts_user_add")
+        assert client.get(url).status_code == 403
+        response = client.post(
+            url,
+            {
+                "email": "new@example.com",
+                "password1": "Hacked-Pass-123",
+                "password2": "Hacked-Pass-123",
+            },
+        )
+        assert response.status_code == 403
+        assert not User.objects.filter(email="new@example.com").exists()
+
+    def test_the_administrator_still_switches_an_account_and_it_is_audited(
+        self, client: Client, admin_user: User, bob: User
+    ) -> None:
+        client.force_login(admin_user)
+        url = reverse("admin:accounts_user_change", args=[bob.pk])
+        assert client.post(url, {"is_active": ""}).status_code == 302
+        bob.refresh_from_db()
+        assert bob.is_active is False
+        event = AuditEvent.objects.get(action="admin.user_changed")
+        assert event.actor == admin_user
+        assert event.target_user == bob
+        assert event.detail == {"fields": ["is_active"]}
+
+    def test_the_administrator_role_is_granted_and_withdrawn_with_an_audit_line(
+        self, client: Client, admin_user: User, bob: User
+    ) -> None:
+        client.force_login(admin_user)
+        url = reverse("admin:accounts_user_change", args=[bob.pk])
+        client.post(url, {"is_active": "on", "is_staff": "on", "is_superuser": "on"})
+        bob.refresh_from_db()
+        assert bob.is_staff
+        assert bob.is_superuser
+        client.post(url, {"is_active": "on"})
+        bob.refresh_from_db()
+        assert not bob.is_staff
+        assert not bob.is_superuser
+        details = [e.detail for e in AuditEvent.objects.filter(action="admin.user_changed")]
+        assert details == [
+            {"fields": ["is_staff", "is_superuser"]},
+            {"fields": ["is_staff", "is_superuser"]},
+        ]
+
+    def test_an_unchanged_form_writes_no_audit_line(
+        self, client: Client, admin_user: User, bob: User
+    ) -> None:
+        client.force_login(admin_user)
+        client.post(reverse("admin:accounts_user_change", args=[bob.pk]), {"is_active": "on"})
+        assert not AuditEvent.objects.filter(action="admin.user_changed").exists()
+
+    def test_the_only_models_on_the_site_are_the_three_that_hold_no_credential(self) -> None:
+        # A model added later (by a new app or an update of a dependency) fails here
+        # until someone decides it takes no account and holds no secret.
+        assert {m._meta.label for m in admin.site._registry} == {
+            "accounts.User",
+            "accounts.InstanceSetup",
+            "apitokens.ApiToken",
+        }
+
+    @pytest.mark.parametrize(
+        "label",
+        [
+            "account.EmailAddress",
+            "mfa.Authenticator",
+            "socialaccount.SocialAccount",
+            "socialaccount.SocialApp",
+            "socialaccount.SocialToken",
+            "django_q.Schedule",
+            "django_q.Success",
+            "django_q.Failure",
+            "django_q.OrmQ",
+            "auth.Group",
+            "sessions.Session",
+        ],
+    )
+    def test_nothing_that_gives_an_account_or_a_secret_is_on_the_site(
+        self, client: Client, admin_user: User, label: str
+    ) -> None:
+        from django.apps import apps
+
+        model = apps.get_model(label)
+        assert not admin.site.is_registered(model)
+        client.force_login(admin_user)
+        base = f"admin:{model._meta.app_label}_{model._meta.model_name}"
+        for kind in ("changelist", "add"):
+            with pytest.raises(Exception, match="not a valid view function"):
+                reverse(f"{base}_{kind}")
+        assert (
+            client.get(f"/admin/{model._meta.app_label}/{model._meta.model_name}/").status_code
+            == 404
+        )
+
+    def test_a_token_and_the_setup_record_stay_unwritable(
+        self, client: Client, admin_user: User, bob: User, secret_home: Home
+    ) -> None:
+        token, raw = token_services.issue_token(
+            bob, name="ha", scopes=["events"], homes=[secret_home]
+        )
+        client.force_login(admin_user)
+        page = client.get(reverse("admin:apitokens_apitoken_change", args=[token.id]))
+        assert raw not in page.text
+        assert token.digest not in page.text
+        client.post(reverse("admin:apitokens_apitoken_change", args=[token.id]), {"name": "x"})
+        assert ApiToken.objects.get(pk=token.pk).name == "ha"
+        assert client.get(reverse("admin:apitokens_apitoken_add")).status_code == 403
+        InstanceSetup.objects.all().delete()
+        assert client.get(reverse("admin:accounts_instancesetup_add")).status_code == 403
+
+    def test_an_administrator_still_opens_no_home_through_the_site(
+        self, client: Client, admin_user: User, secret_home: Home
+    ) -> None:
+        client.force_login(admin_user)
+        for model in ("home", "membership", "invitation", "event"):
+            assert client.get(f"/admin/homes/{model}/").status_code == 404
+            assert client.get(f"/admin/homes/{model}/{secret_home.pk}/change/").status_code == 404
+        assert client.get(f"/admin/events/event/{secret_home.pk}/change/").status_code == 404
 
 
 class TestWebAndApi:

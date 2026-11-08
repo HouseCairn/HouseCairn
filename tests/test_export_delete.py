@@ -410,13 +410,6 @@ class TestEraseAccount:
         user = make_user("someone@example.com")
         client.post(
             reverse("admin:accounts_user_change", args=[user.pk]),
-            {
-                "email": "someone@example.com",
-                "first_name": "S",
-                "last_name": "O",
-                "is_active": "on",
-                "date_joined_0": "2026-01-01",
-                "date_joined_1": "00:00:00",
-            },
+            {"is_staff": "on"},
         )
         assert AuditEvent.objects.filter(action="admin.user_changed", target_user=user).exists()

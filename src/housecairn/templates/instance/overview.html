@@ -23,7 +23,7 @@
       <p class="small">{% translate "The person receives a link by email, which works once. They create their account and then their own home." %}</p>
     </form>
   {% else %}
-    <p class="small card">{% translate "This instance cannot send email, so it cannot invite by link. Create accounts in the administration site, or set up outgoing email." %}</p>
+    <p class="small card">{% translate "This instance cannot send email, so it cannot invite by link. Set up outgoing email to invite people." %}</p>
   {% endif %}
   {% if invitations %}
     <h2>{% translate "Pending invitations" %}</h2>
@@ -59,7 +59,7 @@
     <a class="row" href="{% url 'admin:accounts_user_changelist' %}">
       <span class="row-body">
         <span class="row-title">{% translate "Accounts" %}</span>
-        <span class="row-text">{% translate "Create, deactivate, set the administrators (administration site)" %}</span>
+        <span class="row-text">{% translate "Deactivate, delete, set the administrators (administration site)" %}</span>
       </span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>

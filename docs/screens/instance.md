@@ -13,7 +13,7 @@ invitations, never a home, a member of a home, a task or a document (see
 - **Invite someone to the instance**: an email address; the person receives a
   link that works once, creates their account and then their own home. The
   link goes by email only, so the form is hidden when the instance cannot send
-  email: create the account in the administration site instead. **Send again**
+  email. **Send again**
   makes a new link and a new expiry (the previous link stops working) and
   **Revoke** cancels it. Inviting answers the same whether or not the address
   already has an account.
@@ -21,8 +21,9 @@ invitations, never a home, a member of a home, a task or a document (see
   sign-in provider that some homes require, nobody can open those homes.
   **Remove these requirements** clears the rule of every such home at once,
   without showing which they are.
-- **Accounts** opens the administration site, where accounts are created,
-  deactivated, deleted and made administrators. Deleting an account follows
+- **Accounts** opens the administration site, where accounts are deactivated,
+  deleted and made administrators (the address of an account and its password
+  cannot be changed there, and no account is created there). Deleting an account follows
   the rules of erasure: the only administrator, and the only owner of a home
   with other members, cannot be deleted.
 - **Audit log**: administration actions, invitations to the instance, accounts

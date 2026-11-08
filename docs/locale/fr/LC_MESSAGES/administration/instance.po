@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 00:04+0000\n"
+"POT-Creation-Date: 2026-11-08 01:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -28,17 +28,17 @@ msgstr "L'administrateur fait fonctionner l'instance : comptes, invitations, fou
 msgid "Who is an administrator"
 msgstr "Qui est administrateur"
 
-msgid "An active account that is both *staff* and *superuser*. The first account of a new instance created through single sign-on is one (see [Single sign-on](oidc.md)); `manage.py createsuperuser` makes another; the administration site (`/admin/`) sets the two boxes on an account. Being an administrator adds no home to the account: it sees the homes it belongs to, like anyone."
-msgstr "Un compte actif qui est à la fois *staff* et *superuser*. Le premier compte d'une nouvelle instance créé par authentification unique en est un (voir [Authentification unique](oidc.md)) ; `manage.py createsuperuser` en crée un autre ; le site d'administration (`/admin/`) coche les deux cases sur un compte. Être administrateur n'ajoute aucun logement au compte : il voit les logements dont il fait partie, comme tout le monde."
+msgid "An active account that is both *staff* and *superuser*. The first account of a new instance created through single sign-on is one (see [Single sign-on](oidc.md)); `manage.py createsuperuser` makes another; the administration site (`/admin/`) grants or withdraws the role on an existing account (both boxes, audited). Being an administrator adds no home to the account: it sees the homes it belongs to, like anyone."
+msgstr "Un compte actif qui est à la fois *staff* et *superuser*. Le premier compte d'une nouvelle instance créé par authentification unique en est un (voir [Authentification unique](oidc.md)) ; `manage.py createsuperuser` en crée un autre ; le site d'administration (`/admin/`) accorde ou retire le rôle sur un compte existant (les deux cases, avec audit). Être administrateur n'ajoute aucun logement au compte : il voit les logements dont il fait partie, comme tout le monde."
 
 msgid "What the administrator can do"
 msgstr "Ce que l'administrateur peut faire"
 
-msgid "**Accounts**, in the administration site: create, deactivate, delete, administrators. Changes and deletions are written to the audit log of the instance."
-msgstr "Les **comptes**, dans le site d'administration : créer, désactiver, supprimer, nommer des administrateurs. Les modifications et suppressions sont inscrites au journal d'audit de l'instance."
+msgid "**Accounts**, in the administration site: switch an account on or off, grant or withdraw the administrator role, delete an account. Changes and deletions are written to the audit log of the instance. An account is created by an invitation to the instance (or by sign-up, or single sign-on, when the instance allows it), never from the administration site."
+msgstr "Les **comptes**, dans le site d'administration : activer ou désactiver un compte, accorder ou retirer le rôle d'administrateur, supprimer un compte. Les modifications et suppressions sont inscrites au journal d'audit de l'instance. Un compte se crée par une invitation à l'instance (ou par l'inscription, ou l'authentification unique, quand l'instance les permet), jamais depuis le site d'administration."
 
-msgid "**Invitations to the instance**, at `/instance/` and in the API (`/api/v1/instance/invitations/`): an address receives a link by email, creates an account and then their own home. They need outgoing email; without it, create the account in the administration site. See [Instance administration](../screens/instance.md)."
-msgstr "Les **invitations à l'instance**, sur `/instance/` et dans l'API (`/api/v1/instance/invitations/`) : une adresse reçoit un lien par e-mail, crée un compte puis son propre logement. Elles nécessitent l'envoi d'e-mails ; sans lui, créez le compte dans le site d'administration. Voir [Administration de l'instance](../screens/instance.md)."
+msgid "**Invitations to the instance**, at `/instance/` and in the API (`/api/v1/instance/invitations/`): an address receives a link by email, creates an account and then their own home. They need outgoing email. See [Instance administration](../screens/instance.md)."
+msgstr "Les **invitations à l'instance**, sur `/instance/` et dans l'API (`/api/v1/instance/invitations/`) : une adresse reçoit un lien par e-mail, crée un compte puis son propre logement. Elles nécessitent l'envoi d'e-mails. Voir [Administration de l'instance](../screens/instance.md)."
 
 msgid "**Providers and settings**: environment variables (see [Environment variables](variables.md)). Nothing is edited in the interface."
 msgstr "Les **fournisseurs et réglages** : variables d'environnement (voir [Variables d'environnement](variables.md)). Rien ne se modifie dans l'interface."
@@ -61,9 +61,11 @@ msgstr "La page d'un compte dans le site d'administration ne liste pas ses appar
 msgid "The administrator deletes an account by the same rules as the person: the only administrator, and the only owner of a home with other members, cannot be erased."
 msgstr "L'administrateur supprime un compte selon les mêmes règles que la personne : l'unique administrateur, et l'unique propriétaire d'un logement qui a d'autres membres, ne peuvent pas être effacés."
 
+msgid "The administrator cannot take over an account. The administration site has no page to set a password, shows the address of an account read-only, cannot add an account, and registers no model that holds a credential: email addresses, linked identities and provider keys, authenticator secrets and recovery codes, scheduled and finished background tasks. API tokens are listed and revoked, never read. A person who lost their access recovers it with the *Forgot your password?* link, which they trigger and which goes to their own address; the administrator can neither do it for them nor read the link. Without outgoing email there is no such link, and the operator of the machine sets a new password with `manage.py changepassword`."
+msgstr "L'administrateur ne peut pas prendre un compte. Le site d'administration n'a aucune page pour fixer un mot de passe, affiche l'adresse d'un compte en lecture seule, ne peut pas ajouter de compte et n'enregistre aucun modèle qui détient un identifiant : adresses e-mail, identités liées et clés de fournisseur, secrets d'authentification et codes de récupération, tâches de fond planifiées et terminées. Les jetons d'API sont listés et révoqués, jamais lus. Une personne qui a perdu son accès le récupère avec le lien *Mot de passe oublié ?*, qu'elle déclenche et qui part vers sa propre adresse ; l'administrateur ne peut ni le faire à sa place ni lire le lien. Sans e-mail sortant, il n'y a pas de tel lien, et l'exploitant de la machine définit un nouveau mot de passe avec `manage.py changepassword`."
+
 msgid "What this does not protect against"
 msgstr "Ce contre quoi cela ne protège pas"
 
-msgid "Whoever operates the machine reads the database and its backups: the guarantee is about the application, not about the host. Say so to the people who sign up (privacy policy, backups, who has access to the server)."
-msgstr "Qui exploite la machine lit la base de données et ses sauvegardes : la garantie porte sur l'application, pas sur l'hôte. Dites-le aux personnes qui s'inscrivent (politique de confidentialité, sauvegardes, qui a accès au serveur)."
-
+msgid "Whoever operates the machine reads the database and its backups, and can run `manage.py` (`changepassword`, `shell`): the guarantee is about the application, not about the host. Say so to the people who sign up (privacy policy, backups, who has access to the server)."
+msgstr "Qui exploite la machine lit la base de données et ses sauvegardes, et peut lancer `manage.py` (`changepassword`, `shell`) : la garantie porte sur l'application, pas sur l'hôte. Dites-le aux personnes qui s'inscrivent (politique de confidentialité, sauvegardes, qui a accès au serveur)."

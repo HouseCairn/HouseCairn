@@ -37,8 +37,8 @@ starts with `HouseCairn:`.
 
 Without `EMAIL_HOST`, or with a console or dummy backend, nothing is delivered.
 What depends on it is hidden or falls back: the *Forgot your password?* link
-and its pages (404), the page of email addresses, invitations to the instance
-(create accounts in the administration site), security alerts (not recorded
+and its pages (404), the page of email addresses, invitations to the instance,
+security alerts (not recorded
 either), and open sign-up (refused at start-up). An invitation to a home shows
 its link once to the owner, who passes it on; such a link cannot create an
 account.

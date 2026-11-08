@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 00:04+0000\n"
+"POT-Creation-Date: 2026-11-08 01:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -31,15 +31,14 @@ msgstr "Vous faites fonctionner l'instance ici et ne lisez aucun logement : la p
 msgid "**Overview**: the number of accounts, whether open sign-up is on, whether outgoing email is configured and the sign-in providers the instance offers."
 msgstr "**Vue d'ensemble** : le nombre de comptes, si l'inscription libre est activée, si l'envoi d'e-mails est configuré et les fournisseurs de connexion que propose l'instance."
 
-msgid "**Invite someone to the instance**: an email address; the person receives a link that works once, creates their account and then their own home. The link goes by email only, so the form is hidden when the instance cannot send email: create the account in the administration site instead. **Send again** makes a new link and a new expiry (the previous link stops working) and **Revoke** cancels it. Inviting answers the same whether or not the address already has an account."
-msgstr "**Inviter quelqu'un à l'instance** : une adresse e-mail ; la personne reçoit un lien qui ne sert qu'une fois, crée son compte puis son propre logement. Le lien ne part que par e-mail, donc le formulaire est masqué quand l'instance ne peut pas envoyer d'e-mails : créez plutôt le compte dans le site d'administration. **Renvoyer** crée un nouveau lien et une nouvelle échéance (le lien précédent cesse de fonctionner) et **Révoquer** l'annule. Inviter répond de la même façon que l'adresse ait déjà un compte ou non."
+msgid "**Invite someone to the instance**: an email address; the person receives a link that works once, creates their account and then their own home. The link goes by email only, so the form is hidden when the instance cannot send email. **Send again** makes a new link and a new expiry (the previous link stops working) and **Revoke** cancels it. Inviting answers the same whether or not the address already has an account."
+msgstr "**Inviter quelqu'un à l'instance** : une adresse e-mail ; la personne reçoit un lien qui ne sert qu'une fois, crée son compte puis son propre logement. Le lien ne part que par e-mail, donc le formulaire est masqué quand l'instance ne peut pas envoyer d'e-mails. **Renvoyer** crée un nouveau lien et une nouvelle échéance (le lien précédent cesse de fonctionner) et **Révoquer** l'annule. Inviter répond de la même façon que l'adresse ait déjà un compte ou non."
 
 msgid "**Homes locked by a removed provider**: when the instance stops offering a sign-in provider that some homes require, nobody can open those homes. **Remove these requirements** clears the rule of every such home at once, without showing which they are."
 msgstr "**Logements verrouillés par un fournisseur retiré** : quand l'instance cesse de proposer un fournisseur de connexion que certains logements exigent, personne ne peut ouvrir ces logements. **Retirer ces exigences** efface la règle de tous ces logements d'un coup, sans montrer lesquels ils sont."
 
-msgid "**Accounts** opens the administration site, where accounts are created, deactivated, deleted and made administrators. Deleting an account follows the rules of erasure: the only administrator, and the only owner of a home with other members, cannot be deleted."
-msgstr "**Comptes** ouvre le site d'administration, où l'on crée, désactive et supprime des comptes et où l'on nomme des administrateurs. La suppression d'un compte suit les règles d'effacement : l'unique administrateur, et l'unique propriétaire d'un logement qui a d'autres membres, ne peuvent pas être supprimés."
+msgid "**Accounts** opens the administration site, where accounts are deactivated, deleted and made administrators (the address of an account and its password cannot be changed there, and no account is created there). Deleting an account follows the rules of erasure: the only administrator, and the only owner of a home with other members, cannot be deleted."
+msgstr "**Comptes** ouvre le site d'administration, où l'on désactive et supprime des comptes et où l'on nomme des administrateurs (l'adresse d'un compte et son mot de passe ne s'y modifient pas, et aucun compte n'y est créé). La suppression d'un compte suit les règles d'effacement : l'unique administrateur, et l'unique propriétaire d'un logement qui a d'autres membres, ne peuvent pas être supprimés."
 
 msgid "**Audit log**: administration actions, invitations to the instance, accounts created or erased, homes unlocked, homes deleted (without the name), each with who did it and when. It holds nothing about the inside of a home."
 msgstr "**Journal d'audit** : actions d'administration, invitations à l'instance, comptes créés ou effacés, logements déverrouillés, logements supprimés (sans le nom), chacune avec qui l'a faite et quand. Il ne contient rien sur l'intérieur d'un logement."
-
