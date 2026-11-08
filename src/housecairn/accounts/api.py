@@ -24,6 +24,21 @@ class SignedInPerson(permissions.BasePermission):
         return bool(request.user.is_authenticated) and not isinstance(request.auth, ApiToken)
 
 
+class PersonOnlyToChange:
+    """Mixin: reading follows the view's own permissions; any other method is for a person.
+
+    The rule for everything under `me/` that belongs to the person (account, display
+    preferences, notification channels and reminders): an API token is tied to homes
+    and may read where it could, but changes nothing here.
+    """
+
+    def get_permissions(self) -> list[Any]:
+        found: list[Any] = list(super().get_permissions())  # type: ignore[misc]
+        if self.request.method not in permissions.SAFE_METHODS:  # type: ignore[attr-defined]
+            found.append(SignedInPerson())
+        return found
+
+
 class MeSerializer(serializers.ModelSerializer[User]):
     display_name = serializers.CharField(
         max_length=names.DISPLAY_NAME_MAX_LENGTH,
@@ -45,18 +60,12 @@ class MeSerializer(serializers.ModelSerializer[User]):
         return names.person_name(user)
 
 
-class MeView(APIView):
+class MeView(PersonOnlyToChange, APIView):
     """The signed-in person: who they are, and how they are named.
 
     An API token may read it. Changing it is for the person signed in: the name is seen in
     every home of the person, which is wider than the one home a token can be tied to.
     """
-
-    def get_permissions(self) -> list[Any]:
-        found = list(super().get_permissions())
-        if self.request.method not in permissions.SAFE_METHODS:
-            found.append(SignedInPerson())
-        return found
 
     @extend_schema(responses=MeSerializer)
     def get(self, request: Request) -> Response:
