@@ -1,0 +1,148 @@
+/* Tasks layer (static/css/app.css): task rows with their Done button, the task sheet,
+   the undo banner and the fields grouped under headings (docs/adr/0031). Tokens
+   only, no inline style. */
+
+.task-list {
+  display: block;
+  margin: 0 0 var(--hc-space-3);
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  background: var(--hc-color-surface);
+  border: 1px solid var(--hc-color-border);
+  border-radius: var(--hc-radius-lg);
+}
+
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: var(--hc-space-2);
+  padding-right: var(--hc-space-3);
+  border-top: 1px solid var(--hc-color-border);
+}
+
+.task-row:first-child {
+  border-top: 0;
+}
+
+.task-row > .row {
+  flex: 1;
+  min-width: 0;
+  border-top: 0;
+}
+
+.task-row > form {
+  margin: 0;
+  flex: none;
+}
+
+.task-row-overdue {
+  background: var(--hc-color-danger-soft);
+}
+
+.task-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hc-space-2);
+  margin-bottom: var(--hc-space-2);
+}
+
+.task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hc-space-2);
+  margin-top: var(--hc-space-4);
+}
+
+.task-actions form {
+  margin: 0;
+}
+
+.undo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hc-space-3);
+  margin-bottom: var(--hc-space-3);
+  padding: var(--hc-space-2) var(--hc-space-4);
+  background: var(--hc-color-sage-soft);
+  border: 1px solid var(--hc-color-border);
+  border-radius: var(--hc-radius-md);
+}
+
+.undo-banner form {
+  margin: 0;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--hc-space-2);
+  margin-bottom: var(--hc-space-3);
+}
+
+.filter-row select {
+  width: auto;
+  min-width: 0;
+}
+
+.form-section {
+  margin-bottom: var(--hc-space-3);
+  border: 1px solid var(--hc-color-border);
+  border-radius: var(--hc-radius-md);
+  background: var(--hc-color-surface);
+}
+
+.form-section > summary {
+  min-height: var(--hc-layout-touch-target);
+  padding: var(--hc-space-3) var(--hc-space-4);
+  font-weight: var(--hc-font-weight-bold);
+  cursor: pointer;
+}
+
+.form-section > div {
+  padding: 0 var(--hc-space-4) var(--hc-space-2);
+}
+
+.procedure {
+  max-width: 40rem;
+  overflow-wrap: anywhere;
+}
+
+.procedure h1,
+.procedure h2,
+.procedure h3 {
+  font-size: var(--hc-font-size-base);
+}
+
+.procedure pre {
+  overflow-x: auto;
+}
+
+.history-note {
+  display: block;
+  font-size: var(--hc-font-size-sm);
+  color: var(--hc-color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.file-list {
+  display: block;
+  margin: 0 0 var(--hc-space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.file-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hc-space-3);
+  min-height: var(--hc-layout-touch-target);
+  overflow-wrap: anywhere;
+}
+
+.file-list form {
+  margin: 0;
+}

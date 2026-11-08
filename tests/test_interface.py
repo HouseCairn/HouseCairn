@@ -24,7 +24,14 @@ SMTP_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 CONSOLE_BACKEND = "django.core.mail.backends.console.EmailBackend"
 LOGO = "img/brand/housecairn-logo.svg"
 # Layers of the interface's styles, imported by static/css/app.css in this order.
-STYLE_LAYERS = ("base.css", "shell.css", "components.css", "rooms.css", "utilities.css")
+STYLE_LAYERS = (
+    "base.css",
+    "shell.css",
+    "components.css",
+    "rooms.css",
+    "tasks.css",
+    "utilities.css",
+)
 
 
 @pytest.fixture(autouse=True)

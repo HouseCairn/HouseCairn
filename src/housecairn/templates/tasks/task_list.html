@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load i18n tasks_extras %}
+{% block head_title %}{% translate "Tasks" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  <h1>{% translate "Tasks" %}</h1>
+  {% include "tasks/_undo.html" %}
+  <form method="get" class="filter-row" role="search">
+    <label class="visually-hidden" for="filter-status">{% translate "Show" %}</label>
+    <select id="filter-status" name="status">
+      <option value="open"{% if status == "open" %} selected{% endif %}>{% translate "To do" %}</option>
+      <option value="done"{% if status == "done" %} selected{% endif %}>{% translate "Done" context "task" %}</option>
+    </select>
+    <label class="visually-hidden" for="filter-room">{% translate "Room" %}</label>
+    <select id="filter-room" name="room">
+      <option value="">{% translate "All rooms" %}</option>
+      {% for candidate in rooms %}<option value="{{ candidate.id }}"{% if room and room.id == candidate.id %} selected{% endif %}>{{ candidate.name }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="button-secondary button-small">{% translate "Filter" %}</button>
+  </form>
+  {% if page %}
+    <ul class="task-list">
+      {% for occurrence in page %}
+        <li class="task-row{% if occurrence|late_days:today %} task-row-overdue{% endif %}">
+          <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
+            <span class="row-body">
+              <span class="row-title">{{ occurrence.task.title }}</span>
+              <span class="row-text">
+                {% if occurrence.task.room %}{{ occurrence.task.room.name }}{% if occurrence.task.item %} · {{ occurrence.task.item.name }}{% endif %}{% elif occurrence.task.item %}{{ occurrence.task.item.name }}{% endif %}
+              </span>
+              {% if status == "open" %}{% include "tasks/_due.html" %}{% else %}
+                <span class="pill {% if occurrence.status == 'done' %}pill-success{% else %}pill-ghost{% endif %}">{{ occurrence.get_status_display }}{% if occurrence.completed_on %} · {{ occurrence.completed_on|date:"SHORT_DATE_FORMAT" }}{% endif %}</span>
+              {% endif %}
+            </span>
+          </a>
+          {% if can_write and status == "open" %}
+            <form method="post" action="{% url 'tasks:complete' home_id=home.id task_id=occurrence.task_id occurrence_id=occurrence.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button type="submit" class="button-small">{% translate "Done" context "task" %}<span class="visually-hidden"> {{ occurrence.task.title }}</span></button>
+            </form>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+    {% if page.paginator.num_pages > 1 %}
+      <nav class="button-row" aria-label="{% translate 'Pages' %}">
+        {% if page.has_previous %}<a class="button button-secondary button-small" href="?status={{ status }}{% if room %}&amp;room={{ room.id }}{% endif %}{% if show_hidden %}&amp;hidden=1{% endif %}&amp;page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+        <span class="small">{% blocktranslate with number=page.number total=page.paginator.num_pages %}Page {{ number }} of {{ total }}{% endblocktranslate %}</span>
+        {% if page.has_next %}<a class="button button-secondary button-small" href="?status={{ status }}{% if room %}&amp;room={{ room.id }}{% endif %}{% if show_hidden %}&amp;hidden=1{% endif %}&amp;page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% elif status == "open" %}
+    <p class="empty">{% translate "Nothing to do. Add a task to start." %}</p>
+  {% else %}
+    <p class="empty">{% translate "Nothing done yet." %}</p>
+  {% endif %}
+  {% if hidden_count %}
+    <p class="small">{% blocktranslate count counter=hidden_count %}{{ counter }} task is hidden until its date gets closer.{% plural %}{{ counter }} tasks are hidden until their date gets closer.{% endblocktranslate %} <a href="{{ show_hidden_url }}">{% translate "Show them" %}</a></p>
+  {% endif %}
+  {% if can_write %}
+    <a class="button button-block" href="{% url 'tasks:create' home_id=home.id %}{% if room %}?room={{ room.id }}{% endif %}">{% translate "Add a task" %}</a>
+  {% endif %}
+{% endblock content %}

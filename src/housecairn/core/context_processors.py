@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from django.urls import reverse
 
 # Sections of the signed-in navigation, in display order.
-HOME, HOMES, ROOMS, MORE = "home", "homes", "rooms", "more"
+HOME, HOMES, ROOMS, TASKS, MORE = "home", "homes", "rooms", "tasks", "more"
 
 
 def nav_section(request: HttpRequest) -> str:
@@ -16,6 +16,8 @@ def nav_section(request: HttpRequest) -> str:
         return HOMES
     if match.namespace == "rooms" or match.view_name == "rooms":
         return ROOMS
+    if match.namespace == "tasks" or match.view_name == "tasks":
+        return TASKS
     return MORE
 
 
@@ -28,6 +30,19 @@ def rooms_url(request: HttpRequest) -> str:
     return reverse("rooms")
 
 
+def tasks_url(request: HttpRequest) -> str:
+    """Address of the Tasks entry: the tasks of the home being viewed, else the entry page."""
+    match = getattr(request, "resolver_match", None)
+    home_id = match.kwargs.get("home_id") if match else None
+    if home_id:
+        return reverse("tasks:list", kwargs={"home_id": home_id})
+    return reverse("tasks")
+
+
 def shell(request: HttpRequest) -> dict[str, str]:
-    """Context of the application shell: the current navigation entry and its Rooms address."""
-    return {"nav_section": nav_section(request), "rooms_url": rooms_url(request)}
+    """Context of the application shell: the current navigation entry and its entry addresses."""
+    return {
+        "nav_section": nav_section(request),
+        "rooms_url": rooms_url(request),
+        "tasks_url": tasks_url(request),
+    }

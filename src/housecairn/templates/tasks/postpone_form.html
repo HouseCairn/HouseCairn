@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Postpone" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'tasks:detail' home_id=home.id task_id=task.id %}">{% include "components/icon.html" with name="chevron" %}{{ task.title }}</a>
+  <h1>{% translate "Postpone" %}</h1>
+  <form method="post" class="card">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button-block">{% translate "Postpone" %}</button>
+  </form>
+{% endblock content %}

@@ -1,0 +1,12 @@
+{% load i18n tasks_extras %}{# The state of an open occurrence in a pill: late, today, soon, or the date. `occurrence`, `today`. #}
+{% with late=occurrence|late_days:today %}
+  {% if late %}
+    <span class="pill pill-danger">{% blocktranslate count counter=late %}{{ counter }} day late{% plural %}{{ counter }} days late{% endblocktranslate %}</span>
+  {% elif occurrence.due_on == today %}
+    <span class="pill pill-warning">{% translate "Today" %}</span>
+  {% elif occurrence.due_on %}
+    <span class="pill pill-sand">{{ occurrence.due_on|date:"SHORT_DATE_FORMAT" }}</span>
+  {% else %}
+    <span class="pill pill-ghost">{% translate "No date" %}</span>
+  {% endif %}
+{% endwith %}

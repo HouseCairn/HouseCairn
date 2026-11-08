@@ -1,7 +1,7 @@
 # Screen reference
 
 Each screen of HouseCairn has a help link, **?**, in its top bar, which opens
-its page here. The screens to plan maintenance and projects do not exist yet;
+its page here. The screens to plan projects and the budget do not exist yet;
 this reference describes the screens that exist today and grows with each
 feature.
 
@@ -29,6 +29,9 @@ item
 item-form
 photo-form
 search
+tasks
+task
+task-form
 more
 about
 ```

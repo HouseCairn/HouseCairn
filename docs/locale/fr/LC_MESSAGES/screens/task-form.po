@@ -1,0 +1,65 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 02:12+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Task form"
+msgstr "Formulaire de tâche"
+
+msgid "The form to add a task, at `/h/<home id>/tasks/new/`, and to edit it, at `/h/<home id>/tasks/<task id>/edit/`. Only the **title** is required. From a room or an item, **Add a task** fills the room and the item in."
+msgstr "Le formulaire pour ajouter une tâche, sur `/h/<home id>/tasks/new/`, et pour la modifier, sur `/h/<home id>/tasks/<task id>/edit/`. Seul le **titre** est requis. Depuis une pièce ou un élément, **Ajouter une tâche** renseigne déjà la pièce et l'élément."
+
+msgid "The first block holds the title, the room, the item (listed with its room), the due date and, below, four sections that open when you need them:"
+msgstr "Le premier bloc contient le titre, la pièce, l'élément (listé avec sa pièce), l'échéance et, en dessous, quatre sections qui s'ouvrent au besoin :"
+
+msgid "Section"
+msgstr "Section"
+
+msgid "Content"
+msgstr "Contenu"
+
+msgid "Repeat"
+msgstr "Répétition"
+
+msgid "**Once**, **Fixed date** (every N days, weeks, months or years from the first date) or **After the last time** (N units after the day it was done). A season (first and last month; November to March is fine) outside of which nothing falls, and the number of days before the date from which the task shows."
+msgstr "**Une fois**, **Date fixe** (tous les N jours, semaines, mois ou ans à partir de la première date) ou **Après la dernière fois** (N unités après le jour où elle a été faite). Une saison (premier et dernier mois ; de novembre à mars convient) hors de laquelle rien ne tombe, et le nombre de jours avant la date à partir duquel la tâche s'affiche."
+
+msgid "Who"
+msgstr "Qui"
+
+msgid "Priority, the person in charge (a member of the home) and the contractor: pick one of the home or type a new name and trade."
+msgstr "Priorité, la personne responsable (un membre du logement) et l'intervenant : choisissez-en un du logement ou saisissez un nouveau nom et un métier."
+
+msgid "Time and budget"
+msgstr "Durée et budget"
+
+msgid "Estimated duration in minutes, labour and material budgets, in the currency of the home."
+msgstr "Durée estimée en minutes, budgets main d'œuvre et matériel, dans la devise du logement."
+
+msgid "How to do it"
+msgstr "Comment faire"
+
+msgid "The procedure in Markdown and notes."
+msgstr "Le mode opératoire en Markdown et des notes."
+
+msgid "Editing the date moves the occurrence that is open. Deleting the task, at the bottom of the edit form, asks for confirmation and removes the task, its history and its files from the screens."
+msgstr "Modifier la date déplace l'occurrence qui est ouverte. Supprimer la tâche, en bas du formulaire de modification, demande une confirmation et retire la tâche, son historique et ses fichiers des écrans."
+
+#~ msgid "When you add files together with the task and one of them is refused, the task is created anyway and a message names the file and the reason."
+#~ msgstr "Quand vous ajoutez des fichiers en même temps que la tâche et que l'un d'eux est refusé, la tâche est créée quand même et un message nomme le fichier et la raison."

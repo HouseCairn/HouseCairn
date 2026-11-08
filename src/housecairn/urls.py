@@ -9,6 +9,7 @@ from housecairn.core import views as core_views
 from housecairn.homes import views as home_views
 from housecairn.instance import views as instance_views
 from housecairn.rooms import views as room_views
+from housecairn.tasks import views as task_views
 
 urlpatterns = [
     path("", core_views.IndexView.as_view(), name="index"),
@@ -20,6 +21,9 @@ urlpatterns = [
     # Rooms, items and photos of a home (docs/adr/0029); /rooms/ is the navigation entry.
     path("h/<uuid:home_id>/", include("housecairn.rooms.urls")),
     path("rooms/", room_views.EntryView.as_view(), name="rooms"),
+    # Tasks of a home (docs/adr/0031); /tasks/ is the navigation entry.
+    path("h/<uuid:home_id>/", include("housecairn.tasks.urls")),
+    path("tasks/", task_views.EntryView.as_view(), name="tasks"),
     # Invitation links, opened signed in or not (docs/adr/0020).
     path("invitations/<str:token>/", home_views.InvitationView.as_view(), name="invitation"),
     # Instance invitation links: an account, without a home (docs/adr/0022).
