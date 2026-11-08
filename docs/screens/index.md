@@ -32,6 +32,10 @@ search
 tasks
 task
 task-form
+stock
+stock-item
+stock-item-form
+supplier-form
 task-files
 more
 about

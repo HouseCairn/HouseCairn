@@ -1,0 +1,19 @@
+# Add or edit a stock item
+
+The form to add an item to the [stock](stock.md), at `/h/<home id>/stock/new/`, and
+to edit one, at `/h/<home id>/stock/<item id>/edit/`.
+
+| Field | Content |
+| --- | --- |
+| Name | Required, 120 characters at most. |
+| Manufacturer reference, dimensions | Free text, 120 characters at most each. |
+| Storage location | Where it is kept, for example "garage, second shelf". |
+| Unit | For example pieces, litres, metres. |
+| Threshold | The item is flagged when the stock falls to this quantity or below. |
+| Compatible items | The equipment or surfaces of the home this fits; only items of this home can be chosen. |
+| Photo of the label | JPEG, PNG or WebP, treated like the [photos of a room](photo-form.md): the content is checked, the location and the other information stored in the file are removed, a large picture is reduced. The default limit is 10 MB. |
+| Notes | Free text, 4,000 characters at most. |
+
+The quantity is not a field: the stock starts at zero and changes with the
+movements, which you record on the [page of the item](stock-item.md). Only the name
+is required.

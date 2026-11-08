@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 12:11+0000\n"
+"POT-Creation-Date: 2026-11-08 13:28+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -142,7 +142,8 @@ msgstr "Écriture"
 msgid "Post events"
 msgstr "Envoi d'événements"
 
-#: apitokens/models.py homes/models.py rooms/models.py tasks/models.py
+#: apitokens/models.py homes/models.py rooms/models.py stock/models.py
+#: tasks/models.py
 msgid "name"
 msgstr "nom"
 
@@ -307,7 +308,7 @@ msgstr "Accueil"
 msgid "Instance"
 msgstr "Instance"
 
-#: audit/models.py
+#: audit/models.py stock/models.py
 msgid "date"
 msgstr "date"
 
@@ -1114,7 +1115,7 @@ msgstr "Extérieur"
 msgid "Other"
 msgstr "Autre"
 
-#: rooms/models.py
+#: rooms/models.py stock/models.py
 msgid "type"
 msgstr "type"
 
@@ -1122,7 +1123,7 @@ msgstr "type"
 msgid "position"
 msgstr "position"
 
-#: rooms/models.py tasks/models.py
+#: rooms/models.py stock/models.py tasks/models.py
 msgid "notes"
 msgstr "notes"
 
@@ -1254,12 +1255,12 @@ msgstr "La liste contient une pièce deux fois, ou une pièce qui n'existe pas."
 msgid "Choose up or down."
 msgstr "Choisissez monter ou descendre."
 
-#: rooms/services.py
+#: rooms/services.py stock/services.py
 #, python-format
 msgid "This file is too large: the limit is %(limit)s."
 msgstr "Ce fichier est trop volumineux : la limite est de %(limit)s."
 
-#: rooms/services.py
+#: rooms/services.py stock/services.py
 msgid "This file is empty."
 msgstr "Ce fichier est vide."
 
@@ -1300,7 +1301,7 @@ msgstr "L'élément et ses photos disparaissent des écrans."
 msgid "Item deleted."
 msgstr "Élément supprimé."
 
-#: rooms/views.py tasks/views.py
+#: rooms/views.py stock/views.py tasks/views.py
 msgid "This file is too large."
 msgstr "Ce fichier est trop volumineux."
 
@@ -1319,6 +1320,190 @@ msgstr "Anglais"
 #: settings.py
 msgid "French"
 msgstr "Français"
+
+#: stock/apps.py templates/shell/navigation.html
+#: templates/stock/article_detail.html templates/stock/article_form.html
+#: templates/stock/article_list.html templates/stock/choose_home.html
+msgid "Stock"
+msgstr "Matériel"
+
+#: stock/forms.py templates/stock/article_detail.html
+msgid "Compatible items"
+msgstr "Éléments compatibles"
+
+#: stock/forms.py
+msgid "The equipment this fits, such as the boiler a filter is made for."
+msgstr "L'équipement concerné, par exemple la chaudière pour laquelle un filtre est fait."
+
+#: stock/forms.py
+msgid "Photo of the label"
+msgstr "Photo de l'étiquette"
+
+#: stock/forms.py
+msgid "Remove the photo of the label"
+msgstr "Supprimer la photo de l'étiquette"
+
+#: stock/forms.py
+msgid "Quantity"
+msgstr "Quantité"
+
+#: stock/forms.py
+msgid "Date"
+msgstr "Date"
+
+#: stock/forms.py tasks/forms.py
+msgid "Note"
+msgstr "Note"
+
+#: stock/models.py
+msgid "manufacturer reference"
+msgstr "référence fabricant"
+
+#: stock/models.py
+msgid "dimensions"
+msgstr "dimensions"
+
+#: stock/models.py
+msgid "storage location"
+msgstr "emplacement de rangement"
+
+#: stock/models.py
+msgid "For example: garage, second shelf."
+msgstr "Par exemple : garage, deuxième étagère."
+
+#: stock/models.py tasks/models.py
+msgid "unit"
+msgstr "unité"
+
+#: stock/models.py
+msgid "For example: pieces, litres, metres."
+msgstr "Par exemple : pièces, litres, mètres."
+
+#: stock/models.py
+msgid "threshold"
+msgstr "seuil"
+
+#: stock/models.py
+msgid "The stock is flagged when it falls to this quantity or below."
+msgstr "Le stock est signalé quand il descend à cette quantité ou en dessous."
+
+#: stock/models.py
+msgid "compatible items"
+msgstr "éléments compatibles"
+
+#: stock/models.py
+msgid "stock item"
+msgstr "article"
+
+#: stock/models.py
+msgid "stock items"
+msgstr "articles"
+
+#: stock/models.py
+msgid "supplier reference"
+msgstr "référence fournisseur"
+
+#: stock/models.py
+msgid "purchase link"
+msgstr "lien d'achat"
+
+#: stock/models.py
+msgid "last price paid"
+msgstr "dernier prix payé"
+
+#: stock/models.py
+msgid "supplier"
+msgstr "fournisseur"
+
+#: stock/models.py
+msgid "suppliers"
+msgstr "fournisseurs"
+
+#: stock/models.py
+msgid "Entry"
+msgstr "Entrée"
+
+#: stock/models.py
+msgid "Exit"
+msgstr "Sortie"
+
+#: stock/models.py
+msgid "Inventory"
+msgstr "Inventaire"
+
+#: stock/models.py
+msgid "quantity"
+msgstr "quantité"
+
+#: stock/models.py
+msgid "change"
+msgstr "variation"
+
+#: stock/models.py tasks/models.py
+msgid "note"
+msgstr "note"
+
+#: stock/models.py
+msgid "movement"
+msgstr "mouvement"
+
+#: stock/models.py
+msgid "movements"
+msgstr "mouvements"
+
+#: stock/services.py tasks/models.py
+msgid "This item is not in this home."
+msgstr "Cet élément n'est pas dans ce logement."
+
+#: stock/services.py
+msgid "Choose entry, exit or inventory."
+msgstr "Choisissez entrée, sortie ou inventaire."
+
+#: stock/services.py
+msgid "The quantity must be more than zero."
+msgstr "La quantité doit être supérieure à zéro."
+
+#: stock/services.py
+#, python-format
+msgid "Only %(available)s in stock."
+msgstr "Il n'y en a que %(available)s en stock."
+
+#: stock/views.py
+msgid "Stock item added."
+msgstr "Article ajouté."
+
+#: stock/views.py
+msgid "Stock item saved."
+msgstr "Article enregistré."
+
+#: stock/views.py
+msgid ""
+"The stock item, its suppliers and its movements disappear from the screens."
+msgstr "L'article, ses fournisseurs et ses mouvements disparaissent des écrans."
+
+#: stock/views.py
+msgid "Stock item deleted."
+msgstr "Article supprimé."
+
+#: stock/views.py
+msgid "Movement recorded."
+msgstr "Mouvement enregistré."
+
+#: stock/views.py
+msgid "Supplier added."
+msgstr "Fournisseur ajouté."
+
+#: stock/views.py
+msgid "Supplier saved."
+msgstr "Fournisseur enregistré."
+
+#: stock/views.py
+msgid "The supplier disappears from the stock item."
+msgstr "Le fournisseur disparaît de l'article."
+
+#: stock/views.py
+msgid "Supplier deleted."
+msgstr "Fournisseur supprimé."
 
 #: tasks/apps.py templates/rooms/item_detail.html
 #: templates/rooms/room_detail.html templates/shell/navigation.html
@@ -1377,10 +1562,6 @@ msgid "Choose a contractor or give a new one, not both."
 msgstr "Choisissez un intervenant ou donnez-en un nouveau, pas les deux."
 
 #: tasks/forms.py
-msgid "Note"
-msgstr "Note"
-
-#: tasks/forms.py
 msgid "New date"
 msgstr "Nouvelle date"
 
@@ -1388,7 +1569,7 @@ msgstr "Nouvelle date"
 msgid "Choose at least one file."
 msgstr "Choisissez au moins un fichier."
 
-#: tasks/models.py
+#: tasks/models.py templates/stock/article_list.html
 msgid "Low"
 msgstr "Basse"
 
@@ -1451,10 +1632,6 @@ msgid "trade"
 msgstr "métier"
 
 #: tasks/models.py
-msgid "note"
-msgstr "note"
-
-#: tasks/models.py
 msgid "contractor"
 msgstr "intervenant"
 
@@ -1495,10 +1672,6 @@ msgid "repeat"
 msgstr "répétition"
 
 #: tasks/models.py
-msgid "unit"
-msgstr "unité"
-
-#: tasks/models.py
 msgid "every"
 msgstr "tous les"
 
@@ -1525,10 +1698,6 @@ msgstr "tâche"
 #: tasks/models.py
 msgid "tasks"
 msgstr "tâches"
-
-#: tasks/models.py
-msgid "This item is not in this home."
-msgstr "Cet élément n'est pas dans ce logement."
 
 #: tasks/models.py
 msgid "This item is not in this room."
@@ -2062,7 +2231,7 @@ msgstr ""
 "tâches, ni documents, ni notes."
 
 #: templates/homes/confirm.html templates/rooms/confirm_delete.html
-#: templates/tasks/confirm_delete.html
+#: templates/stock/confirm_delete.html templates/tasks/confirm_delete.html
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -2164,7 +2333,8 @@ msgstr ""
 "Une archive avec tout le contenu de ce logement, dans un format ouvert."
 
 #: templates/homes/home_form.html templates/homes/home_list.html
-#: templates/rooms/choose_home.html templates/tasks/choose_home.html
+#: templates/rooms/choose_home.html templates/stock/choose_home.html
+#: templates/tasks/choose_home.html
 msgid "Add a home"
 msgstr "Ajouter un logement"
 
@@ -2270,7 +2440,8 @@ msgstr ""
 
 #: templates/homes/household.html templates/instance/settings.html
 #: templates/rooms/item_form.html templates/rooms/room_form.html
-#: templates/rooms/room_memory_form.html templates/tasks/completion_form.html
+#: templates/rooms/room_memory_form.html templates/stock/article_form.html
+#: templates/stock/supplier_form.html templates/tasks/completion_form.html
 #: templates/tasks/task_form.html
 msgid "Save"
 msgstr "Enregistrer"
@@ -2626,7 +2797,8 @@ msgid "Photo of %(name)s"
 msgstr "Photo de %(name)s"
 
 #: templates/rooms/_photos.html templates/rooms/confirm_delete.html
-#: templates/tasks/_attachments.html templates/tasks/confirm_delete.html
+#: templates/stock/confirm_delete.html templates/tasks/_attachments.html
+#: templates/tasks/confirm_delete.html
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -2638,11 +2810,13 @@ msgstr "cette photo"
 msgid "Choose the home whose rooms you want to open."
 msgstr "Choisissez le logement dont vous voulez ouvrir les pièces."
 
-#: templates/rooms/choose_home.html templates/tasks/choose_home.html
+#: templates/rooms/choose_home.html templates/stock/choose_home.html
+#: templates/tasks/choose_home.html
 msgid "You have no home to open yet."
 msgstr "Vous n'avez pas encore de logement à ouvrir."
 
-#: templates/rooms/confirm_delete.html templates/tasks/confirm_delete.html
+#: templates/rooms/confirm_delete.html templates/stock/confirm_delete.html
+#: templates/tasks/confirm_delete.html
 #, python-format
 msgid "Delete %(name)s?"
 msgstr "Supprimer %(name)s ?"
@@ -2677,7 +2851,7 @@ msgid "open the contract"
 msgstr "ouvrir le contrat"
 
 #: templates/rooms/item_detail.html templates/rooms/room_detail.html
-#: templates/tasks/task_detail.html
+#: templates/stock/article_detail.html templates/tasks/task_detail.html
 msgid "Notes"
 msgstr "Notes"
 
@@ -2834,6 +3008,7 @@ msgid "Search rooms and items"
 msgstr "Rechercher des pièces et des éléments"
 
 #: templates/rooms/room_list.html templates/rooms/search.html
+#: templates/stock/article_list.html
 msgid "Search"
 msgstr "Rechercher"
 
@@ -2886,6 +3061,156 @@ msgstr "Aide sur cette page"
 #: templates/shell/navigation.html
 msgid "Main navigation"
 msgstr "Navigation principale"
+
+#: templates/stock/article_detail.html
+msgid "Low stock"
+msgstr "Stock bas"
+
+#: templates/stock/article_detail.html
+msgid "Threshold"
+msgstr "Seuil"
+
+#: templates/stock/article_detail.html
+msgid "Manufacturer reference"
+msgstr "Référence fabricant"
+
+#: templates/stock/article_detail.html
+msgid "Dimensions"
+msgstr "Dimensions"
+
+#: templates/stock/article_detail.html
+msgid "Storage location"
+msgstr "Emplacement de rangement"
+
+#: templates/stock/article_detail.html
+#, python-format
+msgid "Label of %(name)s"
+msgstr "Étiquette de %(name)s"
+
+#: templates/stock/article_detail.html templates/stock/article_form.html
+msgid "Edit the stock item"
+msgstr "Modifier l'article"
+
+#: templates/stock/article_detail.html
+msgid "Record a movement"
+msgstr "Enregistrer un mouvement"
+
+#: templates/stock/article_detail.html
+msgid "Add to stock"
+msgstr "Ajouter au stock"
+
+#: templates/stock/article_detail.html
+msgid "Take from stock"
+msgstr "Sortir du stock"
+
+#: templates/stock/article_detail.html
+msgid "Set the count"
+msgstr "Fixer le compte"
+
+#: templates/stock/article_detail.html
+msgid ""
+"Set the count states what you counted on the shelf; the stock is corrected "
+"to it."
+msgstr "« Fixer le compte » indique ce que vous avez compté sur l'étagère ; le stock est corrigé en conséquence."
+
+#: templates/stock/article_detail.html
+msgid "No compatible item chosen."
+msgstr "Aucun élément compatible choisi."
+
+#: templates/stock/article_detail.html
+msgid "Suppliers"
+msgstr "Fournisseurs"
+
+#: templates/stock/article_detail.html
+msgid "Supplier reference"
+msgstr "Référence fournisseur"
+
+#: templates/stock/article_detail.html
+msgid "Last price paid"
+msgstr "Dernier prix payé"
+
+#: templates/stock/article_detail.html
+msgid "Purchase link"
+msgstr "Lien d'achat"
+
+#: templates/stock/article_detail.html templates/stock/supplier_form.html
+msgid "Edit the supplier"
+msgstr "Modifier le fournisseur"
+
+#: templates/stock/article_detail.html
+msgid "No supplier yet."
+msgstr "Aucun fournisseur pour l'instant."
+
+#: templates/stock/article_detail.html templates/stock/supplier_form.html
+msgid "Add a supplier"
+msgstr "Ajouter un fournisseur"
+
+#: templates/stock/article_detail.html
+msgid "Movements"
+msgstr "Mouvements"
+
+#: templates/stock/article_detail.html
+#, python-format
+msgid "counted %(count)s"
+msgstr "compté : %(count)s"
+
+#: templates/stock/article_detail.html
+msgid "No movement yet."
+msgstr "Aucun mouvement pour l'instant."
+
+#: templates/stock/article_form.html templates/stock/article_list.html
+msgid "Add a stock item"
+msgstr "Ajouter un article"
+
+#: templates/stock/article_form.html
+#, python-format
+msgid ""
+"Label photo: JPEG, PNG or WebP, up to %(size)s. Location data and other "
+"information stored in the file are removed."
+msgstr "Photo de l'étiquette : JPEG, PNG ou WebP, jusqu'à %(size)s. La position et les autres informations stockées dans le fichier sont supprimées."
+
+#: templates/stock/article_form.html
+msgid "Add the stock item"
+msgstr "Ajouter l'article"
+
+#: templates/stock/article_form.html
+msgid "Delete the stock item"
+msgstr "Supprimer l'article"
+
+#: templates/stock/article_list.html
+msgid "Search by name, reference or supplier"
+msgstr "Rechercher par nom, référence ou fournisseur"
+
+#: templates/stock/article_list.html
+msgid "Low stock only"
+msgstr "Stock bas seulement"
+
+#: templates/stock/article_list.html
+msgid "No stock item yet."
+msgstr "Aucun article pour l'instant."
+
+#: templates/stock/article_list.html
+msgid "No stock item matches."
+msgstr "Aucun article ne correspond."
+
+#: templates/stock/choose_home.html
+msgid "Choose the home whose stock you want to open."
+msgstr "Choisissez le logement dont vous voulez ouvrir le matériel."
+
+#: templates/stock/supplier_form.html
+#, python-format
+msgid ""
+"The price is in %(currency)s, the currency of the home. The link is only "
+"stored: HouseCairn never opens it."
+msgstr "Le prix est en %(currency)s, la devise du logement. Le lien est seulement enregistré : HouseCairn ne l'ouvre jamais."
+
+#: templates/stock/supplier_form.html
+msgid "Add the supplier"
+msgstr "Ajouter le fournisseur"
+
+#: templates/stock/supplier_form.html
+msgid "Delete the supplier"
+msgstr "Supprimer le fournisseur"
 
 #: templates/tasks/_attachments.html
 #, python-format

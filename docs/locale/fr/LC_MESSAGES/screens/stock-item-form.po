@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 13:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Add or edit a stock item"
+msgstr "Ajouter ou modifier un article"
+
+msgid "The form to add an item to the [stock](stock.md), at `/h/<home id>/stock/new/`, and to edit one, at `/h/<home id>/stock/<item id>/edit/`."
+msgstr "Le formulaire pour ajouter un article au [matériel](stock.md), à `/h/<id du logement>/stock/new/`, et pour en modifier un, à `/h/<id du logement>/stock/<id de l'article>/edit/`."
+
+msgid "Field"
+msgstr "Champ"
+
+msgid "Content"
+msgstr "Contenu"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Required, 120 characters at most."
+msgstr "Requis, 120 caractères au plus."
+
+msgid "Manufacturer reference, dimensions"
+msgstr "Référence fabricant, dimensions"
+
+msgid "Free text, 120 characters at most each."
+msgstr "Texte libre, 120 caractères au plus chacun."
+
+msgid "Storage location"
+msgstr "Emplacement de rangement"
+
+msgid "Where it is kept, for example \"garage, second shelf\"."
+msgstr "Où il est rangé, par exemple « garage, deuxième étagère »."
+
+msgid "Unit"
+msgstr "Unité"
+
+msgid "For example pieces, litres, metres."
+msgstr "Par exemple des pièces, des litres, des mètres."
+
+msgid "Threshold"
+msgstr "Seuil"
+
+msgid "The item is flagged when the stock falls to this quantity or below."
+msgstr "L'article est signalé quand le stock descend à cette quantité ou en dessous."
+
+msgid "Compatible items"
+msgstr "Éléments compatibles"
+
+msgid "The equipment or surfaces of the home this fits; only items of this home can be chosen."
+msgstr "Les équipements ou surfaces du logement auxquels il convient ; seuls les éléments de ce logement peuvent être choisis."
+
+msgid "Photo of the label"
+msgstr "Photo de l'étiquette"
+
+msgid "JPEG, PNG or WebP, treated like the [photos of a room](photo-form.md): the content is checked, the location and the other information stored in the file are removed, a large picture is reduced. The default limit is 10 MB."
+msgstr "JPEG, PNG ou WebP, traitée comme les [photos d'une pièce](photo-form.md) : le contenu est vérifié, la position et les autres informations stockées dans le fichier sont supprimées, une grande image est réduite. La limite par défaut est de 10 Mo."
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Free text, 4,000 characters at most."
+msgstr "Texte libre, 4 000 caractères au plus."
+
+msgid "The quantity is not a field: the stock starts at zero and changes with the movements, which you record on the [page of the item](stock-item.md). Only the name is required."
+msgstr "La quantité n'est pas un champ : le stock part de zéro et évolue avec les mouvements, que vous enregistrez sur la [page de l'article](stock-item.md). Seul le nom est requis."
+

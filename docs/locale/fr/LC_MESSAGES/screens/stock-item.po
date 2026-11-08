@@ -1,0 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 13:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Stock item"
+msgstr "Article"
+
+msgid "One item of the [stock](stock.md), at `/h/<home id>/stock/<item id>/`."
+msgstr "Un article du [matériel](stock.md), à `/h/<id du logement>/stock/<id de l'article>/`."
+
+msgid "**The quantity** at the top is the sum of the movements below; it is stored nowhere else. A **Low stock** label shows when it is at or below the threshold."
+msgstr "**La quantité**, en haut, est la somme des mouvements ci-dessous ; elle n'est stockée nulle part ailleurs. La mention **Stock bas** s'affiche quand elle est au seuil ou en dessous."
+
+msgid "**Record a movement** takes a quantity, a date (today by default) and a note, then one button: **Add to stock** (an entry), **Take from stock** (an exit) or **Set the count** (an inventory: you state what you counted on the shelf and the stock is corrected to it). Taking more than what is in stock is refused. A movement is never changed or deleted: a mistake is corrected by a new movement."
+msgstr "**Enregistrer un mouvement** prend une quantité, une date (aujourd'hui par défaut) et une note, puis un bouton : **Ajouter au stock** (une entrée), **Sortir du stock** (une sortie) ou **Fixer le compte** (un inventaire : vous indiquez ce que vous avez compté sur l'étagère et le stock est corrigé en conséquence). Sortir plus que le stock est refusé. Un mouvement n'est jamais modifié ni supprimé : une erreur se corrige par un nouveau mouvement."
+
+msgid "**Compatible items** lists the equipment or surfaces of the home this fits; each one opens its [item page](item.md)."
+msgstr "**Éléments compatibles** liste les équipements ou surfaces du logement auxquels il convient ; chacun ouvre sa [page d'élément](item.md)."
+
+msgid "**Suppliers** lists where to buy it: name, supplier reference, purchase link and the last price paid, in the currency of the home. **Add a supplier** and **Edit the supplier** open the [supplier form](supplier-form.md). The purchase link is a plain link: HouseCairn never opens it and shows no preview."
+msgstr "**Fournisseurs** liste où l'acheter : nom, référence fournisseur, lien d'achat et dernier prix payé, dans la devise du logement. **Ajouter un fournisseur** et **Modifier le fournisseur** ouvrent le [formulaire de fournisseur](supplier-form.md). Le lien d'achat est un simple lien : HouseCairn ne l'ouvre jamais et n'affiche aucun aperçu."
+
+msgid "**The history** lists the movements, the most recent first."
+msgstr "**L'historique** liste les mouvements, le plus récent en premier."
+
+msgid "**The photo of the label** is shown when there is one. Its address, `/h/<home id>/stock/<item id>/label/`, opens for the members of the home only."
+msgstr "**La photo de l'étiquette** s'affiche s'il y en a une. Son adresse, `/h/<id du logement>/stock/<id de l'article>/label/`, ne s'ouvre que pour les membres du logement."
+
+msgid "**Edit the stock item** opens the [form](stock-item-form.md), where **Delete the stock item** asks for confirmation and removes the item, its suppliers and its movements from the screens and the API."
+msgstr "**Modifier l'article** ouvre le [formulaire](stock-item-form.md), où **Supprimer l'article** demande confirmation et retire l'article, ses fournisseurs et ses mouvements des écrans et de l'API."
+
+msgid "Read-only members see everything and none of the buttons that change it."
+msgstr "Les membres en lecture seule voient tout et aucun des boutons qui modifient."
+

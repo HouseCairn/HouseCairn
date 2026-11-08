@@ -15,6 +15,7 @@ from housecairn.instance.api import (
     UnlockHomesView,
 )
 from housecairn.rooms import api as rooms_api
+from housecairn.stock import api as stock_api
 from housecairn.tasks import api as tasks_api
 
 app_name = "api-v1"
@@ -38,6 +39,9 @@ for prefix, viewset, basename in (
     ("tasks", tasks_api.TaskViewSet, "home-task"),
     ("occurrences", tasks_api.OccurrenceViewSet, "home-occurrence"),
     ("contractors", tasks_api.ContractorViewSet, "home-contractor"),
+    ("articles", stock_api.ArticleViewSet, "home-article"),
+    ("suppliers", stock_api.SupplierViewSet, "home-supplier"),
+    ("movements", stock_api.MovementViewSet, "home-movement"),
     ("attachments", tasks_api.AttachmentViewSet, "home-attachment"),
 ):
     router.register(rf"homes/(?P<home_id>[0-9a-f-]{{36}})/{prefix}", viewset, basename=basename)
