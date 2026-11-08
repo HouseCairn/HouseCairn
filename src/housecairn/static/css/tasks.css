@@ -149,10 +149,6 @@
 
 /* Today, My home and History (docs/adr/0037). */
 
-.today-bar {
-  margin: 0 0 var(--hc-space-3);
-}
-
 .section-overdue {
   color: var(--hc-color-danger);
 }

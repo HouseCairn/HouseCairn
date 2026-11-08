@@ -2,7 +2,8 @@
 
 The old free text, "who services it, and the contract number if any", goes whole into the
 provider: nothing is lost, and people split it when they next open the item. Going back,
-the provider and the number are joined into the one text again.
+the provider and the number are joined into the one text again, cut at 200 characters (the
+length of the old field): the contract number is lost when the provider alone is longer.
 """
 
 from django.db import migrations, models

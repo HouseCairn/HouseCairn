@@ -56,7 +56,9 @@ with it on the project's
 - **Photo categories and the contract of an item change shape.** The category `open_walls`
   of a photo is now `behind_walls`, in the API and in exports; the field `contract` of an
   item is now `contract_provider` (the old text, whole) and `contract_number`, in the API
-  and in exports. The migrations are reversible. Clients of the API must use the new names.
+  and in exports. The migrations are reversible, but going back joins the two into the one
+  text again and cuts it at 200 characters: the contract number is lost when the provider
+  alone is longer than that. Clients of the API must use the new names.
 
 - **Each home now has quotas of files**: 5 GB and 5000 files by default, deleted files
   included until they are purged. Raise them in **Instance administration, Settings, Files of
