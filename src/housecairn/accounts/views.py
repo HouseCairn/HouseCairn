@@ -15,7 +15,6 @@ from django.utils.translation import gettext as _
 from django.views.generic import FormView
 
 from housecairn.accounts import forms, services
-from housecairn.homes.scoping import allow
 
 
 def needs_email(view: Callable[..., HttpResponse]) -> Callable[..., HttpResponse]:
@@ -42,7 +41,7 @@ class AccountDeleteView(LoginRequiredMixin, FormView[forms.DeleteAccountForm]):
     form_class = forms.DeleteAccountForm
 
     def get_form_kwargs(self) -> dict[str, Any]:
-        return {**super().get_form_kwargs(), "user": self.request.user}
+        return {**super().get_form_kwargs(), "user": self.request.user, "request": self.request}
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -52,9 +51,6 @@ class AccountDeleteView(LoginRequiredMixin, FormView[forms.DeleteAccountForm]):
         return context
 
     def form_valid(self, form: forms.DeleteAccountForm) -> HttpResponse:
-        if not allow(self.request, "housecairn_delete_account"):
-            form.add_error(None, _("Too many attempts. Try again later."))
-            return self.form_invalid(form)
         try:
             services.delete_account(self.request.user)  # type: ignore[arg-type]
         except ValidationError as exc:

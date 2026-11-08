@@ -44,12 +44,13 @@ class AccountDeleteView(APIView):
         user = request.user
         assert isinstance(user, User)  # noqa: S101 - SignedInPerson ran
         data = request.data if isinstance(request.data, dict) else {}
+        # Every attempt counts, before the address or the password is looked at.
+        if not allow(request, "housecairn_delete_account"):
+            raise exceptions.Throttled()
         if not services.same_address(str(data.get("confirm_email") or ""), user.email):
             raise exceptions.ValidationError({"confirm_email": ["This is not your address."]})
         if user.has_usable_password() and not user.check_password(str(data.get("password") or "")):
             raise exceptions.ValidationError({"password": ["The password is not correct."]})
-        if not allow(request, "housecairn_delete_account"):
-            raise exceptions.Throttled()
         try:
             services.delete_account(user)
         except DjangoValidationError as exc:

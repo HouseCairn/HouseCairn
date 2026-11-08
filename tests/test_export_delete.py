@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 from allauth.account.models import EmailAddress
-from django.test import Client
+from django.test import Client, override_settings
 from django.urls import reverse
 from rest_framework.test import APIClient
 
@@ -326,6 +326,38 @@ class TestEraseAccount:
         assert done["Location"] == reverse("account_login")
         assert not User.objects.filter(pk=bob.pk).exists()
         assert client.get(reverse("homes:list")).status_code == 302
+
+    @override_settings(ACCOUNT_RATE_LIMITS={"housecairn_delete_account": "3/m/user"})
+    def test_wrong_attempts_on_the_web_form_use_up_the_limit(
+        self, client: Client, bob: User
+    ) -> None:
+        from tests.conftest import PASSWORD
+
+        client.force_login(bob)
+        url = reverse("account_delete")
+        for _attempt in range(3):
+            page = client.post(url, {"confirm_email": "bob@example.com", "password": "wrong"})
+            assert "The password is not correct." in page.text
+        # The right password no longer goes through once the wrong ones used it up.
+        page = client.post(url, {"confirm_email": "bob@example.com", "password": PASSWORD})
+        assert page.status_code == 200
+        assert "Too many attempts" in page.text
+        assert User.objects.filter(pk=bob.pk).exists()
+
+    @override_settings(ACCOUNT_RATE_LIMITS={"housecairn_delete_account": "3/m/user"})
+    def test_wrong_attempts_on_the_api_use_up_the_limit(self, client: Client, bob: User) -> None:
+        from tests.conftest import PASSWORD
+
+        client.force_login(bob)
+        url = reverse("api-v1:account-delete")
+        wrong = {"confirm_email": "bob@example.com", "password": "wrong"}
+        codes: list[int] = []
+        for _attempt in range(3):
+            codes.append(client.post(url, wrong, content_type="application/json").status_code)
+        assert codes == [400, 400, 400]
+        right = {"confirm_email": "bob@example.com", "password": PASSWORD}
+        assert client.post(url, right, content_type="application/json").status_code == 429
+        assert User.objects.filter(pk=bob.pk).exists()
 
     def test_the_web_form_lists_the_homes_that_block(
         self,

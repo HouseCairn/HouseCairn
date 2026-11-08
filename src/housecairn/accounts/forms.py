@@ -9,6 +9,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from housecairn.accounts import antibot, services
+from housecairn.homes.scoping import allow
 
 
 class LoginForm(AllauthLoginForm):  # type: ignore[misc]
@@ -40,15 +41,20 @@ class DeleteAccountForm(forms.Form):
         widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}),
     )
 
-    def __init__(self, *args: Any, user: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, user: Any, request: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.user = user
+        self.request = request
         if not user.has_usable_password():
             # An account that signs in through a provider has no password to ask for.
             del self.fields["password"]
 
     def clean(self) -> dict[str, Any]:
         data: dict[str, Any] = super().clean() or {}
+        # Every attempt counts, before the password is looked at: a wrong guess is
+        # what the limit is for.
+        if not allow(self.request, "housecairn_delete_account"):
+            raise forms.ValidationError(_("Too many attempts. Try again later."), code="throttled")
         email = data.get("confirm_email")
         if email and not services.same_address(email, self.user.email):
             self.add_error("confirm_email", _("This is not the address of your account."))
