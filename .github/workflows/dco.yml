@@ -1,23 +1,33 @@
 # Developer Certificate of Origin: every commit of a pull request carries a
 # Signed-off-by line from its author (docs/adr/0014, CONTRIBUTING.md).
+#
+# On a merge queue entry the commits of the queue are made by GitHub, not by a
+# contributor: the check verifies again the commits of the queued pull request,
+# read from the API at that moment (scripts/merge_queue.py, docs/adr/0040).
 name: DCO
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  merge_group:
+    types: [checks_requested]
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  # A merge queue entry has no pull request number: its own branch is its group.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   dco:
     name: Signed-off-by
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    permissions:
+      contents: read # check out the repository
+      pull-requests: read # merge queue: read the queued pull request
     steps:
       - name: Check out with the history of the pull request
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -25,9 +35,26 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
       - name: Check every commit
+        if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           # Bot commits are exempt only in a pull request opened by that bot.
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: python3 scripts/check_signoff.py "$BASE_SHA" "$HEAD_SHA"
+      - name: Check every commit of the queued pull request
+        if: github.event_name == 'merge_group'
+        env:
+          MERGE_GROUP_HEAD_REF: ${{ github.event.merge_group.head_ref }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/merge_queue.py >"$RUNNER_TEMP/pull.json"
+          number=$(jq -r .number "$RUNNER_TEMP/pull.json")
+          base=$(jq -r .base_sha "$RUNNER_TEMP/pull.json")
+          head=$(jq -r .head_sha "$RUNNER_TEMP/pull.json")
+          echo "Queued pull request #$number, commits $base..$head"
+          # The commits of a pull request from a fork are not on a branch here.
+          git fetch --no-tags --quiet origin "+refs/pull/$number/head:refs/remotes/origin/queued-pr"
+          test "$(git rev-parse refs/remotes/origin/queued-pr)" = "$head"
+          PR_AUTHOR=$(jq -r .author "$RUNNER_TEMP/pull.json") \
+            python3 scripts/check_signoff.py "$base" "$head"

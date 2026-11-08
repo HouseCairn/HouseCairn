@@ -77,6 +77,8 @@ own tests in `tests/test_ci_scripts.py`.
 - **Merge commits are not checked for a sign-off.** They only bring in commits
   that are checked on their own; the sign-off check would otherwise fail on the
   merge commit created by GitHub's "Update branch" button.
+  Since ADR 0040, `main` is merged through the merge queue and branches no
+  longer need updating; such merge commits can still appear in a pull request.
 - **Bot commits are not checked for a sign-off in their own pull requests.**
   Dependabot signs off as `dependabot[bot] <support@github.com>`, not with its
   author address, so its pull requests could never pass. Commits authored by
@@ -217,6 +219,9 @@ every merge):
 - `Signed-off-by`
 - `CLA` (a commit status set by `cla.js`, not a job; add it last, once
   `cla.yml` is on `main` and the `cla-signatures` branch exists)
+
+Each of their workflows also runs on the merge queue, where the same names are
+required on every queue entry (ADR 0040).
 
 Not required: `CLA signatures` (the job that sets the `CLA` status; it runs on
 the default branch, not on the pull request head), `zizmor (code scanning)`

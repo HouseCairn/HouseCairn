@@ -133,6 +133,13 @@ maintainer merges it ([ADR 0014](docs/adr/0014-continuous-integration-and-supply
 Workflows of a pull request from outside the project only start once the
 maintainer approves them.
 
+The maintainer merges through GitHub's merge queue
+([ADR 0040](docs/adr/0040-merge-queue.md)): you do not need to update your
+branch with `main`. Once the checks pass, the queue tests your pull request
+together with the latest `main` and the pull requests ahead of it, runs the
+same checks again, and merges it. Do not push to a pull request while it is in
+the queue; if it is removed from the queue, the timeline says why.
+
 ## Pull requests
 
 - **Small and focused.** One topic per pull request. Unrelated refactoring or

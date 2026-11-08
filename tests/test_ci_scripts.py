@@ -1,12 +1,13 @@
 """Scripts run by the CI workflows (scripts/, docs/adr/0014)."""
 
+import json
 import os
 import subprocess
 from pathlib import Path
 
 import pytest
 
-from scripts import check_external_urls, check_pr_title, check_signoff
+from scripts import check_external_urls, check_pr_title, check_signoff, merge_queue
 
 # Pull request titles
 
@@ -243,6 +244,113 @@ def test_local_and_non_web_files_pass(tmp_path: Path) -> None:
 
 def test_repository_has_no_external_url() -> None:
     assert check_external_urls.main([]) == 0
+
+
+# Merge queue entries (scripts/merge_queue.py, docs/adr/0040)
+
+_QUEUE_SHA = "929f8209d40f77f4abc622a499c93a83babdbe64"
+
+
+def _pull(**changes: object) -> dict[str, object]:
+    pull: dict[str, object] = {
+        "number": 104,
+        "state": "open",
+        "title": "feat: add yearly recurrence",
+        "user": {"login": "alice"},
+        "base": {"ref": "main", "sha": "b" * 40},
+        "head": {"sha": "h" * 40},
+        "labels": [{"name": "no-docs-needed"}],
+    }
+    pull.update(changes)
+    return pull
+
+
+def test_queue_branch_gives_the_pull_request_number() -> None:
+    ref = f"refs/heads/gh-readonly-queue/main/pr-104-{_QUEUE_SHA}"
+    assert merge_queue.pull_request_number(ref, "main") == 104
+
+
+@pytest.mark.parametrize(
+    "ref",
+    [
+        "",
+        "refs/heads/main",
+        f"refs/heads/feature/pr-104-{_QUEUE_SHA}",
+        f"refs/heads/gh-readonly-queue/release/pr-104-{_QUEUE_SHA}",
+        f"refs/heads/gh-readonly-queue/main/pr-0104-{_QUEUE_SHA}",
+        "refs/heads/gh-readonly-queue/main/pr-104-abc",
+        f"refs/heads/gh-readonly-queue/main/pr-104-{_QUEUE_SHA}\n",
+    ],
+)
+def test_other_references_are_refused(ref: str) -> None:
+    with pytest.raises(merge_queue.QueueError):
+        merge_queue.pull_request_number(ref, "main")
+
+
+def test_queued_pull_request_is_read_from_the_api() -> None:
+    urls: list[str] = []
+
+    def fetch(url: str) -> dict[str, object]:
+        urls.append(url)
+        return _pull()
+
+    ref = f"refs/heads/gh-readonly-queue/main/pr-104-{_QUEUE_SHA}"
+    pull = merge_queue.queued_pull_request(ref, "main", "o/r", "https://api.example.com", fetch)
+    assert urls == ["https://api.example.com/repos/o/r/pulls/104"]
+    assert pull == {
+        "number": 104,
+        "title": "feat: add yearly recurrence",
+        "author": "alice",
+        "base_sha": "b" * 40,
+        "head_sha": "h" * 40,
+        "labels": ["no-docs-needed"],
+    }
+
+
+@pytest.mark.parametrize(
+    "pull",
+    [_pull(state="closed"), _pull(base={"ref": "release", "sha": "b" * 40})],
+)
+def test_a_pull_request_not_open_against_the_base_is_refused(pull: dict[str, object]) -> None:
+    with pytest.raises(merge_queue.QueueError):
+        merge_queue.summary(pull, "main")
+
+
+def test_main_prints_the_pull_request_or_fails(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setenv("GITHUB_REPOSITORY", "o/r")
+    ref = f"refs/heads/gh-readonly-queue/main/pr-104-{_QUEUE_SHA}"
+    monkeypatch.setenv("MERGE_GROUP_HEAD_REF", ref)
+    assert merge_queue.main([], fetch=lambda url: _pull()) == 0
+    assert json.loads(capsys.readouterr().out)["number"] == 104
+    assert merge_queue.main([], fetch=lambda url: _pull(state="closed")) == 1
+    assert "not open" in capsys.readouterr().err
+    monkeypatch.setenv("MERGE_GROUP_HEAD_REF", "refs/heads/main")
+    assert merge_queue.main([], fetch=lambda url: _pull()) == 1
+
+
+# Every workflow of a required check also runs on the merge queue: a required
+# check that never reports on a queue entry blocks the queue (docs/adr/0040).
+_REQUIRED_CHECK_WORKFLOWS = (
+    "ci.yml",
+    "cla.yml",
+    "dco.yml",
+    "dependency-review.yml",
+    "docs-updated.yml",
+    "docs.yml",
+    "image.yml",
+    "pr-title.yml",
+    "zizmor.yml",
+)
+
+
+@pytest.mark.parametrize("name", _REQUIRED_CHECK_WORKFLOWS)
+def test_required_check_workflows_run_on_the_merge_queue(name: str) -> None:
+    workflow = Path(__file__).parent.parent / ".github" / "workflows" / name
+    text = workflow.read_text(encoding="utf-8")
+    on_block = text.split("\non:\n", 1)[1].split("\n\n", 1)[0]
+    assert "\n  merge_group:\n    types: [checks_requested]" in f"\n{on_block}"
 
 
 # Retries of the downloads made by the CI (.github/scripts/retry.sh)

@@ -1,17 +1,24 @@
 # The documentation changes with the code (docs/adr/0016, CONTRIBUTING.md): a
 # pull request that changes a screen, a setting or the API must change `docs/`,
 # or carry the `no-docs-needed` label. The job name is a status check.
+#
+# On a merge queue entry the check runs again on the queued pull request, its
+# diff and its labels read from the API at that moment (scripts/merge_queue.py,
+# docs/adr/0040).
 name: Documentation updated
 
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
+  merge_group:
+    types: [checks_requested]
 
 permissions: {}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  # A merge queue entry has no pull request number: its own branch is its group.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   docs-updated:
@@ -20,6 +27,7 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read # check out the repository
+      pull-requests: read # merge queue: read the queued pull request
     steps:
       - name: Check out with the history of the pull request
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -27,6 +35,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
       - name: Check that user-facing changes come with documentation
+        if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -35,3 +44,20 @@ jobs:
           # (the postgres image of compose.yaml) are exempted (docs/adr/0016).
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: python3 scripts/check_docs_updated.py "$BASE_SHA" "$HEAD_SHA"
+      - name: Check the queued pull request
+        if: github.event_name == 'merge_group'
+        env:
+          MERGE_GROUP_HEAD_REF: ${{ github.event.merge_group.head_ref }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/merge_queue.py >"$RUNNER_TEMP/pull.json"
+          number=$(jq -r .number "$RUNNER_TEMP/pull.json")
+          base=$(jq -r .base_sha "$RUNNER_TEMP/pull.json")
+          head=$(jq -r .head_sha "$RUNNER_TEMP/pull.json")
+          echo "Queued pull request #$number, diff $base...$head"
+          # The commits of a pull request from a fork are not on a branch here.
+          git fetch --no-tags --quiet origin "+refs/pull/$number/head:refs/remotes/origin/queued-pr"
+          test "$(git rev-parse refs/remotes/origin/queued-pr)" = "$head"
+          PR_LABELS=$(jq -r '.labels | join(",")' "$RUNNER_TEMP/pull.json") \
+            PR_AUTHOR=$(jq -r .author "$RUNNER_TEMP/pull.json") \
+            python3 scripts/check_docs_updated.py "$base" "$head"
