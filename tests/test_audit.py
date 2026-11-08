@@ -222,3 +222,70 @@ def test_an_unknown_action_is_shown_as_its_code() -> None:
     assert label("something.new", {}) == "something.new"
     assert label("member.role_changed", {"role": "owner"}) == "Role changed to Owner"
     assert label("member.role_changed", {}) == "Role changed to"
+
+
+class TestSameNameInTheLog:
+    """Two people who look the same on screen show their address, as in the other lists."""
+
+    @pytest.fixture
+    def twins(
+        self,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        add_member: Callable[..., Membership],
+    ) -> Membership:
+        membership = add_member(alice_home, bob, Role.MEMBER)
+        User.objects.filter(pk=alice.pk).update(display_name="Sam")
+        User.objects.filter(pk=bob.pk).update(display_name="sam\u3164")  # nothing shows
+        services.change_role(alice, membership, Role.READ_ONLY)
+        return membership
+
+    def test_the_web_log_tells_them_apart(
+        self, client: Client, alice: User, bob: User, alice_home: Home, twins: Membership
+    ) -> None:
+        client.force_login(alice)
+        text = client.get(reverse("homes:audit", kwargs={"home_id": alice_home.id})).text
+        assert f"Sam ({alice.email}) → sam ({bob.email})" in text
+
+    def test_the_api_tells_them_apart(
+        self, api_client: APIClient, alice: User, bob: User, alice_home: Home, twins: Membership
+    ) -> None:
+        api_client.force_authenticate(alice)
+        url = reverse("api-v1:home-audit", kwargs={"home_id": alice_home.id})
+        entries = api_client.get(url).json()["results"]
+        changed = next(e for e in entries if e["action"] == "member.role_changed")
+        assert changed["actor_name"] == f"Sam ({alice.email})"
+        assert changed["target_name"] == f"sam ({bob.email})"
+
+    def test_a_name_alone_in_the_log_shows_no_address(
+        self, api_client: APIClient, alice: User, bob: User, alice_home: Home, twins: Membership
+    ) -> None:
+        User.objects.filter(pk=bob.pk).update(display_name="Bobby")
+        api_client.force_authenticate(alice)
+        url = reverse("api-v1:home-audit", kwargs={"home_id": alice_home.id})
+        entries = api_client.get(url).json()["results"]
+        changed = next(e for e in entries if e["action"] == "member.role_changed")
+        assert (changed["actor_name"], changed["target_name"]) == ("Sam", "Bobby")
+
+    def test_the_instance_log_tells_them_apart(
+        self,
+        client: Client,
+        api_client: APIClient,
+        make_user: Callable[..., User],
+        alice: User,
+        bob: User,
+    ) -> None:
+        admin = make_user("admin@example.com", is_staff=True, is_superuser=True)
+        User.objects.filter(pk=alice.pk).update(display_name="Sam")
+        User.objects.filter(pk=bob.pk).update(display_name="\u3164SAM")
+        audit.record("account.created", actor=alice, target=bob)
+        client.force_login(admin)
+        text = client.get(reverse("instance:audit")).text
+        assert f"Sam ({alice.email}) → SAM ({bob.email})" in text
+        api_client.force_authenticate(admin)
+        entries = api_client.get(reverse("api-v1:instance-audit-list")).json()["results"]
+        assert (entries[0]["actor_name"], entries[0]["target_name"]) == (
+            f"Sam ({alice.email})",
+            f"SAM ({bob.email})",
+        )
