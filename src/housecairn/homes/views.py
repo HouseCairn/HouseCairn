@@ -19,6 +19,7 @@ from django.views import View
 from django.views.generic import DetailView, FormView, ListView
 
 from housecairn.accounts.models import User
+from housecairn.accounts.names import person_name
 from housecairn.accounts.services import email_is_configured
 from housecairn.audit import services as audit_services
 from housecairn.homes import exports, forms, services, sso
@@ -70,6 +71,7 @@ class HomeCreateView(LoginRequiredMixin, FormView[forms.HomeForm]):
             self.request.user,  # type: ignore[arg-type]
             name=form.cleaned_data["name"],
             currency=form.cleaned_data["currency"],
+            hemisphere=form.cleaned_data["hemisphere"],
         )
         return redirect("homes:detail", home_id=home.id)
 
@@ -85,7 +87,30 @@ class HomeDetailView(WebHomeScopedMixin, DetailView[Home]):
         context = super().get_context_data(**kwargs)
         context["role"] = services.role_of(self.request.user, self.object)
         context["member_count"] = services.members(self.object).count()
+        context["can_write"] = services.can_write(self.request.user, self.object)
         return context
+
+
+class HomeEditView(WebHomeScopedMixin, FormView[forms.HomeForm]):
+    """Name, currency and hemisphere of the home, for those who may write in it."""
+
+    template_name = "homes/home_form.html"
+    form_class = forms.HomeForm
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        home = self.get_home()
+        if not services.can_write(self.request.user, home):
+            raise PermissionDenied
+        return {**super().get_form_kwargs(), "instance": home}
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        return super().get_context_data(home=self.get_home(), editing=True, **kwargs)
+
+    def form_valid(self, form: forms.HomeForm) -> HttpResponse:
+        home = self.get_home()
+        services.update_home(self.request.user, home, **form.cleaned_data)
+        messages.success(self.request, _("Home saved."))
+        return redirect("homes:detail", home_id=home.id)
 
 
 class HouseholdView(WebHomeScopedMixin, DetailView[Home]):
@@ -136,9 +161,9 @@ class HomeAuditView(WebHomeScopedMixin, DetailView[Home]):
         context = super().get_context_data(**kwargs)
         entries = audit_services.home_log(self.request.user, self.object.id)
         context["is_owner"] = True  # the log is for owners only: the tab bar shows its own tab
-        context["page"] = Paginator(entries, self.paginate_by).get_page(
-            self.request.GET.get("page")
-        )
+        page = Paginator(entries, self.paginate_by).get_page(self.request.GET.get("page"))
+        page.object_list = audit_services.name_people(page.object_list)
+        context["page"] = page
         return context
 
 
@@ -348,7 +373,7 @@ class MemberRemoveView(ConfirmedActionView):
             % {"home": home.name}
             if me
             else _("%(who)s will lose access to %(home)s.")
-            % {"who": membership.user.get_full_name() or membership.user.email, "home": home.name},
+            % {"who": person_name(membership.user), "home": home.name},
             "action": reverse("homes:member-remove", args=[home.id, membership.id]),
             "button": _("Leave") if me else _("Remove"),
             "back": reverse("homes:member", args=[home.id, membership.id]),

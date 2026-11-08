@@ -53,8 +53,8 @@ export and the PDF file are a later lot (data).
 in the `tasks` app (one row per user at most, created on the first change; defaults
 apply until then), not a field of the account, so that the accounts app does not learn
 about tasks. They are read and changed only for the person signed in, by the web
-(`/me/preferences/`) and by the API (`/api/v1/me/display-preferences/`, a token acts
-for its user). The row goes with the account when it is erased.
+(`/me/preferences/`) and by the API (`/api/v1/me/display-preferences/`). An API token
+may read them; changing them is for the person signed in (ADR 0045). The row goes with the account when it is erased.
 
 **API.** `GET /api/v1/homes/<id>/today/`, `GET /api/v1/me/home/` (optional `home`),
 `GET|PATCH /api/v1/me/display-preferences/`. History is the occurrence list with the

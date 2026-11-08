@@ -33,6 +33,7 @@ urlpatterns = [
         task_views.PreferencesView.as_view(),
         name="display-preferences",
     ),
+    path("me/profile/", account_views.ProfileView.as_view(), name="profile"),
     # Notification channels and reminders of the person (docs/adr/0043).
     path("me/notifications/", include("housecairn.notifications.urls")),
     # Calendar (week, month, year) and its secret feeds (docs/adr/0052).

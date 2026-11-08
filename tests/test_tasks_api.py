@@ -477,13 +477,15 @@ class TestContractors:
     def test_crud(self, client_of_alice: APIClient, alice_home: Home) -> None:
         created = client_of_alice.post(
             api("contractor-list", alice_home),
-            {"name": "A. Roofer", "trade": "Roofer", "note": "n"},
+            {"name": "A. Roofer", "trade": "roofer", "note": "n"},
             format="json",
         )
         assert created.status_code == 201
         detail = api("contractor-detail", alice_home, contractor_id=created.json()["id"])
         assert (
-            client_of_alice.patch(detail, {"trade": "Slater"}, format="json").json()["trade"]
+            client_of_alice.patch(
+                detail, {"trade": "other", "trade_other": "Slater"}, format="json"
+            ).json()["trade_label"]
             == "Slater"
         )
         assert (
@@ -657,6 +659,7 @@ class TestRolesScopesAndIsolation:
             ("get", api("occurrence-detail", home, occurrence_id=occ.id)),
             ("get", api("contractor-list", home)),
             ("get", api("contractor-detail", home, contractor_id=contractor.id)),  # type: ignore[attr-defined]
+            ("get", api("contractor-vcard", home, contractor_id=contractor.id)),  # type: ignore[attr-defined]
             ("get", api("attachment-list", home)),
             ("get", api("attachment-detail", home, attachment_id=doc.id)),
             ("get", api("attachment-content", home, attachment_id=doc.id)),

@@ -128,6 +128,13 @@ class RoomSerializer(serializers.ModelSerializer[Room]):
             "updated_at",
         ]
         read_only_fields = ["id", "position", "item_count", "created_at", "updated_at"]
+        extra_kwargs = {
+            "name": {
+                "required": False,
+                "allow_blank": True,
+                "help_text": "Left empty, the name is the label of the type (not for `other`).",
+            }
+        }
 
 
 class RoomViewSet(

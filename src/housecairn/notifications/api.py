@@ -2,7 +2,9 @@
 
 Same rules as the web, through `services`. An API token reaches these endpoints only with
 the `write` scope (a `read` token reads nothing here, an `events` token nothing at all):
-a channel makes the server send messages, which reading must not allow.
+a channel makes the server send messages, which reading must not allow. Adding, changing,
+deleting or testing a channel and changing the preferences belong to the person: a token,
+which stands for an integration tied to homes, gets a 403 there (`PersonOnlyToChange`).
 """
 
 from typing import Any
@@ -15,6 +17,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from housecairn.accounts.api import PersonOnlyToChange
 from housecairn.apitokens.models import ApiToken, Scope
 from housecairn.apitokens.permissions import TokenScopePermission
 from housecairn.notifications import services
@@ -63,6 +66,7 @@ class TestSerializer(serializers.Serializer[Any]):
 
 
 class ChannelViewSet(
+    PersonOnlyToChange,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
@@ -129,7 +133,7 @@ class PreferenceSerializer(serializers.ModelSerializer[Preference]):
         fields = sorted(services.PREFERENCE_FIELDS)
 
 
-class PreferencesView(APIView):
+class PreferencesView(PersonOnlyToChange, APIView):
     """When the caller wants reminders: delay, time, quiet hours, summary, language."""
 
     permission_classes = PERMISSIONS

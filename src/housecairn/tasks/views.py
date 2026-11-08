@@ -9,15 +9,18 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import Resolver404, resolve, reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
-from housecairn.core.redirects import is_safe_redirect
+from housecairn.accounts import names
+from housecairn.core.redirects import has_safe_shape
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import open_homes_for_request
 from housecairn.rooms import conf
@@ -83,9 +86,15 @@ def _url(name: str, **kwargs: object) -> str:
 
 
 def _back(request: HttpRequest, default: str) -> str:
-    """Where to go after an action: the page it was sent from, if that is on this site."""
+    """Where to go after an action: the page it was sent from, if that is on this site.
+
+    The rule of `core.redirects` (a safe shape, then Django's own check of host and scheme)
+    is written out where the address is used, so that the check is on the value redirected to.
+    """
     target = request.POST.get("next", "")
-    if is_safe_redirect(target, request):
+    if has_safe_shape(target) and url_has_allowed_host_and_scheme(
+        target, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
         return target
     return default
 
@@ -183,20 +192,14 @@ class TaskFormMixin(HomeTasksMixin, FormView[Any]):
     def split(self, form: forms.TaskForm) -> tuple[dict[str, Any], dict[str, Any]]:
         """Fields of the task, and the rest (date, new contractor, files)."""
         data = dict(form.cleaned_data)
-        extra = {
-            key: data.pop(key, None)
-            for key in ("due_on", "new_contractor", "new_contractor_trade", "uploads")
-        }
+        extra = {key: data.pop(key, None) for key in ("due_on", "contractor_name", "uploads")}
         return data, extra
 
     def contractor_of(self, data: dict[str, Any], extra: dict[str, Any]) -> None:
-        if extra["new_contractor"]:
-            data["contractor"] = services.create_contractor(
-                self.request.user,
-                self.home,
-                name=extra["new_contractor"],
-                trade=extra["new_contractor_trade"] or "",
-            )
+        """The single field: a known contractor is linked, a new name creates one."""
+        data["contractor"] = services.contractor_named(
+            self.request.user, self.home, extra["contractor_name"] or ""
+        )
 
 
 class TaskCreateView(TaskFormMixin):
@@ -219,10 +222,12 @@ class TaskCreateView(TaskFormMixin):
     def form_valid(self, form: forms.TaskForm) -> HttpResponse:
         data, extra = self.split(form)
         try:
-            self.contractor_of(data, extra)
-            task = services.create_task(
-                self.request.user, self.home, due_on=extra["due_on"], **data
-            )
+            # One unit: a form refused leaves no contractor, and no audit line, behind.
+            with transaction.atomic():
+                self.contractor_of(data, extra)
+                task = services.create_task(
+                    self.request.user, self.home, due_on=extra["due_on"], **data
+                )
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)
@@ -282,8 +287,9 @@ class TaskEditView(TaskFormMixin):
         task = self.get_task()
         data, extra = self.split(form)
         try:
-            self.contractor_of(data, extra)
-            services.update_task(self.request.user, task, due_on=extra["due_on"], **data)
+            with transaction.atomic():
+                self.contractor_of(data, extra)
+                services.update_task(self.request.user, task, due_on=extra["due_on"], **data)
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)
@@ -484,6 +490,9 @@ class HistoryView(HomeTasksMixin, TemplateView):
         rows = agenda.history(self.home, selection)
         page = Paginator(rows, PAGE_SIZE).get_page(params.get("page"))
         kept = [(k, v) for k, v in params.items() if k not in ("page", "undo") and v]
+        members = list(services.members_for_forms(self.home))
+        shown = names.labels(members)
+        people = [{"id": m.pk, "label": shown[m.pk]} for m in members]
         return super().get_context_data(
             **self.page(
                 page=page,
@@ -492,7 +501,7 @@ class HistoryView(HomeTasksMixin, TemplateView):
                 rooms=services.rooms_for_forms(self.home),
                 items=services.items_for_forms(self.home),
                 contractors=services.contractors_of(self.home),
-                members=services.members_for_forms(self.home),
+                members=people,
                 query_string=urlencode(kept),
                 filtered=bool(kept),
             ),
@@ -513,7 +522,9 @@ class PreferencesView(LoginRequiredMixin, FormView[Any]):
 
     def _next(self) -> str:
         target = self.request.POST.get("next") or self.request.GET.get("next", "")
-        if is_safe_redirect(target, self.request):
+        if has_safe_shape(target) and url_has_allowed_host_and_scheme(
+            target, allowed_hosts={self.request.get_host()}, require_https=self.request.is_secure()
+        ):
             return target
         return reverse("my-home")
 

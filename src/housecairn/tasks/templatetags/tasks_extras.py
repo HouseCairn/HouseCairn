@@ -7,9 +7,10 @@ from django.utils.safestring import SafeString
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 
+from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item, Room
-from housecairn.tasks import markup
-from housecairn.tasks.models import OPEN_STATUSES, Occurrence, RepeatMode, Task
+from housecairn.tasks import durations, markup
+from housecairn.tasks.models import OPEN_STATUSES, Occurrence, RepeatMode, Season, Task
 
 register = template.Library()
 
@@ -18,6 +19,12 @@ register = template.Library()
 def markdown(value: str) -> SafeString:
     """The procedure of a task as safe HTML (docs/adr/0031)."""
     return markup.render(value)
+
+
+@register.filter
+def duration(minutes: int | None) -> str:
+    """An estimated duration in minutes as people say it ("1 h 30", "2 days")."""
+    return durations.label(minutes) if minutes else ""
 
 
 @register.filter
@@ -57,6 +64,8 @@ def repeat_summary(task: Task) -> str:
             "year": ngettext("A year after the last time", "%(n)d years after the last time", n),
         }[unit] % {"n": n}
     if task.season_start_month and task.season_end_month:
+        if task.season and task.season != Season.CUSTOM:
+            text += ", " + str(Season(task.season).label)
         text += ", " + _("from %(start)s to %(end)s") % {
             "start": MONTHS[task.season_start_month],
             "end": MONTHS[task.season_end_month],
@@ -88,8 +97,6 @@ def where_and_who(occurrence: Occurrence) -> str:
         task.room.name if task.room else "",
         task.item.name if task.item else "",
         task.contractor.name if task.contractor else "",
-        (occurrence.completed_by.get_full_name() or occurrence.completed_by.email)
-        if occurrence.completed_by
-        else "",
+        person_name(occurrence.completed_by),
     ]
     return " · ".join(part for part in parts if part)

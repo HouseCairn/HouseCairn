@@ -1,5 +1,6 @@
 """Writing and reading the audit log (docs/adr/0023)."""
 
+from collections.abc import Iterable
 from typing import Any
 from uuid import UUID
 
@@ -7,6 +8,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.db import models
 
+from housecairn.accounts import names
 from housecairn.accounts.models import User
 from housecairn.audit.models import AuditEvent, Scope
 from housecairn.core.text import without_control_characters
@@ -87,3 +89,24 @@ def instance_log(actor: User | AnonymousUser) -> models.QuerySet[AuditEvent]:
     if not is_instance_admin(actor):
         raise PermissionDenied
     return AuditEvent.objects.filter(scope=Scope.INSTANCE).select_related("actor", "target_user")
+
+
+def name_people(entries: Iterable[AuditEvent]) -> list[AuditEvent]:
+    """Give each entry the names of its actor and target, told apart across the list.
+
+    Two people who look the same on screen (same name, whatever the case or the filler
+    characters) show their address in brackets, as in the other lists (docs/adr/0045).
+    The names are `actor_label` and `target_label`, empty for nobody.
+    """
+    found = list(entries)
+    people = {
+        user.pk: user
+        for entry in found
+        for user in (entry.actor, entry.target_user)
+        if user is not None
+    }
+    shown = names.labels(people.values())
+    for entry in found:
+        entry.actor_label = shown[entry.actor.pk] if entry.actor else ""  # type: ignore[attr-defined]
+        entry.target_label = shown[entry.target_user.pk] if entry.target_user else ""  # type: ignore[attr-defined]
+    return found

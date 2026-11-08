@@ -7,9 +7,19 @@ from django.conf import settings
 from django.utils.dates import MONTHS
 from django.utils.translation import gettext_lazy as _
 
+from housecairn.accounts import names
+from housecairn.accounts.models import User
+from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item
-from housecairn.tasks import files, services
-from housecairn.tasks.models import DisplayPreference, Occurrence, Task
+from housecairn.tasks import durations, files, services
+from housecairn.tasks.models import (
+    Contractor,
+    DisplayPreference,
+    Occurrence,
+    Season,
+    Task,
+    Trade,
+)
 
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
 
@@ -37,29 +47,61 @@ class ItemChoiceField(forms.ModelChoiceField[Item]):
         return f"{obj.room.name} · {obj.name}"
 
 
+class PersonChoiceField(forms.ModelChoiceField[User]):
+    """A member of the home, by their name (docs/adr/0045).
+
+    The address is added, in brackets, only to tell apart two members of the same name.
+    """
+
+    def label_from_instance(self, obj: User) -> str:
+        shown = getattr(self, "_labels", None)
+        if shown is None:
+            shown = self._labels = names.labels(self.queryset or [])
+        return shown.get(obj.pk) or person_name(obj)
+
+
 class TaskForm(forms.ModelForm[Task]):
     """A task: the title is the only required field; the rest is under the headings."""
 
+    assignee = PersonChoiceField(label=_("Assignee"), queryset=User.objects.none(), required=False)
     item = ItemChoiceField(label=_("Item"), queryset=Item.objects.none(), required=False)
 
     due_on = forms.DateField(label=_("Due on"), required=False, widget=_DATE)
-    season_start_month = forms.TypedChoiceField(
-        label=_("Season starts in"),
+    season = forms.ChoiceField(
+        label=_("Season"),
         required=False,
-        choices=[("", _("No season")), *MONTHS.items()],
-        coerce=int,
-        empty_value=None,
+        choices=[("", _("All year")), *Season.choices],
     )
-    season_end_month = forms.TypedChoiceField(
-        label=_("Season ends in"),
+    season_start_month = forms.TypedChoiceField(
+        label=_("Custom season starts in"),
         required=False,
         choices=[("", "—"), *MONTHS.items()],
         coerce=int,
         empty_value=None,
     )
-    new_contractor = forms.CharField(label=_("Or a new contractor"), max_length=120, required=False)
-    new_contractor_trade = forms.CharField(
-        label=_("Trade of the new contractor"), max_length=120, required=False
+    season_end_month = forms.TypedChoiceField(
+        label=_("Custom season ends in"),
+        required=False,
+        choices=[("", "—"), *MONTHS.items()],
+        coerce=int,
+        empty_value=None,
+        help_text=_("Only used with the season Custom months."),
+    )
+    duration_value = forms.IntegerField(
+        label=_("Estimated duration"), required=False, min_value=1, max_value=durations.MAX_MINUTES
+    )
+    duration_unit = forms.ChoiceField(
+        label=_("Unit"), choices=durations.UNIT_CHOICES, initial=durations.HOUR, required=False
+    )
+    contractor_name = forms.CharField(
+        label=_("Contractor"),
+        max_length=120,
+        required=False,
+        widget=forms.TextInput(attrs={"list": "contractor-options", "autocomplete": "off"}),
+        help_text=_(
+            "Pick one from the suggestions or type a new name: it joins the contractors of "
+            "the home when you save."
+        ),
     )
     uploads = MultipleFileField(
         label=_("Photos and files"),
@@ -76,14 +118,14 @@ class TaskForm(forms.ModelForm[Task]):
         "repeat_mode",
         "repeat_interval",
         "repeat_unit",
+        "season",
         "season_start_month",
         "season_end_month",
         "hide_days_before",
         "assignee",
-        "contractor",
-        "new_contractor",
-        "new_contractor_trade",
-        "estimated_minutes",
+        "contractor_name",
+        "duration_value",
+        "duration_unit",
         "labour_budget",
         "material_budget",
         "procedure",
@@ -103,8 +145,6 @@ class TaskForm(forms.ModelForm[Task]):
             "repeat_unit",
             "hide_days_before",
             "assignee",
-            "contractor",
-            "estimated_minutes",
             "labour_budget",
             "material_budget",
             "procedure",
@@ -124,15 +164,25 @@ class TaskForm(forms.ModelForm[Task]):
         self._choices("room").queryset = services.rooms_for_forms(home)
         self._choices("item").queryset = services.items_for_forms(home)
         self._choices("assignee").queryset = services.members_for_forms(home)
-        self._choices("contractor").queryset = services.contractors_of(home)
-        self.fields["contractor"].required = False
-        for name in ("room", "item", "assignee", "contractor"):
+        self.contractors = list(services.contractors_of(home))
+        hemisphere = home.get_hemisphere_display().lower()
+        self.fields["season"].help_text = _(
+            "The season follows the hemisphere of the home (%(hemisphere)s): change it in the "
+            "settings of the home."
+        ) % {"hemisphere": hemisphere}
+        for name in ("room", "item", "assignee"):
             self.fields[name].empty_label = "—"  # type: ignore[attr-defined]
         if not with_files:
             del self.fields["uploads"]
         if self.instance.pk:
             current = services.open_occurrence_of(self.instance)
             self.initial.setdefault("due_on", current.due_on if current else None)
+            if self.instance.contractor is not None:
+                self.initial.setdefault("contractor_name", self.instance.contractor.name)
+            if self.instance.estimated_minutes:
+                value, unit = durations.split(self.instance.estimated_minutes)
+                self.initial.setdefault("duration_value", value)
+                self.initial.setdefault("duration_unit", unit)
 
     def _choices(self, name: str) -> forms.ModelChoiceField[Any]:
         field = self.fields[name]
@@ -141,9 +191,47 @@ class TaskForm(forms.ModelForm[Task]):
 
     def clean(self) -> dict[str, Any]:
         data: dict[str, Any] = super().clean() or {}
-        if data.get("new_contractor") and data.get("contractor"):
-            self.add_error("new_contractor", _("Choose a contractor or give a new one, not both."))
+        value, unit = data.pop("duration_value", None), data.pop("duration_unit", None)
+        minutes = None
+        if value is not None:
+            minutes = durations.to_minutes(value, unit or durations.HOUR)
+            if not durations.within_bounds(minutes):
+                self.add_error(
+                    "duration_value", _("Give a duration between a minute and thirty days.")
+                )
+        data["estimated_minutes"] = minutes
+        if (
+            not data.get("season")
+            and data.get("season_start_month")
+            and data.get("season_end_month")
+        ):
+            data["season"] = Season.CUSTOM  # months given without a season: a custom one
+        if data.get("season") != Season.CUSTOM:
+            # The months are the person's own only for a custom season.
+            data["season_start_month"] = data["season_end_month"] = None
+        elif data.get("season_start_month") is None or data.get("season_end_month") is None:
+            self.add_error("season_start_month", _("Give the first and the last month."))
         return data
+
+
+class ContractorForm(forms.ModelForm[Contractor]):
+    """A contractor: only the name is required (docs/adr/0045)."""
+
+    class Meta:
+        model = Contractor
+        fields = ["name", "trade", "trade_other", "phone", "email", "address", "note"]
+        widgets = {
+            "address": forms.Textarea(attrs={"rows": 3}),
+            "note": forms.Textarea(attrs={"rows": 3}),
+            "phone": forms.TextInput(attrs={"type": "tel", "autocomplete": "off"}),
+        }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        trade = self.fields["trade"]
+        assert isinstance(trade, forms.ChoiceField)  # noqa: S101 - narrows the type
+        trade.choices = [("", "—"), *Trade.choices]
+        self.fields["trade"].required = False
 
 
 class CompletionForm(forms.ModelForm[Occurrence]):

@@ -6,14 +6,24 @@ from django import forms
 from django.contrib.auth import password_validation
 from django.utils.translation import gettext_lazy as _
 
-from housecairn.homes.models import Home, Role
+from housecairn.homes.models import Hemisphere, Home, Role
 from housecairn.homes.sso import Provider
 
 
 class HomeForm(forms.ModelForm[Home]):
     class Meta:
         model = Home
-        fields = ["name", "currency"]
+        fields = ["name", "currency", "hemisphere"]
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["hemisphere"].required = False
+
+    def clean_hemisphere(self) -> str:
+        """Left out, the hemisphere is the default one (a form posted by an older client)."""
+        return str(
+            self.cleaned_data.get("hemisphere") or self.instance.hemisphere or Hemisphere.NORTH
+        )
 
 
 class InviteForm(forms.Form):

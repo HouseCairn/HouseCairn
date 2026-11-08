@@ -9,10 +9,33 @@ due date and, below, four sections that open when you need them:
 
 | Section | Content |
 | --- | --- |
-| Repeat | **Once**, **Fixed date** (every N days, weeks, months or years from the first date) or **After the last time** (N units after the day it was done). A season (first and last month; November to March is fine) outside of which nothing falls, and the number of days before the date from which the task shows. |
-| Who | Priority, the person in charge (a member of the home) and the contractor: pick one of the home or type a new name and trade. |
-| Time and budget | Estimated duration in minutes, labour and material budgets, in the currency of the home. |
+| Repeat | **Once**, **Fixed date** (every N days, weeks, months or years from the first date) or **After the last time** (N units after the day it was done). A **season** outside of which nothing falls (see below), and the number of days before the date from which the task shows. |
+| Who | Priority, the person in charge (a member of the home, shown by name) and the contractor, in one field: pick one of the home from the suggestions or type a new name, which is added to the contractors of the home when you save. Empty the field to remove the contractor. |
+| Time and budget | Estimated duration (a number and a unit: minutes, hours or days), labour and material budgets, in the currency of the home. |
 | How to do it | The procedure in Markdown, notes and, when adding, photos and files. |
+
+## Season
+
+A task can be limited to a season: **Spring**, **Summer**, **Autumn**, **Winter**,
+**Heating season** or **Custom months** (a first and a last month; November to March is
+fine). The predefined seasons follow the **hemisphere** of the home, which you set on the
+[home](home.md) page: in the northern hemisphere spring is March to May, summer June to
+August, autumn September to November, winter December to February and the heating season
+October to April; in the southern one they are shifted by six months. Changing the
+hemisphere of the home moves the tasks on a predefined season; a custom season keeps its
+months.
+
+## Estimated duration
+
+A whole number and a unit, from 1 minute to 30 days; it is stored in minutes and shown as
+people say it: **45 min**, **1 h 30**, **2 days**.
+
+## Contractor
+
+The field has no list to scroll through: start typing and the contractors of the home are
+suggested (with their trade); without script, type the name. A name that is already in the
+home, whatever its case, picks that contractor; a new name creates one, which you complete
+on its [sheet](contractor.md).
 
 Editing the date moves the occurrence that is open. Deleting the task, at the
 bottom of the edit form, asks for confirmation and removes the task, its history

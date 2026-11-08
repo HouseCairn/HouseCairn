@@ -1,12 +1,20 @@
 # Home
 
-The page of one home, at `/h/<home id>/`: its name, your role in it and its
-currency. Its address stays the same as long as the home exists. The tabs above
+The page of one home, at `/h/<home id>/`: its name, your role in it, its
+currency and its hemisphere. Its address stays the same as long as the home exists. The tabs above
 the page switch between the **Overview**, **Household and roles** (its members) and,
 for owners, the **Audit log**; they are the same on those three pages.
 
 When the home requires signing in through a provider and your session did not,
 the page asks you to continue with that provider instead.
+
+## Name, currency and hemisphere
+
+Owners and members open **Name, currency and hemisphere** (`/h/<home id>/edit/`) to change
+them. The hemisphere, **Northern** by default, decides what spring, summer, autumn, winter
+and the heating season mean for the [tasks](task-form.md): it is never guessed from a place.
+Changing it moves the window of the tasks that use a predefined season. Read-only members
+do not see the row.
 
 ## Your data
 

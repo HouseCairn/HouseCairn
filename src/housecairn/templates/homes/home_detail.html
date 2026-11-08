@@ -9,10 +9,20 @@
     <dl class="facts">
       <div><dt>{% translate "Your role" %}</dt><dd>{{ role.label }}</dd></div>
       <div><dt>{% translate "Currency" %}</dt><dd>{{ home.currency }}</dd></div>
+      <div><dt>{% translate "Hemisphere" %}</dt><dd>{{ home.get_hemisphere_display }}</dd></div>
     </dl>
   </section>
   <h2>{% translate "Settings" %}</h2>
   <div class="list">
+    {% if can_write %}
+    <a class="row" href="{% url 'homes:edit' home_id=home.id %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Name, currency and hemisphere" %}</span>
+        <span class="row-text">{% translate "The hemisphere decides what spring, summer and the other seasons mean for the tasks" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+    {% endif %}
     <a class="row" href="{% url 'homes:household' home_id=home.id %}">
       <span class="row-body">
         <span class="row-title">{% translate "Household and roles" %}</span>

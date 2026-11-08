@@ -160,8 +160,10 @@ class TestWeb:
         add_member(alice_home, bob, Role.READ_ONLY)
         client.force_login(alice)
         html = client.get(reverse("homes:household", kwargs={"home_id": alice_home.id})).text
-        assert "alice@example.com" in html
-        assert "bob@example.com" in html
+        # People are named, not addressed (docs/adr/0045); the address is on their own page.
+        assert "alice@example.com" not in html
+        assert "bob@example.com" not in html
+        assert ">bob<" in html
         assert "read only" in html
         assert reverse("homes:invite", kwargs={"home_id": alice_home.id}) in html
 
@@ -171,7 +173,7 @@ class TestWeb:
         add_member(alice_home, bob, Role.MEMBER)
         client.force_login(bob)
         html = client.get(reverse("homes:household", kwargs={"home_id": alice_home.id})).text
-        assert "alice@example.com" in html
+        assert ">alice<" in html
         assert reverse("homes:invite", kwargs={"home_id": alice_home.id}) not in html
         assert "Only owners invite" in html
 
