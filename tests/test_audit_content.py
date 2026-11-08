@@ -41,11 +41,11 @@ class TestEveryActionLeavesAnEntry:
     def test_items(self, alice: User, alice_home: Home) -> None:
         room = room_services.create_room(alice, alice_home, name="Cellar")
         item = room_services.create_item(alice, room, name="Boiler")
-        room_services.update_item(alice, item, contract="Secret number 12345")
+        room_services.update_item(alice, item, contract_number="Secret number 12345")
         room_services.delete_item(alice, item)
         assert entries(alice_home, "room.created") == [
             ("item.created", {"title": "Boiler"}),
-            ("item.updated", {"title": "Boiler", "fields": ["contract"]}),
+            ("item.updated", {"title": "Boiler", "fields": ["contract_number"]}),
             ("item.deleted", {"title": "Boiler"}),
         ]
 

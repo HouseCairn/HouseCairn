@@ -225,6 +225,7 @@ class ItemFormMixin(RoomFormMixin):
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         kwargs["rooms"] = services.rooms_of(self.home)
+        kwargs["brands"] = services.brands_of(self.home)
         return kwargs
 
 

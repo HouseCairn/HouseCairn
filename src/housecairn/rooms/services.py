@@ -51,7 +51,8 @@ ITEM_FIELDS = frozenset(
         "serial_number",
         "installed_on",
         "warranty_ends_on",
-        "contract",
+        "contract_provider",
+        "contract_number",
         "contract_url",
         "links",
         "notes",
@@ -92,6 +93,17 @@ def rooms_of(home: Home) -> models.QuerySet[Room]:
 
 def items_of(home: Home) -> models.QuerySet[Item]:
     return Item.objects.filter(home=home).select_related("room")
+
+
+def brands_of(home: Home) -> list[str]:
+    """The brands already entered for the items of the home, once each, alphabetical.
+
+    Compared without regard to case: the first spelling met is the one suggested.
+    """
+    seen: dict[str, str] = {}
+    for brand in Item.objects.filter(home=home).exclude(brand="").values_list("brand", flat=True):
+        seen.setdefault(brand.casefold(), brand)
+    return sorted(seen.values(), key=str.casefold)
 
 
 def photos_of(home: Home) -> models.QuerySet[Photo]:

@@ -130,11 +130,17 @@ class Item(HomeOwnedModel):
     serial_number = models.CharField(_("serial number"), max_length=120, blank=True)
     installed_on = models.DateField(_("installed on"), null=True, blank=True)
     warranty_ends_on = models.DateField(_("warranty ends on"), null=True, blank=True)
-    contract = models.CharField(
-        _("maintenance contract"),
+    contract_provider = models.CharField(
+        _("maintenance contract: provider"),
         max_length=200,
         blank=True,
-        help_text=_("Who services it, and the contract number if any."),
+        help_text=_("Who services it. Example: Acme Heating."),
+    )
+    contract_number = models.CharField(
+        _("maintenance contract: number"),
+        max_length=120,
+        blank=True,
+        help_text=_("The number to quote when you call them. Example: C-2024-0187."),
     )
     contract_url = WebUrlField(_("contract link"), max_length=500, blank=True)
     links = models.JSONField(_("links"), default=list, blank=True, validators=[validate_links])

@@ -14,6 +14,7 @@ from housecairn.rooms.models import (
     validate_links,
 )
 
+BRAND_LIST_ID = "brand-suggestions"
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
 
 
@@ -139,7 +140,8 @@ class ItemForm(forms.ModelForm[Item]):
             "serial_number",
             "installed_on",
             "warranty_ends_on",
-            "contract",
+            "contract_provider",
+            "contract_number",
             "contract_url",
             "links",
             "notes",
@@ -150,8 +152,11 @@ class ItemForm(forms.ModelForm[Item]):
             "notes": forms.Textarea(attrs={"rows": 4}),
         }
 
-    def __init__(self, *args: Any, rooms: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, rooms: Any, brands: Any = (), **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        # The brands already entered in the home are suggested; any other text is kept.
+        self.brands = list(brands)
+        self.fields["brand"].widget.attrs.update({"list": BRAND_LIST_ID, "autocomplete": "off"})
         room_field = self.fields["room"]
         assert isinstance(room_field, forms.ModelChoiceField)  # noqa: S101 - narrows the type
         room_field.queryset = rooms
