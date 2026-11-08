@@ -16,7 +16,8 @@ Rules that keep accounts and homes safe:
 - a provider that a home requires cannot be deleted (disable it: the homes then follow the
   way out of docs/adr/0021);
 - the administrator who acts keeps a way to sign in: a usable password, a passkey, or an
-  identity linked to a provider that stays enabled.
+  identity linked to a provider that stays enabled. Disabling or deleting a provider, and
+  changing the issuer, client identifier or secret of an enabled one, are refused otherwise.
 """
 
 import http.client
@@ -350,9 +351,9 @@ SECRET_FOR_NEW_ISSUER = gettext_lazy(
 )
 
 
-def _guard(actor: User, slug: str) -> None:
+def _guard(actor: User, slug: str, field: str = "enabled") -> None:
     if not keeps_a_way_to_sign_in(actor, without=slug):
-        raise ValidationError({"enabled": [str(LAST_WAY)]})
+        raise ValidationError({field: [str(LAST_WAY)]})
 
 
 # ---------- changes ----------
@@ -434,6 +435,17 @@ def update(actor: User, provider: OidcProvider, changes: dict[str, Any]) -> list
             raise ValidationError({"secret": [str(SECRET_FOR_NEW_ISSUER)]})
         if clean.get("enabled") is False and provider.enabled:
             _guard(actor, provider.slug)
+        elif provider.enabled:
+            # What signs people in: a wrong issuer, client or secret breaks it like disabling.
+            touched = [
+                f
+                for f in ("issuer", "client_id")
+                if f in clean and clean[f] != getattr(provider, f)
+            ]
+            if clean.get("secret"):
+                touched.append("secret")
+            if touched:
+                _guard(actor, provider.slug, field=touched[0])
         if clear_secret:
             provider.secret = ""
             changed.append("secret")

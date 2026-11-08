@@ -64,8 +64,17 @@ from the instance page). That keeps every lift of a requirement an explicit, aud
 **The last way to sign in.** Disabling or deleting a provider is refused when the
 administrator who does it would be left with no way to sign in: no usable password, no
 passkey, and no identity linked to another provider that stays enabled (or to the provider of
-the variables). In the administration site, the only active administrator cannot be switched
-off nor lose `is_staff` or `is_superuser`; erasing that account was already refused (ADR 0023).
+the variables). Changing the issuer, the client identifier or the secret of an enabled
+provider goes through the same check, since a wrong value breaks sign-in as surely as
+disabling it; the name and PKCE do not. In the administration site, the only active
+administrator cannot be switched off nor lose `is_staff` or `is_superuser`; erasing that
+account was already refused (ADR 0023).
+
+This guard protects the administrator who acts, and no one else. Known limits, accepted
+without a further mechanism: another administrator, or a member who signs in only through
+that provider, can lose their way to sign in when it is disabled, deleted or changed. The
+screen of the provider shows how many accounts are linked to it, so the administrator sees
+who depends on it before such a change.
 
 **The client secret** is encrypted like the secrets of ADR 0035 (Fernet, key derived from
 `SECRET_KEY`), write only, never in the screen, the API, the audit log (only "client secret
@@ -105,7 +114,8 @@ That is accepted for an instance administrator, as ADR 0035 accepts the mail tes
 - Moving an enabled provider to another issuer takes its secret in the same change; there is
   no way to keep the old secret for the new issuer.
 - An administrator who signs in through one provider only must set a password or a passkey,
-  or link another provider, before disabling it.
+  or link another provider, before disabling it or changing its issuer, client identifier or
+  secret (to rotate the secret, for instance).
 - Moving a provider from the variables to the interface keeps its identifier only while the
   variables stay; once they are removed, its identities and the homes that require it keep
   the identifier reserved.

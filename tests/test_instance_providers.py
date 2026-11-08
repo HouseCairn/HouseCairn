@@ -346,6 +346,32 @@ class TestLastWayToSignIn:
         provider.refresh_from_db()
         assert provider.enabled is True
 
+    def test_nor_change_how_it_signs_in(self, admin_user: User) -> None:
+        provider = declare(admin_user)
+        sso_only(admin_user, "company")
+        for changes in ({"client_id": "another-client"}, {"secret": "rotated"}):
+            with pytest.raises(ValidationError, match="last way to sign in") as raised:
+                providers.update(admin_user, provider, changes)
+            assert list(raised.value.message_dict) == list(changes)
+        # Its name, PKCE and the values it already has can change.
+        providers.update(admin_user, provider, {"name": "New", "pkce": False})
+        providers.update(admin_user, provider, {"client_id": "housecairn", "issuer": ISSUER})
+        assert self._app_secret() == SECRET
+        # The issuer, here of a provider no identity is linked to yet.
+        SocialAccount.objects.filter(user=admin_user).delete()
+        with pytest.raises(ValidationError, match="last way to sign in") as raised:
+            providers.update(admin_user, provider, {"issuer": EVIL, "secret": "s"})
+        assert list(raised.value.message_dict) == ["issuer"]
+        provider.refresh_from_db()
+        assert (provider.issuer, provider.client_id) == (ISSUER, "housecairn")
+        # A disabled provider is not a way to sign in: it may change.
+        other = declare(admin_user, slug="other", enabled=False)
+        providers.update(admin_user, other, {"issuer": EVIL, "client_id": "c", "secret": "s"})
+
+    def _app_secret(self) -> str:
+        secret: str = get_adapter().get_app(None, "company").secret
+        return secret
+
     def test_a_password_a_passkey_or_another_provider_is_enough(self, admin_user: User) -> None:
         first = declare(admin_user)
         second = declare(admin_user, slug="second")
@@ -390,8 +416,16 @@ class TestLastWayToSignIn:
         assert response.status_code == 400
         assert "last way to sign in" in response.json()["enabled"][0]
         assert admin_api.delete(detail).status_code == 400
+        response = form(admin_client, url, client_id="another-client")
+        assert response.status_code == 422
+        assert "last way to sign in" in response.text
+        response = admin_api.patch(detail, {"secret": "rotated"}, format="json")
+        assert response.status_code == 400
+        assert "last way to sign in" in response.json()["secret"][0]
         provider.refresh_from_db()
         assert provider.enabled
+        assert provider.client_id == "housecairn"
+        assert get_adapter().get_app(None, "company").secret == SECRET
         assert not provider.is_deleted
 
 

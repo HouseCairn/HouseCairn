@@ -63,9 +63,11 @@ Rules that protect accounts and homes:
   change. A new client identifier alone keeps the secret.
 - A provider that **a home requires cannot be deleted**. Disable it: the homes then follow
   the way out described below.
-- You cannot disable or delete **your last way to sign in**: set a password or a passkey, or
-  link another provider, first. In the administration site, the **only administrator**
-  cannot be switched off nor lose the administrator role.
+- You cannot disable or delete **your last way to sign in**, nor change its issuer, client
+  identifier or secret: set a password or a passkey, or link another provider, first. This
+  protects only you: check the linked accounts of a provider before you change it. In the
+  administration site, the **only administrator** cannot be switched off nor lose the
+  administrator role.
 
 Each change is in the instance audit log; the client secret never is.
 

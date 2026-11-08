@@ -76,8 +76,8 @@ msgstr "Un nouvel **émetteur efface le secret client**, sauf si vous saisissez 
 msgid "A provider that **a home requires cannot be deleted**. Disable it: the homes then follow the way out described below."
 msgstr "Un fournisseur **exigé par un logement ne peut pas être supprimé**. Désactivez-le : les logements suivent alors la sortie décrite plus bas."
 
-msgid "You cannot disable or delete **your last way to sign in**: set a password or a passkey, or link another provider, first. In the administration site, the **only administrator** cannot be switched off nor lose the administrator role."
-msgstr "Vous ne pouvez pas désactiver ni supprimer **votre dernier moyen de connexion** : définissez d'abord un mot de passe ou une passkey, ou liez un autre fournisseur. Dans le site d'administration, le **seul administrateur** ne peut être ni désactivé ni privé du rôle d'administrateur."
+msgid "You cannot disable or delete **your last way to sign in**, nor change its issuer, client identifier or secret: set a password or a passkey, or link another provider, first. This protects only you: check the linked accounts of a provider before you change it. In the administration site, the **only administrator** cannot be switched off nor lose the administrator role."
+msgstr "Vous ne pouvez pas désactiver ni supprimer **votre dernier moyen de connexion**, ni changer son émetteur, son identifiant client ou son secret : définissez d'abord un mot de passe ou une passkey, ou liez un autre fournisseur. Cette protection ne vaut que pour vous : vérifiez les comptes liés à un fournisseur avant de le modifier. Dans le site d'administration, le **seul administrateur** ne peut être ni désactivé ni privé du rôle d'administrateur."
 
 msgid "Each change is in the instance audit log; the client secret never is."
 msgstr "Chaque modification figure au journal d'audit de l'instance ; le secret client, jamais."
