@@ -7,6 +7,7 @@ from django.conf import settings
 from django.utils.dates import MONTHS
 from django.utils.translation import gettext_lazy as _
 
+from housecairn.accounts import names
 from housecairn.accounts.models import User
 from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item
@@ -47,10 +48,16 @@ class ItemChoiceField(forms.ModelChoiceField[Item]):
 
 
 class PersonChoiceField(forms.ModelChoiceField[User]):
-    """A member of the home, by their name and never by their address (docs/adr/0045)."""
+    """A member of the home, by their name (docs/adr/0045).
+
+    The address is added, in brackets, only to tell apart two members of the same name.
+    """
 
     def label_from_instance(self, obj: User) -> str:
-        return person_name(obj)
+        shown = getattr(self, "_labels", None)
+        if shown is None:
+            shown = self._labels = names.labels(self.queryset or [])
+        return shown.get(obj.pk) or person_name(obj)
 
 
 class TaskForm(forms.ModelForm[Task]):

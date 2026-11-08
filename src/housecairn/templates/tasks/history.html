@@ -38,7 +38,7 @@
       <label for="filter-person">{% translate "Done by" %}</label>
       <select id="filter-person" name="person">
         <option value="">{% translate "Everyone" %}</option>
-        {% for candidate in members %}<option value="{{ candidate.id }}"{% if selection.person == candidate.id %} selected{% endif %}>{{ candidate|person }}</option>{% endfor %}
+        {% for candidate in members %}<option value="{{ candidate.id }}"{% if selection.person == candidate.id %} selected{% endif %}>{{ candidate.label }}</option>{% endfor %}
       </select>
     </p>
     <p>

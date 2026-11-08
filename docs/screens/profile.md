@@ -5,7 +5,9 @@ How you are named to the other members of your homes, at `/me/profile/` (**More*
 
 - **Display name**: up to 60 characters, on one line. It is what people see on the tasks you
   are in charge of, in the [history](history.md), in [Today](today.md) and in the
-  [household](household.md).
+  [household](household.md). It cannot contain an `@` (it would pass for an address) and must
+  show at least one visible character. Where you pick a person (the assignee of a task, the
+  "Done by" filter), two members of the same name are told apart by their address in brackets.
 
 Without a display name you are shown by your full name if you have one, and otherwise by the
 part of your email address before the `@`. Your whole address is never used to name you on

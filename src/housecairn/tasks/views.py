@@ -18,6 +18,7 @@ from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
+from housecairn.accounts import names
 from housecairn.core.redirects import is_safe_redirect
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import open_homes_for_request
@@ -482,6 +483,9 @@ class HistoryView(HomeTasksMixin, TemplateView):
         rows = agenda.history(self.home, selection)
         page = Paginator(rows, PAGE_SIZE).get_page(params.get("page"))
         kept = [(k, v) for k, v in params.items() if k not in ("page", "undo") and v]
+        members = list(services.members_for_forms(self.home))
+        shown = names.labels(members)
+        people = [{"id": m.pk, "label": shown[m.pk]} for m in members]
         return super().get_context_data(
             **self.page(
                 page=page,
@@ -490,7 +494,7 @@ class HistoryView(HomeTasksMixin, TemplateView):
                 rooms=services.rooms_for_forms(self.home),
                 items=services.items_for_forms(self.home),
                 contractors=services.contractors_of(self.home),
-                members=services.members_for_forms(self.home),
+                members=people,
                 query_string=urlencode(kept),
                 filtered=bool(kept),
             ),

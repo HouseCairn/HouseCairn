@@ -10,9 +10,9 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from housecairn.accounts import services
-from housecairn.apitokens import services as token_services
 from housecairn.accounts.models import User
 from housecairn.accounts.names import person_name
+from housecairn.apitokens import services as token_services
 from housecairn.homes.models import Home
 
 pytestmark = pytest.mark.django_db
@@ -63,6 +63,51 @@ class TestService:
             before.password,
             before.is_staff,
         )
+
+
+MISLEADING = [
+    "alice@example.com",
+    "Ally @ work",
+    "@boss",
+    "Ally\uff20x",  # a full-width at sign
+    "\u3164",  # Hangul filler
+    "\u115f\u1160",  # Hangul choseong and jungseong fillers
+    "\u2800",  # blank Braille pattern
+    "\u2800 \u3164 \u00a0",
+    "\u0301\u0301",  # combining marks with nothing to stand on
+]
+
+
+class TestMisleadingNames:
+    """A name that passes for an address, or that draws nothing, is no name."""
+
+    @pytest.mark.parametrize("value", MISLEADING)
+    def test_the_service_refuses_it(self, alice: User, value: str) -> None:
+        with pytest.raises(ValidationError):
+            services.set_display_name(alice, value)
+        alice.refresh_from_db()
+        assert alice.display_name == ""
+
+    @pytest.mark.parametrize("value", MISLEADING)
+    def test_the_screen_refuses_it(self, client: Client, alice: User, value: str) -> None:
+        client.force_login(alice)
+        response = client.post(reverse("profile"), {"display_name": value})
+        assert response.status_code == 200
+        alice.refresh_from_db()
+        assert alice.display_name == ""
+
+    @pytest.mark.parametrize("value", MISLEADING)
+    def test_the_api_refuses_it(self, api_client: APIClient, alice: User, value: str) -> None:
+        api_client.force_authenticate(alice)
+        response = api_client.patch(reverse("api-v1:me"), {"display_name": value}, format="json")
+        assert response.status_code == 400
+        assert "display_name" in response.json()
+        alice.refresh_from_db()
+        assert alice.display_name == ""
+
+    @pytest.mark.parametrize("value", ["Zoë", "Chloé Durand", "李雷", "Ally 🙂", "O'Neil", ""])
+    def test_a_real_name_stays_welcome(self, alice: User, value: str) -> None:
+        assert services.set_display_name(alice, value).display_name == value
 
 
 class TestScreen:

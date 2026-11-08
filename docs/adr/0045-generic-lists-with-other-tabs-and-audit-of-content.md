@@ -88,6 +88,13 @@ whole address except where the address is the subject (their account, an invitat
 sheet of a member). The administration site still shows the display name read only and
 cannot take an account over (ADR 0022).
 
+A display name is refused when it contains an `@` (in any width: the full-width form counts),
+which would pass for an address, or when nothing in it draws (spaces, the Hangul fillers
+U+115F, U+1160, U+3164 and U+FFA0, the blank Braille pattern U+2800, bare combining marks).
+Emptying it stays possible. In a list where one picks a person (the assignee of a task, the
+"Done by" filter of the history), two members of the same name, compared without case, show
+their address in brackets after it; a name that is alone shows no address.
+
 **Estimated duration.** A number and a unit (minutes, hours, days) on the screens, minutes
 in the data and in the API, between one minute and thirty days; the service layer checks the
 bounds for every way in. The page shows it as people say it ("45 min", "1 h 30", "2 days"),
@@ -132,8 +139,9 @@ keeps the `tel:` link of the sheet safe.
 - The household page and the member filters name people without their address; an
   administrator who wants an address finds it on the sheet of the member (owners) or in the
   administration site.
-- Two members who share a display name look alike in a list; the sheet of a member tells them
-  apart. The name is a courtesy, not an identity.
+- Two members who share a display name are told apart in the lists by their address in
+  brackets. Elsewhere they look alike; the sheet of a member tells them apart. The name is a
+  courtesy, not an identity.
 - Changing the hemisphere moves the window of the tasks on a predefined season, not their due
   dates: an occurrence already dated stays where it is.
 - A contractor is found by name inside a home. Two contractors with the same name stay

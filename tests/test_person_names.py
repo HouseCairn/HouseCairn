@@ -119,3 +119,58 @@ def test_the_api_names_the_assignee_and_who_closed_it(
     assert "Bobby" in {r["completed_by_name"] for r in rows}
     members = api_client.get(reverse("api-v1:home-member-list", kwargs=kwargs)).json()["results"]
     assert {m["user"]["name"] for m in members} == {"alice", "Bobby"}
+
+
+class TestSameName:
+    """Two members of the same name show their address, in brackets, to be told apart."""
+
+    @pytest.fixture
+    def twins(
+        self,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        add_member: Callable[..., Membership],
+        make_user: Callable[..., User],
+    ) -> User:
+        carol = make_user("carol@example.com")
+        add_member(alice_home, bob, Role.MEMBER)
+        add_member(alice_home, carol, Role.MEMBER)
+        account_services.set_display_name(bob, "Sam")
+        account_services.set_display_name(carol, "sam")  # case is not a difference
+        return carol
+
+    def test_the_assignee_list(
+        self, client: Client, alice: User, alice_home: Home, twins: User
+    ) -> None:
+        client.force_login(alice)
+        text = client.get(reverse("tasks:create", kwargs={"home_id": alice_home.id})).text
+        assert ">Sam (bob@example.com)</option>" in text
+        assert ">sam (carol@example.com)</option>" in text
+        # Alone with their name, a member shows no address.
+        assert ">alice</option>" in text
+
+    def test_the_done_by_list(
+        self, client: Client, alice: User, alice_home: Home, twins: User
+    ) -> None:
+        client.force_login(alice)
+        text = client.get(reverse("tasks:history", kwargs={"home_id": alice_home.id})).text
+        assert ">Sam (bob@example.com)</option>" in text
+        assert ">sam (carol@example.com)</option>" in text
+        assert ">alice</option>" in text
+
+    def test_a_name_alone_in_its_home_shows_no_address(
+        self,
+        client: Client,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        add_member: Callable[..., Membership],
+    ) -> None:
+        add_member(alice_home, bob, Role.MEMBER)
+        account_services.set_display_name(bob, "Bobby")
+        client.force_login(alice)
+        for name in ("create", "history"):
+            text = client.get(reverse(f"tasks:{name}", kwargs={"home_id": alice_home.id})).text
+            assert ">Bobby</option>" in text
+            assert "bob@example.com" not in text
