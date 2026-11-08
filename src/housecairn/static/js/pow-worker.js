@@ -17,7 +17,34 @@ function zeroBits (bytes) {
   return bits
 }
 
+// Bounds of the difficulty: the same as HOUSECAIRN_SIGNUP_POW_BITS (settings.py).
+const MIN_BITS = 8
+const MAX_BITS = 24
+const CHALLENGE = /^[A-Za-z0-9_-]{8,128}$/
+
+// A dedicated worker is created by pow.js and only that page can post to it, so the
+// origin of a message is the empty string. Anything else is refused explicitly (a
+// message from another origin must never start the search), and so is any message
+// that is not exactly { challenge: string, bits: integer within bounds }.
+function wellFormed (data) {
+  return (
+    data !== null &&
+    typeof data === 'object' &&
+    typeof data.challenge === 'string' &&
+    CHALLENGE.test(data.challenge) &&
+    Number.isInteger(data.bits) &&
+    data.bits >= MIN_BITS &&
+    data.bits <= MAX_BITS
+  )
+}
+
 self.onmessage = async (event) => {
+  if (event.origin !== '' && event.origin !== self.location.origin) {
+    return
+  }
+  if (!wellFormed(event.data)) {
+    return
+  }
   const { challenge, bits } = event.data
   const encoder = new TextEncoder()
   for (let n = 0; ; n++) {
