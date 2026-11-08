@@ -142,6 +142,48 @@ class TestRecord:
         assert mine.home_id == alice_home.id
 
 
+TASK_FORM = {
+    "title": "Service the boiler",
+    "priority": "normal",
+    "repeat_mode": "fixed",  # without a date: refused by the service, after the form passed
+    "repeat_interval": "1",
+    "repeat_unit": "year",
+    "hide_days_before": "0",
+    "contractor_name": "Brand New Ltd",
+}
+
+
+class TestRefusedFormLeavesNothing:
+    def test_a_refused_new_task_creates_no_contractor_and_no_audit_line(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        response = signed_in.post(
+            reverse("tasks:create", kwargs={"home_id": alice_home.id}), TASK_FORM
+        )
+        assert response.status_code == 200  # the form again, with its error
+        assert not Contractor.objects.filter(name="Brand New Ltd").exists()
+        assert not AuditEvent.objects.filter(action__startswith="contractor.").exists()
+        assert not Task.objects.exists()
+
+    def test_a_refused_edit_creates_no_contractor_and_no_audit_line(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        task = services.create_task(alice, alice_home, title="Service the boiler")
+        before = AuditEvent.objects.count()
+        response = signed_in.post(
+            reverse("tasks:edit", kwargs={"home_id": alice_home.id, "task_id": task.id}), TASK_FORM
+        )
+        assert response.status_code == 200
+        assert not Contractor.objects.filter(name="Brand New Ltd").exists()
+        assert AuditEvent.objects.count() == before
+
+    def test_an_accepted_form_still_creates_both(self, signed_in: Client, alice_home: Home) -> None:
+        data = {**TASK_FORM, "repeat_mode": "once"}
+        response = signed_in.post(reverse("tasks:create", kwargs={"home_id": alice_home.id}), data)
+        assert response.status_code == 302
+        assert Task.objects.get().contractor == Contractor.objects.get(name="Brand New Ltd")
+
+
 class TestScreens:
     def test_the_list_and_the_sheet(
         self, signed_in: Client, alice_home: Home, alice: User, contractor: Contractor

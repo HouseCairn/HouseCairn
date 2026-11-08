@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
@@ -213,10 +214,12 @@ class TaskCreateView(TaskFormMixin):
     def form_valid(self, form: forms.TaskForm) -> HttpResponse:
         data, extra = self.split(form)
         try:
-            self.contractor_of(data, extra)
-            task = services.create_task(
-                self.request.user, self.home, due_on=extra["due_on"], **data
-            )
+            # One unit: a form refused leaves no contractor, and no audit line, behind.
+            with transaction.atomic():
+                self.contractor_of(data, extra)
+                task = services.create_task(
+                    self.request.user, self.home, due_on=extra["due_on"], **data
+                )
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)
@@ -276,8 +279,9 @@ class TaskEditView(TaskFormMixin):
         task = self.get_task()
         data, extra = self.split(form)
         try:
-            self.contractor_of(data, extra)
-            services.update_task(self.request.user, task, due_on=extra["due_on"], **data)
+            with transaction.atomic():
+                self.contractor_of(data, extra)
+                services.update_task(self.request.user, task, due_on=extra["due_on"], **data)
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)
