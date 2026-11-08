@@ -20,6 +20,13 @@ with it on the project's
   API, each paired with its environment variable: a variable that is set wins and locks the
   field. Secrets are encrypted in the database. See [Settings](administration/settings.md).
 
+- **Sign-in providers in the interface.** An instance administrator can declare OpenID
+  Connect providers on **Instance administration, Sign-in providers**, or by the API, next to
+  the one the `OIDC_*` variables set, which stays read only. A **Test the issuer** button
+  reads the provider's configuration. The administrator cannot remove their own last way to
+  sign in, and the only administrator cannot be switched off in the administration site. See
+  [Single sign-on](administration/oidc.md).
+
 ### Upgrade notes
 
 - **Environment variables are checked a little more strictly.** A boolean variable such as

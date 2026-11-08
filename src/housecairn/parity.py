@@ -32,6 +32,8 @@ PARITY: dict[str, tuple[str, ...]] = {
     "instance:unlock": ("api-v1:instance-unlock",),
     "instance:audit": ("api-v1:instance-audit-list",),
     "instance:settings": ("api-v1:instance-settings",),
+    "instance:providers": ("api-v1:instance-provider-list", "api-v1:instance-provider-check"),
+    "instance:provider": ("api-v1:instance-provider-detail", "api-v1:instance-provider-check"),
     # Creating the account of an instance invitation is account management, which the
     # API leaves to sign-in (see EXEMPT_MODULE_PREFIXES).
     "instance-invitation": ("api-v1:instance-invitation-list",),

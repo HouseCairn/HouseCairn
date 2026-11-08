@@ -34,6 +34,8 @@ HELP_PAGES: dict[str, str] = {
     "instance:unlock": "screens/instance/",
     "instance:audit": "screens/instance/",
     "instance:settings": "screens/instance-settings/",
+    "instance:providers": "screens/sign-in-providers/",
+    "instance:provider": "screens/sign-in-providers/",
     "instance-invitation": "screens/instance-invitation/",
     "homes:member": "screens/member/",
     "homes:member-role": "screens/member/",

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Sign-in providers" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'instance:overview' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Instance administration" %}</a>
+  <h1>{% translate "Sign-in providers" %}</h1>
+  <p class="small">{% translate "OpenID Connect providers people can sign in with, as well as the built-in sign-in. A provider set by environment variables is shown read only. An identity never reaches an existing account through its address: each person links it once signed in." %}</p>
+
+  {% if providers %}
+    <div class="list">
+      {% for provider in providers %}
+        {% if provider.locked %}
+          <section class="card" aria-labelledby="provider-{{ provider.slug }}">
+            <p class="row-title" id="provider-{{ provider.slug }}">{{ provider.name }}</p>
+            <dl class="facts">
+              <div><dt>{% translate "Identifier" %}</dt><dd><code>{{ provider.slug }}</code></dd></div>
+              <div><dt>{% translate "Issuer" %}</dt><dd>{{ provider.issuer }}</dd></div>
+              <div><dt>{% translate "Client identifier" %}</dt><dd>{{ provider.client_id }}</dd></div>
+              <div><dt>{% translate "Client secret" %}</dt><dd>{% if provider.secret_set %}{% translate "set" %}{% else %}{% translate "not set" %}{% endif %}</dd></div>
+              <div><dt>{% translate "Linked accounts" %}</dt><dd>{{ provider.linked_accounts }}</dd></div>
+            </dl>
+            <p class="small helptext">{% blocktranslate %}Set by the variables <code>OIDC_SERVER_URL</code>, <code>OIDC_CLIENT_ID</code> and the others: change it there.{% endblocktranslate %} <a href="{{ docs_url }}">{% translate "Documentation" %}</a></p>
+          </section>
+        {% else %}
+          <a class="row" href="{% url 'instance:provider' slug=provider.slug %}">
+            <span class="row-body">
+              <span class="row-title">{{ provider.name }}</span>
+              <span class="row-text">{% if provider.enabled %}{% translate "enabled" %}{% else %}{% translate "disabled" %}{% endif %} · <code>{{ provider.slug }}</code> · {% blocktranslate count counter=provider.linked_accounts %}{{ counter }} linked account{% plural %}{{ counter }} linked accounts{% endblocktranslate %}</span>
+            </span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="small card">{% translate "No provider yet: people sign in with a password or a passkey." %}</p>
+  {% endif %}
+
+  <h2>{% translate "Add a provider" %}</h2>
+  <form method="post" action="{% url 'instance:providers' %}" class="card">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p class="small">{% blocktranslate %}Redirect URI to register at the provider: <code>{{ callback_base }}&lt;identifier&gt;/login/callback/</code>{% endblocktranslate %}</p>
+    <button type="submit" class="button-block">{% translate "Add" %}</button>
+    <button type="submit" name="test" value="1" formnovalidate class="button-secondary button-block">{% translate "Test the issuer" %}</button>
+    <p class="small">{% translate "Reads the issuer's OpenID configuration and checks it; nothing is saved. You can save without testing." %}</p>
+  </form>
+{% endblock content %}

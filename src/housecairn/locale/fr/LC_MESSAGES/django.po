@@ -2242,3 +2242,194 @@ msgstr "oui"
 
 msgid "{item} is not a domain name."
 msgstr "{item} n'est pas un nom de domaine."
+
+msgid "The issuer's answer is not a valid OpenID configuration."
+msgstr "La réponse de l'émetteur n'est pas une configuration OpenID valide."
+
+msgid "%(count)s home(s) require this provider: it cannot be deleted. Disable it instead; the owners, or you from the instance page, can then remove the requirement."
+msgstr "%(count)s logement(s) exigent ce fournisseur : il ne peut pas être supprimé. Désactivez-le plutôt ; les propriétaires, ou vous depuis la page de l'instance, pourront alors retirer l'exigence."
+
+msgid "Accounts are linked to this provider, so its issuer cannot change: declare a new provider for another issuer."
+msgstr "Des comptes sont liés à ce fournisseur, son émetteur ne peut donc pas changer : déclarez un nouveau fournisseur pour un autre émetteur."
+
+msgid "Accounts are linked to this provider: another issuer could sign in as them. Declare a new provider for the new issuer."
+msgstr "Des comptes sont liés à ce fournisseur : un autre émetteur pourrait se connecter à leur place. Déclarez un nouveau fournisseur pour le nouvel émetteur."
+
+msgid "Add a provider"
+msgstr "Ajouter un fournisseur"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Client identifier"
+msgstr "Identifiant client"
+
+msgid "Client secret"
+msgstr "Secret client"
+
+msgid "Delete the provider"
+msgstr "Supprimer le fournisseur"
+
+msgid "Enabled"
+msgstr "Activé"
+
+msgid "Expected an https:// address, without query or credentials."
+msgstr "Une adresse https:// est attendue, sans paramètres ni identifiants."
+
+msgid "Expected an https:// address."
+msgstr "Une adresse https:// est attendue."
+
+msgid "From 2 to 32 lowercase letters, digits or hyphens, starting with a letter or a digit."
+msgstr "De 2 à 32 lettres minuscules, chiffres ou tirets, en commençant par une lettre ou un chiffre."
+
+msgid "Homes that require it"
+msgstr "Logements qui l'exigent"
+
+msgid "Identifier"
+msgstr "Identifiant"
+
+msgid "In the redirect URI; lowercase letters, digits and hyphens. It never changes and is never given to another provider."
+msgstr "Dans l'URI de redirection ; lettres minuscules, chiffres et tirets. Il ne change jamais et n'est jamais donné à un autre fournisseur."
+
+msgid "Issuer"
+msgstr "Émetteur"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "No provider yet: people sign in with a password or a passkey."
+msgstr "Aucun fournisseur pour l'instant : on se connecte par mot de passe ou par clé d'accès."
+
+msgid "On the button, such as Company SSO."
+msgstr "Sur le bouton, par exemple Company SSO."
+
+msgid "OpenID Connect providers people can sign in with, as well as the built-in sign-in. A provider set by environment variables is shown read only. An identity never reaches an existing account through its address: each person links it once signed in."
+msgstr "Les fournisseurs OpenID Connect par lesquels on peut se connecter, en plus de la connexion intégrée. Un fournisseur défini par des variables d'environnement est affiché en lecture seule. Une identité n'atteint jamais un compte existant par son adresse : chacun la lie une fois connecté."
+
+msgid "PKCE"
+msgstr "PKCE"
+
+msgid "People can no longer sign in with it; its identifier is never given to another provider. A provider that a home requires cannot be deleted: disable it instead."
+msgstr "On ne peut plus se connecter par lui ; son identifiant n'est jamais donné à un autre fournisseur. Un fournisseur exigé par un logement ne peut pas être supprimé : désactivez-le plutôt."
+
+msgid "Provider added."
+msgstr "Fournisseur ajouté."
+
+msgid "Provider deleted."
+msgstr "Fournisseur supprimé."
+
+msgid "Provider saved."
+msgstr "Fournisseur enregistré."
+
+msgid "Recommended; on by default."
+msgstr "Recommandé ; activé par défaut."
+
+msgid "Redirect URI to register at the provider: <code>%(callback_base)s&lt;identifier&gt;/login/callback/</code>"
+msgstr "URI de redirection à déclarer chez le fournisseur : <code>%(callback_base)s&lt;identifiant&gt;/login/callback/</code>"
+
+msgid "Redirect URI"
+msgstr "URI de redirection"
+
+msgid "Set by the variables <code>OIDC_SERVER_URL</code>, <code>OIDC_CLIENT_ID</code> and the others: change it there."
+msgstr "Défini par les variables <code>OIDC_SERVER_URL</code>, <code>OIDC_CLIENT_ID</code> et les autres : modifiez-le là."
+
+msgid "Shown on the sign-in page. Test the issuer before you enable it."
+msgstr "Affiché sur la page de connexion. Testez l'émetteur avant de l'activer."
+
+msgid "Sign-in provider %(provider)s added"
+msgstr "Fournisseur de connexion %(provider)s ajouté"
+
+msgid "Sign-in provider %(provider)s deleted"
+msgstr "Fournisseur de connexion %(provider)s supprimé"
+
+msgid "Sign-in provider %(provider)s: %(setting)s changed from %(old)s to %(new)s"
+msgstr "Fournisseur de connexion %(provider)s : %(setting)s passé de %(old)s à %(new)s"
+
+msgid "Sign-in provider %(provider)s: client secret changed"
+msgstr "Fournisseur de connexion %(provider)s : secret client modifié"
+
+msgid "Single sign-on through OpenID Connect"
+msgstr "Authentification unique par OpenID Connect"
+
+msgid "Test the issuer"
+msgstr "Tester l'émetteur"
+
+msgid "The OpenID configuration names another issuer."
+msgstr "La configuration OpenID nomme un autre émetteur."
+
+msgid "The identifier of a provider never changes."
+msgstr "L'identifiant d'un fournisseur ne change jamais."
+
+msgid "The issuer answers with a valid OpenID configuration."
+msgstr "L'émetteur répond par une configuration OpenID valide."
+
+msgid "The issuer could not be reached."
+msgstr "L'émetteur est injoignable."
+
+msgid "The issuer has no OpenID configuration at the usual address."
+msgstr "L'émetteur n'a pas de configuration OpenID à l'adresse habituelle."
+
+msgid "The issuer is not a valid https:// address."
+msgstr "L'émetteur n'est pas une adresse https:// valide."
+
+msgid "The issuer resolves to an address the instance does not call."
+msgstr "L'émetteur désigne une adresse que l'instance n'appelle pas."
+
+msgid "The secure connection to the issuer failed: check its certificate."
+msgstr "La connexion sécurisée à l'émetteur a échoué : vérifiez son certificat."
+
+msgid "This address cannot be an identity provider."
+msgstr "Cette adresse ne peut pas être un fournisseur d'identité."
+
+msgid "This field is required."
+msgstr "Ce champ est obligatoire."
+
+msgid "This identifier is or was already used."
+msgstr "Cet identifiant est ou a déjà été utilisé."
+
+msgid "This is the only administrator of the instance: make another account an administrator first."
+msgstr "C'est le seul administrateur de l'instance : nommez d'abord un autre compte administrateur."
+
+msgid "This is your last way to sign in: set a password or a passkey, or link another provider, first."
+msgstr "C'est votre dernier moyen de connexion : définissez d'abord un mot de passe ou une clé d'accès, ou liez un autre fournisseur."
+
+msgid "Unknown field."
+msgstr "Champ inconnu."
+
+msgid "Write only: it is never shown again. Empty: unchanged."
+msgstr "Écriture seule : il n'est plus jamais affiché. Vide : inchangé."
+
+msgid "client identifier"
+msgstr "identifiant client"
+
+msgid "client secret"
+msgstr "secret client"
+
+msgid "disabled"
+msgstr "désactivé"
+
+msgid "enabled"
+msgstr "activé"
+
+msgid "https:// address; its OpenID configuration is read below it."
+msgstr "Adresse https:// ; sa configuration OpenID est lue en dessous."
+
+msgid "identifier"
+msgstr "identifiant"
+
+msgid "issuer"
+msgstr "émetteur"
+
+msgid "sign-in provider"
+msgstr "fournisseur de connexion"
+
+msgid "sign-in providers"
+msgstr "fournisseurs de connexion"
+
+msgid "%(counter)s linked account"
+msgid_plural "%(counter)s linked accounts"
+msgstr[0] "%(counter)s compte lié"
+msgstr[1] "%(counter)s comptes liés"
+
+msgid "Reads the issuer's OpenID configuration and checks it; nothing is saved. You can save without testing."
+msgstr "Lit la configuration OpenID de l'émetteur et la vérifie ; rien n'est enregistré. Vous pouvez enregistrer sans tester."

@@ -32,10 +32,10 @@ from housecairn.homes import sso
 from housecairn.homes.forms import InvitationSignupForm
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import allow
-from housecairn.instance import config, emails, registry, services
+from housecairn.instance import config, emails, providers, registry, services
 from housecairn.instance import settings_services as services_settings
-from housecairn.instance.forms import InstanceInviteForm, SettingsSectionForm
-from housecairn.instance.models import InstanceInvitation
+from housecairn.instance.forms import InstanceInviteForm, ProviderForm, SettingsSectionForm
+from housecairn.instance.models import InstanceInvitation, OidcProvider
 from housecairn.instance.reauth import signed_in_recently
 
 DELIVERY_FAILED = _lazy(
@@ -370,6 +370,124 @@ class SettingsView(InstanceAdminMixin, TemplateView):
             ok, text = services_settings.check_email(actor)
             (messages.success if ok else messages.error)(request, text)
         return redirect(f"{reverse('instance:settings')}#email")
+
+
+def _reauthenticate_to(request: HttpRequest, url: str) -> HttpResponse | None:
+    if signed_in_recently(request):
+        return None
+    messages.warning(
+        request, _("Confirm your sign-in to change settings, then make the change again.")
+    )
+    return redirect(f"{reverse('account_reauthenticate')}?{urlencode({'next': url})}")
+
+
+def _form_errors(form: ProviderForm, exc: ValidationError) -> None:
+    for key, errors in exc.message_dict.items():
+        for error in errors:
+            form.add_error(key if key in form.fields else None, error)
+
+
+def _test_issuer(request: HttpRequest, form: ProviderForm) -> None:
+    """The test button: checks the issuer typed in the form; saves nothing."""
+    if not allow(request, "housecairn_settings_test"):
+        messages.error(request, _("Too many tests in a short time. Try again later."))
+        return
+    ok, text = providers.check(request.user, str(form.data.get("issuer", "")))  # type: ignore[arg-type]
+    (messages.success if ok else messages.error)(request, text)
+
+
+class ProvidersView(InstanceAdminMixin, TemplateView):
+    """The sign-in providers: those of the variables, read only, and those of the interface."""
+
+    template_name = "instance/providers.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context.update(
+            providers=providers.describe_all(),
+            form=kwargs.get("form") or ProviderForm(),
+            callback_base=self.request.build_absolute_uri("/accounts/oidc/"),
+            variables=providers.ENVIRONMENT_VARIABLES,
+            docs_url=docs_page_url("administration/oidc/", get_language()),
+        )
+        return context
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        form = ProviderForm(request.POST)
+        if "test" in request.POST:
+            _test_issuer(request, form)
+            form.is_valid()
+            return self.render_to_response(self.get_context_data(form=form))
+        if (response := _reauthenticate_to(request, reverse("instance:providers"))) is not None:
+            return response
+        if form.is_valid():
+            try:
+                provider = providers.create(request.user, form.data_for_service())  # type: ignore[arg-type]
+            except ValidationError as exc:
+                _form_errors(form, exc)
+            else:
+                messages.success(request, _("Provider added."))
+                return redirect("instance:provider", slug=provider.slug)
+        return self.render_to_response(self.get_context_data(form=form), status=422)
+
+
+class ProviderView(InstanceAdminMixin, TemplateView):
+    """One provider of the interface: change, test, delete. One set by variables is a 404."""
+
+    template_name = "instance/provider.html"
+
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
+        self.provider = OidcProvider.objects.filter(slug=kwargs["slug"]).first()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        if self.provider is None:
+            raise Http404
+        context = super().get_context_data(**kwargs)
+        initial = {f: getattr(self.provider, f) for f in providers.EDITABLE}
+        context.update(
+            provider=self.provider,
+            state=providers.describe(self.provider),
+            form=kwargs.get("form") or ProviderForm(initial=initial, editing=True),
+            callback=self.request.build_absolute_uri(
+                f"/accounts/oidc/{self.provider.slug}/login/callback/"
+            ),
+            docs_url=docs_page_url("administration/oidc/", get_language()),
+        )
+        return context
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if self.provider is None:
+            raise Http404
+        here = reverse("instance:provider", kwargs={"slug": self.provider.slug})
+        form = ProviderForm(request.POST, editing=True)
+        if "test" in request.POST:
+            _test_issuer(request, form)
+            form.is_valid()
+            return self.render_to_response(self.get_context_data(form=form))
+        if (response := _reauthenticate_to(request, here)) is not None:
+            return response
+        actor: User = request.user  # type: ignore[assignment]
+        if "delete" in request.POST:
+            try:
+                providers.delete(actor, self.provider)
+            except ValidationError as exc:
+                for message in exc.messages:
+                    messages.error(request, message)
+                return redirect(here)
+            messages.success(request, _("Provider deleted."))
+            return redirect("instance:providers")
+        if form.is_valid():
+            try:
+                changed = providers.update(actor, self.provider, form.data_for_service())
+            except ValidationError as exc:
+                _form_errors(form, exc)
+            else:
+                messages.success(
+                    request, _("Provider saved.") if changed else _("Nothing to change.")
+                )
+                return redirect(here)
+        return self.render_to_response(self.get_context_data(form=form), status=422)
 
 
 def _display(state: config.State) -> str:

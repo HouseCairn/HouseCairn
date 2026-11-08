@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 00:04+0000\n"
+"POT-Creation-Date: 2026-11-08 12:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -40,6 +40,45 @@ msgstr "`OIDC_SERVER_URL` est l'émetteur (issuer) : HouseCairn lit `/.well-know
 msgid "Restart the container, then sign in right away with the address set in `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, which the provider must have verified."
 msgstr "Redémarrez le conteneur, puis connectez-vous aussitôt avec l'adresse définie dans `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, que le fournisseur doit avoir vérifiée."
 
+msgid "Declaring providers in the interface"
+msgstr "Déclarer des fournisseurs dans l'interface"
+
+msgid "An administrator can also declare providers on **Instance administration, Sign-in providers** (see [Sign-in providers](../screens/sign-in-providers.md)), or with the API (`/api/v1/instance/providers/`), without a restart. A provider set by the variables above is listed there read only; change it in the variables."
+msgstr "Un administrateur peut aussi déclarer des fournisseurs dans **Administration de l'instance, Fournisseurs de connexion** (voir [Fournisseurs de connexion](../screens/sign-in-providers.md)), ou par l'API (`/api/v1/instance/providers/`), sans redémarrage. Un fournisseur défini par les variables ci-dessus y figure en lecture seule ; modifiez-le dans les variables."
+
+msgid "Each provider of the interface has:"
+msgstr "Chaque fournisseur de l'interface a :"
+
+msgid "an **identifier**, such as `company`, chosen once: it is in the redirect URI to register at the provider, `https://housecairn.example.com/accounts/oidc/company/login/callback/`. It never changes and is never given to another provider, even after deletion;"
+msgstr "un **identifiant**, par exemple `company`, choisi une fois : il figure dans l'URI de redirection à déclarer chez le fournisseur, `https://housecairn.example.com/accounts/oidc/company/login/callback/`. Il ne change jamais et n'est jamais donné à un autre fournisseur, même après suppression ;"
+
+msgid "a **name**, on the button: \"Continue with\" and the name, such as `Company SSO`;"
+msgstr "un **nom**, sur le bouton : « Continuer avec » suivi du nom, par exemple `Company SSO` ;"
+
+msgid "the **issuer**, an `https://` address, the client identifier and the client secret (write only, encrypted in the database);"
+msgstr "l'**émetteur**, une adresse `https://`, l'identifiant client et le secret client (écriture seule, chiffré en base) ;"
+
+msgid "**PKCE**, on by default, and **Enabled**, off by default: declare the provider, test it, then enable it."
+msgstr "**PKCE**, activé par défaut, et **Activé**, désactivé par défaut : déclarez le fournisseur, testez-le, puis activez-le."
+
+msgid "**Test the issuer** reads the issuer's OpenID configuration and says whether it is valid; it is never required to save. The instance calls only `https://` addresses for it, never its own address nor a link-local one, and follows no redirect."
+msgstr "**Tester l'émetteur** lit la configuration OpenID de l'émetteur et dit si elle est valide ; ce test n'est jamais obligatoire pour enregistrer. L'instance n'appelle pour cela que des adresses `https://`, jamais sa propre adresse ni une adresse lien-local, et ne suit aucune redirection."
+
+msgid "Rules that protect accounts and homes:"
+msgstr "Règles qui protègent les comptes et les logements :"
+
+msgid "Once accounts are linked to a provider, its **issuer cannot change**: another issuer could sign in as them. Declare a new provider for the new issuer."
+msgstr "Dès que des comptes sont liés à un fournisseur, son **émetteur ne peut plus changer** : un autre émetteur pourrait se connecter à leur place. Déclarez un nouveau fournisseur pour le nouvel émetteur."
+
+msgid "A provider that **a home requires cannot be deleted**. Disable it: the homes then follow the way out described below."
+msgstr "Un fournisseur **exigé par un logement ne peut pas être supprimé**. Désactivez-le : les logements suivent alors la sortie décrite plus bas."
+
+msgid "You cannot disable or delete **your last way to sign in**: set a password or a passkey, or link another provider, first. In the administration site, the **only administrator** cannot be switched off nor lose the administrator role."
+msgstr "Vous ne pouvez pas désactiver ni supprimer **votre dernier moyen de connexion** : définissez d'abord un mot de passe ou une passkey, ou liez un autre fournisseur. Dans le site d'administration, le **seul administrateur** ne peut être ni désactivé ni privé du rôle d'administrateur."
+
+msgid "Each change is in the instance audit log; the client secret never is."
+msgstr "Chaque modification figure au journal d'audit de l'instance ; le secret client, jamais."
+
 msgid "Who gets an account"
 msgstr "Qui obtient un compte"
 
@@ -58,8 +97,8 @@ msgstr "Un compte local existant n'est jamais repris par une identité qui en pa
 msgid "Requiring single sign-on for a home"
 msgstr "Exiger l'authentification unique pour un logement"
 
-msgid "Providers are declared by the administrator of the instance only, with the variables above. Single sign-on is never required for the whole instance: the built-in sign-in (password, passkey, second factor) stays the default."
-msgstr "Seul l'administrateur de l'instance déclare les fournisseurs, par les variables ci-dessus. L'authentification unique n'est jamais exigée pour toute l'instance : la connexion intégrée (mot de passe, passkey, deuxième facteur) reste le défaut."
+msgid "Providers are declared by the administrator of the instance only, with the variables above or in the interface. Single sign-on is never required for the whole instance: the built-in sign-in (password, passkey, second factor) stays the default."
+msgstr "Seul l'administrateur de l'instance déclare les fournisseurs, par les variables ci-dessus ou dans l'interface. L'authentification unique n'est jamais exigée pour toute l'instance : la connexion intégrée (mot de passe, passkey, deuxième facteur) reste le défaut."
 
 msgid "An owner can require that the members of one home sign in through a declared provider, from **Household and roles**. The rule is checked each time the home is opened, by the web and by the API:"
 msgstr "Un propriétaire peut exiger que les membres d'un logement se connectent par un fournisseur déclaré, depuis **Foyer et rôles**. La règle est contrôlée à chaque ouverture du logement, par le web comme par l'API :"

@@ -31,6 +31,40 @@ in the code. Single sign-on is off until `OIDC_SERVER_URL` is set
 3. Restart the container, then sign in right away with the address set in
    `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, which the provider must have verified.
 
+## Declaring providers in the interface
+
+An administrator can also declare providers on **Instance administration, Sign-in
+providers** (see [Sign-in providers](../screens/sign-in-providers.md)), or with the API
+(`/api/v1/instance/providers/`), without a restart. A provider set by the variables above
+is listed there read only; change it in the variables.
+
+Each provider of the interface has:
+
+- an **identifier**, such as `company`, chosen once: it is in the redirect URI to register
+  at the provider, `https://housecairn.example.com/accounts/oidc/company/login/callback/`.
+  It never changes and is never given to another provider, even after deletion;
+- a **name**, on the button: "Continue with" and the name, such as `Company SSO`;
+- the **issuer**, an `https://` address, the client identifier and the client secret (write
+  only, encrypted in the database);
+- **PKCE**, on by default, and **Enabled**, off by default: declare the provider, test it,
+  then enable it.
+
+**Test the issuer** reads the issuer's OpenID configuration and says whether it is valid; it
+is never required to save. The instance calls only `https://` addresses for it, never its
+own address nor a link-local one, and follows no redirect.
+
+Rules that protect accounts and homes:
+
+- Once accounts are linked to a provider, its **issuer cannot change**: another issuer
+  could sign in as them. Declare a new provider for the new issuer.
+- A provider that **a home requires cannot be deleted**. Disable it: the homes then follow
+  the way out described below.
+- You cannot disable or delete **your last way to sign in**: set a password or a passkey, or
+  link another provider, first. In the administration site, the **only administrator**
+  cannot be switched off nor lose the administrator role.
+
+Each change is in the instance audit log; the client secret never is.
+
 ## Who gets an account
 
 - **First sign-in of a new instance**: while the instance has never had an
@@ -50,7 +84,7 @@ in the code. Single sign-on is off until `OIDC_SERVER_URL` is set
 ## Requiring single sign-on for a home
 
 Providers are declared by the administrator of the instance only, with the
-variables above. Single sign-on is never required for the whole instance: the
+variables above or in the interface. Single sign-on is never required for the whole instance: the
 built-in sign-in (password, passkey, second factor) stays the default.
 
 An owner can require that the members of one home sign in through a declared

@@ -1,0 +1,42 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 12:24+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Sign-in providers"
+msgstr "Fournisseurs de connexion"
+
+msgid "The OpenID Connect providers of the instance, at `/instance/providers/`, reached from **Instance administration**. Administrators only; anyone else gets a 404."
+msgstr "Les fournisseurs OpenID Connect de l'instance, à `/instance/providers/`, depuis **Administration de l'instance**. Réservé aux administrateurs ; toute autre personne obtient une 404."
+
+msgid "**Set by variables**: the provider of the `OIDC_*` variables, read only, with its issuer, client identifier, whether a client secret is set, and the number of linked accounts."
+msgstr "**Défini par les variables** : le fournisseur des variables `OIDC_*`, en lecture seule, avec son émetteur, son identifiant client, la présence d'un secret client et le nombre de comptes liés."
+
+msgid "**Declared here**: one row per provider, enabled or disabled, with its identifier and the number of linked accounts. A row opens the provider."
+msgstr "**Déclarés ici** : une ligne par fournisseur, activé ou désactivé, avec son identifiant et le nombre de comptes liés. Une ligne ouvre le fournisseur."
+
+msgid "**Add a provider**: identifier, name, issuer, client identifier, client secret, PKCE and Enabled. The redirect URI to register at the provider is shown below the fields."
+msgstr "**Ajouter un fournisseur** : identifiant, nom, émetteur, identifiant client, secret client, PKCE et Activé. L'URI de redirection à déclarer chez le fournisseur est affichée sous les champs."
+
+msgid "The page of a provider shows its redirect URI, whether a client secret is stored, the accounts linked to it and the homes that require it, then the same fields without the identifier, which never changes. Leave the client secret empty to keep the stored one. **Test the issuer** checks the issuer typed in the field and saves nothing. **Delete** is refused while a home requires the provider; disable it instead."
+msgstr "La page d'un fournisseur montre son URI de redirection, la présence d'un secret client, les comptes qui lui sont liés et les logements qui l'exigent, puis les mêmes champs sans l'identifiant, qui ne change jamais. Laissez le secret client vide pour garder celui qui est enregistré. **Tester l'émetteur** vérifie l'émetteur saisi dans le champ et n'enregistre rien. **Supprimer** est refusé tant qu'un logement exige le fournisseur ; désactivez-le plutôt."
+
+msgid "Saving or deleting asks you to have signed in within the last five minutes. You cannot disable or delete your own last way to sign in. See [Single sign-on](../administration/oidc.md)."
+msgstr "Enregistrer ou supprimer demande une connexion de moins de cinq minutes. Vous ne pouvez pas désactiver ni supprimer votre propre dernier moyen de connexion. Voir [Authentification unique](../administration/oidc.md)."
+
