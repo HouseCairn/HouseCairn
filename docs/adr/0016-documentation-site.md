@@ -172,6 +172,15 @@ written to `docs/_generated/screenshots/`, ignored by git: they can be generated
 so they are not committed (a committed image would go stale silently and make
 reviews noisy). Sphinx picks `name.fr.png` for the French site.
 
+The script reaches each page by its address (the identifier of the first home is
+read from the seed), never by the text of a link, so a new navigation entry or a
+second occurrence of a name cannot break it. When a step fails it prints the
+address and title of the page, keeps `failure-<device>.png` next to the other
+images and prints the end of the server log; the workflow uploads the partial
+set even then, and the step that follows no longer hides this error. The job runs
+on every pull request and on `main`: a failure only seen after a merge is flaky,
+not path dependent, and the failure image is what tells why.
+
 The browser comes from `playwright install --with-deps --only-shell chromium`, the
 official command of the Playwright version locked in `uv.lock`: it downloads
 Chrome Headless Shell (Chrome for Testing, revision named in the `browsers.json`
