@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{{ room.name }}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'rooms:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Rooms" %}</a>
+  <h1>{{ room.name }}</h1>
+  <section class="card">
+    <dl class="facts">
+      <div><dt>{% translate "Type" %}</dt><dd>{{ room.get_kind_display }}</dd></div>
+      {% if room.notes %}<div><dt>{% translate "Notes" %}</dt><dd class="prose">{{ room.notes|linebreaksbr }}</dd></div>{% endif %}
+    </dl>
+    {% if can_write %}
+      <div class="button-row">
+        <a class="button button-secondary button-small" href="{% url 'rooms:edit' home_id=home.id room_id=room.id %}">{% translate "Edit the room" %}</a>
+      </div>
+    {% endif %}
+  </section>
+
+  <h2>{% translate "Room memory" %}</h2>
+  <section class="card">
+    {% if room.has_memory %}
+      <dl class="facts">
+        {% if room.paint_colour %}<div><dt>{% translate "Paint colour" %}</dt><dd>{{ room.paint_colour }}</dd></div>{% endif %}
+        {% if room.paint_brand %}<div><dt>{% translate "Paint brand" %}</dt><dd>{{ room.paint_brand }}</dd></div>{% endif %}
+        {% if room.paint_reference %}<div><dt>{% translate "Paint reference" %}</dt><dd>{{ room.paint_reference }}</dd></div>{% endif %}
+        {% if room.paint_batch %}<div><dt>{% translate "Paint batch" %}</dt><dd>{{ room.paint_batch }}</dd></div>{% endif %}
+        {% if room.paint_stock %}<div><dt>{% translate "Paint left in stock" %}</dt><dd>{{ room.paint_stock }}</dd></div>{% endif %}
+        {% if room.floor_covering %}<div><dt>{% translate "Floor covering" %}</dt><dd>{{ room.floor_covering }}</dd></div>{% endif %}
+        {% if room.wall_covering %}<div><dt>{% translate "Wall covering" %}</dt><dd>{{ room.wall_covering }}</dd></div>{% endif %}
+        {% if room.memory_notes %}<div><dt>{% translate "Memory notes" %}</dt><dd class="prose">{{ room.memory_notes|linebreaksbr }}</dd></div>{% endif %}
+      </dl>
+    {% else %}
+      <p class="small">{% translate "Nothing noted yet: paint, floor and wall coverings, and photos of the open walls." %}</p>
+    {% endif %}
+    {% if can_write %}
+      <div class="button-row">
+        <a class="button button-secondary button-small" href="{% url 'rooms:memory' home_id=home.id room_id=room.id %}">{% translate "Edit the memory" %}</a>
+      </div>
+    {% endif %}
+  </section>
+
+  <h2>{% translate "Open walls" %}</h2>
+  {% if open_wall_photos %}
+    {% include "rooms/_photos.html" with photos=open_wall_photos label=room.name %}
+  {% else %}
+    <p class="small">{% translate "Photos taken before closing a wall or a duct: where the cables and pipes run." %}</p>
+  {% endif %}
+
+  <h2>{% translate "Photos" %}</h2>
+  {% if photos %}
+    {% include "rooms/_photos.html" with photos=photos label=room.name %}
+  {% endif %}
+  {% if can_write %}
+    <a class="button button-secondary button-block" href="{% url 'rooms:room-photo-add' home_id=home.id room_id=room.id %}">{% translate "Add a photo" %}</a>
+  {% elif not photos and not open_wall_photos %}
+    <p class="empty">{% translate "No photo yet." %}</p>
+  {% endif %}
+
+  <h2>{% translate "Items" %}</h2>
+  {% if items %}
+    <ul class="card-list">
+      {% for item in items %}
+        <li>
+          <a class="row" href="{% url 'rooms:item-detail' home_id=home.id item_id=item.id %}">
+            <span class="row-body">
+              <span class="row-title">{{ item.name }}</span>
+              <span class="row-text">{{ item.get_kind_display }}{% if item.brand %} · {{ item.brand }}{% endif %}{% if item.warranty_ends_on %} · {% blocktranslate with date=item.warranty_ends_on|date:"SHORT_DATE_FORMAT" %}warranty until {{ date }}{% endblocktranslate %}{% endif %}</span>
+            </span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "No item in this room yet." %}</p>
+  {% endif %}
+  {% if can_write %}
+    <a class="button button-secondary button-block" href="{% url 'rooms:item-create' home_id=home.id room_id=room.id %}">{% translate "Add an item" %}</a>
+  {% endif %}
+{% endblock content %}

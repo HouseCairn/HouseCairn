@@ -1,0 +1,90 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 00:13+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Add or edit an item"
+msgstr "Ajouter ou modifier un élément"
+
+msgid "The form to add an item to a room, at `/h/<home id>/rooms/<room id>/items/new/`, and to edit one, at `/h/<home id>/items/<item id>/edit/`."
+msgstr "Le formulaire pour ajouter un élément à une pièce, sur `/h/<home id>/rooms/<room id>/items/new/`, et pour en modifier un, sur `/h/<home id>/items/<item id>/edit/`."
+
+msgid "Field"
+msgstr "Champ"
+
+msgid "Content"
+msgstr "Contenu"
+
+msgid "Room"
+msgstr "Pièce"
+
+msgid "The room the item is in. Choose another one to move the item; its photos go with it."
+msgstr "La pièce où se trouve l'élément. Choisissez-en une autre pour le déplacer ; ses photos le suivent."
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Required, 120 characters at most."
+msgstr "Obligatoire, 120 caractères au plus."
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Equipment or surface."
+msgstr "Équipement ou surface."
+
+msgid "Brand, model, serial number"
+msgstr "Marque, modèle, numéro de série"
+
+msgid "Free text, 120 characters at most each."
+msgstr "Texte libre, 120 caractères au plus chacun."
+
+msgid "Installed on, warranty ends on"
+msgstr "Posé le, fin de garantie"
+
+msgid "Dates."
+msgstr "Dates."
+
+msgid "Maintenance contract"
+msgstr "Contrat d'entretien"
+
+msgid "Who services it, and the contract number if any."
+msgstr "Qui l'entretient, et le numéro de contrat s'il y en a un."
+
+msgid "Contract link"
+msgstr "Lien du contrat"
+
+msgid "An `http` or `https` address."
+msgstr "Une adresse `http` ou `https`."
+
+msgid "Links"
+msgstr "Liens"
+
+msgid "One address per line, then an optional label; ten at most, `http` or `https` only."
+msgstr "Une adresse par ligne, puis une étiquette facultative ; dix au plus, `http` ou `https` uniquement."
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Free text, 4,000 characters at most."
+msgstr "Texte libre, 4 000 caractères au plus."
+
+msgid "Only the name is required."
+msgstr "Seul le nom est obligatoire."
+

@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "housecairn.events",
     "housecairn.audit",
     "housecairn.instance",
+    "housecairn.rooms",
 ]
 
 MIDDLEWARE = [

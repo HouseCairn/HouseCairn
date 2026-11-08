@@ -20,6 +20,14 @@ member
 invitation
 instance
 instance-invitation
+rooms
+room
+room-form
+room-memory
+item
+item-form
+photo-form
+search
 more
 about
 ```

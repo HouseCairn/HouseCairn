@@ -1,0 +1,91 @@
+/* Rooms layer (static/css/app.css): photo grid, search field and the few helpers
+   of the room, item and photo screens (docs/adr/0029). Tokens only, no inline
+   style. */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.prose {
+  max-width: 40rem;
+  overflow-wrap: anywhere;
+  text-align: left;
+  font-weight: var(--hc-font-weight-regular);
+}
+
+.search-form {
+  margin-bottom: var(--hc-space-4);
+}
+
+.search-row {
+  display: flex;
+  gap: var(--hc-space-2);
+}
+
+.search-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  gap: var(--hc-space-3);
+  margin: 0 0 var(--hc-space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.photo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hc-space-1);
+  min-width: 0;
+}
+
+.photo > a {
+  display: block;
+  overflow: hidden;
+  background: var(--hc-color-sage-soft);
+  border: 1px solid var(--hc-color-border);
+  border-radius: var(--hc-radius-md);
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.photo-caption {
+  font-size: var(--hc-font-size-xs);
+  color: var(--hc-color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.photo form {
+  margin: 0;
+}
+
+.photo .link-button {
+  min-height: var(--hc-layout-touch-target);
+  font-size: var(--hc-font-size-sm);
+}
+
+.card > .button-row {
+  margin-top: var(--hc-space-4);
+}

@@ -6,6 +6,15 @@ with it on the project's
 
 ## Unreleased
 
+### New
+
+- **Rooms, items and photos.** Describe the rooms of a home, what was used in
+  them (the room memory), the equipment and surfaces they hold, and add photos.
+  Screens, API and a guide: see [Rooms and items](guides/rooms-and-items.md).
+  Photos are stored in `/data/media/photos/`, checked by their content and
+  stripped of their metadata. The new variable `HOUSECAIRN_PHOTO_MAX_BYTES` sets
+  the size limit of a photo (10 MB by default).
+
 ### Upgrade notes
 
 - **Reverse proxy: set `HOUSECAIRN_FORWARDED_ALLOW_IPS`.** HouseCairn used to

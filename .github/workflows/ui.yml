@@ -87,6 +87,31 @@ jobs:
               delivery=services.Delivery(),
           )
           open('$RUNNER_TEMP/invitation-token', 'w').write(raw)
+          # Rooms, an item and a photo for the room screens (made-up data).
+          import io
+          from django.core.files.uploadedfile import SimpleUploadedFile
+          from PIL import Image
+          from housecairn.rooms import services as rooms
+          living = rooms.create_room(
+              user, home, name='Living room', kind='living',
+              paint_colour='Linen white', paint_brand='Acme Paints',
+              paint_reference='AP-1042', paint_stock='Half a tin, in the garage',
+              floor_covering='Oak parquet',
+          )
+          rooms.create_room(user, home, name='Kitchen', kind='kitchen')
+          rooms.create_room(user, home, name='Garage', kind='garage')
+          rooms.create_item(
+              user, living, name='Wood stove', brand='Acme', model='S-25',
+              serial_number='SN-0000-17',
+              warranty_ends_on='2031-09-14', contract='Example Heating Ltd',
+              links=[{'url': 'https://example.com/manual', 'label': 'Manual'}],
+          )
+          picture = io.BytesIO()
+          Image.new('RGB', (640, 480), (143, 163, 154)).save(picture, 'PNG')
+          rooms.add_photo(
+              user, room=living, caption='North wall', category='open_walls',
+              upload=SimpleUploadedFile('wall.png', picture.getvalue()),
+          )
           from housecairn.instance import services as instance_services
           sent = []
           instance_services.invite(

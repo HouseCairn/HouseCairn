@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{{ item.name }}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'rooms:detail' home_id=home.id room_id=item.room_id %}">{% include "components/icon.html" with name="chevron" %}{{ item.room.name }}</a>
+  <h1>{{ item.name }}</h1>
+  <section class="card">
+    <p class="small">{{ item.room.name }} · {{ item.get_kind_display }}</p>
+    <dl class="facts">
+      {% if item.brand or item.model %}<div><dt>{% translate "Brand, model" %}</dt><dd>{{ item.brand }}{% if item.brand and item.model %} · {% endif %}{{ item.model }}</dd></div>{% endif %}
+      {% if item.serial_number %}<div><dt>{% translate "Serial number" %}</dt><dd class="mono">{{ item.serial_number }}</dd></div>{% endif %}
+      {% if item.installed_on %}<div><dt>{% translate "Installed on" %}</dt><dd>{{ item.installed_on|date:"DATE_FORMAT" }}</dd></div>{% endif %}
+      {% if item.warranty_ends_on %}
+        <div>
+          <dt>{% translate "Warranty" %}</dt>
+          <dd>
+            {% if warranty == "expired" %}
+              <span class="pill pill-danger">{% blocktranslate with date=item.warranty_ends_on|date:"DATE_FORMAT" %}ended on {{ date }}{% endblocktranslate %}</span>
+            {% else %}
+              <span class="pill pill-sand">{% blocktranslate with date=item.warranty_ends_on|date:"DATE_FORMAT" %}until {{ date }}{% endblocktranslate %}</span>
+            {% endif %}
+          </dd>
+        </div>
+      {% endif %}
+      {% if item.contract or item.contract_url %}
+        <div>
+          <dt>{% translate "Maintenance contract" %}</dt>
+          <dd>{{ item.contract }}{% if item.contract_url %}{% if item.contract %} · {% endif %}<a href="{{ item.contract_url }}" rel="noopener noreferrer nofollow">{% translate "open the contract" %}</a>{% endif %}</dd>
+        </div>
+      {% endif %}
+      {% if item.notes %}<div><dt>{% translate "Notes" %}</dt><dd class="prose">{{ item.notes|linebreaksbr }}</dd></div>{% endif %}
+    </dl>
+    {% if can_write %}
+      <div class="button-row">
+        <a class="button button-secondary button-small" href="{% url 'rooms:item-edit' home_id=home.id item_id=item.id %}">{% translate "Edit the item" %}</a>
+      </div>
+    {% endif %}
+  </section>
+
+  {% if item.links %}
+    <h2>{% translate "Links" %}</h2>
+    <ul class="card-list">
+      {% for link in item.links %}
+        <li>
+          <a class="row" href="{{ link.url }}" rel="noopener noreferrer nofollow">
+            <span class="row-body">
+              <span class="row-title">{% firstof link.label link.url %}</span>
+              {% if link.label %}<span class="row-text">{{ link.url }}</span>{% endif %}
+            </span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <h2>{% translate "Photos" %}</h2>
+  {% if photos %}
+    {% include "rooms/_photos.html" with photos=photos label=item.name %}
+  {% endif %}
+  {% if can_write %}
+    <a class="button button-secondary button-block" href="{% url 'rooms:item-photo-add' home_id=home.id item_id=item.id %}">{% translate "Add a photo" %}</a>
+  {% elif not photos %}
+    <p class="empty">{% translate "No photo yet." %}</p>
+  {% endif %}
+
+  {% comment %}Maintenance log and cost of ownership: shown once the tasks exist (`journal`).{% endcomment %}
+  {% if journal %}
+    <h2>{% translate "Maintenance log" %}</h2>
+  {% endif %}
+{% endblock content %}

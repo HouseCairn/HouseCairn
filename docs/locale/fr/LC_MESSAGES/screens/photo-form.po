@@ -1,0 +1,57 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 00:13+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Add a photo"
+msgstr "Ajouter une photo"
+
+msgid "The form to add a photo of a room, at `/h/<home id>/rooms/<room id>/photos/new/`, or of an item, at `/h/<home id>/items/<item id>/photos/new/`. From a phone, the file field offers the camera and the gallery."
+msgstr "Le formulaire pour ajouter une photo d'une pièce, sur `/h/<home id>/rooms/<room id>/photos/new/`, ou d'un élément, sur `/h/<home id>/items/<item id>/photos/new/`. Depuis un téléphone, le champ de fichier propose l'appareil photo et la galerie."
+
+msgid "Field"
+msgstr "Champ"
+
+msgid "Content"
+msgstr "Contenu"
+
+msgid "Photo"
+msgstr "Photo"
+
+msgid "A JPEG, PNG or WebP image, 10 MB at most by default (see [Rooms and items](../guides/rooms-and-items.md))."
+msgstr "Une image JPEG, PNG ou WebP, 10 Mo au plus par défaut (voir [Pièces et éléments](../guides/rooms-and-items.md))."
+
+msgid "Caption"
+msgstr "Légende"
+
+msgid "Optional, 200 characters at most."
+msgstr "Facultative, 200 caractères au plus."
+
+msgid "Category"
+msgstr "Catégorie"
+
+msgid "\"Photo\", or \"Open walls\" for a photo taken before closing a wall."
+msgstr "« Photo », ou « Murs ouverts » pour une photo prise avant de fermer un mur."
+
+msgid "HouseCairn checks the content of the file, not its name or the type your browser announces. It then writes the image again: the location and every other information stored in the file (camera, date, comments) are removed, a photo taken in portrait is turned upright and an image over 2,560 pixels is reduced. A room or an item holds 30 photos at most."
+msgstr "HouseCairn vérifie le contenu du fichier, pas son nom ni le type annoncé par votre navigateur. Il écrit ensuite l'image à nouveau : la position et toutes les autres informations stockées dans le fichier (appareil, date, commentaires) sont supprimées, une photo prise en portrait est redressée et une image de plus de 2 560 pixels est réduite. Une pièce ou un élément contient 30 photos au plus."
+
+msgid "A photo opens at `/h/<home id>/photos/<photo id>/` and its thumbnail at `/h/<home id>/photos/<photo id>/thumbnail/`, for the members of the home only. **Delete** under a thumbnail removes the photo from the screens and the API."
+msgstr "Une photo s'ouvre sur `/h/<home id>/photos/<photo id>/` et sa miniature sur `/h/<home id>/photos/<photo id>/thumbnail/`, pour les membres du logement seulement. **Supprimer** sous une miniature retire la photo des écrans et de l'API."
+

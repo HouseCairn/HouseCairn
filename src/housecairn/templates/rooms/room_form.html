@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% if room %}{% translate "Edit the room" %}{% else %}{% translate "Add a room" %}{% endif %}{% endblock head_title %}
+{% block content %}
+  {% if room %}
+    <a class="back-link" href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}">{% include "components/icon.html" with name="chevron" %}{{ room.name }}</a>
+    <h1>{% translate "Edit the room" %}</h1>
+  {% else %}
+    <a class="back-link" href="{% url 'rooms:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Rooms" %}</a>
+    <h1>{% translate "Add a room" %}</h1>
+  {% endif %}
+  <form method="post" class="card">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button-block">{% if room %}{% translate "Save" %}{% else %}{% translate "Add the room" %}{% endif %}</button>
+  </form>
+  {% if room %}
+    <a class="button button-danger button-block" href="{% url 'rooms:delete' home_id=home.id room_id=room.id %}">{% translate "Delete the room" %}</a>
+  {% endif %}
+{% endblock content %}

@@ -25,12 +25,13 @@ jobs:
           fail-on-severity: moderate
           # SPDX identifiers whose terms allow combining with AGPL-3.0-only
           # code (docs/adr/0014). Anything else, unknown licenses included,
-          # needs a decision recorded in an ADR before it can be added.
+          # needs a decision recorded in an ADR before it can be added
+          # (MIT-CMU: Pillow, docs/adr/0030).
           allow-licenses: >-
             0BSD, AGPL-3.0-only, AGPL-3.0-or-later, Apache-2.0, BlueOak-1.0.0,
             BSD-2-Clause, BSD-3-Clause, CC0-1.0, GPL-3.0-only, GPL-3.0-or-later,
             ISC, LGPL-2.1-or-later, LGPL-3.0-only, LGPL-3.0-or-later, MIT, MIT-0,
-            MPL-2.0, PSF-2.0, Python-2.0, Unlicense, Zlib
+            MIT-CMU, MPL-2.0, PSF-2.0, Python-2.0, Unlicense, Zlib
           # docutils (documentation group, docs/adr/0016): its files are in the
           # public domain or BSD-2-Clause; the license scan also finds the
           # GPL texts shipped with files their author relicensed to BSD-2-Clause,
