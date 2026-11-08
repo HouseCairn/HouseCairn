@@ -376,6 +376,28 @@ class TestWriting:
             svc.update(admin_user, {"email_host": ""})
         assert config.get_setting("email_host") == "smtp.example.com"
 
+    def test_restoring_no_mail_server_is_refused_while_sign_up_is_open(
+        self, admin_user: User
+    ) -> None:
+        svc.update(admin_user, {"signup_open": True, "email_host": "smtp.example.com"})
+        with pytest.raises(ValidationError, match="SMTP server") as caught:
+            svc.reset(admin_user, "email_host")
+        assert "email_host" in caught.value.message_dict
+        assert config.get_setting("email_host") == "smtp.example.com"
+        assert not AuditEvent.objects.filter(action="settings.reset").exists()
+        # Closing sign-up first makes the same reset possible.
+        assert svc.reset(admin_user, "signup_open") is True
+        assert svc.reset(admin_user, "email_host") is True
+
+    def test_restoring_no_mail_server_is_refused_while_a_variable_opens_sign_up(
+        self, admin_user: User
+    ) -> None:
+        with locked("signup_open", HOUSECAIRN_SIGNUP_OPEN=True):
+            svc.update(admin_user, {"email_host": "smtp.example.com"})
+            with pytest.raises(ValidationError, match="SMTP server"):
+                svc.reset(admin_user, "email_host")
+            assert config.get_setting("email_host") == "smtp.example.com"
+
     def test_the_site_url_loses_its_trailing_slash(self, admin_user: User) -> None:
         svc.update(admin_user, {"site_url": "https://home.example.com/"})
         assert config.get_setting("site_url") == "https://home.example.com"
@@ -556,6 +578,27 @@ class TestWebScreen:
         assert response.status_code == 422
         assert "set the SMTP server first" in response.text
         assert config.get_setting("signup_open") is False
+
+    @pytest.mark.parametrize("by_variable", [False, True], ids=["database", "variable"])
+    def test_restoring_no_mail_server_is_refused_with_the_message(
+        self, admin_client: Client, admin_user: User, by_variable: bool
+    ) -> None:
+        opened = (
+            locked("signup_open", HOUSECAIRN_SIGNUP_OPEN=True)
+            if by_variable
+            else override_settings()
+        )
+        with opened:
+            if by_variable:
+                svc.update(admin_user, {"email_host": "smtp.example.com"})
+            else:
+                svc.update(admin_user, {"signup_open": True, "email_host": "smtp.example.com"})
+            response = post(admin_client, "email", reset="email_host")
+            assert response.status_code == 302
+            page = admin_client.get(reverse(WEB)).text
+            assert "set the SMTP server first" in page
+            assert "Default restored." not in page
+            assert config.get_setting("email_host") == "smtp.example.com"
 
     def test_an_empty_secret_keeps_the_stored_one(
         self, admin_client: Client, admin_user: User
@@ -754,6 +797,27 @@ class TestApi:
             assert response.status_code == 400, body
         assert not SettingValue.objects.exists()
         assert admin_api.patch(reverse(API), [1], format="json").status_code == 400
+
+    @pytest.mark.parametrize("by_variable", [False, True], ids=["database", "variable"])
+    def test_restoring_no_mail_server_is_a_400_while_sign_up_is_open(
+        self, admin_api: APIClient, admin_user: User, by_variable: bool
+    ) -> None:
+        opened = (
+            locked("signup_open", HOUSECAIRN_SIGNUP_OPEN=True)
+            if by_variable
+            else override_settings()
+        )
+        with opened:
+            if by_variable:
+                svc.update(admin_user, {"email_host": "smtp.example.com"})
+            else:
+                svc.update(admin_user, {"signup_open": True, "email_host": "smtp.example.com"})
+            response = admin_api.delete(
+                reverse("api-v1:instance-setting-reset", args=["email_host"])
+            )
+            assert response.status_code == 400
+            assert "set the SMTP server first" in response.json()["email_host"][0]
+            assert config.get_setting("email_host") == "smtp.example.com"
 
     def test_an_unknown_setting_cannot_be_reset(self, admin_api: APIClient) -> None:
         response = admin_api.delete(reverse("api-v1:instance-setting-reset", args=["nope"]))
