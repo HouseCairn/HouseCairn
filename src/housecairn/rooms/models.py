@@ -162,8 +162,19 @@ class Item(HomeOwnedModel):
 
 
 class PhotoCategory(models.TextChoices):
-    GENERAL = "general", _("Photo")
-    OPEN_WALLS = "open_walls", _("Open walls")
+    """The categories of a photo, one list for everything (docs/adr/0045)."""
+
+    GENERAL = "general", _("General")
+    BEHIND_WALLS = "behind_walls", _("Behind the walls")
+    BEFORE = "before", _("Before the work")
+    AFTER = "after", _("After the work")
+    OTHER = "other", _("Other")
+
+
+# What "behind the walls" is for, shown wherever a photo gets that category.
+BEHIND_WALLS_HELP = _(
+    "Pipes and cables photographed before the wall is closed, to know where not to drill."
+)
 
 
 def photo_path(photo: "Photo", filename: str) -> str:

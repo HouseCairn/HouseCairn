@@ -21,7 +21,7 @@ from housecairn.homes.models import Home
 from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
 from housecairn.rooms import conf, forms, services
 from housecairn.rooms.files import photo_response
-from housecairn.rooms.models import Item, Photo, PhotoCategory, Room
+from housecairn.rooms.models import BEHIND_WALLS_HELP, Item, Photo, PhotoCategory, Room
 
 
 class EntryView(LoginRequiredMixin, TemplateView):
@@ -116,13 +116,21 @@ class RoomDetailView(HomeRoomsMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         room = self.get_room()
-        photos = list(services.photos_for(room))
+        everything = services.photos_for(room)
+        chosen = self.request.GET.get("category", "")
+        chosen = chosen if chosen in PhotoCategory.values else ""
+        photos = list(everything.filter(category=chosen) if chosen else everything)
+        present = set(everything.values_list("category", flat=True))
         return super().get_context_data(
             **self.page(
                 room=room,
                 items=room.items.order_by("name", "id"),
-                open_wall_photos=[p for p in photos if p.category == PhotoCategory.OPEN_WALLS],
-                photos=[p for p in photos if p.category != PhotoCategory.OPEN_WALLS],
+                photos=photos,
+                category=chosen,
+                categories=[
+                    (value, label) for value, label in PhotoCategory.choices if value in present
+                ],
+                behind_walls_help=BEHIND_WALLS_HELP,
             ),
             **kwargs,
         )

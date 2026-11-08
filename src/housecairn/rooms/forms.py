@@ -174,5 +174,11 @@ class PhotoForm(forms.Form):
     )
     caption = forms.CharField(label=_("Caption"), max_length=200, required=False)
     category = forms.ChoiceField(
-        label=_("Category"), choices=PhotoCategory.choices, initial=PhotoCategory.GENERAL
+        label=_("Category"),
+        choices=PhotoCategory.choices,
+        initial=PhotoCategory.GENERAL,
+        help_text=_(
+            "Behind the walls: pipes and cables photographed before the wall is closed, "
+            "to know where not to drill. Other: say what it is in the caption."
+        ),
     )
