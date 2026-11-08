@@ -16,7 +16,7 @@ The archive is a zip:
 | Part | Content |
 | --- | --- |
 | `export.json` | The data, as JSON (below). |
-| `files/` | The files of the home, at the paths `export.json` lists. None yet. |
+| `files/` | The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`. |
 | `README.txt` | A reminder of the format. |
 
 `export.json` is versioned. Version `1` has these keys:
@@ -29,7 +29,15 @@ The archive is a zip:
 | `members` | `id`, `email`, `name`, `role`, `joined_at` of each member. |
 | `pending_invitations` | `id`, `email`, `role`, `sent_at`, `expires_at`; never a link. |
 | `events` | `id`, `kind`, `payload`, `received_at` of the events received. |
+| `rooms` | `id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch and stock, floor and wall covering, memory notes). |
+| `items` | `id`, `room`, `name`, `kind`, `brand`, `model`, `serial_number`, `installed_on`, `warranty_ends_on`, `contract`, `contract_url`, `links`, `notes`, `created_at` of each item. |
+| `photos` | `id`, `room` or `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the photo in the archive (`files/photos/<id>.<extension>`, or `null` if the file is missing). |
 | `files` | `path` and `size` of each file in `files/`. |
+
+Photos are exported as they are stored, already stripped of their metadata at
+upload. Thumbnails are not exported, and neither is anything deleted. The
+archive has no size limit of its own: it is as large as the photos of the home
+(each is limited by `HOUSECAIRN_PHOTO_MAX_BYTES`).
 
 Each lot that adds data adds its section here and to the archive. The archive
 holds the home it was made for and nothing of another.
@@ -42,6 +50,11 @@ invitations, events, its audit log and its files; an API token left without a
 home is revoked. **There is no grace period and no way back**: export first.
 The audit log of the instance records that a home was deleted, without its
 name.
+
+The photos are erased from the disk with the home, deleted ones included. If
+the disk refuses (permissions, a full or read-only volume), the home is still
+deleted and the error is logged by `housecairn.files` with the path of the
+directory (`photos/<home id>`): remove that directory by hand.
 
 ## Erasure of an account
 
