@@ -194,6 +194,27 @@ class TestResolution:
         monkeypatch.setattr(SettingValue.objects, "values_list", broken)
         assert config.get_setting("email_port") == 587
 
+    def test_a_failed_read_keeps_the_last_values_read(
+        self, monkeypatch: pytest.MonkeyPatch, caplog: Any
+    ) -> None:
+        SettingValue.objects.create(key="invitation_lifetime_days", value="21")
+        assert config.get_setting("invitation_lifetime_days") == 21
+
+        def locked_database(*args: Any, **kwargs: Any) -> Any:
+            raise DatabaseError("database is locked")
+
+        with monkeypatch.context() as patched:
+            patched.setattr(SettingValue.objects, "values_list", locked_database)
+            config._loaded_at -= config.SNAPSHOT_SECONDS + 1
+            with caplog.at_level(logging.WARNING, logger="housecairn.settings"):
+                assert config.get_setting("invitation_lifetime_days") == 21
+            assert "not readable" in caplog.text
+            assert config.source("invitation_lifetime_days") == "database"
+        # Read again once the database answers.
+        SettingValue.objects.filter(key="invitation_lifetime_days").update(value="14")
+        config._loaded_at -= config.SNAPSHOT_SECONDS + 1
+        assert config.get_setting("invitation_lifetime_days") == 14
+
     def test_the_environment_is_read_once_with_empty_meaning_unset(self) -> None:
         env = registry.read_environment(
             {"HOUSECAIRN_SIGNUP_OPEN": "yes", "EMAIL_HOST": "  ", "EMAIL_PORT": "2525"}

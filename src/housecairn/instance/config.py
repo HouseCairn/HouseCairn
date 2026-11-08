@@ -28,6 +28,8 @@ SNAPSHOT_SECONDS = 5.0
 
 _lock = threading.Lock()
 _snapshot: dict[str, tuple[str, bool]] | None = None
+# The last snapshot read from the database, kept when a later read fails.
+_last_good: dict[str, tuple[str, bool]] | None = None
 _loaded_at = 0.0
 
 # What the settings held before the database changed them: restored when a value is reset.
@@ -49,13 +51,17 @@ def invalidate() -> None:
 
 def reset() -> None:
     """Back to the start-up state (tests)."""
+    global _last_good
     invalidate()
+    with _lock:
+        _last_good = None
     for name in _applied:
         setattr(settings, name, _ORIGINAL[name])
     _applied.clear()
 
 
-def _load() -> dict[str, tuple[str, bool]]:
+def _load() -> dict[str, tuple[str, bool]] | None:
+    """The stored values, or None when the database cannot be read."""
     from housecairn.instance.models import SettingValue
 
     try:
@@ -63,20 +69,33 @@ def _load() -> dict[str, tuple[str, bool]]:
         with transaction.atomic():
             rows = list(SettingValue.objects.values_list("key", "value", "is_secret"))
     except (DatabaseError, RuntimeError):
-        # No table yet (before `migrate`), no database, or a context that forbids queries:
-        # the environment and the defaults still answer.
-        logger.warning("Settings table not readable: using the environment and defaults.")
-        return {}
+        # No table yet (before `migrate`), no database, a locked database, or a context
+        # that forbids queries.
+        return None
     return {key: (value, secret) for key, value, secret in rows}
 
 
 def _current() -> dict[str, tuple[str, bool]]:
-    global _snapshot, _loaded_at
+    """The snapshot in force, loaded again when it is older than `SNAPSHOT_SECONDS`.
+
+    A failed read keeps the last snapshot that was read (the settings do not vanish
+    because the database was busy once), or, before any, the environment and defaults
+    alone; it is tried again after the same delay.
+    """
+    global _snapshot, _last_good, _loaded_at
     with _lock:
         if _snapshot is not None and time.monotonic() - _loaded_at < SNAPSHOT_SECONDS:
             return _snapshot
     loaded = _load()
     with _lock:
+        if loaded is None:
+            logger.warning(
+                "Settings table not readable: using the last values read, "
+                "or the environment and defaults."
+            )
+            loaded = _last_good if _last_good is not None else {}
+        else:
+            _last_good = loaded
         _snapshot, _loaded_at = loaded, time.monotonic()
     _apply_derived(loaded)
     return loaded
