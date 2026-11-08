@@ -17,6 +17,7 @@ from housecairn.homes.models import Home
 from housecairn.rooms import services as room_services
 from housecairn.rooms.models import Item, Room
 from housecairn.tasks import services
+from housecairn.tasks.forms import TaskForm
 from housecairn.tasks.models import Occurrence, Status, Task
 from tests.tasks_fixtures import TODAY
 
@@ -926,3 +927,14 @@ class TestExportAndDeletion:
         assert not Occurrence.all_objects.filter(home_id=alice_home.id).exists()
         assert Task.objects.filter(id=theirs.id).exists()
         assert Occurrence.objects.filter(task=theirs).count() == 1
+
+
+class TestFrenchForm:
+    def test_every_label_of_the_task_form_is_translated(self, alice_home: Home) -> None:
+        from django.utils import translation
+
+        with translation.override("fr"):
+            labels = [str(field.label) for field in TaskForm(home=alice_home).fields.values()]
+        assert "Pièce" in labels
+        assert "Room" not in labels
+        assert "Item" not in labels

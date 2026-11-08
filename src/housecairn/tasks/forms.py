@@ -90,6 +90,7 @@ class TaskForm(forms.ModelForm[Task]):
             "procedure": forms.Textarea(attrs={"rows": 8}),
             "notes": forms.Textarea(attrs={"rows": 3}),
         }
+        labels = {"room": _("Room")}
         help_texts = {
             "procedure": _("Markdown: how to do it, step by step. Links to web pages only."),
         }
