@@ -1,4 +1,4 @@
-"""A recent sign-in, asked before an instance setting changes (docs/adr/0031).
+"""A recent sign-in, asked before an instance setting changes (docs/adr/0035).
 
 Recent means a sign-in or re-authentication within `ACCOUNT_REAUTHENTICATION_TIMEOUT`
 (five minutes by default). An account with no password, no authenticator and no passkey

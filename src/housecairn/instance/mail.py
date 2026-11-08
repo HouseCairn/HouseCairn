@@ -1,4 +1,4 @@
-"""Outgoing email with the settings in force at the time of sending (docs/adr/0031).
+"""Outgoing email with the settings in force at the time of sending (docs/adr/0035).
 
 Django reads `EMAIL_*` once at start-up; this backend asks `get_setting` for each
 connection instead, so that a change made in the interface applies without a restart.

@@ -1,4 +1,4 @@
-"""Refresh the settings snapshot at the start of each request (docs/adr/0031)."""
+"""Refresh the settings snapshot at the start of each request (docs/adr/0035)."""
 
 from collections.abc import Callable
 

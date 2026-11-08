@@ -1,4 +1,4 @@
-"""The settings an administrator can change in the interface (docs/adr/0031).
+"""The settings an administrator can change in the interface (docs/adr/0035).
 
 Each one is paired with an environment variable: the variable wins and locks the
 field, otherwise the value stored in the database, otherwise the default. This

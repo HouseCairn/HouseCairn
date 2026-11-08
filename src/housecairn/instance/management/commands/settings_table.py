@@ -1,4 +1,4 @@
-"""Print the table of the instance settings, as the documentation shows it (docs/adr/0031).
+"""Print the table of the instance settings, as the documentation shows it (docs/adr/0035).
 
 `docs/administration/settings.md` holds this table between two markers; a test fails when
 it differs, so that a setting added without a documentation entry cannot be merged.

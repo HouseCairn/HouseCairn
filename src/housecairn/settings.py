@@ -31,7 +31,7 @@ env = environ.Env()
 if (REPO_DIR / ".env").is_file():
     env.read_env(str(REPO_DIR / ".env"), overwrite=False)
 
-# Settings an administrator can also change in the interface (docs/adr/0031): the variable of
+# Settings an administrator can also change in the interface (docs/adr/0035): the variable of
 # each one is read here, once. A variable that is set locks its field; `get_setting` is the
 # only way the rest of the code reads them.
 _ENV = registry.read_environment()
@@ -100,7 +100,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    # Last: reads the database, so after the checks that need no query (docs/adr/0031).
+    # Last: reads the database, so after the checks that need no query (docs/adr/0035).
     "housecairn.instance.middleware.SettingsSnapshotMiddleware",
 ]
 
@@ -306,7 +306,7 @@ EMAIL_USE_TLS: bool = _ENV.values["email_use_tls"] and not EMAIL_USE_SSL
 # web process for minutes (the default of Python is no limit).
 EMAIL_TIMEOUT: int = _ENV.values["email_timeout"]
 # SMTP when a host is set, the console otherwise, decided for each message from the settings
-# in force (docs/adr/0031), so that the interface can change the server without a restart.
+# in force (docs/adr/0035), so that the interface can change the server without a restart.
 EMAIL_BACKEND = "housecairn.instance.mail.EmailBackend"
 DEFAULT_FROM_EMAIL: str = _ENV.values["default_from_email"]
 # Security alerts (password or passkey changed, new address, new sign-in) go out

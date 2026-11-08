@@ -1,4 +1,4 @@
-"""Changing the instance settings: validation, storage, audit (docs/adr/0031).
+"""Changing the instance settings: validation, storage, audit (docs/adr/0035).
 
 Web and API both come through here. Who may call it, and whether they signed in recently,
 is decided by the caller; the rules that keep the instance reachable are decided here.

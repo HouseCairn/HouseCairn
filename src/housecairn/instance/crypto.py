@@ -1,4 +1,4 @@
-"""Encryption at rest of the secrets kept in the database (docs/adr/0031).
+"""Encryption at rest of the secrets kept in the database (docs/adr/0035).
 
 The key is derived from the instance's `SECRET_KEY`, never stored. If the key changes the
 stored secrets can no longer be read: they are then treated as not set, and the

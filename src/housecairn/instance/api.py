@@ -249,7 +249,7 @@ def _locked(keys: Iterable[str]) -> Response | None:
 
 
 class InstanceSettingsView(APIView):
-    """Settings of the instance, paired with environment variables (docs/adr/0031).
+    """Settings of the instance, paired with environment variables (docs/adr/0035).
 
     Reading needs an administrator signed in; changing also needs a recent sign-in. A setting
     that a variable sets is `locked` and refuses writes. Secrets are write-only.

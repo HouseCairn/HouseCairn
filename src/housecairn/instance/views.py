@@ -273,7 +273,7 @@ def _server_rows() -> list[dict[str, Any]]:
 
 
 class SettingsView(InstanceAdminMixin, TemplateView):
-    """The settings of the instance, by section, each paired with its variable (docs/adr/0031)."""
+    """The settings of the instance, by section, each paired with its variable (docs/adr/0035)."""
 
     template_name = "instance/settings.html"
 

@@ -59,7 +59,7 @@ class InstanceInvitation(BaseModel):
 
 
 class SettingValue(models.Model):
-    """A setting chosen in the interface (docs/adr/0031).
+    """A setting chosen in the interface (docs/adr/0035).
 
     `value` is JSON for an ordinary setting and an encrypted token for a secret. A row
     exists only while the value differs from the default: resetting deletes it.

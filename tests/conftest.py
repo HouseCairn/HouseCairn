@@ -75,7 +75,7 @@ def api_client() -> APIClient:
 
 @pytest.fixture(autouse=True)
 def _fresh_instance_settings() -> Iterator[None]:
-    """The settings snapshot of one test must not leak into the next (docs/adr/0031)."""
+    """The settings snapshot of one test must not leak into the next (docs/adr/0035)."""
     from housecairn.instance import config
 
     config.reset()

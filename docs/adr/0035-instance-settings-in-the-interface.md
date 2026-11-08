@@ -1,4 +1,4 @@
-# 0031. Instance settings in the interface, paired with environment variables
+# 0035. Instance settings in the interface, paired with environment variables
 
 - Status: accepted
 - Date: 2026-11-08

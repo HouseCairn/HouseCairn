@@ -1,4 +1,4 @@
-"""Instance settings in the interface, paired with environment variables (docs/adr/0031)."""
+"""Instance settings in the interface, paired with environment variables (docs/adr/0035)."""
 
 import json
 import logging

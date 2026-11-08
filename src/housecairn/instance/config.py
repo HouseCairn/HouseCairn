@@ -1,4 +1,4 @@
-"""Reading the settings that the interface and the environment share (docs/adr/0031).
+"""Reading the settings that the interface and the environment share (docs/adr/0035).
 
 `get_setting(key)` is the one way the code reads them. Resolution order: the environment
 variable if it is set (the field is then locked), else the value stored in the database,
