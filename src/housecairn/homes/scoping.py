@@ -58,11 +58,17 @@ class HomeScopedMixin:
     def get_homes(self) -> models.QuerySet[Home]:
         return open_homes_for_request(self.request)
 
-    def get_home(self) -> Home:
+    def get_home(self, *, allow_locked: bool = False) -> Home:
+        """The home from the URL; `allow_locked` skips the sign-in requirement.
+
+        Only for what a member must always be able to do: leave the home, and
+        lift a requirement whose provider the instance no longer offers.
+        """
         home = get_object_or_404(
             homes_for_request(self.request), id=self.kwargs[self.home_url_kwarg]
         )
-        services.check_open(home, sso.signed_in_providers(self.request))
+        if not allow_locked:
+            services.check_open(home, sso.signed_in_providers(self.request))
         return home
 
 
@@ -83,7 +89,12 @@ def sso_required_response(request: HttpRequest, exc: services.SsoRequiredError) 
     response = TemplateResponse(
         request,
         "homes/sso_required.html",
-        {"home": exc.home, "provider": provider, "provider_declared": declared},
+        {
+            "home": exc.home,
+            "provider": provider,
+            "provider_declared": declared,
+            "is_owner": services.is_owner(request.user, exc.home),
+        },
         status=403,
     )
     return response.render()
@@ -104,6 +115,17 @@ def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response |
                 "provider": exc.provider_id,
             },
             status=status.HTTP_403_FORBIDDEN,
+        )
+    if isinstance(exc, services.DeliveryFailedError):
+        return Response(
+            {
+                "detail": _(
+                    "The invitation is saved, but the email could not be sent. Send it again later."
+                ),
+                "code": "delivery_failed",
+                "id": str(exc.invitation.pk),
+            },
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
         )
     return exception_handler(exc, context)
 

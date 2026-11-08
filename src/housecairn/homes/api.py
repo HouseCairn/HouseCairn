@@ -4,8 +4,10 @@ from typing import Any
 
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db import models
+from django.db import models, transaction
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, extend_schema_field, inline_serializer
 from rest_framework import exceptions, mixins, permissions, serializers, status, viewsets
 from rest_framework.decorators import action
@@ -15,7 +17,9 @@ from rest_framework.views import APIView
 
 from housecairn.accounts.models import User
 from housecairn.apitokens.models import ApiToken
-from housecairn.homes import services, sso
+from housecairn.audit import services as audit_services
+from housecairn.audit.api import AuditEventSerializer
+from housecairn.homes import exports, services, sso
 from housecairn.homes.models import Home, Invitation, Membership, Role
 from housecairn.homes.scoping import (
     HomeScopedMixin,
@@ -129,19 +133,22 @@ class HomeViewSet(
         serializer.is_valid(raise_exception=True)
         changes = dict(serializer.validated_data)
         provider = changes.pop("required_provider", None)
+        if provider is not None and isinstance(request.auth, ApiToken):
+            # Refused before anything is written: no rename applied, then a 403.
+            raise exceptions.PermissionDenied(NoTokenForHousehold.message)
         try:
-            if changes:
-                home = services.update_home(request.user, home, **changes)
-            if provider is not None:
-                if isinstance(request.auth, ApiToken):
-                    raise exceptions.PermissionDenied(NoTokenForHousehold.message)
-                home = services.set_required_provider(
-                    request.user,
-                    home,
-                    provider,
-                    declared=[p.id for p in sso.declared_providers(request)],
-                    signed_in_with=sso.signed_in_providers(request),
-                )
+            # One transaction: a refused sign-in requirement leaves the name as it was.
+            with transaction.atomic():
+                if changes:
+                    home = services.update_home(request.user, home, **changes)
+                if provider is not None:
+                    home = services.set_required_provider(
+                        request.user,
+                        home,
+                        provider,
+                        declared=[p.id for p in sso.declared_providers(request)],
+                        signed_in_with=sso.signed_in_providers(request),
+                    )
         except DjangoValidationError as exc:
             raise _validation(exc) from exc
         return Response(self.get_serializer(home).data)
@@ -152,12 +159,82 @@ class HomeViewSet(
         """Leave the home. The last owner cannot leave."""
         if isinstance(request.auth, ApiToken):
             raise exceptions.PermissionDenied(NoTokenForHousehold.message)
-        home = self.get_home()
+        home = self.get_home(allow_locked=True)  # leaving never needs the provider
         try:
             services.leave_home(request.user, home)  # type: ignore[arg-type]
         except DjangoValidationError as exc:
             raise _validation(exc) from exc
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @extend_schema(responses={200: AuditEventSerializer(many=True)})
+    @action(detail=True, methods=["get"])
+    def audit(self, request: Request, home_id: str) -> Response:
+        """Audit log of the home: roles, invitations, sign-in rule, export. Owners only."""
+        home = self.get_home()
+        if isinstance(request.auth, ApiToken):
+            raise exceptions.PermissionDenied(NoTokenForHousehold.message)
+        try:
+            entries = audit_services.home_log(request.user, home.id)
+        except PermissionDenied as exc:
+            raise exceptions.PermissionDenied() from exc
+        page = self.paginate_queryset(entries)  # type: ignore[arg-type]
+        return self.get_paginated_response(AuditEventSerializer(page, many=True).data)
+
+    @extend_schema(
+        request=None,
+        responses={(200, "application/zip"): OpenApiTypes.BINARY},
+        description=(
+            "Everything of the home as one archive: `export.json` (versioned, documented in "
+            "Administration > Export and deletion) and the home's files. Owners only, signed "
+            "in: an API token cannot export."
+        ),
+    )
+    @action(detail=True, methods=["post"])
+    def export(self, request: Request, home_id: str) -> Any:
+        home = self.get_home()
+        if isinstance(request.auth, ApiToken):
+            raise exceptions.PermissionDenied(NoTokenForHousehold.message)
+        try:
+            archive, name = exports.export_home(request.user, home)
+        except PermissionDenied as exc:
+            raise exceptions.PermissionDenied() from exc
+        return FileResponse(
+            archive, as_attachment=True, filename=name, content_type="application/zip"
+        )
+
+    @extend_schema(
+        request=inline_serializer("HomeDeletion", {"confirmation": serializers.CharField()}),
+        responses={204: None},
+        description="Delete the home for good. The confirmation is the exact name of the home.",
+    )
+    @action(detail=True, methods=["post"], url_path="delete")
+    def delete_home(self, request: Request, home_id: str) -> Response:
+        home = self.get_home()
+        if isinstance(request.auth, ApiToken):
+            raise exceptions.PermissionDenied(NoTokenForHousehold.message)
+        confirmation = request.data.get("confirmation") if isinstance(request.data, dict) else None
+        try:
+            services.delete_home(request.user, home, confirmation=str(confirmation or ""))
+        except DjangoValidationError as exc:
+            raise _validation(exc) from exc
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @extend_schema(request=None, responses={200: HomeSerializer})
+    @action(detail=True, methods=["post"])
+    def unlock(self, request: Request, home_id: str) -> Response:
+        """Stop requiring a sign-in provider the instance no longer offers (owners)."""
+        home = self.get_home(allow_locked=True)
+        if isinstance(request.auth, ApiToken):
+            raise exceptions.PermissionDenied(NoTokenForHousehold.message)
+        try:
+            home = services.lift_unavailable_requirement(
+                request.user,
+                home,
+                declared=[p.id for p in sso.declared_providers(request)],
+            )
+        except DjangoValidationError as exc:
+            raise _validation(exc) from exc
+        return Response(self.get_serializer(home).data)
 
 
 # ---------- members ----------

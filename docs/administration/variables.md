@@ -13,11 +13,16 @@ Set them in `deploy/production.env`. The full list, with defaults, is in
 | `SECRET_KEY` | generated in `/data/secret_key` | Set it only to manage the key yourself. |
 | `DATABASE_URL` | SQLite in `/data` | For example `postgres://housecairn:<password>@postgres:5432/housecairn`. |
 | `TIME_ZONE` | `UTC` | Time zone of the instance. |
-| `HOUSECAIRN_SIGNUP_OPEN` | `false` | Allow local sign-up from the web page. |
+| `HOUSECAIRN_SIGNUP_OPEN` | `false` | Allow local sign-up from the web page; needs email. See [Open sign-up](sign-up.md). |
+| `HOUSECAIRN_SIGNUP_POW_BITS` | `16` | Work of the anti-robot check of sign-up, from 8 to 24 bits. |
+| `HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS`, `HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS` | (none) | Comma-separated domains that may, or may not, sign up. |
+| `ACCOUNT_EMAIL_VERIFICATION` | `optional`, `mandatory` with open sign-up | Whether an address must be verified before sign-in. |
+| `HOUSECAIRN_CACHE_URL` | `locmemcache://housecairn` | Cache of the rate-limit counters; `dbcache://housecairn_cache` shares them between web processes. See [Rate limits](rate-limits.md). |
 | `OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` | (none) | Single sign-on through any OpenID Connect provider. |
 | `HOUSECAIRN_OIDC_SIGNUP`, `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL` | `closed`, (none) | Who may get an account through single sign-on. |
-| `EMAIL_HOST` | (none) | Outgoing mail server (SMTP); email is off while it is empty. See Email below. |
-| `HOUSECAIRN_SITE_URL` | (none) | Public address of the instance, such as `https://home.example.com`, used for links in emails. Empty: the address of the request, checked against `ALLOWED_HOSTS`. |
+| `EMAIL_HOST` | (none) | Outgoing mail server (SMTP); email is off while it is empty. See [Email](email.md). |
+| `EMAIL_USE_SSL`, `EMAIL_TIMEOUT` | `false`, `15` | TLS from the first byte; seconds to wait for the server. See [Email](email.md). |
+| `HOUSECAIRN_SITE_URL` | (none: set it in production) | Public address of the instance, such as `https://home.example.com`, used for links in emails. Empty: the address of the request, checked against `ALLOWED_HOSTS`; `check --deploy` warns when `EMAIL_HOST` is set without it. |
 | `HOUSECAIRN_INVITATION_LIFETIME_DAYS` | `7` | Days an invitation link stays valid, from 1 to 90. |
 | `HOUSECAIRN_DOCS_URL` | `https://docs.housecairn.app` | Address of this documentation, used by the help link of each screen. |
 | `HOUSECAIRN_WEB_WORKERS` | `2` | Web server processes. |
@@ -31,19 +36,20 @@ Set inside the image, not to be changed: `HOUSECAIRN_DATA_DIR=/data`,
 
 ## Email
 
-HouseCairn sends email to reset a forgotten password and to deliver
-invitations to a home. Set `EMAIL_HOST` to
-your SMTP server to turn it on, with `EMAIL_PORT` (`587`), `EMAIL_HOST_USER`,
-`EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` (`true`) and `DEFAULT_FROM_EMAIL`
-(`HouseCairn <noreply@localhost>`) as needed.
+HouseCairn sends email for invitations, address verification, password reset
+and security alerts. Set `EMAIL_HOST` to your SMTP server to turn it on, with
+`EMAIL_PORT` (`587`), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`,
+`EMAIL_USE_TLS` (`true`), `EMAIL_USE_SSL`, `EMAIL_TIMEOUT` and
+`DEFAULT_FROM_EMAIL`. All of it is on the [Email](email.md) page, with what
+becomes of the features that need a mailbox when there is none.
 
-Without `EMAIL_HOST`, or with a console or dummy email backend, nothing could
-be delivered: the *Forgot your password?* link is hidden and the reset page
-answers 404, and inviting someone shows the invitation link once to the owner,
-who passes it on.
-
-Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. Set it when
-`ALLOWED_HOSTS` lists several names, so that every email uses the public one.
+Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. **Set it in
+production.** Without it, a link takes the host of the request that triggered
+it: `ALLOWED_HOSTS` limits that to the names the instance answers to, but a
+proxy that lets a request choose its host, or several names in
+`ALLOWED_HOSTS`, can make a link point where you did not intend.
+`manage.py check --deploy` reports `EMAIL_HOST` set without
+`HOUSECAIRN_SITE_URL`.
 
 ## PostgreSQL
 

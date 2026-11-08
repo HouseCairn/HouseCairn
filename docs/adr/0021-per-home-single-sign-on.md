@@ -42,7 +42,15 @@ address and take over their account.
 - A home that requires a provider cannot be reached by an integration token
   (for example Home Assistant's `events` token) until token management records
   the sign-in a token was issued from. To revisit then.
-- If the administrator removes a provider, the homes requiring it stay locked;
-  the administrator clears the field in the administration site.
+- If the administrator removes a provider, the homes requiring it stay locked
+  until the rule is lifted, and the way out does not go through the
+  administration site, which shows no home (ADR 0022): an owner opens the
+  locked page, which offers **Remove the sign-in requirement** when the
+  provider is no longer declared (web, and `POST /homes/<id>/unlock/`); and the
+  administrator can clear the rule of every such home at once from the
+  instance page, which reads none and reports a count. A provider that is
+  still declared keeps its protection: neither action touches it.
+- A member is never held in a locked home: leaving it, the member page and the
+  API `leave` need no sign-in through the provider.
 - The rule binds a session, not an account: a member who signed in through the
   provider once in the session keeps access until that session ends.

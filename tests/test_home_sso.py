@@ -4,7 +4,6 @@ from collections.abc import Callable
 from typing import Any
 
 import pytest
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.test import Client, override_settings
 from django.urls import reverse
@@ -205,6 +204,25 @@ class TestSettingTheRequirement:
         assert accepted.status_code == 200
         assert accepted.json()["required_provider"] == "company"
 
+    def test_api_refusal_leaves_the_name_untouched(
+        self, client: Client, api_client: APIClient, alice: User, alice_home: Home
+    ) -> None:
+        """A rename sent with a refused requirement is not applied (session, then token)."""
+        url = reverse("api-v1:home-detail", kwargs={"home_id": alice_home.id})
+        body = {"name": "Renamed", "required_provider": "company"}
+        signed_in_through(client, alice, None)
+        assert client.patch(url, body, content_type="application/json").status_code == 400
+        _token, raw = token_services.issue_token(
+            alice, name="all", scopes=["read", "write"], homes=[alice_home]
+        )
+        api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
+        assert api_client.patch(url, body).status_code == 403
+        alice_home.refresh_from_db()
+        assert alice_home.name == "Main house"
+        assert alice_home.required_provider == ""
+        # A token may still rename the home when it asks nothing about sign-in.
+        assert api_client.patch(url, {"name": "Renamed"}).status_code == 200
+
     def test_no_section_without_a_declared_provider(
         self, client: Client, alice: User, alice_home: Home
     ) -> None:
@@ -212,13 +230,6 @@ class TestSettingTheRequirement:
             client.force_login(alice)
             page = client.get(reverse("homes:household", kwargs={"home_id": alice_home.id})).text
         assert reverse("homes:required-provider", kwargs={"home_id": alice_home.id}) not in page
-
-
-def test_no_account_is_taken_over_by_a_matching_address() -> None:
-    # An identity from a provider never signs in to, nor links itself to, an
-    # account because the provider claims the same address (docs/adr/0021).
-    assert settings.SOCIALACCOUNT_EMAIL_AUTHENTICATION is False
-    assert settings.SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT is False
 
 
 class TestIsolation:
@@ -275,3 +286,130 @@ class TestIsolation:
             assert api_client.get(url).status_code == 404, url
         listed = api_client.get(reverse("api-v1:home-list")).json()["results"]
         assert [h["id"] for h in listed] == [str(alice_home.id)]
+
+
+class TestWaysOut:
+    """A requirement never traps anyone: leaving, and lifting a rule whose provider is gone."""
+
+    @pytest.fixture
+    def gone_provider_home(self, alice_home: Home) -> Home:
+        alice_home.required_provider = "removed-idp"
+        alice_home.save()
+        return alice_home
+
+    def test_an_owner_lifts_a_rule_whose_provider_is_gone(
+        self, client: Client, alice: User, gone_provider_home: Home
+    ) -> None:
+        signed_in_through(client, alice, None)
+        kwargs = {"home_id": gone_provider_home.id}
+        page = client.get(reverse("homes:detail", kwargs=kwargs))
+        assert page.status_code == 403
+        assert "Remove the sign-in requirement" in page.text
+        response = client.post(reverse("homes:unlock", kwargs=kwargs))
+        assert response.status_code == 302
+        gone_provider_home.refresh_from_db()
+        assert gone_provider_home.required_provider == ""
+        assert client.get(reverse("homes:detail", kwargs=kwargs)).status_code == 200
+
+    def test_a_member_cannot_lift_it(
+        self,
+        client: Client,
+        bob: User,
+        gone_provider_home: Home,
+        add_member: Callable[..., Membership],
+    ) -> None:
+        add_member(gone_provider_home, bob, Role.MEMBER)
+        signed_in_through(client, bob, None)
+        kwargs = {"home_id": gone_provider_home.id}
+        assert (
+            "Remove the sign-in requirement"
+            not in client.get(reverse("homes:detail", kwargs=kwargs)).text
+        )
+        assert client.post(reverse("homes:unlock", kwargs=kwargs)).status_code == 403
+        gone_provider_home.refresh_from_db()
+        assert gone_provider_home.required_provider == "removed-idp"
+
+    def test_a_provider_that_is_still_offered_keeps_its_protection(
+        self, client: Client, alice: User, locked_home: Home
+    ) -> None:
+        signed_in_through(client, alice, None)
+        client.post(reverse("homes:unlock", kwargs={"home_id": locked_home.id}), follow=True)
+        locked_home.refresh_from_db()
+        assert locked_home.required_provider == "company"
+
+    def test_a_stranger_gets_404(self, client: Client, bob: User, gone_provider_home: Home) -> None:
+        signed_in_through(client, bob, None)
+        url = reverse("homes:unlock", kwargs={"home_id": gone_provider_home.id})
+        assert client.post(url).status_code == 404
+
+    def test_api_unlock_session_only(
+        self,
+        client: Client,
+        api_client: APIClient,
+        alice: User,
+        gone_provider_home: Home,
+        alice_home: Home,
+    ) -> None:
+        url = reverse("api-v1:home-unlock", kwargs={"home_id": gone_provider_home.id})
+        _token, raw = token_services.issue_token(
+            alice, name="all", scopes=["read", "write"], homes=[alice_home]
+        )
+        api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
+        assert api_client.post(url).status_code == 403
+        signed_in_through(client, alice, None)
+        response = client.post(url)
+        assert response.status_code == 200
+        assert response.json()["required_provider"] == ""
+
+    def test_instance_wide_lift_frees_only_homes_of_removed_providers(
+        self, locked_home: Home, alice: User
+    ) -> None:
+        cottage = services.create_home(alice, name="Cottage")
+        cottage.required_provider = "removed-idp"
+        cottage.save()
+        assert services.lift_all_unavailable_requirements(declared=["company", "other"]) == 1
+        cottage.refresh_from_db()
+        locked_home.refresh_from_db()
+        assert cottage.required_provider == ""
+        assert locked_home.required_provider == "company"
+
+    def test_leaving_a_locked_home_needs_no_provider(
+        self,
+        client: Client,
+        bob: User,
+        locked_home: Home,
+        add_member: Callable[..., Membership],
+    ) -> None:
+        membership = add_member(locked_home, bob, Role.MEMBER)
+        signed_in_through(client, bob, None)
+        kwargs = {"home_id": locked_home.id}
+        assert client.get(reverse("homes:detail", kwargs=kwargs)).status_code == 403
+        assert client.get(reverse("homes:leave", kwargs=kwargs)).status_code == 200
+        response = client.post(reverse("homes:leave", kwargs=kwargs))
+        assert response.status_code == 302
+        assert services.role_of(bob, locked_home) is None
+        assert not Membership.objects.filter(pk=membership.pk).exists()
+
+    def test_leaving_by_the_member_page_and_by_the_api(
+        self,
+        client: Client,
+        bob: User,
+        locked_home: Home,
+        add_member: Callable[..., Membership],
+        make_user: Callable[..., User],
+    ) -> None:
+        carol = make_user("carol@example.com")
+        add_member(locked_home, carol, Role.MEMBER)
+        mine = add_member(locked_home, bob, Role.MEMBER)
+        signed_in_through(client, bob, None)
+        kwargs = {"home_id": locked_home.id, "member_id": mine.id}
+        assert client.post(reverse("homes:member-remove", kwargs=kwargs)).status_code == 302
+        assert services.role_of(bob, locked_home) is None
+        # Not an owner: bob's session does not let him remove carol from a locked home.
+        add_member(locked_home, bob, Role.MEMBER)
+        carols = Membership.objects.get(home=locked_home, user=carol)
+        other = {"home_id": locked_home.id, "member_id": carols.id}
+        assert client.post(reverse("homes:member-remove", kwargs=other)).status_code == 403
+        url = reverse("api-v1:home-leave", kwargs={"home_id": locked_home.id})
+        assert client.post(url).status_code == 204
+        assert services.role_of(bob, locked_home) is None

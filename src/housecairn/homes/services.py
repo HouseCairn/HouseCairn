@@ -4,6 +4,7 @@ Web views and API views call these functions; neither holds rules of its own.
 """
 
 import hashlib
+import logging
 import secrets
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
@@ -14,16 +15,50 @@ from uuid import UUID
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db import models, transaction
+from django.db import IntegrityError, models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.audit import models as audit_models
+from housecairn.audit import services as audit
 from housecairn.homes.models import WRITE_ROLES, Home, Invitation, Membership, Role
 
 AnyUser = User | AnonymousUser
 
 INVITATION_PREFIX = "hci_"
+
+logger = logging.getLogger("housecairn.mail")
+
+
+class DeliveryFailedError(Exception):
+    """The invitation exists but its email could not be sent (docs/adr/0020).
+
+    The link was never shown to anybody and only its digest is kept: sending the
+    invitation again makes a new one.
+    """
+
+    def __init__(self, invitation: Any) -> None:
+        super().__init__("invitation email not sent")
+        self.invitation = invitation
+
+
+def deliver(
+    invitation: Any, raw: str, send: Callable[[Any, str], None] | None
+) -> tuple[Any, str | None]:
+    """Send the link by email, outside any transaction of ours.
+
+    A mail server that is down must neither undo the invitation nor become a
+    server error: it is logged, without the address, and reported to the caller.
+    """
+    if send is None:
+        return invitation, raw
+    try:
+        send(invitation, raw)
+    except Exception as exc:
+        logger.warning("invitation email not sent: %s", type(exc).__name__)
+        raise DeliveryFailedError(invitation) from exc
+    return invitation, None
 
 
 class SsoRequiredError(Exception):
@@ -89,6 +124,7 @@ def create_home(owner: User, *, name: str, currency: str = "EUR") -> Home:
     home.full_clean()
     home.save()
     Membership.objects.create(home=home, user=owner, role=Role.OWNER)
+    audit.record("home.created", actor=owner, home_id=home.id)
     return home
 
 
@@ -130,7 +166,86 @@ def set_required_provider(
             )
     home.required_provider = provider_id
     home.save(update_fields=["required_provider", "updated_at"])
+    if provider_id:
+        audit.record("sso.required", actor=actor, home_id=home.id, provider=provider_id)
+    else:
+        audit.record("sso.lifted", actor=actor, home_id=home.id)
     return home
+
+
+def lift_unavailable_requirement(actor: AnyUser, home: Home, *, declared: Iterable[str]) -> Home:
+    """Stop requiring a sign-in provider the instance no longer offers.
+
+    The way out when the administrator removes a provider from the
+    configuration: nobody could otherwise open the home to change the rule. An
+    owner only, and only for a provider that is gone: a provider that is still
+    offered keeps its protection (docs/adr/0021).
+    """
+    _require_owner(actor, home)
+    if not home.required_provider or home.required_provider in set(declared):
+        raise ValidationError(_("This home's sign-in provider is still offered by this instance."))
+    home.required_provider = ""
+    home.save(update_fields=["required_provider", "updated_at"])
+    audit.record("sso.lifted", actor=actor, home_id=home.id)
+    return home
+
+
+def lift_all_unavailable_requirements(*, declared: Iterable[str]) -> int:
+    """Instance-wide version for the administrator: how many homes were freed.
+
+    Names no home and reads none: it only clears a rule that points at a provider
+    that no longer exists.
+    """
+    return int(
+        Home.objects.exclude(required_provider="")
+        .exclude(required_provider__in=list(declared))
+        .update(required_provider="", updated_at=timezone.now())
+    )
+
+
+# ---------- deletion ----------
+
+
+def erase_home(home: Home) -> None:
+    """Delete a home and everything that hangs off it, for good (docs/adr/0023).
+
+    Rows go by cascade, soft-deleted ones included; so do the home's entries in
+    its audit log and, when files exist, its directory of files. An API token
+    left with no home is revoked. What remains is a count in the instance log.
+    """
+    from housecairn.apitokens.models import ApiToken
+
+    home_id = home.pk
+    tokens = list(ApiToken.objects.filter(homes=home).values_list("pk", flat=True))
+    Home.all_objects.filter(pk=home_id).delete()
+    audit_models.AuditEvent.objects.filter(home_id=home_id).delete()
+    ApiToken.objects.filter(pk__in=tokens, homes__isnull=True, revoked_at__isnull=True).update(
+        revoked_at=timezone.now()
+    )
+    transaction.on_commit(lambda: _remove_files(home_id))
+
+
+def _remove_files(home_id: UUID) -> None:
+    import shutil
+    from pathlib import Path
+
+    shutil.rmtree(Path(settings.MEDIA_ROOT) / "homes" / str(home_id), ignore_errors=True)
+
+
+@transaction.atomic
+def delete_home(actor: AnyUser, home: Home, *, confirmation: str) -> None:
+    """An owner deletes the home, for good, after typing its name.
+
+    The confirmation is the name as it is shown: a typo, or a request that does
+    not know the name (a script run by mistake), changes nothing. There is no
+    grace period: the specification asks for a definitive deletion, so the
+    owner is told to export first (docs/administration/data.md).
+    """
+    _require_owner(actor, home)
+    if confirmation.strip() != home.name.strip():
+        raise ValidationError(_("Type the exact name of the home to delete it."))
+    erase_home(home)
+    audit.record("home.deleted", actor=actor if isinstance(actor, User) else None)
 
 
 # ---------- household ----------
@@ -168,9 +283,18 @@ def change_role(actor: AnyUser, membership: Membership, role: Role | str) -> Mem
     target = next((m for m in locked if m.pk == membership.pk), None)
     if target is None:
         raise Membership.DoesNotExist
+    previous = target.role
     target.role = new_role
     _check_an_owner_remains(locked)
     target.save(update_fields=["role", "updated_at"])
+    audit.record(
+        "member.role_changed",
+        actor=actor,
+        home_id=home.id,
+        target=target.user,
+        role=str(new_role),
+        previous_role=str(previous),
+    )
     return target
 
 
@@ -186,6 +310,12 @@ def remove_member(actor: AnyUser, membership: Membership) -> None:
         raise Membership.DoesNotExist
     _check_an_owner_remains([m for m in locked if m.pk != target.pk])
     target.soft_delete()
+    audit.record(
+        "member.left" if target.user_id == getattr(actor, "pk", None) else "member.removed",
+        actor=actor,
+        home_id=home.id,
+        target=target.user,
+    )
 
 
 def leave_home(actor: User, home: Home) -> None:
@@ -210,6 +340,7 @@ def transfer_ownership(actor: User, home: Home, to: Membership) -> Membership:
     mine.role = Role.MEMBER
     target.save(update_fields=["role", "updated_at"])
     mine.save(update_fields=["role", "updated_at"])
+    audit.record("ownership.transferred", actor=actor, home_id=home.id, target=target.user)
     return target
 
 
@@ -251,7 +382,6 @@ class Delivery:
     send: Callable[[Invitation, str], None] | None = None
 
 
-@transaction.atomic
 def invite(
     actor: User, home: Home, *, email: str, role: Role | str, delivery: Delivery
 ) -> tuple[Invitation, str | None]:
@@ -259,38 +389,62 @@ def invite(
 
     Returns the invitation and, when it was not sent by email, its link secret
     (shown once). The answer does not depend on whether an account uses the
-    address, so inviting cannot be used to find out who has an account.
+    address, so inviting cannot be used to find out who has an account. The
+    email goes out after the invitation is saved: if it fails, the invitation
+    stays and `DeliveryFailedError` says so.
     """
     _require_owner(actor, home)
     address = email.strip()
     new_role = Role(role)
-    if any(same_address(m.user.email, address) for m in members(home)):
-        raise ValidationError(_("This person is already a member of the home."))
-    if any(same_address(i.email, address) for i in pending_invitations(home)):
-        raise ValidationError(
-            _("An invitation to this address is already pending; send it again instead.")
+    with transaction.atomic():
+        if any(same_address(m.user.email, address) for m in members(home)):
+            raise ValidationError(_("This person is already a member of the home."))
+        _retire_expired(home, address)
+        if any(same_address(i.email, address) for i in pending_invitations(home)):
+            raise ValidationError(
+                _("An invitation to this address is already pending; send it again instead.")
+            )
+        raw, digest = _new_secret()
+        now = timezone.now()
+        invitation = Invitation(
+            home=home,
+            email=address,
+            role=new_role,
+            invited_by=actor,
+            digest=digest,
+            expires_at=now + _lifetime(),
+            sent_at=now,
+            delivered_by_email=delivery.send is not None,
         )
-    raw, digest = _new_secret()
+        invitation.full_clean(exclude=["digest"])
+        try:
+            with transaction.atomic():
+                invitation.save()
+        except IntegrityError as exc:
+            # Two simultaneous invitations to one address: the database settled it.
+            raise ValidationError(
+                _("An invitation to this address is already pending; send it again instead.")
+            ) from exc
+        audit.record("invitation.sent", actor=actor, home_id=home.id, role=str(new_role))
+    return deliver(invitation, raw, delivery.send)
+
+
+def _retire_expired(home: Home, address: str) -> None:
+    """Revoke the home's lapsed invitations to this address, so it can be invited again.
+
+    A lapsed invitation opens nothing; it would otherwise keep the one-pending
+    rule of the database (`unique_pending_invitation`) from letting a new one in.
+    """
     now = timezone.now()
-    invitation = Invitation(
+    Invitation.objects.filter(
         home=home,
-        email=address,
-        role=new_role,
-        invited_by=actor,
-        digest=digest,
-        expires_at=now + _lifetime(),
-        sent_at=now,
-        delivered_by_email=delivery.send is not None,
-    )
-    invitation.full_clean(exclude=["digest"])
-    invitation.save()
-    if delivery.send is not None:
-        delivery.send(invitation, raw)
-        return invitation, None
-    return invitation, raw
+        email__iexact=address,
+        accepted_at__isnull=True,
+        revoked_at__isnull=True,
+        expires_at__lte=now,
+    ).update(revoked_at=now)
 
 
-@transaction.atomic
 def resend_invitation(
     actor: User, invitation: Invitation, *, delivery: Delivery
 ) -> tuple[Invitation, str | None]:
@@ -304,20 +458,21 @@ def resend_invitation(
     invitation.sent_at = now
     invitation.expires_at = now + _lifetime()
     invitation.delivered_by_email = delivery.send is not None
-    invitation.save(
-        update_fields=["digest", "sent_at", "expires_at", "delivered_by_email", "updated_at"]
-    )
-    if delivery.send is not None:
-        delivery.send(invitation, raw)
-        return invitation, None
-    return invitation, raw
+    with transaction.atomic():
+        invitation.save(
+            update_fields=["digest", "sent_at", "expires_at", "delivered_by_email", "updated_at"]
+        )
+        audit.record("invitation.resent", actor=actor, home_id=invitation.home_id)
+    return deliver(invitation, raw, delivery.send)
 
 
 def revoke_invitation(actor: User, invitation: Invitation) -> None:
     _require_owner(actor, invitation.home)
     if invitation.revoked_at is None and invitation.accepted_at is None:
-        invitation.revoked_at = timezone.now()
-        invitation.save(update_fields=["revoked_at", "updated_at"])
+        with transaction.atomic():
+            invitation.revoked_at = timezone.now()
+            invitation.save(update_fields=["revoked_at", "updated_at"])
+            audit.record("invitation.revoked", actor=actor, home_id=invitation.home_id)
 
 
 def find_invitation(raw: str) -> Invitation | None:
@@ -365,6 +520,10 @@ def accept_invitation(user: User, raw: str) -> Membership:
         raise Invitation.DoesNotExist
     if not same_address(user.email, invitation.email):
         raise PermissionDenied(_("This invitation is for another email address."))
+    if invitation.delivered_by_email:
+        # The link reached the mailbox of that address and nobody else saw it:
+        # whoever opens it with this address proves the address (docs/adr/0020).
+        verify_address(user, invitation.email)
     membership: Membership | None = Membership.objects.filter(
         home=invitation.home, user=user
     ).first()
@@ -375,26 +534,45 @@ def accept_invitation(user: User, raw: str) -> Membership:
     invitation.accepted_at = timezone.now()
     invitation.accepted_by = user
     invitation.save(update_fields=["accepted_at", "accepted_by", "updated_at"])
+    audit.record(
+        "invitation.accepted", actor=user, home_id=invitation.home_id, role=str(membership.role)
+    )
     return membership
+
+
+def verify_address(user: User, address: str) -> None:
+    """Mark the account's address verified, adding its record if it has none."""
+    from allauth.account.models import EmailAddress
+
+    record = EmailAddress.objects.filter(user=user, email__iexact=address).first()
+    if record is None:
+        has_primary = EmailAddress.objects.filter(user=user, primary=True).exists()
+        EmailAddress.objects.create(
+            user=user, email=user.email, primary=not has_primary, verified=True
+        )
+    elif not record.verified:
+        record.verified = True
+        record.save(update_fields=["verified"])
 
 
 @transaction.atomic
 def create_account_for_invitation(raw: str, *, password: str) -> User:
     """Create the account of an invited address, then accept the invitation.
 
-    The invitation is the way in when sign-up is closed. The address is marked
-    verified only when the link reached it by email.
+    The invitation is the way in when sign-up is closed. Only a link that went
+    to the address by email can create the account, and that is what verifies
+    the address. A link the owner handed over (the instance sends no email)
+    proves nothing about the address and never creates an account: it could
+    otherwise be used to take the address or to learn whether an account uses
+    it (docs/adr/0020).
     """
-    from allauth.account.models import EmailAddress
-
     invitation = find_invitation(raw)
     if invitation is None:
         raise Invitation.DoesNotExist
+    if not invitation.delivered_by_email:
+        raise PermissionDenied(_("This link was not sent by email: it cannot create an account."))
     if User.objects.filter(email__iexact=invitation.email).exists():
         raise ValidationError(_("An account already uses this address: sign in to accept."))
     user = User.objects.create_user(email=invitation.email, password=password)
-    EmailAddress.objects.create(
-        user=user, email=user.email, primary=True, verified=invitation.delivered_by_email
-    )
     accept_invitation(user, raw)
     return user

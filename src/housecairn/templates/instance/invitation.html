@@ -1,0 +1,36 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Invitation" %}{% endblock head_title %}
+{% block content %}
+  <h1>{% translate "Create your HouseCairn account" %}</h1>
+  <p class="lead">{% blocktranslate with email=invitation.email %}You are invited with the address {{ email }}.{% endblocktranslate %}</p>
+  {% if user.is_authenticated %}
+    {% if same_address %}
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="button-block">{% translate "Accept the invitation" %}</button>
+      </form>
+    {% else %}
+      <div class="alert alert-warning" role="status">{% blocktranslate with email=invitation.email %}You are signed in with another address. Sign out, then open the link again and sign in as {{ email }}.{% endblocktranslate %}</div>
+    {% endif %}
+  {% else %}
+    {% if account_exists %}
+      <div class="alert alert-info" role="status">{% translate "An account already uses this address: sign in to accept the invitation." %}</div>
+    {% elif form %}
+      <h2>{% translate "Create your account" %}</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{% translate "Create the account" %}</button>
+      </form>
+    {% endif %}
+    <p class="auth-footer">{% translate "Already have an account?" %} <a href="{% url 'account_login' %}?next={{ next_url|urlencode }}">{% translate "Sign in" %}</a></p>
+    {% if providers %}
+      <div class="sso-list">
+        {% for provider in providers %}
+          <a class="button button-secondary" href="{% url 'openid_connect_login' provider_id=provider.id %}?process=login&amp;next={{ next_url|urlencode }}">{% blocktranslate with provider=provider.name %}Continue with {{ provider }}{% endblocktranslate %}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endif %}
+{% endblock content %}

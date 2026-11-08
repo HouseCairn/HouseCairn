@@ -70,6 +70,8 @@ INSTALLED_APPS = [
     "housecairn.homes",
     "housecairn.apitokens",
     "housecairn.events",
+    "housecairn.audit",
+    "housecairn.instance",
     "housecairn.rooms",
     "housecairn.tasks",
 ]
@@ -88,6 +90,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "housecairn.accounts.middleware.DeviceCookieMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -225,10 +228,18 @@ _form_action: list[str] = [SELF]
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_VERIFICATION = env.str("ACCOUNT_EMAIL_VERIFICATION", default="optional")
+HOUSECAIRN_SIGNUP_OPEN: bool = env.bool("HOUSECAIRN_SIGNUP_OPEN", default=False)
+# With sign-up open, an address is verified by email before the account can be used;
+# otherwise the accounts are the administrator's and the invited people's.
+ACCOUNT_EMAIL_VERIFICATION = env.str(
+    "ACCOUNT_EMAIL_VERIFICATION", default="mandatory" if HOUSECAIRN_SIGNUP_OPEN else "optional"
+)
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_ADAPTER = "housecairn.accounts.adapters.AccountAdapter"
-ACCOUNT_FORMS = {"login": "housecairn.accounts.forms.LoginForm"}
+ACCOUNT_FORMS = {
+    "login": "housecairn.accounts.forms.LoginForm",
+    "signup": "housecairn.accounts.forms.SignupForm",
+}
 SOCIALACCOUNT_ADAPTER = "housecairn.accounts.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_ONLY = False
 # An identity from a provider never signs in to, nor attaches itself to, an
@@ -242,6 +253,10 @@ SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = False
 ACCOUNT_RATE_LIMITS = {
     "housecairn_invite": "10/m/user,50/d/user",
     "housecairn_invitation": "30/m/ip",
+    "housecairn_instance_invite": "10/m/user,50/d/user",
+    "housecairn_delete_account": "5/m/user",
+    # Sign-up and password reset, per client address (allauth's own actions).
+    "signup": "10/m/ip,60/d/ip",
 }
 # Days an invitation link stays valid.
 HOUSECAIRN_INVITATION_LIFETIME_DAYS: int = env.int("HOUSECAIRN_INVITATION_LIFETIME_DAYS", default=7)
@@ -258,7 +273,18 @@ if HOUSECAIRN_SITE_URL and (
     raise ImproperlyConfigured(
         "HOUSECAIRN_SITE_URL must be an http:// or https:// address without a path."
     )
-HOUSECAIRN_SIGNUP_OPEN: bool = env.bool("HOUSECAIRN_SIGNUP_OPEN", default=False)
+# Open sign-up (docs/adr/0024): the proof of work asked on the sign-up page, as a
+# count of zero bits (8 to 24; 16 takes a second or so), and optional lists of
+# domains, comma-separated, that may (only those) or may not sign up.
+HOUSECAIRN_SIGNUP_POW_BITS: int = env.int("HOUSECAIRN_SIGNUP_POW_BITS", default=16)
+if not 8 <= HOUSECAIRN_SIGNUP_POW_BITS <= 24:
+    raise ImproperlyConfigured("HOUSECAIRN_SIGNUP_POW_BITS must be between 8 and 24.")
+HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS: list[str] = [
+    d.strip().lower().lstrip("@") for d in env.list("HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS", default=[])
+]
+HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS: list[str] = [
+    d.strip().lower().lstrip("@") for d in env.list("HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS", default=[])
+]
 # Sign-up through OIDC: "closed" (default) refuses an identity without an
 # account, except the very first one, which becomes the instance
 # administrator; "open" lets anyone the provider accepts create an account.
@@ -278,13 +304,25 @@ EMAIL_HOST: str = env.str("EMAIL_HOST", default="").strip()
 EMAIL_PORT: int = env.int("EMAIL_PORT", default=587)
 EMAIL_HOST_USER: str = env.str("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD: str = env.str("EMAIL_HOST_PASSWORD", default="")
+# STARTTLS on the submission port (587) by default; EMAIL_USE_SSL is TLS from the
+# first byte (port 465). One of them: Django refuses both.
 EMAIL_USE_TLS: bool = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_USE_SSL: bool = env.bool("EMAIL_USE_SSL", default=False)
+if EMAIL_USE_SSL:
+    EMAIL_USE_TLS = False
+# Seconds to wait for the mail server: a server that does not answer must not hold a
+# web process for minutes (the default of Python is no limit).
+EMAIL_TIMEOUT: int = env.int("EMAIL_TIMEOUT", default=15)
 EMAIL_BACKEND = (
     "django.core.mail.backends.smtp.EmailBackend"
     if EMAIL_HOST
     else "django.core.mail.backends.console.EmailBackend"
 )
 DEFAULT_FROM_EMAIL: str = env.str("DEFAULT_FROM_EMAIL", default="HouseCairn <noreply@localhost>")
+# Security alerts (password or passkey changed, new address, new sign-in) go out
+# only when mail can be delivered (docs/adr/0023); subjects start with the name.
+ACCOUNT_EMAIL_NOTIFICATIONS = bool(EMAIL_HOST)
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "HouseCairn: "
 
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True
@@ -383,6 +421,13 @@ HOUSECAIRN_API_TOKEN_DEFAULT_LIFETIME_DAYS: int = env.int(
     "HOUSECAIRN_API_TOKEN_DEFAULT_LIFETIME_DAYS", default=90
 )
 HOUSECAIRN_EVENT_PAYLOAD_MAX_BYTES = 16 * 1024
+
+# Cache, which holds the counters of the rate limits (docs/adr/0025). The default is
+# in memory and per process: with several web processes each counts alone, so a limit
+# is up to HOUSECAIRN_WEB_WORKERS times looser. A shared cache makes it exact, for
+# example HOUSECAIRN_CACHE_URL=dbcache://housecairn_cache (the table is created at
+# start-up), or a Redis or Memcached URL.
+CACHES = {"default": env.cache("HOUSECAIRN_CACHE_URL", default="locmemcache://housecairn")}
 
 # Documentation site opened by the help link of each screen (docs/adr/0016).
 # A link only: the interface loads nothing from this address.

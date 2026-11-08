@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Instance administration" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'more' %}">{% include "components/icon.html" with name="chevron" %}{% translate "More" %}</a>
+  <h1>{% translate "Instance administration" %}</h1>
+  <p class="small">{% translate "You run this instance: accounts, invitations, sign-in providers. You see no home, no task and no document, and no member of a home you do not belong to." %}</p>
+  <section class="card">
+    <dl class="facts">
+      <div><dt>{% translate "Accounts" %}</dt><dd>{{ accounts }}</dd></div>
+      <div><dt>{% translate "Open sign-up" %}</dt><dd>{% if signup_open %}{% translate "on" %}{% else %}{% translate "off" %}{% endif %}</dd></div>
+      <div><dt>{% translate "Outgoing email" %}</dt><dd>{% if email_configured %}{% translate "configured" %}{% else %}{% translate "not configured" %}{% endif %}</dd></div>
+      <div><dt>{% translate "Sign-in providers" %}</dt><dd>{% for provider in providers %}{{ provider.name }}{% if not forloop.last %}, {% endif %}{% empty %}{% translate "none" %}{% endfor %}</dd></div>
+    </dl>
+  </section>
+
+  <h2>{% translate "Invite someone to the instance" %}</h2>
+  {% if email_configured %}
+    <form method="post" action="{% url 'instance:invite' %}" class="card">
+      {% csrf_token %}
+      {{ invite_form.as_p }}
+      <button type="submit" class="button-block">{% translate "Invite" %}</button>
+      <p class="small">{% translate "The person receives a link by email, which works once. They create their account and then their own home." %}</p>
+    </form>
+  {% else %}
+    <p class="small card">{% translate "This instance cannot send email, so it cannot invite by link. Set up outgoing email to invite people." %}</p>
+  {% endif %}
+  {% if invitations %}
+    <h2>{% translate "Pending invitations" %}</h2>
+    {% for invitation in invitations %}
+      <section class="card">
+        <p class="row-title">{{ invitation.email }}</p>
+        <p class="row-text">{% blocktranslate with date=invitation.expires_at|date:"SHORT_DATE_FORMAT" %}until {{ date }}{% endblocktranslate %}</p>
+        <div class="button-row">
+          <form method="post" action="{% url 'instance:invitation-resend' invitation_id=invitation.id %}">
+            {% csrf_token %}
+            <button type="submit" class="button-secondary button-small">{% translate "Send again" %}</button>
+          </form>
+          <form method="post" action="{% url 'instance:invitation-revoke' invitation_id=invitation.id %}">
+            {% csrf_token %}
+            <button type="submit" class="button-danger button-small">{% translate "Revoke" %}</button>
+          </form>
+        </div>
+      </section>
+    {% endfor %}
+  {% endif %}
+
+  {% if stale_homes %}
+    <h2>{% translate "Homes locked by a removed provider" %}</h2>
+    <form method="post" action="{% url 'instance:unlock' %}" class="card">
+      {% csrf_token %}
+      <p>{% blocktranslate count counter=stale_homes %}{{ counter }} home requires a sign-in provider this instance no longer offers, so nobody can open it.{% plural %}{{ counter }} homes require a sign-in provider this instance no longer offers, so nobody can open them.{% endblocktranslate %}</p>
+      <button type="submit" class="button-secondary button-block">{% translate "Remove these requirements" %}</button>
+    </form>
+  {% endif %}
+
+  <h2>{% translate "Accounts and settings" %}</h2>
+  <div class="list">
+    <a class="row" href="{% url 'admin:accounts_user_changelist' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Accounts" %}</span>
+        <span class="row-text">{% translate "Deactivate, delete, set the administrators (administration site)" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+    <a class="row" href="{% url 'instance:audit' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Audit log" %}</span>
+        <span class="row-text">{% translate "Administration actions, invitations, accounts" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+  </div>
+{% endblock content %}

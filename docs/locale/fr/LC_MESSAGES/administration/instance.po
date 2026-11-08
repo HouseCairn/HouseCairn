@@ -1,0 +1,71 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 01:03+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Instance administrator"
+msgstr "Administrateur de l'instance"
+
+msgid "The administrator runs the instance: accounts, invitations, sign-in providers and settings. The administrator **does not read the homes** ([ADR 0022](../adr/0022-instance-administrator-without-content.md))."
+msgstr "L'administrateur fait fonctionner l'instance : comptes, invitations, fournisseurs de connexion et réglages. L'administrateur **ne lit pas les logements** ([ADR 0022](../adr/0022-instance-administrator-without-content.md))."
+
+msgid "Who is an administrator"
+msgstr "Qui est administrateur"
+
+msgid "An active account that is both *staff* and *superuser*. The first account of a new instance created through single sign-on is one (see [Single sign-on](oidc.md)); `manage.py createsuperuser` makes another; the administration site (`/admin/`) grants or withdraws the role on an existing account (both boxes, audited). Being an administrator adds no home to the account: it sees the homes it belongs to, like anyone."
+msgstr "Un compte actif qui est à la fois *staff* et *superuser*. Le premier compte d'une nouvelle instance créé par authentification unique en est un (voir [Authentification unique](oidc.md)) ; `manage.py createsuperuser` en crée un autre ; le site d'administration (`/admin/`) accorde ou retire le rôle sur un compte existant (les deux cases, avec audit). Être administrateur n'ajoute aucun logement au compte : il voit les logements dont il fait partie, comme tout le monde."
+
+msgid "What the administrator can do"
+msgstr "Ce que l'administrateur peut faire"
+
+msgid "**Accounts**, in the administration site: switch an account on or off, grant or withdraw the administrator role, delete an account. Changes and deletions are written to the audit log of the instance. An account is created by an invitation to the instance (or by sign-up, or single sign-on, when the instance allows it), never from the administration site."
+msgstr "Les **comptes**, dans le site d'administration : activer ou désactiver un compte, accorder ou retirer le rôle d'administrateur, supprimer un compte. Les modifications et suppressions sont inscrites au journal d'audit de l'instance. Un compte se crée par une invitation à l'instance (ou par l'inscription, ou l'authentification unique, quand l'instance les permet), jamais depuis le site d'administration."
+
+msgid "**Invitations to the instance**, at `/instance/` and in the API (`/api/v1/instance/invitations/`): an address receives a link by email, creates an account and then their own home. They need outgoing email. See [Instance administration](../screens/instance.md)."
+msgstr "Les **invitations à l'instance**, sur `/instance/` et dans l'API (`/api/v1/instance/invitations/`) : une adresse reçoit un lien par e-mail, crée un compte puis son propre logement. Elles nécessitent l'envoi d'e-mails. Voir [Administration de l'instance](../screens/instance.md)."
+
+msgid "**Providers and settings**: environment variables (see [Environment variables](variables.md)). Nothing is edited in the interface."
+msgstr "Les **fournisseurs et réglages** : variables d'environnement (voir [Variables d'environnement](variables.md)). Rien ne se modifie dans l'interface."
+
+msgid "**Unlocking homes**: when a provider is removed from the configuration, the homes that required it stay locked. **Remove these requirements** on the instance page (or `POST /api/v1/instance/unlock/`) clears the rule of all of them, without showing which. An owner can also lift the rule of their own home from its locked page."
+msgstr "Le **déverrouillage des logements** : quand un fournisseur est retiré de la configuration, les logements qui l'exigeaient restent verrouillés. **Retirer ces exigences** sur la page de l'instance (ou `POST /api/v1/instance/unlock/`) efface la règle de tous, sans montrer lesquels. Un propriétaire peut aussi lever la règle de son propre logement depuis sa page verrouillée."
+
+msgid "**Audit log of the instance**: `/instance/audit/` and `/api/v1/instance/audit/`."
+msgstr "Le **journal d'audit de l'instance** : `/instance/audit/` et `/api/v1/instance/audit/`."
+
+msgid "What the administrator cannot do"
+msgstr "Ce que l'administrateur ne peut pas faire"
+
+msgid "Read a home, its members, invitations, events, files or audit log; export or delete a home; be given the name of a home. The web pages and the API answer 404 for a home the administrator does not belong to, the administration site registers no home model, and an API token never serves the administrator's endpoints."
+msgstr "Lire un logement, ses membres, invitations, événements, fichiers ou journal d'audit ; exporter ou supprimer un logement ; recevoir le nom d'un logement. Les pages web et l'API répondent 404 pour un logement dont l'administrateur ne fait pas partie, le site d'administration n'enregistre aucun modèle de logement, et un jeton d'API ne sert jamais les points d'accès de l'administrateur."
+
+msgid "The page of an account in the administration site does not list its memberships, and deleting an account does not either."
+msgstr "La page d'un compte dans le site d'administration ne liste pas ses appartenances, et la suppression d'un compte non plus."
+
+msgid "The administrator deletes an account by the same rules as the person: the only administrator, and the only owner of a home with other members, cannot be erased."
+msgstr "L'administrateur supprime un compte selon les mêmes règles que la personne : l'unique administrateur, et l'unique propriétaire d'un logement qui a d'autres membres, ne peuvent pas être effacés."
+
+msgid "The administrator cannot take over an account. The administration site has no page to set a password, shows the address of an account read-only, cannot add an account, and registers no model that holds a credential: email addresses, linked identities and provider keys, authenticator secrets and recovery codes, scheduled and finished background tasks. API tokens are listed and revoked, never read. A person who lost their access recovers it with the *Forgot your password?* link, which they trigger and which goes to their own address; the administrator can neither do it for them nor read the link. Without outgoing email there is no such link, and the operator of the machine sets a new password with `manage.py changepassword`."
+msgstr "L'administrateur ne peut pas prendre un compte. Le site d'administration n'a aucune page pour fixer un mot de passe, affiche l'adresse d'un compte en lecture seule, ne peut pas ajouter de compte et n'enregistre aucun modèle qui détient un identifiant : adresses e-mail, identités liées et clés de fournisseur, secrets d'authentification et codes de récupération, tâches de fond planifiées et terminées. Les jetons d'API sont listés et révoqués, jamais lus. Une personne qui a perdu son accès le récupère avec le lien *Mot de passe oublié ?*, qu'elle déclenche et qui part vers sa propre adresse ; l'administrateur ne peut ni le faire à sa place ni lire le lien. Sans e-mail sortant, il n'y a pas de tel lien, et l'exploitant de la machine définit un nouveau mot de passe avec `manage.py changepassword`."
+
+msgid "What this does not protect against"
+msgstr "Ce contre quoi cela ne protège pas"
+
+msgid "Whoever operates the machine reads the database and its backups, and can run `manage.py` (`changepassword`, `shell`): the guarantee is about the application, not about the host. Say so to the people who sign up (privacy policy, backups, who has access to the server)."
+msgstr "Qui exploite la machine lit la base de données et ses sauvegardes, et peut lancer `manage.py` (`changepassword`, `shell`) : la garantie porte sur l'application, pas sur l'hôte. Dites-le aux personnes qui s'inscrivent (politique de confidentialité, sauvegardes, qui a accès au serveur)."

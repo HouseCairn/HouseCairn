@@ -16,6 +16,8 @@
   {% else %}
     {% if account_exists %}
       <div class="alert alert-info" role="status">{% translate "An account already uses this address: sign in to accept the invitation." %}</div>
+    {% elif not invitation.delivered_by_email %}
+      <div class="alert alert-info" role="status">{% translate "This link was handed over by the person who invited you, not sent by email, so it cannot create an account. Sign in with the invited address, then open the link again. Without an account, ask the administrator of this instance." %}</div>
     {% elif form %}
       <h2>{% translate "Create your account" %}</h2>
       <form method="post">

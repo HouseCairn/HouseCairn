@@ -125,3 +125,38 @@ def test_check_deploy_with_example_production_environment(tmp_path: Path) -> Non
     result = _run_python(code, env)
     assert result.returncode == 0, result.stdout + result.stderr
     assert "no issues" in result.stdout
+
+
+class TestRateLimitCache:
+    """The cache behind the rate limits can be shared between web processes (docs/adr/0025)."""
+
+    @staticmethod
+    def caches(url: str | None, tmp_path: Path) -> str:
+        env = {"DEBUG": "true", "HOUSECAIRN_DATA_DIR": str(tmp_path)}
+        if url:
+            env["HOUSECAIRN_CACHE_URL"] = url
+        code = "import housecairn.settings as s; print(s.CACHES['default']['BACKEND'])"
+        return _run_python(code, env).stdout.strip()
+
+    def test_the_default_is_per_process(self, tmp_path: Path) -> None:
+        assert self.caches(None, tmp_path).endswith("LocMemCache")
+
+    def test_a_database_cache_can_be_chosen(self, tmp_path: Path) -> None:
+        assert self.caches("dbcache://housecairn_cache", tmp_path).endswith("DatabaseCache")
+
+    def test_the_table_of_a_database_cache_is_created(self, tmp_path: Path) -> None:
+        env = {
+            "DEBUG": "true",
+            "HOUSECAIRN_DATA_DIR": str(tmp_path),
+            "HOUSECAIRN_CACHE_URL": "dbcache://housecairn_cache",
+            "DJANGO_SETTINGS_MODULE": "housecairn.settings",
+        }
+        code = (
+            "from django.core.management import execute_from_command_line as run;"
+            "from django.core.cache import cache;"
+            "run(['manage.py', 'migrate', '--noinput', '-v', '0']);"
+            "run(['manage.py', 'createcachetable']);"
+            "cache.set('k', 'v', 60); print(cache.get('k'))"
+        )
+        result = _run_python(code, env)
+        assert result.stdout.strip().splitlines()[-1] == "v", result.stderr

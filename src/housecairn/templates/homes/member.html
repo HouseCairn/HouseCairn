@@ -27,17 +27,11 @@
             <button type="submit" class="button-secondary">{% translate "Make owner, and become a member myself" %}</button>
           </form>
         {% endif %}
-        <form method="post" action="{% url 'homes:member-remove' home_id=home.id member_id=membership.id %}">
-          {% csrf_token %}
-          <button type="submit" class="button-danger">{% translate "Remove from the home" %}</button>
-        </form>
+        <a class="button button-danger" href="{% url 'homes:member-remove' home_id=home.id member_id=membership.id %}">{% translate "Remove from the home" %}</a>
       </div>
     {% endif %}
   {% endif %}
   {% if is_me %}
-    <form method="post" action="{% url 'homes:leave' home_id=home.id %}">
-      {% csrf_token %}
-      <button type="submit" class="button-danger button-block">{% translate "Leave this home" %}</button>
-    </form>
+    <a class="button button-danger button-block" href="{% url 'homes:leave' home_id=home.id %}">{% translate "Leave this home" %}</a>
   {% endif %}
 {% endblock content %}

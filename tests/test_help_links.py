@@ -108,5 +108,5 @@ class TestPages:
 
     def test_account_pages_link_to_their_help(self, client: Client, alice: User) -> None:
         client.force_login(alice)
-        response = client.get(reverse("account_email"))
+        response = client.get(reverse("account_change_password"))
         assert 'href="https://docs.housecairn.app/screens/account/"' in response.text

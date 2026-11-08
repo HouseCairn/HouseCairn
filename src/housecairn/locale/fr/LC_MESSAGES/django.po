@@ -5,6 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 00:05+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -12,307 +13,832 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: accounts/admin.py
+#: accounts/admin.py:26
 msgid "Personal info"
 msgstr "Informations personnelles"
 
-#: accounts/admin.py
+#: accounts/admin.py:28
 msgid "Permissions"
 msgstr "Permissions"
 
-#: accounts/admin.py
+#: accounts/admin.py:31
 msgid "Important dates"
 msgstr "Dates importantes"
 
-#: accounts/apps.py
+#: accounts/apps.py:8 templates/instance/overview.html:10
+#: templates/instance/overview.html:61
 msgid "Accounts"
 msgstr "Comptes"
 
-#: accounts/models.py
+#: accounts/forms.py:35
+msgid "Type your email address to confirm"
+msgstr "Saisissez votre adresse e-mail pour confirmer"
+
+#: accounts/forms.py:37
+msgid "Your password"
+msgstr "Votre mot de passe"
+
+#: accounts/forms.py:54
+msgid "This is not the address of your account."
+msgstr "Ce n'est pas l'adresse de votre compte."
+
+#: accounts/forms.py:56
+msgid "The password is not correct."
+msgstr "Le mot de passe n'est pas correct."
+
+#: accounts/forms.py:81
+msgid "Sign-up is not open to addresses of this domain."
+msgstr "L'inscription n'est pas ouverte aux adresses de ce domaine."
+
+#: accounts/forms.py:95
+msgid ""
+"The check that you are not a robot did not complete. Wait a few seconds for "
+"it on the page, with JavaScript on, then try again."
+msgstr "La vérification que vous n'êtes pas un robot n'a pas abouti. Attendez-la quelques secondes sur la page, avec JavaScript activé, puis réessayez."
+
+#: accounts/models.py:57 homes/models.py:82 instance/models.py:22
 msgid "email address"
 msgstr "adresse e-mail"
 
-#: accounts/models.py core/models.py
+#: accounts/models.py:58 core/models.py:37
 msgid "updated at"
 msgstr "modifié le"
 
-#: accounts/models.py
+#: accounts/models.py:66
 msgid "user"
 msgstr "utilisateur"
 
-#: accounts/models.py
+#: accounts/models.py:67
 msgid "users"
 msgstr "utilisateurs"
 
-#: accounts/models.py
+#: accounts/models.py:74
 msgid "first sign-in through OIDC"
 msgstr "première connexion par OIDC"
 
-#: accounts/models.py
+#: accounts/models.py:75
 msgid "created another way"
 msgstr "créé autrement"
 
-#: accounts/models.py core/models.py
+#: accounts/models.py:91 core/models.py:36
 msgid "created at"
 msgstr "créé le"
 
-#: accounts/models.py
+#: accounts/models.py:92
 msgid "method"
 msgstr "méthode"
 
-#: accounts/models.py
+#: accounts/models.py:95
 msgid "first account"
 msgstr "premier compte"
 
-#: accounts/models.py
+#: accounts/models.py:103 accounts/models.py:104
 msgid "instance setup"
 msgstr "initialisation de l'instance"
 
-#: apitokens/admin.py
+#: accounts/models.py:130
+msgid "known device"
+msgstr "appareil connu"
+
+#: accounts/models.py:131
+msgid "known devices"
+msgstr "appareils connus"
+
+#: accounts/services.py:238
+msgid "This is the only administrator of the instance."
+msgstr "C'est le seul administrateur de l'instance."
+
+#: accounts/services.py:243
+#, python-format
+msgid ""
+"This account is the only owner of %(count)s home(s) that have other members: "
+"hand ownership over or delete the home first."
+msgstr "Ce compte est le seul propriétaire de %(count)s logement(s) qui ont d'autres membres : transférez d'abord la propriété ou supprimez le logement."
+
+#: accounts/views.py:56
+msgid "Too many attempts. Try again later."
+msgstr "Trop de tentatives. Réessayez plus tard."
+
+#: accounts/views.py:64
+msgid "Your account was deleted."
+msgstr "Votre compte a été supprimé."
+
+#: apitokens/admin.py:40
 msgid "Revoke selected tokens"
 msgstr "Révoquer les jetons sélectionnés"
 
-#: apitokens/apps.py apitokens/models.py
+#: apitokens/apps.py:8 apitokens/models.py:34
 msgid "API tokens"
 msgstr "Jetons d'API"
 
-#: apitokens/authentication.py
+#: apitokens/authentication.py:20 apitokens/authentication.py:24
 msgid "Invalid token header."
 msgstr "En-tête de jeton invalide."
 
-#: apitokens/authentication.py
+#: apitokens/authentication.py:27
 msgid "Invalid, expired or revoked token."
 msgstr "Jeton invalide, expiré ou révoqué."
 
-#: apitokens/models.py
+#: apitokens/models.py:12
 msgid "Read"
 msgstr "Lecture"
 
-#: apitokens/models.py
+#: apitokens/models.py:13
 msgid "Write"
 msgstr "Écriture"
 
-#: apitokens/models.py
+#: apitokens/models.py:14
 msgid "Post events"
 msgstr "Envoi d'événements"
 
-#: apitokens/models.py homes/models.py
+#: apitokens/models.py:21 homes/models.py:27
 msgid "name"
 msgstr "nom"
 
-#: apitokens/models.py
+#: apitokens/models.py:24
 msgid "prefix"
 msgstr "préfixe"
 
-#: apitokens/models.py
+#: apitokens/models.py:26
 msgid "scopes"
 msgstr "portées"
 
-#: apitokens/models.py homes/models.py
+#: apitokens/models.py:27 homes/models.py:44
 msgid "homes"
 msgstr "logements"
 
-#: apitokens/models.py
+#: apitokens/models.py:28 homes/models.py:88 instance/models.py:27
 msgid "expires at"
 msgstr "expire le"
 
-#: apitokens/models.py
+#: apitokens/models.py:29 homes/models.py:97 instance/models.py:33
 msgid "revoked at"
 msgstr "révoqué le"
 
-#: apitokens/models.py
+#: apitokens/models.py:30
 msgid "last used at"
 msgstr "dernière utilisation le"
 
-#: apitokens/models.py
+#: apitokens/models.py:33
 msgid "API token"
 msgstr "jeton d'API"
 
-#: apitokens/permissions.py
+#: apitokens/permissions.py:30
 msgid "This token does not have the scope this request needs."
 msgstr "Ce jeton n'a pas la portée nécessaire à cette requête."
 
-#: apitokens/services.py
+#: apitokens/services.py:44
 msgid "A token needs at least one scope."
 msgstr "Un jeton a besoin d'au moins une portée."
 
-#: apitokens/services.py
+#: apitokens/services.py:47
 msgid "A token is bound to at least one home."
 msgstr "Un jeton est lié à au moins un logement."
 
-#: core/apps.py
+#: audit/apps.py:8 templates/homes/audit.html:3 templates/homes/audit.html:6
+#: templates/homes/household.html:55 templates/homes/household.html:59
+#: templates/instance/audit.html:3 templates/instance/audit.html:6
+#: templates/instance/overview.html:68
+msgid "Audit log"
+msgstr "Journal d'audit"
+
+#: audit/labels.py:10
+msgid "Home created"
+msgstr "Logement créé"
+
+#: audit/labels.py:11
+#, python-format
+msgid "Role changed to %(role)s"
+msgstr "Rôle changé en %(role)s"
+
+#: audit/labels.py:12
+msgid "Member removed"
+msgstr "Membre retiré"
+
+#: audit/labels.py:13
+msgid "Member left"
+msgstr "Membre parti"
+
+#: audit/labels.py:14
+msgid "Ownership transferred"
+msgstr "Propriété transférée"
+
+#: audit/labels.py:15
+#, python-format
+msgid "Invitation sent (%(role)s)"
+msgstr "Invitation envoyée (%(role)s)"
+
+#: audit/labels.py:16
+msgid "Invitation sent again"
+msgstr "Invitation renvoyée"
+
+#: audit/labels.py:17
+msgid "Invitation revoked"
+msgstr "Invitation révoquée"
+
+#: audit/labels.py:18
+#, python-format
+msgid "Invitation accepted (%(role)s)"
+msgstr "Invitation acceptée (%(role)s)"
+
+#: audit/labels.py:19
+#, python-format
+msgid "Sign-in through %(provider)s required"
+msgstr "Connexion par %(provider)s exigée"
+
+#: audit/labels.py:20
+msgid "Sign-in requirement removed"
+msgstr "Exigence de connexion retirée"
+
+#: audit/labels.py:21
+msgid "Home exported"
+msgstr "Logement exporté"
+
+#: audit/labels.py:23
+msgid "Instance invitation sent"
+msgstr "Invitation à l'instance envoyée"
+
+#: audit/labels.py:24
+msgid "Instance invitation sent again"
+msgstr "Invitation à l'instance renvoyée"
+
+#: audit/labels.py:25
+msgid "Instance invitation revoked"
+msgstr "Invitation à l'instance révoquée"
+
+#: audit/labels.py:26
+msgid "Instance invitation accepted"
+msgstr "Invitation à l'instance acceptée"
+
+#: audit/labels.py:27
+msgid "Account created"
+msgstr "Compte créé"
+
+#: audit/labels.py:28
+msgid "Account deleted"
+msgstr "Compte supprimé"
+
+#: audit/labels.py:29
+msgid "A home was deleted"
+msgstr "Un logement a été supprimé"
+
+#: audit/labels.py:30
+#, python-format
+msgid "Sign-in requirement removed from %(count)s homes"
+msgstr "Exigence de connexion retirée de %(count)s logements"
+
+#: audit/labels.py:31
+msgid "Account changed in the administration site"
+msgstr "Compte modifié dans le site d'administration"
+
+#: audit/labels.py:32
+msgid "Account deleted in the administration site"
+msgstr "Compte supprimé dans le site d'administration"
+
+#: audit/models.py:15 templates/shell/navigation.html:6
+msgid "Home"
+msgstr "Accueil"
+
+#: audit/models.py:16 instance/apps.py:8
+msgid "Instance"
+msgstr "Instance"
+
+#: audit/models.py:21
+msgid "date"
+msgstr "date"
+
+#: audit/models.py:23
+msgid "action"
+msgstr "action"
+
+#: audit/models.py:37
+msgid "audit entry"
+msgstr "entrée d'audit"
+
+#: audit/models.py:38
+msgid "audit entries"
+msgstr "entrées d'audit"
+
+#: core/apps.py:8
 msgid "Core"
 msgstr "Cœur"
 
-#: core/models.py
+#: core/models.py:38
 msgid "deleted at"
 msgstr "supprimé le"
 
-#: core/views.py templates/core/index.html
+#: core/views.py:64 templates/core/index.html:8
 msgid "What needs doing in the house, where, when, with what and for how much."
 msgstr ""
 "Ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
 
-#: events/apps.py
+#: events/apps.py:8
 msgid "Events"
 msgstr "Événements"
 
-#: events/models.py
+#: events/models.py:11
 msgid "kind"
 msgstr "type"
 
-#: events/models.py
+#: events/models.py:12
 msgid "payload"
 msgstr "contenu"
 
-#: events/models.py
+#: events/models.py:21
 msgid "event"
 msgstr "événement"
 
-#: events/models.py
+#: events/models.py:22
 msgid "events"
 msgstr "événements"
 
-#: events/services.py
+#: events/services.py:29
 msgid "Event payload is too large."
 msgstr "Le contenu de l'événement est trop volumineux."
 
-#: homes/apps.py templates/base.html templates/core/more.html
-#: templates/homes/home_detail.html templates/homes/home_list.html
+#: homes/apps.py:8 templates/core/more.html:9
+#: templates/homes/home_detail.html:5 templates/homes/home_form.html:5
+#: templates/homes/home_list.html:3 templates/homes/home_list.html:5
+#: templates/homes/sso_required.html:5 templates/shell/navigation.html:11
 msgid "Homes"
 msgstr "Logements"
 
-#: homes/models.py
+#: homes/forms.py:20 homes/forms.py:45 instance/forms.py:8
+#: templates/homes/member.html:9
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+#: homes/forms.py:21 homes/forms.py:25 templates/homes/member.html:10
+#: templates/homes/member.html:15
+msgid "Role"
+msgstr "Rôle"
+
+#: homes/forms.py:29
+msgid "Sign-in required to open this home"
+msgstr "Connexion exigée pour ouvrir ce logement"
+
+#: homes/forms.py:33
+msgid "No requirement"
+msgstr "Aucune exigence"
+
+#: homes/forms.py:51 templates/core/more.html:30
+msgid "Password"
+msgstr "Mot de passe"
+
+#: homes/forms.py:56
+msgid "Password (again)"
+msgstr "Mot de passe (confirmation)"
+
+#: homes/forms.py:69
+msgid "The two passwords differ."
+msgstr "Les deux mots de passe diffèrent."
+
+#: homes/forms.py:77
+msgid "Type the name of the home to confirm"
+msgstr "Saisissez le nom du logement pour confirmer"
+
+#: homes/models.py:18
 msgid "Owner"
 msgstr "Propriétaire"
 
-#: homes/models.py
+#: homes/models.py:19
 msgid "Member"
 msgstr "Membre"
 
-#: homes/models.py
+#: homes/models.py:20
 msgid "Read only"
 msgstr "Lecture seule"
 
-#: homes/models.py
+#: homes/models.py:29
 msgid "currency"
 msgstr "devise"
 
-#: homes/models.py
+#: homes/models.py:32
 msgid "Use an ISO 4217 code, such as EUR."
 msgstr "Utilisez un code ISO 4217, par exemple EUR."
 
-#: homes/models.py
+#: homes/models.py:33
 msgid "ISO 4217 code of the currency used for this home's budget."
 msgstr "Code ISO 4217 de la devise du budget de ce logement."
 
-#: homes/models.py
+#: homes/models.py:39
+msgid "required sign-in provider"
+msgstr "fournisseur de connexion exigé"
+
+#: homes/models.py:43
 msgid "home"
 msgstr "logement"
 
-#: homes/models.py
+#: homes/models.py:55 homes/models.py:83
 msgid "role"
 msgstr "rôle"
 
-#: homes/models.py
+#: homes/models.py:58
 msgid "membership"
 msgstr "appartenance"
 
-#: homes/models.py
+#: homes/models.py:59
 msgid "memberships"
 msgstr "appartenances"
 
-#: settings.py
+#: homes/models.py:89 instance/models.py:28
+msgid "sent at"
+msgstr "envoyée le"
+
+#: homes/models.py:93 instance/models.py:29
+msgid "accepted at"
+msgstr "acceptée le"
+
+#: homes/models.py:100
+msgid "invitation"
+msgstr "invitation"
+
+#: homes/models.py:101
+msgid "invitations"
+msgstr "invitations"
+
+#: homes/scoping.py:112
+#, python-format
+msgid "This home requires signing in through %(provider)s."
+msgstr "Ce logement exige une connexion par %(provider)s."
+
+#: homes/scoping.py:123
+msgid ""
+"The invitation is saved, but the email could not be sent. Send it again "
+"later."
+msgstr "L'invitation est enregistrée, mais l'e-mail n'a pas pu être envoyé. Renvoyez-la plus tard."
+
+#: homes/services.py:162
+msgid "This sign-in provider is not offered by this instance."
+msgstr "Cette instance ne propose pas ce fournisseur de connexion."
+
+#: homes/services.py:165
+msgid "Sign in through this provider first, then require it for the home."
+msgstr ""
+"Connectez-vous d'abord par ce fournisseur, puis exigez-le pour le logement."
+
+#: homes/services.py:186
+msgid "This home's sign-in provider is still offered by this instance."
+msgstr "Le fournisseur de connexion de ce logement est toujours proposé par cette instance."
+
+#: homes/services.py:246
+msgid "Type the exact name of the home to delete it."
+msgstr "Saisissez le nom exact du logement pour le supprimer."
+
+#: homes/services.py:273 templates/homes/member.html:20
+msgid "A home always keeps at least one owner."
+msgstr "Un logement garde toujours au moins un propriétaire."
+
+#: homes/services.py:338
+msgid "Choose another member of the home."
+msgstr "Choisissez un autre membre du logement."
+
+#: homes/services.py:401
+msgid "This person is already a member of the home."
+msgstr "Cette personne est déjà membre du logement."
+
+#: homes/services.py:405 homes/services.py:426 instance/services.py:69
+#: instance/services.py:85
+msgid ""
+"An invitation to this address is already pending; send it again instead."
+msgstr ""
+"Une invitation à cette adresse est déjà en attente : renvoyez-la plutôt."
+
+#: homes/services.py:454 instance/services.py:98
+msgid "This invitation was already accepted or revoked."
+msgstr "Cette invitation a déjà été acceptée ou révoquée."
+
+#: homes/services.py:522 instance/services.py:159
+msgid "This invitation is for another email address."
+msgstr "Cette invitation est destinée à une autre adresse e-mail."
+
+#: homes/services.py:573
+msgid "This link was not sent by email: it cannot create an account."
+msgstr "Ce lien n'a pas été envoyé par e-mail : il ne peut pas créer de compte."
+
+#: homes/services.py:575
+msgid "An account already uses this address: sign in to accept."
+msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter."
+
+#: homes/views.py:184
+msgid "The home was deleted."
+msgstr "Le logement a été supprimé."
+
+#: homes/views.py:240 homes/views.py:259 instance/views.py:108
+#: instance/views.py:122
+msgid "Too many invitations in a short time. Try again later."
+msgstr "Trop d'invitations en peu de temps. Réessayez plus tard."
+
+#: homes/views.py:251 instance/views.py:114
+msgid "Invitation sent."
+msgstr "Invitation envoyée."
+
+#: homes/views.py:251
+msgid "Invitation created: share its link."
+msgstr "Invitation créée : partagez son lien."
+
+#: homes/views.py:268 instance/views.py:128
+msgid "Invitation sent again."
+msgstr "Invitation renvoyée."
+
+#: homes/views.py:268
+msgid "New link created: share it."
+msgstr "Nouveau lien créé : partagez-le."
+
+#: homes/views.py:276 instance/views.py:134
+msgid "Invitation revoked."
+msgstr "Invitation révoquée."
+
+#: homes/views.py:310
+msgid "Choose a role."
+msgstr "Choisissez un rôle."
+
+#: homes/views.py:312
+msgid "Role changed."
+msgstr "Rôle modifié."
+
+#: homes/views.py:346 homes/views.py:375
+msgid "Leave this home?"
+msgstr "Quitter ce logement ?"
+
+#: homes/views.py:346
+msgid "Remove this member?"
+msgstr "Retirer ce membre ?"
+
+#: homes/views.py:348 homes/views.py:377
+#, python-format
+msgid ""
+"You will lose access to %(home)s. Someone has to invite you again to return."
+msgstr "Vous perdrez l'accès à %(home)s. Il faudra qu'on vous invite à nouveau pour y revenir."
+
+#: homes/views.py:352
+#, python-format
+msgid "%(who)s will lose access to %(home)s."
+msgstr "%(who)s perdra l'accès à %(home)s."
+
+#: homes/views.py:355 homes/views.py:381
+msgid "Leave"
+msgstr "Quitter"
+
+#: homes/views.py:355
+msgid "Remove"
+msgstr "Retirer"
+
+#: homes/views.py:363 homes/views.py:387
+#, python-format
+msgid "You left %(home)s."
+msgstr "Vous avez quitté %(home)s."
+
+#: homes/views.py:365
+msgid "Member removed."
+msgstr "Membre retiré."
+
+#: homes/views.py:403
+msgid "Sign-in requirement removed."
+msgstr "Exigence de connexion retirée."
+
+#: homes/views.py:414
+msgid "Ownership transferred. You are now a member."
+msgstr "Propriété transférée. Vous êtes désormais membre."
+
+#: homes/views.py:423
+msgid "Choose a sign-in provider."
+msgstr "Choisissez un fournisseur de connexion."
+
+#: homes/views.py:431
+msgid "Sign-in requirement saved."
+msgstr "Exigence de connexion enregistrée."
+
+#: homes/views.py:503
+#, python-format
+msgid "Welcome to %(home)s."
+msgstr "Bienvenue dans %(home)s."
+
+#: homes/views.py:515
+#, python-format
+msgid "You joined %(home)s."
+msgstr "Vous avez rejoint %(home)s."
+
+#: instance/models.py:36
+msgid "instance invitation"
+msgstr "invitation à l'instance"
+
+#: instance/models.py:37
+msgid "instance invitations"
+msgstr "invitations à l'instance"
+
+#: instance/services.py:175
+msgid "An account already uses this address: sign in."
+msgstr "Un compte utilise déjà cette adresse : connectez-vous."
+
+#: instance/views.py:102
+msgid ""
+"This instance cannot send email: create the account in the administration "
+"site."
+msgstr "Cette instance ne peut pas envoyer d'e-mail : créez le compte dans le site d'administration."
+
+#: instance/views.py:120
+msgid "This instance cannot send email."
+msgstr "Cette instance ne peut pas envoyer d'e-mail."
+
+#: instance/views.py:145
+#, python-format
+msgid "Sign-in requirement removed from %(count)s homes."
+msgstr "Exigence de connexion retirée de %(count)s logements."
+
+#: instance/views.py:213
+msgid "Welcome to HouseCairn. Add your first home."
+msgstr "Bienvenue sur HouseCairn. Ajoutez votre premier logement."
+
+#: instance/views.py:223
+msgid "Invitation accepted. You can add a home."
+msgstr "Invitation acceptée. Vous pouvez ajouter un logement."
+
+#: settings.py:156
 msgid "English"
 msgstr "Anglais"
 
-#: settings.py
+#: settings.py:156
 msgid "French"
 msgstr "Français"
 
-#: templates/400.html
+#: templates/400.html:3 templates/400.html:7
 msgid "Bad request"
 msgstr "Requête invalide"
 
-#: templates/400.html
+#: templates/400.html:8
 msgid "The request could not be understood."
 msgstr "La requête n'a pas pu être comprise."
 
-#: templates/400.html templates/403.html templates/403_csrf.html
-#: templates/404.html templates/500.html
+#: templates/400.html:9 templates/403.html:9 templates/403_csrf.html:9
+#: templates/404.html:9 templates/429.html:9 templates/500.html:28
 msgid "Back to the home page"
 msgstr "Retour à l'accueil"
 
-#: templates/403.html
+#: templates/403.html:3 templates/403.html:7
 msgid "Access denied"
 msgstr "Accès refusé"
 
-#: templates/403.html
+#: templates/403.html:8
 msgid "You do not have permission to see this page."
 msgstr "Vous n'avez pas le droit de voir cette page."
 
-#: templates/403_csrf.html
+#: templates/403_csrf.html:3 templates/403_csrf.html:7
 msgid "Session expired"
 msgstr "Session expirée"
 
-#: templates/403_csrf.html
+#: templates/403_csrf.html:8
 msgid ""
 "The form you sent is no longer valid, usually because the page stayed open "
 "too long. Go back, reload the page and try again."
-msgstr "Le formulaire envoyé n'est plus valide, en général parce que la page est restée ouverte trop longtemps. Revenez en arrière, rechargez la page et réessayez."
+msgstr ""
+"Le formulaire envoyé n'est plus valide, en général parce que la page est "
+"restée ouverte trop longtemps. Revenez en arrière, rechargez la page et "
+"réessayez."
 
-#: templates/404.html
+#: templates/404.html:3 templates/404.html:7
 msgid "Page not found"
 msgstr "Page introuvable"
 
-#: templates/404.html
+#: templates/404.html:8
 msgid "This page does not exist, or it has moved."
 msgstr "Cette page n'existe pas ou a été déplacée."
 
-#: templates/500.html
+#: templates/429.html:3 templates/429.html:7
+msgid "Too many requests"
+msgstr "Trop de requêtes"
+
+#: templates/429.html:8
+msgid "Wait a minute, then try again."
+msgstr "Attendez une minute, puis réessayez."
+
+#: templates/500.html:10 templates/500.html:26
 msgid "Something went wrong"
 msgstr "Une erreur est survenue"
 
-#: templates/500.html
+#: templates/500.html:27
 msgid ""
 "The server could not complete your request. Try again in a moment; if it "
 "keeps happening, tell the administrator of this instance."
-msgstr "Le serveur n'a pas pu traiter votre demande. Réessayez dans un instant ; si cela continue, prévenez l'administrateur de cette instance."
+msgstr ""
+"Le serveur n'a pas pu traiter votre demande. Réessayez dans un instant ; si "
+"cela continue, prévenez l'administrateur de cette instance."
 
-#: templates/account/login.html templates/core/index.html
+#: templates/account/email/base_message.txt:1
+msgid "Hello from HouseCairn!"
+msgstr "Bonjour de la part de HouseCairn !"
+
+#: templates/account/email/base_message.txt:5
+msgid "Thank you for using HouseCairn."
+msgstr "Merci d'utiliser HouseCairn."
+
+#: templates/account/email/new_login_message.txt:4
+msgid ""
+"Your account was just signed in from a browser or device we had not seen "
+"before."
+msgstr "Votre compte vient d'être utilisé pour se connecter depuis un navigateur ou un appareil que nous n'avions pas encore vu."
+
+#: templates/account/email/new_login_subject.txt:1
+msgid "New sign-in to your account"
+msgstr "Nouvelle connexion à votre compte"
+
+#: templates/account/login.html:11 templates/account/login.html:15
+#: templates/account/login.html:28 templates/account/signup.html:15
+#: templates/core/index.html:12 templates/homes/invitation.html:29
+#: templates/instance/invitation.html:27
 msgid "Sign in"
 msgstr "Se connecter"
 
-#: templates/account/login.html
+#: templates/account/login.html:35
 msgid "Send me a sign-in code"
 msgstr "Envoyez-moi un code de connexion"
 
-#: templates/account/login.html
+#: templates/account/login.html:43
 msgid "No account yet?"
 msgstr "Pas encore de compte ?"
 
-#: templates/account/login.html
+#: templates/account/login.html:43 templates/account/signup.html:9
+#: templates/account/signup.html:12 templates/account/signup.html:33
 msgid "Create an account"
 msgstr "Créer un compte"
 
-#: templates/account/snippets/passkey_login.html
+#: templates/account/signup.html:15 templates/homes/invitation.html:29
+#: templates/instance/invitation.html:27
+msgid "Already have an account?"
+msgstr "Vous avez déjà un compte ?"
+
+#: templates/account/signup.html:26
+msgid "Checking that you are not a robot…"
+msgstr "Vérification que vous n'êtes pas un robot…"
+
+#: templates/account/signup.html:27
+msgid "Check done: you can create the account."
+msgstr "Vérification terminée : vous pouvez créer le compte."
+
+#: templates/account/signup.html:28
+msgid "This check needs JavaScript and a secure connection (HTTPS)."
+msgstr "Cette vérification nécessite JavaScript et une connexion sécurisée (HTTPS)."
+
+#: templates/account/signup.html:29
+msgid "This page needs JavaScript to check that you are not a robot."
+msgstr "Cette page nécessite JavaScript pour vérifier que vous n'êtes pas un robot."
+
+#: templates/account/snippets/passkey_login.html:11
 msgid "Use a passkey"
 msgstr "Utiliser une clé d'accès"
 
-#: templates/account/snippets/passkey_login.html
+#: templates/account/snippets/passkey_login.html:12
 msgid "Use a passkey saved on this device or on your phone."
-msgstr "Utiliser une clé d'accès enregistrée sur cet appareil ou sur votre téléphone."
+msgstr ""
+"Utiliser une clé d'accès enregistrée sur cet appareil ou sur votre téléphone."
 
-#: templates/account/snippets/passkey_login.html
+#: templates/account/snippets/passkey_login.html:13
 msgid ""
 "Passkey sign-in did not complete. You can try again or use your password."
-msgstr "La connexion par clé d'accès n'a pas abouti. Vous pouvez réessayer ou utiliser votre mot de passe."
+msgstr ""
+"La connexion par clé d'accès n'a pas abouti. Vous pouvez réessayer ou "
+"utiliser votre mot de passe."
 
-#: templates/accounts/oidc_signup_refused.html
+#: templates/accounts/delete.html:3 templates/accounts/delete.html:6
+#: templates/core/more.html:53
+msgid "Delete my account"
+msgstr "Supprimer mon compte"
+
+#: templates/accounts/delete.html:5 templates/core/more.html:3
+#: templates/core/more.html:5 templates/instance/overview.html:5
+#: templates/shell/navigation.html:16
+msgid "More"
+msgstr "Plus"
+
+#: templates/accounts/delete.html:8
+msgid ""
+"This erases your account, your sign-in methods, your API tokens and the "
+"homes where you are the only member. It cannot be undone. Homes shared with "
+"others stay with them."
+msgstr "Cela efface votre compte, vos méthodes de connexion, vos jetons d'API et les logements dont vous êtes le seul membre. Cette action est irréversible. Les logements partagés avec d'autres personnes leur restent."
+
+#: templates/accounts/delete.html:10
+msgid ""
+"You are the only administrator of this instance. Make someone else an "
+"administrator first."
+msgstr "Vous êtes le seul administrateur de cette instance. Nommez d'abord un autre administrateur."
+
+#: templates/accounts/delete.html:14
+msgid ""
+"You are the only owner of these homes, which have other members. Hand "
+"ownership over, or delete the home, first:"
+msgstr "Vous êtes le seul propriétaire de ces logements, qui ont d'autres membres. Transférez d'abord la propriété, ou supprimez le logement :"
+
+#: templates/accounts/delete.html:26
+msgid "Delete my account for good"
+msgstr "Supprimer définitivement mon compte"
+
+#: templates/accounts/oidc_signup_refused.html:5
+#: templates/accounts/oidc_signup_refused.html:9
 msgid "Sign-in refused"
 msgstr "Connexion refusée"
 
-#: templates/accounts/oidc_signup_refused.html
+#: templates/accounts/oidc_signup_refused.html:12
 msgid ""
 "No account on this instance matches this identity, and new accounts cannot "
 "be created through single sign-on. Ask the administrator of this instance "
@@ -322,315 +848,246 @@ msgstr ""
 "l'authentification unique ne permet pas de créer de nouveaux comptes. "
 "Demandez un accès à l'administrateur de cette instance."
 
-#: templates/accounts/oidc_signup_refused.html
+#: templates/accounts/oidc_signup_refused.html:16
+#: templates/homes/invitation_invalid.html:7
 msgid "Back to sign-in"
 msgstr "Retour à la connexion"
 
-#: templates/allauth/elements/provider.html
+#: templates/allauth/elements/provider.html:3
+#: templates/homes/invitation.html:33 templates/homes/sso_required.html:10
+#: templates/instance/invitation.html:31
 #, python-format
 msgid "Continue with %(provider)s"
 msgstr "Continuer avec %(provider)s"
 
-#: templates/base.html
+#: templates/audit/_entries.html:8
+msgid "deleted account or system"
+msgstr "compte supprimé ou système"
+
+#: templates/audit/_entries.html:14
+msgid "Nothing recorded yet."
+msgstr "Rien n'est encore enregistré."
+
+#: templates/audit/_pager.html:3
+msgid "Pages"
+msgstr "Pages"
+
+#: templates/audit/_pager.html:4
+msgid "Newer"
+msgstr "Plus récentes"
+
+#: templates/audit/_pager.html:5
+msgid "Older"
+msgstr "Plus anciennes"
+
+#: templates/base.html:22
 msgid "Skip to content"
 msgstr "Aller au contenu"
 
-#: templates/base.html
-msgid "Main navigation"
-msgstr "Navigation principale"
-
-#: templates/base.html
-msgid "Home"
-msgstr "Accueil"
-
-#: templates/base.html templates/core/more.html
-msgid "More"
-msgstr "Plus"
-
-#: templates/core/about.html templates/core/more.html
+#: templates/core/about.html:3 templates/core/about.html:5
+#: templates/core/more.html:59
 msgid "About"
 msgstr "À propos"
 
-#: templates/core/about.html
+#: templates/core/about.html:9
 #, python-format
 msgid "version %(version)s"
 msgstr "version %(version)s"
 
-#: templates/core/about.html
+#: templates/core/about.html:10
 msgid "Free software under the AGPL-3.0 licence."
 msgstr "Logiciel libre sous licence AGPL-3.0."
 
-#: templates/core/about.html
+#: templates/core/about.html:10
 msgid "Source code and security reports on GitHub."
 msgstr "Code source et signalement de sécurité sur GitHub."
 
-#: templates/core/about.html
+#: templates/core/about.html:11
 msgid "Developed with an AI agent, under human review."
 msgstr "Développé avec un agent IA, sous revue humaine."
 
-#: templates/base.html
-msgid "Help for this page"
-msgstr "Aide sur cette page"
-
-#: templates/core/index.html
+#: templates/core/index.html:3
 msgid "Welcome"
 msgstr "Bienvenue"
 
-#: templates/core/index.html
+#: templates/core/index.html:10
 msgid "Go to my homes"
 msgstr "Voir mes logements"
 
-#: templates/core/more.html
+#: templates/core/more.html:6 templates/homes/home_detail.html:13
 msgid "Settings"
 msgstr "Réglages"
 
-#: templates/core/more.html
+#: templates/core/more.html:14
 msgid "Account security"
 msgstr "Sécurité du compte"
 
-#: templates/core/more.html
+#: templates/core/more.html:15
 msgid "Passkeys, authenticator app, recovery codes"
 msgstr "Clés d'accès, application d'authentification, codes de récupération"
 
-#: templates/core/more.html
+#: templates/core/more.html:22 templates/instance/audit.html:5
+#: templates/instance/overview.html:3 templates/instance/overview.html:6
+msgid "Instance administration"
+msgstr "Administration de l'instance"
+
+#: templates/core/more.html:23
+msgid "Accounts, invitations, audit log"
+msgstr "Comptes, invitations, journal d'audit"
+
+#: templates/core/more.html:31
+msgid "Change the password you sign in with"
+msgstr "Modifier le mot de passe avec lequel vous vous connectez"
+
+#: templates/core/more.html:38
+msgid "Email addresses"
+msgstr "Adresses e-mail"
+
+#: templates/core/more.html:39
+msgid "Add or verify the addresses of your account"
+msgstr "Ajouter ou vérifier les adresses de votre compte"
+
+#: templates/core/more.html:46
 msgid "API documentation"
 msgstr "Documentation de l'API"
 
-#: templates/core/more.html
+#: templates/core/more.html:47
 msgid "OpenAPI schema and test interface"
 msgstr "Schéma OpenAPI et interface de test"
 
-#: templates/core/more.html
+#: templates/core/more.html:54
+msgid "Erase your account and your data"
+msgstr "Effacer votre compte et vos données"
+
+#: templates/core/more.html:66
 msgid "Sign out"
 msgstr "Se déconnecter"
 
-#: templates/homes/home_detail.html
-msgid "Your role"
-msgstr "Votre rôle"
-
-#: templates/homes/home_detail.html
-msgid "Currency"
-msgstr "Devise"
-
-#: templates/homes/home_list.html
-msgid "You are not a member of any home yet."
-msgstr "Vous n'êtes membre d'aucun logement pour l'instant."
-
-#: homes/forms.py templates/homes/member.html
-msgid "Role"
-msgstr "Rôle"
-
-#: homes/forms.py
-msgid "Sign-in required to open this home"
-msgstr "Connexion exigée pour ouvrir ce logement"
-
-#: homes/forms.py
-msgid "No requirement"
-msgstr "Aucune exigence"
-
-#: homes/forms.py
-msgid "Password"
-msgstr "Mot de passe"
-
-#: homes/forms.py
-msgid "Password (again)"
-msgstr "Mot de passe (confirmation)"
-
-#: homes/forms.py
-msgid "The two passwords differ."
-msgstr "Les deux mots de passe diffèrent."
-
-#: homes/models.py
-msgid "required sign-in provider"
-msgstr "fournisseur de connexion exigé"
-
-#: homes/models.py
-msgid "invitation"
-msgstr "invitation"
-
-#: homes/models.py
-msgid "invitations"
-msgstr "invitations"
-
-#: homes/models.py
-msgid "sent at"
-msgstr "envoyée le"
-
-#: homes/models.py
-msgid "accepted at"
-msgstr "acceptée le"
-
-#: homes/scoping.py
-#, python-format
-msgid "This home requires signing in through %(provider)s."
-msgstr "Ce logement exige une connexion par %(provider)s."
-
-#: homes/services.py
-msgid "This sign-in provider is not offered by this instance."
-msgstr "Cette instance ne propose pas ce fournisseur de connexion."
-
-#: homes/services.py
-msgid "Sign in through this provider first, then require it for the home."
-msgstr "Connectez-vous d'abord par ce fournisseur, puis exigez-le pour le logement."
-
-#: homes/services.py templates/homes/member.html
-msgid "A home always keeps at least one owner."
-msgstr "Un logement garde toujours au moins un propriétaire."
-
-#: homes/services.py
-msgid "Choose another member of the home."
-msgstr "Choisissez un autre membre du logement."
-
-#: homes/services.py
-msgid "This person is already a member of the home."
-msgstr "Cette personne est déjà membre du logement."
-
-#: homes/services.py
-msgid "An invitation to this address is already pending; send it again instead."
-msgstr "Une invitation à cette adresse est déjà en attente : renvoyez-la plutôt."
-
-#: homes/services.py
-msgid "This invitation was already accepted or revoked."
-msgstr "Cette invitation a déjà été acceptée ou révoquée."
-
-#: homes/services.py
-msgid "This invitation is for another email address."
-msgstr "Cette invitation est destinée à une autre adresse e-mail."
-
-#: homes/services.py
-msgid "An account already uses this address: sign in to accept."
-msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter."
-
-#: homes/views.py
-msgid "Too many invitations in a short time. Try again later."
-msgstr "Trop d'invitations en peu de temps. Réessayez plus tard."
-
-#: homes/views.py
-msgid "Invitation sent."
-msgstr "Invitation envoyée."
-
-#: homes/views.py
-msgid "Invitation created: share its link."
-msgstr "Invitation créée : partagez son lien."
-
-#: homes/views.py
-msgid "Invitation sent again."
-msgstr "Invitation renvoyée."
-
-#: homes/views.py
-msgid "New link created: share it."
-msgstr "Nouveau lien créé : partagez-le."
-
-#: homes/views.py
-msgid "Invitation revoked."
-msgstr "Invitation révoquée."
-
-#: homes/views.py
-msgid "Choose a role."
-msgstr "Choisissez un rôle."
-
-#: homes/views.py
-msgid "Role changed."
-msgstr "Rôle modifié."
-
-#: homes/views.py
-#, python-format
-msgid "You left %(home)s."
-msgstr "Vous avez quitté %(home)s."
-
-#: homes/views.py
-msgid "Member removed."
-msgstr "Membre retiré."
-
-#: homes/views.py
-msgid "Ownership transferred. You are now a member."
-msgstr "Propriété transférée. Vous êtes désormais membre."
-
-#: homes/views.py
-msgid "Choose a sign-in provider."
-msgstr "Choisissez un fournisseur de connexion."
-
-#: homes/views.py
-msgid "Sign-in requirement saved."
-msgstr "Exigence de connexion enregistrée."
-
-#: homes/views.py
-#, python-format
-msgid "Welcome to %(home)s."
-msgstr "Bienvenue dans %(home)s."
-
-#: homes/views.py
-#, python-format
-msgid "You joined %(home)s."
-msgstr "Vous avez rejoint %(home)s."
-
-#: templates/429.html
-msgid "Too many requests"
-msgstr "Trop de requêtes"
-
-#: templates/429.html
-msgid "Wait a minute, then try again."
-msgstr "Attendez une minute, puis réessayez."
-
-#: templates/homes/_role_text.html
+#: templates/homes/_role_text.html:1
 msgid "owner · everything, the household included"
 msgstr "propriétaire · tout, foyer compris"
 
-#: templates/homes/_role_text.html
+#: templates/homes/_role_text.html:1
 msgid "member · tasks, projects, marking work done"
 msgstr "membre · tâches, projets, réalisation"
 
-#: templates/homes/_role_text.html
+#: templates/homes/_role_text.html:1
 msgid "read only · sees the home, changes nothing"
 msgstr "lecture seule · voit le logement, ne modifie rien"
 
-#: templates/homes/email/invitation_message.html
-#: templates/homes/email/invitation_message.txt
-#, python-format
-msgid "You are invited to join the home \"%(home)s\" on HouseCairn, as %(role)s."
-msgstr "Vous êtes invité à rejoindre le logement « %(home)s » sur HouseCairn, avec le rôle %(role)s."
+#: templates/homes/audit.html:5 templates/homes/home_detail.html:17
+#: templates/homes/household.html:3 templates/homes/household.html:6
+#: templates/homes/member.html:5
+msgid "Household and roles"
+msgstr "Foyer et rôles"
 
-#: templates/homes/email/invitation_message.html
+#: templates/homes/audit.html:7
+msgid ""
+"Who changed what in this home: roles, invitations, the sign-in rule, "
+"exports. Only owners see it, and it holds no tasks, documents or notes."
+msgstr "Qui a modifié quoi dans ce logement : rôles, invitations, règle de connexion, exports. Seuls les propriétaires le voient, et il ne contient ni tâches, ni documents, ni notes."
+
+#: templates/homes/confirm.html:5 templates/homes/confirm.html:13
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/homes/delete.html:3 templates/homes/delete.html:6
+#: templates/homes/home_detail.html:32
+msgid "Delete this home"
+msgstr "Supprimer ce logement"
+
+#: templates/homes/delete.html:8
+#, python-format
+msgid ""
+"Deleting %(home)s removes it for good, with everything in it, for the "
+"%(counter)s person who belongs to it. There is no way back."
+msgid_plural ""
+"Deleting %(home)s removes it for good, with everything in it, for the "
+"%(counter)s people who belong to it. There is no way back."
+msgstr[0] "La suppression de %(home)s l'efface définitivement, avec tout son contenu, pour la %(counter)s personne qui en fait partie. Il n'y a pas de retour en arrière."
+msgstr[1] "La suppression de %(home)s l'efface définitivement, avec tout son contenu, pour les %(counter)s personnes qui en font partie. Il n'y a pas de retour en arrière."
+
+#: templates/homes/delete.html:9
+msgid "Export the home first if you want to keep its data."
+msgstr "Exportez d'abord le logement si vous voulez conserver ses données."
+
+#: templates/homes/delete.html:12 templates/homes/home_detail.html:28
+msgid "Export all data"
+msgstr "Exporter toutes les données"
+
+#: templates/homes/delete.html:18
+msgid "Delete the home for good"
+msgstr "Supprimer définitivement le logement"
+
+#: templates/homes/email/invitation_message.html:6
+#: templates/homes/email/invitation_message.txt:1
+#, python-format
+msgid ""
+"You are invited to join the home \"%(home)s\" on HouseCairn, as %(role)s."
+msgstr ""
+"Vous êtes invité à rejoindre le logement « %(home)s » sur HouseCairn, avec "
+"le rôle %(role)s."
+
+#: templates/homes/email/invitation_message.html:7
+#: templates/instance/invitation.html:11
 msgid "Accept the invitation"
 msgstr "Accepter l'invitation"
 
-#: templates/homes/email/invitation_message.html
-#: templates/homes/email/invitation_message.txt
+#: templates/homes/email/invitation_message.html:8
+#: templates/homes/email/invitation_message.txt:6
+#: templates/instance/email/invitation_message.html:8
+#: templates/instance/email/invitation_message.txt:6
 #, python-format
 msgid "The link works once and expires on %(date)s."
 msgstr "Le lien ne sert qu'une fois et expire le %(date)s."
 
-#: templates/homes/email/invitation_message.html
-#: templates/homes/email/invitation_message.txt
+#: templates/homes/email/invitation_message.html:8
+#: templates/homes/email/invitation_message.txt:7
+#: templates/instance/email/invitation_message.html:8
+#: templates/instance/email/invitation_message.txt:7
 msgid "If you did not expect this invitation, ignore this message."
 msgstr "Si vous n'attendiez pas cette invitation, ignorez ce message."
 
-#: templates/homes/email/invitation_message.txt
+#: templates/homes/email/invitation_message.txt:3
 msgid "Open this link to accept, and to create your account if you have none:"
-msgstr "Ouvrez ce lien pour accepter, et pour créer votre compte si vous n'en avez pas :"
+msgstr ""
+"Ouvrez ce lien pour accepter, et pour créer votre compte si vous n'en avez "
+"pas :"
 
-#: templates/homes/email/invitation_subject.txt
+#: templates/homes/email/invitation_subject.txt:1
 #, python-format
 msgid "HouseCairn: you are invited to %(home)s"
 msgstr "HouseCairn : vous êtes invité à %(home)s"
 
-#: templates/homes/home_detail.html templates/homes/household.html
-#: templates/homes/member.html
-msgid "Household and roles"
-msgstr "Foyer et rôles"
+#: templates/homes/home_detail.html:9
+msgid "Your role"
+msgstr "Votre rôle"
 
-#: templates/homes/home_detail.html
+#: templates/homes/home_detail.html:10
+msgid "Currency"
+msgstr "Devise"
+
+#: templates/homes/home_detail.html:18
 #, python-format
 msgid "%(counter)s person"
 msgid_plural "%(counter)s people"
 msgstr[0] "%(counter)s personne"
 msgstr[1] "%(counter)s personnes"
 
-#: templates/homes/home_form.html templates/homes/home_list.html
+#: templates/homes/home_detail.html:24
+msgid "Your data"
+msgstr "Vos données"
+
+#: templates/homes/home_detail.html:29
+msgid "One archive with everything of this home, in an open format."
+msgstr "Une archive avec tout le contenu de ce logement, dans un format ouvert."
+
+#: templates/homes/home_form.html:3 templates/homes/home_form.html:6
+#: templates/homes/home_list.html:24
 msgid "Add a home"
 msgstr "Ajouter un logement"
 
-#: templates/homes/home_form.html
+#: templates/homes/home_form.html:7
 msgid ""
 "Each home has its own rooms, tasks, budget and currency. You will be its "
 "owner, and can invite the rest of the household."
@@ -638,44 +1095,48 @@ msgstr ""
 "Chaque logement a ses pièces, ses tâches, son budget et sa devise. Vous en "
 "serez propriétaire, et pourrez inviter le reste du foyer."
 
-#: templates/homes/home_form.html
+#: templates/homes/home_form.html:11
 msgid "Create the home"
 msgstr "Créer le logement"
 
-#: templates/homes/home_list.html
+#: templates/homes/home_list.html:15
 #, python-format
 msgid "%(provider)s required"
 msgstr "%(provider)s exigé"
 
-#: templates/homes/household.html
+#: templates/homes/home_list.html:22
+msgid "You are not a member of any home yet."
+msgstr "Vous n'êtes membre d'aucun logement pour l'instant."
+
+#: templates/homes/household.html:12
 msgid "you"
 msgstr "vous"
 
-#: templates/homes/household.html
+#: templates/homes/household.html:24
 msgid "Invitation link"
 msgstr "Lien d'invitation"
 
-#: templates/homes/household.html
+#: templates/homes/household.html:25
 msgid ""
 "This instance does not send email. Give this link to the person you invite: "
 "it is shown only once and works once."
 msgstr ""
-"Cette instance n'envoie pas d'e-mails. Donnez ce lien à la personne invitée : "
-"il n'est affiché qu'une fois et ne sert qu'une fois."
+"Cette instance n'envoie pas d'e-mails. Donnez ce lien à la personne "
+"invitée : il n'est affiché qu'une fois et ne sert qu'une fois."
 
-#: templates/homes/household.html
+#: templates/homes/household.html:29
 msgid "Invite someone"
 msgstr "Inviter quelqu'un"
 
-#: templates/homes/household.html
+#: templates/homes/household.html:33 templates/instance/overview.html:22
 msgid "Invite"
 msgstr "Inviter"
 
-#: templates/homes/household.html
+#: templates/homes/household.html:34
 msgid "The invitation is sent by email, with a link that works once."
 msgstr "L'invitation part par e-mail, avec un lien qui ne sert qu'une fois."
 
-#: templates/homes/household.html
+#: templates/homes/household.html:34
 msgid ""
 "This instance does not send email: you will get a link to pass on, which "
 "works once."
@@ -683,35 +1144,39 @@ msgstr ""
 "Cette instance n'envoie pas d'e-mails : vous obtiendrez un lien à "
 "transmettre, qui ne sert qu'une fois."
 
-#: templates/homes/household.html
+#: templates/homes/household.html:34
 #, python-format
 msgid "It expires after %(days)s day."
 msgid_plural "It expires after %(days)s days."
 msgstr[0] "Il expire au bout de %(days)s jour."
 msgstr[1] "Il expire au bout de %(days)s jours."
 
-#: templates/homes/household.html
+#: templates/homes/household.html:37 templates/instance/overview.html:29
 msgid "Pending invitations"
 msgstr "Invitations en attente"
 
-#: templates/homes/household.html
+#: templates/homes/household.html:41 templates/instance/overview.html:33
 #, python-format
 msgid "until %(date)s"
 msgstr "jusqu'au %(date)s"
 
-#: templates/homes/household.html
+#: templates/homes/household.html:45 templates/instance/overview.html:37
 msgid "Send again"
 msgstr "Renvoyer"
 
-#: templates/homes/household.html
+#: templates/homes/household.html:49 templates/instance/overview.html:41
 msgid "Revoke"
 msgstr "Révoquer"
 
-#: templates/homes/household.html
+#: templates/homes/household.html:60
+msgid "Roles, invitations, sign-in rule, export"
+msgstr "Rôles, invitations, règle de connexion, export"
+
+#: templates/homes/household.html:66
 msgid "Sign-in"
 msgstr "Connexion"
 
-#: templates/homes/household.html
+#: templates/homes/household.html:70
 msgid ""
 "When a provider is required, members open this home only after signing in "
 "through it, not with a password or a passkey alone. Set it from a session "
@@ -721,38 +1186,39 @@ msgstr ""
 "s'être connectés par lui, pas avec un mot de passe ou une passkey seuls. "
 "Réglez-le depuis une session connectée par ce fournisseur."
 
-#: templates/homes/household.html
+#: templates/homes/household.html:71
 msgid "Save"
 msgstr "Enregistrer"
 
-#: templates/homes/household.html
+#: templates/homes/household.html:75
 #, python-format
 msgid "Members open this home by signing in through %(provider)s."
 msgstr "Les membres ouvrent ce logement en se connectant par %(provider)s."
 
-#: templates/homes/household.html
+#: templates/homes/household.html:76
 msgid "Only owners invite people and change roles."
 msgstr "Seuls les propriétaires invitent et changent les rôles."
 
-#: templates/homes/invitation.html templates/homes/invitation_invalid.html
+#: templates/homes/invitation.html:3 templates/homes/invitation_invalid.html:3
+#: templates/instance/invitation.html:3
 msgid "Invitation"
 msgstr "Invitation"
 
-#: templates/homes/invitation.html
+#: templates/homes/invitation.html:5
 #, python-format
 msgid "Join %(home)s"
 msgstr "Rejoindre %(home)s"
 
-#: templates/homes/invitation.html
+#: templates/homes/invitation.html:6
 #, python-format
 msgid "You are invited as %(role)s, with the address %(email)s."
 msgstr "Vous êtes invité avec le rôle %(role)s, à l'adresse %(email)s."
 
-#: templates/homes/invitation.html
+#: templates/homes/invitation.html:11
 msgid "Join the home"
 msgstr "Rejoindre le logement"
 
-#: templates/homes/invitation.html
+#: templates/homes/invitation.html:14 templates/instance/invitation.html:14
 #, python-format
 msgid ""
 "You are signed in with another address. Sign out, then open the link again "
@@ -761,29 +1227,34 @@ msgstr ""
 "Vous êtes connecté avec une autre adresse. Déconnectez-vous, rouvrez le lien "
 "et connectez-vous avec %(email)s."
 
-#: templates/homes/invitation.html
+#: templates/homes/invitation.html:18 templates/instance/invitation.html:18
 msgid "An account already uses this address: sign in to accept the invitation."
 msgstr ""
 "Un compte utilise déjà cette adresse : connectez-vous pour accepter "
 "l'invitation."
 
-#: templates/homes/invitation.html
+#: templates/homes/invitation.html:20
+msgid ""
+"This link was handed over by the person who invited you, not sent by email, "
+"so it cannot create an account. Sign in with the invited address, then open "
+"the link again. Without an account, ask the administrator of this instance."
+msgstr "Ce lien vous a été remis par la personne qui vous a invité, et non envoyé par e-mail : il ne peut donc pas créer de compte. Connectez-vous avec l'adresse invitée, puis rouvrez le lien. Sans compte, demandez à l'administrateur de cette instance."
+
+#: templates/homes/invitation.html:22
+#: templates/instance/email/invitation_message.html:7
+#: templates/instance/invitation.html:20
 msgid "Create your account"
 msgstr "Créer votre compte"
 
-#: templates/homes/invitation.html
+#: templates/homes/invitation.html:26
 msgid "Create the account and join"
 msgstr "Créer le compte et rejoindre"
 
-#: templates/homes/invitation.html
-msgid "Already have an account?"
-msgstr "Vous avez déjà un compte ?"
-
-#: templates/homes/invitation_invalid.html
+#: templates/homes/invitation_invalid.html:5
 msgid "This invitation link does not work"
 msgstr "Ce lien d'invitation ne fonctionne pas"
 
-#: templates/homes/invitation_invalid.html
+#: templates/homes/invitation_invalid.html:6
 msgid ""
 "It may have been used already, revoked, replaced by a newer link, or it may "
 "have expired. Ask the person who invited you to send it again."
@@ -791,51 +1262,191 @@ msgstr ""
 "Il a peut-être déjà servi, été révoqué, remplacé par un lien plus récent, ou "
 "il a expiré. Demandez à la personne qui vous a invité de le renvoyer."
 
-#: templates/homes/member.html
+#: templates/homes/member.html:11
 msgid "Member since"
 msgstr "Membre depuis"
 
-#: templates/homes/member.html
+#: templates/homes/member.html:19
 msgid "Change the role"
 msgstr "Changer le rôle"
 
-#: templates/homes/member.html
+#: templates/homes/member.html:27
 msgid "Make owner, and become a member myself"
 msgstr "Le nommer propriétaire, et devenir moi-même membre"
 
-#: templates/homes/member.html
+#: templates/homes/member.html:30
 msgid "Remove from the home"
 msgstr "Retirer du logement"
 
-#: templates/homes/member.html
+#: templates/homes/member.html:35 templates/homes/sso_required.html:24
 msgid "Leave this home"
 msgstr "Quitter ce logement"
 
-#: templates/homes/sso_required.html
+#: templates/homes/sso_required.html:8
 #, python-format
 msgid "This home opens only after signing in through %(provider)s."
 msgstr "Ce logement ne s'ouvre qu'après une connexion par %(provider)s."
 
-#: templates/homes/sso_required.html
+#: templates/homes/sso_required.html:11
 msgid ""
 "If your account is not linked to this provider yet, link it first from your "
 "linked accounts."
 msgstr ""
-"Si votre compte n'est pas encore lié à ce fournisseur, liez-le d'abord depuis "
-"vos comptes liés."
+"Si votre compte n'est pas encore lié à ce fournisseur, liez-le d'abord "
+"depuis vos comptes liés."
 
-#: templates/homes/sso_required.html
+#: templates/homes/sso_required.html:11
 msgid "Linked accounts"
 msgstr "Comptes liés"
 
-#: templates/homes/sso_required.html
-msgid "This instance no longer offers this provider. Ask its administrator."
-msgstr ""
-"Cette instance ne propose plus ce fournisseur. Demandez à son administrateur."
+#: templates/homes/sso_required.html:14
+msgid ""
+"This instance no longer offers this provider, so nobody can open this home. "
+"As an owner, you can remove the requirement: members then sign in as usual."
+msgstr "Cette instance ne propose plus ce fournisseur, donc personne ne peut ouvrir ce logement. En tant que propriétaire, vous pouvez retirer l'exigence : les membres se connectent alors comme d'habitude."
 
-#: homes/forms.py templates/homes/invitation.html templates/homes/member.html
-msgid "Email address"
-msgstr "Adresse e-mail"
+#: templates/homes/sso_required.html:17
+msgid "Remove the sign-in requirement"
+msgstr "Retirer l'exigence de connexion"
+
+#: templates/homes/sso_required.html:20
+msgid ""
+"This instance no longer offers this provider. Ask an owner of the home, who "
+"can remove the requirement."
+msgstr "Cette instance ne propose plus ce fournisseur. Demandez à un propriétaire du logement, qui peut retirer l'exigence."
+
+#: templates/homes/sso_required.html:23
+msgid ""
+"Whatever the requirement, you can leave this home without signing in through "
+"the provider."
+msgstr "Quelle que soit l'exigence, vous pouvez quitter ce logement sans vous connecter par le fournisseur."
+
+#: templates/instance/audit.html:7
+msgid ""
+"Operations on the instance. Homes' own operations are in each home's log, "
+"for its owners; no home content appears here."
+msgstr "Opérations sur l'instance. Les opérations propres aux logements figurent dans le journal de chaque logement, pour ses propriétaires ; aucun contenu de logement n'apparaît ici."
+
+#: templates/instance/email/invitation_message.html:6
+#: templates/instance/email/invitation_message.txt:1
+msgid ""
+"You are invited to create an account on HouseCairn, the planner for home "
+"maintenance and renovation."
+msgstr "Vous êtes invité à créer un compte sur HouseCairn, le planificateur d'entretien et de rénovation du logement."
+
+#: templates/instance/email/invitation_message.txt:3
+msgid "Open this link to create your account:"
+msgstr "Ouvrez ce lien pour créer votre compte :"
+
+#: templates/instance/email/invitation_subject.txt:1
+msgid "HouseCairn: you are invited to create an account"
+msgstr "HouseCairn : vous êtes invité à créer un compte"
+
+#: templates/instance/invitation.html:5
+msgid "Create your HouseCairn account"
+msgstr "Créer votre compte HouseCairn"
+
+#: templates/instance/invitation.html:6
+#, python-format
+msgid "You are invited with the address %(email)s."
+msgstr "Vous êtes invité avec l'adresse %(email)s."
+
+#: templates/instance/invitation.html:24
+msgid "Create the account"
+msgstr "Créer le compte"
+
+#: templates/instance/overview.html:7
+msgid ""
+"You run this instance: accounts, invitations, sign-in providers. You see no "
+"home, no task and no document, and no member of a home you do not belong to."
+msgstr "Vous gérez cette instance : comptes, invitations, fournisseurs de connexion. Vous ne voyez aucun logement, aucune tâche ni aucun document, ni aucun membre d'un logement dont vous ne faites pas partie."
+
+#: templates/instance/overview.html:11
+msgid "Open sign-up"
+msgstr "Inscription ouverte"
+
+#: templates/instance/overview.html:11
+msgid "on"
+msgstr "activée"
+
+#: templates/instance/overview.html:11
+msgid "off"
+msgstr "désactivée"
+
+#: templates/instance/overview.html:12
+msgid "Outgoing email"
+msgstr "E-mail sortant"
+
+#: templates/instance/overview.html:12
+msgid "configured"
+msgstr "configuré"
+
+#: templates/instance/overview.html:12
+msgid "not configured"
+msgstr "non configuré"
+
+#: templates/instance/overview.html:13
+msgid "Sign-in providers"
+msgstr "Fournisseurs de connexion"
+
+#: templates/instance/overview.html:13
+msgid "none"
+msgstr "aucun"
+
+#: templates/instance/overview.html:17
+msgid "Invite someone to the instance"
+msgstr "Inviter quelqu'un sur l'instance"
+
+#: templates/instance/overview.html:23
+msgid ""
+"The person receives a link by email, which works once. They create their "
+"account and then their own home."
+msgstr "La personne reçoit par e-mail un lien qui ne fonctionne qu'une fois. Elle crée son compte, puis son propre logement."
+
+#: templates/instance/overview.html:26
+msgid ""
+"This instance cannot send email, so it cannot invite by link. Set up "
+"outgoing email to invite people."
+msgstr "Cette instance ne peut pas envoyer d'e-mail, donc elle ne peut pas inviter par lien. Configurez l'e-mail sortant pour inviter des personnes."
+
+#: templates/instance/overview.html:49
+msgid "Homes locked by a removed provider"
+msgstr "Logements verrouillés par un fournisseur retiré"
+
+#: templates/instance/overview.html:52
+#, python-format
+msgid ""
+"%(counter)s home requires a sign-in provider this instance no longer offers, "
+"so nobody can open it."
+msgid_plural ""
+"%(counter)s homes require a sign-in provider this instance no longer offers, "
+"so nobody can open them."
+msgstr[0] "%(counter)s logement exige un fournisseur de connexion que cette instance ne propose plus, donc personne ne peut l'ouvrir."
+msgstr[1] "%(counter)s logements exigent un fournisseur de connexion que cette instance ne propose plus, donc personne ne peut les ouvrir."
+
+#: templates/instance/overview.html:53
+msgid "Remove these requirements"
+msgstr "Retirer ces exigences"
+
+#: templates/instance/overview.html:57
+msgid "Accounts and settings"
+msgstr "Comptes et réglages"
+
+#: templates/instance/overview.html:62
+msgid "Deactivate, delete, set the administrators (administration site)"
+msgstr "Désactiver, supprimer, définir les administrateurs (site d'administration)"
+
+#: templates/instance/overview.html:69
+msgid "Administration actions, invitations, accounts"
+msgstr "Actions d'administration, invitations, comptes"
+
+#: templates/shell/help_link.html:3
+msgid "Help for this page"
+msgstr "Aide sur cette page"
+
+#: templates/shell/navigation.html:2
+msgid "Main navigation"
+msgstr "Navigation principale"
 
 #: rooms/apps.py templates/rooms/choose_home.html
 #: templates/rooms/room_detail.html templates/rooms/room_form.html
@@ -1163,10 +1774,6 @@ msgstr "Vous n'avez pas encore de logement à ouvrir."
 #: templates/rooms/confirm_delete.html
 msgid "Delete %(name)s?"
 msgstr "Supprimer %(name)s ?"
-
-#: templates/rooms/confirm_delete.html
-msgid "Cancel"
-msgstr "Annuler"
 
 #: templates/rooms/item_detail.html
 msgid "Brand, model"
@@ -1941,10 +2548,6 @@ msgstr "Toutes les pièces"
 #: templates/tasks/task_list.html
 msgid "Filter"
 msgstr "Filtrer"
-
-#: templates/tasks/task_list.html
-msgid "Pages"
-msgstr "Pages"
 
 #: templates/tasks/task_list.html
 msgid "Previous"
