@@ -74,6 +74,14 @@
     </section>
   {% endif %}
 
+  <h2>{% translate "Photos and files" %}</h2>
+  {% include "tasks/_attachments.html" %}
+  {% if can_write %}
+    <a class="button button-secondary button-block" href="{% url 'tasks:attachment-add' home_id=home.id task_id=task.id %}">{% translate "Add photos or files" %}</a>
+  {% elif not images and not documents %}
+    <p class="empty">{% translate "No file yet." %}</p>
+  {% endif %}
+
   {% if history %}
     <h2>{% translate "History" %}</h2>
     <ul class="card-list">

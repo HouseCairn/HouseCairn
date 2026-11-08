@@ -36,6 +36,7 @@ task
 task-form
 history
 display-preferences
+task-files
 more
 about
 ```

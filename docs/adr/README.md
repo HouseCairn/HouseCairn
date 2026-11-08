@@ -36,6 +36,7 @@ later record supersedes it.
 | [0031](0031-tasks-occurrences-and-recurrence.md) | Tasks, occurrences and recurrence | 2026-11-08 |
 | [0032](0032-dates-and-time-zone-of-tasks.md) | Dates and time zone of tasks | 2026-11-08 |
 | [0033](0033-done-with-undo.md) | "Done" in one gesture, with undo | 2026-11-08 |
+| [0034](0034-task-attachments.md) | Photos and files attached to tasks | 2026-11-08 |
 | [0035](0035-instance-settings-in-the-interface.md) | Instance settings in the interface, paired with environment variables | 2026-11-08 |
 | [0036](0036-export-rooms-photos-and-file-erasure.md) | Export of rooms and photos, erasure of files with the home | 2026-11-08 |
 | [0037](0037-today-my-home-history-and-display-preferences.md) | Today, My home, History and display preferences | 2026-11-08 |

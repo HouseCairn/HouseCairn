@@ -7,10 +7,26 @@ from django.utils.dates import MONTHS
 from django.utils.translation import gettext_lazy as _
 
 from housecairn.rooms.models import Item
-from housecairn.tasks import services
+from housecairn.tasks import files, services
 from housecairn.tasks.models import DisplayPreference, Occurrence, Task
 
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
+
+
+class MultipleFileInput(forms.FileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    """Several files from one chooser; each is checked by the service, by its content."""
+
+    widget = MultipleFileInput
+
+    def clean(self, data: Any, initial: Any = None) -> Any:
+        clean_one = super().clean
+        if isinstance(data, list | tuple):
+            return [clean_one(entry, initial) for entry in data if entry]
+        return [clean_one(data, initial)] if data else []
 
 
 class ItemChoiceField(forms.ModelChoiceField[Item]):
@@ -44,6 +60,12 @@ class TaskForm(forms.ModelForm[Task]):
     new_contractor_trade = forms.CharField(
         label=_("Trade of the new contractor"), max_length=120, required=False
     )
+    uploads = MultipleFileField(
+        label=_("Photos and files"),
+        required=False,
+        widget=MultipleFileInput(attrs={"accept": files.ACCEPT_ATTRIBUTE}),
+    )
+
     field_order = [
         "title",
         "room",
@@ -65,6 +87,7 @@ class TaskForm(forms.ModelForm[Task]):
         "material_budget",
         "procedure",
         "notes",
+        "uploads",
     ]
 
     class Meta:
@@ -95,7 +118,7 @@ class TaskForm(forms.ModelForm[Task]):
             "procedure": _("Markdown: how to do it, step by step. Links to web pages only."),
         }
 
-    def __init__(self, *args: Any, home: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, home: Any, with_files: bool = True, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._choices("room").queryset = services.rooms_for_forms(home)
         self._choices("item").queryset = services.items_for_forms(home)
@@ -104,6 +127,8 @@ class TaskForm(forms.ModelForm[Task]):
         self.fields["contractor"].required = False
         for name in ("room", "item", "assignee", "contractor"):
             self.fields[name].empty_label = "—"  # type: ignore[attr-defined]
+        if not with_files:
+            del self.fields["uploads"]
         if self.instance.pk:
             current = services.open_occurrence_of(self.instance)
             self.initial.setdefault("due_on", current.due_on if current else None)
@@ -144,3 +169,16 @@ class PreferencesForm(forms.ModelForm[DisplayPreference]):
         model = DisplayPreference
         fields = ["today_group", "horizon_days", "show_overdue", "show_upcoming", "show_season"]
         widgets = {"today_group": forms.RadioSelect}
+
+
+class AttachmentForm(forms.Form):
+    uploads = MultipleFileField(
+        label=_("Photos and files"),
+        widget=MultipleFileInput(attrs={"accept": files.ACCEPT_ATTRIBUTE}),
+    )
+
+    def clean(self) -> dict[str, Any]:
+        data: dict[str, Any] = super().clean() or {}
+        if not data.get("uploads") and "uploads" not in self.errors:
+            self.add_error("uploads", _("Choose at least one file."))
+        return data

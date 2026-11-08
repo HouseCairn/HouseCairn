@@ -1,4 +1,4 @@
-"""Tasks, their occurrences and contractors (docs/adr/0031 to 0033).
+"""Tasks, their occurrences, contractors and attachments (docs/adr/0031 to 0034).
 
 A task is the thing to do ("change the smoke detector battery"); an occurrence is one
 time it has to be done, with its due date and its outcome. A task that repeats always
@@ -19,8 +19,10 @@ from housecairn.core.models import BaseModel
 from housecairn.homes.models import HomeOwnedModel
 from housecairn.rooms.models import Item, Room, notes_field
 from housecairn.tasks import recurrence
+from housecairn.tasks.storage import attachment_storage
 
 PROCEDURE_MAX_LENGTH = 20000
+MAX_ATTACHMENTS_PER_TASK = 30
 
 
 class Priority(models.TextChoices):
@@ -288,3 +290,42 @@ class DisplayPreference(BaseModel):
     class Meta:
         verbose_name = _("display preference")
         verbose_name_plural = _("display preferences")
+
+
+def attachment_path(attachment: "Attachment", filename: str) -> str:
+    """Storage name: home and attachment identifiers only, never a name chosen by the sender."""
+    return f"{attachment.home_id}/{attachment.id}{filename}"
+
+
+class Attachment(HomeOwnedModel):
+    """A photo or a file attached to a task, or to one of its occurrences (docs/adr/0034)."""
+
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="attachments")
+    occurrence = models.ForeignKey(
+        Occurrence, null=True, blank=True, on_delete=models.CASCADE, related_name="attachments"
+    )
+    # Name shown to people, cleaned of any path and control character; never used on disk.
+    name = models.CharField(_("name"), max_length=120)
+    file = models.FileField(
+        storage=attachment_storage, upload_to=attachment_path, max_length=200, editable=False
+    )
+    thumbnail = models.FileField(
+        storage=attachment_storage,
+        upload_to=attachment_path,
+        max_length=200,
+        editable=False,
+        blank=True,
+    )
+    content_type = models.CharField(max_length=100, editable=False)
+    is_image = models.BooleanField(default=False, editable=False)
+    size_bytes = models.PositiveIntegerField(editable=False)
+    width = models.PositiveIntegerField(null=True, editable=False)
+    height = models.PositiveIntegerField(null=True, editable=False)
+
+    class Meta:
+        verbose_name = _("attachment")
+        verbose_name_plural = _("attachments")
+        ordering = ["created_at", "id"]
+
+    def __str__(self) -> str:
+        return self.name

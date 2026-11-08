@@ -1,4 +1,4 @@
-"""API of tasks, occurrences and contractors: filters, scopes, roles, isolation."""
+"""API of tasks, occurrences, contractors, attachments: filters, scopes, roles, isolation."""
 
 import datetime
 import time
@@ -17,8 +17,9 @@ from housecairn.homes.models import Home
 from housecairn.rooms import services as room_services
 from housecairn.rooms.models import Item, Room
 from housecairn.tasks import services
-from housecairn.tasks.models import Occurrence, Task
-from tests.tasks_fixtures import TODAY
+from housecairn.tasks.models import Attachment, Occurrence, Task
+from tests.rooms_support import image_bytes, upload
+from tests.tasks_fixtures import PDF, TODAY
 
 pytest_plugins = ("tests.tasks_fixtures",)
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("media_root", "frozen_today")]
@@ -497,13 +498,157 @@ class TestContractors:
         assert client_of_alice.get(detail).status_code == 404
 
 
+class TestAttachments:
+    @pytest.fixture
+    def document(self, alice: User, owner_task: Task) -> Attachment:
+        return services.add_attachment(alice, owner_task, upload=upload(PDF, "manual.pdf"))
+
+    def test_upload_read_rename_delete(
+        self,
+        client_of_alice: APIClient,
+        alice_home: Home,
+        owner_task: Task,
+        owner_occurrence: Occurrence,
+    ) -> None:
+        created = client_of_alice.post(
+            api("attachment-list", alice_home),
+            {
+                "task": str(owner_task.id),
+                "occurrence": str(owner_occurrence.id),
+                "file": upload(image_bytes("PNG"), "x.png"),
+                "name": "Before",
+            },
+            format="multipart",
+        )
+        assert created.status_code == 201, created.content
+        body = created.json()
+        assert (body["name"], body["is_image"], body["occurrence"]) == (
+            "Before",
+            True,
+            str(owner_occurrence.id),
+        )
+        assert body["thumbnail_url"]
+        assert body["content_url"]
+        detail = api("attachment-detail", alice_home, attachment_id=body["id"])
+        assert (
+            client_of_alice.patch(detail, {"name": "../After.png"}, format="json").json()["name"]
+            == "After.png"
+        )
+        content = client_of_alice.get(
+            api("attachment-content", alice_home, attachment_id=body["id"]),
+            HTTP_ACCEPT="application/json",
+        )
+        assert content.status_code == 200
+        assert content["Content-Type"] == "image/png"
+        thumbnail = client_of_alice.get(
+            api("attachment-thumbnail", alice_home, attachment_id=body["id"])
+        )
+        assert thumbnail["Content-Type"] == "image/jpeg"
+        assert client_of_alice.delete(detail).status_code == 204
+        assert client_of_alice.get(detail).status_code == 404
+
+    def test_a_document_is_a_download_without_thumbnail(
+        self, client_of_alice: APIClient, alice_home: Home, document: Attachment
+    ) -> None:
+        assert (
+            client_of_alice.get(
+                api("attachment-detail", alice_home, attachment_id=document.id)
+            ).json()["thumbnail_url"]
+            is None
+        )
+        response = client_of_alice.get(
+            api("attachment-content", alice_home, attachment_id=document.id)
+        )
+        assert response["Content-Type"] == "application/pdf"
+        assert response["Content-Disposition"].startswith("attachment;")
+        assert response["X-Content-Type-Options"] == "nosniff"
+        assert (
+            client_of_alice.get(
+                api("attachment-thumbnail", alice_home, attachment_id=document.id)
+            ).status_code
+            == 404
+        )
+
+    def test_bad_uploads(
+        self,
+        client_of_alice: APIClient,
+        alice_home: Home,
+        owner_task: Task,
+        owner_occurrence: Occurrence,
+        alice: User,
+    ) -> None:
+        address = api("attachment-list", alice_home)
+        other = services.create_task(alice, alice_home, title="other")
+        for data in (
+            {
+                "task": str(owner_task.id),
+                "file": upload(b"MZ\x90\x00", "evil.pdf", "application/pdf"),
+            },
+            {"task": str(owner_task.id)},
+            {"file": upload(PDF)},
+            {"task": str(other.id), "occurrence": str(owner_occurrence.id), "file": upload(PDF)},
+        ):
+            assert client_of_alice.post(address, data, format="multipart").status_code == 400, data
+        assert (
+            client_of_alice.post(
+                address, {"task": str(uuid.uuid4()), "file": upload(PDF)}, format="multipart"
+            ).status_code
+            == 404
+        )
+        assert not Attachment.objects.exists()
+
+    def test_an_oversized_body_is_refused_before_it_is_read(
+        self, client_of_alice: APIClient, alice_home: Home, settings: object
+    ) -> None:
+        from housecairn.rooms import conf
+
+        settings.HOUSECAIRN_PHOTO_MAX_BYTES = conf.MIN_PHOTO_MAX_BYTES  # type: ignore[attr-defined]
+        response = client_of_alice.post(
+            api("attachment-list", alice_home),
+            data=b"x",
+            content_type="multipart/form-data; boundary=x",
+            headers={"Content-Length": str(conf.MIN_PHOTO_MAX_BYTES + conf.MULTIPART_OVERHEAD + 1)},
+        )
+        assert response.status_code == 413
+
+    def test_filters(
+        self,
+        client_of_alice: APIClient,
+        alice: User,
+        alice_home: Home,
+        owner_task: Task,
+        owner_occurrence: Occurrence,
+        document: Attachment,
+    ) -> None:
+        other = services.create_task(alice, alice_home, title="other")
+        services.add_attachment(
+            alice, other, upload=upload(PDF), occurrence=services.open_occurrence_of(other)
+        )
+        listing = client_of_alice.get(
+            api("attachment-list", alice_home) + f"?task={owner_task.id}"
+        ).json()["results"]
+        assert [a["id"] for a in listing] == [str(document.id)]
+        by_occurrence = client_of_alice.get(
+            api("attachment-list", alice_home)
+            + f"?occurrence={services.open_occurrence_of(other).id}"
+        ).json()["results"]  # type: ignore[union-attr]
+        assert len(by_occurrence) == 1
+        assert by_occurrence[0]["task"] == str(other.id)
+
+
 class TestRolesScopesAndIsolation:
+    @pytest.fixture
+    def document(self, alice: User, owner_task: Task) -> Attachment:
+        return services.add_attachment(
+            alice, owner_task, upload=upload(image_bytes("PNG"), "manual.png")
+        )
+
     @pytest.fixture
     def contractor(self, alice: User, alice_home: Home) -> object:
         return services.create_contractor(alice, alice_home, name="A")
 
     def endpoints(
-        self, home: Home, task: Task, occ: Occurrence, contractor: object
+        self, home: Home, task: Task, occ: Occurrence, doc: Attachment, contractor: object
     ) -> list[tuple[str, str]]:
         return [
             ("get", api("task-list", home)),
@@ -512,10 +657,14 @@ class TestRolesScopesAndIsolation:
             ("get", api("occurrence-detail", home, occurrence_id=occ.id)),
             ("get", api("contractor-list", home)),
             ("get", api("contractor-detail", home, contractor_id=contractor.id)),  # type: ignore[attr-defined]
+            ("get", api("attachment-list", home)),
+            ("get", api("attachment-detail", home, attachment_id=doc.id)),
+            ("get", api("attachment-content", home, attachment_id=doc.id)),
+            ("get", api("attachment-thumbnail", home, attachment_id=doc.id)),
         ]
 
     def writes(
-        self, home: Home, task: Task, occ: Occurrence, contractor: object
+        self, home: Home, task: Task, occ: Occurrence, doc: Attachment, contractor: object
     ) -> list[tuple[str, str, dict[str, object]]]:
         return [
             ("post", api("task-list", home), {"title": "x"}),
@@ -537,6 +686,9 @@ class TestRolesScopesAndIsolation:
             ("post", api("contractor-list", home), {"name": "x"}),
             ("patch", api("contractor-detail", home, contractor_id=contractor.id), {"name": "x"}),  # type: ignore[attr-defined]
             ("delete", api("contractor-detail", home, contractor_id=contractor.id), {}),  # type: ignore[attr-defined]
+            ("post", api("attachment-list", home), {"task": str(task.id), "file": upload(PDF)}),
+            ("patch", api("attachment-detail", home, attachment_id=doc.id), {"name": "x"}),
+            ("delete", api("attachment-detail", home, attachment_id=doc.id), {}),
         ]
 
     @staticmethod
@@ -558,24 +710,28 @@ class TestRolesScopesAndIsolation:
         bob_home: Home,
         owner_task: Task,
         owner_occurrence: Occurrence,
+        document: Attachment,
         contractor: object,
     ) -> None:
         api_client.force_authenticate(request.getfixturevalue(who))
-        for method, address in self.endpoints(alice_home, owner_task, owner_occurrence, contractor):
+        for method, address in self.endpoints(
+            alice_home, owner_task, owner_occurrence, document, contractor
+        ):
             assert getattr(api_client, method)(address).status_code == 404, address
         for method, address, data in self.writes(
-            alice_home, owner_task, owner_occurrence, contractor
+            alice_home, owner_task, owner_occurrence, document, contractor
         ):
             assert self.send(api_client, method, address, data) == 404, (method, address)
         # Their own home does not know the identifiers of the other one either.
         if who == "bob":
             for method, address in (
-                self.endpoints(bob_home, owner_task, owner_occurrence, contractor)[1:2]
-                + self.endpoints(bob_home, owner_task, owner_occurrence, contractor)[3:4]
+                self.endpoints(bob_home, owner_task, owner_occurrence, document, contractor)[1:2]
+                + self.endpoints(bob_home, owner_task, owner_occurrence, document, contractor)[3:4]
             ):
                 assert getattr(api_client, method)(address).status_code == 404, address
         assert Task.objects.get(id=owner_task.id).title == owner_task.title
         assert Occurrence.objects.get(id=owner_occurrence.id).status == "planned"
+        assert Attachment.objects.filter(id=document.id).exists()
 
     def test_read_only_reads_everything_and_changes_nothing(
         self,
@@ -584,15 +740,16 @@ class TestRolesScopesAndIsolation:
         alice_home: Home,
         owner_task: Task,
         owner_occurrence: Occurrence,
+        document: Attachment,
         contractor: object,
     ) -> None:
         api_client.force_authenticate(reader)
-        for method, address in self.endpoints(alice_home, owner_task, owner_occurrence, contractor)[
-            :
-        ]:
+        for method, address in self.endpoints(
+            alice_home, owner_task, owner_occurrence, document, contractor
+        )[:]:
             assert getattr(api_client, method)(address).status_code == 200, address
         for method, address, data in self.writes(
-            alice_home, owner_task, owner_occurrence, contractor
+            alice_home, owner_task, owner_occurrence, document, contractor
         ):
             assert self.send(api_client, method, address, data) == 403, (method, address)
         assert Occurrence.objects.get(id=owner_occurrence.id).status == "planned"
@@ -637,13 +794,16 @@ class TestRolesScopesAndIsolation:
         alice_home: Home,
         owner_task: Task,
         owner_occurrence: Occurrence,
+        document: Attachment,
         contractor: object,
     ) -> None:
         reading = token(["read"])
-        for method, address in self.endpoints(alice_home, owner_task, owner_occurrence, contractor):
+        for method, address in self.endpoints(
+            alice_home, owner_task, owner_occurrence, document, contractor
+        ):
             assert getattr(reading, method)(address).status_code == 200, address
         for method, address, data in self.writes(
-            alice_home, owner_task, owner_occurrence, contractor
+            alice_home, owner_task, owner_occurrence, document, contractor
         ):
             assert self.send(reading, method, address, data) == 403, (method, address)
         writing = token(["write"])
@@ -676,14 +836,17 @@ class TestRolesScopesAndIsolation:
         alice_home: Home,
         owner_task: Task,
         owner_occurrence: Occurrence,
+        document: Attachment,
         contractor: object,
     ) -> None:
         second = home_services.create_home(alice, name="Holiday flat")
         client = token(["read", "write"], [second])
-        for method, address in self.endpoints(alice_home, owner_task, owner_occurrence, contractor):
+        for method, address in self.endpoints(
+            alice_home, owner_task, owner_occurrence, document, contractor
+        ):
             assert getattr(client, method)(address).status_code == 404, address
         for method, address, data in self.writes(
-            alice_home, owner_task, owner_occurrence, contractor
+            alice_home, owner_task, owner_occurrence, document, contractor
         ):
             assert self.send(client, method, address, data) == 404, (method, address)
         assert client.get(api("task-list", second)).status_code == 200
@@ -721,16 +884,20 @@ class TestRolesScopesAndIsolation:
         alice_home: Home,
         owner_task: Task,
         owner_occurrence: Occurrence,
+        document: Attachment,
         contractor: object,
     ) -> None:
         anonymous = APIClient()
-        for method, address in self.endpoints(alice_home, owner_task, owner_occurrence, contractor):
+        for method, address in self.endpoints(
+            alice_home, owner_task, owner_occurrence, document, contractor
+        ):
             assert getattr(anonymous, method)(address).status_code in {401, 403}, address
         for method, address, data in self.writes(
-            alice_home, owner_task, owner_occurrence, contractor
+            alice_home, owner_task, owner_occurrence, document, contractor
         ):
             assert self.send(anonymous, method, address, data) in {401, 403}, (method, address)
         assert Occurrence.objects.get(id=owner_occurrence.id).status == "planned"
+        assert Attachment.objects.filter(id=document.id).exists()
 
     def test_unknown_and_foreign_identifiers_answer_the_same_404_body(
         self, client_of_alice: APIClient, bob: User, alice_home: Home, bob_home: Home
@@ -739,11 +906,15 @@ class TestRolesScopesAndIsolation:
         theirs = services.create_task(bob, bob_home, title="Theirs", due_on=TODAY)
         occurrence = services.open_occurrence_of(theirs)
         assert occurrence is not None
+        attachment = services.add_attachment(bob, theirs, upload=upload(PDF))
         contractor = services.create_contractor(bob, bob_home, name="B")
         pairs = [
             ("task-detail", "task_id", theirs.id),
             ("occurrence-detail", "occurrence_id", occurrence.id),
             ("contractor-detail", "contractor_id", contractor.id),
+            ("attachment-detail", "attachment_id", attachment.id),
+            ("attachment-content", "attachment_id", attachment.id),
+            ("attachment-thumbnail", "attachment_id", attachment.id),
         ]
         for name, key, foreign_id in pairs:
             foreign = client_of_alice.get(api(name, alice_home, **{key: foreign_id}))

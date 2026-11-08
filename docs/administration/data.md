@@ -16,7 +16,7 @@ The archive is a zip:
 | Part | Content |
 | --- | --- |
 | `export.json` | The data, as JSON (below). |
-| `files/` | The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`. |
+| `files/` | The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, and the files of the tasks, under `files/attachments/`. |
 | `README.txt` | A reminder of the format. |
 
 `export.json` is versioned. Version `1` has these keys:
@@ -32,12 +32,14 @@ The archive is a zip:
 | `rooms` | `id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch and stock, floor and wall covering, memory notes). |
 | `items` | `id`, `room`, `name`, `kind`, `brand`, `model`, `serial_number`, `installed_on`, `warranty_ends_on`, `contract`, `contract_url`, `links`, `notes`, `created_at` of each item. |
 | `photos` | `id`, `room` or `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the photo in the archive (`files/photos/<id>.<extension>`, or `null` if the file is missing). |
+| `attachments` | `id`, `task`, `occurrence` or `null`, `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the file in the archive (`files/attachments/<id>.<extension>`, or `null` if the file is missing). |
 | `files` | `path` and `size` of each file in `files/`. |
 
-Photos are exported as they are stored, already stripped of their metadata at
-upload. Thumbnails are not exported, and neither is anything deleted. The
-archive has no size limit of its own: it is as large as the photos of the home
-(each is limited by `HOUSECAIRN_PHOTO_MAX_BYTES`).
+Photos and the images attached to tasks are exported as they are stored, already
+stripped of their metadata at upload; the documents attached to tasks are exported
+as they were received. Thumbnails are not exported, and neither is anything
+deleted. The archive has no size limit of its own: it is as large as the files of
+the home (each is limited by `HOUSECAIRN_PHOTO_MAX_BYTES`).
 
 Each lot that adds data adds its section here and to the archive. The archive
 holds the home it was made for and nothing of another.
@@ -51,10 +53,11 @@ home is revoked. **There is no grace period and no way back**: export first.
 The audit log of the instance records that a home was deleted, without its
 name.
 
-The photos are erased from the disk with the home, deleted ones included. If
-the disk refuses (permissions, a full or read-only volume), the home is still
-deleted and the error is logged by `housecairn.files` with the path of the
-directory (`photos/<home id>`): remove that directory by hand.
+The photos and the files attached to tasks are erased from the disk with the home
+(photos deleted one by one included). If the disk refuses (permissions, a full or
+read-only volume), the home is still deleted and the error is logged by
+`housecairn.files` with the path of the directory (`photos/<home id>` or
+`attachments/<home id>`): remove that directory by hand.
 
 ## Erasure of an account
 
