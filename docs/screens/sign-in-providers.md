@@ -12,9 +12,11 @@ The OpenID Connect providers of the instance, at `/instance/providers/`, reached
 
 The page of a provider shows its redirect URI, whether a client secret is stored, the
 accounts linked to it and the homes that require it, then the same fields without the
-identifier, which never changes. Leave the client secret empty to keep the stored one.
+identifier, which never changes. Leave the client secret empty to keep the stored one; a new
+issuer clears it unless you enter it again in the same change.
 **Test the issuer** checks the issuer typed in the field and saves nothing. **Delete** is
 refused while a home requires the provider; disable it instead.
 
 Saving or deleting asks you to have signed in within the last five minutes. You cannot
-disable or delete your own last way to sign in. See [Single sign-on](../administration/oidc.md).
+disable or delete your own last way to sign in, nor change its issuer, client identifier or
+secret. See [Single sign-on](../administration/oidc.md).

@@ -81,6 +81,14 @@ def _validate_together(clean: dict[str, Any]) -> dict[str, list[str]]:
                 "or keep sign-up closed."
             )
         ]
+    # A day allows at least what a minute does (docs/adr/0042).
+    for minute, day in (
+        ("ratelimit_signup", "ratelimit_signup_day"),
+        ("ratelimit_invitations", "ratelimit_invitations_day"),
+    ):
+        if (minute in clean or day in clean) and effective(day) < effective(minute):
+            key = day if day in clean else minute
+            errors[key] = [_("A day cannot allow fewer than a minute.")]
     return errors
 
 

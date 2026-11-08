@@ -7,5 +7,5 @@
 {% translate "If you did not expect this invitation, ignore this message." %}
 
 --
-HouseCairn
+{% instance_name %}
 {% endautoescape %}

@@ -18,6 +18,7 @@ from django.utils.translation import gettext_lazy as _
 
 from housecairn.core.proxy import TrustedProxies
 from housecairn.instance import registry
+from housecairn.instance.ratelimits import RateLimits
 
 # Allows generic annotations such as ListView[Home] at runtime.
 django_stubs_ext.monkeypatch()
@@ -94,7 +95,8 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
+    "housecairn.instance.middleware.InstanceLocaleMiddleware",
+    "housecairn.instance.middleware.InstanceTimeZoneMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -124,6 +126,8 @@ TEMPLATES = [
                 "housecairn.core.context_processors.shell",
                 "housecairn.core.help.help_link",
             ],
+            # `{% instance_name %}` in every template, emails included (docs/adr/0042).
+            "builtins": ["housecairn.core.templatetags.instance"],
         },
     },
 ]
@@ -168,8 +172,18 @@ LANGUAGE_CODE = "en"
 LANGUAGES = [("en", _("English")), ("fr", _("French"))]
 LOCALE_PATHS = [BASE_DIR / "locale"]
 USE_I18N = True
-TIME_ZONE = env.str("TIME_ZONE", default="UTC")
+# The time zone of the households (docs/adr/0032, 0042): the variable, else UTC. The
+# interface can set another one, activated for each request (core.middleware).
+TIME_ZONE: str = _ENV.values["time_zone"]
 USE_TZ = True
+# Language for a browser that asks for none the instance offers, and the name of the
+# instance in the app bar, the titles and the emails (docs/adr/0042).
+HOUSECAIRN_DEFAULT_LANGUAGE: str = _ENV.values["default_language"]
+HOUSECAIRN_INSTANCE_NAME: str = _ENV.values["instance_name"]
+# Files of a home (docs/adr/0030, 0042): the largest file, and the quotas of each home.
+HOUSECAIRN_PHOTO_MAX_BYTES: int = _ENV.values["file_max_bytes"]
+HOUSECAIRN_HOME_STORAGE_MB: int = _ENV.values["home_storage_mb"]
+HOUSECAIRN_HOME_MAX_FILES: int = _ENV.values["home_max_files"]
 
 STATIC_URL = "static/"
 STATIC_ROOT = Path(env.str("STATIC_ROOT", default=str(DATA_DIR / "static")))
@@ -262,16 +276,12 @@ SOCIALACCOUNT_EMAIL_AUTHENTICATION = False
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = False
 # Rate limits of django-allauth, plus those of invitations (docs/adr/0020):
 # creating or sending again, per person; opening or accepting a link, per
-# client address (REMOTE_ADDR, see HOUSECAIRN_FORWARDED_ALLOW_IPS).
-ACCOUNT_RATE_LIMITS = {
-    "housecairn_invite": "10/m/user,50/d/user",
-    "housecairn_invitation": "30/m/ip",
-    "housecairn_instance_invite": "10/m/user,50/d/user",
-    "housecairn_delete_account": "5/m/user",
-    "housecairn_settings_test": "5/m/user",
-    # Sign-up and password reset, per client address (allauth's own actions).
-    "signup": "10/m/ip,60/d/ip",
-}
+# client address (REMOTE_ADDR, see HOUSECAIRN_FORWARDED_ALLOW_IPS). The numbers
+# are instance settings (docs/adr/0042): the mapping reads them at each use.
+for _key in registry.SETTINGS:
+    if _key.startswith("ratelimit_"):
+        globals()[registry.SETTINGS[_key].django_name] = _ENV.values[_key]
+ACCOUNT_RATE_LIMITS = RateLimits()
 # Days an invitation link stays valid.
 HOUSECAIRN_INVITATION_LIFETIME_DAYS: int = _ENV.values["invitation_lifetime_days"]
 # Public address of the instance (scheme and host, no path), used for links in
@@ -314,7 +324,7 @@ DEFAULT_FROM_EMAIL: str = _ENV.values["default_from_email"]
 # Security alerts (password or passkey changed, new address, new sign-in) go out
 # only when mail can be delivered (docs/adr/0023); subjects start with the name.
 ACCOUNT_EMAIL_NOTIFICATIONS = bool(EMAIL_HOST)
-ACCOUNT_EMAIL_SUBJECT_PREFIX = "HouseCairn: "
+# Subjects start with the name of the instance (accounts.adapters, docs/adr/0042).
 
 MFA_SUPPORTED_TYPES = ["totp", "recovery_codes", "webauthn"]
 MFA_PASSKEY_LOGIN_ENABLED = True

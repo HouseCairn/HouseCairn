@@ -7,6 +7,7 @@ import zoneinfo
 from unittest import mock
 
 import pytest
+from django.test import override_settings
 from django.utils import timezone
 from hypothesis import given
 from hypothesis import strategies as st
@@ -197,10 +198,14 @@ class TestClockChanges:
 
     def test_today_follows_the_zone_of_the_instance(self) -> None:
         moment = datetime.datetime(2026, 3, 28, 23, 30, tzinfo=datetime.UTC)
+        # The setting of the instance decides (ADR 0042), in a request or a worker alike:
+        # the zone a request activated does not.
         with mock.patch("django.utils.timezone.now", return_value=moment):
-            with timezone.override(zoneinfo.ZoneInfo("UTC")):
+            with override_settings(TIME_ZONE="UTC"):
                 assert services.today() == D(2026, 3, 28)
-            with timezone.override(zoneinfo.ZoneInfo("Europe/Paris")):
+                with timezone.override(zoneinfo.ZoneInfo("Europe/Paris")):
+                    assert services.today() == D(2026, 3, 28)
+            with override_settings(TIME_ZONE="Europe/Paris"):
                 assert services.today() == D(2026, 3, 29)
 
     def test_a_day_is_a_day_on_the_night_the_clocks_change(self) -> None:

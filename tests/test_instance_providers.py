@@ -334,6 +334,81 @@ class TestTheSecretStaysWithItsIssuer:
         response = admin_api.patch(detail, {"issuer": ISSUER, "secret": SECRET}, format="json")
         assert (response.json()["issuer"], response.json()["secret_set"]) == (ISSUER, True)
 
+    def test_the_screen_says_the_secret_was_cleared(
+        self, admin_client: Client, admin_user: User
+    ) -> None:
+        declare(admin_user, enabled=False)
+        url = reverse("instance:provider", kwargs={"slug": "company"})
+        page = form(admin_client, url, issuer=EVIL, enabled=False)
+        assert page.status_code == 302
+        shown = admin_client.get(url).text
+        assert "The new issuer cleared the client secret" in shown
+        # Another change, with no secret to clear, says only that it is saved.
+        form(admin_client, url, name="Renamed", issuer=EVIL, enabled=False)
+        shown = admin_client.get(url).text
+        assert "Provider saved." in shown
+        assert "cleared the client secret" not in shown
+
+    @pytest.mark.parametrize(
+        "changes",
+        [
+            {"issuer": EVIL, "enabled": False},
+            {"enabled": False, "issuer": EVIL},
+        ],
+    )
+    def test_the_order_of_the_fields_does_not_matter(
+        self, admin_user: User, changes: dict[str, Any]
+    ) -> None:
+        provider = declare(admin_user)
+        providers.update(admin_user, provider, changes)
+        provider.refresh_from_db()
+        assert (provider.issuer, provider.enabled, provider.secret) == (EVIL, False, "")
+
+    @pytest.mark.parametrize(
+        "changes",
+        [
+            {"issuer": EVIL, "secret": "new-secret", "enabled": True},
+            {"secret": "new-secret", "enabled": True, "issuer": EVIL},
+            {"enabled": True, "issuer": EVIL, "secret": "new-secret"},
+        ],
+    )
+    def test_nor_with_a_new_secret(self, admin_user: User, changes: dict[str, Any]) -> None:
+        provider = declare(admin_user, enabled=False)
+        providers.update(admin_user, provider, changes)
+        assert (self._app().settings["server_url"], self._app().secret) == (EVIL, "new-secret")
+
+    @pytest.mark.parametrize(
+        "changes",
+        [{"issuer": EVIL, "enabled": True}, {"enabled": True, "issuer": EVIL}],
+    )
+    def test_nor_the_refusal(self, admin_user: User, changes: dict[str, Any]) -> None:
+        provider = declare(admin_user, enabled=False)
+        with pytest.raises(ValidationError, match="not kept for another issuer"):
+            providers.update(admin_user, provider, changes)
+        provider.refresh_from_db()
+        assert (provider.issuer, provider.enabled) == (ISSUER, False)
+
+    @pytest.mark.parametrize(
+        "body",
+        [
+            '{"issuer": "https://idp.attacker.example", "enabled": true}',
+            '{"enabled": true, "issuer": "https://idp.attacker.example"}',
+        ],
+    )
+    def test_nor_in_the_api(self, admin_api: APIClient, admin_user: User, body: str) -> None:
+        declare(admin_user, enabled=False)
+        detail = reverse("api-v1:instance-provider-detail", args=["company"])
+        response = admin_api.patch(detail, body, content_type="application/json")
+        assert response.status_code == 400
+        assert list(response.json()) == ["secret"]
+        assert admin_api.get(detail).json()["issuer"] == ISSUER
+
+
+def test_the_administration_site_has_no_provider() -> None:
+    """Only `providers.update` writes a provider: the administration site cannot."""
+    assert not admin_site.is_registered(OidcProvider)
+    assert all(model._meta.app_label != "instance" for model in admin_site._registry)
+
 
 class TestLastWayToSignIn:
     def test_an_sso_only_administrator_cannot_disable_nor_delete_its_provider(
@@ -500,7 +575,7 @@ class TestWebScreens:
             page = admin_client.get(url).text
             for name in ("pkce", "enabled"):
                 assert re.search(
-                    rf'<p><label for="id_{name}">[^<]+</label><input type="checkbox"[^>]*'
+                    rf'<p><label for="id_{name}">[^<:]+</label><input type="checkbox"[^>]*'
                     rf'id="id_{name}"[^>]*></p>\s*'
                     rf'<p class="small helptext" id="id_{name}_helptext">',
                     page,

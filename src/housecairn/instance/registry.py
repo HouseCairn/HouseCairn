@@ -7,7 +7,10 @@ so that `housecairn.settings` can use it before the database exists. Reading a
 value anywhere else goes through `housecairn.instance.config.get_setting`.
 """
 
+import functools
 import os
+import unicodedata
+import zoneinfo
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import StrEnum
@@ -42,17 +45,28 @@ class Reload(StrEnum):
 
 class Section(StrEnum):
     ADDRESS = "address"
+    INSTANCE = "instance"
     SIGNUP = "signup"
     INVITATIONS = "invitations"
     EMAIL = "email"
+    RATE_LIMITS = "rate-limits"
+    FILES = "files"
 
 
 SECTION_LABELS: dict[Section, Promise] = {
     Section.ADDRESS: _("Public address"),
+    Section.INSTANCE: _("Name, language and time zone"),
     Section.SIGNUP: _("Sign-up"),
     Section.INVITATIONS: _("Invitations"),
     Section.EMAIL: _("Outgoing email"),
+    Section.RATE_LIMITS: _("Rate limits"),
+    Section.FILES: _("Files of a home"),
 }
+
+# The product name: the default name of an instance, and what an empty name shows.
+PRODUCT_NAME = "HouseCairn"
+INSTANCE_NAME_MAX_LENGTH = 64
+LANGUAGES = ("en", "fr")  # the codes of settings.LANGUAGES; checked by a test
 
 
 @dataclass(frozen=True)
@@ -156,12 +170,34 @@ def _check_host(value: str) -> None:
         raise ValueError(_("Must be a host name or an address."))
 
 
+def _check_instance_name(value: str) -> None:
+    if len(value) > INSTANCE_NAME_MAX_LENGTH or any(
+        unicodedata.category(ch) in {"Cc", "Cf", "Cs", "Co", "Cn"} for ch in value
+    ):
+        raise ValueError(
+            format_lazy(
+                _("At most {n} characters, without control characters."),
+                n=INSTANCE_NAME_MAX_LENGTH,
+            )
+        )
+
+
+def _check_time_zone(value: str) -> None:
+    if value not in _time_zones():
+        raise ValueError(_("Must be a time zone of the IANA database, such as Europe/Paris."))
+
+
+@functools.cache
+def _time_zones() -> frozenset[str]:
+    return frozenset(zoneinfo.available_timezones()) | {"UTC"}
+
+
 def _check_from(value: str) -> None:
     if "@" not in value or ("<" in value) != (">" in value):
         raise ValueError(_("Must be an address, such as HouseCairn <noreply@example.com>."))
 
 
-_SETTINGS = (
+_SETTINGS: tuple[Setting, ...] = (
     Setting(
         "site_url",
         "HOUSECAIRN_SITE_URL",
@@ -334,6 +370,184 @@ _SETTINGS = (
     ),
 )
 
+
+def _rate(
+    key: str, env: str, label: Promise, help_text: Promise, default: int, top: int
+) -> Setting:
+    """A rate limit (docs/adr/0042): never 0 (always refused), never unbounded."""
+    return Setting(
+        key,
+        env,
+        env,
+        Kind.INT,
+        Section.RATE_LIMITS,
+        label,
+        help_text,
+        default,
+        minimum=1,
+        maximum=top,
+    )
+
+
+_SETTINGS += (
+    Setting(
+        "instance_name",
+        "HOUSECAIRN_INSTANCE_NAME",
+        "HOUSECAIRN_INSTANCE_NAME",
+        Kind.STR,
+        Section.INSTANCE,
+        _("Name of the instance"),
+        _(
+            "In the app bar, the title of the pages and the emails, at most 64 characters. "
+            "Empty: HouseCairn."
+        ),
+        PRODUCT_NAME,
+        check=_check_instance_name,
+    ),
+    Setting(
+        "default_language",
+        "HOUSECAIRN_DEFAULT_LANGUAGE",
+        "HOUSECAIRN_DEFAULT_LANGUAGE",
+        Kind.CHOICE,
+        Section.INSTANCE,
+        _("Default language"),
+        _(
+            "en or fr. For people whose browser asks for no language the instance offers; "
+            "the language a browser asks for always wins."
+        ),
+        "en",
+        choices=LANGUAGES,
+    ),
+    Setting(
+        "time_zone",
+        "TIME_ZONE",
+        "TIME_ZONE",
+        Kind.STR,
+        Section.INSTANCE,
+        _("Time zone"),
+        _(
+            "Of the households, such as Europe/Paris: it decides what today is, and so what "
+            "is late. Times are stored in UTC."
+        ),
+        "UTC",
+        check=_check_time_zone,
+    ),
+    _rate(
+        "ratelimit_login",
+        "HOUSECAIRN_RATELIMIT_LOGIN",
+        _("Sign-ins a minute"),
+        _("Per client address, from 1 to 1000."),
+        30,
+        1000,
+    ),
+    _rate(
+        "ratelimit_login_failures",
+        "HOUSECAIRN_RATELIMIT_LOGIN_FAILURES",
+        _("Failed sign-ins in five minutes"),
+        _("Per account, from 1 to 100; then the account waits."),
+        5,
+        100,
+    ),
+    _rate(
+        "ratelimit_signup",
+        "HOUSECAIRN_RATELIMIT_SIGNUP",
+        _("Sign-ups a minute"),
+        _("Per client address, from 1 to 1000."),
+        10,
+        1000,
+    ),
+    _rate(
+        "ratelimit_signup_day",
+        "HOUSECAIRN_RATELIMIT_SIGNUP_DAY",
+        _("Sign-ups a day"),
+        _("Per client address, from 1 to 100000; not less than a minute's."),
+        60,
+        100_000,
+    ),
+    _rate(
+        "ratelimit_password_reset",
+        "HOUSECAIRN_RATELIMIT_PASSWORD_RESET",
+        _("Password reset requests a minute"),
+        _("Per client address, from 1 to 1000; an address gets at most 5 a minute."),
+        20,
+        1000,
+    ),
+    _rate(
+        "ratelimit_invitations",
+        "HOUSECAIRN_RATELIMIT_INVITATIONS",
+        _("Invitations sent a minute"),
+        _("Per person, to a home or to the instance, from 1 to 1000."),
+        10,
+        1000,
+    ),
+    _rate(
+        "ratelimit_invitations_day",
+        "HOUSECAIRN_RATELIMIT_INVITATIONS_DAY",
+        _("Invitations sent a day"),
+        _("Per person, from 1 to 100000; not less than a minute's."),
+        50,
+        100_000,
+    ),
+    _rate(
+        "ratelimit_invitation_links",
+        "HOUSECAIRN_RATELIMIT_INVITATION_LINKS",
+        _("Invitation links opened a minute"),
+        _("Per client address, from 1 to 1000."),
+        30,
+        1000,
+    ),
+    _rate(
+        "ratelimit_tests",
+        "HOUSECAIRN_RATELIMIT_TESTS",
+        _("Tests of the mail server or of an issuer a minute"),
+        _("Per administrator, from 1 to 60."),
+        5,
+        60,
+    ),
+    Setting(
+        "file_max_bytes",
+        "HOUSECAIRN_PHOTO_MAX_BYTES",
+        "HOUSECAIRN_PHOTO_MAX_BYTES",
+        Kind.INT,
+        Section.FILES,
+        _("Largest file (bytes)"),
+        _(
+            "A photo or an attachment, as sent, from 10240 (10 KB) to 104857600 (100 MB); "
+            "10485760 is 10 MB."
+        ),
+        10 * 1024 * 1024,
+        minimum=10 * 1024,
+        maximum=100 * 1024 * 1024,
+    ),
+    Setting(
+        "home_storage_mb",
+        "HOUSECAIRN_HOME_STORAGE_MB",
+        "HOUSECAIRN_HOME_STORAGE_MB",
+        Kind.INT,
+        Section.FILES,
+        _("Space for the files of a home (MB)"),
+        _(
+            "Photos, attachments and their thumbnails, deleted ones included until they are "
+            "purged; from 1 to 1048576 (1 TB)."
+        ),
+        5120,
+        minimum=1,
+        maximum=1024 * 1024,
+    ),
+    Setting(
+        "home_max_files",
+        "HOUSECAIRN_HOME_MAX_FILES",
+        "HOUSECAIRN_HOME_MAX_FILES",
+        Kind.INT,
+        Section.FILES,
+        _("Number of files of a home"),
+        _("Photos and attachments, deleted ones included until they are purged; 1 to 1000000."),
+        5000,
+        minimum=1,
+        maximum=1_000_000,
+    ),
+)
+
 SETTINGS: dict[str, Setting] = {s.key: s for s in _SETTINGS}
 
 
@@ -369,6 +583,10 @@ def _expected(setting: Setting) -> str:
         return "domain names separated by commas"
     if setting.key == "site_url":
         return "an http:// or https:// address without a path"
+    if setting.key == "time_zone":
+        return "a time zone of the IANA database, such as Europe/Paris"
+    if setting.key == "instance_name":
+        return f"a name of at most {INSTANCE_NAME_MAX_LENGTH} characters"
     return "a single line of text"
 
 

@@ -27,8 +27,8 @@ from housecairn.accounts import services as account_services
 from housecairn.accounts.models import User
 from housecairn.audit import services as audit
 from housecairn.core.help import docs_page_url
+from housecairn.homes import quotas, sso
 from housecairn.homes import services as home_services
-from housecairn.homes import sso
 from housecairn.homes.forms import InvitationSignupForm
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import allow
@@ -160,6 +160,22 @@ class AuditView(InstanceAdminMixin, TemplateView):
         log = audit.instance_log(self.request.user)
         page = Paginator(log, self.paginate_by).get_page(self.request.GET.get("page"))
         context["page"] = page
+        return context
+
+
+class UsageView(InstanceAdminMixin, TemplateView):
+    """Space and files each home takes, against the quotas (docs/adr/0042).
+
+    A home is its identifier and its numbers: no name, no member, no file (docs/adr/0022).
+    """
+
+    template_name = "instance/usage.html"
+    paginate_by = 50
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        page = Paginator(quotas.by_home(), self.paginate_by).get_page(self.request.GET.get("page"))
+        context.update(page=page, limits=quotas.limits())
         return context
 
 
@@ -478,14 +494,25 @@ class ProviderView(InstanceAdminMixin, TemplateView):
             messages.success(request, _("Provider deleted."))
             return redirect("instance:providers")
         if form.is_valid():
+            had_secret = bool(self.provider.secret)
             try:
                 changed = providers.update(actor, self.provider, form.data_for_service())
             except ValidationError as exc:
                 _form_errors(form, exc)
             else:
-                messages.success(
-                    request, _("Provider saved.") if changed else _("Nothing to change.")
-                )
+                self.provider.refresh_from_db()
+                if had_secret and not self.provider.secret:
+                    messages.warning(
+                        request,
+                        _(
+                            "Provider saved. The new issuer cleared the client secret: "
+                            "enter it again before you enable the provider."
+                        ),
+                    )
+                else:
+                    messages.success(
+                        request, _("Provider saved.") if changed else _("Nothing to change.")
+                    )
                 return redirect(here)
         return self.render_to_response(self.get_context_data(form=form), status=422)
 

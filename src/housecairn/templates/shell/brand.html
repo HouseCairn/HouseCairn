@@ -1,6 +1,7 @@
-{% load static %}{# Brand of the app bar: icon and name on a phone, logo on a computer and on signed-out pages (static/css/shell.css). #}
-<a class="brand" href="{% url 'index' %}">
+{% load static %}{# Brand of the app bar: icon and name on a phone, logo on a computer and on signed-out pages (static/css/shell.css). An instance with its own name (docs/adr/0042) shows it on a phone in place of the product name, and below the logo elsewhere. #}{% instance_name as name %}
+<a class="brand{% if name != 'HouseCairn' %} brand-named{% endif %}" href="{% url 'index' %}">
   <img class="brand-icon" src="{% static 'img/brand/housecairn-icon.svg' %}" alt="" width="40" height="40">
-  <span class="brand-name">HouseCairn</span>
+  <span class="brand-name">{{ name }}</span>
   <img class="brand-logo" src="{% static 'img/brand/housecairn-logo.svg' %}" alt="HouseCairn" width="168" height="48">
+  {% if name != "HouseCairn" %}<span class="brand-instance">{{ name }}</span>{% endif %}
 </a>

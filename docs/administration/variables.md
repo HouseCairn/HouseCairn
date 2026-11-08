@@ -13,7 +13,12 @@ changed in the interface; a variable that is set locks its field there. The full
 | `HOUSECAIRN_FORWARDED_ALLOW_IPS` | `127.0.0.1,::1` | Addresses or networks of that proxy, comma-separated: only their forwarding headers count (see [Reverse proxy](reverse-proxy.md)). |
 | `SECRET_KEY` | generated in `/data/secret_key` | Set it only to manage the key yourself. |
 | `DATABASE_URL` | SQLite in `/data` | For example `postgres://housecairn:<password>@postgres:5432/housecairn`. |
-| `TIME_ZONE` | `UTC` | Time zone of the instance. |
+| `TIME_ZONE` | `UTC` | Time zone of the households, such as `Europe/Paris`: it decides what today is. Also in the interface. |
+| `HOUSECAIRN_DEFAULT_LANGUAGE` | `en` | `en` or `fr`, for browsers that ask for no language the instance offers. Also in the interface. |
+| `HOUSECAIRN_INSTANCE_NAME` | `HouseCairn` | Name in the app bar, the page titles and the emails, at most 64 characters. Also in the interface. |
+| `HOUSECAIRN_PHOTO_MAX_BYTES` | `10485760` | Largest photo or attachment, in bytes, from 10240 to 104857600. Also in the interface. |
+| `HOUSECAIRN_HOME_STORAGE_MB`, `HOUSECAIRN_HOME_MAX_FILES` | `5120`, `5000` | Space (MB) and number of files each home may hold. Also in the interface. |
+| `HOUSECAIRN_RATELIMIT_*` | see [Rate limits](rate-limits.md) | The rate limits, one variable each. Also in the interface. |
 | `HOUSECAIRN_SIGNUP_OPEN` | `false` | Allow local sign-up from the web page; needs email. See [Open sign-up](sign-up.md). |
 | `HOUSECAIRN_SIGNUP_POW_BITS` | `16` | Work of the anti-robot check of sign-up, from 8 to 24 bits. |
 | `HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS`, `HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS` | (none) | Comma-separated domains that may, or may not, sign up. |

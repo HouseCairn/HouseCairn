@@ -37,13 +37,21 @@ class ProviderForm(forms.Form):
         required=False,
         max_length=1024,
         widget=forms.PasswordInput(render_value=False, attrs={"autocomplete": "new-password"}),
-        help_text=_("Write only: it is never shown again. Empty: unchanged."),
+        help_text=_(
+            "Write only: it is never shown again. Empty: unchanged, but a new issuer clears it."
+        ),
     )
+    # A box has its label beside it, without a colon, as on the settings screen.
     pkce = forms.BooleanField(
-        label=_("PKCE"), required=False, initial=True, help_text=_("Recommended; on by default.")
+        label=_("PKCE"),
+        label_suffix="",
+        required=False,
+        initial=True,
+        help_text=_("Recommended; on by default."),
     )
     enabled = forms.BooleanField(
         label=_("Enabled"),
+        label_suffix="",
         required=False,
         help_text=_("Shown on the sign-in page. Test the issuer before you enable it."),
     )
@@ -70,7 +78,7 @@ def _field(setting: registry.Setting) -> forms.Field:
     }
     kind = setting.kind
     if kind is registry.Kind.BOOL:
-        return forms.BooleanField(**common)
+        return forms.BooleanField(label_suffix="", **common)
     if kind is registry.Kind.INT:
         return forms.IntegerField(
             min_value=setting.minimum, max_value=setting.maximum, **{**common, "required": True}

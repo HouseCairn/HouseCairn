@@ -1,0 +1,48 @@
+"""The rate limits of django-allauth and of HouseCairn, from the instance settings (ADR 0042).
+
+`settings.ACCOUNT_RATE_LIMITS` is a `RateLimits`: django-allauth reads it at each limited
+request (`allauth.account.app_settings.RATE_LIMITS`), and each read asks `get_setting`,
+so a limit changed in the interface applies within the few seconds of the settings
+snapshot, without a restart. This module imports no model: `settings.py` uses it.
+"""
+
+from collections.abc import Iterator, Mapping
+
+
+def rates() -> dict[str, str]:
+    """The rate of each action, in allauth's format (amount/period/key)."""
+    from housecairn.instance.config import get_setting
+
+    def n(key: str) -> int:
+        return int(get_setting(f"ratelimit_{key}"))
+
+    invite = f"{n('invitations')}/m/user,{n('invitations_day')}/d/user"
+    return {
+        # allauth's own actions; the defaults are those of allauth or of ADR 0024.
+        "login": f"{n('login')}/m/ip",
+        "login_failed": f"10/m/ip,{n('login_failures')}/300s/key",
+        "signup": f"{n('signup')}/m/ip,{n('signup_day')}/d/ip",
+        "reset_password": f"{n('password_reset')}/m/ip,5/m/key",
+        # HouseCairn's (ADR 0020, 0022, 0023, 0035, 0041).
+        "housecairn_invite": invite,
+        "housecairn_instance_invite": invite,
+        "housecairn_invitation": f"{n('invitation_links')}/m/ip",
+        "housecairn_settings_test": f"{n('tests')}/m/user",
+        "housecairn_delete_account": "5/m/user",
+    }
+
+
+class RateLimits(Mapping[str, str]):
+    """A mapping that is computed again at each read; allauth merges it into its own."""
+
+    def __getitem__(self, action: str) -> str:
+        return rates()[action]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(rates())
+
+    def __len__(self) -> int:
+        return len(rates())
+
+    def __repr__(self) -> str:
+        return f"RateLimits({rates()!r})"

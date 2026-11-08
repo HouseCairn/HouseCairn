@@ -1,12 +1,12 @@
 """Invitation email, in plain text and HTML, in the language of the person who invites."""
 
-from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import translation
 
 from housecairn.homes.models import Invitation
+from housecairn.instance.config import get_setting
 
 
 def invitation_link(base_url: str, raw: str) -> str:
@@ -19,7 +19,7 @@ def invitation_link(base_url: str, raw: str) -> str:
 
 
 def send_invitation(invitation: Invitation, link: str, *, language: str | None) -> None:
-    with translation.override(language or settings.LANGUAGE_CODE):
+    with translation.override(language or get_setting("default_language")):
         context = {
             "home_name": invitation.home.name,
             "role": invitation.get_role_display(),
