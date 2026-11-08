@@ -15,7 +15,18 @@ with it on the project's
   stripped of their metadata. The new variable `HOUSECAIRN_PHOTO_MAX_BYTES` sets
   the size limit of a photo (10 MB by default).
 
+- **Instance settings in the interface.** Sign-up, invitations, outgoing email and the
+  public address can be changed by an instance administrator, in the interface and by the
+  API, each paired with its environment variable: a variable that is set wins and locks the
+  field. Secrets are encrypted in the database. See [Settings](administration/settings.md).
+
 ### Upgrade notes
+
+- **Environment variables are checked a little more strictly.** A boolean variable such as
+  `HOUSECAIRN_SIGNUP_OPEN` or `EMAIL_USE_TLS` must be `true` or `false` (also `1`, `0`, `yes`,
+  `no`, `on`, `off`); another word used to count as `false` and now stops the start-up with a
+  message. `EMAIL_PORT` and `EMAIL_TIMEOUT` must be in range, and the domain lists must hold
+  domain names. A variable set to an empty value now counts as not set.
 
 - **Reverse proxy: set `HOUSECAIRN_FORWARDED_ALLOW_IPS`.** HouseCairn used to
   accept forwarding headers (`X-Forwarded-Proto`, `X-Forwarded-For`) from any

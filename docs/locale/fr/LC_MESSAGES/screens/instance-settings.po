@@ -1,0 +1,45 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 01:59+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Instance settings"
+msgstr "Réglages de l'instance"
+
+msgid "The settings of the instance, at `/instance/settings/`, reached from **Instance administration**. Administrators only; anyone else gets a 404."
+msgstr "Les réglages de l'instance, sur `/instance/settings/`, accessibles depuis **Administration de l'instance**. Réservé aux administrateurs ; toute autre personne obtient une 404."
+
+msgid "Each setting is paired with an environment variable (see [Settings](../administration/settings.md)):"
+msgstr "Chaque réglage est associé à une variable d'environnement (voir [Réglages](../administration/settings.md)) :"
+
+msgid "**Editable**: no variable sets it. Change the value and press **Save** at the bottom of its section. The default is shown below the field; **Restore the default** appears when you have changed it."
+msgstr "**Modifiable** : aucune variable ne le pose. Changez la valeur et appuyez sur **Enregistrer** en bas de sa section. Le défaut est affiché sous le champ ; **Rétablir le défaut** apparaît quand vous l'avez modifié."
+
+msgid "**Locked**: a variable sets it. The field is read-only and shows the value in force, the name of the variable and a link to the documentation."
+msgstr "**Verrouillé** : une variable le pose. Le champ est en lecture seule et affiche la valeur en vigueur, le nom de la variable et un lien vers la documentation."
+
+msgid "**Secret** (the SMTP password): write only. The screen says whether one is stored; leave the field empty to keep it."
+msgstr "**Secret** (le mot de passe SMTP) : écriture seule. L'écran dit si un mot de passe est enregistré ; laissez le champ vide pour le conserver."
+
+msgid "Sections: **Public address**, **Sign-up** (open sign-up, sign-up through single sign-on, allowed and blocked domains, anti-robot work), **Invitations** (lifetime) and **Outgoing email** (server, port, STARTTLS or TLS, user name, password, timeout, sender). **Test the connection** checks the mail server with the settings in force and sends nothing. **Server** lists the variables that stay in the environment, read-only."
+msgstr "Sections : **Adresse publique**, **Inscription** (inscription ouverte, inscription par authentification unique, domaines autorisés et refusés, travail anti-robot), **Invitations** (durée de validité) et **E-mail sortant** (serveur, port, STARTTLS ou TLS, nom d'utilisateur, mot de passe, délai, expéditeur). **Tester la connexion** vérifie le serveur de messagerie avec les réglages en vigueur et n'envoie rien. **Serveur** liste, en lecture seule, les variables qui restent dans l'environnement."
+
+msgid "Saving asks you to have signed in within the last five minutes; if you have not, you are sent to confirm your sign-in and then back here, and you make the change again. Every change is in the [audit log](instance.md)."
+msgstr "Enregistrer exige de s'être connecté dans les cinq dernières minutes ; sinon, vous êtes envoyé confirmer votre connexion puis ramené ici, et vous refaites la modification. Chaque modification figure au [journal d'audit](instance.md)."
+

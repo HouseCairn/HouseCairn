@@ -2,7 +2,6 @@
 
 from typing import Any
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -31,6 +30,7 @@ from housecairn.homes.scoping import (
     homes_for_request,
     invitation_link,
 )
+from housecairn.instance.config import get_setting
 
 DELIVERY_FAILED = _lazy(
     "The invitation is saved, but the email could not be sent. "
@@ -116,7 +116,7 @@ class HouseholdView(WebHomeScopedMixin, DetailView[Home]):
             if home.required_provider
             else None,
             email_configured=email_is_configured(),
-            invitation_days=settings.HOUSECAIRN_INVITATION_LIFETIME_DAYS,
+            invitation_days=get_setting("invitation_lifetime_days"),
             shared_link=self.request.session.pop("housecairn_shared_invitation", None),
         )
         return context

@@ -25,6 +25,7 @@ from django.db import IntegrityError, transaction
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import InstanceSetup, SetupMethod, User
+from housecairn.instance.config import get_setting
 
 logger = logging.getLogger("housecairn.security")
 
@@ -63,7 +64,9 @@ def email_is_configured() -> bool:
     the console backend, the default without `EMAIL_HOST`, only prints. Password
     reset by email is offered only then.
     """
-    return bool(settings.EMAIL_HOST) and settings.EMAIL_BACKEND not in _NON_DELIVERING_BACKENDS
+    return (
+        bool(get_setting("email_host")) and settings.EMAIL_BACKEND not in _NON_DELIVERING_BACKENDS
+    )
 
 
 def is_instance_admin(user: Any) -> bool:
@@ -82,7 +85,7 @@ def is_instance_admin(user: Any) -> bool:
 
 def signup_is_open() -> bool:
     """Whether anyone may create a local account from the sign-up page."""
-    return bool(settings.HOUSECAIRN_SIGNUP_OPEN)
+    return bool(get_setting("signup_open"))
 
 
 def signup_domain_allowed(email: str | None) -> bool:
@@ -93,8 +96,8 @@ def signup_domain_allowed(email: str | None) -> bool:
     Subdomains count as their parent (`mail.example.com` is `example.com`).
     """
     domain = (email or "").rpartition("@")[2].strip().lower().rstrip(".")
-    allowed: list[str] = settings.HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS
-    blocked: list[str] = settings.HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS
+    allowed: list[str] = get_setting("signup_allowed_domains")
+    blocked: list[str] = get_setting("signup_blocked_domains")
 
     def listed(names: list[str]) -> bool:
         return any(domain == name or domain.endswith("." + name) for name in names)
@@ -140,7 +143,7 @@ def oidc_signup_decision(email: str | None, email_verified: bool) -> Decision:
         )
     if has_invitation(email, email_verified):
         return Decision.MEMBER
-    if settings.HOUSECAIRN_OIDC_SIGNUP == SIGNUP_OPEN and signup_domain_allowed(email):
+    if get_setting("oidc_signup") == SIGNUP_OPEN and signup_domain_allowed(email):
         return Decision.MEMBER
     return Decision.REFUSED
 

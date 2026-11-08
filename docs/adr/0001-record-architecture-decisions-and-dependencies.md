@@ -29,6 +29,7 @@ we would otherwise write (principle "do not reinvent"):
 | django-csp | Content Security Policy (0011). |
 | python-dateutil | RFC 5545 recurrence rules, needed from the tasks lot onwards. |
 | Pillow | Decodes and writes again the photos of rooms and items, to check their content and drop their metadata (0030). |
+| cryptography | Encrypts the secrets an administrator stores from the interface, with a key derived from `SECRET_KEY` (0035). Already installed by django-allauth's passkey support; now a direct dependency. |
 | django-stubs-ext | Lets generic classes such as `ModelAdmin[Home]` be subscripted at runtime for the type checker. Companion of django-stubs, maintained by the same project, no runtime behaviour otherwise. |
 
 Optional runtime dependency, installed with the `postgres` extra

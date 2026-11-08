@@ -56,3 +56,26 @@ class InstanceInvitation(BaseModel):
             and self.deleted_at is None
             and self.expires_at > timezone.now()
         )
+
+
+class SettingValue(models.Model):
+    """A setting chosen in the interface (docs/adr/0035).
+
+    `value` is JSON for an ordinary setting and an encrypted token for a secret. A row
+    exists only while the value differs from the default: resetting deletes it.
+    """
+
+    key = models.CharField(max_length=64, unique=True)
+    value = models.TextField()
+    is_secret = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="+"
+    )
+
+    class Meta:
+        verbose_name = _("instance setting")
+        verbose_name_plural = _("instance settings")
+
+    def __str__(self) -> str:
+        return str(self.key)

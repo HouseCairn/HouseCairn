@@ -59,6 +59,7 @@ SCREENS = [
     ("home-delete", "{home}delete/", True),
     ("instance", "/instance/", True),
     ("instance-audit", "/instance/audit/", True),
+    ("instance-settings", "/instance/settings/", True),
     ("instance-invitation", "{instance_invitation}", False),
     # Rooms, items and photos (docs/adr/0029, 0030).
     ("rooms", "{home}rooms/", True),

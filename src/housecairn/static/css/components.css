@@ -118,7 +118,17 @@
   font-size: var(--hc-font-size-sm);
 }
 
+/* On a phone, long names and values (a variable name, a path) wrap inside the card. The
+   value keeps its width up to 60 % so that a short one ("no", an address) never breaks. */
+.facts dt {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .facts dd {
+  flex-shrink: 0;
+  max-width: 60%;
+  overflow-wrap: anywhere;
   margin: 0;
   font-weight: var(--hc-font-weight-medium);
   text-align: right;
@@ -615,4 +625,12 @@ td {
 .about-logo {
   width: 4.5rem;
   height: 4.5rem;
+}
+
+/* A setting that an environment variable fixes: shown as it is, not editable. Only the
+   locked fields of the settings screen: other disabled fields keep the browser's look. */
+input.setting-locked {
+  color: var(--hc-color-text-muted);
+  background: var(--hc-color-surface-muted);
+  border-style: dashed;
 }

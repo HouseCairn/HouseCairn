@@ -6,7 +6,14 @@ from rest_framework.routers import SimpleRouter
 from housecairn.accounts.api import AccountDeleteView
 from housecairn.events.api import EventCreateView
 from housecairn.homes.api import AcceptInvitationView, HomeViewSet, InvitationViewSet, MemberViewSet
-from housecairn.instance.api import InstanceAuditView, InstanceInvitationViewSet, UnlockHomesView
+from housecairn.instance.api import (
+    InstanceAuditView,
+    InstanceEmailTestView,
+    InstanceInvitationViewSet,
+    InstanceSettingResetView,
+    InstanceSettingsView,
+    UnlockHomesView,
+)
 from housecairn.rooms import api as rooms_api
 
 app_name = "api-v1"
@@ -31,6 +38,15 @@ router.register("instance/invitations", InstanceInvitationViewSet, basename="ins
 router.register("instance/audit", InstanceAuditView, basename="instance-audit")
 
 urlpatterns = [
+    path("instance/settings/", InstanceSettingsView.as_view(), name="instance-settings"),
+    path(
+        "instance/settings/email-test/", InstanceEmailTestView.as_view(), name="instance-email-test"
+    ),
+    path(
+        "instance/settings/<slug:key>/",
+        InstanceSettingResetView.as_view(),
+        name="instance-setting-reset",
+    ),
     path("instance/unlock/", UnlockHomesView.as_view(), name="instance-unlock"),
     path("account/delete/", AccountDeleteView.as_view(), name="account-delete"),
     *router.urls,
