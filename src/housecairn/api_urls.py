@@ -3,7 +3,7 @@
 from django.urls import path
 from rest_framework.routers import SimpleRouter
 
-from housecairn.accounts.api import AccountDeleteView
+from housecairn.accounts.api import AccountDeleteView, MeView
 from housecairn.events.api import EventCreateView
 from housecairn.homes.api import AcceptInvitationView, HomeViewSet, InvitationViewSet, MemberViewSet
 from housecairn.instance.api import (
@@ -77,6 +77,7 @@ urlpatterns = [
     path("instance/unlock/", UnlockHomesView.as_view(), name="instance-unlock"),
     path("instance/usage/", InstanceUsageView.as_view(), name="instance-usage"),
     path("account/delete/", AccountDeleteView.as_view(), name="account-delete"),
+    path("me/", MeView.as_view(), name="me"),
     path("me/home/", tasks_api.MyHomeView.as_view(), name="my-home"),
     path(
         "me/display-preferences/", tasks_api.PreferencesView.as_view(), name="display-preferences"

@@ -9,6 +9,13 @@
       <span class="row-body"><span class="row-title">{% translate "Homes" %}</span></span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>
+    <a class="row" href="{% url 'profile' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Profile" %}</span>
+        <span class="row-text">{% translate "Your display name" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
     <a class="row" href="{% url 'display-preferences' %}">
       <span class="row-body">
         <span class="row-title">{% translate "Display preferences" %}</span>

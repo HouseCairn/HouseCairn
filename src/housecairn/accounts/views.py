@@ -80,6 +80,28 @@ class AccountDeleteView(LoginRequiredMixin, FormView[forms.DeleteAccountForm]):
         return redirect("account_login")
 
 
+class ProfileView(LoginRequiredMixin, FormView[forms.ProfileForm]):
+    """How the person is named to the others (docs/adr/0045)."""
+
+    template_name = "accounts/profile.html"
+    form_class = forms.ProfileForm
+
+    def get_initial(self) -> dict[str, Any]:
+        return {"display_name": self.request.user.display_name}  # type: ignore[union-attr]
+
+    def form_valid(self, form: forms.ProfileForm) -> HttpResponse:
+        try:
+            services.set_display_name(
+                self.request.user,  # type: ignore[arg-type]
+                form.cleaned_data["display_name"],
+            )
+        except ValidationError as exc:
+            form.add_error("display_name", exc)
+            return self.form_invalid(form)
+        messages.success(self.request, _("Profile saved."))
+        return redirect("profile")
+
+
 class SignupView(allauth_views.SignupView):  # type: ignore[misc]
     """allauth's sign-up page, whose form also gets the request (for the proof of work)."""
 

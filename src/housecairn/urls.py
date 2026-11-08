@@ -33,6 +33,7 @@ urlpatterns = [
         task_views.PreferencesView.as_view(),
         name="display-preferences",
     ),
+    path("me/profile/", account_views.ProfileView.as_view(), name="profile"),
     # Stock items, suppliers and movements of a home (docs/adr/0038); /stock/ is the entry.
     path("h/<uuid:home_id>/", include("housecairn.stock.urls")),
     path("stock/", stock_views.EntryView.as_view(), name="stock"),

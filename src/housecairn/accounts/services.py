@@ -25,6 +25,7 @@ from django.db import IntegrityError, transaction
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import InstanceSetup, SetupMethod, User
+from housecairn.core.text import without_control_characters
 from housecairn.instance.config import get_setting
 
 logger = logging.getLogger("housecairn.security")
@@ -330,3 +331,12 @@ def note_sign_in(request: Any, user: User) -> str | None:
                 "sign-in alert not sent: %s", type(exc).__name__
             )
     return secret
+
+
+def set_display_name(user: User, value: str) -> User:
+    """Change how the person is named: one line, no control character, 60 characters at most."""
+    cleaned = " ".join(without_control_characters(" ".join(str(value).split())).split())
+    user.display_name = cleaned
+    user.full_clean(exclude=[f.name for f in user._meta.fields if f.name != "display_name"])
+    user.save(update_fields=["display_name", "updated_at"])
+    return user
