@@ -5,9 +5,11 @@ import json
 import time
 import zipfile
 from decimal import Decimal
+from unittest import mock
 
 import pytest
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import models
 from django.test import Client
 from django.urls import reverse
 
@@ -303,6 +305,31 @@ class TestDoneAndUndo:
     ) -> None:
         with pytest.raises(ValidationError, match="done or skipped"):
             services.undo(alice, owner_occurrence)
+
+    def test_undo_locks_the_next_occurrence_as_well_as_the_closed_one(
+        self, alice: User, owner_occurrence: Occurrence
+    ) -> None:
+        closing = services.complete(alice, owner_occurrence)
+        locked: list[str] = []
+        real = models.QuerySet.select_for_update
+
+        def spy(queryset: models.QuerySet[Occurrence], *args: object, **kwargs: object) -> object:
+            locked.append(queryset.query.__str__())
+            return real(queryset, *args, **kwargs)  # type: ignore[arg-type]
+
+        with mock.patch.object(models.QuerySet, "select_for_update", spy):
+            services.undo(alice, closing.occurrence)
+        assert len(locked) == 2
+        assert "follows_id" in locked[1]
+
+    def test_undo_is_refused_when_the_next_occurrence_was_closed_meanwhile(
+        self, alice: User, owner_occurrence: Occurrence
+    ) -> None:
+        closing = services.complete(alice, owner_occurrence)
+        assert closing.next is not None
+        services.complete(alice, closing.next)
+        with pytest.raises(ValidationError, match="cannot be undone"):
+            services.undo(alice, closing.occurrence)
 
     def test_undo_is_refused_once_the_next_occurrence_was_worked_on(
         self, alice: User, owner_task: Task, owner_occurrence: Occurrence

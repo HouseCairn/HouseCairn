@@ -468,7 +468,8 @@ def undo(actor: AnyUser, occurrence: Occurrence) -> Occurrence:
     locked = _lock(occurrence)
     if locked.status not in (Status.DONE, Status.SKIPPED):
         raise ValidationError(_("Only a task that was marked done or skipped can be undone."))
-    following = Occurrence.objects.filter(follows=locked).first()
+    # Locked as well: a "Done" on the next occurrence meanwhile makes this a 400, not a 500.
+    following = Occurrence.objects.select_for_update().filter(follows=locked).first()
     if following is not None:
         if not _untouched(following):
             raise ValidationError(
