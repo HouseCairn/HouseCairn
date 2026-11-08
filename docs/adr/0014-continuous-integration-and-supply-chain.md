@@ -181,7 +181,7 @@ taken has a license in this list.
 ### Dependency updates
 
 Dependabot (`.github/dependabot.yml`) checks weekly the `uv`, `github-actions`
-and `docker` ecosystems. Minor and patch updates are grouped per ecosystem;
+ecosystems, and daily the `docker` one (base image without cooldown, docs/adr/0015). Minor and patch updates are grouped per ecosystem;
 commits are prefixed `chore(deps)`. A cooldown of 7 days (`cooldown:
 default-days: 7`, supported for these three ecosystems by GitHub's Dependabot
 options reference) delays version updates until a release has been public for

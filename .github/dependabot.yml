@@ -1,4 +1,5 @@
-# Dependency updates (docs/adr/0014). Weekly, minor and patch updates grouped
+# Dependency updates (docs/adr/0014). Weekly (daily for the base image of the
+# Dockerfile, docs/adr/0015), minor and patch updates grouped
 # per ecosystem, and a 7-day cooldown: a new release is only proposed once it
 # has been public for a week, so a compromised release has time to be noticed
 # and withdrawn. Security updates are not delayed by the cooldown.
@@ -51,10 +52,15 @@ updates:
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: daily
+    # The Python base image has no cooldown: its rebuilds carry Debian security
+    # fixes, which a 7-day wait would only delay. Its digest is pinned next to
+    # its tag, so Dependabot proposes each rebuild. The other images of the
+    # Dockerfile (uv) keep the cooldown.
     cooldown:
       default-days: 7
+      exclude:
+        - python
     groups:
       docker-minor-and-patch:
         update-types: [minor, patch]
