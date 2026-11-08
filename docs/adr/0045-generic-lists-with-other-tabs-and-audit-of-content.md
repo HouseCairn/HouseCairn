@@ -88,18 +88,35 @@ whole address except where the address is the subject (their account, an invitat
 sheet of a member). The administration site still shows the display name read only and
 cannot take an account over (ADR 0022).
 
-`GET /api/v1/me/` is open to an API token (it only names the person); `PATCH` is for the
-person signed in, as the erasure of the account is (`SignedInPerson`). The name shows in every
-home of the person, which is wider than the homes a token is tied to. Of the routes under
-`me/`, `home/` only reads. `display-preferences/` stays open to a token with the `write` scope: it sets how the person's own screens group and filter, which no other member
-sees.
+**Routes under `me/` and API tokens.** What belongs to the person, and not to a home, is
+not an API token's to change: a token is tied to some homes and stands for an integration.
+It may read where it could (the `GET` routes keep the rules they had), and every method
+that changes something is for the person signed in, as the erasure of the account is
+(`SignedInPerson`, shared by the views as the `PersonOnlyToChange` mixin; a token gets a
+403 and nothing is created, changed or sent). The name shows in every home of the person,
+which is wider than the homes a token is tied to; a channel makes the server send
+messages; the display preferences are the person's own layout.
+
+| Route | Methods | API token |
+| --- | --- | --- |
+| `me/` | `GET`, `PATCH` | reads; `PATCH` refused |
+| `me/home/` | `GET` | reads |
+| `me/display-preferences/` | `GET`, `PATCH` | reads; `PATCH` refused |
+| `me/notification-channels/`, `.../<id>/` | `GET`, `POST`, `PATCH`, `DELETE` | reads (with the `write` scope); `POST`, `PATCH`, `DELETE` refused |
+| `me/notification-channels/<id>/test/` | `POST` | refused (it sends a message) |
+| `me/notification-preferences/` | `GET`, `PATCH` | reads (with the `write` scope); `PATCH` refused |
+| `me/notifications-export/` | `GET` | reads (with the `write` scope) |
+| `account/delete/` | `POST` | refused |
 
 A display name is refused when it contains an `@` (in any width: the full-width form counts),
 which would pass for an address, or when nothing in it draws (spaces, the Hangul fillers
-U+115F, U+1160, U+3164 and U+FFA0, the blank Braille pattern U+2800, bare combining marks).
-Emptying it stays possible. In a list where one picks a person (the assignee of a task, the
-"Done by" filter of the history), two members of the same name, compared without case, show
-their address in brackets after it; a name that is alone shows no address.
+U+115F, U+1160, U+3164 and U+FFA0, the blank Braille pattern U+2800, bare combining marks). Those fillers,
+and spaces, are removed at either end of a name that has something else (`Sam` followed by
+U+3164 is `Sam`); inside a name they stay. Emptying it stays possible. In a list where one
+picks a person (the assignee of a task, the "Done by" filter of the history) and in the
+audit logs of a home and of the instance, two members of the same name, compared without
+case and without the fillers, show their address in brackets after it; a name that is
+alone shows no address.
 
 **Estimated duration.** A number and a unit (minutes, hours, days) on the screens, minutes
 in the data and in the API, between one minute and thirty days; the service layer checks the

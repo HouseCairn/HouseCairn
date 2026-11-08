@@ -17,9 +17,20 @@ web interface: every request only sees the homes of its user
   scopes `read`, `write` and `events`, bound to one or more homes and expiring
   after 90 days by default
   ([ADR 0007](../adr/0007-authentication-and-api-tokens.md)). There is no
-  screen to create a token yet. An API token reads `GET /api/v1/me/` but cannot change the
-  account (`PATCH /api/v1/me/`, `POST /api/v1/account/delete/`): those are for the person
-  signed in.
+  screen to create a token yet. An API token is tied to homes: it can read the routes under
+  `/api/v1/me/` where it could, but it cannot change the account, the display
+  preferences or the notification channels and reminders of the person. Those are for the
+  person signed in, and a token gets a 403 there:
+  - `PATCH /api/v1/me/` (the display name);
+  - `PATCH /api/v1/me/display-preferences/`;
+  - `POST`, `PATCH` and `DELETE` on `/api/v1/me/notification-channels/` and
+    `POST .../<id>/test/` (a test sends a message);
+  - `PATCH /api/v1/me/notification-preferences/`;
+  - `POST /api/v1/account/delete/`.
+
+  `GET /api/v1/me/`, `me/home/` and `me/display-preferences/` stay open to a token;
+  the `GET` routes of notifications need the `write` scope
+  ([ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)).
 - **Rooms, items and photos** of a home: `/api/v1/homes/<home id>/rooms/`,
   `.../items/`, `.../photos/` and `.../search/?q=`, with the same rules as the
   screens ([ADR 0029](../adr/0029-rooms-items-and-room-memory.md),
@@ -61,7 +72,7 @@ web interface: every request only sees the homes of its user
   `home`) what concerns the caller in each home; `GET` and `PATCH
   /api/v1/me/display-preferences/` the layout (`today_group`, `horizon_days`,
   `show_overdue`, `show_upcoming`, `show_season`, `language`), which only its owner can
-  read or change. `language` is a language the instance ships (`en`, `fr`) or empty to
+  read or change (a token reads, the person signed in changes). `language` is a language the instance ships (`en`, `fr`) or empty to
   follow the browser; the web screens apply it from the next page. History is the occurrence list with `status=closed&ordering=recent` and the
   filters `contractor`, `completed_by`, `q`, `closed_after` and `closed_before`;
   `GET .../occurrences/cost/` gives the real cost entered on the same selection.
@@ -84,8 +95,10 @@ web interface: every request only sees the homes of its user
   `{"ok": true|false, "detail": ...}` with a fixed sentence. `GET` and `PATCH
   /api/v1/me/notification-preferences/` the reminders (`days_before`, `send_at`,
   `quiet_start`, `quiet_end`, `digest`, `language`, `time_zone`), and `GET
-  /api/v1/me/notifications-export/` both, without any address. Every endpoint needs a
-  token with the `write` scope, reading included; someone else's channel is a 404.
+  /api/v1/me/notifications-export/` both, without any address. A token with the `write`
+  scope reads them (any other token gets a 403); adding, renaming, deleting and testing a
+  channel and changing the reminders are for the person signed in, and a token gets a 403
+  there. Someone else's channel is a 404.
 
 The [reference](reference.md) lists every operation. It is generated from the
 OpenAPI 3.1 schema of the code at each build of this site:
