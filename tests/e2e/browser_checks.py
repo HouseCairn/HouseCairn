@@ -49,14 +49,26 @@ SCREENS = [
     ("member", "{member}", True),
     ("invitation", "{invitation}", False),
     ("invitation-invalid", "/invitations/hci_no-longer-valid/", False),
+    # Accounts, data and administration (docs/adr/0022 and 0023).
+    ("password-change", "/accounts/password/change/", True),
+    ("email-addresses", "/accounts/email/", True),
+    ("account-delete", "/accounts/delete/", True),
+    ("home-audit", "{home}audit/", True),
+    ("home-delete", "{home}delete/", True),
+    ("instance", "/instance/", True),
+    ("instance-audit", "/instance/audit/", True),
+    ("instance-invitation", "{instance_invitation}", False),
 ]
 NOT_FOUND = {"not-found", "invitation-invalid"}
 
 
-def resolve(page: Page, base: str, path: str, invitation: str) -> str:
+def resolve(page: Page, base: str, path: str, invitations: tuple[str, str]) -> str:
     """Fill in the addresses of the demonstration data, read through the API."""
+    invitation, instance_invitation = invitations
     if "{invitation}" in path:
         return path.replace("{invitation}", f"/invitations/{invitation}/")
+    if "{instance_invitation}" in path:
+        return path.replace("{instance_invitation}", f"/join/{instance_invitation}/")
     if "{home}" not in path and "{member}" not in path:
         return path
     homes = page.request.get(f"{base}/api/v1/homes/").json()["results"]
@@ -83,7 +95,7 @@ def sign_out(page: Page, base: str) -> None:
     page.wait_for_url(f"{base}/")
 
 
-def capture(browser: Browser, base: str, out: Path, invitation: str) -> None:
+def capture(browser: Browser, base: str, out: Path, invitations: tuple[str, str]) -> None:
     out.mkdir(parents=True, exist_ok=True)
     for device, options in DEVICES.items():
         for language in ("en", "fr"):
@@ -104,7 +116,7 @@ def capture(browser: Browser, base: str, out: Path, invitation: str) -> None:
                 if authenticated and session is None:
                     sign_in(page, base)
                     session = context.storage_state()
-                path = resolve(page, base, path, invitation)
+                path = resolve(page, base, path, invitations)
                 response = page.goto(f"{base}{path}")
                 page.wait_for_load_state("networkidle")
                 expected = 404 if name in NOT_FOUND else 200
@@ -200,13 +212,20 @@ def main() -> None:
         type=Path,
         help="file holding the secret of a pending invitation of the demonstration data",
     )
+    parser.add_argument(
+        "--instance-invitation-file",
+        type=Path,
+        help="file holding the secret of a pending invitation to the instance",
+    )
     args = parser.parse_args()
     base = args.base.rstrip("/")
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch()
         if args.mode == "capture":
             invitation = args.invitation_file.read_text().strip() if args.invitation_file else ""
-            capture(browser, base, args.out, invitation)
+            instance_file = args.instance_invitation_file
+            instance_invitation = instance_file.read_text().strip() if instance_file else ""
+            capture(browser, base, args.out, (invitation, instance_invitation))
         else:
             passkey(browser, base)
         browser.close()

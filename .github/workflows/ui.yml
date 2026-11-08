@@ -70,7 +70,12 @@ jobs:
           uv run python manage.py shell -c "
           from housecairn.accounts.models import User
           from housecairn.homes import services
-          user = User.objects.create_user(email='demo@example.com', password='correct-horse-battery-staple')
+          # The demonstration account owns homes and administers the instance, so that
+          # the screens of both are captured. Its address is verified: open sign-up
+          # makes verification mandatory, and no mail is sent from this instance.
+          from allauth.account.models import EmailAddress
+          user = User.objects.create_superuser(email='demo@example.com', password='correct-horse-battery-staple')
+          EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=True)
           home = services.create_home(user, name='Main house')
           services.create_home(user, name='Holiday flat')
           # A second member and a pending invitation for the household screens.
@@ -82,6 +87,12 @@ jobs:
               delivery=services.Delivery(),
           )
           open('$RUNNER_TEMP/invitation-token', 'w').write(raw)
+          from housecairn.instance import services as instance_services
+          sent = []
+          instance_services.invite(
+              user, email='newcomer@example.com', send=lambda _invitation, secret: sent.append(secret)
+          )
+          open('$RUNNER_TEMP/instance-invitation-token', 'w').write(sent[0])
           "
           nohup uv run gunicorn housecairn.wsgi --bind 127.0.0.1:8000 > "$RUNNER_TEMP/shots-server.log" 2>&1 &
           for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/healthz && break; sleep 1; done
@@ -89,7 +100,8 @@ jobs:
         run: |
           uv run python tests/e2e/browser_checks.py capture \
             --base http://localhost:8000 --out "$RUNNER_TEMP/screenshots" \
-            --invitation-file "$RUNNER_TEMP/invitation-token"
+            --invitation-file "$RUNNER_TEMP/invitation-token" \
+            --instance-invitation-file "$RUNNER_TEMP/instance-invitation-token"
       - name: Start the instance for the passkey sign-in (development settings)
         env:
           # WebAuthn needs a secure origin: http://localhost is one for the browser, and the
