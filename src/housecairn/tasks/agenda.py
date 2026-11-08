@@ -65,7 +65,10 @@ def update_preferences(actor: AnyUser, **changes: Any) -> DisplayPreference:
     prefs, _created = DisplayPreference.objects.get_or_create(user=actor)
     for field, value in changes.items():
         setattr(prefs, field, value)
-    prefs.full_clean(exclude=["user"])
+    # Only what is sent is validated: a value stored behind the model's back (a language the
+    # instance no longer ships) must not refuse a change of something else.
+    untouched = [f.name for f in prefs._meta.fields if f.name not in changes]
+    prefs.full_clean(exclude=untouched)
     prefs.save()
     return prefs
 
