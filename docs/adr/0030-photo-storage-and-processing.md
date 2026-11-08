@@ -17,6 +17,13 @@ backups (ADR 0015).
 no safe way to check an image without decoding it, and writing JPEG, PNG and
 WebP codecs is not an option.
 
+**License of Pillow.** Pillow is distributed under `MIT-CMU`, the permissive
+"historical permission notice and disclaimer" family (the license it carried
+before under the name HPND): keep the copyright and permission notice, no
+copyleft, no restriction on combining it with AGPL-3.0-only code. It is added to
+the allowed licenses of ADR 0014 and of the dependency review by this decision;
+the maintainer confirms it when reviewing this record.
+
 **The type is decided by the content.** The upload is decoded with Pillow
 restricted to JPEG, PNG and WebP (`Image.open(..., formats=...)`): the file name
 and the `Content-Type` sent by the client are never read. A text, HTML or SVG

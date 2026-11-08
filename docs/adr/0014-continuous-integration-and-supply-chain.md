@@ -165,8 +165,8 @@ Housecairn is distributed under AGPL-3.0-only. A dependency may be combined
 with it if its license is permissive or a compatible copyleft:
 
 - permissive: `0BSD`, `Apache-2.0`, `BlueOak-1.0.0`, `BSD-2-Clause`,
-  `BSD-3-Clause`, `CC0-1.0`, `ISC`, `MIT`, `MIT-0`, `PSF-2.0`, `Python-2.0`,
-  `Unlicense`, `Zlib`;
+  `BSD-3-Clause`, `CC0-1.0`, `ISC`, `MIT`, `MIT-0`, `MIT-CMU` (Pillow, accepted
+  by ADR 0030), `PSF-2.0`, `Python-2.0`, `Unlicense`, `Zlib`;
 - weak copyleft: `LGPL-2.1-or-later`, `LGPL-3.0-only`, `LGPL-3.0-or-later`,
   `MPL-2.0` (its section 3.3 allows combining with the GNU licenses);
 - strong copyleft compatible with AGPL-3.0: `GPL-3.0-only`,
