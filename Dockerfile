@@ -66,6 +66,22 @@ RUN DEBUG=true .venv/bin/python manage.py build_design_tokens \
 # ---------------------------------------------------------------------------
 FROM python:3.13.18-slim-trixie@sha256:09a17cad02668ae61ece136b4fd36ac3849e14f670ebedb637ea3e15580525bc
 
+# Debian security fixes that the base image does not carry yet (docs/adr/0015,
+# amendment of 2026-11-08). The Python image is rebuilt some days after a
+# Debian security advisory; until then, a fixable high vulnerability of the
+# base image would block every pull request. Only the packages named here are
+# upgraded, from the base image's own trixie-security source, and the build
+# fails if the installed version is still below the fixed one. Remove a
+# package from this step once the pinned base image carries its fix.
+# - zlib1g: CVE-2026-76844, CVE-2026-85091 (DSA-6613-1), fixed in
+#   1:1.3.dfsg+really1.3.1-1+deb13u1.
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends --only-upgrade zlib1g \
+    && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' zlib1g)" \
+        ge '1:1.3.dfsg+really1.3.1-1+deb13u1' \
+    && rm -rf /var/lib/apt/lists/*
+
 # The base image's pip is not used at run time (dependencies are in
 # /app/.venv): removed, with its advisories. Then a fixed, unprivileged
 # identity, also the owner of /data. A host directory mounted on /data must

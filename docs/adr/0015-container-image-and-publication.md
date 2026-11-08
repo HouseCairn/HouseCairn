@@ -224,7 +224,9 @@ Dependabot), `Publish image` (never runs on a pull request).
   package (its visibility and its link to the repository are set once, by the
   maintainer, after the first push).
 - A fixable high or critical vulnerability in the base image or a dependency
-  blocks pull requests until it is updated, which Dependabot proposes.
+  blocks pull requests until it is updated. Dependabot proposes the update
+  for a dependency; for a Debian package of the base image, see the
+  amendment of 2026-11-08 below.
 - The `X.Y` and `latest` tags move to the most recently published release,
   even if it is a patch of an older line.
 
@@ -249,3 +251,46 @@ The Dependabot rule is unchanged in substance: it ignores minor and major
 updates of the `python` image (a jump to 3.14 is a migration lot) and keeps the
 3.13.x patch releases. The three CVEs above stay reported until a Python line
 that fixes them is adopted; they are accepted until then.
+
+## Amendment, 2026-11-08: Debian security fixes ahead of the base image
+
+Debian published DSA-6613-1 for zlib (CVE-2026-76844 and CVE-2026-85091,
+high, plus CVE-2026-27171, medium), fixed in `1:1.3.dfsg+really1.3.1-1+deb13u1`
+in trixie-security. The pinned `python:3.13.18-slim-trixie` still had
+`1:1.3.dfsg+really1.3.1-1+b1`, so the `Container image` check failed on every
+pull request and on `main`, and no image could be published. No newer image of
+the 3.13 line carried the fix: the tag had been rebuilt the same day, but its
+amd64 and arm64 manifests were the same as those of the pinned digest (only
+riscv64 had changed), and their Debian sources point to a snapshot of
+2026-11-04, without the fix.
+
+The final stage therefore upgrades the named packages, and only those, from
+the base image's own trixie-security source (`apt-get install --only-upgrade`),
+then checks that the installed version is at least the fixed one, so that a
+mirror still serving the old package fails the build instead of shipping it.
+The step lists each package with its CVEs and fixed version.
+
+The compromise: the image no longer depends only on the base image digest and
+the lock file. Two builds of the same commit can get different versions of a
+listed package if Debian publishes a newer security update in between; the
+version can only go up, and never below the fixed one. Pinning the exact
+version was not chosen, for the reason the build stage already gives: a pinned
+Debian version leaves the mirrors at its next security update and breaks every
+build. Installing from a fixed `snapshot.debian.org` timestamp would be
+reproducible but makes every build depend on that service, slower and rate
+limited. A general `apt-get upgrade` was not chosen either: it would change
+every package of the base image, not just the ones a finding names. The
+blocking scan is unchanged (`--only-fixed --fail-on high`); nothing is ignored.
+
+The step is temporary per package: once Dependabot moves the `FROM` lines to a
+base image digest that carries the fix, the package leaves the list, and the
+step goes away when the list is empty.
+
+Dependabot could not have proposed this change. Its security updates follow
+the GitHub Advisory Database, which does not cover the Debian packages of an
+image, and no base image digest with the fix existed. When the Python image is
+rebuilt with it, the weekly schedule and the 7-day cooldown of the `docker`
+ecosystem delay the digest update by up to two weeks. A possible setting, not
+applied here, is to exempt the `python` base image from that cooldown
+(`cooldown: exclude: ["python"]`) and to check it daily, keeping the cooldown
+for the other images.

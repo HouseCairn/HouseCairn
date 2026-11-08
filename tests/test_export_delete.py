@@ -120,7 +120,7 @@ class TestExport:
     ) -> None:
         file = tmp_path / "photo.jpg"
         file.write_bytes(b"\xff\xd8photo")
-        exports.register("rooms", lambda home: [{"name": "Kitchen", "home": str(home.id)}])
+        exports.register("widgets", lambda home: [{"name": "Kitchen", "home": str(home.id)}])
         exports.register_files(
             lambda home: iter([exports.ExportedFile("rooms/kitchen/photo.jpg", file)])
         )
@@ -128,11 +128,11 @@ class TestExport:
             archive, _name = exports.export_home(alice, alice_home)
             zipped = zipfile.ZipFile(archive)
             data = json.loads(zipped.read("export.json"))
-            assert data["rooms"] == [{"name": "Kitchen", "home": str(alice_home.id)}]
+            assert data["widgets"] == [{"name": "Kitchen", "home": str(alice_home.id)}]
             assert data["files"] == [{"path": "files/rooms/kitchen/photo.jpg", "size": 7}]
             assert zipped.read("files/rooms/kitchen/photo.jpg") == b"\xff\xd8photo"
         finally:
-            exports.EXPORTERS.pop("rooms")
+            exports.EXPORTERS.pop("widgets")
             exports.FILE_SOURCES.pop()
 
     def test_a_file_cannot_leave_the_archive(self, alice_home: Home, tmp_path: Any) -> None:
