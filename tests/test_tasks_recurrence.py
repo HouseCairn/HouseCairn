@@ -318,3 +318,14 @@ def test_a_series_begun_a_century_ago_is_counted_from_its_recent_past() -> None:
     )
     assert following == D(2026, 6, 16)
     assert time.perf_counter() - began < 0.2
+
+
+def test_even_a_series_begun_in_year_one_is_counted_at_once() -> None:
+    """The cost depends on the interval and the reference, not on the age of the anchor."""
+    rule = Rule(FIXED, DAY, 1)
+    began = time.perf_counter()
+    following = recurrence.next_due(
+        rule, anchor=D(1, 1, 1), due_on=D(2026, 6, 15), done_on=D(2026, 6, 15)
+    )
+    assert following == D(2026, 6, 16)
+    assert time.perf_counter() - began < 0.2
