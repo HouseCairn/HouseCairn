@@ -26,7 +26,8 @@ in the code. Single sign-on is off until `OIDC_SERVER_URL` is set
    `/.well-known/openid-configuration` below it. `OIDC_PROVIDER_NAME` is the
    provider's name, for example `Company SSO` (`Single sign-on` by default);
    the sign-in page shows one button per provider, under the form, labelled
-   "Continue with" and that name.
+   "Continue with" and that name. A click on it goes straight to the
+   provider, with no intermediate confirmation page.
 3. Restart the container, then sign in right away with the address set in
    `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, which the provider must have verified.
 

@@ -49,7 +49,12 @@ error message.
 **Third-party sign-in.** `socialaccount/snippets/login.html` is overridden: no
 separator, no heading, one secondary button per configured provider, labelled
 "Continue with" and the provider's name (`OIDC_PROVIDER_NAME`, for example "Company SSO"),
-under the form.
+under the form. The button is a form posted with the CSRF token to the provider's
+login address, not a link: allauth answers a GET with a confirmation page and starts
+the sign-in only for a POST, so one click goes straight to the provider.
+`SOCIALACCOUNT_LOGIN_ON_GET` stays off, since it would let any link start a sign-in.
+The page of a home that requires a provider ([0021](0021-per-home-single-sign-on.md))
+uses the same form, and `next` is kept.
 The refusal page for closed OIDC sign-up is unchanged ([0007](0007-authentication-and-api-tokens.md)).
 
 **Forgotten password.** allauth's "Forgot your password?" link and the reset pages

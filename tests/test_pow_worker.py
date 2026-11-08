@@ -42,8 +42,8 @@ def run(origin: str | None, data: object) -> list[str]:
     event: dict[str, object] = {"data": data}
     if origin is not None:
         event["origin"] = origin
-    done = subprocess.run(
-        ["node", "-e", RUNNER, str(WORKER), json.dumps(event)],
+    done = subprocess.run(  # noqa: S603 - fixed program, test-controlled arguments
+        ["node", "-e", RUNNER, str(WORKER), json.dumps(event)],  # noqa: S607 - node from PATH
         capture_output=True,
         text=True,
         timeout=60,

@@ -409,7 +409,11 @@ class TestSignInPage:
             ]
         }
     }
-    BUTTON = r'<a class="button button-secondary" href="([^"]+)">([^<]+)</a>'
+    BUTTON = (
+        r'<form method="post" action="([^"]+)">\s*'
+        r'<input type="hidden" name="csrfmiddlewaretoken" value="[^"]+">\s*'
+        r'<button type="submit" class="button button-secondary">([^<]+)</button>'
+    )
 
     @pytest.mark.django_db
     def test_one_button_per_provider_labelled_continue_with_its_name(self, client: Client) -> None:

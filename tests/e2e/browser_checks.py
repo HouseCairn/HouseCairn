@@ -5,13 +5,15 @@ version for this job only.
 
     python tests/e2e/browser_checks.py capture --base http://localhost:8000 --out shots
     python tests/e2e/browser_checks.py passkey --base http://localhost:8001
+    python tests/e2e/browser_checks.py sso --base http://localhost:8001 --provider http://127.0.0.1:8002
 
 `capture` takes the screenshots attached to the workflow run: the same screens on a
 phone and on a desktop, in English and French. `passkey` replays the sign-in with a
 virtual authenticator (Chromium's WebAuthn emulation): it registers a passkey, then
 signs in through the conditional (autofill) path and through the fallback button.
 What no script can do, the real autofill pop-up of each browser, is listed in
-docs/adr/0018.
+docs/adr/0018. `sso` clicks the provider button of the sign-in page once and checks that
+the browser lands on the provider, with no confirmation page of the application in between.
 """
 
 import argparse
@@ -85,7 +87,7 @@ def sign_in(page: Page, base: str) -> None:
     page.goto(f"{base}/accounts/login/")
     page.fill("input[name=login]", EMAIL)
     page.fill("input[name=password]", PASSWORD)
-    page.click("main form button[type=submit]")
+    page.click("main form:has(input[name=login]) button[type=submit]")
     page.wait_for_url(f"{base}/h/")
 
 
@@ -203,11 +205,43 @@ def passkey(browser: Browser, base: str) -> None:
     context.close()
 
 
+def sso(browser: Browser, base: str, provider: str) -> None:
+    """One click from the sign-in page to the provider (a stub that serves the discovery)."""
+    page = browser.new_page(viewport={"width": 390, "height": 844})
+    navigations: list[str] = []
+    page.on(
+        "request",
+        lambda request: (
+            navigations.append(f"{request.method} {request.url}")
+            if request.is_navigation_request()
+            else None
+        ),
+    )
+    page.goto(f"{base}/accounts/login/")
+    button = page.locator("form button:has-text('Continue with Company SSO')")
+    check(button.count() == 1, "one provider button on the sign-in page")
+    navigations.clear()
+    button.click()
+    page.wait_for_url(f"{provider}/authorize*", timeout=15000)
+    check(True, "one click reached the provider")
+    check(
+        navigations[0].startswith("POST ") and "/accounts/oidc/" in navigations[0],
+        f"the click posts to the provider login ({navigations[0]})",
+    )
+    check(
+        not any("/accounts/oidc/" in n and n.startswith("GET ") for n in navigations),
+        "no confirmation page between the button and the provider",
+    )
+    check("state=" in page.url and "code_challenge=" in page.url, "state and PKCE are sent")
+    page.close()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("mode", choices=["capture", "passkey"])
+    parser.add_argument("mode", choices=["capture", "passkey", "sso"])
     parser.add_argument("--base", required=True, help="address of the running instance")
     parser.add_argument("--out", type=Path, default=Path("shots"))
+    parser.add_argument("--provider", help="address of the stub identity provider (sso mode)")
     parser.add_argument(
         "--invitation-file",
         type=Path,
@@ -227,6 +261,8 @@ def main() -> None:
             instance_file = args.instance_invitation_file
             instance_invitation = instance_file.read_text().strip() if instance_file else ""
             capture(browser, base, args.out, (invitation, instance_invitation))
+        elif args.mode == "sso":
+            sso(browser, base, args.provider.rstrip("/"))
         else:
             passkey(browser, base)
         browser.close()
