@@ -104,7 +104,10 @@ bit, and tests are limited. An administrator who does not want it leaves notific
 the task (when the public address is set): no note, procedure, cost or file leaves the
 instance. It is in the language of the person. The text is sent as plain text: Apprise
 escapes it for the format of each channel (HTML or Markdown, as the service expects), so a
-title cannot change the markup of the message. The title of a message is fixed. A message
+title cannot change the markup of the message. The title of a task and the name of a home
+are put on one line first (each run of line breaks or control characters becomes a space),
+so neither can add a line of its own, such as a fake link under the real one. The title of
+a message is fixed. A message
 carries no image: Apprise would add the address of its icons on github.com (an avatar, a
 logo, a thumbnail), which the app of each person who receives it would then load, so the
 asset has no image address and `include_image`, `footer_logo` and `avatar` are off.

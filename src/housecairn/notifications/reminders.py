@@ -18,6 +18,7 @@ service failed, the worker stopped) is not tried again; the next follow-up is.
 
 import datetime
 import logging
+import re
 import zoneinfo
 from collections import defaultdict
 from typing import Any
@@ -74,11 +75,21 @@ def _link(occurrence: Occurrence) -> str:
     )
 
 
+# Control characters (Unicode category Cc), and the line and paragraph separators.
+BREAKS = re.compile("[\x00-\x1f\x7f-\x9f\u2028\u2029]+")
+
+
+def one_line(text: str) -> str:
+    """A name typed by a person, on one line: each run of line breaks or other control
+    characters becomes one space, so it cannot start a line of its own in the message."""
+    return BREAKS.sub(" ", text)
+
+
 def _line(occurrence: Occurrence) -> str:
     """Title, home, due date and link: nothing else of the task leaves the instance."""
     text = _("%(title)s, %(home)s, due %(date)s") % {
-        "title": occurrence.task.title,
-        "home": occurrence.home.name,
+        "title": one_line(occurrence.task.title),
+        "home": one_line(occurrence.home.name),
         "date": formats.date_format(occurrence.due_on, "DATE_FORMAT") if occurrence.due_on else "",
     }
     link = _link(occurrence)

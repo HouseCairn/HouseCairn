@@ -392,6 +392,29 @@ class TestMessage:
         for private in ("Secret note", "Step one", "120"):
             assert private not in body
 
+    @pytest.mark.parametrize("separator", ["\n", "\r\n", "\r", "\x0b", "\x85", "\u2028", "\u2029"])
+    def test_a_title_or_a_home_cannot_add_a_line(
+        self,
+        alice: User,
+        alice_home: Home,
+        make_task: Callable[..., Occurrence],
+        due: datetime.date,
+        outbox: list[tuple[str, str]],
+        separator: str,
+    ) -> None:
+        Home.objects.filter(pk=alice_home.pk).update(
+            name=f"Main house{separator}https://evil.example.com/home"
+        )
+        make_task(f"Pay the bill{separator}https://evil.example.com/pay\tnow")
+        reachable(alice, days_before=0)
+        with override_settings(HOUSECAIRN_SITE_URL="https://home.example.com"):
+            reminders.dispatch(at(due, 8))
+        ((_title, body),) = outbox
+        lines = body.splitlines()
+        assert len(lines) == 2
+        assert lines[0].startswith("Pay the bill https://evil.example.com/pay now, Main house ")
+        assert lines[1].startswith("https://home.example.com/")
+
     def test_the_language_of_the_person(
         self,
         alice: User,
