@@ -79,3 +79,8 @@ warns when mail is on without it.
 - The cookie of known devices is a convenience for alerts, not a security
   control: a thief with the cookie is not alerted, and a person who clears
   cookies gets an alert for their own browser.
+- An account with no recorded device raises no alert on its first sign-in on any
+  browser, which includes every account that existed before `EMAIL_HOST` was
+  set: that first sign-in only records the browser. Whoever signs in first on
+  such an account is not announced to its holder; from the second browser on,
+  every unknown browser is.
