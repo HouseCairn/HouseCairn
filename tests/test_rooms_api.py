@@ -53,6 +53,30 @@ class TestRooms:
         created = client_of_alice.post(api("room-list", alice_home), {"name": "x", "position": 9})
         assert created.json()["position"] == 0
 
+    @pytest.mark.parametrize("name", [None, "", "  ", "\u200b\u200d", "\U000e0061\U000e0062"])
+    def test_an_empty_or_invisible_name_takes_the_label_of_the_type(
+        self, client_of_alice: APIClient, alice_home: Home, name: str | None
+    ) -> None:
+        data = {"kind": "kitchen"} if name is None else {"kind": "kitchen", "name": name}
+        created = client_of_alice.post(api("room-list", alice_home), data)
+        assert created.status_code == 201
+        assert created.json()["name"] == "Kitchen"
+        detail = api("room-detail", alice_home, room_id=created.json()["id"])
+        renamed = client_of_alice.patch(detail, {"name": "Cooking"})
+        assert renamed.json()["name"] == "Cooking"
+        blanked = client_of_alice.patch(detail, {"name": name or ""})
+        assert blanked.status_code == 200
+        assert blanked.json()["name"] == "Kitchen"
+
+    @pytest.mark.parametrize("name", [None, "", "\u200b"])
+    def test_the_type_other_still_needs_a_visible_name(
+        self, client_of_alice: APIClient, alice_home: Home, name: str | None
+    ) -> None:
+        data = {"kind": "other"} if name is None else {"kind": "other", "name": name}
+        response = client_of_alice.post(api("room-list", alice_home), data)
+        assert response.status_code == 400
+        assert "name" in response.json()
+
     def test_validation_errors_are_reported_by_field(
         self, client_of_alice: APIClient, alice_home: Home
     ) -> None:

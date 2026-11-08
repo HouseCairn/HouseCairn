@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 22:50+0000\n"
+"POT-Creation-Date: 2026-11-08 23:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -79,14 +79,14 @@ msgstr "Quand, et par quelle version."
 msgid "`home`"
 msgstr "`home`"
 
-msgid "`id`, `name`, `currency`, `required_provider`, `created_at`."
-msgstr "`id`, `name`, `currency`, `required_provider`, `created_at`."
+msgid "`id`, `name`, `currency`, `hemisphere` (`north` or `south`), `required_provider`, `created_at`."
+msgstr "`id`, `name`, `currency`, `hemisphere` (`north` ou `south`), `required_provider`, `created_at`."
 
 msgid "`members`"
 msgstr "`members`"
 
-msgid "`id`, `email`, `name`, `role`, `joined_at` of each member."
-msgstr "`id`, `email`, `name`, `role`, `joined_at` de chaque membre."
+msgid "`id`, `email`, `name` (the display name, else the full name, else the part of the address before the `@`), `role`, `joined_at` of each member."
+msgstr "`id`, `email`, `name` (le nom d'affichage, sinon le nom complet, sinon la partie de l'adresse avant le `@`), `role`, `joined_at` de chaque membre."
 
 msgid "`pending_invitations`"
 msgstr "`pending_invitations`"
@@ -142,6 +142,18 @@ msgstr "`stock_movements`"
 msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
 msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
 
+msgid "`tasks`"
+msgstr "`tasks`"
+
+msgid "`id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, the budgets, `notes`, `procedure`, `assignee`, `contractor` (an id), the repeat rule, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` or empty) with `season_start_month` and `season_end_month`, `hide_days_before`."
+msgstr "`id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, les budgets, `notes`, `procedure`, `assignee`, `contractor` (un identifiant), la règle de répétition, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` ou vide) avec `season_start_month` et `season_end_month`, `hide_days_before`."
+
+msgid "`contractors`"
+msgstr "`contractors`"
+
+msgid "`id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`."
+msgstr "`id`, `name`, `trade` (un code de la liste, ou `other`), `trade_other`, `phone`, `email`, `address`, `note`."
+
 msgid "`labels`"
 msgstr "`labels`"
 
@@ -181,9 +193,6 @@ msgstr "Sauvegardes"
 msgid "Deleted data stays in backups until they expire: tell people how long you keep them (see [Backup](backup.md))."
 msgstr "Les données supprimées restent dans les sauvegardes jusqu'à leur expiration : indiquez aux gens combien de temps vous les conservez (voir [Sauvegarde](backup.md))."
 
-#~ msgid "`reports`"
-#~ msgstr "`reports`"
-
-#~ msgid "`id`, `title`, `status`, `place`, `room`, `item` or `stock_item`, `task`, `reporter` (the e-mail address that `members` already holds), `created_at`, `closed_at`, and `file`, the path of the photo in the archive (`files/reports/<id>.<extension>`, or `null`)."
-#~ msgstr "`id`, `title`, `status`, `place`, `room`, `item` ou `stock_item`, `task`, `reporter` (l'adresse e-mail que `members` contient déjà), `created_at`, `closed_at`, et `file`, le chemin de la photo dans l'archive (`files/reports/<id>.<extension>`, ou `null`)."
+#~ msgid "`id`, `email`, `name`, `role`, `joined_at` of each member."
+#~ msgstr "`id`, `email`, `name`, `role`, `joined_at` de chaque membre."
 

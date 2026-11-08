@@ -24,7 +24,9 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.utils.translation import gettext as _
 
+from housecairn.accounts import names
 from housecairn.accounts.models import InstanceSetup, SetupMethod, User
+from housecairn.core.text import without_control_characters
 from housecairn.instance.config import get_setting
 
 logger = logging.getLogger("housecairn.security")
@@ -330,3 +332,24 @@ def note_sign_in(request: Any, user: User) -> str | None:
                 "sign-in alert not sent: %s", type(exc).__name__
             )
     return secret
+
+
+def set_display_name(user: User, value: str) -> User:
+    """Change how the person is named.
+
+    One line, no control character, 60 characters at most, and not misleading: no "@" (it
+    would pass for an address) and something that draws (a name of fillers is no name).
+    Fillers at either end are removed. Empty is allowed: the person is then named as before
+    they chose.
+    """
+    cleaned = " ".join(without_control_characters(" ".join(str(value).split())).split())
+    if names.looks_like_an_address(cleaned):
+        raise ValidationError(_("A display name cannot contain “@”: it would pass for an address."))
+    if cleaned and not names.has_visible_glyph(cleaned):
+        raise ValidationError(_("Give a name with at least one visible character."))
+    # A filler at either end draws a gap: "Sam" and "Sam\u3164" would look like two people.
+    cleaned = names.trim_fillers(cleaned)
+    user.display_name = cleaned
+    user.full_clean(exclude=[f.name for f in user._meta.fields if f.name != "display_name"])
+    user.save(update_fields=["display_name", "updated_at"])
+    return user

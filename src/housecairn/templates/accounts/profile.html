@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Profile" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'more' %}">{% include "components/icon.html" with name="chevron" %}{% translate "More" %}</a>
+  <h1>{% translate "Profile" %}</h1>
+  <p class="small">{% translate "Your display name is what the other members of your homes see: on tasks you are in charge of, in the history and in the household. Without one, the first part of your address is shown." %}</p>
+  <form method="post" class="card" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button-block">{% translate "Save" %}</button>
+  </form>
+{% endblock content %}

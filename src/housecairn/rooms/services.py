@@ -26,7 +26,7 @@ from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms import conf, images
-from housecairn.rooms.models import Item, Photo, PhotoCategory, Room
+from housecairn.rooms.models import Item, Photo, PhotoCategory, Room, RoomKind
 
 AnyUser = User | AnonymousUser
 
@@ -143,11 +143,24 @@ def search(home: Home, query: str) -> SearchResult:
 # ---------- rooms ----------
 
 
+def _name_the_room(room: Room) -> None:
+    """A room left unnamed, or named by invisible characters, takes the label of its type.
+
+    As the form does (docs/adr/0045); "Other" has no label to offer.
+    """
+    if room.name.strip():
+        return
+    if room.kind == RoomKind.OTHER:
+        raise ValidationError({"name": _("Give the room a name.")})
+    room.name = str(RoomKind(room.kind).label)
+
+
 @transaction.atomic
 def create_room(actor: AnyUser, home: Home, **fields: Any) -> Room:
     _require_write(actor, home)
     room = Room(home=home)
     _apply(room, ROOM_FIELDS | MEMORY_FIELDS, fields)
+    _name_the_room(room)
     last = Room.objects.filter(home=home).aggregate(last=models.Max("position"))["last"]
     room.position = 0 if last is None else last + 1
     room.full_clean()
@@ -159,6 +172,7 @@ def create_room(actor: AnyUser, home: Home, **fields: Any) -> Room:
 def update_room(actor: AnyUser, room: Room, **changes: Any) -> Room:
     _require_write(actor, room.home)
     _apply(room, ROOM_FIELDS | MEMORY_FIELDS, changes)
+    _name_the_room(room)
     room.full_clean()
     room.save()
     audit.record_object(

@@ -44,6 +44,7 @@ class TestTaskTabs:
                 "Today",
                 "All tasks",
                 "History",
+                "Contractors",
                 "Display preferences",
             ]
             assert current(html) == [label]

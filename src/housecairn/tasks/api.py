@@ -26,7 +26,9 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
+from housecairn.accounts.api import PersonOnlyToChange
 from housecairn.accounts.models import User
+from housecairn.accounts.names import person_name
 from housecairn.core.pagination import DefaultCursorPagination
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import open_homes_for_request
@@ -39,7 +41,7 @@ from housecairn.rooms.api import (
     _validation,
 )
 from housecairn.rooms.models import Item, Room
-from housecairn.tasks import agenda, files, services
+from housecairn.tasks import agenda, durations, files, services, vcard
 from housecairn.tasks.models import (
     CLOSED_STATUSES,
     OPEN_STATUSES,
@@ -47,8 +49,10 @@ from housecairn.tasks.models import (
     Contractor,
     DisplayPreference,
     Occurrence,
+    Season,
     Status,
     Task,
+    Trade,
 )
 
 _FAR = datetime.date(9999, 12, 31)
@@ -74,10 +78,35 @@ DATE_PARAMS = [
 
 
 class ContractorSerializer(serializers.ModelSerializer[Contractor]):
+    trade = serializers.ChoiceField(
+        choices=[("", "none"), *Trade.choices],
+        required=False,
+        help_text="A trade of the list, or `other` with `trade_other` saying which.",
+    )
+    trade_label = serializers.SerializerMethodField(
+        help_text="The trade as people read it, in the language of the request."
+    )
+
     class Meta:
         model = Contractor
-        fields = ["id", "name", "trade", "note", "created_at", "updated_at"]
+        fields = [
+            "id",
+            "name",
+            "trade",
+            "trade_other",
+            "trade_label",
+            "phone",
+            "email",
+            "address",
+            "note",
+            "created_at",
+            "updated_at",
+        ]
         read_only_fields = ["id", "created_at", "updated_at"]
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_trade_label(self, contractor: Contractor) -> str:
+        return contractor.trade_label
 
 
 class ContractorViewSet(
@@ -89,7 +118,10 @@ class ContractorViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet[Contractor],
 ):
-    """People and companies who do work in a home: name, trade, a note."""
+    """People and companies who do work in a home: name, trade, how to reach them, a note.
+
+    Their tasks are the tasks of the home filtered by `contractor`.
+    """
 
     serializer_class = ContractorSerializer
     queryset = Contractor.objects.none()
@@ -125,6 +157,12 @@ class ContractorViewSet(
         services.delete_contractor(request.user, self.get_object())
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @extend_schema(responses={(200, "text/vcard"): OpenApiTypes.BINARY})
+    @action(detail=True, methods=["get"], renderer_classes=[BinaryRenderer])
+    def vcard(self, request: Request, *args: Any, **kwargs: Any) -> HttpResponseBase:
+        """The contact file of the contractor (vCard 3.0), readable by every member."""
+        return vcard.response(self.get_object())
+
 
 # ---------- tasks ----------
 
@@ -142,8 +180,30 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
         allow_null=True,
         help_text="A member of the home.",
     )
+    assignee_name = serializers.SerializerMethodField(
+        help_text="The name shown for the assignee (display name, never the address)."
+    )
+    estimated_minutes = serializers.IntegerField(
+        required=False,
+        allow_null=True,
+        min_value=durations.MIN_MINUTES,
+        max_value=durations.MAX_MINUTES,
+        help_text="Estimated duration in minutes, from 1 to 43200 (thirty days). The screens "
+        "take a number and a unit and store minutes.",
+    )
+    estimated_text = serializers.SerializerMethodField(
+        help_text="The estimated duration as people read it, in the language of the request "
+        '("1 h 30", "2 days").'
+    )
     contractor = serializers.PrimaryKeyRelatedField(
         queryset=Contractor.objects.none(), required=False, allow_null=True
+    )
+    season = serializers.ChoiceField(
+        choices=[("", "all year"), *Season.choices],
+        required=False,
+        help_text="`spring`, `summer`, `autumn`, `winter` and `heating` follow the hemisphere "
+        "of the home and set the two months below; `custom` takes the months given; empty is "
+        "the whole year. Months given without a season make a custom one.",
     )
     due_on = serializers.DateField(
         source="open_due_on",
@@ -169,15 +229,18 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
             "due_on",
             "open_occurrence",
             "estimated_minutes",
+            "estimated_text",
             "labour_budget",
             "material_budget",
             "notes",
             "procedure",
             "assignee",
+            "assignee_name",
             "contractor",
             "repeat_mode",
             "repeat_unit",
             "repeat_interval",
+            "season",
             "season_start_month",
             "season_end_month",
             "hide_days_before",
@@ -194,6 +257,13 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
             self.fields["item"].queryset = Item.objects.filter(home=home)  # type: ignore[attr-defined]
             self.fields["assignee"].queryset = services.members_for_forms(home)  # type: ignore[attr-defined]
             self.fields["contractor"].queryset = Contractor.objects.filter(home=home)  # type: ignore[attr-defined]
+
+    def get_assignee_name(self, task: Task) -> str:
+        return person_name(task.assignee)
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_estimated_text(self, task: Task) -> str:
+        return durations.label(task.estimated_minutes) if task.estimated_minutes else ""
 
 
 class TaskViewSet(
@@ -225,7 +295,12 @@ class TaskViewSet(
             open_due_on=models.Subquery(open_rows.values("due_on")[:1]),
         )
         params = self.request.query_params
-        for name, field in (("room", "room_id"), ("item", "item_id"), ("assignee", "assignee_id")):
+        for name, field in (
+            ("room", "room_id"),
+            ("item", "item_id"),
+            ("assignee", "assignee_id"),
+            ("contractor", "contractor_id"),
+        ):
             value = _uuid_param(self.request, name)
             if value is not None:
                 tasks = tasks.filter(**{field: value})
@@ -252,6 +327,7 @@ class TaskViewSet(
             OpenApiParameter("room", OpenApiTypes.UUID),
             OpenApiParameter("item", OpenApiTypes.UUID),
             OpenApiParameter("assignee", OpenApiTypes.UUID),
+            OpenApiParameter("contractor", OpenApiTypes.UUID),
             *DATE_PARAMS,
         ]
     )
@@ -309,6 +385,12 @@ class OccurrenceSerializer(serializers.ModelSerializer[Occurrence]):
     room = serializers.UUIDField(source="task.room_id", read_only=True, allow_null=True)
     item = serializers.UUIDField(source="task.item_id", read_only=True, allow_null=True)
     completed_by = serializers.UUIDField(source="completed_by_id", read_only=True, allow_null=True)
+    completed_by_name = serializers.SerializerMethodField(
+        help_text="The name shown for who closed it (display name, never the address)."
+    )
+    assignee_name = serializers.SerializerMethodField(
+        help_text="The name shown for the assignee of the task."
+    )
     is_overdue = serializers.SerializerMethodField()
 
     class Meta:
@@ -325,6 +407,8 @@ class OccurrenceSerializer(serializers.ModelSerializer[Occurrence]):
             "postponed_from",
             "completed_on",
             "completed_by",
+            "completed_by_name",
+            "assignee_name",
             "actual_cost",
             "completion_note",
             "is_overdue",
@@ -341,6 +425,12 @@ class OccurrenceSerializer(serializers.ModelSerializer[Occurrence]):
             "created_at",
             "updated_at",
         ]
+
+    def get_completed_by_name(self, occurrence: Occurrence) -> str:
+        return person_name(occurrence.completed_by)
+
+    def get_assignee_name(self, occurrence: Occurrence) -> str:
+        return person_name(occurrence.task.assignee)
 
     def get_is_overdue(self, occurrence: Occurrence) -> bool:
         return occurrence.is_overdue(services.today())
@@ -673,8 +763,8 @@ class MyHomeView(APIView):
         return Response(DigestSerializer(digests, many=True, context={"request": request}).data)
 
 
-class PreferencesView(APIView):
-    """The display preferences of the caller, which only they can read or change."""
+class PreferencesView(PersonOnlyToChange, APIView):
+    """The display preferences of the caller. A token reads them; only the person changes them."""
 
     @extend_schema(responses=PreferencesSerializer)
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:

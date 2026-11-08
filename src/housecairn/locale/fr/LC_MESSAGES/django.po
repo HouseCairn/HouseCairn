@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 22:49+0000\n"
+"POT-Creation-Date: 2026-11-08 23:05+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -33,6 +33,18 @@ msgstr ""
 #: src/housecairn/templates/instance/overview.html
 msgid "Accounts"
 msgstr "Comptes"
+
+#: src/housecairn/accounts/forms.py
+msgid "Display name"
+msgstr "Nom d'affichage"
+
+#: src/housecairn/accounts/forms.py
+msgid ""
+"How the other members of your homes see you, instead of your address. "
+"Optional."
+msgstr ""
+"Comment les autres membres de vos logements vous voient, à la place de votre "
+"adresse. Facultatif."
 
 #: src/housecairn/accounts/forms.py
 msgid "Type your email address to confirm"
@@ -67,13 +79,21 @@ msgstr ""
 "quelques secondes sur la page, avec JavaScript activé, puis réessayez."
 
 #: src/housecairn/accounts/models.py src/housecairn/homes/models.py
-#: src/housecairn/instance/models.py
+#: src/housecairn/instance/models.py src/housecairn/tasks/models.py
 msgid "email address"
 msgstr "adresse e-mail"
 
 #: src/housecairn/accounts/models.py src/housecairn/core/models.py
 msgid "updated at"
 msgstr "modifié le"
+
+#: src/housecairn/accounts/models.py
+msgid "display name"
+msgstr "nom d'affichage"
+
+#: src/housecairn/accounts/models.py
+msgid "How the other members of your homes see you. Optional."
+msgstr "Comment les autres membres de vos logements vous voient. Facultatif."
 
 #: src/housecairn/accounts/models.py
 msgid "user"
@@ -128,9 +148,23 @@ msgstr ""
 "Ce compte est le seul propriétaire de %(count)s logement(s) qui ont d'autres "
 "membres : transférez d'abord la propriété ou supprimez le logement."
 
+#: src/housecairn/accounts/services.py
+msgid "A display name cannot contain “@”: it would pass for an address."
+msgstr ""
+"Un nom d'affichage ne peut pas contenir « @ » : il passerait pour une "
+"adresse."
+
+#: src/housecairn/accounts/services.py
+msgid "Give a name with at least one visible character."
+msgstr "Donnez un nom avec au moins un caractère visible."
+
 #: src/housecairn/accounts/views.py
 msgid "Your account was deleted."
 msgstr "Votre compte a été supprimé."
+
+#: src/housecairn/accounts/views.py
+msgid "Profile saved."
+msgstr "Profil enregistré."
 
 #: src/housecairn/apitokens/admin.py
 msgid "Revoke selected tokens"
@@ -296,6 +330,21 @@ msgstr "Élément modifié : %(title)s"
 #, python-format
 msgid "Item deleted: %(title)s"
 msgstr "Élément supprimé : %(title)s"
+
+#: src/housecairn/audit/labels.py
+#, python-format
+msgid "Contractor added: %(title)s"
+msgstr "Intervenant ajouté : %(title)s"
+
+#: src/housecairn/audit/labels.py
+#, python-format
+msgid "Contractor changed: %(title)s"
+msgstr "Intervenant modifié : %(title)s"
+
+#: src/housecairn/audit/labels.py
+#, python-format
+msgid "Contractor deleted: %(title)s"
+msgstr "Intervenant supprimé : %(title)s"
 
 #: src/housecairn/audit/labels.py
 #, python-format
@@ -480,6 +529,13 @@ msgid "History"
 msgstr "Historique"
 
 #: src/housecairn/core/templatetags/tabs.py
+#: src/housecairn/templates/tasks/contractor_detail.html
+#: src/housecairn/templates/tasks/contractor_form.html
+#: src/housecairn/templates/tasks/contractor_list.html
+msgid "Contractors"
+msgstr "Intervenants"
+
+#: src/housecairn/core/templatetags/tabs.py
 #: src/housecairn/templates/core/more.html
 #: src/housecairn/templates/tasks/my_home.html
 #: src/housecairn/templates/tasks/preferences.html
@@ -520,6 +576,7 @@ msgstr "Fichiers des logements"
 #: src/housecairn/templates/rooms/room_detail.html
 #: src/housecairn/templates/shell/navigation.html
 #: src/housecairn/templates/tasks/choose_home.html
+#: src/housecairn/templates/tasks/contractor_detail.html
 #: src/housecairn/templates/tasks/task_detail.html
 #: src/housecairn/templates/tasks/task_form.html
 #: src/housecairn/templates/tasks/task_list.html
@@ -572,6 +629,7 @@ msgstr "Logements"
 
 #: src/housecairn/homes/forms.py src/housecairn/instance/forms.py
 #: src/housecairn/templates/homes/member.html
+#: src/housecairn/templates/tasks/contractor_detail.html
 msgid "Email address"
 msgstr "Adresse e-mail"
 
@@ -616,6 +674,14 @@ msgid "Read only"
 msgstr "Lecture seule"
 
 #: src/housecairn/homes/models.py
+msgid "Northern"
+msgstr "Nord"
+
+#: src/housecairn/homes/models.py
+msgid "Southern"
+msgstr "Sud"
+
+#: src/housecairn/homes/models.py
 msgid "currency"
 msgstr "devise"
 
@@ -626,6 +692,18 @@ msgstr "Utilisez un code ISO 4217, par exemple EUR."
 #: src/housecairn/homes/models.py
 msgid "ISO 4217 code of the currency used for this home's budget."
 msgstr "Code ISO 4217 de la devise du budget de ce logement."
+
+#: src/housecairn/homes/models.py
+msgid "hemisphere"
+msgstr "hémisphère"
+
+#: src/housecairn/homes/models.py
+msgid ""
+"Where the home is, for the seasons: spring in the north starts in March, in "
+"the south in September."
+msgstr ""
+"Où se trouve le logement, pour les saisons : le printemps commence en mars "
+"dans l'hémisphère nord, en septembre dans l'hémisphère sud."
 
 #: src/housecairn/homes/models.py
 msgid "required sign-in provider"
@@ -748,6 +826,10 @@ msgstr ""
 #: src/housecairn/homes/services.py
 msgid "An account already uses this address: sign in to accept."
 msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter."
+
+#: src/housecairn/homes/views.py
+msgid "Home saved."
+msgstr "Logement enregistré."
 
 #: src/housecairn/homes/views.py
 msgid "The home was deleted."
@@ -1694,9 +1776,7 @@ msgstr "Code QR de %(name)s"
 
 #: src/housecairn/labels/views.py
 msgid "Only members who can edit make a new label: print the ones that exist."
-msgstr ""
-"Seuls les membres qui peuvent modifier créent une nouvelle étiquette : "
-"imprimez celles qui existent."
+msgstr "Seuls les membres qui peuvent modifier créent une nouvelle étiquette : imprimez celles qui existent."
 
 #: src/housecairn/labels/views.py
 msgid "QR label made."
@@ -1704,8 +1784,7 @@ msgstr "Étiquette QR créée."
 
 #: src/housecairn/labels/views.py
 msgid "The old sticker no longer opens anything. Print the new label."
-msgstr ""
-"L'ancien autocollant n'ouvre plus rien. Imprimez la nouvelle étiquette."
+msgstr "L'ancien autocollant n'ouvre plus rien. Imprimez la nouvelle étiquette."
 
 #: src/housecairn/labels/views.py
 msgid "QR label revoked: the sticker no longer opens anything."
@@ -1957,7 +2036,7 @@ msgstr ""
 msgid "Choose a type"
 msgstr "Choisissez un type"
 
-#: src/housecairn/rooms/forms.py
+#: src/housecairn/rooms/forms.py src/housecairn/rooms/services.py
 msgid "Give the room a name."
 msgstr "Donnez un nom à la pièce."
 
@@ -2116,7 +2195,7 @@ msgstr "Grenier"
 msgid "Outdoor"
 msgstr "Extérieur"
 
-#: src/housecairn/rooms/models.py
+#: src/housecairn/rooms/models.py src/housecairn/tasks/models.py
 msgid "Other"
 msgstr "Autre"
 
@@ -2381,6 +2460,7 @@ msgid "Date"
 msgstr "Date"
 
 #: src/housecairn/stock/forms.py src/housecairn/tasks/forms.py
+#: src/housecairn/templates/tasks/contractor_detail.html
 msgid "Note"
 msgstr "Note"
 
@@ -2555,6 +2635,44 @@ msgstr "En retard"
 msgid "In season"
 msgstr "De saison"
 
+#: src/housecairn/tasks/contractor_views.py
+msgid "Contractor added."
+msgstr "Intervenant ajouté."
+
+#: src/housecairn/tasks/contractor_views.py
+msgid "Contractor saved."
+msgstr "Intervenant enregistré."
+
+#: src/housecairn/tasks/contractor_views.py
+msgid "Contractor deleted."
+msgstr "Intervenant supprimé."
+
+#: src/housecairn/tasks/durations.py
+msgid "minutes"
+msgstr "minutes"
+
+#: src/housecairn/tasks/durations.py
+msgid "hours"
+msgstr "heures"
+
+#: src/housecairn/tasks/durations.py src/housecairn/tasks/models.py
+msgid "days"
+msgstr "jours"
+
+#: src/housecairn/tasks/durations.py
+#, python-format
+msgid "%(n)d min"
+msgid_plural "%(n)d min"
+msgstr[0] "%(n)d min"
+msgstr[1] "%(n)d min"
+
+#: src/housecairn/tasks/durations.py
+#, python-format
+msgid "%(n)d day"
+msgid_plural "%(n)d days"
+msgstr[0] "%(n)d jour"
+msgstr[1] "%(n)d jours"
+
 #: src/housecairn/tasks/files.py
 msgid ""
 "This type of file is not accepted. Use a JPEG, PNG or WebP image, or a PDF, "
@@ -2564,29 +2682,55 @@ msgstr ""
 "ou un fichier PDF, texte, Word, Excel ou OpenDocument."
 
 #: src/housecairn/tasks/forms.py
+msgid "Assignee"
+msgstr "Responsable"
+
+#: src/housecairn/tasks/forms.py
 #: src/housecairn/templates/tasks/task_detail.html
 msgid "Due on"
 msgstr "Échéance"
 
 #: src/housecairn/tasks/forms.py
-msgid "Season starts in"
-msgstr "La saison commence en"
+msgid "Season"
+msgstr "Saison"
 
 #: src/housecairn/tasks/forms.py
-msgid "No season"
-msgstr "Pas de saison"
+msgid "All year"
+msgstr "Toute l'année"
 
 #: src/housecairn/tasks/forms.py
-msgid "Season ends in"
-msgstr "La saison finit en"
+msgid "Custom season starts in"
+msgstr "La saison personnalisée commence en"
 
 #: src/housecairn/tasks/forms.py
-msgid "Or a new contractor"
-msgstr "Ou un nouvel intervenant"
+msgid "Custom season ends in"
+msgstr "La saison personnalisée finit en"
 
 #: src/housecairn/tasks/forms.py
-msgid "Trade of the new contractor"
-msgstr "Métier du nouvel intervenant"
+msgid "Only used with the season Custom months."
+msgstr "Utilisé seulement avec la saison « Mois personnalisés »."
+
+#: src/housecairn/tasks/forms.py
+#: src/housecairn/templates/tasks/task_detail.html
+msgid "Estimated duration"
+msgstr "Durée estimée"
+
+#: src/housecairn/tasks/forms.py
+msgid "Unit"
+msgstr "Unité"
+
+#: src/housecairn/tasks/forms.py src/housecairn/templates/tasks/history.html
+#: src/housecairn/templates/tasks/task_detail.html
+msgid "Contractor"
+msgstr "Intervenant"
+
+#: src/housecairn/tasks/forms.py
+msgid ""
+"Pick one from the suggestions or type a new name: it joins the contractors "
+"of the home when you save."
+msgstr ""
+"Choisissez parmi les suggestions ou saisissez un nouveau nom : il rejoint "
+"les intervenants du logement à l'enregistrement."
 
 #: src/housecairn/tasks/forms.py
 #: src/housecairn/templates/tasks/task_detail.html
@@ -2599,8 +2743,21 @@ msgstr ""
 "Markdown : comment faire, pas à pas. Liens vers des pages web seulement."
 
 #: src/housecairn/tasks/forms.py
-msgid "Choose a contractor or give a new one, not both."
-msgstr "Choisissez un intervenant ou donnez-en un nouveau, pas les deux."
+#, python-format
+msgid ""
+"The season follows the hemisphere of the home (%(hemisphere)s): change it in "
+"the settings of the home."
+msgstr ""
+"La saison suit l'hémisphère du logement (%(hemisphere)s) : modifiez-le dans "
+"les réglages du logement."
+
+#: src/housecairn/tasks/forms.py src/housecairn/tasks/services.py
+msgid "Give a duration between a minute and thirty days."
+msgstr "Indiquez une durée comprise entre une minute et trente jours."
+
+#: src/housecairn/tasks/forms.py
+msgid "Give the first and the last month."
+msgstr "Indiquez le premier et le dernier mois."
 
 #: src/housecairn/tasks/forms.py
 msgid "New date"
@@ -2655,10 +2812,6 @@ msgid "After the last time"
 msgstr "Après la dernière fois"
 
 #: src/housecairn/tasks/models.py
-msgid "days"
-msgstr "jours"
-
-#: src/housecairn/tasks/models.py
 msgid "weeks"
 msgstr "semaines"
 
@@ -2669,6 +2822,30 @@ msgstr "mois"
 #: src/housecairn/tasks/models.py
 msgid "years"
 msgstr "ans"
+
+#: src/housecairn/tasks/models.py
+msgid "Spring"
+msgstr "Printemps"
+
+#: src/housecairn/tasks/models.py
+msgid "Summer"
+msgstr "Été"
+
+#: src/housecairn/tasks/models.py
+msgid "Autumn"
+msgstr "Automne"
+
+#: src/housecairn/tasks/models.py
+msgid "Winter"
+msgstr "Hiver"
+
+#: src/housecairn/tasks/models.py
+msgid "Heating season"
+msgstr "Saison de chauffe"
+
+#: src/housecairn/tasks/models.py
+msgid "Custom months"
+msgstr "Mois personnalisés"
 
 #: src/housecairn/tasks/models.py
 msgid "Planned"
@@ -2693,8 +2870,68 @@ msgid "Skipped"
 msgstr "Ignorée"
 
 #: src/housecairn/tasks/models.py
+msgid "Plumber"
+msgstr "Plombier"
+
+#: src/housecairn/tasks/models.py
+msgid "Electrician"
+msgstr "Électricien"
+
+#: src/housecairn/tasks/models.py
+msgid "Heating engineer"
+msgstr "Chauffagiste"
+
+#: src/housecairn/tasks/models.py
+msgid "Roofer"
+msgstr "Couvreur"
+
+#: src/housecairn/tasks/models.py
+msgid "Carpenter"
+msgstr "Menuisier"
+
+#: src/housecairn/tasks/models.py
+msgid "Painter"
+msgstr "Peintre"
+
+#: src/housecairn/tasks/models.py
+msgid "Mason"
+msgstr "Maçon"
+
+#: src/housecairn/tasks/models.py
+msgid "Gardener"
+msgstr "Jardinier"
+
+#: src/housecairn/tasks/models.py
+msgid "Locksmith"
+msgstr "Serrurier"
+
+#: src/housecairn/tasks/models.py
+msgid "Chimney sweep"
+msgstr "Ramoneur"
+
+#: src/housecairn/tasks/models.py
 msgid "trade"
 msgstr "métier"
+
+#: src/housecairn/tasks/models.py
+msgid "which trade"
+msgstr "quel métier"
+
+#: src/housecairn/tasks/models.py
+msgid "Only with the trade Other. Example: Pool maintenance."
+msgstr "Seulement avec le métier Autre. Exemple : entretien de piscine."
+
+#: src/housecairn/tasks/models.py
+msgid "phone"
+msgstr "téléphone"
+
+#: src/housecairn/tasks/models.py
+msgid "Digits, spaces and + ( ) - . / only."
+msgstr "Chiffres, espaces et + ( ) - . / seulement."
+
+#: src/housecairn/tasks/models.py
+msgid "address"
+msgstr "adresse"
 
 #: src/housecairn/tasks/models.py
 msgid "contractor"
@@ -2703,6 +2940,10 @@ msgstr "intervenant"
 #: src/housecairn/tasks/models.py
 msgid "contractors"
 msgstr "intervenants"
+
+#: src/housecairn/tasks/models.py
+msgid "Say which trade."
+msgstr "Dites de quel métier il s'agit."
 
 #: src/housecairn/tasks/models.py
 msgid "title"
@@ -2739,6 +2980,10 @@ msgstr "répétition"
 #: src/housecairn/tasks/models.py
 msgid "every"
 msgstr "tous les"
+
+#: src/housecairn/tasks/models.py
+msgid "season"
+msgstr "saison"
 
 #: src/housecairn/tasks/models.py
 msgid "season starts in"
@@ -3171,6 +3416,7 @@ msgid "Delete my account"
 msgstr "Supprimer mon compte"
 
 #: src/housecairn/templates/accounts/delete.html
+#: src/housecairn/templates/accounts/profile.html
 #: src/housecairn/templates/core/more.html
 #: src/housecairn/templates/instance/audit.html
 #: src/housecairn/templates/instance/overview.html
@@ -3230,6 +3476,40 @@ msgstr ""
 #: src/housecairn/templates/homes/invitation_invalid.html
 msgid "Back to sign-in"
 msgstr "Retour à la connexion"
+
+#: src/housecairn/templates/accounts/profile.html
+#: src/housecairn/templates/core/more.html
+msgid "Profile"
+msgstr "Profil"
+
+#: src/housecairn/templates/accounts/profile.html
+msgid ""
+"Your display name is what the other members of your homes see: on tasks you "
+"are in charge of, in the history and in the household. Without one, the "
+"first part of your address is shown."
+msgstr ""
+"Votre nom d'affichage est ce que les autres membres de vos logements "
+"voient : sur les tâches dont vous êtes responsable, dans l'historique et "
+"dans le foyer. Sans nom, le début de votre adresse est affiché."
+
+#: src/housecairn/templates/accounts/profile.html
+#: src/housecairn/templates/homes/home_form.html
+#: src/housecairn/templates/homes/household.html
+#: src/housecairn/templates/instance/provider.html
+#: src/housecairn/templates/instance/settings.html
+#: src/housecairn/templates/notifications/channel.html
+#: src/housecairn/templates/notifications/index.html
+#: src/housecairn/templates/rooms/item_form.html
+#: src/housecairn/templates/rooms/room_form.html
+#: src/housecairn/templates/rooms/room_memory_form.html
+#: src/housecairn/templates/stock/article_form.html
+#: src/housecairn/templates/stock/supplier_form.html
+#: src/housecairn/templates/tasks/completion_form.html
+#: src/housecairn/templates/tasks/contractor_form.html
+#: src/housecairn/templates/tasks/preferences.html
+#: src/housecairn/templates/tasks/task_form.html
+msgid "Save"
+msgstr "Enregistrer"
 
 #: src/housecairn/templates/allauth/elements/provider.html
 #: src/housecairn/templates/homes/invitation.html
@@ -3295,6 +3575,10 @@ msgstr "Bienvenue"
 #: src/housecairn/templates/core/index.html
 msgid "Go to my homes"
 msgstr "Voir mes logements"
+
+#: src/housecairn/templates/core/more.html
+msgid "Your display name"
+msgstr "Votre nom d'affichage"
 
 #: src/housecairn/templates/core/more.html
 msgid "How the Today screen is laid out for you"
@@ -3384,6 +3668,7 @@ msgstr ""
 #: src/housecairn/templates/rooms/confirm_delete.html
 #: src/housecairn/templates/stock/confirm_delete.html
 #: src/housecairn/templates/tasks/confirm_delete.html
+#: src/housecairn/templates/tasks/contractor_confirm_delete.html
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -3471,6 +3756,22 @@ msgid "Currency"
 msgstr "Devise"
 
 #: src/housecairn/templates/homes/home_detail.html
+msgid "Hemisphere"
+msgstr "Hémisphère"
+
+#: src/housecairn/templates/homes/home_detail.html
+msgid "Name, currency and hemisphere"
+msgstr "Nom, devise et hémisphère"
+
+#: src/housecairn/templates/homes/home_detail.html
+msgid ""
+"The hemisphere decides what spring, summer and the other seasons mean for "
+"the tasks"
+msgstr ""
+"L'hémisphère décide ce que veulent dire le printemps, l'été et les autres "
+"saisons pour les tâches"
+
+#: src/housecairn/templates/homes/home_detail.html
 #, python-format
 msgid "%(counter)s person"
 msgid_plural "%(counter)s people"
@@ -3485,6 +3786,10 @@ msgstr "Vos données"
 msgid "One archive with everything of this home, in an open format."
 msgstr ""
 "Une archive avec tout le contenu de ce logement, dans un format ouvert."
+
+#: src/housecairn/templates/homes/home_form.html
+msgid "Edit the home"
+msgstr "Modifier le logement"
 
 #: src/housecairn/templates/homes/home_form.html
 #: src/housecairn/templates/homes/home_list.html
@@ -3595,22 +3900,6 @@ msgstr ""
 "Quand un fournisseur est exigé, les membres n'ouvrent ce logement qu'après "
 "s'être connectés par lui, pas avec un mot de passe ou une passkey seuls. "
 "Réglez-le depuis une session connectée par ce fournisseur."
-
-#: src/housecairn/templates/homes/household.html
-#: src/housecairn/templates/instance/provider.html
-#: src/housecairn/templates/instance/settings.html
-#: src/housecairn/templates/notifications/channel.html
-#: src/housecairn/templates/notifications/index.html
-#: src/housecairn/templates/rooms/item_form.html
-#: src/housecairn/templates/rooms/room_form.html
-#: src/housecairn/templates/rooms/room_memory_form.html
-#: src/housecairn/templates/stock/article_form.html
-#: src/housecairn/templates/stock/supplier_form.html
-#: src/housecairn/templates/tasks/completion_form.html
-#: src/housecairn/templates/tasks/preferences.html
-#: src/housecairn/templates/tasks/task_form.html
-msgid "Save"
-msgstr "Enregistrer"
 
 #: src/housecairn/templates/homes/household.html
 #, python-format
@@ -3932,6 +4221,8 @@ msgstr ""
 #: src/housecairn/templates/stock/confirm_delete.html
 #: src/housecairn/templates/tasks/_attachments.html
 #: src/housecairn/templates/tasks/confirm_delete.html
+#: src/housecairn/templates/tasks/contractor_confirm_delete.html
+#: src/housecairn/templates/tasks/contractor_detail.html
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -4096,8 +4387,7 @@ msgstr "Suivant"
 
 #: src/housecairn/templates/labels/_row.html
 msgid "Print stickers that open a room, an item or a stock item"
-msgstr ""
-"Imprimer des autocollants qui ouvrent une pièce, un élément ou un article"
+msgstr "Imprimer des autocollants qui ouvrent une pièce, un élément ou un article"
 
 #: src/housecairn/templates/labels/_tools.html
 msgid "Make a QR label"
@@ -4135,9 +4425,7 @@ msgstr "Si l'autocollant est perdu ou partagé"
 
 #: src/housecairn/templates/labels/label_detail.html
 msgid "A new label has a new code; the old sticker stops opening anything."
-msgstr ""
-"Une nouvelle étiquette a un nouveau code ; l'ancien autocollant n'ouvre plus "
-"rien."
+msgstr "Une nouvelle étiquette a un nouveau code ; l'ancien autocollant n'ouvre plus rien."
 
 #: src/housecairn/templates/labels/label_detail.html
 msgid "Make a new label"
@@ -4148,13 +4436,8 @@ msgid "Revoke the label"
 msgstr "Révoquer l'étiquette"
 
 #: src/housecairn/templates/labels/label_list.html
-msgid ""
-"Tick what to label, choose a layout and print the sheet. Scanning a sticker "
-"opens the page of the object, for the members of this home."
-msgstr ""
-"Cochez ce qu'il faut étiqueter, choisissez une mise en page et imprimez la "
-"planche. Scanner un autocollant ouvre la page de l'objet, pour les membres "
-"de ce logement."
+msgid "Tick what to label, choose a layout and print the sheet. Scanning a sticker opens the page of the object, for the members of this home."
+msgstr "Cochez ce qu'il faut étiqueter, choisissez une mise en page et imprimez la planche. Scanner un autocollant ouvre la page de l'objet, pour les membres de ce logement."
 
 #: src/housecairn/templates/labels/label_list.html
 msgid "No label yet"
@@ -4174,11 +4457,8 @@ msgid "A label is made for each object ticked that has none."
 msgstr "Une étiquette est créée pour chaque objet coché qui n'en a pas."
 
 #: src/housecairn/templates/labels/label_list.html
-msgid ""
-"You can print the labels that exist; members who can edit make new ones."
-msgstr ""
-"Vous pouvez imprimer les étiquettes qui existent ; les membres qui peuvent "
-"modifier en créent de nouvelles."
+msgid "You can print the labels that exist; members who can edit make new ones."
+msgstr "Vous pouvez imprimer les étiquettes qui existent ; les membres qui peuvent modifier en créent de nouvelles."
 
 #: src/housecairn/templates/labels/label_list.html
 msgid "Print the labels"
@@ -4186,9 +4466,7 @@ msgstr "Imprimer les étiquettes"
 
 #: src/housecairn/templates/labels/label_list.html
 msgid "Nothing to label yet: add rooms, items or stock items first."
-msgstr ""
-"Rien à étiqueter pour l'instant : ajoutez d'abord des pièces, des éléments "
-"ou des articles."
+msgstr "Rien à étiqueter pour l'instant : ajoutez d'abord des pièces, des éléments ou des articles."
 
 #: src/housecairn/templates/notifications/channel.html
 #, python-format
@@ -4275,6 +4553,7 @@ msgstr "Vous n'avez pas encore de logement à ouvrir."
 #: src/housecairn/templates/rooms/confirm_delete.html
 #: src/housecairn/templates/stock/confirm_delete.html
 #: src/housecairn/templates/tasks/confirm_delete.html
+#: src/housecairn/templates/tasks/contractor_confirm_delete.html
 #, python-format
 msgid "Delete %(name)s?"
 msgstr "Supprimer %(name)s ?"
@@ -4764,6 +5043,56 @@ msgstr "Détails de ce qui a été fait"
 msgid "The task, its history and its files disappear from the screens."
 msgstr "La tâche, son historique et ses fichiers disparaissent des écrans."
 
+#: src/housecairn/templates/tasks/contractor_confirm_delete.html
+msgid ""
+"The contractor disappears from the screens. The tasks that named them stay, "
+"without a contractor."
+msgstr ""
+"L'intervenant disparaît des écrans. Les tâches qui le nommaient restent, "
+"sans intervenant."
+
+#: src/housecairn/templates/tasks/contractor_detail.html
+msgid "Trade"
+msgstr "Métier"
+
+#: src/housecairn/templates/tasks/contractor_detail.html
+msgid "Phone"
+msgstr "Téléphone"
+
+#: src/housecairn/templates/tasks/contractor_detail.html
+msgid "Address"
+msgstr "Adresse"
+
+#: src/housecairn/templates/tasks/contractor_detail.html
+msgid "Download the contact (.vcf)"
+msgstr "Télécharger la fiche contact (.vcf)"
+
+#: src/housecairn/templates/tasks/contractor_detail.html
+msgid "No task is linked to this contractor."
+msgstr "Aucune tâche n'est liée à cet intervenant."
+
+#: src/housecairn/templates/tasks/contractor_detail.html
+msgid "Edit"
+msgstr "Modifier"
+
+#: src/housecairn/templates/tasks/contractor_form.html
+msgid "Edit the contractor"
+msgstr "Modifier l'intervenant"
+
+#: src/housecairn/templates/tasks/contractor_form.html
+#: src/housecairn/templates/tasks/contractor_list.html
+msgid "Add a contractor"
+msgstr "Ajouter un intervenant"
+
+#: src/housecairn/templates/tasks/contractor_list.html
+msgid ""
+"No contractor yet. People and companies who work in this home, with their "
+"trade and how to reach them, are kept here."
+msgstr ""
+"Aucun intervenant pour l'instant. Les personnes et les entreprises qui "
+"travaillent dans ce logement, avec leur métier et le moyen de les joindre, "
+"sont gardées ici."
+
 #: src/housecairn/templates/tasks/history.html
 msgid "Filters"
 msgstr "Filtres"
@@ -4776,11 +5105,6 @@ msgstr "Toutes les pièces"
 #: src/housecairn/templates/tasks/history.html
 msgid "All items"
 msgstr "Tous les éléments"
-
-#: src/housecairn/templates/tasks/history.html
-#: src/housecairn/templates/tasks/task_detail.html
-msgid "Contractor"
-msgstr "Intervenant"
 
 #: src/housecairn/templates/tasks/history.html
 msgid "Everyone"
@@ -4966,15 +5290,6 @@ msgstr "Comment faire"
 #: src/housecairn/templates/tasks/task_detail.html
 msgid "Details"
 msgstr "Détails"
-
-#: src/housecairn/templates/tasks/task_detail.html
-msgid "Estimated duration"
-msgstr "Durée estimée"
-
-#: src/housecairn/templates/tasks/task_detail.html
-#, python-format
-msgid "%(minutes)s min"
-msgstr "%(minutes)s min"
 
 #: src/housecairn/templates/tasks/task_detail.html
 msgid "Labour budget"

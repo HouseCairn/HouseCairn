@@ -105,3 +105,111 @@ def test_the_language_of_a_person_can_be_undone_and_redone() -> None:
         assert "language" in columns
     finally:
         to_latest()
+
+
+def test_a_window_becomes_a_predefined_season_or_a_custom_one() -> None:
+    try:
+        apps = apps_at(("tasks", "0004_displaypreference_language"))
+        home = make_home(apps)
+        task_model = apps.get_model("tasks", "Task")
+        windows = {
+            "Mow": (6, 8),
+            "Heat": (10, 4),
+            "Prune": (2, 3),
+            "Garden": (4, 10),
+            "Dust": (None, None),
+        }
+        for title, (start, end) in windows.items():
+            task_model.objects.create(
+                home=home, title=title, season_start_month=start, season_end_month=end
+            )
+        apps = apps_at(("tasks", "0005_task_season"))
+        seasons = dict(apps.get_model("tasks", "Task").objects.values_list("title", "season"))
+        assert seasons == {
+            "Mow": "summer",
+            "Heat": "heating",
+            "Prune": "custom",
+            "Garden": "custom",
+            "Dust": "",
+        }
+        apps = apps_at(("tasks", "0004_displaypreference_language"))
+        months = {
+            title: (start, end)
+            for title, start, end in apps.get_model("tasks", "Task").objects.values_list(
+                "title", "season_start_month", "season_end_month"
+            )
+        }
+        assert months == windows
+        apps = apps_at(("tasks", "0005_task_season"))
+        assert apps.get_model("tasks", "Task").objects.count() == len(windows)
+    finally:
+        to_latest()
+
+
+def test_a_trade_becomes_one_of_the_list_or_other_and_comes_back() -> None:
+    try:
+        apps = apps_at(("tasks", "0005_task_season"))
+        home = make_home(apps)
+        contractor_model = apps.get_model("tasks", "Contractor")
+        trades = {
+            "Pipes Ltd": "Plumber",
+            "Sparks": "  électricien ",
+            "Heat": "Chauffagiste",
+            "Pool Co": "Pool maintenance",
+            "Walls": "MAÇON",
+            "Nobody": "",
+        }
+        for name, trade in trades.items():
+            contractor_model.objects.create(home=home, name=name, trade=trade, note="n")
+        apps = apps_at(("tasks", "0006_contractor_record"))
+        rows = {
+            c.name: (c.trade, c.trade_other, c.note)
+            for c in apps.get_model("tasks", "Contractor").objects.all()
+        }
+        assert rows == {
+            "Pipes Ltd": ("plumber", "", "n"),
+            "Sparks": ("electrician", "", "n"),
+            "Heat": ("heating_engineer", "", "n"),
+            "Pool Co": ("other", "Pool maintenance", "n"),
+            "Walls": ("mason", "", "n"),
+            "Nobody": ("", "", "n"),
+        }
+        apps = apps_at(("tasks", "0005_task_season"))
+        back = {c.name: c.trade for c in apps.get_model("tasks", "Contractor").objects.all()}
+        assert back == {
+            "Pipes Ltd": "Plumber",
+            "Sparks": "Electrician",
+            "Heat": "Heating engineer",
+            "Pool Co": "Pool maintenance",
+            "Walls": "Mason",
+            "Nobody": "",
+        }
+        apps = apps_at(("tasks", "0006_contractor_record"))
+        assert apps.get_model("tasks", "Contractor").objects.count() == len(trades)
+    finally:
+        to_latest()
+
+
+def test_a_duration_of_zero_becomes_unset_and_the_rest_is_kept() -> None:
+    try:
+        apps = apps_at(("tasks", "0006_contractor_record"))
+        home = make_home(apps)
+        task_model = apps.get_model("tasks", "Task")
+        for title, minutes in (("None", None), ("Zero", 0), ("Ninety", 90)):
+            task_model.objects.create(home=home, title=title, estimated_minutes=minutes)
+        apps = apps_at(("tasks", "0007_estimate_zero_unset"))
+        tasks = apps.get_model("tasks", "Task").objects
+        assert dict(tasks.values_list("title", "estimated_minutes")) == {
+            "None": None,
+            "Zero": None,
+            "Ninety": 90,
+        }
+        # Undone, then done again: nothing else is touched.
+        apps = apps_at(("tasks", "0006_contractor_record"))
+        tasks = apps.get_model("tasks", "Task").objects
+        assert tasks.get(title="Ninety").estimated_minutes == 90
+        assert tasks.count() == 3
+        apps = apps_at(("tasks", "0007_estimate_zero_unset"))
+        assert apps.get_model("tasks", "Task").objects.get(title="Zero").estimated_minutes is None
+    finally:
+        to_latest()

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tabs %}
+{% load i18n tabs people %}
 {% block head_title %}{% translate "Household and roles" %}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
@@ -10,7 +10,7 @@
       <li>
         <a class="row" href="{% url 'homes:member' home_id=home.id member_id=membership.id %}">
           <span class="row-body">
-            <span class="row-title">{% firstof membership.user.get_full_name membership.user.email %}{% if membership.user_id == me.pk %} ({% translate "you" %}){% endif %}</span>
+            <span class="row-title">{{ membership.user|person }}{% if membership.user_id == me.pk %} ({% translate "you" %}){% endif %}</span>
             <span class="row-text">{% include "homes/_role_text.html" with role=membership.role %}</span>
           </span>
           {% include "components/icon.html" with name="chevron" class="chevron" %}

@@ -821,7 +821,53 @@ class TestIsolation:
             api_client.get(reverse("api-v1:notification-export")),
         ]
         codes = [a.status_code for a in answers]
-        assert codes == ([200, 201, 200, 200] if allowed else [403] * 4)
+        # Reading with `write`; adding a channel is the person's, never a token's.
+        assert codes == ([200, 403, 200, 200] if allowed else [403] * 4)
+        assert not Channel.objects.exclude(pk=channel.pk).exists()
+
+    def test_a_write_token_changes_nothing_of_the_person(
+        self,
+        api_client: APIClient,
+        alice: User,
+        alice_home: Home,
+        channel: Channel,
+        sent: list[Any],
+    ) -> None:
+        """Channels and reminders belong to the person, not to a token tied to homes."""
+        _token, raw = token_services.issue_token(
+            alice, name="t", scopes=["read", "write"], homes=[alice_home]
+        )
+        api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
+        detail = reverse("api-v1:notification-channel-detail", args=[channel.id])
+        prefs = reverse("api-v1:notification-preferences")
+        before = Channel.objects.get().url
+        answers = {
+            "create": api_client.post(reverse(LIST), {"name": "x", "url": URL}, format="json"),
+            "rename": api_client.patch(
+                detail, {"name": "Hijacked", "enabled": False}, format="json"
+            ),
+            "delete": api_client.delete(detail),
+            "test": api_client.post(reverse("api-v1:notification-channel-test", args=[channel.id])),
+            "preferences": api_client.patch(prefs, {"digest": True}, format="json"),
+        }
+        assert {k: v.status_code for k, v in answers.items()} == dict.fromkeys(answers, 403)
+        stored = Channel.objects.get()
+        assert (stored.name, stored.enabled, stored.url) == ("Phone", True, before)
+        assert not services.Preference.objects.filter(user=alice, digest=True).exists()
+        assert sent == []
+        # Reading stays open to a token with `write`.
+        assert api_client.get(detail).status_code == 200
+        assert api_client.get(prefs).status_code == 200
+        # The person signed in still does all of it.
+        api_client.credentials()
+        api_client.force_authenticate(alice)
+        assert api_client.patch(prefs, {"digest": True}, format="json").status_code == 200
+        assert (
+            api_client.post(
+                reverse("api-v1:notification-channel-test", args=[channel.id])
+            ).status_code
+            == 200
+        )
 
 
 class TestWebAndApi:

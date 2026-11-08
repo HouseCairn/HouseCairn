@@ -1,0 +1,72 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 19:40+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Contractor form"
+msgstr "Formulaire d'intervenant"
+
+msgid "The form to add a contractor, at `/h/<home id>/contractors/new/`, and to edit one, at `/h/<home id>/contractors/<contractor id>/edit/`. Only the **name** is required."
+msgstr "Le formulaire pour ajouter un intervenant, sur `/h/<home id>/contractors/new/`, et pour en modifier un, sur `/h/<home id>/contractors/<contractor id>/edit/`. Seul le **nom** est obligatoire."
+
+msgid "Field"
+msgstr "Champ"
+
+msgid "Content"
+msgstr "Contenu"
+
+msgid "Trade"
+msgstr "Métier"
+
+msgid "One of the list: plumber, electrician, heating engineer, roofer, carpenter, painter, mason, gardener, locksmith, chimney sweep, or **Other**."
+msgstr "Un de la liste : plombier, électricien, chauffagiste, couvreur, menuisier, peintre, maçon, jardinier, serrurier, ramoneur, ou **Autre**."
+
+msgid "Which trade"
+msgstr "Quel métier"
+
+msgid "Only with **Other**, and then required: the trade in your own words."
+msgstr "Seulement avec **Autre**, et alors obligatoire : le métier avec vos propres mots."
+
+msgid "Phone"
+msgstr "Téléphone"
+
+msgid "Digits, spaces and `+ ( ) - . /` only."
+msgstr "Chiffres, espaces et `+ ( ) - . /` seulement."
+
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+msgid "A valid address."
+msgstr "Une adresse valide."
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Several lines are fine."
+msgstr "Plusieurs lignes sont acceptées."
+
+msgid "Note"
+msgstr "Note"
+
+msgid "Free text."
+msgstr "Texte libre."
+
+msgid "A contractor can also be created from the [task form](task-form.md), by typing a new name in its contractor field; the rest is added here afterwards."
+msgstr "Un intervenant peut aussi être créé depuis le [formulaire de tâche](task-form.md), en saisissant un nouveau nom dans son champ intervenant ; le reste se complète ici ensuite."
+

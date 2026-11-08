@@ -387,6 +387,17 @@ form p:has(> input[type="checkbox"], > input[type="radio"]) label {
   margin-top: var(--hc-space-1);
 }
 
+/* A number and its unit on one line (estimated duration). */
+.field-pair {
+  display: flex;
+  gap: var(--hc-space-2);
+}
+
+.field-pair input {
+  flex: 1;
+  min-width: 0;
+}
+
 .helptext ul {
   margin: var(--hc-space-1) 0 0;
   padding-left: var(--hc-space-4);

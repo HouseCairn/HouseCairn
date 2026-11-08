@@ -18,31 +18,33 @@
       {% include "tasks/_field.html" with field=form.item %}
       {% include "tasks/_field.html" with field=form.due_on %}
     </div>
-    <details class="form-section"{% if form.repeat_mode.errors or form.repeat_interval.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeat_mode.value != "once" %} open{% endif %}>
+    <details class="form-section"{% if form.repeat_mode.errors or form.repeat_interval.errors or form.season.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeat_mode.value != "once" %} open{% endif %}>
       <summary>{% translate "Repeat" %}</summary>
       <div>
         {% include "tasks/_field.html" with field=form.repeat_mode %}
         {% include "tasks/_field.html" with field=form.repeat_interval %}
         {% include "tasks/_field.html" with field=form.repeat_unit %}
+        {% include "tasks/_field.html" with field=form.season %}
         {% include "tasks/_field.html" with field=form.season_start_month %}
         {% include "tasks/_field.html" with field=form.season_end_month %}
         {% include "tasks/_field.html" with field=form.hide_days_before %}
       </div>
     </details>
-    <details class="form-section"{% if form.assignee.errors or form.contractor.errors or form.new_contractor.errors %} open{% endif %}>
+    <details class="form-section"{% if form.assignee.errors or form.contractor_name.errors %} open{% endif %}>
       <summary>{% translate "Who" %}</summary>
       <div>
         {% include "tasks/_field.html" with field=form.priority %}
         {% include "tasks/_field.html" with field=form.assignee %}
-        {% include "tasks/_field.html" with field=form.contractor %}
-        {% include "tasks/_field.html" with field=form.new_contractor %}
-        {% include "tasks/_field.html" with field=form.new_contractor_trade %}
+        {% include "tasks/_field.html" with field=form.contractor_name %}
+        <datalist id="contractor-options">
+          {% for candidate in form.contractors %}<option value="{{ candidate.name }}">{{ candidate.trade_label }}</option>{% endfor %}
+        </datalist>
       </div>
     </details>
-    <details class="form-section"{% if form.estimated_minutes.errors or form.labour_budget.errors or form.material_budget.errors %} open{% endif %}>
+    <details class="form-section"{% if form.duration_value.errors or form.duration_unit.errors or form.labour_budget.errors or form.material_budget.errors %} open{% endif %}>
       <summary>{% translate "Time and budget" %}</summary>
       <div>
-        {% include "tasks/_field.html" with field=form.estimated_minutes %}
+        {% include "tasks/_duration_field.html" %}
         {% include "tasks/_field.html" with field=form.labour_budget %}
         {% include "tasks/_field.html" with field=form.material_budget %}
       </div>

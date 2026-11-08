@@ -22,6 +22,7 @@ from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
 from housecairn.audit import services as audit
+from housecairn.core.text import without_control_characters
 from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership
@@ -29,7 +30,7 @@ from housecairn.instance.config import instance_zone
 from housecairn.rooms import images
 from housecairn.rooms.models import Item, Room
 from housecairn.rooms.services import _read_upload
-from housecairn.tasks import files, recurrence
+from housecairn.tasks import durations, files, recurrence
 from housecairn.tasks.models import (
     MAX_ATTACHMENTS_PER_TASK,
     OPEN_STATUSES,
@@ -37,8 +38,10 @@ from housecairn.tasks.models import (
     Contractor,
     Occurrence,
     RepeatMode,
+    Season,
     Status,
     Task,
+    Trade,
 )
 from housecairn.tasks.storage import attachment_storage
 
@@ -62,15 +65,25 @@ TASK_FIELDS = frozenset(
         "repeat_mode",
         "repeat_unit",
         "repeat_interval",
+        "season",
         "season_start_month",
         "season_end_month",
         "hide_days_before",
     }
 )
 RULE_FIELDS = frozenset(
-    {"repeat_mode", "repeat_unit", "repeat_interval", "season_start_month", "season_end_month"}
+    {
+        "repeat_mode",
+        "repeat_unit",
+        "repeat_interval",
+        "season",
+        "season_start_month",
+        "season_end_month",
+    }
 )
-CONTRACTOR_FIELDS = frozenset({"name", "trade", "note"})
+_SEASON_FIELDS = frozenset({"season", "season_start_month", "season_end_month"})
+CONTRACTOR_FIELDS = frozenset({"name", "trade", "trade_other", "phone", "email", "address", "note"})
+_CONTRACTOR_LINE_FIELDS = frozenset({"name", "trade_other", "phone", "email"})
 COMPLETION_FIELDS = frozenset({"completed_on", "actual_cost", "completion_note"})
 _UNSET: Any = object()
 DATE_SPAN_YEARS = 100
@@ -132,7 +145,7 @@ def contractors_of(home: Home) -> models.QuerySet[Contractor]:
 def occurrences_of(home: Home) -> models.QuerySet[Occurrence]:
     """Occurrences of the home's tasks, in no particular order: arrears first is `order_open`."""
     return Occurrence.objects.filter(home=home, task__deleted_at__isnull=True).select_related(
-        "task", "task__room", "task__item", "task__assignee"
+        "task", "task__room", "task__item", "task__assignee", "completed_by"
     )
 
 
@@ -209,21 +222,52 @@ def upcoming_dates(task: Task, count: int = 3) -> list[datetime.date]:
 # ---------- contractors ----------
 
 
+def _one_line(value: str) -> str:
+    return " ".join(without_control_characters(" ".join(value.split())).split())
+
+
+def _lines(value: str) -> str:
+    """Several lines, each without control characters; the breaks stay."""
+    text = value.replace("\r\n", "\n").replace("\r", "\n")
+    return "\n".join(without_control_characters(line).rstrip() for line in text.split("\n")).strip()
+
+
+def _apply_contractor(contractor: Contractor, changes: dict[str, Any]) -> None:
+    unknown = set(changes) - CONTRACTOR_FIELDS
+    if unknown:
+        raise ValueError(f"Cannot change: {', '.join(sorted(unknown))}")
+    for field, value in changes.items():
+        if isinstance(value, str):
+            value = _one_line(value) if field in _CONTRACTOR_LINE_FIELDS else _lines(value)
+        setattr(contractor, field, value)
+    if contractor.trade != Trade.OTHER:
+        contractor.trade_other = ""
+
+
 @transaction.atomic
 def create_contractor(actor: AnyUser, home: Home, **fields: Any) -> Contractor:
     _require_write(actor, home)
     contractor = Contractor(home=home)
-    _apply(contractor, CONTRACTOR_FIELDS, fields)
+    _apply_contractor(contractor, fields)
     contractor.full_clean()
     contractor.save()
+    audit.record_object("contractor.created", actor=actor, home_id=home.id, title=contractor.name)
     return contractor
 
 
+@transaction.atomic
 def update_contractor(actor: AnyUser, contractor: Contractor, **changes: Any) -> Contractor:
     _require_write(actor, contractor.home)
-    _apply(contractor, CONTRACTOR_FIELDS, changes)
+    _apply_contractor(contractor, changes)
     contractor.full_clean()
     contractor.save()
+    audit.record_object(
+        "contractor.updated",
+        actor=actor,
+        home_id=contractor.home_id,
+        title=contractor.name,
+        fields=sorted(changes),
+    )
     return contractor
 
 
@@ -232,9 +276,77 @@ def delete_contractor(actor: AnyUser, contractor: Contractor) -> None:
     _require_write(actor, contractor.home)
     Task.objects.filter(contractor=contractor).update(contractor=None)
     contractor.soft_delete()
+    audit.record_object(
+        "contractor.deleted", actor=actor, home_id=contractor.home_id, title=contractor.name
+    )
+
+
+def contractor_named(actor: AnyUser, home: Home, name: str) -> Contractor | None:
+    """The contractor of the home with this name, made on the spot if there is none yet.
+
+    The single field of a task (docs/adr/0045): a name picked from the list finds its
+    contractor, a new name creates one. Case is not a difference; empty means nobody.
+    """
+    wanted = _one_line(name)
+    if not wanted:
+        return None
+    for known in contractors_of(home):
+        if known.name.casefold() == wanted.casefold():
+            return known
+    return create_contractor(actor, home, name=wanted)
+
+
+def tasks_of_contractor(contractor: Contractor) -> models.QuerySet[Task]:
+    return Task.objects.filter(home=contractor.home_id, contractor=contractor).select_related(
+        "room"
+    )
 
 
 # ---------- tasks ----------
+
+
+def _sync_season(task: Task, changes: dict[str, Any]) -> None:
+    """Make the months of the task agree with its season (docs/adr/0045).
+
+    A predefined season takes the window of the hemisphere of the home. Months given without
+    a season (a client that predates seasons) make a custom one; no season means no months.
+    """
+    if "season" not in changes and {"season_start_month", "season_end_month"} & set(changes):
+        given = task.season_start_month is not None or task.season_end_month is not None
+        task.season = Season.CUSTOM if given else ""
+    window = recurrence.season_window(task.season, task.home.hemisphere)
+    if window is not None:
+        task.season_start_month, task.season_end_month = window
+    elif not task.season:
+        task.season_start_month = task.season_end_month = None
+
+
+@transaction.atomic
+def resync_seasons(home: Home) -> int:
+    """Give the tasks of a home on a predefined season the window of its hemisphere."""
+    changed = 0
+    for task in Task.objects.filter(home=home, season__in=recurrence.PREDEFINED_SEASONS):
+        window = recurrence.season_window(task.season, home.hemisphere)
+        if window is not None and window != (task.season_start_month, task.season_end_month):
+            task.season_start_month, task.season_end_month = window
+            task.save(update_fields=["season_start_month", "season_end_month", "updated_at"])
+            changed += 1
+    return changed
+
+
+def _check_estimate(task: Task, *, before: int | None = None, creating: bool = True) -> None:
+    """The estimated duration is between a minute and thirty days (docs/adr/0045).
+
+    Held only when it is set or changed: a task kept from before the bound (a duration of 0
+    was accepted) can still be edited for something else.
+    """
+    minutes = task.estimated_minutes
+    if not creating and minutes == before:
+        return
+    if minutes is not None and not durations.within_bounds(minutes):
+        raise ValidationError(
+            {"estimated_minutes": _("Give a duration between a minute and thirty days.")}
+        )
 
 
 def _check_links(home: Home, task: Task) -> None:
@@ -270,6 +382,8 @@ def create_task(
     _require_write(actor, home)
     task = Task(home=home)
     _apply(task, TASK_FIELDS, fields)
+    _sync_season(task, fields)
+    _check_estimate(task)
     _check_links(home, task)
     _check_date(due_on, "due_on")
     _check_due(task, due_on)
@@ -289,7 +403,11 @@ def update_task(
 ) -> Task:
     """Change a task. `due_on`, if given, moves the occurrence that is open."""
     _require_write(actor, task.home)
+    estimate_before = task.estimated_minutes
     _apply(task, TASK_FIELDS, changes)
+    if _SEASON_FIELDS & set(changes):
+        _sync_season(task, changes)
+    _check_estimate(task, before=estimate_before, creating=False)
     current = open_occurrence_of(task)
     new_due = (current.due_on if current else None) if due_on is _UNSET else due_on
     _check_links(task.home, task)

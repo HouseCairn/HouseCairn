@@ -22,7 +22,16 @@ from housecairn.tasks.storage import attachment_storage
 
 def _contractors(home: Home) -> list[dict[str, Any]]:
     return [
-        {"id": str(c.id), "name": c.name, "trade": c.trade, "note": c.note}
+        {
+            "id": str(c.id),
+            "name": c.name,
+            "trade": c.trade,
+            "trade_other": c.trade_other,
+            "phone": c.phone,
+            "email": c.email,
+            "address": c.address,
+            "note": c.note,
+        }
         for c in Contractor.objects.filter(home=home).order_by("created_at", "id")
     ]
 
@@ -46,6 +55,7 @@ def _tasks(home: Home) -> list[dict[str, Any]]:
             "repeat_mode": t.repeat_mode,
             "repeat_unit": t.repeat_unit,
             "repeat_interval": t.repeat_interval,
+            "season": t.season,
             "season_start_month": t.season_start_month,
             "season_end_month": t.season_end_month,
             "hide_days_before": t.hide_days_before,

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 22:50+0000\n"
+"POT-Creation-Date: 2026-11-08 23:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -22,11 +22,17 @@ msgstr ""
 msgid "Home"
 msgstr "Logement"
 
-msgid "The page of one home, at `/h/<home id>/`: its name, your role in it and its currency. Its address stays the same as long as the home exists. The tabs above the page switch between the **Overview**, **Household and roles** (its members) and, for owners, the **Audit log**; they are the same on those three pages."
-msgstr "La page d'un logement, sur `/h/<home id>/` : son nom, votre rôle et sa devise. Son adresse ne change pas tant que le logement existe. Les onglets au-dessus de la page passent de la **Vue d'ensemble** à **Foyer et rôles** (ses membres) et, pour les propriétaires, au **Journal d'audit** ; ils sont les mêmes sur ces trois pages."
+msgid "The page of one home, at `/h/<home id>/`: its name, your role in it, its currency and its hemisphere. Its address stays the same as long as the home exists. The tabs above the page switch between the **Overview**, **Household and roles** (its members) and, for owners, the **Audit log**; they are the same on those three pages."
+msgstr "La page d'un logement, sur `/h/<home id>/` : son nom, votre rôle, sa devise et son hémisphère. Son adresse ne change pas tant que le logement existe. Les onglets au-dessus de la page passent de la **Vue d'ensemble** à **Foyer et rôles** (ses membres) et, pour les propriétaires, au **Journal d'audit** ; ils sont les mêmes sur ces trois pages."
 
 msgid "When the home requires signing in through a provider and your session did not, the page asks you to continue with that provider instead."
 msgstr "Quand le logement exige une connexion par un fournisseur que votre session n'a pas utilisé, la page vous propose de continuer avec ce fournisseur."
+
+msgid "Name, currency and hemisphere"
+msgstr "Nom, devise et hémisphère"
+
+msgid "Owners and members open **Name, currency and hemisphere** (`/h/<home id>/edit/`) to change them. The hemisphere, **Northern** by default, decides what spring, summer, autumn, winter and the heating season mean for the [tasks](task-form.md): it is never guessed from a place. Changing it moves the window of the tasks that use a predefined season. Read-only members do not see the row."
+msgstr "Les propriétaires et les membres ouvrent **Nom, devise et hémisphère** (`/h/<home id>/edit/`) pour les changer. L'hémisphère, **Nord** par défaut, décide de ce que veulent dire le printemps, l'été, l'automne, l'hiver et la saison de chauffe pour les [tâches](task-form.md) : il n'est jamais deviné à partir d'un lieu. Le changer déplace la fenêtre des tâches qui utilisent une saison prédéfinie. Les lecteurs seuls ne voient pas la ligne."
 
 msgid "Under **Settings**, a row leads to the [QR labels](qr-labels.md) of the home."
 msgstr "Sous **Réglages**, une ligne mène aux [étiquettes QR](qr-labels.md) du logement."

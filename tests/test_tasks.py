@@ -72,7 +72,7 @@ class TestCreate:
         self, alice: User, alice_home: Home, owner_room: Room, owner_item: Item
     ) -> None:
         contractor = services.create_contractor(
-            alice, alice_home, name="J. Plumber", trade="Plumber"
+            alice, alice_home, name="J. Plumber", trade="plumber"
         )
         task = services.create_task(
             alice,
@@ -630,9 +630,9 @@ class TestQueries:
 class TestContractors:
     def test_crud(self, alice: User, alice_home: Home) -> None:
         contractor = services.create_contractor(
-            alice, alice_home, name="A. Roofer", trade="Roofer", note="n"
+            alice, alice_home, name="A. Roofer", trade="roofer", note="n"
         )
-        services.update_contractor(alice, contractor, trade="Slater")
+        services.update_contractor(alice, contractor, trade="other", trade_other="Slater")
         task = services.create_task(alice, alice_home, title="x", contractor=contractor)
         services.delete_contractor(alice, contractor)
         task.refresh_from_db()
@@ -828,17 +828,18 @@ class TestScreens:
                 "season_start_month": "9",
                 "season_end_month": "11",
                 "hide_days_before": "30",
-                "new_contractor": "A. Plumber",
-                "new_contractor_trade": "Plumber",
+                "contractor_name": "A. Plumber",
                 "labour_budget": "80",
                 "procedure": "**Switch off** first",
-                "estimated_minutes": "60",
+                "duration_value": "1",
+                "duration_unit": "hour",
             },
         )
         assert response.status_code == 302, response.content.decode()[:3000]
         task = Task.objects.get(title="Service the boiler")
         assert task.contractor
-        assert task.contractor.trade == "Plumber"
+        assert task.contractor.name == "A. Plumber"
+        assert task.estimated_minutes == 60
         page = signed_in.get(response["Location"]).content.decode()
         assert "<strong>Switch off</strong>" in page
         assert "Every 12 months, from September to November" in page
@@ -860,24 +861,62 @@ class TestScreens:
         assert response.status_code == 200
         assert "needs a date" in response.content.decode()
 
-    def test_a_contractor_is_one_or_the_other(
+    def test_a_known_name_links_the_contractor_and_a_new_one_makes_it(
         self, signed_in: Client, alice_home: Home, alice: User
     ) -> None:
-        contractor = services.create_contractor(alice, alice_home, name="X")
-        response = signed_in.post(
-            url("create", alice_home),
-            {
-                "title": "x",
-                "priority": "normal",
-                "repeat_mode": "once",
-                "repeat_interval": "1",
-                "repeat_unit": "month",
-                "hide_days_before": "0",
-                "contractor": str(contractor.id),
-                "new_contractor": "Y",
-            },
+        known = services.create_contractor(alice, alice_home, name="X")
+        base = {
+            "priority": "normal",
+            "repeat_mode": "once",
+            "repeat_interval": "1",
+            "repeat_unit": "month",
+            "hide_days_before": "0",
+        }
+        signed_in.post(url("create", alice_home), {**base, "title": "a", "contractor_name": "x "})
+        signed_in.post(url("create", alice_home), {**base, "title": "b", "contractor_name": "Y"})
+        signed_in.post(url("create", alice_home), {**base, "title": "c"})
+        assert Task.objects.get(title="a").contractor == known
+        made = Task.objects.get(title="b").contractor
+        assert made is not None
+        assert made.name == "Y"
+        assert Task.objects.get(title="c").contractor is None
+        assert services.contractors_of(alice_home).count() == 2
+
+    def test_the_field_is_a_text_input_with_suggestions(
+        self, signed_in: Client, alice_home: Home, alice: User
+    ) -> None:
+        services.create_contractor(alice, alice_home, name="Pipes Ltd", trade="plumber")
+        page = signed_in.get(url("create", alice_home)).text
+        assert 'name="contractor_name"' in page
+        assert 'list="contractor-options"' in page
+        assert '<datalist id="contractor-options">' in page
+        assert '<option value="Pipes Ltd">Plumber</option>' in page
+        assert (
+            "<script"
+            not in page.split('<datalist id="contractor-options">')[1].split("</datalist>")[0]
         )
-        assert "not both" in response.content.decode()
+
+    def test_editing_keeps_the_contractor_and_emptying_the_field_clears_it(
+        self, signed_in: Client, alice_home: Home, alice: User, owner_task: Task
+    ) -> None:
+        contractor = services.create_contractor(alice, alice_home, name="Pipes Ltd")
+        services.update_task(alice, owner_task, contractor=contractor)
+        edit = url("edit", alice_home, task_id=owner_task.id)
+        assert 'value="Pipes Ltd"' in signed_in.get(edit).text
+        form = {
+            "title": owner_task.title,
+            "priority": "normal",
+            "repeat_mode": "once",
+            "repeat_interval": "1",
+            "repeat_unit": "month",
+            "hide_days_before": "0",
+        }
+        signed_in.post(edit, {**form, "contractor_name": "Pipes Ltd"})
+        owner_task.refresh_from_db()
+        assert owner_task.contractor == contractor
+        signed_in.post(edit, {**form, "contractor_name": ""})
+        owner_task.refresh_from_db()
+        assert owner_task.contractor is None
 
     def test_edit_and_delete(self, signed_in: Client, alice_home: Home, owner_task: Task) -> None:
         edit = url("edit", alice_home, task_id=owner_task.id)
@@ -1166,7 +1205,7 @@ class TestExportAndDeletion:
         owner_occurrence: Occurrence,
     ) -> None:
         contractor = services.create_contractor(
-            alice, alice_home, name="A. Plumber", trade="Plumber"
+            alice, alice_home, name="A. Plumber", trade="plumber"
         )
         services.update_task(alice, owner_task, contractor=contractor, assignee=alice)
         done = services.complete(alice, owner_occurrence, actual_cost=Decimal("4.5"), note="AAA")

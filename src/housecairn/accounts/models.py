@@ -8,6 +8,8 @@ from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from housecairn.accounts.names import DISPLAY_NAME_MAX_LENGTH
+
 
 class UserManager(DjangoUserManager["User"]):
     """Users sign in with their email address; there is no username."""
@@ -56,6 +58,13 @@ class User(AbstractUser):
     username = None  # type: ignore[assignment]
     email = models.EmailField(_("email address"), unique=True)
     updated_at = models.DateTimeField(_("updated at"), auto_now=True)
+    # How the person is named to the others (docs/adr/0045); see accounts.names.person_name.
+    display_name = models.CharField(
+        _("display name"),
+        max_length=DISPLAY_NAME_MAX_LENGTH,
+        blank=True,
+        help_text=_("How the other members of your homes see you. Optional."),
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS: ClassVar[list[str]] = []

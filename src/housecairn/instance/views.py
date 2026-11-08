@@ -159,6 +159,7 @@ class AuditView(InstanceAdminMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         log = audit.instance_log(self.request.user)
         page = Paginator(log, self.paginate_by).get_page(self.request.GET.get("page"))
+        page.object_list = audit.name_people(page.object_list)
         context["page"] = page
         return context
 
