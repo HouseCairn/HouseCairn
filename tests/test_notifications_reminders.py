@@ -427,6 +427,37 @@ class TestRecipients:
             "bob@example.com",
         }
 
+    @pytest.mark.parametrize("case", ["reader in charge", "inactive in charge", "nobody"])
+    def test_when_no_writer_can_be_reminded_nothing_is_sent(
+        self,
+        alice: User,
+        make_user: Callable[..., User],
+        alice_home: Home,
+        make_task: Callable[..., Occurrence],
+        due: datetime.date,
+        add_member: Callable[[Home, User, Role], Membership],
+        outbox: Any,
+        case: str,
+    ) -> None:
+        """No writer active with a channel: no message, never to a reader alone nor to an
+        inactive account. Alice, the other writer, has no channel; a reader has one."""
+        carol = make_user("carol@example.com")
+        reader = make_user("reader@example.com")
+        add_member(alice_home, carol, Role.READ_ONLY if case == "reader in charge" else Role.MEMBER)
+        add_member(alice_home, reader, Role.READ_ONLY)
+        reachable(reader, days_before=0)
+        if case != "nobody":
+            reachable(carol, days_before=0)
+        if case == "inactive in charge":
+            User.objects.filter(pk=carol.pk).update(is_active=False)
+        make_task()
+        if case != "nobody":
+            Task.objects.update(assignee=carol)  # a reader cannot be chosen: forced here
+        for day in (0, 1, 3, 7):
+            assert reminders.dispatch(at(due + datetime.timedelta(days=day), 9)) == 0
+        assert outbox == []
+        assert not Delivery.objects.exists()
+
     def test_an_inactive_writer_is_not_reminded(
         self,
         alice: User,
