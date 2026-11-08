@@ -492,3 +492,42 @@ class TestRolesScopesAndIsolation:
         anonymous = APIClient()
         for method, address in self.endpoints(alice_home, owner_room, owner_item, photo):
             assert getattr(anonymous, method)(address).status_code in {401, 403}, address
+
+    def test_anonymous_writes_are_refused_and_change_nothing(
+        self, alice_home: Home, owner_room: Room, owner_item: Item, photo: Photo
+    ) -> None:
+        anonymous = APIClient()
+        for method, address, data in self.writes(alice_home, owner_room, owner_item, photo):
+            response = getattr(anonymous, method)(
+                address, data, format="multipart" if "file" in data else "json"
+            )
+            assert response.status_code in {401, 403}, (method, address)
+        assert Room.objects.get(id=owner_room.id).name == "Living room"
+        assert Item.objects.get(id=owner_item.id).name == "Boiler"
+        assert Photo.objects.count() == 1
+        assert Photo.objects.get(id=photo.id).caption == ""
+
+    def test_unknown_and_foreign_identifiers_answer_the_same_404_body(
+        self,
+        client_of_alice: APIClient,
+        bob: User,
+        alice_home: Home,
+        bob_home: Home,
+    ) -> None:
+        """Byte for byte: nothing tells an unknown identifier from one of another home."""
+        theirs_room = services.create_room(bob, bob_home, name="Their room")
+        theirs_item = services.create_item(bob, theirs_room, name="Their item")
+        theirs_photo = services.add_photo(bob, room=theirs_room, upload=upload(image_bytes()))
+        pairs = [
+            ("room-detail", "room_id", theirs_room.id),
+            ("item-detail", "item_id", theirs_item.id),
+            ("photo-detail", "photo_id", theirs_photo.id),
+            ("photo-content", "photo_id", theirs_photo.id),
+            ("photo-thumbnail", "photo_id", theirs_photo.id),
+        ]
+        for name, key, foreign_id in pairs:
+            foreign = client_of_alice.get(api(name, alice_home, **{key: foreign_id}))
+            unknown = client_of_alice.get(api(name, alice_home, **{key: uuid.uuid4()}))
+            assert foreign.status_code == unknown.status_code == 404, name
+            assert foreign.content == unknown.content, name
+            assert foreign["Content-Type"] == unknown["Content-Type"], name

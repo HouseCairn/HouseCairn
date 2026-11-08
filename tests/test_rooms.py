@@ -12,7 +12,8 @@ from django.urls import reverse
 from housecairn.accounts.models import User
 from housecairn.homes.models import Home
 from housecairn.rooms import forms, services
-from housecairn.rooms.models import Item, Room, validate_links
+from housecairn.rooms.models import Item, Photo, Room, validate_links
+from tests.rooms_support import image_bytes, upload
 
 pytest_plugins = ("tests.rooms_fixtures",)
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("media_root")]
@@ -402,6 +403,34 @@ class TestIsolationAndRoles:
         for address in (url("move", alice_home, room_id=owner_room.id),):
             assert client.post(address, {"direction": "up"}).status_code == 404
         assert Room.objects.filter(id=owner_room.id).exists()
+
+    @pytest.mark.parametrize("who", ["bob", "site_admin"])
+    def test_a_stranger_cannot_write_by_post(
+        self,
+        request: pytest.FixtureRequest,
+        client: Client,
+        alice_home: Home,
+        owner_room: Room,
+        owner_item: Item,
+        who: str,
+    ) -> None:
+        """Not a member (nor the instance administrator): 404 and nothing changes."""
+        client.force_login(request.getfixturevalue(who))
+        photo = upload(image_bytes())
+        attempts = [
+            (url("edit", alice_home, room_id=owner_room.id), {"name": "Hacked"}),
+            (url("memory", alice_home, room_id=owner_room.id), {"notes": "Hacked"}),
+            (url("delete", alice_home, room_id=owner_room.id), {}),
+            (url("item-edit", alice_home, item_id=owner_item.id), {"name": "Hacked"}),
+            (url("item-delete", alice_home, item_id=owner_item.id), {}),
+            (url("room-photo-add", alice_home, room_id=owner_room.id), {"file": photo}),
+            (url("item-photo-add", alice_home, item_id=owner_item.id), {"file": photo}),
+        ]
+        for address, data in attempts:
+            assert client.post(address, data).status_code == 404, address
+        assert Room.objects.get(id=owner_room.id).name == "Living room"
+        assert Item.objects.get(id=owner_item.id).name == "Boiler"
+        assert not Photo.objects.exists()
 
     def test_unknown_and_foreign_identifiers_answer_the_same_404(
         self, signed_in: Client, bob: User, alice_home: Home, bob_home: Home
