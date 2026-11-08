@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 22:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Calendar"
+msgstr "Calendrier"
+
+msgid "The tasks of your homes by week, month or year, at `/calendar/` (**Tasks**, then **Calendar**). It shows what is planned, done, postponed and skipped, with the status written in words, and what is still to come for a task that repeats."
+msgstr "Les tâches de vos logements par semaine, par mois ou par année, sur `/calendar/` (**Tâches**, puis **Calendrier**). Il montre ce qui est prévu, fait, reporté et ignoré, avec le statut écrit en toutes lettres, et ce qui reste à venir pour une tâche récurrente."
+
+msgid "**Week, Month, Year**: the three views switch from the bar under the title. The week lists each day with its tasks; the month adds a grid in which every day links to its week and says how many tasks it holds; the year counts the tasks of each month by status and links to it."
+msgstr "**Semaine, Mois, Année** : les trois vues se changent depuis la barre sous le titre. La semaine liste chaque jour avec ses tâches ; le mois ajoute une grille où chaque jour renvoie vers sa semaine et dit combien de tâches il contient ; l'année compte les tâches de chaque mois par statut et renvoie vers lui."
+
+msgid "**Filters**: home (when you belong to several, the default is all of them together), room, person, priority. A person is shown by their name, never by their email address."
+msgstr "**Filtres** : logement (si vous en avez plusieurs, tous ensemble par défaut), pièce, personne, priorité. Une personne est affichée par son nom, jamais par son adresse e-mail."
+
+msgid "**Previous, Next, Today** move by one period. With the focus inside the calendar, the left and right arrows do the same and `T` goes to today; the shortcuts work nowhere else on the page."
+msgstr "**Précédent, Suivant, Aujourd'hui** avancent d'une période. Quand le focus est dans le calendrier, les flèches gauche et droite font de même et `T` va à aujourd'hui ; les raccourcis ne fonctionnent nulle part ailleurs sur la page."
+
+msgid "**Done** marks a task done in one tap, with **Undo** on the page you come back to, exactly as on [Today](today.md). A reader of a home sees its tasks but has no **Done** button."
+msgstr "**Fait** marque une tâche faite en un geste, avec **Annuler** sur la page où vous revenez, comme sur [Aujourd'hui](today.md). Un lecteur d'un logement voit ses tâches mais n'a pas de bouton **Fait**."
+
+msgid "**Forecast**: the dates after the open occurrence of a task that repeats are computed from its rule and marked as forecast. They are not created until the task is done; they have no button."
+msgstr "**Prévision** : les dates qui suivent l'occurrence ouverte d'une tâche récurrente sont calculées d'après sa règle et marquées comme prévisions. Elles ne sont créées qu'une fois la tâche faite ; elles n'ont pas de bouton."
+
+msgid "The range is limited to 400 days and 5 000 entries; past that the screen says so, and narrowing the filters shows the rest. The same data is in the [API](../api/index.md) (`GET /api/v1/calendar/?from=&to=`)."
+msgstr "La période est limitée à 400 jours et 5 000 entrées ; au-delà, l'écran le dit, et réduire les filtres montre le reste. Les mêmes données sont dans l'[API](../api/index.md) (`GET /api/v1/calendar/?from=&to=`)."
+
+msgid "Feeds"
+msgstr "Flux"
+
+msgid "**Feeds** (`/calendar/feeds/`) gives the address of a calendar that Google Calendar, Apple Calendar, Thunderbird or Home Assistant can subscribe to; see the [guide](../guides/calendar.md). You can have one feed per home and one for all your homes."
+msgstr "**Flux** (`/calendar/feeds/`) donne l'adresse d'un calendrier auquel Google Agenda, Calendrier d'Apple, Thunderbird ou Home Assistant peuvent s'abonner ; voir le [guide](../guides/calendar.md). Vous pouvez avoir un flux par logement et un pour tous vos logements."
+
+msgid "**Create** shows the address once: copy it then. Only a digest is kept, so nobody, you included, can read it again."
+msgstr "**Créer** affiche l'adresse une seule fois : copiez-la alors. Seule une empreinte est conservée, personne, vous compris, ne peut la relire."
+
+msgid "**New address** replaces the secret; the old address stops working at once."
+msgstr "**Nouvelle adresse** remplace le secret ; l'ancienne adresse cesse de fonctionner aussitôt."
+
+msgid "**Revoke** deletes the feed. Leaving a home revokes your feed of that home."
+msgstr "**Révoquer** supprime le flux. Quitter un logement révoque votre flux de ce logement."
+
+msgid "A feed shows the title, home, room, date, status and a link to each task, and nothing more. It is a secret address: anyone who has it reads the feed, so share it with nobody."
+msgstr "Un flux montre le titre, le logement, la pièce, la date, le statut et un lien vers chaque tâche, et rien de plus. C'est une adresse secrète : quiconque la possède lit le flux, ne la partagez donc avec personne."
+

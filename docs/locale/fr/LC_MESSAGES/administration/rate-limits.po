@@ -130,3 +130,8 @@ msgstr "les conserve dans la base de données (la table est créée au démarrag
 #~ msgid "Inviting to the instance"
 #~ msgstr "Inviter à l'instance"
 
+msgid "Reading a [calendar feed](../guides/calendar.md)"
+msgstr "Lecture d'un [flux de calendrier](../guides/calendar.md)"
+
+msgid "60 a minute per client address"
+msgstr "60 par minute par adresse client"

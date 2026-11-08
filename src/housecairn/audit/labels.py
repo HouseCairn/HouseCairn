@@ -32,6 +32,9 @@ LABELS: dict[str, Promise] = {
     "photo.deleted": _("Photo deleted from %(title)s"),
     "attachment.added": _("File added to the task %(title)s"),
     "attachment.deleted": _("File deleted from the task %(title)s"),
+    "calendar.feed_created": _("Calendar feed created"),
+    "calendar.feed_regenerated": _("Calendar feed given a new address"),
+    "calendar.feed_revoked": _("Calendar feed revoked"),
     # Instance scope.
     "instance_invitation.sent": _("Instance invitation sent"),
     "instance_invitation.resent": _("Instance invitation sent again"),

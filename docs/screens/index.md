@@ -39,6 +39,7 @@ task-form
 history
 display-preferences
 notifications
+calendar
 stock
 stock-item
 stock-item-form

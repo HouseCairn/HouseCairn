@@ -12,4 +12,5 @@ tasks-and-recurrence
 today-and-history
 stock
 notifications
+calendar
 ```

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 18:09+0000\n"
+"POT-Creation-Date: 2026-11-08 22:31+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -318,6 +318,18 @@ msgid "File deleted from the task %(title)s"
 msgstr "Fichier supprimé de la tâche %(title)s"
 
 #: audit/labels.py
+msgid "Calendar feed created"
+msgstr "Flux de calendrier créé"
+
+#: audit/labels.py
+msgid "Calendar feed given a new address"
+msgstr "Flux de calendrier : nouvelle adresse"
+
+#: audit/labels.py
+msgid "Calendar feed revoked"
+msgstr "Flux de calendrier révoqué"
+
+#: audit/labels.py
 msgid "Instance invitation sent"
 msgstr "Invitation à l'instance envoyée"
 
@@ -429,6 +441,71 @@ msgstr "entrée d'audit"
 msgid "audit entries"
 msgstr "entrées d'audit"
 
+#: calendar/apps.py core/templatetags/tabs.py tasks/models.py
+#: templates/calendar/calendar.html templates/calendar/feeds.html
+msgid "Calendar"
+msgstr "Calendrier"
+
+#: calendar/feeds.py
+msgid "You already have a feed for this. Regenerate it to get a new address."
+msgstr "Vous avez déjà un flux pour cela. Demandez-lui une nouvelle adresse."
+
+#: calendar/ics.py templates/calendar/_entry.html
+msgid "forecast"
+msgstr "prévision"
+
+#: calendar/ics.py
+msgid "Status"
+msgstr "Statut"
+
+#: calendar/ics.py templates/calendar/calendar.html
+msgctxt "calendar"
+msgid "Home"
+msgstr "Logement"
+
+#: calendar/ics.py rooms/forms.py tasks/forms.py tasks/models.py
+#: templates/calendar/calendar.html templates/tasks/history.html
+#: templates/tasks/task_list.html
+msgid "Room"
+msgstr "Pièce"
+
+#: calendar/ics.py templates/calendar/calendar.html
+#: templates/calendar/feeds.html templates/tasks/my_home.html
+msgid "All my homes"
+msgstr "Tous mes logements"
+
+#: calendar/models.py
+msgid "regenerated at"
+msgstr "adresse renouvelée le"
+
+#: calendar/models.py
+msgid "calendar feed"
+msgstr "flux de calendrier"
+
+#: calendar/models.py
+msgid "calendar feeds"
+msgstr "flux de calendrier"
+
+#: calendar/services.py
+msgid "A member"
+msgstr "Un membre"
+
+#: calendar/views.py
+msgid "Week"
+msgstr "Semaine"
+
+#: calendar/views.py templates/calendar/calendar.html
+msgid "Month"
+msgstr "Mois"
+
+#: calendar/views.py
+msgid "Year"
+msgstr "Année"
+
+#: calendar/views.py
+msgid "Feed revoked: its address no longer works."
+msgstr "Flux révoqué : son adresse ne fonctionne plus."
+
 #: core/apps.py
 msgid "Core"
 msgstr "Cœur"
@@ -437,8 +514,8 @@ msgstr "Cœur"
 msgid "deleted at"
 msgstr "supprimé le"
 
-#: core/templatetags/tabs.py tasks/agenda.py templates/tasks/_due.html
-#: templates/tasks/today.html
+#: core/templatetags/tabs.py tasks/agenda.py templates/calendar/calendar.html
+#: templates/tasks/_due.html templates/tasks/today.html
 msgid "Today"
 msgstr "Aujourd'hui"
 
@@ -1874,11 +1951,6 @@ msgstr ""
 "Ce que cachent les murs et le sol, ou tout autre souvenir des travaux faits. "
 "Exemple : canalisation d'eau le long du mur nord, à 30 cm du sol."
 
-#: rooms/forms.py tasks/forms.py tasks/models.py templates/tasks/history.html
-#: templates/tasks/task_list.html
-msgid "Room"
-msgstr "Pièce"
-
 #: rooms/forms.py
 msgid "Where the item is. Choose another room to move it."
 msgstr "Où se trouve l'élément. Choisissez une autre pièce pour le déplacer."
@@ -2402,7 +2474,7 @@ msgstr "Fournisseur supprimé."
 msgid "No room"
 msgstr "Aucune pièce"
 
-#: tasks/agenda.py
+#: tasks/agenda.py templates/calendar/calendar.html
 msgid "Nobody yet"
 msgstr "Personne pour l'instant"
 
@@ -2501,7 +2573,7 @@ msgstr "Basse"
 msgid "Normal"
 msgstr "Normale"
 
-#: tasks/models.py
+#: tasks/models.py templates/calendar/_entry.html
 msgid "High"
 msgstr "Haute"
 
@@ -2533,22 +2605,25 @@ msgstr "mois"
 msgid "years"
 msgstr "ans"
 
-#: tasks/models.py
+#: tasks/models.py templates/calendar/calendar.html
 msgid "Planned"
 msgstr "Prévue"
 
-#: tasks/models.py templates/tasks/_occurrence_row.html
+#: tasks/models.py templates/calendar/_entry.html
+#: templates/calendar/calendar.html templates/tasks/_occurrence_row.html
 #: templates/tasks/history.html templates/tasks/task_detail.html
 #: templates/tasks/task_list.html
 msgctxt "task"
 msgid "Done"
 msgstr "Fait"
 
-#: tasks/models.py templates/tasks/task_detail.html
+#: tasks/models.py templates/calendar/calendar.html
+#: templates/tasks/task_detail.html
 msgid "Postponed"
 msgstr "Reportée"
 
-#: tasks/models.py templates/tasks/history.html
+#: tasks/models.py templates/calendar/calendar.html
+#: templates/tasks/history.html
 msgid "Skipped"
 msgstr "Ignorée"
 
@@ -2668,13 +2743,9 @@ msgstr "occurrences"
 msgid "Urgency"
 msgstr "Urgence"
 
-#: tasks/models.py
+#: tasks/models.py templates/calendar/calendar.html
 msgid "Person"
 msgstr "Personne"
-
-#: tasks/models.py
-msgid "Calendar"
-msgstr "Calendrier"
 
 #: tasks/models.py
 msgid "1 week"
@@ -3120,6 +3191,131 @@ msgstr "Plus anciennes"
 msgid "Skip to content"
 msgstr "Aller au contenu"
 
+#: templates/calendar/calendar.html
+msgid "Calendar views"
+msgstr "Vues du calendrier"
+
+#: templates/calendar/calendar.html
+msgid "Feeds"
+msgstr "Flux"
+
+#: templates/calendar/calendar.html
+msgid "Filter the calendar"
+msgstr "Filtrer le calendrier"
+
+#: templates/calendar/calendar.html templates/tasks/history.html
+#: templates/tasks/task_list.html
+msgid "All rooms"
+msgstr "Toutes les pièces"
+
+#: templates/calendar/calendar.html
+msgid "Everybody"
+msgstr "Tout le monde"
+
+#: templates/calendar/calendar.html
+msgid "Priority"
+msgstr "Priorité"
+
+#: templates/calendar/calendar.html
+msgid "Any priority"
+msgstr "Toute priorité"
+
+#: templates/calendar/calendar.html templates/tasks/history.html
+#: templates/tasks/task_list.html
+msgid "Filter"
+msgstr "Filtrer"
+
+#: templates/calendar/calendar.html
+msgid "Period"
+msgstr "Période"
+
+#: templates/calendar/calendar.html templates/instance/usage.html
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Previous"
+msgstr "Précédent"
+
+#: templates/calendar/calendar.html
+#, python-format
+msgid "Week of %(day)s"
+msgstr "Semaine du %(day)s"
+
+#: templates/calendar/calendar.html templates/instance/usage.html
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Next"
+msgstr "Suivant"
+
+#: templates/calendar/calendar.html
+msgid "Too many tasks to show them all: narrow the range or use the filters."
+msgstr "Trop de tâches pour tout afficher : réduisez la période ou utilisez les filtres."
+
+#: templates/calendar/calendar.html
+msgid "Nothing planned."
+msgstr "Rien de prévu."
+
+#: templates/calendar/calendar.html
+#, python-format
+msgid "%(counter)s task"
+msgid_plural "%(counter)s tasks"
+msgstr[0] "%(counter)s tâche"
+msgstr[1] "%(counter)s tâches"
+
+#: templates/calendar/calendar.html
+msgid "Nothing planned this month."
+msgstr "Rien de prévu ce mois-ci."
+
+#: templates/calendar/feeds.html
+msgid "Calendar feeds"
+msgstr "Flux de calendrier"
+
+#: templates/calendar/feeds.html
+msgid ""
+"A feed lets a calendar application (Google Calendar, Apple Calendar, "
+"Thunderbird, Home Assistant) show your tasks. Its address is a secret: "
+"anyone who has it sees the tasks of the feed, so share it with nobody. It "
+"shows titles, home, room, date and status, never notes, costs or files."
+msgstr "Un flux permet à une application de calendrier (Google Agenda, Calendrier d'Apple, Thunderbird, Home Assistant) d'afficher vos tâches. Son adresse est secrète : quiconque la possède voit les tâches du flux, ne la partagez donc avec personne. Il montre les titres, le logement, la pièce, la date et le statut, jamais les notes, les coûts ni les fichiers."
+
+#: templates/calendar/feeds.html
+msgid "Your new feed address"
+msgstr "L'adresse de votre nouveau flux"
+
+#: templates/calendar/feeds.html
+msgid "Copy it now: it is shown only once."
+msgstr "Copiez-la maintenant : elle n'est affichée qu'une fois."
+
+#: templates/calendar/feeds.html
+#, python-format
+msgid "Active since %(day)s"
+msgstr "Actif depuis le %(day)s"
+
+#: templates/calendar/feeds.html
+#, python-format
+msgid "new address on %(day)s"
+msgstr "nouvelle adresse le %(day)s"
+
+#: templates/calendar/feeds.html
+msgid "No feed"
+msgstr "Aucun flux"
+
+#: templates/calendar/feeds.html
+msgid "New address"
+msgstr "Nouvelle adresse"
+
+#: templates/calendar/feeds.html templates/homes/household.html
+#: templates/instance/overview.html
+msgid "Revoke"
+msgstr "Révoquer"
+
+#: templates/calendar/feeds.html
+msgid "Create"
+msgstr "Créer"
+
+#: templates/calendar/feeds.html
+msgid ""
+"A new address stops the old one at once. Revoking deletes the feed. Leaving "
+"a home revokes your feed of that home."
+msgstr "Une nouvelle adresse arrête l'ancienne aussitôt. Révoquer supprime le flux. Quitter un logement révoque votre flux de ce logement."
+
 #: templates/core/about.html templates/core/more.html
 msgid "About"
 msgstr "À propos"
@@ -3418,10 +3614,6 @@ msgstr "jusqu'au %(date)s"
 #: templates/homes/household.html templates/instance/overview.html
 msgid "Send again"
 msgstr "Renvoyer"
-
-#: templates/homes/household.html templates/instance/overview.html
-msgid "Revoke"
-msgstr "Révoquer"
 
 #: templates/homes/household.html
 msgid "Sign-in"
@@ -3904,16 +4096,6 @@ msgstr "%(space)s en %(files)s fichiers, %(percent)s %% du quota"
 #: templates/instance/usage.html
 msgid "No home yet."
 msgstr "Aucun logement pour l'instant."
-
-#: templates/instance/usage.html templates/tasks/history.html
-#: templates/tasks/task_list.html
-msgid "Previous"
-msgstr "Précédent"
-
-#: templates/instance/usage.html templates/tasks/history.html
-#: templates/tasks/task_list.html
-msgid "Next"
-msgstr "Suivant"
 
 #: templates/notifications/channel.html
 #, python-format
@@ -4465,10 +4647,6 @@ msgstr "La tâche, son historique et ses fichiers disparaissent des écrans."
 msgid "Filters"
 msgstr "Filtres"
 
-#: templates/tasks/history.html templates/tasks/task_list.html
-msgid "All rooms"
-msgstr "Toutes les pièces"
-
 #: templates/tasks/history.html
 msgid "All items"
 msgstr "Tous les éléments"
@@ -4500,10 +4678,6 @@ msgstr "Du"
 #: templates/tasks/history.html
 msgid "To"
 msgstr "Au"
-
-#: templates/tasks/history.html templates/tasks/task_list.html
-msgid "Filter"
-msgstr "Filtrer"
 
 #: templates/tasks/history.html
 msgid "Clear"
@@ -4540,10 +4714,6 @@ msgstr "Rien de fait pour l'instant."
 #: templates/tasks/my_home.html
 msgid "My home"
 msgstr "Mon accueil"
-
-#: templates/tasks/my_home.html
-msgid "All my homes"
-msgstr "Tous mes logements"
 
 #: templates/tasks/my_home.html templates/tasks/task_list.html
 msgid "Show"

@@ -8,6 +8,15 @@ with it on the project's
 
 ### New
 
+- **Calendar and calendar feeds.** See your tasks by week, month or year, with filters by home,
+  room, person and priority, **Done** and **Undo** in place, and the next dates of a task that
+  repeats marked as forecast. **Feeds** gives a secret address per home, or for all your homes,
+  that Google Calendar, Apple Calendar, Thunderbird or Home Assistant can subscribe to: it shows
+  titles, home, room, date and status, never notes, costs or files. You can get a new address or
+  revoke it at any time; leaving a home revokes your feed of it. See
+  [Calendar](screens/calendar.md) and [Calendar and feeds](guides/calendar.md). New dependency:
+  `icalendar`.
+
 - **Notifications.** Each person adds their own channels (ntfy, Telegram, Signal, Matrix,
   Gotify, email and other Apprise services) on **More, Notifications**, tests them, and
   chooses when reminders come: days before the due date, time of day, quiet hours, a daily

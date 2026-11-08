@@ -87,4 +87,5 @@ urlpatterns = [
     path("homes/<uuid:home_id>/search/", rooms_api.SearchView.as_view(), name="home-search"),
     path("invitations/accept/", AcceptInvitationView.as_view(), name="invitation-accept"),
     path("", include("housecairn.notifications.api_urls")),  # docs/adr/0043
+    path("", include("housecairn.calendar.api_urls")),  # docs/adr/0052
 ]

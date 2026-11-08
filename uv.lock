@@ -512,6 +512,7 @@ dependencies = [
     { name = "drf-spectacular" },
     { name = "drf-spectacular-sidecar" },
     { name = "gunicorn" },
+    { name = "icalendar" },
     { name = "markdown-it-py" },
     { name = "pillow" },
     { name = "python-dateutil" },
@@ -558,6 +559,7 @@ requires-dist = [
     { name = "drf-spectacular", specifier = ">=0.28" },
     { name = "drf-spectacular-sidecar", specifier = ">=2025.1.1" },
     { name = "gunicorn", specifier = ">=23" },
+    { name = "icalendar", specifier = ">=7.3,<8" },
     { name = "markdown-it-py", specifier = ">=4" },
     { name = "pillow", specifier = ">=12" },
     { name = "psycopg", extras = ["binary"], marker = "extra == 'postgres'", specifier = ">=3.2" },
@@ -639,6 +641,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/cf/c7/1007bdaf517b086df3c54d06de6c47f099704fd8bd6c2b5013e749833ee4/hypothesis-6.170.14-cp315-abi3.abi3t-win32.whl", hash = "sha256:b1d9baaef909100fd1a6ba5457ecffa4a184e820c7f0bd3d4589f14870f5cade", size = 684627, upload-time = "2026-10-30T06:50:49.194Z" },
     { url = "https://files.pythonhosted.org/packages/51/d1/68539ecbe240de4afc03c5fa120ecf0875690708f2a97914352ae3172d36/hypothesis-6.170.14-cp315-abi3.abi3t-win_amd64.whl", hash = "sha256:a725b854c5df088c5a579f1c323657258abe5d8e32e16cd07beb48960f31c070", size = 690617, upload-time = "2026-10-30T06:51:42.268Z" },
     { url = "https://files.pythonhosted.org/packages/66/d7/9671c708cdab1c49ff96344f6730ccd76a7e1c2bdbbb2bed93bc9d6a18b4/hypothesis-6.170.14-cp315-abi3.abi3t-win_arm64.whl", hash = "sha256:75f60ef38c010742339a9b2ec2a44cb0aed6c6c8f1455ad6a6de48f5216a72b2", size = 688595, upload-time = "2026-10-30T06:51:37.945Z" },
+]
+
+[[package]]
+name = "icalendar"
+version = "7.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dateutil" },
+    { name = "tzdata" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/47/2b/1bbf82d316df18c3331d9a06228819c8a5814ceda545a3e9980e52ffce1b/icalendar-7.3.0.tar.gz", hash = "sha256:7bd001c8e648205e1bde5c6a5b77096598e8d0893dcf57755c6c597635620132", size = 525811, upload-time = "2026-08-19T15:10:21.05Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bb/82/50bff78b0bb0c7d7c0cb39e0ee189b92f611fff6bd7cf57f25e92d5a7551/icalendar-7.3.0-py3-none-any.whl", hash = "sha256:8355acfe17be81b368f0b1e3740817cea9b56ea889931f8f1a87c62f2d28db0b", size = 542540, upload-time = "2026-08-19T15:10:19.525Z" },
 ]
 
 [[package]]

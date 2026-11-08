@@ -38,6 +38,7 @@ dependencies = [
   "pillow>=12",
   "markdown-it-py>=4",
   "apprise>=2.1",
+  "icalendar>=7.3,<8",
 ]
 
 [project.optional-dependencies]

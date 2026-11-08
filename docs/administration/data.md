@@ -36,6 +36,7 @@ The archive is a zip:
 | `stock_items` | `id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`). |
 | `stock_suppliers` | `id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`. |
 | `stock_movements` | `id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`. |
+| `calendar_feeds` | `id`, `created_at`, `regenerated_at` of each [calendar feed](../guides/calendar.md) of the home. Never the address or its secret, which is not kept; the combined feed of a person belongs to the person, not to a home. |
 | `files` | `path` and `size` of each file in `files/`. |
 
 Photos and the images attached to tasks are exported as they are stored, already
@@ -51,7 +52,7 @@ holds the home it was made for and nothing of another.
 
 An owner deletes the home from its page (**Delete this home**): type its exact
 name. The home and everything in it go for good, for all its members: members,
-invitations, events, its audit log and its files; an API token left without a
+invitations, events, calendar feeds, its audit log and its files; an API token left without a
 home is revoked. **There is no grace period and no way back**: export first.
 The audit log of the instance records that a home was deleted, without its
 name.
@@ -65,7 +66,7 @@ read-only volume), the home is still deleted and the error is logged by
 ## Erasure of an account
 
 **Delete my account** (see [Account pages](../screens/account.md)) erases the
-account, its sign-in methods, devices and API tokens, the homes where it is
+account, its sign-in methods, devices, API tokens and calendar feeds, the homes where it is
 the only member, and the invitations to its address. It is refused for the only
 administrator and for the only owner of a home with other members: hand
 ownership over, or delete the home, first. The audit log keeps that it happened

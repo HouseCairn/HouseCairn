@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     "housecairn.tasks",
     "housecairn.stock",
     "housecairn.notifications",
+    "housecairn.calendar",
 ]
 
 MIDDLEWARE = [
