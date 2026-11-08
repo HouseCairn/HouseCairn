@@ -17,7 +17,7 @@ from housecairn.rooms import conf, images, services
 from housecairn.rooms.models import Item, Photo, Room
 from tests.rooms_support import image_bytes, noise_image, upload
 
-pytest_plugins = ("tests.rooms_support",)
+pytest_plugins = ("tests.rooms_fixtures",)
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("media_root")]
 
 

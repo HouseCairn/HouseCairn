@@ -14,7 +14,7 @@ from housecairn.homes.models import Home
 from housecairn.rooms import forms, services
 from housecairn.rooms.models import Item, Room, validate_links
 
-pytest_plugins = ("tests.rooms_support",)
+pytest_plugins = ("tests.rooms_fixtures",)
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("media_root")]
 
 
