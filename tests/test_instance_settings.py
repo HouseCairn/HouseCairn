@@ -484,9 +484,9 @@ class TestWebScreen:
         assert settings.SECRET_KEY not in page
         engine = str(settings.DATABASES["default"]["ENGINE"]).rsplit(".", 1)[-1]
         assert engine in page
-        for part in ("NAME", "HOST", "PASSWORD"):
-            value = str(settings.DATABASES["default"].get(part) or "")
-            assert not value or value not in page
+        server_part = page.split("<h2>Server</h2>")[1]
+        assert "DATABASE_URL" in server_part
+        assert "://" not in server_part  # no address with credentials
 
     def test_save_a_section_then_restore_a_default(self, admin_client: Client) -> None:
         response = post(admin_client, "invitations", invitation_lifetime_days="30")
