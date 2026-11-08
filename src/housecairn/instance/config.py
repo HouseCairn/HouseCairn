@@ -26,7 +26,8 @@ logger = logging.getLogger("housecairn.settings")
 # Seconds another process may take to see a change.
 SNAPSHOT_SECONDS = 5.0
 
-_lock = threading.Lock()
+# Re-entrant: `_apply_derived` runs under it and reads settings through `get_setting`.
+_lock = threading.RLock()
 _snapshot: dict[str, tuple[str, bool]] | None = None
 # The last snapshot read from the database, kept when a later read fails.
 _last_good: dict[str, tuple[str, bool]] | None = None
@@ -80,7 +81,9 @@ def _current() -> dict[str, tuple[str, bool]]:
 
     A failed read keeps the last snapshot that was read (the settings do not vanish
     because the database was busy once), or, before any, the environment and defaults
-    alone; it is tried again after the same delay.
+    alone; it is tried again after the same delay. The snapshot and what follows from it
+    (`_apply_derived`) are published together, under the lock, so that no thread sees
+    one without the other.
     """
     global _snapshot, _last_good, _loaded_at
     with _lock:
@@ -97,8 +100,8 @@ def _current() -> dict[str, tuple[str, bool]]:
         else:
             _last_good = loaded
         _snapshot, _loaded_at = loaded, time.monotonic()
-    _apply_derived(loaded)
-    return loaded
+        _apply_derived(loaded)
+        return loaded
 
 
 def is_locked(key: str) -> bool:

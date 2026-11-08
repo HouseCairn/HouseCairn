@@ -256,6 +256,32 @@ class TestFollowers:
         assert before == settings.ACCOUNT_EMAIL_VERIFICATION
         assert settings.ACCOUNT_EMAIL_NOTIFICATIONS is False
 
+    def test_the_followers_are_applied_under_the_snapshot_lock(
+        self, admin_user: User, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """No other thread can read the new snapshot before what follows from it is set."""
+        import threading
+
+        original = config._apply_derived
+        seen: list[bool] = []
+
+        def watched(snapshot: Any) -> None:
+            def try_lock() -> None:
+                got = config._lock.acquire(blocking=False)
+                if got:
+                    config._lock.release()
+                seen.append(got)
+
+            other = threading.Thread(target=try_lock)
+            other.start()
+            other.join()
+            original(snapshot)
+
+        monkeypatch.setattr(config, "_apply_derived", watched)
+        svc.update(admin_user, {"email_host": "smtp.example.com", "signup_open": True})
+        assert seen
+        assert not any(seen)
+
     def test_a_pinned_verification_is_left_alone(self, admin_user: User) -> None:
         from django.conf import settings
 
