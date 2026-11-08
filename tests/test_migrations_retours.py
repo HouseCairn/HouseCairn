@@ -144,3 +144,47 @@ def test_a_window_becomes_a_predefined_season_or_a_custom_one() -> None:
         assert apps.get_model("tasks", "Task").objects.count() == len(windows)
     finally:
         to_latest()
+
+
+def test_a_trade_becomes_one_of_the_list_or_other_and_comes_back() -> None:
+    try:
+        apps = apps_at(("tasks", "0005_task_season"))
+        home = make_home(apps)
+        contractor_model = apps.get_model("tasks", "Contractor")
+        trades = {
+            "Pipes Ltd": "Plumber",
+            "Sparks": "  électricien ",
+            "Heat": "Chauffagiste",
+            "Pool Co": "Pool maintenance",
+            "Walls": "MAÇON",
+            "Nobody": "",
+        }
+        for name, trade in trades.items():
+            contractor_model.objects.create(home=home, name=name, trade=trade, note="n")
+        apps = apps_at(("tasks", "0006_contractor_record"))
+        rows = {
+            c.name: (c.trade, c.trade_other, c.note)
+            for c in apps.get_model("tasks", "Contractor").objects.all()
+        }
+        assert rows == {
+            "Pipes Ltd": ("plumber", "", "n"),
+            "Sparks": ("electrician", "", "n"),
+            "Heat": ("heating_engineer", "", "n"),
+            "Pool Co": ("other", "Pool maintenance", "n"),
+            "Walls": ("mason", "", "n"),
+            "Nobody": ("", "", "n"),
+        }
+        apps = apps_at(("tasks", "0005_task_season"))
+        back = {c.name: c.trade for c in apps.get_model("tasks", "Contractor").objects.all()}
+        assert back == {
+            "Pipes Ltd": "Plumber",
+            "Sparks": "Electrician",
+            "Heat": "Heating engineer",
+            "Pool Co": "Pool maintenance",
+            "Walls": "Mason",
+            "Nobody": "",
+        }
+        apps = apps_at(("tasks", "0006_contractor_record"))
+        assert apps.get_model("tasks", "Contractor").objects.count() == len(trades)
+    finally:
+        to_latest()

@@ -11,7 +11,14 @@ from housecairn.accounts.models import User
 from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item
 from housecairn.tasks import durations, files, services
-from housecairn.tasks.models import DisplayPreference, Occurrence, Season, Task
+from housecairn.tasks.models import (
+    Contractor,
+    DisplayPreference,
+    Occurrence,
+    Season,
+    Task,
+    Trade,
+)
 
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
 
@@ -79,9 +86,15 @@ class TaskForm(forms.ModelForm[Task]):
     duration_unit = forms.ChoiceField(
         label=_("Unit"), choices=durations.UNIT_CHOICES, initial=durations.HOUR, required=False
     )
-    new_contractor = forms.CharField(label=_("Or a new contractor"), max_length=120, required=False)
-    new_contractor_trade = forms.CharField(
-        label=_("Trade of the new contractor"), max_length=120, required=False
+    contractor_name = forms.CharField(
+        label=_("Contractor"),
+        max_length=120,
+        required=False,
+        widget=forms.TextInput(attrs={"list": "contractor-options", "autocomplete": "off"}),
+        help_text=_(
+            "Pick one from the suggestions or type a new name: it joins the contractors of "
+            "the home when you save."
+        ),
     )
     uploads = MultipleFileField(
         label=_("Photos and files"),
@@ -103,9 +116,7 @@ class TaskForm(forms.ModelForm[Task]):
         "season_end_month",
         "hide_days_before",
         "assignee",
-        "contractor",
-        "new_contractor",
-        "new_contractor_trade",
+        "contractor_name",
         "duration_value",
         "duration_unit",
         "labour_budget",
@@ -127,7 +138,6 @@ class TaskForm(forms.ModelForm[Task]):
             "repeat_unit",
             "hide_days_before",
             "assignee",
-            "contractor",
             "labour_budget",
             "material_budget",
             "procedure",
@@ -147,20 +157,21 @@ class TaskForm(forms.ModelForm[Task]):
         self._choices("room").queryset = services.rooms_for_forms(home)
         self._choices("item").queryset = services.items_for_forms(home)
         self._choices("assignee").queryset = services.members_for_forms(home)
-        self._choices("contractor").queryset = services.contractors_of(home)
-        self.fields["contractor"].required = False
+        self.contractors = list(services.contractors_of(home))
         hemisphere = home.get_hemisphere_display().lower()
         self.fields["season"].help_text = _(
             "The season follows the hemisphere of the home (%(hemisphere)s): change it in the "
             "settings of the home."
         ) % {"hemisphere": hemisphere}
-        for name in ("room", "item", "assignee", "contractor"):
+        for name in ("room", "item", "assignee"):
             self.fields[name].empty_label = "—"  # type: ignore[attr-defined]
         if not with_files:
             del self.fields["uploads"]
         if self.instance.pk:
             current = services.open_occurrence_of(self.instance)
             self.initial.setdefault("due_on", current.due_on if current else None)
+            if self.instance.contractor is not None:
+                self.initial.setdefault("contractor_name", self.instance.contractor.name)
             if self.instance.estimated_minutes:
                 value, unit = durations.split(self.instance.estimated_minutes)
                 self.initial.setdefault("duration_value", value)
@@ -193,9 +204,27 @@ class TaskForm(forms.ModelForm[Task]):
             data["season_start_month"] = data["season_end_month"] = None
         elif data.get("season_start_month") is None or data.get("season_end_month") is None:
             self.add_error("season_start_month", _("Give the first and the last month."))
-        if data.get("new_contractor") and data.get("contractor"):
-            self.add_error("new_contractor", _("Choose a contractor or give a new one, not both."))
         return data
+
+
+class ContractorForm(forms.ModelForm[Contractor]):
+    """A contractor: only the name is required (docs/adr/0045)."""
+
+    class Meta:
+        model = Contractor
+        fields = ["name", "trade", "trade_other", "phone", "email", "address", "note"]
+        widgets = {
+            "address": forms.Textarea(attrs={"rows": 3}),
+            "note": forms.Textarea(attrs={"rows": 3}),
+            "phone": forms.TextInput(attrs={"type": "tel", "autocomplete": "off"}),
+        }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        trade = self.fields["trade"]
+        assert isinstance(trade, forms.ChoiceField)  # noqa: S101 - narrows the type
+        trade.choices = [("", "—"), *Trade.choices]
+        self.fields["trade"].required = False
 
 
 class CompletionForm(forms.ModelForm[Occurrence]):

@@ -22,6 +22,7 @@ from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
 from housecairn.audit import services as audit
+from housecairn.core.text import without_control_characters
 from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership
@@ -40,6 +41,7 @@ from housecairn.tasks.models import (
     Season,
     Status,
     Task,
+    Trade,
 )
 from housecairn.tasks.storage import attachment_storage
 
@@ -80,7 +82,8 @@ RULE_FIELDS = frozenset(
     }
 )
 _SEASON_FIELDS = frozenset({"season", "season_start_month", "season_end_month"})
-CONTRACTOR_FIELDS = frozenset({"name", "trade", "note"})
+CONTRACTOR_FIELDS = frozenset({"name", "trade", "trade_other", "phone", "email", "address", "note"})
+_CONTRACTOR_LINE_FIELDS = frozenset({"name", "trade_other", "phone", "email"})
 COMPLETION_FIELDS = frozenset({"completed_on", "actual_cost", "completion_note"})
 _UNSET: Any = object()
 DATE_SPAN_YEARS = 100
@@ -219,21 +222,52 @@ def upcoming_dates(task: Task, count: int = 3) -> list[datetime.date]:
 # ---------- contractors ----------
 
 
+def _one_line(value: str) -> str:
+    return " ".join(without_control_characters(" ".join(value.split())).split())
+
+
+def _lines(value: str) -> str:
+    """Several lines, each without control characters; the breaks stay."""
+    text = value.replace("\r\n", "\n").replace("\r", "\n")
+    return "\n".join(without_control_characters(line).rstrip() for line in text.split("\n")).strip()
+
+
+def _apply_contractor(contractor: Contractor, changes: dict[str, Any]) -> None:
+    unknown = set(changes) - CONTRACTOR_FIELDS
+    if unknown:
+        raise ValueError(f"Cannot change: {', '.join(sorted(unknown))}")
+    for field, value in changes.items():
+        if isinstance(value, str):
+            value = _one_line(value) if field in _CONTRACTOR_LINE_FIELDS else _lines(value)
+        setattr(contractor, field, value)
+    if contractor.trade != Trade.OTHER:
+        contractor.trade_other = ""
+
+
 @transaction.atomic
 def create_contractor(actor: AnyUser, home: Home, **fields: Any) -> Contractor:
     _require_write(actor, home)
     contractor = Contractor(home=home)
-    _apply(contractor, CONTRACTOR_FIELDS, fields)
+    _apply_contractor(contractor, fields)
     contractor.full_clean()
     contractor.save()
+    audit.record_object("contractor.created", actor=actor, home_id=home.id, title=contractor.name)
     return contractor
 
 
+@transaction.atomic
 def update_contractor(actor: AnyUser, contractor: Contractor, **changes: Any) -> Contractor:
     _require_write(actor, contractor.home)
-    _apply(contractor, CONTRACTOR_FIELDS, changes)
+    _apply_contractor(contractor, changes)
     contractor.full_clean()
     contractor.save()
+    audit.record_object(
+        "contractor.updated",
+        actor=actor,
+        home_id=contractor.home_id,
+        title=contractor.name,
+        fields=sorted(changes),
+    )
     return contractor
 
 
@@ -242,6 +276,30 @@ def delete_contractor(actor: AnyUser, contractor: Contractor) -> None:
     _require_write(actor, contractor.home)
     Task.objects.filter(contractor=contractor).update(contractor=None)
     contractor.soft_delete()
+    audit.record_object(
+        "contractor.deleted", actor=actor, home_id=contractor.home_id, title=contractor.name
+    )
+
+
+def contractor_named(actor: AnyUser, home: Home, name: str) -> Contractor | None:
+    """The contractor of the home with this name, made on the spot if there is none yet.
+
+    The single field of a task (docs/adr/0045): a name picked from the list finds its
+    contractor, a new name creates one. Case is not a difference; empty means nobody.
+    """
+    wanted = _one_line(name)
+    if not wanted:
+        return None
+    for known in contractors_of(home):
+        if known.name.casefold() == wanted.casefold():
+            return known
+    return create_contractor(actor, home, name=wanted)
+
+
+def tasks_of_contractor(contractor: Contractor) -> models.QuerySet[Task]:
+    return Task.objects.filter(home=contractor.home_id, contractor=contractor).select_related(
+        "room"
+    )
 
 
 # ---------- tasks ----------

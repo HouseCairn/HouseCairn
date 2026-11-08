@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% if contractor %}{% translate "Edit the contractor" %}{% else %}{% translate "Add a contractor" %}{% endif %}{% endblock head_title %}
+{% block content %}
+  {% if contractor %}
+    <a class="back-link" href="{% url 'tasks:contractor-detail' home_id=home.id contractor_id=contractor.id %}">{% include "components/icon.html" with name="chevron" %}{{ contractor.name }}</a>
+    <h1>{% translate "Edit the contractor" %}</h1>
+  {% else %}
+    <a class="back-link" href="{% url 'tasks:contractors' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Contractors" %}</a>
+    <h1>{% translate "Add a contractor" %}</h1>
+  {% endif %}
+  <form method="post" class="card" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button-block">{% translate "Save" %}</button>
+  </form>
+{% endblock content %}

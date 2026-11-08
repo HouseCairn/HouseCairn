@@ -68,7 +68,7 @@
         {% if task.estimated_minutes %}<div><dt>{% translate "Estimated duration" %}</dt><dd>{{ task.estimated_minutes|duration }}</dd></div>{% endif %}
         {% if task.labour_budget is not None %}<div><dt>{% translate "Labour budget" %}</dt><dd>{{ task.labour_budget }} {{ home.currency }}</dd></div>{% endif %}
         {% if task.material_budget is not None %}<div><dt>{% translate "Material budget" %}</dt><dd>{{ task.material_budget }} {{ home.currency }}</dd></div>{% endif %}
-        {% if task.contractor %}<div><dt>{% translate "Contractor" %}</dt><dd>{{ task.contractor.name }}{% if task.contractor.trade %} · {{ task.contractor.trade }}{% endif %}{% if task.contractor.note %}<span class="history-note">{{ task.contractor.note }}</span>{% endif %}</dd></div>{% endif %}
+        {% if task.contractor %}<div><dt>{% translate "Contractor" %}</dt><dd><a href="{% url 'tasks:contractor-detail' home_id=home.id contractor_id=task.contractor_id %}">{{ task.contractor.name }}</a>{% if task.contractor.trade_label %} · {{ task.contractor.trade_label }}{% endif %}</dd></div>{% endif %}
         {% if task.notes %}<div><dt>{% translate "Notes" %}</dt><dd class="prose">{{ task.notes|linebreaksbr }}</dd></div>{% endif %}
       </dl>
     </section>

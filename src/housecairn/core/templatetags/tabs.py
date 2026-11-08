@@ -45,6 +45,11 @@ def _tasks(context: template.Context, request: HttpRequest, view: str) -> list[T
         Tab(_("All tasks"), reverse("tasks:list", kwargs=kwargs), view == "tasks:list"),
         Tab(_("History"), reverse("tasks:history", kwargs=kwargs), view == "tasks:history"),
         Tab(
+            _("Contractors"),
+            reverse("tasks:contractors", kwargs=kwargs),
+            view.startswith("tasks:contractor"),
+        ),
+        Tab(
             _("Display preferences"),
             f"{reverse('display-preferences')}?next={quote(here, safe='/')}",
             view == "display-preferences",

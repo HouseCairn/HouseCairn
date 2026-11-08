@@ -10,7 +10,12 @@ from typing import Any
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxLengthValidator, MaxValueValidator, MinValueValidator
+from django.core.validators import (
+    MaxLengthValidator,
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator,
+)
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy
@@ -85,11 +90,48 @@ def _money(label: Any) -> models.DecimalField[Any, Any]:
     )
 
 
+class Trade(models.TextChoices):
+    """The trades of a contractor: a world-wide list plus Other (docs/adr/0045)."""
+
+    PLUMBER = "plumber", _("Plumber")
+    ELECTRICIAN = "electrician", _("Electrician")
+    HEATING_ENGINEER = "heating_engineer", _("Heating engineer")
+    ROOFER = "roofer", _("Roofer")
+    CARPENTER = "carpenter", _("Carpenter")
+    PAINTER = "painter", _("Painter")
+    MASON = "mason", _("Mason")
+    GARDENER = "gardener", _("Gardener")
+    LOCKSMITH = "locksmith", _("Locksmith")
+    CHIMNEY_SWEEP = "chimney_sweep", _("Chimney sweep")
+    OTHER = "other", _("Other")
+
+
+PHONE_PATTERN = r"^[0-9+()./ -]{3,40}$"
+ADDRESS_MAX_LENGTH = 400
+
+
 class Contractor(HomeOwnedModel):
-    """Someone who does work in the home: a trade, a company, a neighbour."""
+    """Someone who does work in the home: a trade, a company, a neighbour (docs/adr/0045)."""
 
     name = models.CharField(_("name"), max_length=120)
-    trade = models.CharField(_("trade"), max_length=120, blank=True)
+    # A code of `Trade`; with Other, what the trade is is said in `trade_other`.
+    trade = models.CharField(_("trade"), max_length=20, choices=Trade.choices, blank=True)
+    trade_other = models.CharField(
+        _("which trade"),
+        max_length=120,
+        blank=True,
+        help_text=_("Only with the trade Other. Example: Pool maintenance."),
+    )
+    phone = models.CharField(
+        _("phone"),
+        max_length=40,
+        blank=True,
+        validators=[RegexValidator(PHONE_PATTERN, _("Digits, spaces and + ( ) - . / only."))],
+    )
+    email = models.EmailField(_("email address"), blank=True)
+    address = models.TextField(
+        _("address"), blank=True, validators=[MaxLengthValidator(ADDRESS_MAX_LENGTH)]
+    )
     note = notes_field(_("note"))
 
     class Meta:
@@ -99,6 +141,18 @@ class Contractor(HomeOwnedModel):
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def trade_label(self) -> str:
+        """The trade as people read it: the list's label, or what Other stands for."""
+        if self.trade == Trade.OTHER:
+            return self.trade_other or str(Trade.OTHER.label)
+        return str(Trade(self.trade).label) if self.trade else ""
+
+    def clean(self) -> None:
+        super().clean()
+        if self.trade == Trade.OTHER and not self.trade_other.strip():
+            raise ValidationError({"trade_other": _("Say which trade.")})
 
 
 class Task(HomeOwnedModel):

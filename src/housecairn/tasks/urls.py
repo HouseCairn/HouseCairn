@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from housecairn.tasks import views
+from housecairn.tasks import contractor_views, views
 
 app_name = "tasks"
 
@@ -43,6 +43,32 @@ urlpatterns = [
         "tasks/<uuid:task_id>/occurrences/<uuid:occurrence_id>/edit/",
         views.OccurrenceEditView.as_view(),
         name="occurrence-edit",
+    ),
+    path("contractors/", contractor_views.ContractorListView.as_view(), name="contractors"),
+    path(
+        "contractors/new/",
+        contractor_views.ContractorCreateView.as_view(),
+        name="contractor-create",
+    ),
+    path(
+        "contractors/<uuid:contractor_id>/",
+        contractor_views.ContractorDetailView.as_view(),
+        name="contractor-detail",
+    ),
+    path(
+        "contractors/<uuid:contractor_id>/edit/",
+        contractor_views.ContractorEditView.as_view(),
+        name="contractor-edit",
+    ),
+    path(
+        "contractors/<uuid:contractor_id>/delete/",
+        contractor_views.ContractorDeleteView.as_view(),
+        name="contractor-delete",
+    ),
+    path(
+        "contractors/<uuid:contractor_id>/contact.vcf",
+        contractor_views.ContractorVcardView.as_view(),
+        name="contractor-vcard",
     ),
     path("task-files/<uuid:attachment_id>/", views.AttachmentFileView.as_view(), name="attachment"),
     path(

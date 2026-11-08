@@ -183,20 +183,14 @@ class TaskFormMixin(HomeTasksMixin, FormView[Any]):
     def split(self, form: forms.TaskForm) -> tuple[dict[str, Any], dict[str, Any]]:
         """Fields of the task, and the rest (date, new contractor, files)."""
         data = dict(form.cleaned_data)
-        extra = {
-            key: data.pop(key, None)
-            for key in ("due_on", "new_contractor", "new_contractor_trade", "uploads")
-        }
+        extra = {key: data.pop(key, None) for key in ("due_on", "contractor_name", "uploads")}
         return data, extra
 
     def contractor_of(self, data: dict[str, Any], extra: dict[str, Any]) -> None:
-        if extra["new_contractor"]:
-            data["contractor"] = services.create_contractor(
-                self.request.user,
-                self.home,
-                name=extra["new_contractor"],
-                trade=extra["new_contractor_trade"] or "",
-            )
+        """The single field: a known contractor is linked, a new name creates one."""
+        data["contractor"] = services.contractor_named(
+            self.request.user, self.home, extra["contractor_name"] or ""
+        )
 
 
 class TaskCreateView(TaskFormMixin):

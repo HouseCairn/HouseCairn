@@ -41,6 +41,7 @@ from housecairn.rooms.api import (
 )
 from housecairn.rooms.models import Item, Room
 from housecairn.tasks import agenda, durations, files, services
+from housecairn.tasks.contractor_views import vcard_response
 from housecairn.tasks.models import (
     CLOSED_STATUSES,
     OPEN_STATUSES,
@@ -51,6 +52,7 @@ from housecairn.tasks.models import (
     Season,
     Status,
     Task,
+    Trade,
 )
 
 _FAR = datetime.date(9999, 12, 31)
@@ -76,10 +78,35 @@ DATE_PARAMS = [
 
 
 class ContractorSerializer(serializers.ModelSerializer[Contractor]):
+    trade = serializers.ChoiceField(
+        choices=[("", "none"), *Trade.choices],
+        required=False,
+        help_text="A trade of the list, or `other` with `trade_other` saying which.",
+    )
+    trade_label = serializers.SerializerMethodField(
+        help_text="The trade as people read it, in the language of the request."
+    )
+
     class Meta:
         model = Contractor
-        fields = ["id", "name", "trade", "note", "created_at", "updated_at"]
+        fields = [
+            "id",
+            "name",
+            "trade",
+            "trade_other",
+            "trade_label",
+            "phone",
+            "email",
+            "address",
+            "note",
+            "created_at",
+            "updated_at",
+        ]
         read_only_fields = ["id", "created_at", "updated_at"]
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_trade_label(self, contractor: Contractor) -> str:
+        return contractor.trade_label
 
 
 class ContractorViewSet(
@@ -91,7 +118,10 @@ class ContractorViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet[Contractor],
 ):
-    """People and companies who do work in a home: name, trade, a note."""
+    """People and companies who do work in a home: name, trade, how to reach them, a note.
+
+    Their tasks are the tasks of the home filtered by `contractor`.
+    """
 
     serializer_class = ContractorSerializer
     queryset = Contractor.objects.none()
@@ -126,6 +156,12 @@ class ContractorViewSet(
     def destroy(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         services.delete_contractor(request.user, self.get_object())
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @extend_schema(responses={(200, "text/vcard"): OpenApiTypes.BINARY})
+    @action(detail=True, methods=["get"], renderer_classes=[BinaryRenderer])
+    def vcard(self, request: Request, *args: Any, **kwargs: Any) -> HttpResponseBase:
+        """The contact file of the contractor (vCard 3.0), readable by every member."""
+        return vcard_response(self.get_object())
 
 
 # ---------- tasks ----------
@@ -259,7 +295,12 @@ class TaskViewSet(
             open_due_on=models.Subquery(open_rows.values("due_on")[:1]),
         )
         params = self.request.query_params
-        for name, field in (("room", "room_id"), ("item", "item_id"), ("assignee", "assignee_id")):
+        for name, field in (
+            ("room", "room_id"),
+            ("item", "item_id"),
+            ("assignee", "assignee_id"),
+            ("contractor", "contractor_id"),
+        ):
             value = _uuid_param(self.request, name)
             if value is not None:
                 tasks = tasks.filter(**{field: value})
@@ -286,6 +327,7 @@ class TaskViewSet(
             OpenApiParameter("room", OpenApiTypes.UUID),
             OpenApiParameter("item", OpenApiTypes.UUID),
             OpenApiParameter("assignee", OpenApiTypes.UUID),
+            OpenApiParameter("contractor", OpenApiTypes.UUID),
             *DATE_PARAMS,
         ]
     )
