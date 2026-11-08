@@ -26,6 +26,7 @@ from housecairn.homes import exports
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Role
 from housecairn.notifications.models import Preference
+from housecairn.rooms.models import Room
 from housecairn.tasks import services as task_services
 from housecairn.tasks.models import Occurrence, Priority, Task
 from tests.htmlscan import inline_code_problems
@@ -507,6 +508,53 @@ class TestIcs:
         summary = str(events_of(body)[0]["SUMMARY"])
         assert "\n" not in summary
         assert "\r" not in summary
+
+    @pytest.mark.parametrize(
+        "hostile",
+        [
+            "Hall\r\nBEGIN:VEVENT\r\nSUMMARY:injected",
+            "Hall\nEND:VCALENDAR\nBEGIN:VCALENDAR",
+            "Semi; colon, comma \\ backslash",
+            "Bidi \u202e\u2066 override \u2069",
+            "Zero\u200bwidth \x1b[31m escape \x00 nul \x7f del",
+        ],
+    )
+    def test_a_room_and_a_home_name_cannot_inject_lines_or_hide_text_either(
+        self,
+        anonymous: Client,
+        alice: User,
+        alice_home: Home,
+        owner_room: Any,
+        feed: Any,
+        hostile: str,
+    ) -> None:
+        # Written under the validation of the forms: the feed must hold even then.
+        make_task(alice, alice_home, "Boiler", 0, room=owner_room)
+        Room.objects.filter(pk=owner_room.pk).update(name=hostile)
+        Home.objects.filter(pk=alice_home.pk).update(name=hostile)
+        body = get_feed(anonymous, feed[1]).content
+        lines = body.split(CRLF)
+        assert all(len(line) <= 75 for line in lines)
+        assert lines.count(b"BEGIN:VCALENDAR") == lines.count(b"END:VCALENDAR") == 1
+        assert lines.count(b"BEGIN:VEVENT") == lines.count(b"END:VEVENT") == 1
+        assert not any(line.startswith(b"SUMMARY:injected") for line in lines)
+        text = body.decode()
+        for char in "\x00\x1b\x7f\u200b\u202e\u2066\u2069":
+            assert char not in text
+        (event,) = events_of(body)
+        assert str(event["LOCATION"]).count("\n") == 0
+        assert "injected" not in str(event["SUMMARY"])
+        assert Calendar.from_ical(body)["X-WR-CALNAME"].count("\n") == 0
+
+    def test_a_title_with_control_and_bidi_characters_is_cleaned(
+        self, anonymous: Client, alice: User, alice_home: Home, feed: Any
+    ) -> None:
+        task = make_task(alice, alice_home, "placeholder", 0)
+        Task.objects.filter(pk=task.pk).update(title="A\u202eB\u2066C\u200bD\x1bE\x00F")
+        text = get_feed(anonymous, feed[1]).content.decode()
+        assert "ABCDEF" in text
+        for char in "\x00\x1b\u200b\u202e\u2066":
+            assert char not in text
 
     def test_nothing_private_leaves_in_the_feed(
         self, anonymous: Client, alice: User, alice_home: Home, owner_room: Any, feed: Any
