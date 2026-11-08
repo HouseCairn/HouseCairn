@@ -36,6 +36,7 @@ from housecairn.rooms.models import (
     Room,
     validate_links,
 )
+from housecairn.stock.models import Article
 
 QUERY = OpenApiParameter("q", str, description="Only names containing this text.")
 
@@ -106,6 +107,15 @@ class HomeResourceMixin(HomeScopedMixin):
 
 class RoomSerializer(serializers.ModelSerializer[Room]):
     item_count = serializers.IntegerField(read_only=True)
+    paint_article = serializers.PrimaryKeyRelatedField(
+        queryset=Article.objects.none(),
+        required=False,
+        allow_null=True,
+        help_text="The tin of paint left over: a stock item of the same home.",
+    )
+    paint_article_name = serializers.CharField(
+        source="paint_article.name", read_only=True, default=None
+    )
 
     class Meta:
         model = Room
@@ -119,7 +129,8 @@ class RoomSerializer(serializers.ModelSerializer[Room]):
             "paint_brand",
             "paint_reference",
             "paint_batch",
-            "paint_stock",
+            "paint_article",
+            "paint_article_name",
             "floor_covering",
             "wall_covering",
             "memory_notes",
@@ -135,6 +146,12 @@ class RoomSerializer(serializers.ModelSerializer[Room]):
                 "help_text": "Left empty, the name is the label of the type (not for `other`).",
             }
         }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        home = self.context.get("home")
+        if home is not None:
+            self.fields["paint_article"].queryset = Article.objects.filter(home=home)  # type: ignore[attr-defined]
 
 
 class RoomViewSet(

@@ -25,7 +25,7 @@ from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms import conf, images
-from housecairn.rooms.models import Item
+from housecairn.rooms.models import Item, Room
 from housecairn.stock.models import Article, Movement, MovementKind, Supplier
 
 if TYPE_CHECKING:
@@ -100,12 +100,33 @@ def articles_of(home: Home) -> models.QuerySet[Article]:
     return articles
 
 
+def articles_of_room(home: Home, room: UUID) -> models.QuerySet[Article]:
+    """The articles that concern a room: kept there, fitting its equipment, or its paint.
+
+    Three ways, in this order of meaning: the room is listed on the article, the article is
+    compatible with an item of the room, or it is the tin of paint left over in the memory
+    of the room (docs/adr/0046).
+    """
+    concerned = (
+        models.Q(rooms=room)
+        | models.Q(compatible_items__room=room, compatible_items__deleted_at__isnull=True)
+        | models.Q(pk__in=Room.objects.filter(pk=room).values("paint_article"))
+    )
+    return articles_of(home).filter(concerned).distinct()
+
+
 def search_articles(
-    home: Home, query: str = "", *, low: bool = False, item: UUID | None = None
+    home: Home,
+    query: str = "",
+    *,
+    low: bool = False,
+    item: UUID | None = None,
+    room: UUID | None = None,
 ) -> models.QuerySet[Article]:
     """Articles whose name, manufacturer reference or supplier matches `query`.
 
-    `low` keeps those at or below their threshold; `item` those compatible with an item.
+    `low` keeps those at or below their threshold; `item` those compatible with an item;
+    `room` those that concern a room (see `articles_of_room`).
     """
     articles = articles_of(home)
     query = query.strip()
@@ -125,6 +146,8 @@ def search_articles(
         )
     if item is not None:
         articles = articles.filter(compatible_items=item)
+    if room is not None:
+        articles = articles.filter(pk__in=articles_of_room(home, room).values("pk"))
     return articles
 
 
@@ -205,12 +228,20 @@ def _check_items(home: Home, items: Iterable[Item]) -> list[Item]:
     return chosen
 
 
+def _check_rooms(home: Home, rooms: Iterable[Room]) -> list[Room]:
+    chosen = list(rooms)
+    if any(room.home_id != home.id for room in chosen):
+        raise ValidationError({"rooms": _("This room is not in this home.")})
+    return chosen
+
+
 @transaction.atomic
 def create_article(
     actor: AnyUser,
     home: Home,
     *,
     compatible_items: Iterable[Item] = (),
+    rooms: Iterable[Room] = (),
     label: UploadedFile | None = None,
     **fields: Any,
 ) -> Article:
@@ -219,11 +250,13 @@ def create_article(
     _apply(article, ARTICLE_FIELDS, fields)
     article.full_clean(exclude=["label"])
     items = _check_items(home, compatible_items)
+    chosen_rooms = _check_rooms(home, rooms)
     processed = _check_label(label) if label is not None else None
     if processed is not None:
         _write_label(article, processed)
     article.save()
     article.compatible_items.set(items)
+    article.rooms.set(chosen_rooms)
     return article
 
 
@@ -233,6 +266,7 @@ def update_article(
     article: Article,
     *,
     compatible_items: Iterable[Item] | None = None,
+    rooms: Iterable[Room] | None = None,
     label: UploadedFile | None = None,
     clear_label: bool = False,
     **changes: Any,
@@ -242,6 +276,7 @@ def update_article(
     _apply(article, ARTICLE_FIELDS, changes)
     article.full_clean(exclude=["label"])
     items = None if compatible_items is None else _check_items(article.home, compatible_items)
+    chosen_rooms = None if rooms is None else _check_rooms(article.home, rooms)
     processed = _check_label(label) if label is not None else None
     if processed is not None:
         _write_label(article, processed)
@@ -250,6 +285,8 @@ def update_article(
     article.save()
     if items is not None:
         article.compatible_items.set(items)
+    if chosen_rooms is not None:
+        article.rooms.set(chosen_rooms)
     return article
 
 

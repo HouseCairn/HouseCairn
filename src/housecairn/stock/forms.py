@@ -6,7 +6,7 @@ from django import forms
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from housecairn.rooms.models import Item
+from housecairn.rooms.models import Item, Room
 from housecairn.stock.models import Article, MovementKind, Supplier
 
 
@@ -25,6 +25,13 @@ class ArticleForm(forms.ModelForm[Article]):
         widget=forms.CheckboxSelectMultiple,
         help_text=_("The equipment this fits, such as the boiler a filter is made for."),
     )
+    rooms = forms.ModelMultipleChoiceField(
+        label=_("Rooms"),
+        queryset=Room.objects.none(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        help_text=_("Where it is used, besides the rooms of the equipment it fits."),
+    )
     label = forms.FileField(
         label=_("Photo of the label"),
         required=False,
@@ -42,15 +49,19 @@ class ArticleForm(forms.ModelForm[Article]):
             "unit",
             "threshold",
             "compatible_items",
+            "rooms",
             "notes",
         ]
         widgets = {"notes": forms.Textarea(attrs={"rows": 4})}
 
-    def __init__(self, *args: Any, items: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, items: Any, rooms: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         field = self.fields["compatible_items"]
         assert isinstance(field, forms.ModelMultipleChoiceField)  # noqa: S101 - narrows the type
         field.queryset = items
+        room_field = self.fields["rooms"]
+        assert isinstance(room_field, forms.ModelMultipleChoiceField)  # noqa: S101
+        room_field.queryset = rooms
         if not (self.instance.pk and self.instance.label):
             del self.fields["clear_label"]
 

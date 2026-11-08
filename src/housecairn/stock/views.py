@@ -19,7 +19,7 @@ from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
 from housecairn.rooms import conf
-from housecairn.rooms.services import items_of
+from housecairn.rooms.services import items_of, rooms_of
 from housecairn.stock import forms, services
 from housecairn.stock.files import label_response
 from housecairn.stock.models import Article, Supplier
@@ -112,6 +112,7 @@ class ArticleFormMixin(HomeStockMixin, FormView[Any]):
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         kwargs["items"] = items_of(self.home).order_by("room__position", "room__name", "name")
+        kwargs["rooms"] = rooms_of(self.home)
         return kwargs
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -139,6 +140,7 @@ class ArticleCreateView(ArticleFormMixin):
                 self.request.user,
                 self.home,
                 compatible_items=data.pop("compatible_items"),
+                rooms=data.pop("rooms"),
                 label=data.pop("label") or None,
                 **data,
             )
@@ -165,6 +167,7 @@ class ArticleEditView(ArticleFormMixin):
                 self.request.user,
                 article,
                 compatible_items=data.pop("compatible_items"),
+                rooms=data.pop("rooms"),
                 label=data.pop("label") or None,
                 clear_label=data.pop("clear_label", False),
                 **data,
@@ -188,6 +191,7 @@ class ArticleDetailView(HomeStockMixin, TemplateView):
                 low=services.is_low(article, quantity),
                 suppliers=article.suppliers.all(),
                 movements=article.movements.select_related("occurrence__task"),
+                rooms=article.rooms.all(),
                 compatible_items=article.compatible_items.select_related("room").order_by(
                     "room__name", "name"
                 ),

@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from housecairn.homes.models import HomeOwnedModel
-from housecairn.rooms.models import Item, WebUrlField, notes_field
+from housecairn.rooms.models import Item, Room, WebUrlField, notes_field
 from housecairn.stock.storage import stock_storage
 
 NON_NEGATIVE = MinValueValidator(Decimal("0"))
@@ -53,6 +53,13 @@ class Article(HomeOwnedModel):
     )
     compatible_items = models.ManyToManyField(
         Item, blank=True, related_name="+", verbose_name=_("compatible items")
+    )
+    rooms = models.ManyToManyField(
+        Room,
+        blank=True,
+        related_name="+",
+        verbose_name=_("rooms"),
+        help_text=_("Where it is used, besides the rooms of the equipment it fits."),
     )
     notes = notes_field(_("notes"))
     # Photo of the label, re-encoded on upload (housecairn.rooms.images).

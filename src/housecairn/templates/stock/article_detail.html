@@ -61,6 +61,20 @@
     <p class="empty">{% translate "No compatible item chosen." %}</p>
   {% endif %}
 
+  {% if rooms %}
+    <h2>{% translate "Rooms" %}</h2>
+    <ul class="card-list">
+      {% for room in rooms %}
+        <li>
+          <a class="row" href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}">
+            <span class="row-body"><span class="row-title">{{ room.name }}</span></span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
   {% if tasks %}
     <h2>{% translate "Needed by tasks" %}</h2>
     <ul class="card-list">

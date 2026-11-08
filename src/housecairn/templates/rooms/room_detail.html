@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras %}
+{% load i18n tasks_extras stock_extras %}
 {% block head_title %}{{ room.name }}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{% url 'rooms:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Rooms" %}</a>
@@ -24,7 +24,8 @@
         {% if room.paint_brand %}<div><dt>{% translate "Paint brand" %}</dt><dd>{{ room.paint_brand }}</dd></div>{% endif %}
         {% if room.paint_reference %}<div><dt>{% translate "Paint reference" %}</dt><dd>{{ room.paint_reference }}</dd></div>{% endif %}
         {% if room.paint_batch %}<div><dt>{% translate "Paint batch" %}</dt><dd>{{ room.paint_batch }}</dd></div>{% endif %}
-        {% if room.paint_stock %}<div><dt>{% translate "Paint left in stock" %}</dt><dd>{{ room.paint_stock }}</dd></div>{% endif %}
+        {% paint_article_of room as paint %}
+        {% if paint %}<div><dt>{% translate "Paint left in stock" %}</dt><dd><a href="{% url 'stock:detail' home_id=home.id article_id=paint.id %}">{{ paint.name }}</a> · {{ paint.quantity|floatformat:"-2" }}{% if paint.unit_label %} {{ paint.unit_label }}{% endif %}{% if paint.storage_location %} · {{ paint.storage_location }}{% endif %}</dd></div>{% endif %}
         {% if room.floor_covering %}<div><dt>{% translate "Floor covering" %}</dt><dd>{{ room.floor_covering }}</dd></div>{% endif %}
         {% if room.wall_covering %}<div><dt>{% translate "Wall covering" %}</dt><dd>{{ room.wall_covering }}</dd></div>{% endif %}
         {% if room.memory_notes %}<div><dt>{% translate "Memory notes" %}</dt><dd class="prose">{{ room.memory_notes|linebreaksbr }}</dd></div>{% endif %}
@@ -38,6 +39,26 @@
       </div>
     {% endif %}
   </section>
+
+  {% room_articles room as stock_rows %}
+  <h2>{% translate "Stock" %}</h2>
+  {% if stock_rows %}
+    <ul class="card-list">
+      {% for row in stock_rows %}
+        <li>
+          <a class="row" href="{% url 'stock:detail' home_id=home.id article_id=row.article.id %}">
+            <span class="row-body">
+              <span class="row-title">{{ row.article.name }}</span>
+              <span class="row-text">{{ row.article.quantity|floatformat:"-2" }}{% if row.article.unit_label %} {{ row.article.unit_label }}{% endif %}{% if row.article.storage_location %} · {{ row.article.storage_location }}{% endif %}{% if row.low %} <span class="pill pill-warning">{% translate "Low stock" %}</span>{% endif %}</span>
+            </span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "No stock item for this room yet." %}</p>
+  {% endif %}
 
   <h2>{% translate "Photos" %}</h2>
   {% if categories %}

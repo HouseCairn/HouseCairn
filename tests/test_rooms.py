@@ -39,7 +39,7 @@ class TestServices:
 
     def test_update_and_memory(self, alice: User, owner_room: Room) -> None:
         services.update_room(
-            alice, owner_room, name="Lounge", paint_brand="Acme", paint_stock="half a tin"
+            alice, owner_room, name="Lounge", paint_brand="Acme", memory_notes="half a tin"
         )
         owner_room.refresh_from_db()
         assert (owner_room.name, owner_room.paint_brand, owner_room.has_memory) == (
@@ -249,7 +249,7 @@ class TestScreens:
         signed_in.post(url("edit", alice_home, **kwargs), {"name": "Lounge", "kind": "living"})
         assert signed_in.get(url("memory", alice_home, **kwargs)).status_code == 200
         signed_in.post(
-            url("memory", alice_home, **kwargs), {"paint_brand": "Acme", "paint_stock": "1 tin"}
+            url("memory", alice_home, **kwargs), {"paint_brand": "Acme", "memory_notes": "1 tin"}
         )
         owner_room.refresh_from_db()
         assert (owner_room.name, owner_room.paint_brand) == ("Lounge", "Acme")

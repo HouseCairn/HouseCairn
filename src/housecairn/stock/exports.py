@@ -53,6 +53,7 @@ def _articles(home: Home) -> list[dict[str, Any]]:
             "compatible_items": [
                 str(pk) for pk in a.compatible_items.order_by("id").values_list("id", flat=True)
             ],
+            "rooms": [str(pk) for pk in a.rooms.order_by("id").values_list("id", flat=True)],
             "notes": a.notes,
             "label": f"files/{_archive_name(a)}" if _stored_file(a) else None,
             "created_at": a.created_at.isoformat(),
