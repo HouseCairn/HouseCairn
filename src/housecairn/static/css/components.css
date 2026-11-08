@@ -118,14 +118,17 @@
   font-size: var(--hc-font-size-sm);
 }
 
-.facts dt,
-.facts dd {
-  /* Long names and lists (a variable name, proxy addresses) wrap on a phone. */
+/* On a phone, long names and values (a variable name, a path) wrap inside the card. The
+   value keeps its width up to 60 % so that a short one ("no", an address) never breaks. */
+.facts dt {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
 .facts dd {
+  flex-shrink: 0;
+  max-width: 60%;
+  overflow-wrap: anywhere;
   margin: 0;
   font-weight: var(--hc-font-weight-medium);
   text-align: right;
