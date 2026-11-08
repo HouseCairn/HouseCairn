@@ -72,6 +72,20 @@ def test_the_address_of_a_member_is_on_no_task_page(
             assert shown in text, label
 
 
+def test_the_occurrence_row_of_today_names_the_assignee(
+    client: Client, alice: User, bob: User, alice_home: Home, shared_task: Task
+) -> None:
+    """Grouped as it is by default, Today shows the person on each row, by name."""
+    account_services.set_display_name(bob, "Bobby")
+    client.force_login(alice)
+    assert agenda.preferences_of(alice).today_group != "person"  # the person is on the row
+    page = client.get(pages(alice_home, shared_task)["today"]).text
+    row = page[page.index("Clean the gutters") :]
+    assert "Bobby" in row.split("</li>")[0]
+    assert ADDRESS not in page
+    assert "bob@" not in page
+
+
 def test_the_home_of_a_member_names_them_too(
     client: Client, bob: User, alice_home: Home, shared_task: Task
 ) -> None:
