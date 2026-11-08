@@ -12,11 +12,13 @@ import time
 from collections.abc import Callable, Iterator
 from typing import Any
 
+import apprise
 import pytest
 import requests
 from apprise.plugins.discord import NotifyDiscord
 from apprise.plugins.gotify import NotifyGotify
 from apprise.plugins.telegram import NotifyTelegram
+from django.core.exceptions import PermissionDenied
 from django.db import connection
 from django.test import Client
 from django.test.utils import override_settings
@@ -209,6 +211,27 @@ class TestOutgoingCalls:
         assert refused == [address]
 
     @pytest.mark.parametrize(
+        "address", ["::ffff:127.0.0.1", "64:ff9b::7f00:1", "2002:7f00:1::1", "::ffff:169.254.1.1"]
+    )
+    def test_an_ipv6_address_that_carries_a_refused_ipv4_is_not_called(
+        self, monkeypatch: pytest.MonkeyPatch, address: str
+    ) -> None:
+        """Mapped, NAT64 and 6to4 forms of loopback and link-local, as resolved when sending."""
+        monkeypatch.setattr(
+            outbound,
+            "_resolve",
+            lambda *a, **k: [(socket.AF_INET6, socket.SOCK_STREAM, 6, "", (address, 443, 0, 0))],
+        )
+        connected: list[Any] = []
+        monkeypatch.setattr(socket.socket, "connect", lambda self, a: connected.append(a))
+        refused = spy_refusals(monkeypatch)
+        assert (
+            outbound.send(outbound.seal("ntfys://ntfy.example.com/t"), title="t", body="b") is False
+        )
+        assert connected == []
+        assert refused == [address]
+
+    @pytest.mark.parametrize(
         "address",
         [
             "169.254.169.254",
@@ -342,6 +365,26 @@ class TestOutgoingCalls:
         assert reminders.dispatch(timezone.now() + datetime.timedelta(days=1)) == 1
         assert time.monotonic() - started < 3
         assert Delivery.objects.get().sent is False
+
+    def test_certificates_are_verified_whatever_the_address_says(self) -> None:
+        plugin = outbound._plugin("gotifys://gotify.example.com/token?verify=no")
+        assert plugin.verify_certificate is True
+
+    def test_each_wait_of_a_socket_is_short_whatever_the_address_says(self) -> None:
+        plugin = outbound._plugin("gotifys://gotify.example.com/token?cto=120&rto=120")
+        assert plugin.socket_connect_timeout == outbound.TIMEOUT_SECONDS == 5
+        assert plugin.socket_read_timeout == outbound.TIMEOUT_SECONDS
+
+    def test_a_plugin_of_another_scheme_is_refused(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """If Apprise ever mapped an allowed scheme to another plugin, it is not used."""
+        real = apprise.Apprise.instantiate
+
+        def other(url: str, **kwargs: Any) -> Any:
+            return real("json://hooks.example.com/hook", **kwargs)
+
+        monkeypatch.setattr(apprise.Apprise, "instantiate", staticmethod(other))
+        with pytest.raises(outbound.RefusedError, match="scheme"):
+            outbound.parse("ntfys://ntfy.example.com/topic")
 
     def test_apprise_does_not_retry(self) -> None:
         plugin = outbound._plugin("gotifys://gotify.example.com/token?retry=5&wait=30")
@@ -529,6 +572,21 @@ class TestIsolation:
         assert json.loads(api_client.get(reverse(LIST)).text) == []
         assert "Phone" not in client.get(reverse("notifications:index")).text
         assert Channel.objects.get().name == "Phone"
+
+    def test_the_services_check_the_owner_themselves(
+        self, bob: User, channel: Channel, sent: list[Any]
+    ) -> None:
+        """Not only the views: a service called with someone else's channel refuses."""
+        for call in (
+            lambda: services.update_channel(bob, channel, name="Mine", enabled=False),
+            lambda: services.test_channel(bob, channel),
+            lambda: services.delete_channel(bob, channel),
+        ):
+            with pytest.raises(PermissionDenied):
+                call()
+        channel.refresh_from_db()
+        assert (channel.name, channel.enabled) == ("Phone", True)
+        assert sent == []
 
     def test_the_administration_site_has_no_channel(
         self, client: Client, admin: User, channel: Channel
