@@ -1,7 +1,7 @@
-# Interface checks in a real browser (docs/adr/0017, docs/adr/0018): screenshots of
-# the main screens on a phone and a desktop, in English and French, attached to the
-# run, and an end-to-end passkey sign-in with Chromium's virtual authenticator.
-# Not a required check: it produces evidence for review. Playwright comes from the
+# Interface checks in a real browser (docs/adr/0018): an end-to-end passkey sign-in
+# with Chromium's virtual authenticator, and the one-click single sign-on button.
+# No screenshots until the dedicated lot before the public release (docs/adr/0017).
+# Not a required check. Playwright comes from the
 # `docs` dependency group (locked in uv.lock, docs/adr/0016): it is not a dependency
 # of the application.
 name: UI
@@ -35,7 +35,7 @@ env:
 
 jobs:
   browser:
-    name: Screenshots and passkey sign-in
+    name: Passkey and single sign-on
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -53,113 +53,6 @@ jobs:
         run: uv sync --locked --group docs
       - name: Install the browser (playwright install)
         run: uv run playwright install --with-deps --only-shell --no-progress chromium
-      - name: Start the instance for the screenshots (production settings)
-        env:
-          HOUSECAIRN_DATA_DIR: ${{ runner.temp }}/shots-data
-          STATIC_ROOT: ${{ runner.temp }}/shots-static
-          HOUSECAIRN_SIGNUP_OPEN: "true"
-          OIDC_SERVER_URL: https://id.example.com
-          OIDC_CLIENT_ID: housecairn
-          OIDC_PROVIDER_NAME: Company SSO
-          # The password reset page exists only with a mail server; nothing is sent.
-          EMAIL_HOST: smtp.example.com
-        run: |
-          mkdir -p "$HOUSECAIRN_DATA_DIR"
-          uv run python manage.py migrate --noinput
-          uv run python manage.py collectstatic --noinput
-          uv run python manage.py shell -c "
-          from housecairn.accounts.models import User
-          from housecairn.homes import services
-          # The demonstration account owns homes and administers the instance, so that
-          # the screens of both are captured. Its address is verified: open sign-up
-          # makes verification mandatory, and no mail is sent from this instance.
-          from allauth.account.models import EmailAddress
-          user = User.objects.create_superuser(email='demo@example.com', password='correct-horse-battery-staple')
-          EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=True)
-          home = services.create_home(user, name='Main house')
-          services.create_home(user, name='Holiday flat')
-          # A second member and a pending invitation for the household screens.
-          from housecairn.homes.models import Membership, Role
-          other = User.objects.create_user(email='sam@example.com', password=None)
-          Membership.objects.create(home=home, user=other, role=Role.MEMBER)
-          _invitation, raw = services.invite(
-              user, home, email='guest@example.com', role=Role.READ_ONLY,
-              delivery=services.Delivery(),
-          )
-          open('$RUNNER_TEMP/invitation-token', 'w').write(raw)
-          # Rooms, an item and a photo for the room screens (made-up data).
-          import io
-          from django.core.files.uploadedfile import SimpleUploadedFile
-          from PIL import Image
-          from housecairn.rooms import services as rooms
-          living = rooms.create_room(
-              user, home, name='Living room', kind='living',
-              paint_colour='Linen white', paint_brand='Acme Paints',
-              paint_reference='AP-1042', paint_stock='Half a tin, in the garage',
-              floor_covering='Oak parquet',
-          )
-          rooms.create_room(user, home, name='Kitchen', kind='kitchen')
-          rooms.create_room(user, home, name='Garage', kind='garage')
-          rooms.create_item(
-              user, living, name='Wood stove', brand='Acme', model='S-25',
-              serial_number='SN-0000-17',
-              warranty_ends_on='2031-09-14', contract='Example Heating Ltd',
-              links=[{'url': 'https://example.com/manual', 'label': 'Manual'}],
-          )
-          picture = io.BytesIO()
-          Image.new('RGB', (640, 480), (143, 163, 154)).save(picture, 'PNG')
-          rooms.add_photo(
-              user, room=living, caption='North wall', category='open_walls',
-              upload=SimpleUploadedFile('wall.png', picture.getvalue()),
-          )
-          # Tasks for the task screens (made-up data): one late, one repeating, one done.
-          import datetime
-          from housecairn.tasks import services as tasks
-          item = rooms.items_of(home).get(name='Wood stove')
-          today = datetime.date.today()
-          tasks.create_task(
-              user, home, title='Change the smoke detector battery', room=living, item=item,
-              priority='high', due_on=today - datetime.timedelta(days=2),
-              repeat_mode='after_last', repeat_unit='year', repeat_interval=1,
-              estimated_minutes=10, material_budget='4.50', assignee=other,
-              procedure='1. Open the cover.\n2. Replace the **9 V battery**.\n3. Press the test button.',
-          )
-          tasks.create_task(
-              user, home, title='Sweep the chimney', room=living, item=item,
-              due_on=today + datetime.timedelta(days=30), repeat_mode='fixed',
-              repeat_unit='year', hide_days_before=14,
-          )
-          tasks.create_task(
-              user, home, title='Mow the lawn', due_on=today + datetime.timedelta(days=3),
-              repeat_mode='fixed', repeat_unit='week', season_start_month=4, season_end_month=10,
-          )
-          tasks.create_task(user, home, title='Order paint for the hall')
-          finished = tasks.create_task(
-              user, home, title='Bleed the radiators', due_on=today - datetime.timedelta(days=9),
-          )
-          tasks.complete(user, tasks.open_occurrence_of(finished), actual_cost='0')
-          from housecairn.instance import services as instance_services
-          sent = []
-          instance_services.invite(
-              user, email='newcomer@example.com', send=lambda _invitation, secret: sent.append(secret)
-          )
-          open('$RUNNER_TEMP/instance-invitation-token', 'w').write(sent[0])
-          # A provider declared in the interface, for its own screen; left disabled, so
-          # that the sign-in screens stay as they are (made-up values).
-          from housecairn.instance import providers
-          providers.create(user, {
-              'slug': 'company', 'name': 'Example SSO', 'issuer': 'https://sso.example.com',
-              'client_id': 'housecairn', 'secret': 'made-up-value', 'enabled': False,
-          })
-          "
-          nohup uv run gunicorn housecairn.wsgi --bind 127.0.0.1:8000 > "$RUNNER_TEMP/shots-server.log" 2>&1 &
-          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/healthz && break; sleep 1; done
-      - name: Take the screenshots
-        run: |
-          uv run python tests/e2e/browser_checks.py capture \
-            --base http://localhost:8000 --out "$RUNNER_TEMP/screenshots" \
-            --invitation-file "$RUNNER_TEMP/invitation-token" \
-            --instance-invitation-file "$RUNNER_TEMP/instance-invitation-token"
       - name: Start a stub identity provider (serves only its discovery document)
         run: |
           mkdir -p "$RUNNER_TEMP/idp/.well-known"
@@ -200,11 +93,3 @@ jobs:
         run: |
           uv run python tests/e2e/browser_checks.py sso \
             --base http://localhost:8001 --provider http://127.0.0.1:8002
-      - name: Upload the screenshots
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ui-screenshots
-          path: ${{ runner.temp }}/screenshots/*.png
-          if-no-files-found: warn
-          retention-days: 30

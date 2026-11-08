@@ -26,17 +26,5 @@ Local sign-up from the web page stays closed unless
 
 Open the address of your instance and sign in with the account you created.
 
-```{image} /_generated/screenshots/sign-in-desktop.png
-:alt: The sign-in page, on a computer.
-:class: screenshot
-```
-
 After signing in, HouseCairn shows the list of your homes. A new instance has
-none, and there is no screen to create one yet; the screenshot below comes
-from a demonstration instance.
-
-```{image} /_generated/screenshots/homes-mobile.png
-:alt: The list of homes, on a phone.
-:class: screenshot
-:width: 320px
-```
+none, and there is no screen to create one yet.

@@ -1,5 +1,4 @@
-"""Check the accessibility of the built documentation site, and photograph it
-(docs/adr/0016, "Design").
+"""Check the accessibility of the built documentation site (docs/adr/0016, "Design").
 
 Serves the built site on 127.0.0.1 and opens it in Playwright's Chromium:
 
@@ -12,12 +11,12 @@ Serves the built site on 127.0.0.1 and opens it in Playwright's Chromium:
    2 px with 3:1 against the page, in both themes.
 3. Motion (2.3.3): with `prefers-reduced-motion: reduce`, nothing on the home
    page has a transition or an animation.
-4. Screenshots of a sample of pages (home, a guide, the API reference, a screen
-   page), light and dark, on a computer and a phone, in both languages,
-   written outside the site (review evidence, not published).
 
-Usage: python scripts/check_docs_design.py [<site>] [--screenshots <dir>]
-Needs the `docs` dependency group and the browser (see docs_screenshots.py).
+No screenshots until the dedicated lot before the public release (docs/adr/0016).
+
+Usage: python scripts/check_docs_design.py [<site>]
+Needs the `docs` dependency group and the browser:
+`uv run playwright install --only-shell chromium`.
 """
 
 import argparse
@@ -33,23 +32,10 @@ from typing import Any
 
 REPO_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_SITE = REPO_DIR / "docs" / "_build" / "site"
-DEFAULT_SCREENSHOTS = REPO_DIR / "docs" / "_build" / "site-screenshots"
 LANGUAGES = {"en": "", "fr": "fr/"}
 THEMES = ("light", "dark")
 DEVICES: dict[str, dict[str, Any]] = {
     "desktop": {"viewport": {"width": 1280, "height": 800}},
-    "mobile": {
-        "viewport": {"width": 390, "height": 844},
-        "device_scale_factor": 2,
-        "is_mobile": True,
-        "has_touch": True,
-    },
-}
-SAMPLE = {
-    "home": "",
-    "guide": "getting-started/first-start/",
-    "api": "api/reference/",
-    "screen": "screens/sign-in/",
 }
 TEXT_RATIO = 4.5
 LARGE_TEXT_RATIO = 3.0
@@ -290,7 +276,7 @@ def load(page: Any, url: str) -> None:
     page.evaluate("document.fonts.ready.then(() => true)")
 
 
-def check(site: Path, screenshots: Path) -> int:
+def check(site: Path) -> int:
     # Imported here: only the docs dependency group provides Playwright.
     from playwright.sync_api import sync_playwright
 
@@ -301,10 +287,6 @@ def check(site: Path, screenshots: Path) -> int:
     focus_problems: list[str] = []
     focus_count = 0
     motion: list[str] = []
-    shots = 0
-    screenshots.mkdir(parents=True, exist_ok=True)
-    for old in screenshots.glob("*.png"):
-        old.unlink()
 
     with serve(site) as base, sync_playwright() as playwright:
         browser = playwright.chromium.launch()
@@ -336,17 +318,6 @@ def check(site: Path, screenshots: Path) -> int:
                     if problem:
                         focus_problems.append(problem)
             context.close()
-
-            for device in DEVICES:
-                for language, prefix in LANGUAGES.items():
-                    context = open_page(browser, theme, device)
-                    page = context.new_page()
-                    for name, address in SAMPLE.items():
-                        load(page, base + prefix + address)
-                        path = screenshots / f"{name}-{theme}-{device}-{language}.png"
-                        page.screenshot(path=str(path), full_page=True)
-                        shots += 1
-                    context.close()
 
         context = open_page(browser, "light", "desktop", reduced_motion="reduce")
         page = context.new_page()
@@ -381,19 +352,17 @@ def check(site: Path, screenshots: Path) -> int:
         sys.stderr.writelines(f"- {line}\n" for line in motion[:MAX_LINES])
     else:
         sys.stdout.write("Reduced motion: no transition or animation when it is asked for.\n")
-    sys.stdout.write(f"Screenshots: {shots} in {screenshots}.\n")
     return 1 if failed else 0
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Check the design of the built site.")
     parser.add_argument("site", nargs="?", type=Path, default=DEFAULT_SITE)
-    parser.add_argument("--screenshots", type=Path, default=DEFAULT_SCREENSHOTS)
     args = parser.parse_args(argv)
     if not (args.site / "index.html").exists():
         sys.stderr.write(f"No site in {args.site}: build it first (scripts/build_docs.py).\n")
         return 2
-    return check(args.site.resolve(), args.screenshots.resolve())
+    return check(args.site.resolve())
 
 
 if __name__ == "__main__":

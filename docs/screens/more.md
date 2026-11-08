@@ -7,9 +7,3 @@ administrator), account security (authenticator app, recovery codes,
 passkeys), your password, your email addresses (when the instance sends
 email), the documentation of the API, deleting your account, the About page
 and sign-out.
-
-```{image} /_generated/screenshots/more-mobile.png
-:alt: The More page, on a phone.
-:class: screenshot
-:width: 320px
-```

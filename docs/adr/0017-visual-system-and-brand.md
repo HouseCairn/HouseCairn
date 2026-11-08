@@ -102,3 +102,14 @@ errors) use the shell.
 - Two font files (about 65 kB) are part of the image and cached for a year.
 - The v2 mock-up is the reference for every later screen; a deviation is recorded
   here or in a later record, with its reason.
+
+## Amendment, 2026-11-08: no screenshots in CI
+
+The `ui.yml` workflow no longer takes or uploads screenshots (`ui-screenshots`
+artifact), until one dedicated change before the first public release
+([0016](0016-documentation-site.md), amendment of the same date). Its job keeps the
+end-to-end passkey sign-in and the one-click single sign-on check
+([0018](0018-sign-in-page-and-passkeys.md)), and is now named
+`Passkey and single sign-on` (it was `Screenshots and passkey sign-in`; it is not a
+required check). "Evidence for review" above describes the state before this
+amendment.

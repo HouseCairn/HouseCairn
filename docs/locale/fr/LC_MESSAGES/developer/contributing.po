@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 21:39+0000\n"
+"POT-Creation-Date: 2026-11-08 14:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -34,11 +34,11 @@ msgstr "Une pull request qui change ce que les utilisateurs voient ou configuren
 msgid "Build the site locally"
 msgstr "Construire le site en local"
 
-msgid "The site is in `docs/_build/site/`, English at its root and French under `fr/`; open `docs/_build/site/index.html` in a browser. The build is strict: any warning, such as a broken reference, fails it. `check_docs_design.py` checks the contrast of every page in the light and dark themes, the keyboard focus and reduced motion, and writes screenshots of a few pages to `docs/_build/site-screenshots/`."
-msgstr "Le site est dans `docs/_build/site/`, l'anglais à sa racine et le français sous `fr/` ; ouvrez `docs/_build/site/index.html` dans un navigateur. La construction est stricte : le moindre avertissement, comme une référence cassée, la fait échouer. `check_docs_design.py` vérifie le contraste de chaque page dans les thèmes clair et sombre, le focus clavier et la réduction des animations, et enregistre des captures de quelques pages dans `docs/_build/site-screenshots/`."
+msgid "The site is in `docs/_build/site/`, English at its root and French under `fr/`; open `docs/_build/site/index.html` in a browser. The build is strict: any warning, such as a broken reference, fails it. `check_docs_design.py` checks the contrast of every page in the light and dark themes, the keyboard focus and reduced motion."
+msgstr "Le site est dans `docs/_build/site/`, l'anglais à sa racine et le français sous `fr/` ; ouvrez `docs/_build/site/index.html` dans un navigateur. La construction est stricte : le moindre avertissement, comme une référence cassée, la fait échouer. `check_docs_design.py` vérifie le contraste de chaque page dans les thèmes clair et sombre, le focus clavier et la réduction des animations."
 
-msgid "Screenshots come from a demonstration instance with generated data, in English and French, on a computer and on a phone. They are not committed: the script takes them again before every build."
-msgstr "Les captures d'écran viennent d'une instance de démonstration aux données générées, en anglais et en français, sur ordinateur et sur téléphone. Elles ne sont pas commitées : le script les refait avant chaque construction."
+msgid "The site has no screenshots for now, and the CI takes none: they come back in one dedicated change before the first public release."
+msgstr "Le site n'a pas de captures d'écran pour l'instant, et la CI n'en prend aucune : elles reviendront en une seule modification dédiée, avant la première version publique."
 
 msgid "Translations"
 msgstr "Traductions"
@@ -48,4 +48,7 @@ msgstr "Les pages sont écrites en anglais. Leurs traductions françaises sont d
 
 msgid "A string without translation is shown in English, and the French page then says that it is not entirely translated. The build fails when a catalog lacks a string of its page, so that the catalogs never lag behind the pages."
 msgstr "Une chaîne sans traduction s'affiche en anglais, et la page française indique alors qu'elle n'est pas entièrement traduite. La construction échoue quand un catalogue manque d'une chaîne de sa page, afin que les catalogues ne prennent jamais de retard sur les pages."
+
+#~ msgid "Screenshots come from a demonstration instance with generated data, in English and French, on a computer and on a phone. They are not committed: the script takes them again before every build."
+#~ msgstr "Les captures d'écran viennent d'une instance de démonstration aux données générées, en anglais et en français, sur ordinateur et sur téléphone. Elles ne sont pas commitées : le script les refait avant chaque construction."
 

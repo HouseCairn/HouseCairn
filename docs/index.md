@@ -52,14 +52,6 @@ No telemetry, signed images, and how to report a vulnerability.
 :::::
 ::::::
 
-:::{figure} /_generated/screenshots/start-page-desktop.png
-:alt: The start page of HouseCairn on a computer: the navigation on the left, the HouseCairn logo and a button to go to the homes.
-:class: screenshot
-:figclass: hc-preview
-
-The start page of the application, on a demonstration instance.
-:::
-
 ```{toctree}
 :hidden:
 
