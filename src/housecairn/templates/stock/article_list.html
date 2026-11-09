@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n stock_extras tabs %}
+{% load i18n stock_extras tabs navigation %}
 {% block head_title %}{% translate "Stock" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Stock" %}</h1>
@@ -18,7 +18,7 @@
     <ul class="card-list">
       {% for row in rows %}
         <li>
-          <a class="row" href="{% url 'stock:detail' home_id=home.id article_id=row.article.id %}">
+          <a class="row" href="{% url_with_next 'stock:detail' home_id=home.id article_id=row.article.id %}">
             <span class="row-body">
               <span class="row-title">{{ row.article.name }}</span>
               <span class="row-text">{{ row.article|amount:row.article.quantity }}{% if row.article.storage_location %} · {{ row.article.storage_location }}{% endif %}</span>
@@ -35,6 +35,6 @@
     <p class="empty">{% translate "No stock item matches." %}</p>
   {% endif %}
   {% if can_write %}
-    <a class="button button-secondary button-block" href="{% url 'stock:create' home_id=home.id %}">{% translate "Add a stock item" %}</a>
+    <a class="button button-secondary button-block" href="{% url_with_next 'stock:create' home_id=home.id %}">{% translate "Add a stock item" %}</a>
   {% endif %}
 {% endblock content %}

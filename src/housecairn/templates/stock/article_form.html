@@ -1,21 +1,22 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% if article %}{% translate "Edit the stock item" %}{% else %}{% translate "Add a stock item" %}{% endif %}{% endblock head_title %}
 {% block content %}
   {% if article %}
-    <a class="back-link" href="{% url 'stock:detail' home_id=home.id article_id=article.id %}">{% include "components/icon.html" with name="chevron" %}{{ article.name }}</a>
+    {% url 'stock:detail' home_id=home.id article_id=article.id as parent %}{% back_link parent article.name %}
     <h1>{% translate "Edit the stock item" %}</h1>
   {% else %}
-    <a class="back-link" href="{% url 'stock:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Stock" %}</a>
+    {% url 'stock:list' home_id=home.id as parent %}{% back_link parent %}
     <h1>{% translate "Add a stock item" %}</h1>
   {% endif %}
   <form method="post" enctype="multipart/form-data" class="card">
     {% csrf_token %}
+    {% next_field %}
     {{ form.as_p }}
     <p class="small">{% blocktranslate with size=max_bytes|filesizeformat %}Label photo: JPEG, PNG or WebP, up to {{ size }}. Location data and other information stored in the file are removed.{% endblocktranslate %}</p>
     <button type="submit" class="button-block">{% if article %}{% translate "Save" %}{% else %}{% translate "Add the stock item" %}{% endif %}</button>
   </form>
   {% if article %}
-    <a class="button button-danger button-block" href="{% url 'stock:delete' home_id=home.id article_id=article.id %}">{% translate "Delete the stock item" %}</a>
+    <a class="button button-danger button-block" href="{% url_with_next 'stock:delete' home_id=home.id article_id=article.id %}">{% translate "Delete the stock item" %}</a>
   {% endif %}
 {% endblock content %}
