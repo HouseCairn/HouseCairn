@@ -8,6 +8,18 @@
   <form method="post" class="card" novalidate>
     {% csrf_token %}
     {{ form.as_p }}
+    {% if taken_from %}
+      <p class="small" id="display-name-source">{% blocktranslate with provider=taken_from %}Taken from {{ provider }}. It follows the name your provider gives at each sign-in through it, until you change it here.{% endblocktranslate %}</p>
+    {% elif linked and by_provider %}
+      <p class="small" id="display-name-source">{% translate "Your provider will give your display name at your next sign-in through it, unless you type one here." %}</p>
+    {% endif %}
     <button type="submit" class="button-block">{% translate "Save" %}</button>
   </form>
+  {% if linked and not by_provider %}
+    <form method="post" class="card">
+      {% csrf_token %}
+      <p class="small">{% translate "You typed your display name: sign-in providers do not change it." %}</p>
+      <button type="submit" name="use_provider" value="1" class="button-secondary button-block">{% translate "Use the provider's name" %}</button>
+    </form>
+  {% endif %}
 {% endblock content %}

@@ -65,6 +65,11 @@ web interface: every request only sees the homes of its user
   the same as for rooms: `read` to read, `write` to change, and a role that writes.
 - **Me**: `GET` and `PATCH /api/v1/me/` read and change the `display_name` of the person
   signed in (`email` and `id` are read only); `name` is the name shown for them.
+  `display_name_source` says who sets the display name (`oidc`: the sign-in provider, at
+  each sign-in through it; `manual`: the person, which any change of `display_name` makes
+  it); setting it to `oidc` gives the name back to the provider. `display_name_provider`,
+  read only, is the identifier of the provider it was taken from (see
+  [Profile](../screens/profile.md)).
 - **Today, My home, History and display preferences**
   ([ADR 0037](../adr/0037-today-my-home-history-and-display-preferences.md)):
   `GET /api/v1/homes/<home id>/today/` returns the sections of the Today screen as the
@@ -76,6 +81,17 @@ web interface: every request only sees the homes of its user
   follow the browser; the web screens apply it from the next page. History is the occurrence list with `status=closed&ordering=recent` and the
   filters `contractor`, `completed_by`, `q`, `closed_after` and `closed_before`;
   `GET .../occurrences/cost/` gives the real cost entered on the same selection.
+- **QR labels** ([ADR 0047](../adr/0047-qr-labels.md)):
+  `/api/v1/homes/<home id>/labels/`. `POST .../labels/` with `kind`
+  (`room`, `item` or `article`) and `target` returns the active label of the object (201
+  when it was made, 200 when it already had one); `DELETE .../labels/<id>/` revokes it,
+  `POST .../labels/<id>/regenerate/` replaces it, and `POST .../labels/print/` with
+  `labels` (identifiers) and `layout` (`a4-3x8` or `roll-62`) answers the PDF. Every
+  member lists, reads and prints; only a role that writes makes, revokes or regenerates.
+  `GET /api/v1/labels/resolve/<code>/` says where a scanned code leads, and answers the
+  same 404 for a code that does not exist, one that was revoked and one of a home the
+  caller (or the token) is not in. A token needs `write` for every `POST`, printing
+  included, and `read` for the rest.
 - **Stock** of a home: `/api/v1/homes/<home id>/articles/`, `.../suppliers/` and
   `.../movements/` ([ADR 0038](../adr/0038-stock-suppliers-and-movements.md)). Only
   `name` is required to create an article; its `quantity` is read-only, the sum of its
@@ -86,6 +102,24 @@ web interface: every request only sees the homes of its user
   returns it. Articles are filtered with `q` (name, manufacturer reference or supplier)
   and `low=true`; suppliers and movements with `article`, movements also with `kind`. The
   scopes are the same as for rooms.
+- **Projects** of a home ([ADR 0050](../adr/0050-projects-quotes-and-budget-lines.md)):
+  `/api/v1/homes/<home id>/projects/`, `.../budget-lines/`, `.../quotes/`,
+  `.../project-files/`, `.../project-tasks/` and `.../envelope/`. Only `title` is required
+  to create a project; `budget`, on creation only, becomes its first budget line. Every
+  amount is a string with two decimals in the currency of the home (`"1250.50"`), from
+  `"0.00"` to `"9999999999.99"`; a JSON number (a float or an integer), a negative amount or a
+  third decimal is a 400.
+  A project and a budget line give `planned`, `committed` (the sum of the quotes accepted
+  on it, read-only), `paid`, `gap` and `budget_state` (`over`, `under` or `on`).
+  `POST .../quotes/<id>/accept/` with a `budget_line` of the same project accepts a quote
+  and commits its amount on that line; a quote takes `contractor` (an id) or
+  `contractor_name` (found or created). `project-tasks` takes a `title` (a new task is made
+  in the project, with optional `due_on` and `room`) or a `task` (an existing one that is
+  in no project); deleting a row takes the task out and keeps it. `project-files` takes
+  `file` (multipart), with `quote` for the file of a quote, and `GET .../content/` and
+  `.../thumbnail/` return the file. `GET` and `PUT .../envelope/` read and set the budget
+  envelope of a `year`. Projects are filtered with `status`, `priority`, `season` and
+  `room`, the other lists with `project`. The scopes are the same as for rooms.
 - **Notifications** of the caller
   ([ADR 0043](../adr/0043-notifications-through-apprise.md)):
   `/api/v1/me/notification-channels/` lists, adds (`name` and `url`, an Apprise address),

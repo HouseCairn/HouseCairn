@@ -1,0 +1,42 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-09 00:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Project form"
+msgstr "Formulaire de projet"
+
+msgid "Adds a project (`/h/<home id>/projects/new/`) or changes one (`/h/<home id>/projects/<project id>/edit/`). Only the **title** is required."
+msgstr "Ajoute un projet (`/h/<id du logement>/projects/new/`) ou en modifie un (`/h/<id du logement>/projects/<id du projet>/edit/`). Seul le **titre** est requis."
+
+msgid "**Goal** says what the work is for."
+msgstr "**Objectif** dit à quoi sert le chantier."
+
+msgid "**Status** is idea, planned, in progress, finished or abandoned. **Priority** is low, normal or high."
+msgstr "**Statut** est idée, planifié, en cours, terminé ou abandonné. **Priorité** est basse, normale ou haute."
+
+msgid "**Budget** (when adding) is the amount you plan to spend, in the currency of the home. It becomes the first [budget line](budget-line-form.md), which you can split into materials and labour later. Leave it empty to add lines yourself."
+msgstr "**Budget** (à l'ajout) est le montant que vous prévoyez de dépenser, dans la devise du logement. Il devient la première [ligne de budget](budget-line-form.md), que vous pourrez scinder plus tard en matériel et main-d'œuvre. Laissez-le vide pour ajouter vous-même les lignes."
+
+msgid "**Rooms, duration and season** is under a heading. The **rooms concerned** are rooms of the home. The **estimated duration** is a number and a unit (minutes, hours, days), from a minute to a year. The **preferred season** is one of the seasons of tasks; it follows the hemisphere of the home, and **Custom months** takes a first and a last month."
+msgstr "**Pièces, durée et saison** est sous un intitulé. Les **pièces concernées** sont des pièces du logement. La **durée estimée** est un nombre et une unité (minutes, heures, jours), d'une minute à un an. La **saison souhaitée** est l'une des saisons des tâches ; elle suit l'hémisphère du logement, et **Mois personnalisés** prend un premier et un dernier mois."
+
+msgid "**Delete the project** asks for confirmation. It removes the project, its budget lines, its quotes and its photos from the screens and the API; its tasks stay, taken out of the project."
+msgstr "**Supprimer le projet** demande confirmation. Il retire le projet, ses lignes de budget, ses devis et ses photos des écrans et de l'API ; ses tâches restent, retirées du projet."
+

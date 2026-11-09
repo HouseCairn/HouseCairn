@@ -16,6 +16,14 @@ with it on the project's
   revoke it at any time; leaving a home revokes your feed of it. See
   [Calendar](screens/calendar.md) and [Calendar and feeds](guides/calendar.md). New dependency:
   `icalendar`.
+- **QR labels.** Print stickers that open a room, an item or a stock item: a PDF made by
+  the server, as an A4 sheet of 3 by 8 labels or a 62 mm roll for a label printer. The
+  code on a sticker is a random identifier of 128 bits that names nothing; a sticker
+  opens the page of the object for the members of the home and answers the same "Page
+  not found" to everyone else, and it can be revoked or replaced. Labels are in the API,
+  in the export of a home and are erased with it. Set `HOUSECAIRN_SITE_URL` before
+  printing: the address is on the stickers. See [QR labels](guides/qr-labels.md). New
+  dependency: ReportLab ([ADR 0047](adr/0047-qr-labels.md)).
 
 - **Notifications.** Each person adds their own channels (ntfy, Telegram, Signal, Matrix,
   Gotify, email and other Apprise services) on **More, Notifications**, tests them, and
@@ -57,6 +65,15 @@ with it on the project's
   the label, and the equipment each item fits. Screens, API and a guide: see
   [Stock and supplies](guides/stock.md). Label photos are stored in `/data/media/stock/`.
 
+- **Projects and quotes.** Plan a piece of work such as redoing the bathroom: a project
+  with a status, a priority, rooms, a duration and a season, its steps as tasks created
+  inside it, quotes from contractors, and a budget of lines with a planned, a committed
+  (the quotes you accept) and a paid amount, whose gap is said in words. Compare projects
+  side by side and set a budget envelope for the year. Screens, API and a guide: see
+  [Projects and quotes](guides/projects.md). Photos and quote files are stored in
+  `/data/media/projects/` and are part of the export of the home. Links of inspiration with
+  a preview come in a later change.
+
 - **Feedback from the first tests.** Each person can choose their language in the display
   preferences; the sub-navigation of the tasks, of a home and of the instance administration
   is one set of tabs; the audit log of a home now records what people do to rooms, items,
@@ -79,6 +96,15 @@ with it on the project's
   phone, email address, address, note and the tasks that name them, downloadable as a
   contact file (.vcf). Existing trades are matched to the list, otherwise kept under Other.
   See [Tasks and recurrence](guides/tasks-and-recurrence.md).
+
+- **Display name from the sign-in provider.** An account linked to a single sign-on provider
+  takes its display name from the provider at each sign-in through it (`name`, else the
+  given and family names, the username or the nickname), by the same rules as a typed name;
+  a claim that would be refused is ignored and never stops the sign-in. A name typed on the
+  [profile](screens/profile.md) is kept and no provider overwrites it, until **Use the
+  provider's name**. Display names typed before this version are kept; accounts without one
+  take the provider's at their next sign-in. See
+  [Single sign-on](administration/oidc.md#display-name).
 
 ### Fixed
 

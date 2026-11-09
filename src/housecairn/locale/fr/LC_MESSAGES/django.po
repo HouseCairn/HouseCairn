@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 23:22+0000\n"
+"POT-Creation-Date: 2026-11-09 06:31+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -69,6 +69,14 @@ msgstr ""
 "La vérification que vous n'êtes pas un robot n'a pas abouti. Attendez-la "
 "quelques secondes sur la page, avec JavaScript activé, puis réessayez."
 
+#: accounts/models.py instance/models.py
+msgid "sign-in provider"
+msgstr "fournisseur de connexion"
+
+#: accounts/models.py
+msgid "typed by the person"
+msgstr "saisi par la personne"
+
 #: accounts/models.py homes/models.py instance/models.py tasks/models.py
 msgid "email address"
 msgstr "adresse e-mail"
@@ -84,6 +92,14 @@ msgstr "nom d'affichage"
 #: accounts/models.py
 msgid "How the other members of your homes see you. Optional."
 msgstr "Comment les autres membres de vos logements vous voient. Facultatif."
+
+#: accounts/models.py
+msgid "source of the display name"
+msgstr "source du nom d'affichage"
+
+#: accounts/models.py
+msgid "provider of the display name"
+msgstr "fournisseur du nom d'affichage"
 
 #: accounts/models.py
 msgid "user"
@@ -153,6 +169,17 @@ msgid "Your account was deleted."
 msgstr "Votre compte a été supprimé."
 
 #: accounts/views.py
+msgid "Your display name is now the one of your provider."
+msgstr "Votre nom d'affichage est désormais celui de votre fournisseur."
+
+#: accounts/views.py
+msgid ""
+"Your display name will be taken from your provider at your next sign-in."
+msgstr ""
+"Votre nom d'affichage sera repris de votre fournisseur à votre prochaine "
+"connexion."
+
+#: accounts/views.py
 msgid "Profile saved."
 msgstr "Profil enregistré."
 
@@ -185,7 +212,8 @@ msgid "Post events"
 msgstr "Envoi d'événements"
 
 #: apitokens/models.py homes/models.py instance/models.py
-#: notifications/models.py rooms/models.py stock/models.py tasks/models.py
+#: notifications/models.py projects/models.py rooms/models.py stock/models.py
+#: tasks/models.py
 msgid "name"
 msgstr "nom"
 
@@ -205,7 +233,7 @@ msgstr "logements"
 msgid "expires at"
 msgstr "expire le"
 
-#: apitokens/models.py homes/models.py instance/models.py
+#: apitokens/models.py homes/models.py instance/models.py labels/models.py
 msgid "revoked at"
 msgstr "révoqué le"
 
@@ -379,6 +407,91 @@ msgid "Calendar feed revoked"
 msgstr "Flux de calendrier révoqué"
 
 #: audit/labels.py
+#, python-format
+msgid "QR label revoked: %(title)s"
+msgstr "Étiquette QR révoquée : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "QR label replaced by a new one: %(title)s"
+msgstr "Étiquette QR remplacée par une nouvelle : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Project added: %(title)s"
+msgstr "Projet ajouté : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Project changed: %(title)s"
+msgstr "Projet modifié : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Project deleted: %(title)s"
+msgstr "Projet supprimé : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Task put in the project %(title)s"
+msgstr "Tâche ajoutée au projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Task taken out of the project %(title)s"
+msgstr "Tâche retirée du projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Budget line added to the project %(title)s"
+msgstr "Ligne de budget ajoutée au projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Budget line changed in the project %(title)s"
+msgstr "Ligne de budget modifiée dans le projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Budget line deleted from the project %(title)s"
+msgstr "Ligne de budget supprimée du projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Quote added to the project %(title)s"
+msgstr "Devis ajouté au projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Quote changed in the project %(title)s"
+msgstr "Devis modifié dans le projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Quote accepted in the project %(title)s"
+msgstr "Devis accepté dans le projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Quote deleted from the project %(title)s"
+msgstr "Devis supprimé du projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "File added to the project %(title)s"
+msgstr "Fichier ajouté au projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "File deleted from the project %(title)s"
+msgstr "Fichier supprimé du projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Annual envelope set for %(title)s"
+msgstr "Enveloppe annuelle fixée pour %(title)s"
+
+#: audit/labels.py
 msgid "Instance invitation sent"
 msgstr "Invitation à l'instance envoyée"
 
@@ -474,7 +587,7 @@ msgstr "Accueil"
 msgid "Instance"
 msgstr "Instance"
 
-#: audit/models.py stock/models.py
+#: audit/models.py projects/models.py stock/models.py
 msgid "date"
 msgstr "date"
 
@@ -503,7 +616,8 @@ msgstr "Vous avez déjà un flux pour cela. Demandez-lui une nouvelle adresse."
 msgid "forecast"
 msgstr "prévision"
 
-#: calendar/ics.py
+#: calendar/ics.py templates/projects/compare.html
+#: templates/projects/project_list.html
 msgid "Status"
 msgstr "Statut"
 
@@ -512,8 +626,9 @@ msgctxt "calendar"
 msgid "Home"
 msgstr "Logement"
 
-#: calendar/ics.py rooms/forms.py tasks/forms.py tasks/models.py
-#: templates/calendar/calendar.html templates/tasks/history.html
+#: calendar/ics.py labels/models.py projects/forms.py rooms/forms.py
+#: tasks/forms.py tasks/models.py templates/calendar/calendar.html
+#: templates/projects/project_list.html templates/tasks/history.html
 #: templates/tasks/task_list.html
 msgid "Room"
 msgstr "Pièce"
@@ -543,7 +658,7 @@ msgstr "Semaine"
 msgid "Month"
 msgstr "Mois"
 
-#: calendar/views.py
+#: calendar/views.py projects/forms.py
 msgid "Year"
 msgstr "Année"
 
@@ -572,6 +687,13 @@ msgstr "Toutes les tâches"
 #: templates/tasks/task_detail.html
 msgid "History"
 msgstr "Historique"
+
+#: core/templatetags/tabs.py projects/apps.py
+#: templates/projects/choose_home.html templates/projects/compare.html
+#: templates/projects/envelope_form.html templates/projects/project_detail.html
+#: templates/projects/project_form.html templates/projects/project_list.html
+msgid "Projects"
+msgstr "Projets"
 
 #: core/templatetags/tabs.py templates/tasks/contractor_detail.html
 #: templates/tasks/contractor_form.html templates/tasks/contractor_list.html
@@ -606,7 +728,8 @@ msgstr "Fournisseurs de connexion"
 msgid "Files of the homes"
 msgstr "Fichiers des logements"
 
-#: core/templatetags/tabs.py tasks/apps.py templates/rooms/item_detail.html
+#: core/templatetags/tabs.py tasks/apps.py
+#: templates/projects/project_detail.html templates/rooms/item_detail.html
 #: templates/rooms/room_detail.html templates/shell/navigation.html
 #: templates/tasks/choose_home.html templates/tasks/contractor_detail.html
 #: templates/tasks/task_detail.html templates/tasks/task_form.html
@@ -1047,10 +1170,6 @@ msgstr "secret client"
 #: instance/models.py notifications/models.py templates/instance/providers.html
 msgid "enabled"
 msgstr "activé"
-
-#: instance/models.py
-msgid "sign-in provider"
-msgstr "fournisseur de connexion"
 
 #: instance/models.py
 msgid "sign-in providers"
@@ -1727,6 +1846,77 @@ msgstr "Fournisseur enregistré."
 msgid "(none)"
 msgstr "(aucun)"
 
+#: labels/apps.py labels/models.py templates/labels/_row.html
+#: templates/labels/label_detail.html templates/labels/label_list.html
+msgid "QR labels"
+msgstr "Étiquettes QR"
+
+#: labels/models.py tasks/forms.py templates/tasks/history.html
+msgid "Item"
+msgstr "Élément"
+
+#: labels/models.py
+msgid "Stock item"
+msgstr "Article"
+
+#: labels/models.py rooms/models.py stock/models.py
+msgid "type"
+msgstr "type"
+
+#: labels/models.py templates/labels/_tools.html
+#: templates/labels/label_list.html
+msgid "QR label"
+msgstr "Étiquette QR"
+
+#: labels/printing.py
+msgid "A4 sheet, 3 by 8 labels (63.5 by 33.9 mm)"
+msgstr "Planche A4, 3 par 8 étiquettes (63,5 par 33,9 mm)"
+
+#: labels/printing.py
+msgid "62 mm roll, one label per page (label printer)"
+msgstr "Rouleau de 62 mm, une étiquette par page (imprimante d'étiquettes)"
+
+#: labels/services.py
+msgid "Nothing with this identifier in this home."
+msgstr "Rien avec cet identifiant dans ce logement."
+
+#: labels/services.py
+msgid "Choose one of the layouts offered."
+msgstr "Choisissez l'une des mises en page proposées."
+
+#: labels/services.py
+#, python-format
+msgid "Choose between 1 and %(max)d labels."
+msgstr "Choisissez entre 1 et %(max)d étiquettes."
+
+#: labels/views.py
+msgid "Choose the objects from the list."
+msgstr "Choisissez les objets dans la liste."
+
+#: labels/views.py
+#, python-format
+msgid "QR code of %(name)s"
+msgstr "Code QR de %(name)s"
+
+#: labels/views.py
+msgid "Only members who can edit make a new label: print the ones that exist."
+msgstr ""
+"Seuls les membres qui peuvent modifier créent une nouvelle étiquette : "
+"imprimez celles qui existent."
+
+#: labels/views.py
+msgid "QR label made."
+msgstr "Étiquette QR créée."
+
+#: labels/views.py
+msgid "The old sticker no longer opens anything. Print the new label."
+msgstr ""
+"L'ancien autocollant n'ouvre plus rien. Imprimez la nouvelle étiquette."
+
+#: labels/views.py
+msgid "QR label revoked: the sticker no longer opens anything."
+msgstr "Étiquette QR révoquée : l'autocollant n'ouvre plus rien."
+
 #: notifications/conf.py
 msgid ""
 "People may add channels (ntfy, Telegram, email...) and receive reminders. "
@@ -1947,6 +2137,503 @@ msgstr "Indiquez le début et la fin des heures calmes, ou aucun des deux."
 msgid "Choose a time zone such as Europe/Paris."
 msgstr "Choisissez un fuseau horaire comme Europe/Paris."
 
+#: projects/forms.py templates/projects/project_detail.html
+msgid "Rooms concerned"
+msgstr "Pièces concernées"
+
+#: projects/forms.py templates/projects/project_detail.html
+msgid "Preferred season"
+msgstr "Saison souhaitée"
+
+#: projects/forms.py
+msgid "Any time"
+msgstr "Toute l'année"
+
+#: projects/forms.py tasks/forms.py
+msgid "Custom season starts in"
+msgstr "La saison personnalisée commence en"
+
+#: projects/forms.py tasks/forms.py
+msgid "Custom season ends in"
+msgstr "La saison personnalisée finit en"
+
+#: projects/forms.py tasks/forms.py
+msgid "Only used with the season Custom months."
+msgstr "Utilisé seulement avec la saison « Mois personnalisés »."
+
+#: projects/forms.py tasks/forms.py templates/projects/project_detail.html
+#: templates/tasks/task_detail.html
+msgid "Estimated duration"
+msgstr "Durée estimée"
+
+#: projects/forms.py tasks/forms.py
+msgid "Unit"
+msgstr "Unité"
+
+#: projects/forms.py projects/services.py
+#: templates/projects/project_detail.html
+msgid "Budget"
+msgstr "Budget"
+
+#: projects/forms.py
+msgid ""
+"The amount you plan to spend. It becomes the first budget line, which you "
+"can split into materials and labour later."
+msgstr ""
+"Le montant que vous prévoyez de dépenser. Il devient la première ligne de "
+"budget, que vous pourrez scinder plus tard en matériel et main-d'œuvre."
+
+#: projects/forms.py tasks/forms.py
+#, python-format
+msgid ""
+"The season follows the hemisphere of the home (%(hemisphere)s): change it in "
+"the settings of the home."
+msgstr ""
+"La saison suit l'hémisphère du logement (%(hemisphere)s) : modifiez-le dans "
+"les réglages du logement."
+
+#: projects/forms.py
+msgid "Give a duration between a minute and a year."
+msgstr "Indiquez une durée comprise entre une minute et un an."
+
+#: projects/forms.py tasks/forms.py
+msgid "Give the first and the last month."
+msgstr "Indiquez le premier et le dernier mois."
+
+#: projects/forms.py projects/models.py tasks/models.py
+#: templates/calendar/calendar.html templates/projects/project_detail.html
+msgid "Planned"
+msgstr "Prévue"
+
+#: projects/forms.py templates/projects/project_detail.html
+msgid "Paid"
+msgstr "Payé"
+
+#: projects/forms.py
+msgid ""
+"What has been paid so far. The committed amount comes from accepted quotes."
+msgstr ""
+"Ce qui a été payé jusqu'ici. Le montant engagé vient des devis acceptés."
+
+#: projects/forms.py tasks/forms.py templates/tasks/history.html
+#: templates/tasks/task_detail.html
+msgid "Contractor"
+msgstr "Intervenant"
+
+#: projects/forms.py tasks/forms.py
+msgid ""
+"Pick one from the suggestions or type a new name: it joins the contractors "
+"of the home when you save."
+msgstr ""
+"Choisissez parmi les suggestions ou saisissez un nouveau nom : il rejoint "
+"les intervenants du logement à l'enregistrement."
+
+#: projects/forms.py
+msgid "Amount"
+msgstr "Montant"
+
+#: projects/forms.py templates/projects/project_detail.html
+msgid "Committed on"
+msgstr "Engagé sur"
+
+#: projects/forms.py
+msgid "The budget line an accepted quote is committed on."
+msgstr "La ligne de budget sur laquelle un devis accepté est engagé."
+
+#: projects/forms.py
+msgid "File of the quote"
+msgstr "Fichier du devis"
+
+#: projects/forms.py projects/models.py projects/views.py
+msgid "Choose the budget line the quote is committed on."
+msgstr "Choisissez la ligne de budget sur laquelle le devis est engagé."
+
+#: projects/forms.py templates/projects/project_detail.html
+msgid "Commit on"
+msgstr "Engager sur"
+
+#: projects/forms.py
+msgid "New task"
+msgstr "Nouvelle tâche"
+
+#: projects/forms.py tasks/forms.py templates/tasks/task_detail.html
+msgid "Due on"
+msgstr "Échéance"
+
+#: projects/forms.py
+msgid "Existing task"
+msgstr "Tâche existante"
+
+#: projects/forms.py rooms/forms.py
+msgid "Photo"
+msgstr "Photo"
+
+#: projects/forms.py templates/projects/project_list.html
+msgid "Envelope"
+msgstr "Enveloppe"
+
+#: projects/forms.py
+msgid "What you want to spend on work this year, in the currency of the home."
+msgstr ""
+"Ce que vous voulez dépenser en travaux cette année, dans la devise du "
+"logement."
+
+#: projects/models.py
+msgid "Idea"
+msgstr "Idée"
+
+#: projects/models.py
+msgid "In progress"
+msgstr "En cours"
+
+#: projects/models.py
+msgid "Finished"
+msgstr "Terminé"
+
+#: projects/models.py
+msgid "Abandoned"
+msgstr "Abandonné"
+
+#: projects/models.py
+msgid "Materials"
+msgstr "Matériel"
+
+#: projects/models.py
+msgid "Labour"
+msgstr "Main-d'œuvre"
+
+#: projects/models.py
+msgid "Rental"
+msgstr "Location"
+
+#: projects/models.py rooms/models.py tasks/models.py
+msgid "Other"
+msgstr "Autre"
+
+#: projects/models.py
+msgid "Requested"
+msgstr "Demandé"
+
+#: projects/models.py
+msgid "Received"
+msgstr "Reçu"
+
+#: projects/models.py
+msgid "Accepted"
+msgstr "Accepté"
+
+#: projects/models.py
+msgid "Rejected"
+msgstr "Refusé"
+
+#: projects/models.py tasks/models.py
+msgid "title"
+msgstr "titre"
+
+#: projects/models.py
+msgid "goal"
+msgstr "objectif"
+
+#: projects/models.py tasks/models.py
+msgid "status"
+msgstr "statut"
+
+#: projects/models.py tasks/models.py
+msgid "priority"
+msgstr "priorité"
+
+#: projects/models.py
+msgid "rooms concerned"
+msgstr "pièces concernées"
+
+#: projects/models.py tasks/models.py
+msgid "estimated duration (minutes)"
+msgstr "durée estimée (minutes)"
+
+#: projects/models.py
+msgid "preferred season"
+msgstr "saison souhaitée"
+
+#: projects/models.py tasks/models.py
+msgid "season starts in"
+msgstr "la saison commence en"
+
+#: projects/models.py tasks/models.py
+msgid "season ends in"
+msgstr "la saison finit en"
+
+#: projects/models.py
+msgid "project"
+msgstr "projet"
+
+#: projects/models.py
+msgid "projects"
+msgstr "projets"
+
+#: projects/models.py tasks/models.py
+msgid "Give the first and the last month of the season."
+msgstr "Indiquez le premier et le dernier mois de la saison."
+
+#: projects/models.py
+msgid "Months are for a custom season only."
+msgstr "Les mois ne servent qu'à une saison personnalisée."
+
+#: projects/models.py
+msgid "label"
+msgstr "libellé"
+
+#: projects/models.py
+msgid "nature"
+msgstr "nature"
+
+#: projects/models.py
+msgid "planned"
+msgstr "prévu"
+
+#: projects/models.py
+msgid "paid"
+msgstr "payé"
+
+#: projects/models.py
+msgid ""
+"What has been paid so far; Sure will check it against the real payments."
+msgstr "Ce qui a été payé jusqu'ici ; Sure le rapprochera des paiements réels."
+
+#: projects/models.py
+msgid "budget line"
+msgstr "ligne de budget"
+
+#: projects/models.py
+msgid "budget lines"
+msgstr "lignes de budget"
+
+#: projects/models.py tasks/models.py
+msgid "contractor"
+msgstr "intervenant"
+
+#: projects/models.py
+msgid "amount"
+msgstr "montant"
+
+#: projects/models.py
+msgid "valid until"
+msgstr "valable jusqu'au"
+
+#: projects/models.py stock/models.py tasks/models.py
+msgid "note"
+msgstr "note"
+
+#: projects/models.py
+msgid "Paperless document number"
+msgstr "Numéro du document Paperless"
+
+#: projects/models.py
+msgid "Paperless document link"
+msgstr "Lien du document Paperless"
+
+#: projects/models.py
+msgid "quote"
+msgstr "devis"
+
+#: projects/models.py
+msgid "quotes"
+msgstr "devis"
+
+#: projects/models.py
+msgid "The validity cannot end before the date of the quote."
+msgstr "La validité ne peut pas finir avant la date du devis."
+
+#: projects/models.py tasks/models.py
+msgid "This contractor is not in this home."
+msgstr "Cet intervenant n'est pas dans ce logement."
+
+#: projects/models.py projects/services.py
+msgid "This budget line is not in this project."
+msgstr "Cette ligne de budget n'est pas dans ce projet."
+
+#: projects/models.py
+msgid "project file"
+msgstr "fichier de projet"
+
+#: projects/models.py
+msgid "project files"
+msgstr "fichiers de projet"
+
+#: projects/models.py
+msgid "task of a project"
+msgstr "tâche d'un projet"
+
+#: projects/models.py
+msgid "tasks of projects"
+msgstr "tâches de projets"
+
+#: projects/models.py
+msgid "year"
+msgstr "année"
+
+#: projects/models.py
+msgid "envelope"
+msgstr "enveloppe"
+
+#: projects/models.py
+msgid "annual envelope"
+msgstr "enveloppe annuelle"
+
+#: projects/models.py
+msgid "annual envelopes"
+msgstr "enveloppes annuelles"
+
+#: projects/services.py
+msgid "Give an amount of money, such as 1250.50."
+msgstr "Indiquez un montant, par exemple 1250,50."
+
+#: projects/services.py
+msgid "The amount cannot be negative."
+msgstr "Le montant ne peut pas être négatif."
+
+#: projects/services.py
+msgid "This amount is too large."
+msgstr "Ce montant est trop élevé."
+
+#: projects/services.py
+msgid "At most two decimals."
+msgstr "Deux décimales au plus."
+
+#: projects/services.py rooms/models.py rooms/services.py tasks/models.py
+msgid "This room is not in this home."
+msgstr "Cette pièce n'est pas dans ce logement."
+
+#: projects/services.py
+msgid "This task is not in this home."
+msgstr "Cette tâche n'est pas dans ce logement."
+
+#: projects/services.py
+msgid "This task is already in a project."
+msgstr "Cette tâche est déjà dans un projet."
+
+#: projects/services.py tasks/services.py
+#, python-format
+msgid "Choose a date within %(years)d years of today."
+msgstr "Choisissez une date à moins de %(years)d ans d'aujourd'hui."
+
+#: projects/services.py
+msgid "This quote is not in this project."
+msgstr "Ce devis n'est pas dans ce projet."
+
+#: projects/services.py
+#, python-format
+msgid "At most %(max)d photos for a project."
+msgstr "%(max)d photos au plus pour un projet."
+
+#: projects/services.py
+#, python-format
+msgid "At most %(max)d files for a quote."
+msgstr "%(max)d fichiers au plus pour un devis."
+
+#: projects/views.py rooms/views.py stock/views.py tasks/views.py
+msgid "This file is too large."
+msgstr "Ce fichier est trop volumineux."
+
+#: projects/views.py
+msgid "Envelope saved."
+msgstr "Enveloppe enregistrée."
+
+#: projects/views.py
+msgid "Project added."
+msgstr "Projet ajouté."
+
+#: projects/views.py
+msgid "Project saved."
+msgstr "Projet enregistré."
+
+#: projects/views.py
+msgid ""
+"The project, its budget lines, quotes and photos disappear. Its tasks stay: "
+"they are only taken out of the project."
+msgstr ""
+"Le projet, ses lignes de budget, ses devis et ses photos disparaissent. Ses "
+"tâches restent : elles sont seulement retirées du projet."
+
+#: projects/views.py
+msgid "Project deleted."
+msgstr "Projet supprimé."
+
+#: projects/views.py
+msgid "Task added to the project."
+msgstr "Tâche ajoutée au projet."
+
+#: projects/views.py
+msgid "Choose a task that is in no project yet."
+msgstr "Choisissez une tâche qui n'est dans aucun projet."
+
+#: projects/views.py
+msgid "Task put in the project."
+msgstr "Tâche mise dans le projet."
+
+#: projects/views.py
+msgid "Task taken out of the project."
+msgstr "Tâche retirée du projet."
+
+#: projects/views.py
+msgid "Budget line added."
+msgstr "Ligne de budget ajoutée."
+
+#: projects/views.py
+msgid "Budget line saved."
+msgstr "Ligne de budget enregistrée."
+
+#: projects/views.py
+msgid ""
+"The budget line disappears. The quotes accepted on it go back to Received: "
+"they commit nothing any more."
+msgstr ""
+"La ligne de budget disparaît. Les devis acceptés sur elle repassent à Reçu : "
+"ils n'engagent plus rien."
+
+#: projects/views.py
+msgid "Budget line deleted."
+msgstr "Ligne de budget supprimée."
+
+#: projects/views.py
+msgid "Quote saved."
+msgstr "Devis enregistré."
+
+#: projects/views.py
+msgid "Quote accepted and committed on the budget line."
+msgstr "Devis accepté et engagé sur la ligne de budget."
+
+#: projects/views.py
+msgid "Choose a status."
+msgstr "Choisissez un statut."
+
+#: projects/views.py
+msgid "The quote and its files disappear. What it committed is released."
+msgstr "Le devis et ses fichiers disparaissent. Ce qu'il engageait est libéré."
+
+#: projects/views.py
+msgid "this quote"
+msgstr "ce devis"
+
+#: projects/views.py
+msgid "Quote deleted."
+msgstr "Devis supprimé."
+
+#: projects/views.py
+msgid "Choose a photo."
+msgstr "Choisissez une photo."
+
+#: projects/views.py rooms/views.py
+msgid "Photo added."
+msgstr "Photo ajoutée."
+
+#: projects/views.py
+msgid "The file disappears from the project and from the disk."
+msgstr "Le fichier disparaît du projet et du disque."
+
+#: projects/views.py tasks/views.py
+msgid "File deleted."
+msgstr "Fichier supprimé."
+
 #: rooms/apps.py templates/rooms/choose_home.html
 #: templates/rooms/room_detail.html templates/rooms/room_form.html
 #: templates/rooms/room_list.html templates/rooms/search.html
@@ -2040,10 +2727,6 @@ msgid "One per line: the address, then a label if you like."
 msgstr "Un par ligne : l'adresse, puis une étiquette si vous le souhaitez."
 
 #: rooms/forms.py
-msgid "Photo"
-msgstr "Photo"
-
-#: rooms/forms.py
 msgid "Caption"
 msgstr "Légende"
 
@@ -2128,14 +2811,6 @@ msgstr "Grenier"
 #: rooms/models.py
 msgid "Outdoor"
 msgstr "Extérieur"
-
-#: rooms/models.py tasks/models.py
-msgid "Other"
-msgstr "Autre"
-
-#: rooms/models.py stock/models.py
-msgid "type"
-msgstr "type"
 
 #: rooms/models.py
 msgid "position"
@@ -2249,10 +2924,6 @@ msgstr "élément"
 msgid "items"
 msgstr "éléments"
 
-#: rooms/models.py rooms/services.py tasks/models.py
-msgid "This room is not in this home."
-msgstr "Cette pièce n'est pas dans ce logement."
-
 #: rooms/models.py
 msgid "General"
 msgstr "Général"
@@ -2347,14 +3018,6 @@ msgstr "L'élément et ses photos disparaissent des écrans."
 msgid "Item deleted."
 msgstr "Élément supprimé."
 
-#: rooms/views.py stock/views.py tasks/views.py
-msgid "This file is too large."
-msgstr "Ce fichier est trop volumineux."
-
-#: rooms/views.py
-msgid "Photo added."
-msgstr "Photo ajoutée."
-
 #: rooms/views.py
 msgid "Photo deleted."
 msgstr "Photo supprimée."
@@ -2387,11 +3050,12 @@ msgstr "Supprimer la photo de l'étiquette"
 msgid "Quantity"
 msgstr "Quantité"
 
-#: stock/forms.py
+#: stock/forms.py templates/projects/project_detail.html
 msgid "Date"
 msgstr "Date"
 
-#: stock/forms.py tasks/forms.py templates/tasks/contractor_detail.html
+#: stock/forms.py tasks/forms.py templates/projects/project_detail.html
+#: templates/tasks/contractor_detail.html
 msgid "Note"
 msgstr "Note"
 
@@ -2478,10 +3142,6 @@ msgstr "quantité"
 #: stock/models.py
 msgid "change"
 msgstr "variation"
-
-#: stock/models.py tasks/models.py
-msgid "note"
-msgstr "note"
 
 #: stock/models.py
 msgid "movement"
@@ -2616,53 +3276,13 @@ msgstr ""
 msgid "Assignee"
 msgstr "Responsable"
 
-#: tasks/forms.py templates/tasks/history.html
-msgid "Item"
-msgstr "Élément"
-
-#: tasks/forms.py templates/tasks/task_detail.html
-msgid "Due on"
-msgstr "Échéance"
-
-#: tasks/forms.py
+#: tasks/forms.py templates/projects/compare.html
 msgid "Season"
 msgstr "Saison"
 
 #: tasks/forms.py
 msgid "All year"
 msgstr "Toute l'année"
-
-#: tasks/forms.py
-msgid "Custom season starts in"
-msgstr "La saison personnalisée commence en"
-
-#: tasks/forms.py
-msgid "Custom season ends in"
-msgstr "La saison personnalisée finit en"
-
-#: tasks/forms.py
-msgid "Only used with the season Custom months."
-msgstr "Utilisé seulement avec la saison « Mois personnalisés »."
-
-#: tasks/forms.py templates/tasks/task_detail.html
-msgid "Estimated duration"
-msgstr "Durée estimée"
-
-#: tasks/forms.py
-msgid "Unit"
-msgstr "Unité"
-
-#: tasks/forms.py templates/tasks/history.html templates/tasks/task_detail.html
-msgid "Contractor"
-msgstr "Intervenant"
-
-#: tasks/forms.py
-msgid ""
-"Pick one from the suggestions or type a new name: it joins the contractors "
-"of the home when you save."
-msgstr ""
-"Choisissez parmi les suggestions ou saisissez un nouveau nom : il rejoint "
-"les intervenants du logement à l'enregistrement."
 
 #: tasks/forms.py templates/tasks/task_detail.html
 msgid "Photos and files"
@@ -2673,22 +3293,9 @@ msgid "Markdown: how to do it, step by step. Links to web pages only."
 msgstr ""
 "Markdown : comment faire, pas à pas. Liens vers des pages web seulement."
 
-#: tasks/forms.py
-#, python-format
-msgid ""
-"The season follows the hemisphere of the home (%(hemisphere)s): change it in "
-"the settings of the home."
-msgstr ""
-"La saison suit l'hémisphère du logement (%(hemisphere)s) : modifiez-le dans "
-"les réglages du logement."
-
 #: tasks/forms.py tasks/services.py
 msgid "Give a duration between a minute and thirty days."
 msgstr "Indiquez une durée comprise entre une minute et trente jours."
-
-#: tasks/forms.py
-msgid "Give the first and the last month."
-msgstr "Indiquez le premier et le dernier mois."
 
 #: tasks/forms.py
 msgid "New date"
@@ -2716,15 +3323,17 @@ msgstr "Choisissez au moins un fichier."
 msgid "This language is not offered."
 msgstr "Cette langue n'est pas proposée."
 
-#: tasks/models.py templates/stock/article_list.html
+#: tasks/models.py templates/projects/project_list.html
+#: templates/stock/article_list.html
 msgid "Low"
 msgstr "Basse"
 
-#: tasks/models.py
+#: tasks/models.py templates/projects/project_list.html
 msgid "Normal"
 msgstr "Normale"
 
 #: tasks/models.py templates/calendar/_entry.html
+#: templates/projects/project_list.html
 msgid "High"
 msgstr "Haute"
 
@@ -2776,14 +3385,10 @@ msgstr "Saison de chauffe"
 msgid "Custom months"
 msgstr "Mois personnalisés"
 
-#: tasks/models.py templates/calendar/calendar.html
-msgid "Planned"
-msgstr "Prévue"
-
 #: tasks/models.py templates/calendar/_entry.html
-#: templates/calendar/calendar.html templates/tasks/_occurrence_row.html
-#: templates/tasks/history.html templates/tasks/task_detail.html
-#: templates/tasks/task_list.html
+#: templates/calendar/calendar.html templates/projects/project_detail.html
+#: templates/tasks/_occurrence_row.html templates/tasks/history.html
+#: templates/tasks/task_detail.html templates/tasks/task_list.html
 msgctxt "task"
 msgid "Done"
 msgstr "Fait"
@@ -2863,28 +3468,12 @@ msgid "address"
 msgstr "adresse"
 
 #: tasks/models.py
-msgid "contractor"
-msgstr "intervenant"
-
-#: tasks/models.py
 msgid "contractors"
 msgstr "intervenants"
 
 #: tasks/models.py
 msgid "Say which trade."
 msgstr "Dites de quel métier il s'agit."
-
-#: tasks/models.py
-msgid "title"
-msgstr "titre"
-
-#: tasks/models.py
-msgid "priority"
-msgstr "priorité"
-
-#: tasks/models.py
-msgid "estimated duration (minutes)"
-msgstr "durée estimée (minutes)"
 
 #: tasks/models.py
 msgid "labour budget"
@@ -2915,14 +3504,6 @@ msgid "season"
 msgstr "saison"
 
 #: tasks/models.py
-msgid "season starts in"
-msgstr "la saison commence en"
-
-#: tasks/models.py
-msgid "season ends in"
-msgstr "la saison finit en"
-
-#: tasks/models.py
 msgid "hide until this many days before"
 msgstr "masquer jusqu'à ce nombre de jours avant"
 
@@ -2943,24 +3524,12 @@ msgid "This item is not in this room."
 msgstr "Cet élément n'est pas dans cette pièce."
 
 #: tasks/models.py
-msgid "This contractor is not in this home."
-msgstr "Cet intervenant n'est pas dans ce logement."
-
-#: tasks/models.py
 msgid "This interval is out of range."
 msgstr "Cet intervalle est hors limites."
 
 #: tasks/models.py
-msgid "Give the first and the last month of the season."
-msgstr "Indiquez le premier et le dernier mois de la saison."
-
-#: tasks/models.py
 msgid "due on"
 msgstr "échéance"
-
-#: tasks/models.py
-msgid "status"
-msgstr "statut"
 
 #: tasks/models.py
 msgid "done on"
@@ -3041,11 +3610,6 @@ msgstr "pièce jointe"
 #: tasks/models.py
 msgid "attachments"
 msgstr "pièces jointes"
-
-#: tasks/services.py
-#, python-format
-msgid "Choose a date within %(years)d years of today."
-msgstr "Choisissez une date à moins de %(years)d ans d'aujourd'hui."
 
 #: tasks/services.py
 msgid "This person is not a member of this home."
@@ -3192,10 +3756,6 @@ msgstr "Une partie des fichiers a été ajoutée."
 #: tasks/views.py
 msgid "Files added."
 msgstr "Fichiers ajoutés."
-
-#: tasks/views.py
-msgid "File deleted."
-msgstr "Fichier supprimé."
 
 #: templates/400.html
 msgid "Bad request"
@@ -3413,16 +3973,45 @@ msgstr ""
 "voient : sur les tâches dont vous êtes responsable, dans l'historique et "
 "dans le foyer. Sans nom, le début de votre adresse est affiché."
 
+#: templates/accounts/profile.html
+#, python-format
+msgid ""
+"Taken from %(provider)s. It follows the name your provider gives at each "
+"sign-in through it, until you change it here."
+msgstr ""
+"Repris de %(provider)s. Il suit le nom que donne votre fournisseur à chaque "
+"connexion par celui-ci, jusqu'à ce que vous le modifiiez ici."
+
+#: templates/accounts/profile.html
+msgid ""
+"Your provider will give your display name at your next sign-in through it, "
+"unless you type one here."
+msgstr ""
+"Votre fournisseur donnera votre nom d'affichage à votre prochaine connexion "
+"par celui-ci, sauf si vous en saisissez un ici."
+
 #: templates/accounts/profile.html templates/homes/home_form.html
 #: templates/homes/household.html templates/instance/provider.html
 #: templates/instance/settings.html templates/notifications/channel.html
-#: templates/notifications/index.html templates/rooms/item_form.html
+#: templates/notifications/index.html templates/projects/envelope_form.html
+#: templates/projects/line_form.html templates/projects/project_form.html
+#: templates/projects/quote_form.html templates/rooms/item_form.html
 #: templates/rooms/room_form.html templates/rooms/room_memory_form.html
 #: templates/stock/article_form.html templates/stock/supplier_form.html
 #: templates/tasks/completion_form.html templates/tasks/contractor_form.html
 #: templates/tasks/preferences.html templates/tasks/task_form.html
 msgid "Save"
 msgstr "Enregistrer"
+
+#: templates/accounts/profile.html
+msgid "You typed your display name: sign-in providers do not change it."
+msgstr ""
+"Vous avez saisi votre nom d'affichage : les fournisseurs de connexion ne le "
+"modifient pas."
+
+#: templates/accounts/profile.html
+msgid "Use the provider's name"
+msgstr "Reprendre le nom du fournisseur"
 
 #: templates/allauth/elements/provider.html templates/homes/invitation.html
 #: templates/homes/sso_required.html templates/instance/invitation.html
@@ -3467,8 +4056,8 @@ msgstr "Flux"
 msgid "Filter the calendar"
 msgstr "Filtrer le calendrier"
 
-#: templates/calendar/calendar.html templates/tasks/history.html
-#: templates/tasks/task_list.html
+#: templates/calendar/calendar.html templates/projects/project_list.html
+#: templates/tasks/history.html templates/tasks/task_list.html
 msgid "All rooms"
 msgstr "Toutes les pièces"
 
@@ -3476,16 +4065,17 @@ msgstr "Toutes les pièces"
 msgid "Everybody"
 msgstr "Tout le monde"
 
-#: templates/calendar/calendar.html
+#: templates/calendar/calendar.html templates/projects/compare.html
+#: templates/projects/project_list.html
 msgid "Priority"
 msgstr "Priorité"
 
-#: templates/calendar/calendar.html
+#: templates/calendar/calendar.html templates/projects/project_list.html
 msgid "Any priority"
-msgstr "Toute priorité"
+msgstr "Toutes les priorités"
 
-#: templates/calendar/calendar.html templates/tasks/history.html
-#: templates/tasks/task_list.html
+#: templates/calendar/calendar.html templates/projects/project_list.html
+#: templates/tasks/history.html templates/tasks/task_list.html
 msgid "Filter"
 msgstr "Filtrer"
 
@@ -3706,8 +4296,9 @@ msgstr ""
 "ou change des rôles ou des invitations, chaque action apparaît ici avec son "
 "auteur et sa date, l'objet étant désigné par son titre."
 
-#: templates/homes/confirm.html templates/rooms/confirm_delete.html
-#: templates/stock/confirm_delete.html templates/tasks/confirm_delete.html
+#: templates/homes/confirm.html templates/projects/confirm_delete.html
+#: templates/rooms/confirm_delete.html templates/stock/confirm_delete.html
+#: templates/tasks/confirm_delete.html
 #: templates/tasks/contractor_confirm_delete.html
 msgid "Cancel"
 msgstr "Annuler"
@@ -3830,8 +4421,9 @@ msgid "Edit the home"
 msgstr "Modifier le logement"
 
 #: templates/homes/home_form.html templates/homes/home_list.html
-#: templates/rooms/choose_home.html templates/stock/choose_home.html
-#: templates/tasks/choose_home.html templates/tasks/my_home.html
+#: templates/projects/choose_home.html templates/rooms/choose_home.html
+#: templates/stock/choose_home.html templates/tasks/choose_home.html
+#: templates/tasks/my_home.html
 msgid "Add a home"
 msgstr "Ajouter un logement"
 
@@ -4233,9 +4825,11 @@ msgstr ""
 "un autre fournisseur. Un fournisseur exigé par un logement ne peut pas être "
 "supprimé : désactivez-le plutôt."
 
-#: templates/instance/provider.html templates/rooms/_photos.html
-#: templates/rooms/confirm_delete.html templates/stock/confirm_delete.html
-#: templates/tasks/_attachments.html templates/tasks/confirm_delete.html
+#: templates/instance/provider.html templates/projects/confirm_delete.html
+#: templates/projects/project_detail.html templates/projects/quote_form.html
+#: templates/rooms/_photos.html templates/rooms/confirm_delete.html
+#: templates/stock/confirm_delete.html templates/tasks/_attachments.html
+#: templates/tasks/confirm_delete.html
 #: templates/tasks/contractor_confirm_delete.html
 #: templates/tasks/contractor_detail.html
 msgid "Delete"
@@ -4387,6 +4981,101 @@ msgstr "%(space)s en %(files)s fichiers, %(percent)s %% du quota"
 msgid "No home yet."
 msgstr "Aucun logement pour l'instant."
 
+#: templates/labels/_row.html
+msgid "Print stickers that open a room, an item or a stock item"
+msgstr ""
+"Imprimer des autocollants qui ouvrent une pièce, un élément ou un article"
+
+#: templates/labels/_tools.html
+msgid "Make a QR label"
+msgstr "Créer une étiquette QR"
+
+#: templates/labels/label_detail.html
+#, python-format
+msgid "QR label of %(name)s"
+msgstr "Étiquette QR de %(name)s"
+
+#: templates/labels/label_detail.html
+msgid "The code holds this address and nothing else:"
+msgstr "Le code contient cette adresse et rien d'autre :"
+
+#: templates/labels/label_detail.html
+msgid "Open the page"
+msgstr "Ouvrir la page"
+
+#: templates/labels/label_detail.html
+msgid "Print"
+msgstr "Imprimer"
+
+#: templates/labels/label_detail.html templates/labels/label_list.html
+msgid "Layout"
+msgstr "Mise en page"
+
+#: templates/labels/label_detail.html
+msgid "Print this label"
+msgstr "Imprimer cette étiquette"
+
+#: templates/labels/label_detail.html
+msgid "If the sticker is lost or shared"
+msgstr "Si l'autocollant est perdu ou partagé"
+
+#: templates/labels/label_detail.html
+msgid "A new label has a new code; the old sticker stops opening anything."
+msgstr ""
+"Une nouvelle étiquette a un nouveau code ; l'ancien autocollant n'ouvre plus "
+"rien."
+
+#: templates/labels/label_detail.html
+msgid "Make a new label"
+msgstr "Créer une nouvelle étiquette"
+
+#: templates/labels/label_detail.html
+msgid "Revoke the label"
+msgstr "Révoquer l'étiquette"
+
+#: templates/labels/label_list.html
+msgid ""
+"Tick what to label, choose a layout and print the sheet. Scanning a sticker "
+"opens the page of the object, for the members of this home."
+msgstr ""
+"Cochez ce qu'il faut étiqueter, choisissez une mise en page et imprimez la "
+"planche. Scanner un autocollant ouvre la page de l'objet, pour les membres "
+"de ce logement."
+
+#: templates/labels/label_list.html
+msgid "No label yet"
+msgstr "Pas encore d'étiquette"
+
+#: templates/labels/label_list.html
+msgid "No label"
+msgstr "Pas d'étiquette"
+
+#: templates/labels/label_list.html
+#, python-format
+msgid "Up to %(max)s labels at a time."
+msgstr "%(max)s étiquettes au plus à la fois."
+
+#: templates/labels/label_list.html
+msgid "A label is made for each object ticked that has none."
+msgstr "Une étiquette est créée pour chaque objet coché qui n'en a pas."
+
+#: templates/labels/label_list.html
+msgid ""
+"You can print the labels that exist; members who can edit make new ones."
+msgstr ""
+"Vous pouvez imprimer les étiquettes qui existent ; les membres qui peuvent "
+"modifier en créent de nouvelles."
+
+#: templates/labels/label_list.html
+msgid "Print the labels"
+msgstr "Imprimer les étiquettes"
+
+#: templates/labels/label_list.html
+msgid "Nothing to label yet: add rooms, items or stock items first."
+msgstr ""
+"Rien à étiqueter pour l'instant : ajoutez d'abord des pièces, des éléments "
+"ou des articles."
+
 #: templates/notifications/channel.html
 #, python-format
 msgid ""
@@ -4449,6 +5138,365 @@ msgstr "Rappels"
 msgid "Download my notification settings"
 msgstr "Télécharger mes réglages de notification"
 
+#: templates/projects/_gap.html
+#, python-format
+msgid "Over budget by %(amount)s"
+msgstr "Budget dépassé de %(amount)s"
+
+#: templates/projects/_gap.html
+#, python-format
+msgid "%(amount)s left"
+msgstr "%(amount)s restants"
+
+#: templates/projects/_gap.html
+msgid "On budget"
+msgstr "Budget respecté"
+
+#: templates/projects/_task_link.html
+msgid "Part of the project"
+msgstr "Fait partie du projet"
+
+#: templates/projects/choose_home.html
+msgid "Choose the home whose projects you want to open."
+msgstr "Choisissez le logement dont vous voulez ouvrir les projets."
+
+#: templates/projects/choose_home.html templates/rooms/choose_home.html
+#: templates/stock/choose_home.html templates/tasks/choose_home.html
+#: templates/tasks/my_home.html
+msgid "You have no home to open yet."
+msgstr "Vous n'avez pas encore de logement à ouvrir."
+
+#: templates/projects/compare.html
+msgid "Compare projects"
+msgstr "Comparer les projets"
+
+#: templates/projects/compare.html
+msgid "Tick at least two projects in the list to compare them."
+msgstr "Cochez au moins deux projets dans la liste pour les comparer."
+
+#: templates/projects/compare.html
+msgid "The projects side by side"
+msgstr "Les projets côte à côte"
+
+#: templates/projects/compare.html
+msgid "Project"
+msgstr "Projet"
+
+#: templates/projects/compare.html
+msgid "Planned cost"
+msgstr "Coût prévu"
+
+#: templates/projects/compare.html templates/projects/project_detail.html
+msgid "Committed"
+msgstr "Engagé"
+
+#: templates/projects/compare.html
+msgid "Duration"
+msgstr "Durée"
+
+#: templates/projects/confirm_delete.html templates/rooms/confirm_delete.html
+#: templates/stock/confirm_delete.html templates/tasks/confirm_delete.html
+#: templates/tasks/contractor_confirm_delete.html
+#, python-format
+msgid "Delete %(name)s?"
+msgstr "Supprimer %(name)s ?"
+
+#: templates/projects/envelope_form.html
+msgid "Annual envelope"
+msgstr "Enveloppe annuelle"
+
+#: templates/projects/envelope_form.html templates/projects/line_form.html
+#: templates/projects/project_form.html
+#, python-format
+msgid "Amounts are in %(currency)s, the currency of the home."
+msgstr "Les montants sont en %(currency)s, la devise du logement."
+
+#: templates/projects/line_form.html
+msgid "Edit the budget line"
+msgstr "Modifier la ligne de budget"
+
+#: templates/projects/line_form.html templates/projects/project_detail.html
+msgid "Add a budget line"
+msgstr "Ajouter une ligne de budget"
+
+#: templates/projects/line_form.html
+msgid "Delete the budget line"
+msgstr "Supprimer la ligne de budget"
+
+#: templates/projects/project_detail.html templates/projects/project_list.html
+#: templates/tasks/task_detail.html
+msgid "High priority"
+msgstr "Priorité haute"
+
+#: templates/projects/project_detail.html templates/tasks/task_detail.html
+msgid "Low priority"
+msgstr "Priorité basse"
+
+#: templates/projects/project_detail.html templates/projects/project_form.html
+msgid "Edit the project"
+msgstr "Modifier le projet"
+
+#: templates/projects/project_detail.html
+#, python-format
+msgid "Due %(day)s"
+msgstr "Pour le %(day)s"
+
+#: templates/projects/project_detail.html templates/rooms/item_detail.html
+#: templates/rooms/room_detail.html templates/tasks/_due.html
+#: templates/tasks/today.html
+msgid "No date"
+msgstr "Sans date"
+
+#: templates/projects/project_detail.html
+msgid "Take out"
+msgstr "Retirer"
+
+#: templates/projects/project_detail.html
+msgid "No task in this project yet."
+msgstr "Aucune tâche dans ce projet pour l'instant."
+
+#: templates/projects/project_detail.html
+msgid "Add a task to the project"
+msgstr "Ajouter une tâche au projet"
+
+#: templates/projects/project_detail.html templates/tasks/task_form.html
+msgid "Add the task"
+msgstr "Ajouter la tâche"
+
+#: templates/projects/project_detail.html
+msgid "Put an existing task in the project"
+msgstr "Mettre une tâche existante dans le projet"
+
+#: templates/projects/project_detail.html
+msgid "Put it in the project"
+msgstr "La mettre dans le projet"
+
+#: templates/projects/project_detail.html
+#, python-format
+msgid "Budget lines, in %(currency)s"
+msgstr "Lignes de budget, en %(currency)s"
+
+#: templates/projects/project_detail.html
+msgid "Line"
+msgstr "Ligne"
+
+#: templates/projects/project_detail.html
+msgid "Gap"
+msgstr "Écart"
+
+#: templates/projects/project_detail.html
+#: templates/tasks/contractor_detail.html
+msgid "Edit"
+msgstr "Modifier"
+
+#: templates/projects/project_detail.html
+msgid "Total"
+msgstr "Total"
+
+#: templates/projects/project_detail.html
+msgid ""
+"Committed is the sum of the accepted quotes. The gap is the planned amount "
+"less the more of committed and paid."
+msgstr ""
+"L'engagé est la somme des devis acceptés. L'écart est le montant prévu moins "
+"le plus élevé de l'engagé et du payé."
+
+#: templates/projects/project_detail.html
+msgid "No budget line yet. Add one to say what you plan to spend."
+msgstr ""
+"Aucune ligne de budget pour l'instant. Ajoutez-en une pour dire ce que vous "
+"prévoyez de dépenser."
+
+#: templates/projects/project_detail.html
+msgid "Quotes"
+msgstr "Devis"
+
+#: templates/projects/project_detail.html
+msgid "No contractor"
+msgstr "Aucun intervenant"
+
+#: templates/projects/project_detail.html
+msgid "Valid until"
+msgstr "Valable jusqu'au"
+
+#: templates/projects/project_detail.html templates/projects/quote_form.html
+msgid "Document in Paperless-ngx"
+msgstr "Document dans Paperless-ngx"
+
+#: templates/projects/project_detail.html
+msgid "File"
+msgstr "Fichier"
+
+#: templates/projects/project_detail.html
+msgid "Accept the quote"
+msgstr "Accepter le devis"
+
+#: templates/projects/project_detail.html
+msgid "Mark as received"
+msgstr "Marquer comme reçu"
+
+#: templates/projects/project_detail.html
+msgid "Reject the quote"
+msgstr "Refuser le devis"
+
+#: templates/projects/project_detail.html templates/projects/quote_form.html
+msgid "Edit the quote"
+msgstr "Modifier le devis"
+
+#: templates/projects/project_detail.html
+msgid "Add a budget line to accept a quote: its amount is committed on it."
+msgstr ""
+"Ajoutez une ligne de budget pour accepter un devis : son montant y est "
+"engagé."
+
+#: templates/projects/project_detail.html
+msgid "No quote yet."
+msgstr "Aucun devis pour l'instant."
+
+#: templates/projects/project_detail.html templates/projects/quote_form.html
+msgid "Add a quote"
+msgstr "Ajouter un devis"
+
+#: templates/projects/project_detail.html templates/rooms/item_detail.html
+#: templates/rooms/room_detail.html
+msgid "Photos"
+msgstr "Photos"
+
+#: templates/projects/project_detail.html templates/rooms/item_detail.html
+#: templates/rooms/room_detail.html
+msgid "No photo yet."
+msgstr "Aucune photo pour l'instant."
+
+#: templates/projects/project_detail.html
+#, python-format
+msgid ""
+"JPEG, PNG or WebP, up to %(size)s. HouseCairn keeps the picture and nothing "
+"else: the location and every other piece of information hidden in the file "
+"are removed."
+msgstr ""
+"JPEG, PNG ou WebP, jusqu'à %(size)s. HouseCairn garde l'image et rien "
+"d'autre : la position et toute autre information cachée dans le fichier sont "
+"supprimées."
+
+#: templates/projects/project_detail.html
+msgid "Add the photo"
+msgstr "Ajouter la photo"
+
+#: templates/projects/project_form.html templates/projects/project_list.html
+msgid "Add a project"
+msgstr "Ajouter un projet"
+
+#: templates/projects/project_form.html
+msgid "Rooms, duration and season"
+msgstr "Pièces, durée et saison"
+
+#: templates/projects/project_form.html
+msgid "Delete the project"
+msgstr "Supprimer le projet"
+
+#: templates/projects/project_list.html
+#, python-format
+msgid "Budget envelope %(year)s"
+msgstr "Enveloppe budgétaire %(year)s"
+
+#: templates/projects/project_list.html
+msgid "No envelope set for this year."
+msgstr "Aucune enveloppe fixée pour cette année."
+
+#: templates/projects/project_list.html
+msgid "Planned for the projects going on"
+msgstr "Prévu pour les projets en cours"
+
+#: templates/projects/project_list.html
+msgid "Paid so far"
+msgstr "Payé jusqu'ici"
+
+#: templates/projects/project_list.html
+msgid "Left in the envelope"
+msgstr "Reste dans l'enveloppe"
+
+#: templates/projects/project_list.html
+#, python-format
+msgid "%(amount)s (over the envelope)"
+msgstr "%(amount)s (au-delà de l'enveloppe)"
+
+#: templates/projects/project_list.html
+msgid "Set the envelope"
+msgstr "Fixer l'enveloppe"
+
+#: templates/projects/project_list.html
+msgid "Search by title or goal"
+msgstr "Rechercher par titre ou objectif"
+
+#: templates/projects/project_list.html templates/rooms/room_list.html
+#: templates/rooms/search.html templates/stock/article_list.html
+#: templates/tasks/history.html
+msgid "Search"
+msgstr "Rechercher"
+
+#: templates/projects/project_list.html
+msgid "All statuses"
+msgstr "Tous les statuts"
+
+#: templates/projects/project_list.html
+#, python-format
+msgid "Compare %(title)s"
+msgstr "Comparer %(title)s"
+
+#: templates/projects/project_list.html
+#, python-format
+msgid "Planned %(planned)s"
+msgstr "Prévu : %(planned)s"
+
+#: templates/projects/project_list.html
+msgid "No budget yet"
+msgstr "Pas encore de budget"
+
+#: templates/projects/project_list.html
+msgid "Compare the ticked projects"
+msgstr "Comparer les projets cochés"
+
+#: templates/projects/project_list.html
+msgid ""
+"No project yet. A project is a piece of work with an end, such as redoing "
+"the bathroom."
+msgstr ""
+"Aucun projet pour l'instant. Un projet est un chantier qui a une fin, comme "
+"refaire la salle de bain."
+
+#: templates/projects/project_list.html
+msgid "No project matches."
+msgstr "Aucun projet ne correspond."
+
+#: templates/projects/quote_form.html
+#, python-format
+msgid ""
+"An image, or a PDF, text, Word, Excel or OpenDocument file, up to %(size)s."
+msgstr ""
+"Une image, ou un fichier PDF, texte, Word, Excel ou OpenDocument, jusqu'à "
+"%(size)s."
+
+#: templates/projects/quote_form.html
+msgid ""
+"Kept for a later connection to Paperless-ngx: nothing reads these two fields "
+"yet."
+msgstr ""
+"Gardés pour une connexion ultérieure à Paperless-ngx : rien ne lit encore "
+"ces deux champs."
+
+#: templates/projects/quote_form.html
+#, python-format
+msgid "The amount is in %(currency)s, the currency of the home."
+msgstr "Le montant est en %(currency)s, la devise du logement."
+
+#: templates/projects/quote_form.html
+msgid "Files of the quote"
+msgstr "Fichiers du devis"
+
+#: templates/projects/quote_form.html
+msgid "Delete the quote"
+msgstr "Supprimer le devis"
+
 #: templates/rooms/_photos.html
 #, python-format
 msgid "Photo of %(name)s"
@@ -4461,18 +5509,6 @@ msgstr "cette photo"
 #: templates/rooms/choose_home.html
 msgid "Choose the home whose rooms you want to open."
 msgstr "Choisissez le logement dont vous voulez ouvrir les pièces."
-
-#: templates/rooms/choose_home.html templates/stock/choose_home.html
-#: templates/tasks/choose_home.html templates/tasks/my_home.html
-msgid "You have no home to open yet."
-msgstr "Vous n'avez pas encore de logement à ouvrir."
-
-#: templates/rooms/confirm_delete.html templates/stock/confirm_delete.html
-#: templates/tasks/confirm_delete.html
-#: templates/tasks/contractor_confirm_delete.html
-#, python-format
-msgid "Delete %(name)s?"
-msgstr "Supprimer %(name)s ?"
 
 #: templates/rooms/item_detail.html
 msgid "Brand, model"
@@ -4516,23 +5552,10 @@ msgstr "Notes"
 msgid "Edit the item"
 msgstr "Modifier l'élément"
 
-#: templates/rooms/item_detail.html templates/rooms/room_detail.html
-msgid "Photos"
-msgstr "Photos"
-
 #: templates/rooms/item_detail.html templates/rooms/photo_form.html
 #: templates/rooms/room_detail.html
 msgid "Add a photo"
 msgstr "Ajouter une photo"
-
-#: templates/rooms/item_detail.html templates/rooms/room_detail.html
-msgid "No photo yet."
-msgstr "Aucune photo pour l'instant."
-
-#: templates/rooms/item_detail.html templates/rooms/room_detail.html
-#: templates/tasks/_due.html templates/tasks/today.html
-msgid "No date"
-msgstr "Sans date"
 
 #: templates/rooms/item_detail.html templates/rooms/room_detail.html
 msgid "No task for this yet."
@@ -4669,11 +5692,6 @@ msgstr "Supprimer la pièce"
 #: templates/rooms/room_list.html templates/rooms/search.html
 msgid "Search rooms and items"
 msgstr "Rechercher des pièces et des éléments"
-
-#: templates/rooms/room_list.html templates/rooms/search.html
-#: templates/stock/article_list.html templates/tasks/history.html
-msgid "Search"
-msgstr "Rechercher"
 
 #: templates/rooms/room_list.html
 #, python-format
@@ -4962,10 +5980,6 @@ msgstr "Télécharger la fiche contact (.vcf)"
 msgid "No task is linked to this contractor."
 msgstr "Aucune tâche n'est liée à cet intervenant."
 
-#: templates/tasks/contractor_detail.html
-msgid "Edit"
-msgstr "Modifier"
-
 #: templates/tasks/contractor_form.html
 msgid "Edit the contractor"
 msgstr "Modifier l'intervenant"
@@ -5105,14 +6119,6 @@ msgid "Sections"
 msgstr "Sections"
 
 #: templates/tasks/task_detail.html
-msgid "High priority"
-msgstr "Priorité haute"
-
-#: templates/tasks/task_detail.html
-msgid "Low priority"
-msgstr "Priorité basse"
-
-#: templates/tasks/task_detail.html
 #, python-format
 msgid "assigned to %(person)s"
 msgstr "confiée à %(person)s"
@@ -5183,10 +6189,6 @@ msgstr "Qui"
 #: templates/tasks/task_form.html
 msgid "Time and budget"
 msgstr "Durée et budget"
-
-#: templates/tasks/task_form.html
-msgid "Add the task"
-msgstr "Ajouter la tâche"
 
 #: templates/tasks/task_form.html
 msgid "Delete the task"

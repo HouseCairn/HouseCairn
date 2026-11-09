@@ -22,4 +22,8 @@ One item of the [stock](stock.md), at `/h/<home id>/stock/<item id>/`.
   for confirmation and removes the item, its suppliers and its movements from the
   screens and the API.
 
+- **QR label** opens the [label](qr-label.md) of this stock item; **Make a QR label** makes
+  it when there is none, for members who may write. Read-only members see the label and
+  print it.
+
 Read-only members see everything and none of the buttons that change it.

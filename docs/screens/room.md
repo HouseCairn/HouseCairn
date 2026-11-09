@@ -21,6 +21,10 @@ The page has four parts:
 also deletes its items and their photos; they disappear from every screen and
 from the API.
 
+**QR label** opens the [label](qr-label.md) of this room; **Make a QR label** makes it
+when there is none, for members who may write. Read-only members see the label and
+print it.
+
 Members and owners change the room; read-only members see it all and change
 nothing. An address that does not exist, or that belongs to a home you are not
 a member of, answers the same "Page not found".

@@ -18,6 +18,8 @@ from housecairn.instance.api import (
     InstanceUsageView,
     UnlockHomesView,
 )
+from housecairn.labels import api as labels_api
+from housecairn.projects import api as projects_api
 from housecairn.rooms import api as rooms_api
 from housecairn.stock import api as stock_api
 from housecairn.tasks import api as tasks_api
@@ -47,6 +49,12 @@ for prefix, viewset, basename in (
     ("suppliers", stock_api.SupplierViewSet, "home-supplier"),
     ("movements", stock_api.MovementViewSet, "home-movement"),
     ("attachments", tasks_api.AttachmentViewSet, "home-attachment"),
+    ("labels", labels_api.LabelViewSet, "home-label"),
+    ("projects", projects_api.ProjectViewSet, "home-project"),
+    ("budget-lines", projects_api.BudgetLineViewSet, "home-budget-line"),
+    ("quotes", projects_api.QuoteViewSet, "home-quote"),
+    ("project-files", projects_api.ProjectFileViewSet, "home-project-file"),
+    ("project-tasks", projects_api.ProjectTaskViewSet, "home-project-task"),
 ):
     router.register(rf"homes/(?P<home_id>[0-9a-f-]{{36}})/{prefix}", viewset, basename=basename)
 
@@ -82,7 +90,11 @@ urlpatterns = [
     path(
         "me/display-preferences/", tasks_api.PreferencesView.as_view(), name="display-preferences"
     ),
+    path("labels/resolve/<str:code>/", labels_api.LabelResolveView.as_view(), name="label-resolve"),
     path("homes/<uuid:home_id>/today/", tasks_api.TodayView.as_view(), name="home-today"),
+    path(
+        "homes/<uuid:home_id>/envelope/", projects_api.EnvelopeView.as_view(), name="home-envelope"
+    ),
     *router.urls,
     path("homes/<uuid:home_id>/events/", EventCreateView.as_view(), name="home-events"),
     path("homes/<uuid:home_id>/search/", rooms_api.SearchView.as_view(), name="home-search"),

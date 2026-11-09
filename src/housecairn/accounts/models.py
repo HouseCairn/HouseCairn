@@ -53,6 +53,13 @@ class UserManager(DjangoUserManager["User"]):
         return self._create_user(None, email, password, **extra)
 
 
+class DisplayNameSource(models.TextChoices):
+    """Who sets the display name (docs/adr/0045)."""
+
+    OIDC = "oidc", _("sign-in provider")
+    MANUAL = "manual", _("typed by the person")
+
+
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = None  # type: ignore[assignment]
@@ -64,6 +71,19 @@ class User(AbstractUser):
         max_length=DISPLAY_NAME_MAX_LENGTH,
         blank=True,
         help_text=_("How the other members of your homes see you. Optional."),
+    )
+    # Where the display name comes from: the sign-in provider rewrites it at each sign-in
+    # through it while this is `oidc`; a name typed by the person is `manual` and stays.
+    display_name_source = models.CharField(
+        _("source of the display name"),
+        max_length=8,
+        choices=DisplayNameSource.choices,
+        default=DisplayNameSource.OIDC,
+    )
+    # The identifier of the provider the current display name was taken from; empty when
+    # the person typed it or no provider ever gave one. Never a claim of the provider.
+    display_name_provider = models.CharField(
+        _("provider of the display name"), max_length=32, blank=True, editable=False
     )
 
     USERNAME_FIELD = "email"

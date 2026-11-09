@@ -82,8 +82,10 @@ INSTALLED_APPS = [
     "housecairn.rooms",
     "housecairn.tasks",
     "housecairn.stock",
+    "housecairn.projects",
     "housecairn.notifications",
     "housecairn.calendar",
+    "housecairn.labels",
 ]
 
 MIDDLEWARE = [
@@ -404,6 +406,13 @@ SPECTACULAR_SETTINGS = {
         "housecairn.apitokens.permissions.TokenScopePermission",
     ],
     "COMPONENT_SPLIT_REQUEST": True,
+    # The same three kinds appear in the label, in its creation and in the answer to a scan.
+    # The statuses of an occurrence are those of the tasks and of the calendar entries; the name
+    # is the one the schema already gave them.
+    "ENUM_NAME_OVERRIDES": {
+        "LabelKindEnum": "housecairn.labels.models.LabelKind",
+        "OccurrenceStatusEnum": "housecairn.tasks.models.Status",
+    },
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",

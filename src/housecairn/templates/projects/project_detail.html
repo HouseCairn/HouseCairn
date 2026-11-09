@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% load i18n projects_extras tasks_extras %}
+{% block head_title %}{{ project.title }}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'projects:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Projects" %}</a>
+  <section class="card">
+    <div class="task-pills">
+      <span class="pill pill-info">{{ project.get_status_display }}</span>
+      {% if project.priority == "high" %}<span class="pill pill-warning">{% translate "High priority" %}</span>{% elif project.priority == "low" %}<span class="pill pill-ghost">{% translate "Low priority" %}</span>{% endif %}
+      {% budget_gap total home.currency %}
+    </div>
+    <h1>{{ project.title }}</h1>
+    {% if project.goal %}<p class="prose">{{ project.goal|linebreaksbr }}</p>{% endif %}
+    <dl class="facts">
+      {% if rooms %}<div><dt>{% translate "Rooms concerned" %}</dt><dd>{% for room in rooms %}<a href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}">{{ room.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
+      {% if project.estimated_minutes %}<div><dt>{% translate "Estimated duration" %}</dt><dd>{{ project.estimated_minutes|duration }}</dd></div>{% endif %}
+      {% if project.season %}<div><dt>{% translate "Preferred season" %}</dt><dd>{{ project.get_season_display }}</dd></div>{% endif %}
+    </dl>
+    {% if can_write %}
+      <div class="button-row">
+        <a class="button button-secondary button-small" href="{% url 'projects:edit' home_id=home.id project_id=project.id %}">{% translate "Edit the project" %}</a>
+      </div>
+    {% endif %}
+  </section>
+
+  <h2>{% translate "Tasks" %}</h2>
+  {% if tasks %}
+    <ul class="card-list">
+      {% for link, occurrence in tasks %}
+        <li class="row">
+          <a class="row-body" href="{% url 'tasks:detail' home_id=home.id task_id=link.task_id %}">
+            <span class="row-title">{{ link.task.title }}</span>
+            <span class="row-text">
+              {% if occurrence %}{% if occurrence.due_on %}{% blocktranslate with day=occurrence.due_on|date:"SHORT_DATE_FORMAT" %}Due {{ day }}{% endblocktranslate %}{% else %}{% translate "No date" %}{% endif %}{% else %}{% translate "Done" context "task" %}{% endif %}
+              {% if link.task.room %} · {{ link.task.room.name }}{% endif %}
+            </span>
+          </a>
+          {% if can_write %}
+            <form method="post" action="{% url 'projects:task-detach' home_id=home.id project_id=project.id task_id=link.task_id %}">
+              {% csrf_token %}
+              <button type="submit" class="button-secondary button-small">{% translate "Take out" %}<span class="visually-hidden"> {{ link.task.title }}</span></button>
+            </form>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "No task in this project yet." %}</p>
+  {% endif %}
+  {% if can_write %}
+    <form method="post" action="{% url 'projects:task-add' home_id=home.id project_id=project.id %}" class="card">
+      {% csrf_token %}
+      <h3>{% translate "Add a task to the project" %}</h3>
+      {{ task_form.as_p }}
+      <button type="submit" class="button-block">{% translate "Add the task" %}</button>
+    </form>
+    {% if attach_form.fields.task.queryset.exists %}
+      <form method="post" action="{% url 'projects:task-attach' home_id=home.id project_id=project.id %}" class="card">
+        {% csrf_token %}
+        <h3>{% translate "Put an existing task in the project" %}</h3>
+        {{ attach_form.as_p }}
+        <button type="submit" class="button-secondary button-block">{% translate "Put it in the project" %}</button>
+      </form>
+    {% endif %}
+  {% endif %}
+
+  <h2>{% translate "Budget" %}</h2>
+  {% if lines %}
+    <table>
+      <caption class="visually-hidden">{% blocktranslate with currency=home.currency %}Budget lines, in {{ currency }}{% endblocktranslate %}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{% translate "Line" %}</th>
+          <th scope="col">{% translate "Planned" %}</th>
+          <th scope="col">{% translate "Committed" %}</th>
+          <th scope="col">{% translate "Paid" %}</th>
+          <th scope="col">{% translate "Gap" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for summary in lines %}
+          <tr>
+            <th scope="row">
+              {{ summary.line.label }}<br><span class="small">{{ summary.line.get_nature_display }}</span>
+              {% if can_write %}<br><a class="small" href="{% url 'projects:line-edit' home_id=home.id line_id=summary.line.id %}">{% translate "Edit" %}<span class="visually-hidden"> {{ summary.line.label }}</span></a>{% endif %}
+            </th>
+            <td>{{ summary.amounts.planned|money:home.currency }}</td>
+            <td>{{ summary.amounts.committed|money:home.currency }}</td>
+            <td>{{ summary.amounts.paid|money:home.currency }}</td>
+            <td>{% budget_gap summary.amounts home.currency %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th scope="row">{% translate "Total" %}</th>
+          <td>{{ total.planned|money:home.currency }}</td>
+          <td>{{ total.committed|money:home.currency }}</td>
+          <td>{{ total.paid|money:home.currency }}</td>
+          <td>{% budget_gap total home.currency %}</td>
+        </tr>
+      </tfoot>
+    </table>
+    <p class="small">{% translate "Committed is the sum of the accepted quotes. The gap is the planned amount less the more of committed and paid." %}</p>
+  {% else %}
+    <p class="empty">{% translate "No budget line yet. Add one to say what you plan to spend." %}</p>
+  {% endif %}
+  {% if can_write %}
+    <a class="button button-secondary button-block" href="{% url 'projects:line-create' home_id=home.id project_id=project.id %}">{% translate "Add a budget line" %}</a>
+  {% endif %}
+
+  <h2>{% translate "Quotes" %}</h2>
+  {% if quotes %}
+    <ul class="card-list">
+      {% for quote, quote_files in quotes %}
+        <li class="card">
+          <p>
+            <strong>{% if quote.contractor %}<a href="{% url 'tasks:contractor-detail' home_id=home.id contractor_id=quote.contractor_id %}">{{ quote.contractor.name }}</a>{% else %}{% translate "No contractor" %}{% endif %}</strong>
+            · {{ quote.amount|money:home.currency }}
+            <span class="pill {% if quote.status == 'accepted' %}pill-success{% elif quote.status == 'rejected' %}pill-ghost{% else %}pill-info{% endif %}">{{ quote.get_status_display }}</span>
+          </p>
+          <dl class="facts">
+            {% if quote.budget_line %}<div><dt>{% translate "Committed on" %}</dt><dd>{{ quote.budget_line.label }}</dd></div>{% endif %}
+            {% if quote.issued_on %}<div><dt>{% translate "Date" %}</dt><dd>{{ quote.issued_on|date:"DATE_FORMAT" }}</dd></div>{% endif %}
+            {% if quote.valid_until %}<div><dt>{% translate "Valid until" %}</dt><dd>{{ quote.valid_until|date:"DATE_FORMAT" }}</dd></div>{% endif %}
+            {% if quote.note %}<div><dt>{% translate "Note" %}</dt><dd>{{ quote.note }}</dd></div>{% endif %}
+            {% if quote.paperless_url %}<div><dt>{% translate "Document in Paperless-ngx" %}</dt><dd><a href="{{ quote.paperless_url }}" rel="noopener noreferrer nofollow">{% if quote.paperless_id %}#{{ quote.paperless_id }}{% else %}{{ quote.paperless_url }}{% endif %}</a></dd></div>{% endif %}
+            {% for stored in quote_files %}<div><dt>{% translate "File" %}</dt><dd><a href="{% url 'projects:file' home_id=home.id file_id=stored.id %}">{{ stored.name }}</a></dd></div>{% endfor %}
+          </dl>
+          {% if can_write %}
+            <div class="button-row">
+              {% if quote.status != "accepted" and lines %}
+                <form method="post" action="{% url 'projects:quote-accept' home_id=home.id quote_id=quote.id %}" class="field-pair">
+                  {% csrf_token %}
+                  <label class="visually-hidden" for="accept-{{ quote.id }}">{% translate "Commit on" %}</label>
+                  <select id="accept-{{ quote.id }}" name="budget_line">
+                    {% for summary in lines %}<option value="{{ summary.line.id }}">{{ summary.line.label }}</option>{% endfor %}
+                  </select>
+                  <button type="submit" class="button-small">{% translate "Accept the quote" %}</button>
+                </form>
+              {% endif %}
+              {% if quote.status == "requested" %}
+                <form method="post" action="{% url 'projects:quote-status' home_id=home.id quote_id=quote.id %}">{% csrf_token %}<input type="hidden" name="status" value="received"><button type="submit" class="button-secondary button-small">{% translate "Mark as received" %}</button></form>
+              {% endif %}
+              {% if quote.status == "requested" or quote.status == "received" %}
+                <form method="post" action="{% url 'projects:quote-status' home_id=home.id quote_id=quote.id %}">{% csrf_token %}<input type="hidden" name="status" value="rejected"><button type="submit" class="button-secondary button-small">{% translate "Reject the quote" %}</button></form>
+              {% endif %}
+              <a class="button button-secondary button-small" href="{% url 'projects:quote-edit' home_id=home.id quote_id=quote.id %}">{% translate "Edit the quote" %}</a>
+            </div>
+            {% if quote.status != "accepted" and not lines %}<p class="small">{% translate "Add a budget line to accept a quote: its amount is committed on it." %}</p>{% endif %}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "No quote yet." %}</p>
+  {% endif %}
+  {% if can_write %}
+    <a class="button button-secondary button-block" href="{% url 'projects:quote-create' home_id=home.id project_id=project.id %}">{% translate "Add a quote" %}</a>
+  {% endif %}
+
+  <h2>{% translate "Photos" %}</h2>
+  {% if photos %}
+    <ul class="photo-grid">
+      {% for stored in photos %}
+        <li class="photo">
+          <a href="{% url 'projects:file' home_id=home.id file_id=stored.id %}"><img src="{% url 'projects:file-thumbnail' home_id=home.id file_id=stored.id %}" alt="{{ stored.name }}" loading="lazy" decoding="async"></a>
+          {% if can_write %}<a class="small" href="{% url 'projects:file-delete' home_id=home.id file_id=stored.id %}">{% translate "Delete" %}<span class="visually-hidden"> {{ stored.name }}</span></a>{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "No photo yet." %}</p>
+  {% endif %}
+  {% if can_write %}
+    <form method="post" action="{% url 'projects:file-add' home_id=home.id project_id=project.id %}" enctype="multipart/form-data" class="card">
+      {% csrf_token %}
+      {{ photo_form.as_p }}
+      <p class="small">{% blocktranslate with size=max_bytes|filesizeformat %}JPEG, PNG or WebP, up to {{ size }}. HouseCairn keeps the picture and nothing else: the location and every other piece of information hidden in the file are removed.{% endblocktranslate %}</p>
+      <button type="submit" class="button-secondary button-block">{% translate "Add the photo" %}</button>
+    </form>
+  {% endif %}
+{% endblock content %}
