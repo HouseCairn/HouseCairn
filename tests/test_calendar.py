@@ -33,6 +33,8 @@ from housecairn.tasks.models import Occurrence, Priority, Task
 from tests.htmlscan import inline_code_problems
 from tests.tasks_fixtures import PDF, TODAY
 
+_REAL_TODAY_OF = services.today_of
+
 pytest_plugins = ("tests.tasks_fixtures",)
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("media_root", "frozen_today")]
 
@@ -664,7 +666,7 @@ class TestIcs:
             ("Pacific/Auckland", (2026, 6, 15, 12, 30), (2026, 6, 16)),
         ],
     )
-    def test_today_is_the_day_of_the_person_around_a_change_of_clock(
+    def test_today_is_the_day_of_the_person_in_each_zone_around_midnight(
         self,
         monkeypatch: pytest.MonkeyPatch,
         alice: User,
@@ -677,7 +679,7 @@ class TestIcs:
         now = datetime.datetime(*instant, tzinfo=datetime.UTC)  # type: ignore[arg-type, misc]
         assert services.today_of(alice, now) == datetime.date(*expected)  # type: ignore[arg-type, misc]
 
-    def test_an_all_day_event_stays_on_its_date_across_a_change_of_clock(
+    def test_an_all_day_event_stays_on_its_date_when_the_day_changes_in_the_persons_zone(
         self, anonymous: Client, alice: User, alice_home: Home, feed: Any
     ) -> None:
         Preference.objects.create(user=alice, time_zone="Europe/Paris")
@@ -829,6 +831,60 @@ class TestFeedCache:
         assert len(renders) == 1
         ics.cached_render(feed[0], "https://h.example.com", now=_utc(2026, 6, 16, 10))
         assert len(renders) == 2
+
+
+class TestChangeOfClock:
+    """Europe/Paris moves its clocks on 2026-03-29 (02:00 CET becomes 03:00 CEST)."""
+
+    @pytest.fixture(autouse=True)
+    def _real_clock(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(services, "today_of", _REAL_TODAY_OF)
+
+    @staticmethod
+    def days_in(body: bytes) -> list[datetime.date]:
+        return sorted(e["DTSTART"].dt for e in events_of(body))
+
+    def make(self, alice: User, alice_home: Home, *days: datetime.date) -> None:
+        Preference.objects.create(user=alice, time_zone="Europe/Paris")
+        for n, day in enumerate(days):
+            task = task_services.create_task(
+                alice, alice_home, title=f"Task {n}", due_on=TODAY + DAY
+            )
+            Occurrence.objects.filter(task=task).update(due_on=day)
+
+    def test_today_is_one_day_before_and_after_the_jump_of_the_clock(self, alice: User) -> None:
+        Preference.objects.create(user=alice, time_zone="Europe/Paris")
+        before = services.today_of(alice, _utc(2026, 3, 29, 0, 59))  # 01:59 CET
+        after = services.today_of(alice, _utc(2026, 3, 29, 1, 0))  # 03:00 CEST
+        assert before == after == datetime.date(2026, 3, 29)
+        # The 23-hour day: its last minute is still the 29th, the next one is the 30th.
+        assert services.today_of(alice, _utc(2026, 3, 29, 21, 59)) == datetime.date(2026, 3, 29)
+        assert services.today_of(alice, _utc(2026, 3, 29, 22, 0)) == datetime.date(2026, 3, 30)
+
+    def test_events_around_the_jump_keep_their_dates_and_one_day_length(
+        self, anonymous: Client, alice: User, alice_home: Home, feed: Any
+    ) -> None:
+        days = [datetime.date(2026, 3, d) for d in (28, 29, 30)]
+        self.make(alice, alice_home, *days)
+        for now in (_utc(2026, 3, 29, 0, 59), _utc(2026, 3, 29, 1, 0), _utc(2026, 3, 29, 21, 59)):
+            body = ics.render(feed[0], "https://h.example.com", now=now)
+            assert self.days_in(body) == days
+            for event in events_of(body):
+                assert event["DTEND"].dt - event["DTSTART"].dt == DAY
+                assert type(event["DTSTART"].dt) is datetime.date
+
+    def test_the_window_edge_is_a_date_not_a_number_of_hours(
+        self, alice: User, alice_home: Home, feed: Any
+    ) -> None:
+        # Today is 2026-04-28 (CEST): 30 days back is 03-29, the day of the jump, and the
+        # window keeps it whole; the day before is out. With hours it would slip by one.
+        edge, outside = datetime.date(2026, 3, 29), datetime.date(2026, 3, 28)
+        self.make(alice, alice_home, edge, outside)
+        body = ics.render(feed[0], "https://h.example.com", now=_utc(2026, 4, 28, 10))
+        assert self.days_in(body) == [edge]
+        # And across the jump itself (today = 03-29, window back to 02-27, forward a year).
+        body = ics.render(feed[0], "https://h.example.com", now=_utc(2026, 3, 29, 12))
+        assert self.days_in(body) == [outside, edge]
 
 
 def first_task_id(event: Any) -> str:
