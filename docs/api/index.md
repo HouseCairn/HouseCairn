@@ -76,6 +76,17 @@ web interface: every request only sees the homes of its user
   follow the browser; the web screens apply it from the next page. History is the occurrence list with `status=closed&ordering=recent` and the
   filters `contractor`, `completed_by`, `q`, `closed_after` and `closed_before`;
   `GET .../occurrences/cost/` gives the real cost entered on the same selection.
+- **QR labels** ([ADR 0047](../adr/0047-qr-labels.md)):
+  `/api/v1/homes/<home id>/labels/`. `POST .../labels/` with `kind`
+  (`room`, `item` or `article`) and `target` returns the active label of the object (201
+  when it was made, 200 when it already had one); `DELETE .../labels/<id>/` revokes it,
+  `POST .../labels/<id>/regenerate/` replaces it, and `POST .../labels/print/` with
+  `labels` (identifiers) and `layout` (`a4-3x8` or `roll-62`) answers the PDF. Every
+  member lists, reads and prints; only a role that writes makes, revokes or regenerates.
+  `GET /api/v1/labels/resolve/<code>/` says where a scanned code leads, and answers the
+  same 404 for a code that does not exist, one that was revoked and one of a home the
+  caller (or the token) is not in. A token needs `write` for every `POST`, printing
+  included, and `read` for the rest.
 - **Stock** of a home: `/api/v1/homes/<home id>/articles/`, `.../suppliers/` and
   `.../movements/` ([ADR 0038](../adr/0038-stock-suppliers-and-movements.md)). Only
   `name` is required to create an article; its `quantity` is read-only, the sum of its

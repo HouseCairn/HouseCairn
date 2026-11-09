@@ -1,0 +1,42 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 22:27+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "QR label"
+msgstr "Étiquette QR"
+
+msgid "One label, at `/h/<home id>/labels/<label id>/`, opened from the list of [QR labels](qr-labels.md) or from the page of a room, an item or a stock item."
+msgstr "Une étiquette, sur `/h/<id du logement>/labels/<id de l'étiquette>/`, ouverte depuis la liste des [étiquettes QR](qr-labels.md) ou depuis la page d'une pièce, d'un élément ou d'un article."
+
+msgid "The **QR code** is drawn on the page. Under it, the **address it holds**: `<public address of the instance>/l/<code>/` and nothing else. The code is 22 characters of random, with no name and no identifier in it."
+msgstr "Le **code QR** est dessiné sur la page. Dessous, l'**adresse qu'il contient** : `<adresse publique de l'instance>/l/<code>/` et rien d'autre. Le code fait 22 caractères aléatoires, sans nom ni identifiant."
+
+msgid "**Open the page** goes to the room, item or stock item the label stands for."
+msgstr "**Ouvrir la page** mène à la pièce, à l'élément ou à l'article que désigne l'étiquette."
+
+msgid "**Print this label** downloads a PDF of this label alone, in the layout you choose (A4 sheet or 62 mm roll)."
+msgstr "**Imprimer cette étiquette** télécharge un PDF de cette étiquette seule, dans la mise en page choisie (planche A4 ou rouleau de 62 mm)."
+
+msgid "**Make a new label** and **Revoke the label**, for members who may write: a new label has a new code and the old sticker stops opening anything; revoking stops it without replacing it. Both are recorded in the [audit log](audit.md), with the name of the object and never the code. Use them when a sticker is lost, photographed or shared."
+msgstr "**Créer une nouvelle étiquette** et **Révoquer l'étiquette**, pour les membres qui peuvent écrire : une nouvelle étiquette a un nouveau code et l'ancien autocollant n'ouvre plus rien ; révoquer l'arrête sans la remplacer. Les deux sont consignés dans le [journal d'audit](audit.md), avec le nom de l'objet et jamais le code. Servez-vous-en quand un autocollant est perdu, photographié ou partagé."
+
+msgid "Read-only members see the code and print it; they do not see the buttons that change it."
+msgstr "Les membres en lecture seule voient le code et l'impriment ; ils ne voient pas les boutons qui le modifient."
+

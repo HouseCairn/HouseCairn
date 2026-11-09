@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 00:02+0000\n"
+"POT-Creation-Date: 2026-11-09 06:16+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -206,7 +206,7 @@ msgstr "logements"
 msgid "expires at"
 msgstr "expire le"
 
-#: apitokens/models.py homes/models.py instance/models.py
+#: apitokens/models.py homes/models.py instance/models.py labels/models.py
 msgid "revoked at"
 msgstr "révoqué le"
 
@@ -366,6 +366,16 @@ msgstr "Fichier ajouté à la tâche %(title)s"
 #, python-format
 msgid "File deleted from the task %(title)s"
 msgstr "Fichier supprimé de la tâche %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "QR label revoked: %(title)s"
+msgstr "Étiquette QR révoquée : %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "QR label replaced by a new one: %(title)s"
+msgstr "Étiquette QR remplacée par une nouvelle : %(title)s"
 
 #: audit/labels.py
 #, python-format
@@ -1738,6 +1748,83 @@ msgstr "Fournisseur enregistré."
 msgid "(none)"
 msgstr "(aucun)"
 
+#: labels/apps.py labels/models.py templates/labels/_row.html
+#: templates/labels/label_detail.html templates/labels/label_list.html
+msgid "QR labels"
+msgstr "Étiquettes QR"
+
+#: labels/models.py projects/forms.py rooms/forms.py tasks/forms.py
+#: tasks/models.py templates/projects/project_list.html
+#: templates/tasks/history.html templates/tasks/task_list.html
+msgid "Room"
+msgstr "Pièce"
+
+#: labels/models.py tasks/forms.py templates/tasks/history.html
+msgid "Item"
+msgstr "Élément"
+
+#: labels/models.py
+msgid "Stock item"
+msgstr "Article"
+
+#: labels/models.py rooms/models.py stock/models.py
+msgid "type"
+msgstr "type"
+
+#: labels/models.py templates/labels/_tools.html
+#: templates/labels/label_list.html
+msgid "QR label"
+msgstr "Étiquette QR"
+
+#: labels/printing.py
+msgid "A4 sheet, 3 by 8 labels (63.5 by 33.9 mm)"
+msgstr "Planche A4, 3 par 8 étiquettes (63,5 par 33,9 mm)"
+
+#: labels/printing.py
+msgid "62 mm roll, one label per page (label printer)"
+msgstr "Rouleau de 62 mm, une étiquette par page (imprimante d'étiquettes)"
+
+#: labels/services.py
+msgid "Nothing with this identifier in this home."
+msgstr "Rien avec cet identifiant dans ce logement."
+
+#: labels/services.py
+msgid "Choose one of the layouts offered."
+msgstr "Choisissez l'une des mises en page proposées."
+
+#: labels/services.py
+#, python-format
+msgid "Choose between 1 and %(max)d labels."
+msgstr "Choisissez entre 1 et %(max)d étiquettes."
+
+#: labels/views.py
+msgid "Choose the objects from the list."
+msgstr "Choisissez les objets dans la liste."
+
+#: labels/views.py
+#, python-format
+msgid "QR code of %(name)s"
+msgstr "Code QR de %(name)s"
+
+#: labels/views.py
+msgid "Only members who can edit make a new label: print the ones that exist."
+msgstr ""
+"Seuls les membres qui peuvent modifier créent une nouvelle étiquette : "
+"imprimez celles qui existent."
+
+#: labels/views.py
+msgid "QR label made."
+msgstr "Étiquette QR créée."
+
+#: labels/views.py
+msgid "The old sticker no longer opens anything. Print the new label."
+msgstr ""
+"L'ancien autocollant n'ouvre plus rien. Imprimez la nouvelle étiquette."
+
+#: labels/views.py
+msgid "QR label revoked: the sticker no longer opens anything."
+msgstr "Étiquette QR révoquée : l'autocollant n'ouvre plus rien."
+
 #: notifications/conf.py
 msgid ""
 "People may add channels (ntfy, Telegram, email...) and receive reminders. "
@@ -2032,8 +2119,7 @@ msgstr "Payé"
 
 #: projects/forms.py
 msgid ""
-"What has been paid so far. The committed amount comes from accepted "
-"quotes."
+"What has been paid so far. The committed amount comes from accepted quotes."
 msgstr ""
 "Ce qui a été payé jusqu'ici. Le montant engagé vient des devis acceptés."
 
@@ -2081,12 +2167,6 @@ msgstr "Nouvelle tâche"
 #: projects/forms.py tasks/forms.py templates/tasks/task_detail.html
 msgid "Due on"
 msgstr "Échéance"
-
-#: projects/forms.py rooms/forms.py tasks/forms.py tasks/models.py
-#: templates/projects/project_list.html templates/tasks/history.html
-#: templates/tasks/task_list.html
-msgid "Room"
-msgstr "Pièce"
 
 #: projects/forms.py
 msgid "Existing task"
@@ -2380,11 +2460,11 @@ msgstr "Projet enregistré."
 
 #: projects/views.py
 msgid ""
-"The project, its budget lines, quotes and photos disappear. Its tasks "
-"stay: they are only taken out of the project."
+"The project, its budget lines, quotes and photos disappear. Its tasks stay: "
+"they are only taken out of the project."
 msgstr ""
-"Le projet, ses lignes de budget, ses devis et ses photos disparaissent. "
-"Ses tâches restent : elles sont seulement retirées du projet."
+"Le projet, ses lignes de budget, ses devis et ses photos disparaissent. Ses "
+"tâches restent : elles sont seulement retirées du projet."
 
 #: projects/views.py
 msgid "Project deleted."
@@ -2416,11 +2496,11 @@ msgstr "Ligne de budget enregistrée."
 
 #: projects/views.py
 msgid ""
-"The budget line disappears. The quotes accepted on it go back to "
-"Received: they commit nothing any more."
+"The budget line disappears. The quotes accepted on it go back to Received: "
+"they commit nothing any more."
 msgstr ""
-"La ligne de budget disparaît. Les devis acceptés sur elle repassent à "
-"Reçu : ils n'engagent plus rien."
+"La ligne de budget disparaît. Les devis acceptés sur elle repassent à Reçu : "
+"ils n'engagent plus rien."
 
 #: projects/views.py
 msgid "Budget line deleted."
@@ -2643,10 +2723,6 @@ msgstr "Grenier"
 #: rooms/models.py
 msgid "Outdoor"
 msgstr "Extérieur"
-
-#: rooms/models.py stock/models.py
-msgid "type"
-msgstr "type"
 
 #: rooms/models.py
 msgid "position"
@@ -3111,10 +3187,6 @@ msgstr ""
 #: tasks/forms.py
 msgid "Assignee"
 msgstr "Responsable"
-
-#: tasks/forms.py templates/tasks/history.html
-msgid "Item"
-msgstr "Élément"
 
 #: tasks/forms.py templates/projects/compare.html
 msgid "Season"
@@ -4673,6 +4745,101 @@ msgstr "Précédent"
 msgid "Next"
 msgstr "Suivant"
 
+#: templates/labels/_row.html
+msgid "Print stickers that open a room, an item or a stock item"
+msgstr ""
+"Imprimer des autocollants qui ouvrent une pièce, un élément ou un article"
+
+#: templates/labels/_tools.html
+msgid "Make a QR label"
+msgstr "Créer une étiquette QR"
+
+#: templates/labels/label_detail.html
+#, python-format
+msgid "QR label of %(name)s"
+msgstr "Étiquette QR de %(name)s"
+
+#: templates/labels/label_detail.html
+msgid "The code holds this address and nothing else:"
+msgstr "Le code contient cette adresse et rien d'autre :"
+
+#: templates/labels/label_detail.html
+msgid "Open the page"
+msgstr "Ouvrir la page"
+
+#: templates/labels/label_detail.html
+msgid "Print"
+msgstr "Imprimer"
+
+#: templates/labels/label_detail.html templates/labels/label_list.html
+msgid "Layout"
+msgstr "Mise en page"
+
+#: templates/labels/label_detail.html
+msgid "Print this label"
+msgstr "Imprimer cette étiquette"
+
+#: templates/labels/label_detail.html
+msgid "If the sticker is lost or shared"
+msgstr "Si l'autocollant est perdu ou partagé"
+
+#: templates/labels/label_detail.html
+msgid "A new label has a new code; the old sticker stops opening anything."
+msgstr ""
+"Une nouvelle étiquette a un nouveau code ; l'ancien autocollant n'ouvre plus "
+"rien."
+
+#: templates/labels/label_detail.html
+msgid "Make a new label"
+msgstr "Créer une nouvelle étiquette"
+
+#: templates/labels/label_detail.html
+msgid "Revoke the label"
+msgstr "Révoquer l'étiquette"
+
+#: templates/labels/label_list.html
+msgid ""
+"Tick what to label, choose a layout and print the sheet. Scanning a sticker "
+"opens the page of the object, for the members of this home."
+msgstr ""
+"Cochez ce qu'il faut étiqueter, choisissez une mise en page et imprimez la "
+"planche. Scanner un autocollant ouvre la page de l'objet, pour les membres "
+"de ce logement."
+
+#: templates/labels/label_list.html
+msgid "No label yet"
+msgstr "Pas encore d'étiquette"
+
+#: templates/labels/label_list.html
+msgid "No label"
+msgstr "Pas d'étiquette"
+
+#: templates/labels/label_list.html
+#, python-format
+msgid "Up to %(max)s labels at a time."
+msgstr "%(max)s étiquettes au plus à la fois."
+
+#: templates/labels/label_list.html
+msgid "A label is made for each object ticked that has none."
+msgstr "Une étiquette est créée pour chaque objet coché qui n'en a pas."
+
+#: templates/labels/label_list.html
+msgid ""
+"You can print the labels that exist; members who can edit make new ones."
+msgstr ""
+"Vous pouvez imprimer les étiquettes qui existent ; les membres qui peuvent "
+"modifier en créent de nouvelles."
+
+#: templates/labels/label_list.html
+msgid "Print the labels"
+msgstr "Imprimer les étiquettes"
+
+#: templates/labels/label_list.html
+msgid "Nothing to label yet: add rooms, items or stock items first."
+msgstr ""
+"Rien à étiqueter pour l'instant : ajoutez d'abord des pièces, des éléments "
+"ou des articles."
+
 #: templates/notifications/channel.html
 #, python-format
 msgid ""
@@ -4900,17 +5067,17 @@ msgstr "Total"
 
 #: templates/projects/project_detail.html
 msgid ""
-"Committed is the sum of the accepted quotes. The gap is the planned "
-"amount less the more of committed and paid."
+"Committed is the sum of the accepted quotes. The gap is the planned amount "
+"less the more of committed and paid."
 msgstr ""
-"L'engagé est la somme des devis acceptés. L'écart est le montant prévu "
-"moins le plus élevé de l'engagé et du payé."
+"L'engagé est la somme des devis acceptés. L'écart est le montant prévu moins "
+"le plus élevé de l'engagé et du payé."
 
 #: templates/projects/project_detail.html
 msgid "No budget line yet. Add one to say what you plan to spend."
 msgstr ""
-"Aucune ligne de budget pour l'instant. Ajoutez-en une pour dire ce que "
-"vous prévoyez de dépenser."
+"Aucune ligne de budget pour l'instant. Ajoutez-en une pour dire ce que vous "
+"prévoyez de dépenser."
 
 #: templates/projects/project_detail.html
 msgid "Quotes"
@@ -4975,13 +5142,13 @@ msgstr "Aucune photo pour l'instant."
 #: templates/projects/project_detail.html
 #, python-format
 msgid ""
-"JPEG, PNG or WebP, up to %(size)s. HouseCairn keeps the picture and "
-"nothing else: the location and every other piece of information hidden in "
-"the file are removed."
+"JPEG, PNG or WebP, up to %(size)s. HouseCairn keeps the picture and nothing "
+"else: the location and every other piece of information hidden in the file "
+"are removed."
 msgstr ""
 "JPEG, PNG ou WebP, jusqu'à %(size)s. HouseCairn garde l'image et rien "
-"d'autre : la position et toute autre information cachée dans le fichier "
-"sont supprimées."
+"d'autre : la position et toute autre information cachée dans le fichier sont "
+"supprimées."
 
 #: templates/projects/project_detail.html
 msgid "Add the photo"
@@ -5080,8 +5247,8 @@ msgid ""
 "No project yet. A project is a piece of work with an end, such as redoing "
 "the bathroom."
 msgstr ""
-"Aucun projet pour l'instant. Un projet est un chantier qui a une fin, "
-"comme refaire la salle de bain."
+"Aucun projet pour l'instant. Un projet est un chantier qui a une fin, comme "
+"refaire la salle de bain."
 
 #: templates/projects/project_list.html
 msgid "No project matches."
@@ -5090,16 +5257,15 @@ msgstr "Aucun projet ne correspond."
 #: templates/projects/quote_form.html
 #, python-format
 msgid ""
-"An image, or a PDF, text, Word, Excel or OpenDocument file, up to "
-"%(size)s."
+"An image, or a PDF, text, Word, Excel or OpenDocument file, up to %(size)s."
 msgstr ""
 "Une image, ou un fichier PDF, texte, Word, Excel ou OpenDocument, jusqu'à "
 "%(size)s."
 
 #: templates/projects/quote_form.html
 msgid ""
-"Kept for a later connection to Paperless-ngx: nothing reads these two "
-"fields yet."
+"Kept for a later connection to Paperless-ngx: nothing reads these two fields "
+"yet."
 msgstr ""
 "Gardés pour une connexion ultérieure à Paperless-ngx : rien ne lit encore "
 "ces deux champs."

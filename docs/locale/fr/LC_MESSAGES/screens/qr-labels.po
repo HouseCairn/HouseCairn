@@ -1,0 +1,36 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 22:50+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "QR labels"
+msgstr "Étiquettes QR"
+
+msgid "The stickers of a home, at `/h/<home id>/labels/`, opened from the **QR labels** row of the [home](home.md) page. It lists every room, item and stock item of the home, each with a check box and the state of its label: a link to the label when it has one, *No label yet* when it has not. A stock item is printed with its storage location where an item is printed with its room."
+msgstr "Les autocollants d'un logement, sur `/h/<id du logement>/labels/`, ouverts depuis la ligne **Étiquettes QR** de la page du [logement](home.md). Elle liste chaque pièce, élément et article du logement, chacun avec une case à cocher et l'état de son étiquette : un lien vers l'étiquette quand elle existe, *Pas encore d'étiquette* sinon. Un article est imprimé avec son emplacement de rangement là où un élément est imprimé avec sa pièce."
+
+msgid "**Layout** is the format of the PDF: an **A4 sheet, 3 by 8 labels** (63.5 by 33.9 mm, the common size of adhesive sheets), or a **62 mm roll, one label per page** for a label printer of the Brother QL kind."
+msgstr "**Mise en page** est le format du PDF : une **planche A4, 3 par 8 étiquettes** (63,5 par 33,9 mm, la taille courante des planches adhésives), ou un **rouleau de 62 mm, une étiquette par page** pour une imprimante d'étiquettes de type Brother QL."
+
+msgid "**Print the labels** downloads the PDF of what is ticked, in the order of the list, up to 200 labels at a time. Each label carries the QR code, the name of the object and where it is. Members who may write get a label made for every ticked object that has none; a read-only member prints the labels that exist and is told so when a ticked object has none."
+msgstr "**Imprimer les étiquettes** télécharge le PDF de ce qui est coché, dans l'ordre de la liste, jusqu'à 200 étiquettes à la fois. Chaque étiquette porte le code QR, le nom de l'objet et l'endroit où il se trouve. Les membres qui peuvent écrire se voient créer une étiquette pour chaque objet coché qui n'en a pas ; un membre en lecture seule imprime les étiquettes qui existent et en est informé quand un objet coché n'en a pas."
+
+msgid "What a sticker opens, and how to set the address it holds, is in the [guide](../guides/qr-labels.md). An address that belongs to a home you are not a member of answers \"Page not found\", the same as one that does not exist."
+msgstr "Ce qu'ouvre un autocollant, et comment définir l'adresse qu'il contient, est dans le [guide](../guides/qr-labels.md). Une adresse qui appartient à un logement dont vous n'êtes pas membre répond « Page introuvable », comme une adresse qui n'existe pas."
+
