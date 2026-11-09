@@ -8,7 +8,9 @@ network a link must never reach).
 import ipaddress
 import logging
 import threading
+from collections import Counter
 from collections.abc import Iterator
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -718,6 +720,50 @@ class TestScreens:
         assert not path.exists()
         assert not thumbnail.exists()
         assert ProjectLink.all_objects.get().deleted_at is not None
+
+
+class _Fields(HTMLParser):
+    """The identifiers, the fields and the labels of a page."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.ids: list[str] = []
+        self.fields: list[dict[str, str | None]] = []
+        self.labelled: set[str] = set()
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        found = dict(attrs)
+        if found.get("id"):
+            self.ids.append(str(found["id"]))
+        if tag == "label" and found.get("for"):
+            self.labelled.add(str(found["for"]))
+        hidden = found.get("type") in ("hidden", "submit", "button")
+        if tag in ("input", "select", "textarea") and not hidden:
+            self.fields.append(found)
+
+
+class TestFormLabels:
+    def test_every_field_of_the_page_has_one_identifier_and_one_label(
+        self, signed_in: Client, alice_home: Home, living_room_project: Project
+    ) -> None:
+        shown = signed_in.get(detail(alice_home, living_room_project)).content.decode()
+        parsed = _Fields()
+        parsed.feed(shown)
+        assert [i for i, n in Counter(parsed.ids).items() if n > 1] == []
+        unnamed = [
+            f.get("name")
+            for f in parsed.fields
+            if f.get("aria-label") is None and f.get("id") not in parsed.labelled
+        ]
+        assert unnamed == []
+
+    def test_the_title_of_a_link_is_not_the_title_of_the_new_task(
+        self, signed_in: Client, alice_home: Home, living_room_project: Project
+    ) -> None:
+        shown = signed_in.get(detail(alice_home, living_room_project)).content.decode()
+        assert 'for="id_link_title"' in shown
+        assert 'id="id_link_title"' in shown
+        assert 'id="id_link_url"' in shown
 
 
 class TestAudit:

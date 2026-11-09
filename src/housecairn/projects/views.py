@@ -320,7 +320,7 @@ class ProjectDetailView(HomeProjectsMixin, TemplateView):
                 inspiration_links=list(
                     services.inspiration_links_of(self.home).filter(project=project)
                 ),
-                link_form=forms.LinkForm(),
+                link_form=forms.LinkForm(auto_id="id_link_%s"),
                 preview_enabled=link_services.preview_enabled(),
             ),
             **kwargs,
