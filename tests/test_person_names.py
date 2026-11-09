@@ -44,8 +44,11 @@ def pages(home: Home, task: Task) -> dict[str, str]:
     return {
         "today": reverse("tasks:today", kwargs=kwargs),
         "list": reverse("tasks:list", kwargs=kwargs),
-        "history": reverse("tasks:history", kwargs=kwargs),
-        "history filtered": f"{reverse('tasks:history', kwargs=kwargs)}?person={task.assignee_id}",
+        # The history is the Done filter of the task list (docs/adr/0017).
+        "history": f"{reverse('tasks:list', kwargs=kwargs)}?status=done",
+        "history filtered": (
+            f"{reverse('tasks:list', kwargs=kwargs)}?status=done&person={task.assignee_id}"
+        ),
         "detail": reverse("tasks:detail", kwargs={**kwargs, "task_id": task.id}),
         "new": reverse("tasks:create", kwargs=kwargs),
         "edit": reverse("tasks:edit", kwargs={**kwargs, "task_id": task.id}),
@@ -158,7 +161,9 @@ class TestSameName:
         self, client: Client, alice: User, alice_home: Home, twins: User
     ) -> None:
         client.force_login(alice)
-        text = client.get(reverse("tasks:history", kwargs={"home_id": alice_home.id})).text
+        text = client.get(
+            reverse("tasks:history", kwargs={"home_id": alice_home.id}), follow=True
+        ).text
         assert ">Sam (bob@example.com)</option>" in text
         assert ">sam (carol@example.com)</option>" in text
         assert ">alice</option>" in text
@@ -175,7 +180,8 @@ class TestSameName:
         account_services.set_display_name(bob, "Bobby")
         client.force_login(alice)
         for name in ("create", "history"):
-            text = client.get(reverse(f"tasks:{name}", kwargs={"home_id": alice_home.id})).text
+            url = reverse(f"tasks:{name}", kwargs={"home_id": alice_home.id})
+            text = client.get(url, follow=True).text
             assert ">Bobby</option>" in text
             assert "bob@example.com" not in text
 
@@ -329,7 +335,8 @@ class TestInvisibleTwins:
         User.objects.filter(pk=bob.pk).update(display_name=twin)
         client.force_login(alice)
         for name in ("create", "history"):
-            text = client.get(reverse(f"tasks:{name}", kwargs={"home_id": alice_home.id})).text
+            url = reverse(f"tasks:{name}", kwargs={"home_id": alice_home.id})
+            text = client.get(url, follow=True).text
             assert f"Sam ({alice.email})</option>" in text, name
             assert f"({bob.email})</option>" in text, name
 
