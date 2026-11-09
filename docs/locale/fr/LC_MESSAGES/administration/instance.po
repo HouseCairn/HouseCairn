@@ -30,6 +30,9 @@ msgstr "Qui est administrateur"
 msgid "An active account that is both *staff* and *superuser*. The first account of a new instance created through single sign-on is one (see [Single sign-on](oidc.md)); `manage.py createsuperuser` makes another; the administration site (`/admin/`) grants or withdraws the role on an existing account (both boxes, audited). Being an administrator adds no home to the account: it sees the homes it belongs to, like anyone."
 msgstr "Un compte actif qui est à la fois *staff* et *superuser*. Le premier compte d'une nouvelle instance créé par authentification unique en est un (voir [Authentification unique](oidc.md)) ; `manage.py createsuperuser` en crée un autre ; le site d'administration (`/admin/`) accorde ou retire le rôle sur un compte existant (les deux cases, avec audit). Être administrateur n'ajoute aucun logement au compte : il voit les logements dont il fait partie, comme tout le monde."
 
+msgid "The administration site has no sign-in form of its own: `/admin/login/` sends to the usual sign-in page, so the administrator signs in like anyone, with their second factor (passkey, authenticator app) and the same limits on failed attempts ([Rate limits](rate-limits.md)), then comes back to `/admin/`. An account that is not an administrator gets a 403 there."
+msgstr "Le site d'administration n'a pas de formulaire de connexion propre : `/admin/login/` renvoie vers la page de connexion habituelle, où l'administrateur se connecte comme tout le monde, avec son second facteur (clé d'accès, application d'authentification) et les mêmes limites de tentatives échouées ([Limites de débit](rate-limits.md)), puis revient sur `/admin/`. Un compte qui n'est pas administrateur y reçoit une erreur 403."
+
 msgid "What the administrator can do"
 msgstr "Ce que l'administrateur peut faire"
 

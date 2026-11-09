@@ -50,10 +50,17 @@ person and their API tokens stop seeing the home on the next request.
   sign in with the invited address, and told that an account is otherwise
   created by the administrator or once the instance sends email. Otherwise the
   owner holding the link could create the invitee's account with a password of
-  their own, or learn by trying whether it exists. An existing account whose
-  address equals the invited one can accept such a link, as before: the owner
-  typed that address, and a link that creates nothing and verifies nothing
-  gives the account nothing it did not have.
+  their own, or learn by trying whether it exists. An existing account accepts
+  such a link only if it has **verified** the invited address itself (an
+  allauth `EmailAddress` of that account, verified, equal to the invited
+  address with case ignored): an address the account merely declared proves
+  nothing either, and anyone holding the link could otherwise add the invited
+  address to their own account and join. The invitation page then says to
+  verify the address first (or, without outgoing email, that the instance
+  cannot verify it), and the API answers 403 with the same message. Only a
+  verified address can become the primary address of an account
+  (`AccountAdapter.can_mark_as_primary`, asked by the address page, since
+  allauth calls no adapter method there).
 - When sign-up is closed, the invitation is the way in: the invitation page
   of an emailed link creates the account (password checked by the usual
   validators) with the invited address, then accepts. Through OIDC,
@@ -108,3 +115,11 @@ account management does (ADR 0003).
   (ADR 0021), and removing a member or leaving asks for confirmation first.
 - Owners see members' addresses; members see each other's, as a household
   does.
+
+**Amendment, 2026-11-09: a handed-over link needs a verified address.** The
+first version let an existing account accept a handed-over link as soon as its
+address equalled the invited one. allauth lets an account add an address and
+make it primary without verifying it while it has no verified address, so
+whoever held the link could declare the invited address and join the home.
+Acceptance of a handed-over link now requires the account to have verified
+that address; a link that went by email still proves it, as above.

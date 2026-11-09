@@ -192,22 +192,26 @@ class Amounts:
     committed and what is paid, and its gap is the planned amount less that. The gap of a
     project is the sum of the gaps of its lines (`engaged` adds up line by line, never from
     the totals): an overrun on one line is not hidden by the room left on another.
-    Negative: over budget.
+    Negative: over budget. What is still to pay follows the same rule, line by line.
     """
 
     planned: Decimal = ZERO
     committed: Decimal = ZERO
     paid: Decimal = ZERO
-    # Sum over the lines of max(committed, paid); worked out for one line when left empty.
+    # Sums over the lines of max(committed, paid) and of max(committed - paid, 0); worked out
+    # for one line when left empty.
     engaged_sum: Decimal | None = dataclass_field(default=None, repr=False)
+    to_pay_sum: Decimal | None = dataclass_field(default=None, repr=False)
 
     def __post_init__(self) -> None:
         if self.engaged_sum is None:
             object.__setattr__(self, "engaged_sum", max(self.committed, self.paid))
+        if self.to_pay_sum is None:
+            object.__setattr__(self, "to_pay_sum", max(self.committed - self.paid, ZERO))
 
     @property
     def engaged(self) -> Decimal:
-        return max(self.committed, self.paid) if self.engaged_sum is None else self.engaged_sum
+        return ZERO if self.engaged_sum is None else self.engaged_sum
 
     def __add__(self, other: "Amounts") -> "Amounts":
         return Amounts(
@@ -215,6 +219,7 @@ class Amounts:
             self.committed + other.committed,
             self.paid + other.paid,
             self.engaged + other.engaged,
+            self.to_pay + other.to_pay,
         )
 
     @property
@@ -232,8 +237,9 @@ class Amounts:
 
     @property
     def to_pay(self) -> Decimal:
-        """Committed and not paid yet (zero when more than the commitment has been paid)."""
-        return max(self.committed - self.paid, ZERO)
+        """Committed and not paid yet, line by line: a line paid above its quotes owes nothing,
+        and does not lower what another line still owes."""
+        return ZERO if self.to_pay_sum is None else self.to_pay_sum
 
 
 @dataclass(frozen=True)

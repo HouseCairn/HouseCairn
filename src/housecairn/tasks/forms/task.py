@@ -7,6 +7,7 @@ from django.utils.dates import MONTHS
 from django.utils.translation import gettext_lazy as _
 
 from housecairn.accounts.models import User
+from housecairn.core.forms import MoneyField
 from housecairn.rooms.models import Item
 from housecairn.tasks import durations, files, services
 from housecairn.tasks.forms.fields import (
@@ -65,6 +66,9 @@ class TaskForm(forms.ModelForm[Task]):
             "the home when you save."
         ),
     )
+    # Amounts are typed the way the person writes them, as in projects (docs/adr/0051).
+    labour_budget = MoneyField(label=_("Labour budget"), required=False)
+    material_budget = MoneyField(label=_("Material budget"), required=False)
     uploads = MultipleFileField(
         label=_("Photos and files"),
         required=False,

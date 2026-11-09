@@ -513,6 +513,9 @@ def accept_invitation(user: User, raw: str) -> Membership:
 
     The account's address must be the invited one: a forwarded or stolen link
     is of no use to another account. Someone already a member keeps their role.
+    A link that went by email proves the address; a link handed over by hand
+    proves nothing, so the account must have verified the address itself
+    (docs/adr/0020): otherwise anyone could declare it and use the link.
     """
     invitation = find_invitation(raw)
     if invitation is None:
@@ -527,6 +530,10 @@ def accept_invitation(user: User, raw: str) -> Membership:
         # The link reached the mailbox of that address and nobody else saw it:
         # whoever opens it with this address proves the address (docs/adr/0020).
         verify_address(user, invitation.email)
+    elif not has_verified_address(user, invitation.email):
+        raise UnverifiedAddressError(
+            _("Verify this address in your account first, then open the link again.")
+        )
     membership: Membership | None = Membership.objects.filter(
         home=invitation.home, user=user
     ).first()
@@ -541,6 +548,22 @@ def accept_invitation(user: User, raw: str) -> Membership:
         "invitation.accepted", actor=user, home_id=invitation.home_id, role=str(membership.role)
     )
     return membership
+
+
+class UnverifiedAddressError(PermissionDenied):
+    """The account has the invited address but has not verified it (docs/adr/0020)."""
+
+
+def has_verified_address(user: User, address: str) -> bool:
+    """Whether this account has verified this address, case ignored."""
+    from allauth.account.models import EmailAddress
+
+    return any(
+        same_address(record.email, address)
+        for record in EmailAddress.objects.filter(
+            user=user, email__iexact=address.strip(), verified=True
+        )
+    )
 
 
 def verify_address(user: User, address: str) -> None:

@@ -22,6 +22,7 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.audit import services as audit
 from housecairn.core.text import without_control_characters
 from housecairn.homes import quotas
 from housecairn.homes import services as home_services
@@ -295,6 +296,7 @@ def create_article(
         if processed is not None:
             _erase_label_file(article.label.name)
         raise
+    audit.record_object("article.created", actor=actor, home_id=home.id, title=article.name)
     return article
 
 
@@ -333,6 +335,20 @@ def update_article(
             _erase_label_file(article.label.name)
         raise
     _erase_label_file(previous)
+    audit.record_object(
+        "article.updated",
+        actor=actor,
+        home_id=article.home_id,
+        title=article.name,
+        fields=sorted(
+            [
+                *changes,
+                *(["compatible_items"] if items is not None else []),
+                *(["rooms"] if chosen_rooms is not None else []),
+                *(["label"] if processed is not None or clear_label else []),
+            ]
+        ),
+    )
     return article
 
 
@@ -343,6 +359,7 @@ def delete_article(actor: AnyUser, article: Article) -> None:
     Supplier.objects.filter(article=article).soft_delete()  # type: ignore[attr-defined]
     Movement.objects.filter(article=article).soft_delete()  # type: ignore[attr-defined]
     article.soft_delete()
+    audit.record_object("article.deleted", actor=actor, home_id=article.home_id, title=article.name)
 
 
 # ---------- suppliers ----------
@@ -354,6 +371,9 @@ def create_supplier(actor: AnyUser, article: Article, **fields: Any) -> Supplier
     _apply(supplier, SUPPLIER_FIELDS, fields)
     supplier.full_clean()
     supplier.save()
+    audit.record_object(
+        "supplier.created", actor=actor, home_id=supplier.home_id, title=supplier.name
+    )
     return supplier
 
 
@@ -362,12 +382,22 @@ def update_supplier(actor: AnyUser, supplier: Supplier, **changes: Any) -> Suppl
     _apply(supplier, SUPPLIER_FIELDS, changes)
     supplier.full_clean()
     supplier.save()
+    audit.record_object(
+        "supplier.updated",
+        actor=actor,
+        home_id=supplier.home_id,
+        title=supplier.name,
+        fields=sorted(changes),
+    )
     return supplier
 
 
 def delete_supplier(actor: AnyUser, supplier: Supplier) -> None:
     _require_write(actor, supplier.home)
     supplier.soft_delete()
+    audit.record_object(
+        "supplier.deleted", actor=actor, home_id=supplier.home_id, title=supplier.name
+    )
 
 
 # ---------- movements ----------
