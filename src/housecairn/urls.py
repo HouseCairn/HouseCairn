@@ -5,6 +5,7 @@ from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerSplitView
 
 from housecairn.accounts import views as account_views
+from housecairn.budget import views as budget_views
 from housecairn.core import views as core_views
 from housecairn.homes import views as home_views
 from housecairn.instance import views as instance_views
@@ -43,6 +44,9 @@ urlpatterns = [
     # Projects, budget lines and quotes of a home (docs/adr/0050); /projects/ is the entry.
     path("h/<uuid:home_id>/", include("housecairn.projects.urls")),
     path("projects/", project_views.EntryView.as_view(), name="projects"),
+    # The budget of a home, by room, project and task (docs/adr/0051); /budget/ is the entry.
+    path("h/<uuid:home_id>/", include("housecairn.budget.urls")),
+    path("budget/", budget_views.EntryView.as_view(), name="budget"),
     # Invitation links, opened signed in or not (docs/adr/0020).
     path("invitations/<str:token>/", home_views.InvitationView.as_view(), name="invitation"),
     # Instance invitation links: an account, without a home (docs/adr/0022).

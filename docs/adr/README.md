@@ -47,3 +47,4 @@ later record supersedes it.
 | [0043](0043-notifications-through-apprise.md) | Notifications through Apprise: channels of a person, reminders, quiet hours | 2026-11-08 |
 | [0045](0045-generic-lists-with-other-tabs-and-audit-of-content.md) | Generic lists with "Other", tabs, language of a person and audit of content | 2026-11-08 |
 | [0050](0050-projects-quotes-and-budget-lines.md) | Projects, quotes and budget lines | 2026-11-09 |
+| [0051](0051-budget-views-and-annual-envelope.md) | Budget views and the annual envelope | 2026-11-09 |

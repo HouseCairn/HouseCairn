@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load i18n l10n projects_extras budget_extras %}
+{% block head_title %}{% translate "Budget" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  <h1>{% translate "Budget" %}</h1>
+  {% include "budget/_nav.html" %}
+  {% include "budget/_year.html" %}
+  <section class="card" aria-labelledby="envelope-title">
+    <h2 id="envelope-title">{% blocktranslate with year=year|unlocalize %}Envelope {{ year }}{% endblocktranslate %}</h2>
+    {% if envelope.envelope is None %}
+      <p class="small">{% translate "No envelope set for this year." %}</p>
+    {% endif %}
+    <dl class="facts">
+      {% if envelope.envelope is not None %}<div><dt>{% translate "Envelope" %}</dt><dd>{{ envelope.envelope|money:home.currency }}</dd></div>{% endif %}
+      <div><dt>{% translate "Planned, projects and upkeep" %}</dt><dd>{{ envelope.total.planned|money:home.currency }}</dd></div>
+      <div><dt>{% translate "Used, projects and upkeep" %}</dt><dd>{{ envelope.total.engaged|money:home.currency }}</dd></div>
+      <div><dt>{% translate "Paid" %}</dt><dd>{{ envelope.total.paid|money:home.currency }}</dd></div>
+      {% if envelope.envelope is not None %}
+        <div><dt>{% translate "Left to plan" %}</dt><dd>{% if envelope.left_to_plan < 0 %}{% blocktranslate with amount=envelope.left_to_plan|money:home.currency %}{{ amount }} (the plans exceed the envelope){% endblocktranslate %}{% else %}{{ envelope.left_to_plan|money:home.currency }}{% endif %}</dd></div>
+        <div><dt>{% translate "Left to spend" %}</dt><dd>{% if envelope.left_to_spend < 0 %}{% blocktranslate with amount=envelope.left_to_spend|money:home.currency %}{{ amount }} (the spending exceeds the envelope){% endblocktranslate %}{% else %}{{ envelope.left_to_spend|money:home.currency }}{% endif %}</dd></div>
+      {% endif %}
+      <div><dt>{% translate "Projects" %}</dt><dd>{% blocktranslate with planned=envelope.projects.planned|money:home.currency paid=envelope.projects.paid|money:home.currency %}planned {{ planned }}, paid {{ paid }}{% endblocktranslate %}</dd></div>
+      <div><dt>{% translate "Upkeep" %}</dt><dd>{% blocktranslate with planned=envelope.upkeep.planned|money:home.currency paid=envelope.upkeep.paid|money:home.currency %}planned {{ planned }}, paid {{ paid }}{% endblocktranslate %}</dd></div>
+      <div><dt>{% translate "Budget in Sure" %}</dt><dd>{% translate "Not connected" %}</dd></div>
+    </dl>
+    {% if can_write %}<a class="button button-secondary button-small" href="{% url 'projects:envelope' home_id=home.id %}">{% translate "Set the envelope" %}</a>{% endif %}
+  </section>
+
+  <p><a href="{% url 'budget:rooms' home_id=home.id %}?year={{ year|unlocalize }}">{% translate "By room" %}</a> · <a href="{% url 'budget:projects' home_id=home.id %}">{% translate "By project" %}</a> · <a href="{% url 'budget:tasks' home_id=home.id %}?year={{ year|unlocalize }}">{% translate "By task of the upkeep" %}</a></p>
+
+  <h2>{% blocktranslate with year=year|unlocalize %}By nature, {{ year }}{% endblocktranslate %}</h2>
+  <table>
+    <caption class="visually-hidden">{% translate "Planned, committed and paid, by nature" %}</caption>
+    <thead><tr><th scope="col">{% translate "Nature" %}</th>{% include "budget/_head_amounts.html" %}</tr></thead>
+    <tbody>
+      {% for label, amounts in natures %}
+        <tr><th scope="row">{{ label }}</th>{% include "budget/_row_amounts.html" with amounts=amounts %}</tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="small">{% translate "A cost typed on a done task has no nature: it is counted under Other." %}</p>
+
+  <h2>{% translate "By year" %}</h2>
+  <table>
+    <caption class="visually-hidden">{% translate "Planned, committed and paid, year by year" %}</caption>
+    <thead><tr><th scope="col">{% translate "Year" %}</th><th scope="col">{% translate "Envelope" %}</th>{% include "budget/_head_amounts.html" %}</tr></thead>
+    <tbody>
+      {% for line in yearly %}
+        <tr>
+          <th scope="row">{{ line.year|unlocalize }}</th>
+          <td>{% if line.envelope is None %}—{% else %}{{ line.envelope|money:home.currency }}{% endif %}</td>
+          {% include "budget/_row_amounts.html" with amounts=line.total %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>{% translate "Last 12 months" %}</h2>
+  <section class="card">
+    <p class="small">{% blocktranslate with since=rolling.since|date:"DATE_FORMAT" until=rolling.until|date:"DATE_FORMAT" %}From {{ since }} to {{ until }}, the upkeep that was done. Payments on projects carry no date, so they are not in this figure.{% endblocktranslate %}</p>
+    <dl class="facts">
+      <div><dt>{% translate "Planned" context "amount" %}</dt><dd>{{ rolling.upkeep.planned|money:home.currency }}</dd></div>
+      <div><dt>{% translate "Paid" %}</dt><dd>{{ rolling.upkeep.paid|money:home.currency }}</dd></div>
+      <div><dt>{% translate "Where it stands" %}</dt><dd>{% budget_gap rolling.upkeep home.currency %}</dd></div>
+    </dl>
+    {% if rolling.missing %}<p class="small">{% blocktranslate count counter=rolling.missing %}{{ counter }} task was done without a cost: its estimate is counted, nothing is paid.{% plural %}{{ counter }} tasks were done without a cost: their estimates are counted, nothing is paid.{% endblocktranslate %}</p>{% endif %}
+  </section>
+{% endblock content %}

@@ -45,6 +45,7 @@ class TestTaskTabs:
                 "All tasks",
                 "History",
                 "Projects",
+                "Budget",
                 "Contractors",
                 "Display preferences",
             ]

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 00:04+0000\n"
+"POT-Creation-Date: 2026-11-09 06:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -210,6 +210,9 @@ msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce log
 
 msgid "The photos, the labels of stock items, the photos and quote files of projects and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>`, `stock/<home id>` or `projects/<home id>`): remove that directory by hand."
 msgstr "Les photos, les étiquettes des articles du matériel, les photos et fichiers de devis des projets et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>`, `stock/<id du logement>` ou `projects/<id du logement>`) : supprimez ce dossier à la main."
+
+msgid "The budget screens (by room, by project, by task, the envelope) keep no data of their own: they are worked out from the projects, tasks and envelopes above, so they are in the export and go with the home."
+msgstr "Les écrans du budget (par pièce, par projet, par tâche, l'enveloppe) ne gardent aucune donnée à eux : ils sont calculés à partir des projets, des tâches et des enveloppes ci-dessus, donc ils sont dans l'export et partent avec le logement."
 
 msgid "Erasure of an account"
 msgstr "Effacement d'un compte"

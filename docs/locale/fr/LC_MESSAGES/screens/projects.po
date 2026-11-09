@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 00:04+0000\n"
+"POT-Creation-Date: 2026-11-09 06:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -39,6 +39,9 @@ msgstr "**Ajouter un projet** ouvre le [formulaire de projet](project-form.md)."
 
 msgid "**The budget envelope** at the top is what the household wants to spend on work this year. It sets it against the planned budget of the projects that are neither finished nor abandoned, shows what is paid so far and what is left, and says **over the envelope** when the plans exceed it. **Set the envelope** (owners and members) asks for a year and an amount in the currency of the home, at `/h/<home id>/projects/envelope/`."
 msgstr "**L'enveloppe budgétaire**, en haut, est ce que le foyer veut dépenser en travaux cette année. Elle la compare au budget prévu des projets qui ne sont ni terminés ni abandonnés, montre ce qui est payé jusqu'ici et ce qui reste, et dit **au-delà de l'enveloppe** quand les prévisions la dépassent. **Fixer l'enveloppe** (propriétaires et membres) demande une année et un montant dans la devise du logement, à `/h/<id du logement>/projects/envelope/`."
+
+msgid "The [budget](budget.md) sets the envelope against the projects and the upkeep of the year together."
+msgstr "Le [budget](budget.md) compare l'enveloppe aux projets et à l'entretien de l'année ensemble."
 
 msgid "Read-only members see the same list and none of the buttons that change it."
 msgstr "Les membres en lecture seule voient la même liste et aucun des boutons qui modifient."

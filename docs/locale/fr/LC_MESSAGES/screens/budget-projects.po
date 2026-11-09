@@ -1,0 +1,30 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-09 06:38+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Budget by project"
+msgstr "Budget par projet"
+
+msgid "`/h/<home id>/budget/projects/`, with `?export=csv` for a file."
+msgstr "`/h/<id du logement>/budget/projects/`, avec `?export=csv` pour un fichier."
+
+msgid "One row per [project](project.md): **Counted in** is the year the project starts (the earliest date of its tasks and accepted quotes, else the year it was created); the whole project is counted there even if the work runs into the next year. Then **Planned**, **Committed**, **Paid**, the gauge, where it stands in words and **Still to pay**, which is worked out line by line. An abandoned project plans nothing any more, so what was paid on it shows as spent without a plan. A row opens the project."
+msgstr "Une ligne par [projet](project.md) : **Compté en** est l'année où le projet commence (la première date de ses tâches et de ses devis acceptés, sinon l'année de sa création) ; le projet entier est compté là, même si le chantier se poursuit l'année suivante. Viennent ensuite **Prévu**, **Engagé**, **Payé**, la jauge, où en est le budget en toutes lettres et **Reste à payer**, calculé ligne par ligne. Un projet abandonné ne prévoit plus rien : ce qui a été payé dessus apparaît donc comme dépensé sans prévu. Une ligne ouvre le projet."
+

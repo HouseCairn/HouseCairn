@@ -1,0 +1,42 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-09 06:38+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Entering an amount"
+msgstr "Saisir un montant"
+
+msgid "The same rule applies to every amount you type: the budget of a project, a budget line, a quote, the envelope, and the labour budget, material budget and actual cost of a task."
+msgstr "La même règle vaut pour tous les montants que vous saisissez : le budget d'un projet, une ligne de budget, un devis, l'enveloppe, et le budget de main-d'œuvre, le budget de matériel et le coût réel d'une tâche."
+
+msgid "**Write it as you speak.** In English `1250.50`, in French `1 250,50`. In French the point works too (`1250.50`), and spaces that group thousands are accepted (`1 250,50`)."
+msgstr "**Écrivez-le comme vous le dites.** En anglais `1250.50`, en français `1 250,50`. En français le point passe aussi (`1250.50`), et les espaces qui groupent les milliers sont acceptés (`1 250,50`)."
+
+msgid "**Two decimals at most**, and a decimal mark only once. A form that could be read two ways is refused rather than guessed: `1,250.50` and `1.250,50` are refused, so are letters and a negative sign."
+msgstr "**Deux décimales au plus**, et une seule marque décimale. Une forme qui peut se lire de deux façons est refusée plutôt que devinée : `1,250.50` et `1.250,50` sont refusés, tout comme les lettres et un signe moins."
+
+msgid "**The currency is the one of the home**, never typed."
+msgstr "**La devise est celle du logement**, jamais saisie."
+
+msgid "**The largest amount is 9999999999.99**, and the smallest 0. The API and the files always use a dot and no space: `\"1250.50\"`."
+msgstr "**Le plus grand montant est 9999999999.99**, et le plus petit 0. L'API et les fichiers utilisent toujours un point et aucune espace : `\"1250.50\"`."
+
+msgid "Screens show amounts with the habits of your language, such as `1,250.50 EUR` or `1 250,50 EUR`; what is shown is not always what you type."
+msgstr "Les écrans affichent les montants selon les habitudes de votre langue, comme `1,250.50 EUR` ou `1 250,50 EUR` ; ce qui est affiché n'est pas toujours ce que vous saisissez."
+

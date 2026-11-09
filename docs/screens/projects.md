@@ -22,4 +22,7 @@ budget and, in words, where the budget stands: **... left**, **Over budget by ..
   when the plans exceed it. **Set the envelope** (owners and members) asks for a year and
   an amount in the currency of the home, at `/h/<home id>/projects/envelope/`.
 
+The [budget](budget.md) sets the envelope against the projects and the upkeep of the year
+together.
+
 Read-only members see the same list and none of the buttons that change it.

@@ -11,5 +11,7 @@ tasks-and-recurrence
 today-and-history
 stock
 projects
+budget
+amounts
 notifications
 ```

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 00:02+0000\n"
+"POT-Creation-Date: 2026-11-09 06:35+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -554,6 +554,118 @@ msgstr "entrée d'audit"
 msgid "audit entries"
 msgstr "entrées d'audit"
 
+#: budget/apps.py core/templatetags/tabs.py projects/forms.py
+#: projects/services.py templates/budget/entry.html
+#: templates/budget/overview.html templates/projects/project_detail.html
+msgid "Budget"
+msgstr "Budget"
+
+#: budget/csvfile.py templates/budget/_head_amounts.html
+#: templates/budget/entry.html templates/budget/overview.html
+msgctxt "amount"
+msgid "Planned"
+msgstr "Prévu"
+
+#: budget/csvfile.py templates/budget/_head_amounts.html
+#: templates/projects/compare.html templates/projects/project_detail.html
+msgid "Committed"
+msgstr "Engagé"
+
+#: budget/csvfile.py projects/forms.py templates/budget/_head_amounts.html
+#: templates/budget/entry.html templates/budget/overview.html
+#: templates/projects/project_detail.html
+msgid "Paid"
+msgstr "Payé"
+
+#: budget/csvfile.py templates/budget/_head_amounts.html
+#: templates/budget/entry.html
+msgid "Used"
+msgstr "Consommé"
+
+#: budget/csvfile.py templates/projects/project_detail.html
+msgid "Gap"
+msgstr "Écart"
+
+#: budget/csvfile.py projects/forms.py rooms/forms.py tasks/forms.py
+#: tasks/models.py templates/budget/rooms.html
+#: templates/projects/project_list.html templates/tasks/history.html
+#: templates/tasks/task_list.html
+msgid "Room"
+msgstr "Pièce"
+
+#: budget/csvfile.py
+msgid "Projects used"
+msgstr "Projets : consommé"
+
+#: budget/csvfile.py
+msgid "Upkeep paid"
+msgstr "Entretien : payé"
+
+#: budget/csvfile.py tasks/agenda.py templates/budget/rooms.html
+msgid "No room"
+msgstr "Aucune pièce"
+
+#: budget/csvfile.py templates/budget/projects.html
+#: templates/projects/compare.html
+msgid "Project"
+msgstr "Projet"
+
+#: budget/csvfile.py templates/projects/compare.html
+#: templates/projects/project_list.html
+msgid "Status"
+msgstr "Statut"
+
+#: budget/csvfile.py templates/budget/projects.html
+msgid "Counted in"
+msgstr "Compté en"
+
+#: budget/csvfile.py
+msgid "To pay"
+msgstr "À payer"
+
+#: budget/csvfile.py templates/budget/tasks.html
+msgid "Task"
+msgstr "Tâche"
+
+#: budget/csvfile.py templates/budget/_task_cost.html
+#: templates/budget/tasks.html
+msgid "Estimate each time"
+msgstr "Estimation par fois"
+
+#: budget/csvfile.py templates/budget/_task_cost.html
+#: templates/budget/tasks.html
+msgid "Cost a year"
+msgstr "Coût par an"
+
+#: budget/csvfile.py templates/budget/tasks.html
+msgid "Paid in all"
+msgstr "Payé au total"
+
+#: budget/csvfile.py
+msgid "Done without a cost"
+msgstr "Faites sans coût"
+
+#: budget/csvfile.py
+msgid "Section"
+msgstr "Rubrique"
+
+#: budget/csvfile.py
+msgid "Label"
+msgstr "Libellé"
+
+#: budget/csvfile.py projects/forms.py templates/budget/_year.html
+#: templates/budget/entry.html templates/budget/overview.html
+msgid "Year"
+msgstr "Année"
+
+#: budget/csvfile.py templates/budget/overview.html
+msgid "Nature"
+msgstr "Nature"
+
+#: budget/csvfile.py templates/budget/overview.html
+msgid "Last 12 months"
+msgstr "12 derniers mois"
+
 #: core/apps.py
 msgid "Core"
 msgstr "Cœur"
@@ -576,7 +688,7 @@ msgstr "Toutes les tâches"
 msgid "History"
 msgstr "Historique"
 
-#: core/templatetags/tabs.py projects/apps.py
+#: core/templatetags/tabs.py projects/apps.py templates/budget/overview.html
 #: templates/projects/choose_home.html templates/projects/compare.html
 #: templates/projects/envelope_form.html templates/projects/project_detail.html
 #: templates/projects/project_form.html templates/projects/project_list.html
@@ -615,6 +727,18 @@ msgstr "Fournisseurs de connexion"
 #: core/templatetags/tabs.py templates/instance/usage.html
 msgid "Files of the homes"
 msgstr "Fichiers des logements"
+
+#: core/templatetags/tabs.py templates/budget/overview.html
+msgid "By room"
+msgstr "Par pièce"
+
+#: core/templatetags/tabs.py templates/budget/overview.html
+msgid "By project"
+msgstr "Par projet"
+
+#: core/templatetags/tabs.py
+msgid "By task"
+msgstr "Par tâche"
 
 #: core/templatetags/tabs.py tasks/apps.py
 #: templates/projects/project_detail.html templates/rooms/item_detail.html
@@ -1991,11 +2115,6 @@ msgstr "Durée estimée"
 msgid "Unit"
 msgstr "Unité"
 
-#: projects/forms.py projects/services.py
-#: templates/projects/project_detail.html
-msgid "Budget"
-msgstr "Budget"
-
 #: projects/forms.py
 msgid ""
 "The amount you plan to spend. It becomes the first budget line, which you "
@@ -2026,14 +2145,9 @@ msgstr "Indiquez le premier et le dernier mois."
 msgid "Planned"
 msgstr "Prévue"
 
-#: projects/forms.py templates/projects/project_detail.html
-msgid "Paid"
-msgstr "Payé"
-
 #: projects/forms.py
 msgid ""
-"What has been paid so far. The committed amount comes from accepted "
-"quotes."
+"What has been paid so far. The committed amount comes from accepted quotes."
 msgstr ""
 "Ce qui a été payé jusqu'ici. Le montant engagé vient des devis acceptés."
 
@@ -2082,12 +2196,6 @@ msgstr "Nouvelle tâche"
 msgid "Due on"
 msgstr "Échéance"
 
-#: projects/forms.py rooms/forms.py tasks/forms.py tasks/models.py
-#: templates/projects/project_list.html templates/tasks/history.html
-#: templates/tasks/task_list.html
-msgid "Room"
-msgstr "Pièce"
-
 #: projects/forms.py
 msgid "Existing task"
 msgstr "Tâche existante"
@@ -2096,11 +2204,8 @@ msgstr "Tâche existante"
 msgid "Photo"
 msgstr "Photo"
 
-#: projects/forms.py
-msgid "Year"
-msgstr "Année"
-
-#: projects/forms.py templates/projects/project_list.html
+#: projects/forms.py templates/budget/entry.html templates/budget/overview.html
+#: templates/projects/project_list.html
 msgid "Envelope"
 msgstr "Enveloppe"
 
@@ -2380,11 +2485,11 @@ msgstr "Projet enregistré."
 
 #: projects/views.py
 msgid ""
-"The project, its budget lines, quotes and photos disappear. Its tasks "
-"stay: they are only taken out of the project."
+"The project, its budget lines, quotes and photos disappear. Its tasks stay: "
+"they are only taken out of the project."
 msgstr ""
-"Le projet, ses lignes de budget, ses devis et ses photos disparaissent. "
-"Ses tâches restent : elles sont seulement retirées du projet."
+"Le projet, ses lignes de budget, ses devis et ses photos disparaissent. Ses "
+"tâches restent : elles sont seulement retirées du projet."
 
 #: projects/views.py
 msgid "Project deleted."
@@ -2416,11 +2521,11 @@ msgstr "Ligne de budget enregistrée."
 
 #: projects/views.py
 msgid ""
-"The budget line disappears. The quotes accepted on it go back to "
-"Received: they commit nothing any more."
+"The budget line disappears. The quotes accepted on it go back to Received: "
+"they commit nothing any more."
 msgstr ""
-"La ligne de budget disparaît. Les devis acceptés sur elle repassent à "
-"Reçu : ils n'engagent plus rien."
+"La ligne de budget disparaît. Les devis acceptés sur elle repassent à Reçu : "
+"ils n'engagent plus rien."
 
 #: projects/views.py
 msgid "Budget line deleted."
@@ -3043,10 +3148,6 @@ msgid "Supplier deleted."
 msgstr "Fournisseur supprimé."
 
 #: tasks/agenda.py
-msgid "No room"
-msgstr "Aucune pièce"
-
-#: tasks/agenda.py
 msgid "Nobody yet"
 msgstr "Personne pour l'instant"
 
@@ -3125,6 +3226,14 @@ msgid "All year"
 msgstr "Toute l'année"
 
 #: tasks/forms.py templates/tasks/task_detail.html
+msgid "Labour budget"
+msgstr "Budget main d'œuvre"
+
+#: tasks/forms.py templates/tasks/task_detail.html
+msgid "Material budget"
+msgstr "Budget matériel"
+
+#: tasks/forms.py templates/tasks/task_detail.html
 msgid "Photos and files"
 msgstr "Photos et fichiers"
 
@@ -3136,6 +3245,10 @@ msgstr ""
 #: tasks/forms.py tasks/services.py
 msgid "Give a duration between a minute and thirty days."
 msgstr "Indiquez une durée comprise entre une minute et trente jours."
+
+#: tasks/forms.py
+msgid "Actual cost"
+msgstr "Coût réel"
 
 #: tasks/forms.py
 msgid "New date"
@@ -3857,6 +3970,270 @@ msgstr "Plus anciennes"
 msgid "Skip to content"
 msgstr "Aller au contenu"
 
+#: templates/budget/_gauge.html
+msgid "No budget set"
+msgstr "Aucun budget fixé"
+
+#: templates/budget/_gauge.html
+msgid "Used against planned"
+msgstr "Consommé par rapport au prévu"
+
+#: templates/budget/_gauge.html
+#, python-format
+msgid "%(percent)s %% used"
+msgstr "%(percent)s %% consommé"
+
+#: templates/budget/_head_amounts.html templates/budget/entry.html
+#: templates/budget/overview.html
+msgid "Where it stands"
+msgstr "Où en est le budget"
+
+#: templates/budget/_occurrence_cost.html
+#, python-format
+msgid "Estimated at %(amount)s each time."
+msgstr "Estimé à %(amount)s à chaque fois."
+
+#: templates/budget/_task_cost.html
+msgid "Cost"
+msgstr "Coût"
+
+#: templates/budget/_task_cost.html templates/projects/project_list.html
+msgid "Paid so far"
+msgstr "Payé jusqu'ici"
+
+#: templates/budget/_task_cost.html
+#, python-format
+msgid ""
+"%(counter)s time done without a cost: add it in the details of what was done."
+msgid_plural ""
+"%(counter)s times done without a cost: add them in the details of what was "
+"done."
+msgstr[0] "%(counter)s fois faite sans coût : ajoutez-le dans les détails de ce qui a été fait."
+msgstr[1] "%(counter)s fois faites sans coût : ajoutez-les dans les détails de ce qui a été fait."
+
+#: templates/budget/_year.html templates/budget/entry.html
+#: templates/tasks/my_home.html templates/tasks/task_list.html
+msgid "Show"
+msgstr "Afficher"
+
+#: templates/budget/_year.html
+msgid "Download as CSV"
+msgstr "Télécharger en CSV"
+
+#: templates/budget/entry.html
+msgid ""
+"Homes are added by currency. Amounts in different currencies are never "
+"converted."
+msgstr "Les logements sont additionnés par devise. Les montants de devises différentes ne sont jamais convertis."
+
+#: templates/budget/entry.html
+#, python-format
+msgid "Planned %(planned)s, paid %(paid)s"
+msgstr "Prévu %(planned)s, payé %(paid)s"
+
+#: templates/budget/entry.html templates/projects/choose_home.html
+#: templates/rooms/choose_home.html templates/stock/choose_home.html
+#: templates/tasks/choose_home.html templates/tasks/my_home.html
+msgid "You have no home to open yet."
+msgstr "Vous n'avez pas encore de logement à ouvrir."
+
+#: templates/budget/entry.html templates/homes/home_form.html
+#: templates/homes/home_list.html templates/projects/choose_home.html
+#: templates/rooms/choose_home.html templates/stock/choose_home.html
+#: templates/tasks/choose_home.html templates/tasks/my_home.html
+msgid "Add a home"
+msgstr "Ajouter un logement"
+
+#: templates/budget/overview.html
+#, python-format
+msgid "Envelope %(year)s"
+msgstr "Enveloppe %(year)s"
+
+#: templates/budget/overview.html templates/projects/project_list.html
+msgid "No envelope set for this year."
+msgstr "Aucune enveloppe fixée pour cette année."
+
+#: templates/budget/overview.html
+msgid "Planned, projects and upkeep"
+msgstr "Prévu, projets et entretien"
+
+#: templates/budget/overview.html
+msgid "Used, projects and upkeep"
+msgstr "Consommé, projets et entretien"
+
+#: templates/budget/overview.html
+msgid "Left to plan"
+msgstr "Reste à prévoir"
+
+#: templates/budget/overview.html
+#, python-format
+msgid "%(amount)s (the plans exceed the envelope)"
+msgstr "%(amount)s (le prévu dépasse l'enveloppe)"
+
+#: templates/budget/overview.html
+msgid "Left to spend"
+msgstr "Reste à dépenser"
+
+#: templates/budget/overview.html
+#, python-format
+msgid "%(amount)s (the spending exceeds the envelope)"
+msgstr "%(amount)s (les dépenses dépassent l'enveloppe)"
+
+#: templates/budget/overview.html
+#, python-format
+msgid "planned %(planned)s, paid %(paid)s"
+msgstr "prévu %(planned)s, payé %(paid)s"
+
+#: templates/budget/overview.html
+msgid "Upkeep"
+msgstr "Entretien"
+
+#: templates/budget/overview.html
+msgid "Budget in Sure"
+msgstr "Budget dans Sure"
+
+#: templates/budget/overview.html
+msgid "Not connected"
+msgstr "Non connecté"
+
+#: templates/budget/overview.html templates/projects/project_list.html
+msgid "Set the envelope"
+msgstr "Fixer l'enveloppe"
+
+#: templates/budget/overview.html
+msgid "By task of the upkeep"
+msgstr "Par tâche d'entretien"
+
+#: templates/budget/overview.html
+#, python-format
+msgid "By nature, %(year)s"
+msgstr "Par nature, %(year)s"
+
+#: templates/budget/overview.html
+msgid "Planned, committed and paid, by nature"
+msgstr "Prévu, engagé et payé, par nature"
+
+#: templates/budget/overview.html
+msgid "A cost typed on a done task has no nature: it is counted under Other."
+msgstr "Un coût saisi sur une tâche faite n'a pas de nature : il est compté dans Autre."
+
+#: templates/budget/overview.html
+msgid "By year"
+msgstr "Par année"
+
+#: templates/budget/overview.html
+msgid "Planned, committed and paid, year by year"
+msgstr "Prévu, engagé et payé, année par année"
+
+#: templates/budget/overview.html
+#, python-format
+msgid ""
+"From %(since)s to %(until)s, the upkeep that was done. Payments on projects "
+"carry no date, so they are not in this figure."
+msgstr "Du %(since)s au %(until)s, l'entretien qui a été fait. Les paiements des projets n'ont pas de date : ils ne sont pas dans ce chiffre."
+
+#: templates/budget/overview.html
+#, python-format
+msgid ""
+"%(counter)s task was done without a cost: its estimate is counted, nothing "
+"is paid."
+msgid_plural ""
+"%(counter)s tasks were done without a cost: their estimates are counted, "
+"nothing is paid."
+msgstr[0] "%(counter)s tâche a été faite sans coût : son estimation est comptée, rien n'est payé."
+msgstr[1] "%(counter)s tâches ont été faites sans coût : leurs estimations sont comptées, rien n'est payé."
+
+#: templates/budget/projects.html
+msgid "Budget by project"
+msgstr "Budget par projet"
+
+#: templates/budget/projects.html
+msgid ""
+"Each project is counted in one year, the year it starts. An abandoned "
+"project plans nothing any more: what was paid on it shows as spent without a "
+"plan."
+msgstr "Chaque projet est compté dans une seule année, celle où il commence. Un projet abandonné ne prévoit plus rien : ce qui a été payé dessus apparaît comme dépensé sans prévu."
+
+#: templates/budget/projects.html
+msgid "Planned, committed and paid, project by project"
+msgstr "Prévu, engagé et payé, projet par projet"
+
+#: templates/budget/projects.html
+msgid "Still to pay"
+msgstr "Reste à payer"
+
+#: templates/budget/projects.html templates/budget/rooms.html
+#: templates/budget/tasks.html templates/projects/project_detail.html
+msgid "Total"
+msgstr "Total"
+
+#: templates/budget/projects.html
+msgid "No project yet."
+msgstr "Aucun projet pour l'instant."
+
+#: templates/budget/rooms.html
+msgid "Budget by room"
+msgstr "Budget par pièce"
+
+#: templates/budget/rooms.html
+#, python-format
+msgid ""
+"Projects counted in %(year)s, shared evenly between their rooms, and the "
+"upkeep of %(year)s."
+msgstr "Projets comptés en %(year)s, répartis également entre leurs pièces, et entretien de %(year)s."
+
+#: templates/budget/rooms.html
+msgid "Planned, committed and paid, room by room"
+msgstr "Prévu, engagé et payé, pièce par pièce"
+
+#: templates/budget/rooms.html
+msgid ""
+"No budget yet for this year. Give a project a budget line, or a task an "
+"estimate."
+msgstr "Pas encore de budget cette année. Donnez une ligne de budget à un projet, ou une estimation à une tâche."
+
+#: templates/budget/tasks.html
+msgid "Budget of the upkeep"
+msgstr "Budget de l'entretien"
+
+#: templates/budget/tasks.html
+#, python-format
+msgid ""
+"The tasks that are in no project, with the occurrences of %(year)s: those "
+"done, and the one coming. The money of a task of a project is in the budget "
+"lines of the project."
+msgstr "Les tâches qui ne sont dans aucun projet, avec les occurrences de %(year)s : celles qui sont faites, et celle à venir. L'argent d'une tâche de projet est dans les lignes de budget du projet."
+
+#: templates/budget/tasks.html
+msgid "Estimate, cost a year and what was paid, task by task"
+msgstr "Estimation, coût par an et ce qui a été payé, tâche par tâche"
+
+#: templates/budget/tasks.html
+#, python-format
+msgid "%(counter)s done without a cost"
+msgid_plural "%(counter)s done without a cost"
+msgstr[0] "%(counter)s faite sans coût"
+msgstr[1] "%(counter)s faites sans coût"
+
+#: templates/budget/tasks.html
+msgid ""
+"The cost a year follows the repetition: a task every 3 years costs a third "
+"of its estimate a year. A task that does not repeat on the calendar has none."
+msgstr "Le coût par an suit la répétition : une tâche tous les 3 ans coûte un tiers de son estimation par an. Une tâche qui ne se répète pas sur le calendrier n'en a pas."
+
+#: templates/budget/tasks.html
+msgid ""
+"No task has an estimate or a cost yet. Give a task a labour or material "
+"budget."
+msgstr "Aucune tâche n'a encore d'estimation ni de coût. Donnez un budget de main-d'œuvre ou de matériel à une tâche."
+
+#: templates/budget/tasks.html
+#, python-format
+msgid "%(counter)s task without an estimate or a cost is not listed."
+msgid_plural "%(counter)s tasks without an estimate or a cost are not listed."
+msgstr[0] "%(counter)s tâche sans estimation ni coût n'est pas listée."
+msgstr[1] "%(counter)s tâches sans estimation ni coût ne sont pas listées."
+
 #: templates/core/about.html templates/core/more.html
 msgid "About"
 msgstr "À propos"
@@ -4097,13 +4474,6 @@ msgstr ""
 #: templates/homes/home_form.html
 msgid "Edit the home"
 msgstr "Modifier le logement"
-
-#: templates/homes/home_form.html templates/homes/home_list.html
-#: templates/projects/choose_home.html templates/rooms/choose_home.html
-#: templates/stock/choose_home.html templates/tasks/choose_home.html
-#: templates/tasks/my_home.html
-msgid "Add a home"
-msgstr "Ajouter un logement"
 
 #: templates/homes/home_form.html
 msgid ""
@@ -4757,12 +5127,6 @@ msgstr "Fait partie du projet"
 msgid "Choose the home whose projects you want to open."
 msgstr "Choisissez le logement dont vous voulez ouvrir les projets."
 
-#: templates/projects/choose_home.html templates/rooms/choose_home.html
-#: templates/stock/choose_home.html templates/tasks/choose_home.html
-#: templates/tasks/my_home.html
-msgid "You have no home to open yet."
-msgstr "Vous n'avez pas encore de logement à ouvrir."
-
 #: templates/projects/compare.html
 msgid "Compare projects"
 msgstr "Comparer les projets"
@@ -4776,20 +5140,8 @@ msgid "The projects side by side"
 msgstr "Les projets côte à côte"
 
 #: templates/projects/compare.html
-msgid "Project"
-msgstr "Projet"
-
-#: templates/projects/compare.html templates/projects/project_list.html
-msgid "Status"
-msgstr "Statut"
-
-#: templates/projects/compare.html
 msgid "Planned cost"
 msgstr "Coût prévu"
-
-#: templates/projects/compare.html templates/projects/project_detail.html
-msgid "Committed"
-msgstr "Engagé"
 
 #: templates/projects/compare.html
 msgid "Duration"
@@ -4886,31 +5238,23 @@ msgid "Line"
 msgstr "Ligne"
 
 #: templates/projects/project_detail.html
-msgid "Gap"
-msgstr "Écart"
-
-#: templates/projects/project_detail.html
 #: templates/tasks/contractor_detail.html
 msgid "Edit"
 msgstr "Modifier"
 
 #: templates/projects/project_detail.html
-msgid "Total"
-msgstr "Total"
-
-#: templates/projects/project_detail.html
 msgid ""
-"Committed is the sum of the accepted quotes. The gap is the planned "
-"amount less the more of committed and paid."
+"Committed is the sum of the accepted quotes. The gap is the planned amount "
+"less the more of committed and paid."
 msgstr ""
-"L'engagé est la somme des devis acceptés. L'écart est le montant prévu "
-"moins le plus élevé de l'engagé et du payé."
+"L'engagé est la somme des devis acceptés. L'écart est le montant prévu moins "
+"le plus élevé de l'engagé et du payé."
 
 #: templates/projects/project_detail.html
 msgid "No budget line yet. Add one to say what you plan to spend."
 msgstr ""
-"Aucune ligne de budget pour l'instant. Ajoutez-en une pour dire ce que "
-"vous prévoyez de dépenser."
+"Aucune ligne de budget pour l'instant. Ajoutez-en une pour dire ce que vous "
+"prévoyez de dépenser."
 
 #: templates/projects/project_detail.html
 msgid "Quotes"
@@ -4975,13 +5319,13 @@ msgstr "Aucune photo pour l'instant."
 #: templates/projects/project_detail.html
 #, python-format
 msgid ""
-"JPEG, PNG or WebP, up to %(size)s. HouseCairn keeps the picture and "
-"nothing else: the location and every other piece of information hidden in "
-"the file are removed."
+"JPEG, PNG or WebP, up to %(size)s. HouseCairn keeps the picture and nothing "
+"else: the location and every other piece of information hidden in the file "
+"are removed."
 msgstr ""
 "JPEG, PNG ou WebP, jusqu'à %(size)s. HouseCairn garde l'image et rien "
-"d'autre : la position et toute autre information cachée dans le fichier "
-"sont supprimées."
+"d'autre : la position et toute autre information cachée dans le fichier sont "
+"supprimées."
 
 #: templates/projects/project_detail.html
 msgid "Add the photo"
@@ -5005,16 +5349,8 @@ msgid "Budget envelope %(year)s"
 msgstr "Enveloppe budgétaire %(year)s"
 
 #: templates/projects/project_list.html
-msgid "No envelope set for this year."
-msgstr "Aucune enveloppe fixée pour cette année."
-
-#: templates/projects/project_list.html
 msgid "Planned for the projects going on"
 msgstr "Prévu pour les projets en cours"
-
-#: templates/projects/project_list.html
-msgid "Paid so far"
-msgstr "Payé jusqu'ici"
 
 #: templates/projects/project_list.html
 msgid "Left in the envelope"
@@ -5024,10 +5360,6 @@ msgstr "Reste dans l'enveloppe"
 #, python-format
 msgid "%(amount)s (over the envelope)"
 msgstr "%(amount)s (au-delà de l'enveloppe)"
-
-#: templates/projects/project_list.html
-msgid "Set the envelope"
-msgstr "Fixer l'enveloppe"
 
 #: templates/projects/project_list.html
 msgid "Search by title or goal"
@@ -5080,8 +5412,8 @@ msgid ""
 "No project yet. A project is a piece of work with an end, such as redoing "
 "the bathroom."
 msgstr ""
-"Aucun projet pour l'instant. Un projet est un chantier qui a une fin, "
-"comme refaire la salle de bain."
+"Aucun projet pour l'instant. Un projet est un chantier qui a une fin, comme "
+"refaire la salle de bain."
 
 #: templates/projects/project_list.html
 msgid "No project matches."
@@ -5090,16 +5422,15 @@ msgstr "Aucun projet ne correspond."
 #: templates/projects/quote_form.html
 #, python-format
 msgid ""
-"An image, or a PDF, text, Word, Excel or OpenDocument file, up to "
-"%(size)s."
+"An image, or a PDF, text, Word, Excel or OpenDocument file, up to %(size)s."
 msgstr ""
 "Une image, ou un fichier PDF, texte, Word, Excel ou OpenDocument, jusqu'à "
 "%(size)s."
 
 #: templates/projects/quote_form.html
 msgid ""
-"Kept for a later connection to Paperless-ngx: nothing reads these two "
-"fields yet."
+"Kept for a later connection to Paperless-ngx: nothing reads these two fields "
+"yet."
 msgstr ""
 "Gardés pour une connexion ultérieure à Paperless-ngx : rien ne lit encore "
 "ces deux champs."
@@ -5689,10 +6020,6 @@ msgstr "Mon accueil"
 msgid "All my homes"
 msgstr "Tous mes logements"
 
-#: templates/tasks/my_home.html templates/tasks/task_list.html
-msgid "Show"
-msgstr "Afficher"
-
 #: templates/tasks/my_home.html
 msgid "Nothing needs you here."
 msgstr "Rien ne vous attend ici."
@@ -5789,14 +6116,6 @@ msgstr "Comment faire"
 #: templates/tasks/task_detail.html
 msgid "Details"
 msgstr "Détails"
-
-#: templates/tasks/task_detail.html
-msgid "Labour budget"
-msgstr "Budget main d'œuvre"
-
-#: templates/tasks/task_detail.html
-msgid "Material budget"
-msgstr "Budget matériel"
 
 #: templates/tasks/task_detail.html
 msgid "Add photos or files"

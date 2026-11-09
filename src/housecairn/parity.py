@@ -139,6 +139,13 @@ PARITY: dict[str, tuple[str, ...]] = {
     "projects:file": ("api-v1:home-project-file-content",),
     "projects:file-thumbnail": ("api-v1:home-project-file-thumbnail",),
     "projects:file-delete": ("api-v1:home-project-file-detail",),
+    # The budget of a home and of all of them (docs/adr/0051). The entry page adds the homes
+    # up by currency.
+    "budget": ("api-v1:budget-combined",),
+    "budget:overview": ("api-v1:home-budget",),
+    "budget:rooms": ("api-v1:home-budget-rooms",),
+    "budget:projects": ("api-v1:home-budget-projects",),
+    "budget:tasks": ("api-v1:home-budget-tasks",),
     "notifications:index": ("api-v1:notification-channel-list", "api-v1:notification-preferences"),
     "notifications:add": ("api-v1:notification-channel-list",),
     "notifications:channel": ("api-v1:notification-channel-detail",),

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 00:04+0000\n"
+"POT-Creation-Date: 2026-11-09 06:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -30,6 +30,9 @@ msgstr "Version à venir"
 
 msgid "New"
 msgstr "Nouveautés"
+
+msgid "**Budget.** A new **Budget** tab shows the money of a home by room, by project and for the upkeep: planned, committed, paid and the gap, in words and with labelled gauges, for the envelope of a year, by nature, by year and over the last 12 months. A task now shows its cost, with what it comes to in a year when it repeats. Several homes are added up by currency, never converted. Every page downloads as CSV, and the API has the same figures (read only). Amounts are typed the same way everywhere, with the comma in French: see [Budget](guides/budget.md) and [Entering an amount](guides/amounts.md). Nothing new is stored, so there is nothing more to export or erase. *Still to pay* on a project is now worked out line by line, as the gap is."
+msgstr "**Budget.** Un nouvel onglet **Budget** montre l'argent d'un logement par pièce, par projet et pour l'entretien : prévu, engagé, payé et écart, en toutes lettres et avec des jauges libellées, pour l'enveloppe d'une année, par nature, par année et sur les 12 derniers mois. Une tâche montre maintenant son coût, avec ce que cela fait par an quand elle se répète. Plusieurs logements s'additionnent par devise, sans conversion. Chaque page se télécharge en CSV, et l'API donne les mêmes chiffres (en lecture seule). Les montants se saisissent partout de la même façon, avec la virgule en français : voir [Budget](guides/budget.md) et [Saisir un montant](guides/amounts.md). Rien de nouveau n'est stocké : il n'y a donc rien de plus à exporter ni à effacer. Le *reste à payer* d'un projet se calcule maintenant ligne par ligne, comme l'écart."
 
 msgid "**Notifications.** Each person adds their own channels (ntfy, Telegram, Signal, Matrix, Gotify, email and other Apprise services) on **More, Notifications**, tests them, and chooses when reminders come: days before the due date, time of day, quiet hours, a daily summary. Follow-ups come until the task is done, skipped or postponed, more often for a high priority. Addresses are encrypted and never shown again. Off by default: an administrator turns them on with `HOUSECAIRN_NOTIFICATIONS_ENABLED` or in the settings. See [Notifications](guides/notifications.md)."
 msgstr "**Notifications.** Chacun ajoute ses propres canaux (ntfy, Telegram, Signal, Matrix, Gotify, e-mail et les autres services d'Apprise) dans **Plus, Notifications**, les teste et choisit quand viennent les rappels : jours avant l'échéance, heure, heures calmes, résumé quotidien. Les relances continuent jusqu'à ce que la tâche soit faite, ignorée ou reportée, plus souvent pour une priorité haute. Les adresses sont chiffrées et ne sont plus jamais affichées. Désactivées par défaut : un administrateur les active par `HOUSECAIRN_NOTIFICATIONS_ENABLED` ou dans les réglages. Voir [Notifications](guides/notifications.md)."

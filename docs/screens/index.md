@@ -53,6 +53,10 @@ project-form
 project-compare
 budget-line-form
 quote-form
+budget
+budget-rooms
+budget-projects
+budget-tasks
 more
 about
 ```
