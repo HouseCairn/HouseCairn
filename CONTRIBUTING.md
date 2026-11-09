@@ -170,6 +170,9 @@ the queue; if it is removed from the queue, the timeline says why.
   format**, for example `feat: add yearly recurrence` or
   `fix(schedule): skip archived rooms`. Pull requests are merged by squash: the
   title and description become the commit message on `main`.
+- **A test added for a fix or a feature must fail on the code without the change.**
+- **The repository is public:** no secret, no personal data and no detail of a private
+  infrastructure in code, commits, issues or pull requests.
 - **Documentation in the same pull request as the code** it describes (see
   [Documentation](#documentation)).
 - **Fill in the pull request template**, including what you actually ran to

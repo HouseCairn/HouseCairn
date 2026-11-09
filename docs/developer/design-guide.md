@@ -122,6 +122,9 @@ Administration (administrators only)
 Help · About · Sign out
 ```
 
+The diagram is indicative and does not show every entry; the entries are those of
+`housecairn/core/more.py`.
+
 - The phone bar and the computer column **must** be one `nav`, laid out by CSS.
   Two navigations drift apart, and a screen reader would announce both.
 - On a computer, More **must not** have its own page: its content is in the column.
@@ -137,10 +140,9 @@ More holds four groups, in this order: **Home** (about the home being viewed),
 - An action that cannot be taken back (deleting the account, a home) **must** be at
   the bottom of its own page, never on More. A dangerous action does not sit between
   two everyday settings.
-- A new entry of More **must** be added to both layouts: the page of More on a phone and
-  the column on the left, unfolded under the sections, on a computer, in the same group
-  and with the same label. On a computer More has no page of its own, so an entry added
-  only to the page of More does not exist there.
+- An entry of More **must** be added in `housecairn/core/more.py`, in its group, with
+  its routes for the marking of the current entry, never in a template. The page of More
+  and the column both show it.
 
 ### Where a new screen goes
 
@@ -165,8 +167,10 @@ Answer these questions in order, and stop at the first yes:
      then, not a daily view.
 
    A section never gets a fifth tab: that needs a new decision record
-   ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md)). The records of the
-   list then follow question 2: each one is a page under the list.
+   ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md)). A record that
+   belongs to a parent record (the warranty of its item) keeps that parent in the tree.
+   The cross-home list of More is only an origin, and returns to it with `next`. Only
+   records with no other parent are pages under the list.
 4. **Is it a form that adds or changes a record?** It is opened from the page or the
    list it belongs to, with a `next` address (see the [return rule](#return-rule)).
 5. **Is it about the home but not daily use** (household, reports, labels,
@@ -207,8 +211,8 @@ The shared pieces of the return rule are named here so that a screen never write
 own.
 
 - `core.redirects.is_safe_redirect` checks an address. It is on `main` today.
-- **Coming (lot 2a of the navigation work):** the module `housecairn/core/navigation.py`
-  will hold the helper `url_with_next`, which adds the current path as `next` to the
+- **Coming:** in a coming change of the navigation, the module
+  `housecairn/core/navigation.py` will hold the helper `url_with_next`, which adds the current path as `next` to the
   address of a record or a form, and the tag `back_link`, which draws the back link from
   `next` or from the parent in the tree. Until that change is merged, a view that needs
   `next` uses `is_safe_redirect` directly and the pull request says so. The merge of the
@@ -222,8 +226,9 @@ it, and the other place is only an origin.
 - Without `next` (an address typed by hand, a link in an email or a calendar feed), the
   back link **must** lead to the parent in the tree, never to a previous screen
   guessed from the history. A page must not depend on a history the person cannot see.
-- The parent **must** be the same wherever the record is opened from: the list where
-  the record is created and listed first in the tree above. The screen reference page
+- The parent **must** be the same wherever the record is opened from: the parent
+  record when the record belongs to one (the warranty of its item), otherwise the list
+  of its section, as in the tree above. The screen reference page
   of the record names it.
 - With `next`, the origin wins and the label comes from its route.
 
@@ -344,8 +349,10 @@ The application already has one way to remind and one way to alert; a new screen
 them and does not add a third.
 
 - A date that someone must act on **must** be a task with a due date. The task is then
-  shown on Today (overdue, today, next 7 days), on the Calendar and in the calendar
-  feeds, and its reminders go out through the channels of the person
+  shown in the summary of My home (`/me/`, the view of Today when the person is not in a
+  home): overdue, today, and up to the person's horizon, 7 days by default
+  (the `horizon_days` preference, `Horizon.WEEK`). It is also shown on the Calendar and
+  in the calendar feeds, and its reminders go out through the channels of the person
   ([ADR 0043](../adr/0043-notifications-through-apprise.md)), with the rules of
   postponing, Done and Skip that every task has. A reminder written again for one
   screen would ignore the quiet hours and the follow-ups of the person.
@@ -439,8 +446,8 @@ holds. The review checks the same list.
 - [ ] The screen has its place in the tree, found with
   [Where a new screen goes](#where-a-new-screen-goes), and is reachable from the
   navigation.
-- [ ] A new entry of More is in both layouts, the page of More and the column on the
-  computer, in the same group.
+- [ ] A new entry of More is added in `housecairn/core/more.py`, in its group, with its
+  routes for the marking, and in no template.
 - [ ] A record reachable from two places has one parent, named in its screen reference
   page; without `next`, its back link leads to it.
 - [ ] A date to act on is a task; a date that informs is a list of the agenda digest; an event
