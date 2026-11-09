@@ -91,7 +91,8 @@ web interface: every request only sees the homes of its user
   `.../project-files/`, `.../project-tasks/` and `.../envelope/`. Only `title` is required
   to create a project; `budget`, on creation only, becomes its first budget line. Every
   amount is a string with two decimals in the currency of the home (`"1250.50"`), from
-  `"0.00"` to `"9999999999.99"`; a float, a negative amount or a third decimal is a 400.
+  `"0.00"` to `"9999999999.99"`; a JSON number (a float or an integer), a negative amount or a
+  third decimal is a 400.
   A project and a budget line give `planned`, `committed` (the sum of the quotes accepted
   on it, read-only), `paid`, `gap` and `budget_state` (`over`, `under` or `on`).
   `POST .../quotes/<id>/accept/` with a `budget_line` of the same project accepts a quote

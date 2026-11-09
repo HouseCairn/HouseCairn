@@ -52,6 +52,29 @@ from housecairn.rooms.models import Room
 from housecairn.tasks import services as task_services
 from housecairn.tasks.models import Contractor, Task
 
+
+class MoneyString(serializers.DecimalField):
+    """An amount sent as a string (`"1250.50"`), never as a JSON number a client could round."""
+
+    default_error_messages = {
+        "not_a_string": 'Send the amount as a string such as "1250.50", not as a number.'
+    }
+
+    def to_internal_value(self, data: Any) -> Decimal:
+        if not isinstance(data, str):
+            self.fail("not_a_string")
+        return super().to_internal_value(data)
+
+
+class MoneyModelSerializer(serializers.ModelSerializer[Any]):
+    """Amounts of the model are `MoneyString`, whatever the field is called."""
+
+    serializer_field_mapping = {
+        **serializers.ModelSerializer.serializer_field_mapping,
+        models.DecimalField: MoneyString,
+    }
+
+
 MONEY: dict[str, Any] = {"max_digits": 12, "decimal_places": 2, "min_value": Decimal("0")}
 # An amount is a string with two decimals, so that no client rounds it.
 MONEY_SCHEMA = {"type": "string", "format": "decimal", "example": "1250.50"}
@@ -122,7 +145,7 @@ class ProjectSerializer(AmountsMixin, serializers.ModelSerializer[Project]):
     rooms: serializers.PrimaryKeyRelatedField[Room] = serializers.PrimaryKeyRelatedField(
         many=True, required=False, queryset=Room.objects.none()
     )
-    budget = serializers.DecimalField(
+    budget = MoneyString(
         write_only=True,
         required=False,
         help_text="On creation only: becomes the first budget line, planned.",
@@ -279,7 +302,7 @@ class ProjectViewSet(
 # ---------- budget lines ----------
 
 
-class BudgetLineSerializer(AmountsMixin, serializers.ModelSerializer[BudgetLine]):
+class BudgetLineSerializer(AmountsMixin, MoneyModelSerializer):
     project = serializers.PrimaryKeyRelatedField(
         queryset=Project.objects.none(),
         help_text="The project; it cannot be changed once the line exists.",
@@ -410,7 +433,7 @@ class QuoteSerializer(serializers.ModelSerializer[Quote]):
             "is new. Empty: nobody."
         ),
     )
-    amount = serializers.DecimalField(required=False, **MONEY)
+    amount = MoneyString(required=False, **MONEY)
     budget_line: serializers.PrimaryKeyRelatedField[BudgetLine] = (
         serializers.PrimaryKeyRelatedField(
             queryset=BudgetLine.objects.none(),
@@ -824,7 +847,7 @@ class EnvelopeSerializer(serializers.Serializer[Any]):
 
 class EnvelopeWriteSerializer(serializers.Serializer[Any]):
     year = serializers.IntegerField(required=False)
-    amount = serializers.DecimalField(**MONEY)
+    amount = MoneyString(**MONEY)
 
 
 class EnvelopeView(HomeResourceMixin, APIView):

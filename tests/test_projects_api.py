@@ -264,6 +264,75 @@ class TestLinesAndQuotes:
         assert ok.status_code == 201
         assert ok.json()["planned"] == "9999999999.99"
 
+    @pytest.mark.parametrize("number", [5, 0, 0.1, 1250.5, True, 1e3])
+    def test_a_json_number_is_not_an_amount(
+        self,
+        client_of_alice: APIClient,
+        alice_home: Home,
+        living_room_project: Project,
+        quote: Quote,
+        labour_line: BudgetLine,
+        number: object,
+    ) -> None:
+        project = str(living_room_project.id)
+        sent = [
+            ("post", api("project-list", alice_home), {"title": "P", "budget": number}),
+            (
+                "post",
+                api("budget-line-list", alice_home),
+                {"project": project, "label": "L", "planned": number},
+            ),
+            (
+                "post",
+                api("budget-line-list", alice_home),
+                {"project": project, "label": "L", "paid": number},
+            ),
+            (
+                "patch",
+                api("budget-line-detail", alice_home, line_id=labour_line.id),
+                {"paid": number},
+            ),
+            ("post", api("quote-list", alice_home), {"project": project, "amount": number}),
+            ("patch", api("quote-detail", alice_home, quote_id=quote.id), {"amount": number}),
+            ("put", api("envelope", alice_home), {"year": 2026, "amount": number}),
+        ]
+        for method, address, body in sent:
+            response = getattr(client_of_alice, method)(address, body, format="json")
+            assert response.status_code == 400, (method, address, number, response.content)
+            assert "string" in response.content.decode(), (address, response.content)
+        assert not Project.objects.filter(title="P").exists()
+        assert not BudgetLine.objects.filter(label="L").exists()
+        assert Quote.objects.get(id=quote.id).amount == Decimal("620.00")
+
+    def test_a_decimal_string_is_an_amount(
+        self,
+        client_of_alice: APIClient,
+        alice_home: Home,
+        living_room_project: Project,
+        quote: Quote,
+        labour_line: BudgetLine,
+    ) -> None:
+        project = str(living_room_project.id)
+        created = client_of_alice.post(
+            api("project-list", alice_home), {"title": "P", "budget": "5000.5"}, format="json"
+        )
+        assert created.status_code == 201, created.content
+        assert created.json()["planned"] == "5000.50"
+        line = client_of_alice.patch(
+            api("budget-line-detail", alice_home, line_id=labour_line.id),
+            {"paid": "12.30"},
+            format="json",
+        )
+        assert (line.status_code, line.json()["paid"]) == (200, "12.30")
+        made = client_of_alice.post(
+            api("quote-list", alice_home), {"project": project, "amount": "1250.50"}, format="json"
+        )
+        assert (made.status_code, made.json()["amount"]) == (201, "1250.50")
+        envelope = client_of_alice.put(
+            api("envelope", alice_home), {"year": 2026, "amount": "4000"}, format="json"
+        )
+        assert envelope.status_code == 200, envelope.content
+
     def test_accepting_by_patch_needs_a_line_of_the_same_project(
         self,
         client_of_alice: APIClient,
