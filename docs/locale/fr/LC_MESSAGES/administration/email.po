@@ -132,9 +132,6 @@ msgstr "Vérifier une adresse à la main"
 msgid "An invitation to a home that the owner handed over by hand is accepted only by an account that verified the invited address. Without outgoing email nobody can verify it: an account made by `createsuperuser`, or signed up while verification was off, is stuck. The administrator of the server verifies the address from the command line:"
 msgstr "Une invitation à un logement que le propriétaire a remise à la main n'est acceptée que par un compte qui a vérifié l'adresse invitée. Sans envoi d'e-mail, personne ne peut la vérifier : un compte créé par `createsuperuser`, ou inscrit quand la vérification était désactivée, est bloqué. L'administrateur du serveur vérifie l'adresse en ligne de commande :"
 
-msgid "manage.py verify_email ivy@example.com\nmanage.py verify_email ivy@example.com --primary"
-msgstr "manage.py verify_email ivy@example.com\nmanage.py verify_email ivy@example.com --primary"
-
 msgid "The address is found whatever its case. With `--primary` it also becomes the primary address of its account, so the sign-in address. The command fails, changing nothing, when no account has the address, or when several do (it then lists their identifiers, never other addresses). Run again, it changes nothing and says so. A change is recorded in the audit log of the instance."
 msgstr "L'adresse est trouvée quelle que soit sa casse. Avec `--primary`, elle devient aussi l'adresse principale du compte, donc l'adresse de connexion. La commande échoue sans rien changer quand aucun compte n'a cette adresse, ou quand plusieurs l'ont (elle liste alors leurs identifiants, jamais d'autres adresses). Relancée, elle ne change rien et le dit. Un changement est inscrit au journal d'audit de l'instance."
 
