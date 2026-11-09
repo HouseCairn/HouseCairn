@@ -2,5 +2,5 @@
 <td>{{ amounts.planned|money:home.currency }}</td>
 <td>{{ amounts.committed|money:home.currency }}</td>
 <td>{{ amounts.paid|money:home.currency }}</td>
-<td>{% gauge amounts %}</td>
+<td>{{ amounts.engaged|money:home.currency }} {% gauge amounts %}</td>
 <td>{% budget_gap amounts home.currency %}</td>

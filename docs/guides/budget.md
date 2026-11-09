@@ -22,8 +22,8 @@ is left out of the upkeep so that nothing is counted twice.
 
 *Planned* is what you plan to spend. *Committed* is what accepted quotes promise. *Paid* is
 what was spent. *Used* is the more of committed and paid, line by line, and the *gap* is
-planned less used: **... left**, **On budget** or **Over budget by ...**. Rows also show a
-gauge with its percentage; colour is never the only signal.
+planned less used: **... left**, **On budget** or **Over budget by ...**. Rows also show the
+*Used* amount, then a gauge with its percentage; colour is never the only signal.
 
 ## Example: painting the living room
 

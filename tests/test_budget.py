@@ -131,6 +131,17 @@ class TestPaintingTheLivingRoom:
         assert "Paint the living room" in projects
         assert "170.00" in projects
 
+    def test_the_amount_used_is_shown_beside_the_gauge_and_in_the_file(
+        self, signed_in: Client, alice_home: Home, painted: Project
+    ) -> None:
+        # Used is 350 + 620 = 970 for the project: the amount, then the gauge and its percentage.
+        html = signed_in.get(url("projects", alice_home)).content.decode()
+        assert "970.00" in html
+        assert "121 % used" in html
+        file = signed_in.get(url("projects", alice_home) + "?export=csv")
+        head, row = csv_rows(file)[:2]
+        assert row[head.index("Used")] == "970.00"
+
 
 class TestToPayIsCountedLineByLine:
     def test_a_line_paid_above_its_quotes_does_not_lower_what_another_owes(self) -> None:
