@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Design guide for contributors.** The [design guide](../../../developer/design-guide.md) sets the rules every new or changed screen follows: the five sections and their tabs, where a screen goes, the return rule, actions in place, the current home and the visual system, with a checklist for review. The decision is [ADR 0053](../../../adr/0053-target-navigation-and-return-rule.md); the navigation prototype and the v2 mock-up are in the repository, under `design/`."
+msgstr "**Guide de conception pour les contributeurs.** Le [guide de conception](../../../developer/design-guide.md) fixe les règles que suit tout écran nouveau ou modifié : les cinq sections et leurs onglets, où ranger un écran, la règle de retour, les actions sur place, le logement courant et le système visuel, avec une liste de contrôle pour la revue. La décision est l'[ADR 0053](../../../adr/0053-target-navigation-and-return-rule.md) ; le prototype de navigation et la maquette v2 sont dans le dépôt, sous `design/`."
+
