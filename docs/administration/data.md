@@ -16,7 +16,7 @@ The archive is a zip:
 | Part | Content |
 | --- | --- |
 | `export.json` | The data, as JSON (below). |
-| `files/` | The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`, and the photos and quote files of projects, under `files/projects/`. |
+| `files/` | The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`, the photos and quote files of projects, under `files/projects/`, and the photos of the reports, under `files/reports/`. |
 | `README.txt` | A reminder of the format. |
 
 `export.json` is versioned. Version `1` has these keys:
@@ -46,6 +46,7 @@ The archive is a zip:
 | `contractors` | `id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`. |
 | `calendar_feeds` | `id`, `created_at`, `regenerated_at` of each [calendar feed](../guides/calendar.md) of the home. Never the address or its secret, which is not kept; the combined feed of a person belongs to the person, not to a home. |
 | `labels` | `id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing. |
+| `reports` | `id`, `title`, `status`, `place`, `room`, `item` or `stock_item`, `task`, `reporter` (the e-mail address that `members` already holds), `created_at`, `closed_at`, and `file`, the path of the photo in the archive (`files/reports/<id>.<extension>`, or `null`). |
 | `files` | `path` and `size` of each file in `files/`. |
 
 Photos and the images attached to tasks are exported as they are stored, already
@@ -66,11 +67,11 @@ home is revoked. **There is no grace period and no way back**: export first.
 The audit log of the instance records that a home was deleted, without its
 name.
 
-The photos, the labels of stock items, the photos and quote files of projects and the files attached to tasks are erased from the disk with the home
+The photos, the labels of stock items, the photos and quote files of projects, the photos of reports and the files attached to tasks are erased from the disk with the home
 (photos deleted one by one included). If the disk refuses (permissions, a full or
 read-only volume), the home is still deleted and the error is logged by
 `housecairn.files` with the path of the directory (`photos/<home id>`,
-`attachments/<home id>`, `stock/<home id>` or `projects/<home id>`): remove that directory by hand.
+`attachments/<home id>`, `stock/<home id>`, `projects/<home id>` or `reports/<home id>`): remove that directory by hand.
 
 ## Erasure of an account
 

@@ -46,6 +46,8 @@ urlpatterns = [
     # QR labels of a home (docs/adr/0047). A sticker opens /l/<code>/, which carries
     # no home: signed in or not, the answer never says whether the code exists.
     path("h/<uuid:home_id>/", include("housecairn.labels.urls")),
+    # Problem reports of a home (docs/adr/0047): every member reports, a writer follows up.
+    path("h/<uuid:home_id>/", include("housecairn.reports.urls")),
     path("l/<str:code>/", label_views.OpenView.as_view(), name="label-open"),
     # Projects, budget lines and quotes of a home (docs/adr/0050); /projects/ is the entry.
     path("h/<uuid:home_id>/", include("housecairn.projects.urls")),

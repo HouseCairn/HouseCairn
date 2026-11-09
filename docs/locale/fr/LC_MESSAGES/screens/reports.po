@@ -1,0 +1,35 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Reports"
+msgstr "Signalements"
+
+msgid "The problems reported in a home, at `/h/<home id>/reports/`, opened from the **Reports** row of the [home](home.md) page and from the line on [Today](today.md)."
+msgstr "Les problèmes signalés dans un logement, sur `/h/<id du logement>/reports/`, ouverts depuis la ligne **Signalements** de la page du [logement](home.md) et depuis la ligne d'[Aujourd'hui](today.md)."
+
+msgid "For members who may write, the page lists every report of the home, the newest first, and the filters **Open** (the default), **Closed** (resolved or closed without action), **All** and **Mine**. A report that was made into a task is in **All**, not in **Open**. Each row shows what is wrong, where, its state, its date and who reported it (by display name, never by e-mail address). A row opens the [report](report.md)."
+msgstr "Pour les membres qui peuvent écrire, la page liste tous les signalements du logement, le plus récent d'abord, avec les filtres **Ouvert** (par défaut), **Classés** (résolus ou classés sans suite), **Tous** et **Les miens**. Un signalement transformé en tâche est dans **Tous**, pas dans **Ouvert**. Chaque ligne montre ce qui ne va pas, où, son état, sa date et qui l'a signalé (par nom d'affichage, jamais par adresse e-mail). Une ligne ouvre le [signalement](report.md)."
+
+msgid "A read-only member opens the same address as **My reports**: they see the reports they made and no others."
+msgstr "Un membre en lecture seule ouvre la même adresse sous le titre **Mes signalements** : il voit les signalements qu'il a faits et aucun autre."
+
+msgid "**Report a problem** opens the [form](report-form.md); every member has it, read-only members included."
+msgstr "**Signaler un problème** ouvre le [formulaire](report-form.md) ; tous les membres l'ont, lecteurs compris."
+

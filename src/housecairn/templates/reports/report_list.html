@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n reports_extras %}
+{% block head_title %}{% translate "Reports" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  <h1>{% if can_write %}{% translate "Reports" %}{% else %}{% translate "My reports" %}{% endif %}</h1>
+  {% if filters %}
+    <nav class="task-pills" aria-label="{% translate 'Filter the reports' %}">
+      {% for key, title in filters %}<a class="pill {% if key == shown %}pill-info{% else %}pill-ghost{% endif %}" href="?show={{ key }}"{% if key == shown %} aria-current="page"{% endif %}>{{ title }}</a>{% endfor %}
+      <a class="pill {% if shown == 'mine' %}pill-info{% else %}pill-ghost{% endif %}" href="?show=mine"{% if shown == 'mine' %} aria-current="page"{% endif %}>{% translate "Mine" %}</a>
+    </nav>
+  {% endif %}
+  {% if page %}
+    <ul class="card-list">
+      {% for report in page %}
+        <li>
+          <a class="row" href="{% url 'reports:detail' home_id=home.id report_id=report.id %}">
+            <span class="row-body">
+              <span class="row-title">{{ report.title }}</span>
+              <span class="row-text">{% if report.place %}{{ report.place }} · {% endif %}{{ report.get_status_display }} · {{ report.created_at|date:"SHORT_DATE_FORMAT" }}{% if can_write %} · {{ report.reporter|person_name }}{% endif %}</span>
+            </span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+    {% if page.has_other_pages %}
+      <nav class="button-row" aria-label="{% translate 'Pages' %}">
+        {% if page.has_previous %}<a class="button button-secondary button-small" href="?show={{ shown }}&amp;page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+        {% if page.has_next %}<a class="button button-secondary button-small" href="?show={{ shown }}&amp;page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="empty">{% if shown == "mine" or not can_write %}{% translate "You have not reported anything." %}{% else %}{% translate "Nothing to deal with." %}{% endif %}</p>
+  {% endif %}
+  <a class="button button-block" href="{% url 'reports:create' home_id=home.id %}">{% translate "Report a problem" %}</a>
+{% endblock content %}

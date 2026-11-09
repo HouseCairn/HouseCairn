@@ -20,6 +20,7 @@ from housecairn.instance.api import (
 )
 from housecairn.labels import api as labels_api
 from housecairn.projects import api as projects_api
+from housecairn.reports import api as reports_api
 from housecairn.rooms import api as rooms_api
 from housecairn.stock import api as stock_api
 from housecairn.tasks import api as tasks_api
@@ -50,6 +51,7 @@ for prefix, viewset, basename in (
     ("movements", stock_api.MovementViewSet, "home-movement"),
     ("attachments", tasks_api.AttachmentViewSet, "home-attachment"),
     ("labels", labels_api.LabelViewSet, "home-label"),
+    ("reports", reports_api.ReportViewSet, "home-report"),
     ("projects", projects_api.ProjectViewSet, "home-project"),
     ("budget-lines", projects_api.BudgetLineViewSet, "home-budget-line"),
     ("quotes", projects_api.QuoteViewSet, "home-quote"),

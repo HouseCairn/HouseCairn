@@ -585,7 +585,7 @@ class TestScreens:
                 self.url("list", alice_home),
             )
 
-    def test_the_page_of_an_object_offers_its_label(
+    def test_the_page_of_an_object_offers_its_label_and_the_report_button(
         self,
         alice: User,
         signed_in: Client,
@@ -599,11 +599,14 @@ class TestScreens:
         )
         body = signed_in.get(address).content.decode()
         assert "Make a QR label" in body
+        assert "Report a problem" in body
         label = make(alice, alice_home, owner_item)
         body = signed_in.get(address).content.decode()
         assert self.url("detail", alice_home, label_id=label.id) in body
+        assert f"?item={owner_item.id}" in body
         client.force_login(reader)
         body = client.get(address).content.decode()
+        assert "Report a problem" in body
         assert "Make a QR label" not in body
 
     def test_the_pages_of_a_room_and_a_stock_item_offer_them_too(
@@ -615,7 +618,9 @@ class TestScreens:
         stock = signed_in.get(
             reverse("stock:detail", kwargs={"home_id": alice_home.id, "article_id": article.id})
         ).content.decode()
+        assert "?room=" in room
         assert "Make a QR label" in room
+        assert "?article=" in stock
         assert "Make a QR label" in stock
 
 

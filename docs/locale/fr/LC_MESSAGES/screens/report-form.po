@@ -1,0 +1,38 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Report a problem"
+msgstr "Signaler un problème"
+
+msgid "The form at `/h/<home id>/reports/new/`. Every member of the home may use it, a read-only one included; it is the only thing a read-only member writes."
+msgstr "Le formulaire sur `/h/<id du logement>/reports/new/`. Tout membre du logement peut l'utiliser, un membre en lecture seule compris ; c'est la seule chose qu'un membre en lecture seule écrit."
+
+msgid "**What is wrong?** is the only required field: one line, 200 characters at most."
+msgstr "**Qu'est-ce qui ne va pas ?** est le seul champ obligatoire : une ligne, 200 caractères au plus."
+
+msgid "**Where?** is optional: a room, an item or a stock item of the home. Coming from the page of a room, an item or a stock item, or from a QR label, it is already filled in."
+msgstr "**Où ?** est facultatif : une pièce, un élément ou un article du logement. Quand on vient de la page d'une pièce, d'un élément ou d'un article, ou d'une étiquette QR, il est déjà rempli."
+
+msgid "**Photo** is optional: a JPEG, PNG or WebP image, up to the size limit of the instance. The file is checked by its content, not by its name; the location and every other piece of information hidden in it are removed; it counts in the storage of the home."
+msgstr "**Photo** est facultative : une image JPEG, PNG ou WebP, dans la limite de taille de l'instance. Le fichier est vérifié par son contenu, pas par son nom ; la localisation et toute autre information cachée dedans sont supprimées ; il compte dans le stockage du logement."
+
+msgid "**Send the report** shows the report and thanks you. A person may have 20 reports waiting at the same time; close or wait for some before sending more. The members who may write and have a notification channel are told (see the [guide](../guides/qr-labels.md))."
+msgstr "**Envoyer le signalement** affiche le signalement et vous remercie. Une personne peut avoir 20 signalements en attente en même temps ; attendez que certains soient traités avant d'en envoyer d'autres. Les membres qui peuvent écrire et ont un canal de notification sont prévenus (voir le [guide](../guides/qr-labels.md))."
+
