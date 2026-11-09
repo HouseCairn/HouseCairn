@@ -5,7 +5,7 @@ make them yours.
 
 ## Start the day on My home
 
-**Home** in the navigation opens [My home](../screens/my-home.md): what is assigned
+**Today** in the navigation opens [My home](../screens/my-home.md): what is assigned
 to you, what is late in the home, what nobody has taken yet, and the warranties that
 end soon. With several homes, pick one or look at them all together.
 

@@ -21,8 +21,8 @@ msgstr ""
 msgid "Calendar"
 msgstr "Calendrier"
 
-msgid "The tasks of your homes by week, month or year, at `/calendar/` (**Tasks**, then **Calendar**). It shows what is planned, done, postponed and skipped, with the status written in words, and what is still to come for a task that repeats."
-msgstr "Les tâches de vos logements par semaine, par mois ou par année, sur `/calendar/` (**Tâches**, puis **Calendrier**). Il montre ce qui est prévu, fait, reporté et ignoré, avec le statut écrit en toutes lettres, et ce qui reste à venir pour une tâche récurrente."
+msgid "The tasks of your homes by week, month or year, at `/calendar/` (the **Calendar** tab of **Today**). It shows what is planned, done, postponed and skipped, with the status written in words, and what is still to come for a task that repeats."
+msgstr "Les tâches de vos logements par semaine, par mois ou par année, sur `/calendar/` (l'onglet **Calendrier** d'**Aujourd'hui**). Il montre ce qui est prévu, fait, reporté et ignoré, avec le statut écrit en toutes lettres, et ce qui reste à venir pour une tâche récurrente."
 
 msgid "**Week, Month, Year**: the three views switch from the bar under the title. The week lists each day with its tasks; the month adds a grid in which every day links to its week and says how many tasks it holds; the year counts the tasks of each month by status and links to it."
 msgstr "**Semaine, Mois, Année** : les trois vues se changent depuis la barre sous le titre. La semaine liste chaque jour avec ses tâches ; le mois ajoute une grille où chaque jour renvoie vers sa semaine et dit combien de tâches il contient ; l'année compte les tâches de chaque mois par statut et renvoie vers lui."

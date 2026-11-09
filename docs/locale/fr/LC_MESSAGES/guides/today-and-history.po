@@ -27,8 +27,8 @@ msgstr "Trois écrans pour regarder vos tâches sans rien configurer, et un rég
 msgid "Start the day on My home"
 msgstr "Commencer la journée sur Mon accueil"
 
-msgid "**Home** in the navigation opens [My home](../screens/my-home.md): what is assigned to you, what is late in the home, what nobody has taken yet, and the warranties that end soon. With several homes, pick one or look at them all together."
-msgstr "**Accueil** dans la navigation ouvre [Mon accueil](../screens/my-home.md) : ce qui vous est confié, ce qui est en retard dans le logement, ce que personne n'a encore pris, et les garanties qui se terminent bientôt. Avec plusieurs logements, choisissez-en un ou regardez-les tous ensemble."
+msgid "**Today** in the navigation opens [My home](../screens/my-home.md): what is assigned to you, what is late in the home, what nobody has taken yet, and the warranties that end soon. With several homes, pick one or look at them all together."
+msgstr "**Aujourd'hui** dans la navigation ouvre [Mon accueil](../screens/my-home.md) : ce qui vous est confié, ce qui est en retard dans le logement, ce que personne n'a encore pris, et les garanties qui se terminent bientôt. Avec plusieurs logements, choisissez-en un ou regardez-les tous ensemble."
 
 msgid "Do the day on Today"
 msgstr "Faire la journée sur Aujourd'hui"

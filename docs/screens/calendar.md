@@ -1,6 +1,6 @@
 # Calendar
 
-The tasks of your homes by week, month or year, at `/calendar/` (**Tasks**, then **Calendar**).
+The tasks of your homes by week, month or year, at `/calendar/` (the **Calendar** tab of **Today**).
 It shows what is planned, done, postponed and skipped, with the status written in words, and
 what is still to come for a task that repeats.
 

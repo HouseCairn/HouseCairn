@@ -1,7 +1,7 @@
 # My home
 
-What concerns you, at `/me/`; **Home** in the navigation opens it once you are
-signed in. With several homes, the selector at the top chooses one, or **All my
+What concerns you, at `/me/`; **Today** in the navigation opens it once you are
+signed in, from a page that is not about one home. With several homes, the selector at the top chooses one, or **All my
 homes** to see them together.
 
 For each home, under its name (with links to [Today](today.md), the

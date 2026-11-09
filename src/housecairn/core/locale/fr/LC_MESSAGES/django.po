@@ -323,11 +323,5 @@ msgstr "Aide sur cette page"
 msgid "Main navigation"
 msgstr "Navigation principale"
 
-msgid "Homes"
-msgstr "Logements"
-
 msgid "Rooms"
 msgstr "Pièces"
-
-msgid "Stock"
-msgstr "Matériel"

@@ -1,8 +1,7 @@
 # Projects
 
-The projects of a home, at `/h/<home id>/projects/`. **Tasks** in the navigation opens the
-tasks; **Projects** is one of its tabs. `/projects/` first asks which home when you belong
-to several.
+The projects of a home, at `/h/<home id>/projects/`. **Projects** in the navigation opens
+it; `/projects/` first asks which home when you belong to several.
 
 A project is a piece of work with an end, such as redoing the bathroom. The list groups the
 projects by status, the ones going on first (in progress, planned, idea), then the finished

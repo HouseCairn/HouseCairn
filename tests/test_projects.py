@@ -1175,11 +1175,11 @@ class TestAccess:
             with pytest.raises(PermissionDenied):
                 check()
 
-    def test_the_navigation_keeps_the_tasks_tab_marked(
-        self, signed_in: Client, alice_home: Home
-    ) -> None:
+    def test_the_navigation_marks_projects(self, signed_in: Client, alice_home: Home) -> None:
         html = signed_in.get(url("list", alice_home)).content.decode()
-        assert 'aria-current="page">Projects</a>' in html
+        assert re.search(
+            r'class="nav-link"[^>]*aria-current="page">\s*<svg.*?</svg>\s*Projects', html, re.S
+        )
 
 
 class TestWeb:

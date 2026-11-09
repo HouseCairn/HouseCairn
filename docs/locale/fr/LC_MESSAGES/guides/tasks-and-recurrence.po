@@ -27,8 +27,8 @@ msgstr "Une tâche est quelque chose à faire dans le logement : vérifier le d�
 msgid "Add a task"
 msgstr "Ajouter une tâche"
 
-msgid "**Tasks** in the navigation, then **Add a task**. From the page of a room or of an item, **Add a task** already knows where the task belongs. Everything else is in the sections of the [form](../screens/task-form.md), opened only when needed. Photos and files (a photo of the label, the manual in PDF) can be added right away."
-msgstr "**Tâches** dans la navigation, puis **Ajouter une tâche**. Depuis la page d'une pièce ou d'un élément, **Ajouter une tâche** sait déjà où la tâche se range. Le reste est dans les sections du [formulaire](../screens/task-form.md), qui ne s'ouvrent qu'au besoin. Des photos et des fichiers (la photo de l'étiquette, la notice en PDF) peuvent être ajoutés tout de suite."
+msgid "**Today** in the navigation, then **Add a task**. From the page of a room or of an item, **Add a task** already knows where the task belongs. Everything else is in the sections of the [form](../screens/task-form.md), opened only when needed. Photos and files (a photo of the label, the manual in PDF) can be added right away."
+msgstr "**Aujourd'hui** dans la navigation, puis **Ajouter une tâche**. Depuis la page d'une pièce ou d'un élément, **Ajouter une tâche** sait déjà où la tâche se range. Le reste est dans les sections du [formulaire](../screens/task-form.md), qui ne s'ouvrent qu'au besoin. Des photos et des fichiers (la photo de l'étiquette, la notice en PDF) peuvent être ajoutés tout de suite."
 
 msgid "Done, in one tap"
 msgstr "Fait, en un geste"

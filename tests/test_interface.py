@@ -243,10 +243,11 @@ class TestScreens:
     @pytest.mark.django_db
     def test_current_navigation_entry_is_marked(self, client: Client, alice: object) -> None:
         client.force_login(alice)  # type: ignore[arg-type]
-        for name, label in (("index", "Home"), ("homes:list", "Homes"), ("more", "More")):
+        for name, label in (("index", "Today"), ("homes:list", "More"), ("more", "More")):
             html = _page(client, name).text
-            assert html.count('aria-current="page"') == 1, name
-            current = html.split('aria-current="page"')[1].split("</a>")[0]
+            bar = html.split('<div class="nav-drawer">')[0]
+            assert bar.count('aria-current="page"') == 1, name
+            current = bar.split('aria-current="page"')[1].split("</a>")[0]
             assert label in current, name
 
     def test_navigation_section_of_each_kind_of_page(self) -> None:
@@ -255,8 +256,8 @@ class TestScreens:
             request.resolver_match = resolve(path)
             return nav_section(request)
 
-        assert section("/") == "home"
-        assert section(reverse("homes:list")) == "homes"
+        assert section("/") == "today"
+        assert section(reverse("homes:list")) == "more"
         assert section(reverse("more")) == "more"
         assert section(reverse("mfa_index")) == "more"
         assert nav_section(RequestFactory().get("/nope")) == ""

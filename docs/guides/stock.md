@@ -6,7 +6,7 @@ This guide shows how to keep track of them. Every field is optional except the n
 
 ## Add a stock item
 
-Open **Stock** in the navigation, then **Add a stock item**. Give it a name and, if
+Open **Rooms** in the navigation, then the **Stock** tab, then **Add a stock item**. Give it a name and, if
 you have them at hand, the manufacturer reference, the dimensions, the unit and where
 it is kept. A photo of the label saves typing the reference now and finding it again
 later: HouseCairn keeps the picture and nothing else (the location and every other
