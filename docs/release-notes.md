@@ -8,6 +8,9 @@ with it on the project's
 
 ### New
 
+```{release-fragments} new
+```
+
 - **Calendar and calendar feeds.** See your tasks by week, month or year, with filters by home,
   room, person and priority, **Done** and **Undo** in place, and the next dates of a task that
   repeats marked as forecast. **Feeds** gives a secret address per home, or for all your homes,
@@ -145,6 +148,9 @@ with it on the project's
 
 ### Fixed
 
+```{release-fragments} fixed
+```
+
 - **Display preferences in the API.** Changing one preference no longer fails because the
   stored language is one the instance no longer ships: only the fields sent are checked.
 - **Hidden text in names and titles.** Tag characters that spell a regional flag stay
@@ -160,6 +166,9 @@ with it on the project's
   and an address that starts with `//` or `\`, and falls back to the default page.
 
 ### Upgrade notes
+
+```{release-fragments} upgrade
+```
 
 - **The paint left in stock and the unit of a stock item change shape.** The field
   `paint_stock` of a room is replaced by `paint_article` (a stock item of the home); the

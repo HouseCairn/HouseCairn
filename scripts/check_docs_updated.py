@@ -12,6 +12,13 @@ which changes no screen and no setting.
 Pull requests that change nothing user-facing pass: tests, workflows, scripts,
 dependencies, documentation itself.
 
+The release notes are written in fragments (docs/release-notes/unreleased/README.md):
+a pull request adds its own file and never edits the release notes page nor its
+catalog (`COMMON_NOTES`), on which two pull requests would conflict. Only the fold
+of the fragments at a release (scripts/release_notes.py), which removes them, edits
+these files; a correction of a published entry needs the `release-notes-edit` label.
+The rule applies once the base branch has the fragments directory.
+
 Usage: PR_LABELS=<comma-separated labels> PR_AUTHOR=<login> \
        python scripts/check_docs_updated.py <base-sha> <head-sha>
 """
@@ -27,6 +34,10 @@ LABEL = "no-docs-needed"
 # only this one account: no other bot is exempted.
 EXEMPT_AUTHOR = "dependabot[bot]"
 DOCS_PREFIX = "docs/"
+COMMON_NOTES = ("docs/release-notes.md", "docs/locale/fr/LC_MESSAGES/release-notes.po")
+FRAGMENTS_DIR = "docs/release-notes/unreleased/"
+FRAGMENTS_README = FRAGMENTS_DIR + "README.md"
+NOTES_LABEL = "release-notes-edit"
 # Files whose change is visible to users or administrators. A module may carry a
 # prefix (`api_urls.py`, `contractor_views.py`), and forms, views and API modules
 # may be split into packages (`tasks/forms/`). Static files are what the browser
@@ -55,30 +66,61 @@ def documented(paths: Iterable[str]) -> bool:
     return any(path.startswith(DOCS_PREFIX) for path in paths)
 
 
-def problems(paths: list[str], labels: Iterable[str], author: str = "") -> list[str]:
-    """Why the pull request fails the rule, or an empty list."""
-    concerned = user_facing(paths)
+def notes_problems(
+    paths: Iterable[str], deleted: Iterable[str], labels: set[str], fragments_on_base: bool
+) -> list[str]:
+    """A pull request that edits the shared release notes instead of adding a fragment."""
+    edited = sorted(path for path in paths if path in COMMON_NOTES)
+    folded = any(
+        path.startswith(FRAGMENTS_DIR) and path.endswith(".md") and path != FRAGMENTS_README
+        for path in deleted
+    )
+    if not fragments_on_base or not edited or folded or NOTES_LABEL in labels:
+        return []
+    return [
+        f"The pull request edits {', '.join(edited)}. Add a release notes fragment instead, "
+        f"`{FRAGMENTS_DIR}<category>/<topic>.md` with its own catalog (see {FRAGMENTS_README}): "
+        f"two pull requests then never conflict. To correct a published entry, ask the "
+        f"maintainer to add the `{NOTES_LABEL}` label."
+    ]
+
+
+def problems(
+    paths: list[str],
+    labels: Iterable[str],
+    author: str = "",
+    deleted: Iterable[str] = (),
+    fragments_on_base: bool = True,
+) -> list[str]:
+    """Why the pull request fails the rules, or an empty list."""
     if author == EXEMPT_AUTHOR:
         return []
-    if not concerned or documented(paths) or LABEL in {label.strip() for label in labels}:
-        return []
+    labels = {label.strip() for label in labels}
+    found = notes_problems(paths, deleted, labels, fragments_on_base)
+    concerned = user_facing(paths)
+    if not concerned or documented(paths) or LABEL in labels:
+        return found
     shown = ", ".join(concerned[:5]) + (", ..." if len(concerned) > 5 else "")
     return [
         f"The pull request changes what users see or configure ({shown}) but nothing "
         f"under {DOCS_PREFIX}. Update the documentation in this pull request; if no page is "
-        f"concerned, ask the maintainer to add the `{LABEL}` label."
+        f"concerned, ask the maintainer to add the `{LABEL}` label.",
+        *found,
     ]
 
 
-def changed_paths(base: str, head: str) -> list[str]:
+def changed_paths(base: str, head: str, diff_filter: str | None = None) -> list[str]:
     """Paths changed by the pull request: its head against the merge base with the base."""
-    result = subprocess.run(  # noqa: S603
-        ["git", "diff", "--name-only", "-z", f"{base}...{head}"],  # noqa: S607
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    command = ["git", "diff", "--name-only", "-z", f"{base}...{head}"]
+    if diff_filter:
+        command.append(f"--diff-filter={diff_filter}")
+    result = subprocess.run(command, check=True, capture_output=True, text=True)  # noqa: S603
     return [path for path in result.stdout.split("\0") if path]
+
+
+def exists_on(ref: str, path: str) -> bool:
+    command = ["git", "cat-file", "-e", f"{ref}:{path}"]
+    return subprocess.run(command, check=False, capture_output=True).returncode == 0  # noqa: S603
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -89,7 +131,8 @@ def main(argv: list[str] | None = None) -> int:
     paths = changed_paths(args[0], args[1])
     labels = os.environ.get("PR_LABELS", "").split(",")
     author = os.environ.get("PR_AUTHOR", "")
-    found = problems(paths, labels, author)
+    deleted = changed_paths(args[0], args[1], diff_filter="D")
+    found = problems(paths, labels, author, deleted, exists_on(args[0], FRAGMENTS_README))
     if found:
         sys.stderr.writelines(f"{line}\n" for line in found)
         return 1

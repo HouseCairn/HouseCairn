@@ -1,0 +1,67 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Revoke selected tokens"
+msgstr "Révoquer les jetons sélectionnés"
+
+msgid "API tokens"
+msgstr "Jetons d'API"
+
+msgid "Invalid token header."
+msgstr "En-tête de jeton invalide."
+
+msgid "Invalid, expired or revoked token."
+msgstr "Jeton invalide, expiré ou révoqué."
+
+msgid "Read"
+msgstr "Lecture"
+
+msgid "Write"
+msgstr "Écriture"
+
+msgid "Post events"
+msgstr "Envoi d'événements"
+
+msgid "name"
+msgstr "nom"
+
+msgid "prefix"
+msgstr "préfixe"
+
+msgid "scopes"
+msgstr "portées"
+
+msgid "homes"
+msgstr "logements"
+
+msgid "expires at"
+msgstr "expire le"
+
+msgid "revoked at"
+msgstr "révoqué le"
+
+msgid "last used at"
+msgstr "dernière utilisation le"
+
+msgid "API token"
+msgstr "jeton d'API"
+
+msgid "This token does not have the scope this request needs."
+msgstr "Ce jeton n'a pas la portée nécessaire à cette requête."
+
+msgid "A token needs at least one scope."
+msgstr "Un jeton a besoin d'au moins une portée."
+
+msgid "A token is bound to at least one home."
+msgstr "Un jeton est lié à au moins un logement."

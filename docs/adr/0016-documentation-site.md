@@ -391,3 +391,21 @@ out. As a required check, it held up unrelated pull requests.
 
 The sections "Screenshots" and "Workflows" above and the screenshots of
 `check_docs_design.py` describe the state before this amendment.
+
+**Amendment, 2026-11-09: release notes in fragments.** Every pull request added
+its entry to `release-notes.md` and to `release-notes.po`, so two pull requests
+always conflicted on both. Each pull request now adds its own fragment,
+`docs/release-notes/unreleased/<category>/<topic>.md` (`new`, `fixed` or
+`upgrade`), a page of its own, hidden (`orphan`, `nosearch`), with its own
+catalog, so the French build translates it like any page. The
+`release-fragments` directive of the extension stands under each heading of the
+Unreleased section and, once the pages are read, receives the fragments of its
+category, translated, with their links resolved from the release notes page;
+for the `gettext` builder it stays empty, so that the strings of a fragment are
+only in its own catalog. `scripts/release_notes.py fold` writes the fragments
+into the page when a version is published, with their translations into its
+catalog, and removes them. `scripts/check_docs_updated.py` fails a pull request
+that edits the release notes page or its catalog without folding fragments,
+unless the maintainer adds the `release-notes-edit` label. A fragment published
+alone as a hidden page was preferred to an assembly by `build_docs.py`: the
+strings of an assembled page would all go to one catalog again.

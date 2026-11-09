@@ -5,7 +5,13 @@ from pathlib import Path
 
 import pytest
 
-from scripts import build_docs, check_docs_design, check_docs_site, check_docs_updated
+from scripts import (
+    build_docs,
+    check_docs_design,
+    check_docs_site,
+    check_docs_updated,
+    release_notes,
+)
 
 # check_docs_updated: the documentation changes with the code
 
@@ -46,7 +52,7 @@ def test_user_facing_files_need_docs(path: str) -> None:
         # Tests, scripts, models and services are not user-facing by themselves.
         ["tests/test_homes.py", "scripts/check_signoff.py"],
         ["src/housecairn/homes/services.py", "src/housecairn/homes/models.py"],
-        ["src/housecairn/locale/fr/LC_MESSAGES/django.po"],
+        ["src/housecairn/tasks/locale/fr/LC_MESSAGES/django.po"],
         ["docs/screens/home.md"],
         [],
     ],
@@ -84,7 +90,9 @@ def test_no_other_author_is_exempt(author: str) -> None:
 def test_main_reads_the_author(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    monkeypatch.setattr(check_docs_updated, "changed_paths", lambda base, head: ["compose.yaml"])
+    monkeypatch.setattr(
+        check_docs_updated, "changed_paths", lambda base, head, diff_filter=None: ["compose.yaml"]
+    )
     monkeypatch.setenv("PR_LABELS", "")
     monkeypatch.setenv("PR_AUTHOR", "dependabot[bot]")
     assert check_docs_updated.main(["base", "head"]) == 0
@@ -99,7 +107,9 @@ def test_main_reads_labels_and_diff(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(
-        check_docs_updated, "changed_paths", lambda base, head: ["src/housecairn/homes/views.py"]
+        check_docs_updated,
+        "changed_paths",
+        lambda base, head, diff_filter=None: ["src/housecairn/homes/views.py"],
     )
     monkeypatch.setenv("PR_LABELS", "")
     assert check_docs_updated.main(["base", "head"]) == 1
@@ -370,3 +380,118 @@ def test_catalogs_lose_their_creation_date(tmp_path: Path, monkeypatch: pytest.M
     monkeypatch.setattr(build_docs, "LOCALE_DIR", tmp_path)
     build_docs.drop_creation_dates("fr")
     assert catalog.read_text(encoding="utf-8") == header + '\nmsgid "A"\nmsgstr "B"\n'
+
+
+# Release notes in fragments (scripts/release_notes.py, docs/release-notes/unreleased/).
+
+NOTES = "docs/release-notes.md"
+NOTES_PO = "docs/locale/fr/LC_MESSAGES/release-notes.po"
+FRAGMENT = "docs/release-notes/unreleased/new/inspiration-links.md"
+
+
+@pytest.mark.parametrize("edited", [[NOTES], [NOTES_PO], [NOTES, NOTES_PO, "docs/index.md"]])
+def test_a_pull_request_adds_a_fragment_instead_of_editing_the_notes(edited: list[str]) -> None:
+    found = check_docs_updated.problems(edited, [])
+    assert len(found) == 1
+    assert "Add a release notes fragment instead" in found[0]
+    # A fragment, with its catalog, passes.
+    fragment = [FRAGMENT, FRAGMENT.replace("docs/", "docs/locale/fr/LC_MESSAGES/")[:-3] + ".po"]
+    assert check_docs_updated.problems(fragment, []) == []
+
+
+def test_the_fold_a_label_or_a_base_without_fragments_may_edit_the_notes() -> None:
+    edited = [NOTES, NOTES_PO]
+    assert check_docs_updated.problems([*edited, FRAGMENT], [], deleted=[FRAGMENT]) == []
+    readme = "docs/release-notes/unreleased/README.md"
+    assert check_docs_updated.problems([*edited, readme], [], deleted=[readme]) != []
+    assert check_docs_updated.problems(edited, ["release-notes-edit"]) == []
+    assert check_docs_updated.problems(edited, [], fragments_on_base=False) == []
+    assert check_docs_updated.problems(edited, [], "dependabot[bot]") == []
+    # Both rules report: user-facing change without docs, and the edited notes.
+    both = check_docs_updated.problems(["compose.yaml", NOTES], [])
+    assert len(both) == 1  # docs/release-notes.md is under docs/: only the notes rule
+    assert check_docs_updated.problems(["compose.yaml"], [], deleted=[FRAGMENT]) != []
+
+
+NOTES_PAGE = """\
+# Release notes
+
+## Unreleased
+
+### New
+
+```{release-fragments} new
+```
+
+- **Older.** An entry.
+
+### Fixed
+
+```{release-fragments} fixed
+```
+
+### Upgrade notes
+
+```{release-fragments} upgrade
+```
+
+## 0.0.1
+
+### New
+
+- **First.** An entry.
+"""
+
+
+def test_the_fold_writes_the_fragments_where_their_directive_was() -> None:
+    texts = {"new": ["- **A.** One.\n\n", "- **B.** Two.\n\n"], "fixed": ["- **C.** Three.\n\n"]}
+    page = release_notes.folded(NOTES_PAGE, texts)
+    assert page.index("**A.**") < page.index("**B.**") < page.index("{release-fragments} new")
+    assert page.index("{release-fragments} new") < page.index("**Older.**")
+    assert page.index("**C.**") < page.index("{release-fragments} fixed")
+    assert page.endswith("- **First.** An entry.\n")
+    # With a version: the section takes its name, a new empty Unreleased comes above it.
+    versioned = release_notes.folded(NOTES_PAGE, texts, "0.1.0")
+    unreleased, rest = versioned.split("## 0.1.0\n", 1)
+    assert unreleased.count("{release-fragments}") == 3
+    assert "{release-fragments}" not in rest
+    assert "**A.**" in rest
+    assert "**A.**" not in unreleased
+    assert rest.index("**A.**") < rest.index("**Older.**") < rest.index("## 0.0.1")
+
+
+def test_the_fold_needs_the_directive_of_a_category() -> None:
+    with pytest.raises(ValueError, match="release-fragments upgrade"):
+        release_notes.folded(
+            NOTES_PAGE.replace("```{release-fragments} upgrade\n```\n", ""),
+            {"upgrade": ["- **D.** Four.\n\n"]},
+        )
+
+
+def test_the_links_of_a_fragment_are_made_relative_to_the_page() -> None:
+    fragment = release_notes.FRAGMENTS_DIR / "new" / "x.md"
+    text = "[a](../../../guides/projects.md#links) [b](https://example.com/) [c](/index.md)"
+    assert release_notes.relinked(text, fragment) == (
+        "[a](guides/projects.md#links) [b](https://example.com/) [c](/index.md)"
+    )
+
+
+def test_every_fragment_is_a_hidden_page_with_its_catalog() -> None:
+    """The fragments waiting for the next release (docs/release-notes/unreleased/README.md)."""
+    for category in release_notes.CATEGORIES:
+        for fragment in release_notes.fragments(category):
+            text = fragment.read_text(encoding="utf-8")
+            assert text.startswith("---\norphan: true\nnosearch: true\n---\n"), fragment
+            assert "\n#" not in release_notes.body(fragment), fragment
+            assert release_notes.catalog_of(fragment, "fr").exists(), fragment
+    assert set(release_notes.CATEGORIES) == set(ext_categories())
+
+
+def ext_categories() -> tuple[str, ...]:
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "docs" / "_ext"))
+    pytest.importorskip("sphinx")
+    import housecairn_docs
+
+    return housecairn_docs.FRAGMENT_CATEGORIES

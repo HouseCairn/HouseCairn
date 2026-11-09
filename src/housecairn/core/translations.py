@@ -1,4 +1,8 @@
-"""Translation checks: every source string has a non-fuzzy translation."""
+"""Translation checks: every source string has a non-fuzzy translation.
+
+Each app has its own catalog, `<app>/locale/<language>/LC_MESSAGES/django.po`
+(docs/adr/0013), and `makemessages` sends each string to the catalog of its app.
+"""
 
 import ast
 import os
@@ -16,6 +20,7 @@ from django.core.management import call_command
 class Entry:
     msgid: str = ""
     msgctxt: str | None = None
+    msgid_plural: str | None = None
     msgstrs: list[str] = field(default_factory=list)
     fuzzy: bool = False
 
@@ -61,21 +66,39 @@ def parse_po(text: str) -> list[Entry]:
                 current.msgstrs.append("")
         if target == "msgctxt":
             current.msgctxt = (current.msgctxt or "") + value
-        elif target in ("msgid", "msgid_plural"):
-            if target == "msgid":
-                current.msgid += value
+        elif target == "msgid":
+            current.msgid += value
+        elif target == "msgid_plural":
+            current.msgid_plural = (current.msgid_plural or "") + value
         elif target and target.startswith("msgstr"):
             current.msgstrs[-1] += value
     flush()
     return entries
 
 
+def languages() -> list[str]:
+    """The translated languages: every language but the source one."""
+    return [code for code, _name in settings.LANGUAGES if code != settings.LANGUAGE_CODE]
+
+
+def catalog_path(locale_dir: str | os.PathLike[str], language: str) -> Path:
+    return Path(locale_dir) / language / "LC_MESSAGES" / "django.po"
+
+
 def po_files() -> Iterator[tuple[str, Path]]:
     for locale_dir in settings.LOCALE_PATHS:
-        for language, _name in settings.LANGUAGES:
-            if language == settings.LANGUAGE_CODE:
-                continue
-            yield language, Path(locale_dir) / language / "LC_MESSAGES" / "django.po"
+        for language in languages():
+            yield language, catalog_path(locale_dir, language)
+
+
+def app_catalogs(language: str) -> list[Path]:
+    """The catalogs of the apps in a language, as found on disk."""
+    return sorted(Path(settings.BASE_DIR).glob(f"*/locale/{language}/LC_MESSAGES/django.po"))
+
+
+def app_of(path: Path) -> str:
+    """The app of a catalog: `<app>/locale/<language>/LC_MESSAGES/django.po`."""
+    return path.parents[3].name
 
 
 def untranslated(path: Path) -> list[str]:
@@ -93,38 +116,76 @@ def untranslated(path: Path) -> list[str]:
     return problems
 
 
+def inconsistent(language: str) -> list[str]:
+    """Strings translated differently in two catalogs: only one of them would be shown."""
+    seen: dict[tuple[str | None, str], tuple[list[str], Path]] = {}
+    problems = []
+    for path in app_catalogs(language):
+        for entry in parse_po(path.read_text(encoding="utf-8")):
+            if not entry.msgid:
+                continue
+            first = seen.setdefault(entry.key, (entry.msgstrs, path))
+            if first[0] != entry.msgstrs:
+                apps = f"{app_of(first[1])} and {app_of(path)}"
+                problems.append(f"translated differently in {apps}: {entry.msgid!r}")
+    return problems
+
+
 @contextmanager
-def _restored(path: Path) -> Iterator[None]:
-    backup = path.read_bytes() if path.exists() else None
+def _restored(*paths: Path) -> Iterator[None]:
+    """Put the files back as they were, and remove the catalogs created meanwhile."""
+    backups = {path: path.read_bytes() if path.exists() else None for path in paths}
+    base = Path(settings.BASE_DIR)
+    dirs = set(base.glob("*/locale"))
+    catalogs = set(base.glob("*/locale/*/LC_MESSAGES/django.po"))
     try:
         yield
     finally:
-        if backup is None:
-            path.unlink(missing_ok=True)
-        else:
-            path.write_bytes(backup)
+        for path, backup in backups.items():
+            if backup is None:
+                path.unlink(missing_ok=True)
+            else:
+                path.write_bytes(backup)
+        for created in set(base.glob("*/locale/*/LC_MESSAGES/django.po")) - catalogs:
+            if created not in backups:
+                created.unlink()
+        for created in set(base.glob("*/locale")) - dirs:
+            shutil.rmtree(created)
 
 
-def missing_from_catalog(language: str, path: Path) -> list[str]:
-    """Source strings absent from the committed catalog (needs GNU gettext)."""
+def run_makemessages(language: str, **options: object) -> None:
+    """The project's `makemessages`, run from the apps' directory as documented."""
+    cwd = Path.cwd()
+    os.chdir(settings.BASE_DIR)
+    try:
+        call_command(
+            "makemessages",
+            locale=[language],
+            domain="django",
+            ignore_patterns=["static/*"],
+            verbosity=0,
+            **options,
+        )
+    finally:
+        os.chdir(cwd)
+
+
+def missing_from_catalogs(language: str) -> list[str]:
+    """Source strings absent from the committed catalog of their app (needs GNU gettext)."""
     if shutil.which("xgettext") is None:
         raise RuntimeError("GNU gettext (xgettext) is required to scan the sources.")
-    committed = (
-        {e.key for e in parse_po(path.read_text(encoding="utf-8"))} if path.exists() else set()
-    )
-    cwd = Path.cwd()
-    with _restored(path):
-        os.chdir(settings.BASE_DIR)
-        try:
-            call_command(
-                "makemessages",
-                locale=[language],
-                domain="django",
-                no_obsolete=True,
-                ignore_patterns=["static/*"],
-                verbosity=0,
-            )
-        finally:
-            os.chdir(cwd)
-        scanned = {e.key for e in parse_po(path.read_text(encoding="utf-8")) if e.msgid}
-    return sorted(repr(msgid) for _ctx, msgid in scanned - committed)
+    committed = {
+        path: {e.key for e in parse_po(path.read_text(encoding="utf-8"))}
+        for path in app_catalogs(language)
+    }
+    with _restored(*committed):
+        run_makemessages(language)
+        scanned = {
+            path: {e.key for e in parse_po(path.read_text(encoding="utf-8")) if e.msgid}
+            for path in app_catalogs(language)
+        }
+    return [
+        f"{msgid!r} (catalog of {app_of(path)})"
+        for path, keys in scanned.items()
+        for _ctx, msgid in sorted(keys - committed.get(path, set()), key=repr)
+    ]

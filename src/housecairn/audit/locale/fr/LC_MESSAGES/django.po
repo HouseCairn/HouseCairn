@@ -1,0 +1,343 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Audit log"
+msgstr "Journal d'audit"
+
+msgid "Home created"
+msgstr "Logement créé"
+
+#, python-format
+msgid "Role changed to %(role)s"
+msgstr "Rôle changé en %(role)s"
+
+msgid "Member removed"
+msgstr "Membre retiré"
+
+msgid "Member left"
+msgstr "Membre parti"
+
+msgid "Ownership transferred"
+msgstr "Propriété transférée"
+
+#, python-format
+msgid "Invitation sent (%(role)s)"
+msgstr "Invitation envoyée (%(role)s)"
+
+msgid "Invitation sent again"
+msgstr "Invitation renvoyée"
+
+msgid "Invitation revoked"
+msgstr "Invitation révoquée"
+
+#, python-format
+msgid "Invitation accepted (%(role)s)"
+msgstr "Invitation acceptée (%(role)s)"
+
+#, python-format
+msgid "Sign-in through %(provider)s required"
+msgstr "Connexion par %(provider)s exigée"
+
+msgid "Sign-in requirement removed"
+msgstr "Exigence de connexion retirée"
+
+msgid "Home exported"
+msgstr "Logement exporté"
+
+#, python-format
+msgid "Room added: %(title)s"
+msgstr "Pièce ajoutée : %(title)s"
+
+#, python-format
+msgid "Room changed: %(title)s"
+msgstr "Pièce modifiée : %(title)s"
+
+#, python-format
+msgid "Room deleted: %(title)s"
+msgstr "Pièce supprimée : %(title)s"
+
+#, python-format
+msgid "Item added: %(title)s"
+msgstr "Élément ajouté : %(title)s"
+
+#, python-format
+msgid "Item changed: %(title)s"
+msgstr "Élément modifié : %(title)s"
+
+#, python-format
+msgid "Item deleted: %(title)s"
+msgstr "Élément supprimé : %(title)s"
+
+#, python-format
+msgid "Contractor added: %(title)s"
+msgstr "Intervenant ajouté : %(title)s"
+
+#, python-format
+msgid "Contractor changed: %(title)s"
+msgstr "Intervenant modifié : %(title)s"
+
+#, python-format
+msgid "Contractor deleted: %(title)s"
+msgstr "Intervenant supprimé : %(title)s"
+
+#, python-format
+msgid "Task added: %(title)s"
+msgstr "Tâche ajoutée : %(title)s"
+
+#, python-format
+msgid "Task changed: %(title)s"
+msgstr "Tâche modifiée : %(title)s"
+
+#, python-format
+msgid "Task deleted: %(title)s"
+msgstr "Tâche supprimée : %(title)s"
+
+#, python-format
+msgid "Photo added to %(title)s"
+msgstr "Photo ajoutée à %(title)s"
+
+#, python-format
+msgid "Photo deleted from %(title)s"
+msgstr "Photo supprimée de %(title)s"
+
+#, python-format
+msgid "File added to the task %(title)s"
+msgstr "Fichier ajouté à la tâche %(title)s"
+
+#, python-format
+msgid "File deleted from the task %(title)s"
+msgstr "Fichier supprimé de la tâche %(title)s"
+
+msgid "Calendar feed created"
+msgstr "Flux de calendrier créé"
+
+msgid "Calendar feed given a new address"
+msgstr "Flux de calendrier : nouvelle adresse"
+
+msgid "Calendar feed revoked"
+msgstr "Flux de calendrier révoqué"
+
+#, python-format
+msgid "QR label revoked: %(title)s"
+msgstr "Étiquette QR révoquée : %(title)s"
+
+#, python-format
+msgid "QR label replaced by a new one: %(title)s"
+msgstr "Étiquette QR remplacée par une nouvelle : %(title)s"
+
+#, python-format
+msgid "Problem reported: %(title)s"
+msgstr "Problème signalé : %(title)s"
+
+#, python-format
+msgid "Report made into a task: %(title)s"
+msgstr "Signalement transformé en tâche : %(title)s"
+
+#, python-format
+msgid "Report closed: %(title)s"
+msgstr "Signalement classé : %(title)s"
+
+#, python-format
+msgid "Project added: %(title)s"
+msgstr "Projet ajouté : %(title)s"
+
+#, python-format
+msgid "Project changed: %(title)s"
+msgstr "Projet modifié : %(title)s"
+
+#, python-format
+msgid "Project deleted: %(title)s"
+msgstr "Projet supprimé : %(title)s"
+
+#, python-format
+msgid "Task put in the project %(title)s"
+msgstr "Tâche ajoutée au projet %(title)s"
+
+#, python-format
+msgid "Task taken out of the project %(title)s"
+msgstr "Tâche retirée du projet %(title)s"
+
+#, python-format
+msgid "Budget line added to the project %(title)s"
+msgstr "Ligne de budget ajoutée au projet %(title)s"
+
+#, python-format
+msgid "Budget line changed in the project %(title)s"
+msgstr "Ligne de budget modifiée dans le projet %(title)s"
+
+#, python-format
+msgid "Budget line deleted from the project %(title)s"
+msgstr "Ligne de budget supprimée du projet %(title)s"
+
+#, python-format
+msgid "Quote added to the project %(title)s"
+msgstr "Devis ajouté au projet %(title)s"
+
+#, python-format
+msgid "Quote changed in the project %(title)s"
+msgstr "Devis modifié dans le projet %(title)s"
+
+#, python-format
+msgid "Quote accepted in the project %(title)s"
+msgstr "Devis accepté dans le projet %(title)s"
+
+#, python-format
+msgid "Quote deleted from the project %(title)s"
+msgstr "Devis supprimé du projet %(title)s"
+
+#, python-format
+msgid "File added to the project %(title)s"
+msgstr "Fichier ajouté au projet %(title)s"
+
+#, python-format
+msgid "File deleted from the project %(title)s"
+msgstr "Fichier supprimé du projet %(title)s"
+
+#, python-format
+msgid "Link to %(domain)s added to the project %(title)s"
+msgstr "Lien vers %(domain)s ajouté au projet %(title)s"
+
+#, python-format
+msgid "Link to %(domain)s deleted from the project %(title)s"
+msgstr "Lien vers %(domain)s supprimé du projet %(title)s"
+
+#, python-format
+msgid "Stock article added: %(title)s"
+msgstr "Article de stock ajouté : %(title)s"
+
+#, python-format
+msgid "Stock article changed: %(title)s"
+msgstr "Article de stock modifié : %(title)s"
+
+#, python-format
+msgid "Stock article deleted: %(title)s"
+msgstr "Article de stock supprimé : %(title)s"
+
+#, python-format
+msgid "Supplier added: %(title)s"
+msgstr "Fournisseur ajouté : %(title)s"
+
+#, python-format
+msgid "Supplier changed: %(title)s"
+msgstr "Fournisseur modifié : %(title)s"
+
+#, python-format
+msgid "Supplier deleted: %(title)s"
+msgstr "Fournisseur supprimé : %(title)s"
+
+#, python-format
+msgid "Annual envelope set for %(title)s"
+msgstr "Enveloppe annuelle fixée pour %(title)s"
+
+msgid "Instance invitation sent"
+msgstr "Invitation à l'instance envoyée"
+
+msgid "Instance invitation sent again"
+msgstr "Invitation à l'instance renvoyée"
+
+msgid "Instance invitation revoked"
+msgstr "Invitation à l'instance révoquée"
+
+msgid "Instance invitation accepted"
+msgstr "Invitation à l'instance acceptée"
+
+msgid "Account created"
+msgstr "Compte créé"
+
+msgid "Email address verified from the server"
+msgstr "Adresse e-mail vérifiée depuis le serveur"
+
+msgid "Primary email address changed from the server"
+msgstr "Adresse e-mail principale changée depuis le serveur"
+
+msgid "Account deleted"
+msgstr "Compte supprimé"
+
+msgid "A home was deleted"
+msgstr "Un logement a été supprimé"
+
+#, python-format
+msgid "Sign-in requirement removed from %(count)s homes"
+msgstr "Exigence de connexion retirée de %(count)s logements"
+
+#, python-format
+msgid "Setting %(setting)s changed from %(old)s to %(new)s"
+msgstr "Réglage %(setting)s modifié, de %(old)s à %(new)s"
+
+#, python-format
+msgid "Secret setting %(setting)s changed"
+msgstr "Réglage secret %(setting)s modifié"
+
+#, python-format
+msgid "Setting %(setting)s reset to its default"
+msgstr "Réglage %(setting)s rétabli à son défaut"
+
+#, python-format
+msgid "Sign-in provider %(provider)s added"
+msgstr "Fournisseur de connexion %(provider)s ajouté"
+
+#, python-format
+msgid "Sign-in provider %(provider)s: %(setting)s changed from %(old)s to %(new)s"
+msgstr "Fournisseur de connexion %(provider)s : %(setting)s passé de %(old)s à %(new)s"
+
+#, python-format
+msgid "Sign-in provider %(provider)s: client secret changed"
+msgstr "Fournisseur de connexion %(provider)s : secret client modifié"
+
+#, python-format
+msgid "Sign-in provider %(provider)s: client secret cleared, the issuer changed"
+msgstr "Fournisseur de connexion %(provider)s : secret client effacé, l'émetteur a changé"
+
+#, python-format
+msgid "Sign-in provider %(provider)s deleted"
+msgstr "Fournisseur de connexion %(provider)s supprimé"
+
+msgid "Account changed in the administration site"
+msgstr "Compte modifié dans le site d'administration"
+
+msgid "Account deleted in the administration site"
+msgstr "Compte supprimé dans le site d'administration"
+
+msgid "Home"
+msgstr "Accueil"
+
+msgid "Instance"
+msgstr "Instance"
+
+msgid "date"
+msgstr "date"
+
+msgid "action"
+msgstr "action"
+
+msgid "audit entry"
+msgstr "entrée d'audit"
+
+msgid "audit entries"
+msgstr "entrées d'audit"
+
+msgid "deleted account or system"
+msgstr "compte supprimé ou système"
+
+msgid "Nothing recorded yet."
+msgstr "Rien n'est encore enregistré."
+
+msgid "Pages"
+msgstr "Pages"
+
+msgid "Newer"
+msgstr "Plus récentes"
+
+msgid "Older"
+msgstr "Plus anciennes"

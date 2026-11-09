@@ -1,0 +1,275 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Core"
+msgstr "Cœur"
+
+msgid "created at"
+msgstr "créé le"
+
+msgid "updated at"
+msgstr "modifié le"
+
+msgid "deleted at"
+msgstr "supprimé le"
+
+msgid "Today"
+msgstr "Aujourd'hui"
+
+msgid "All tasks"
+msgstr "Toutes les tâches"
+
+msgid "History"
+msgstr "Historique"
+
+msgid "Calendar"
+msgstr "Calendrier"
+
+msgid "Projects"
+msgstr "Projets"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "Contractors"
+msgstr "Intervenants"
+
+msgid "Display preferences"
+msgstr "Préférences d'affichage"
+
+msgid "Overview"
+msgstr "Vue d'ensemble"
+
+msgid "Household and roles"
+msgstr "Foyer et rôles"
+
+msgid "Audit log"
+msgstr "Journal d'audit"
+
+msgid "Settings"
+msgstr "Réglages"
+
+msgid "Sign-in providers"
+msgstr "Fournisseurs de connexion"
+
+msgid "Files of the homes"
+msgstr "Fichiers des logements"
+
+msgid "By room"
+msgstr "Par pièce"
+
+msgid "By project"
+msgstr "Par projet"
+
+msgid "By task"
+msgstr "Par tâche"
+
+msgid "Tasks"
+msgstr "Tâches"
+
+msgid "Home"
+msgstr "Accueil"
+
+msgid "Instance administration"
+msgstr "Administration de l'instance"
+
+msgid "What needs doing in the house, where, when, with what and for how much."
+msgstr "Ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
+
+msgid "Bad request"
+msgstr "Requête invalide"
+
+msgid "The request could not be understood."
+msgstr "La requête n'a pas pu être comprise."
+
+msgid "Back to the home page"
+msgstr "Retour à l'accueil"
+
+msgid "Access denied"
+msgstr "Accès refusé"
+
+msgid "You do not have permission to see this page."
+msgstr "Vous n'avez pas le droit de voir cette page."
+
+msgid "Session expired"
+msgstr "Session expirée"
+
+msgid "The form you sent is no longer valid, usually because the page stayed open too long. Go back, reload the page and try again."
+msgstr "Le formulaire envoyé n'est plus valide, en général parce que la page est restée ouverte trop longtemps. Revenez en arrière, rechargez la page et réessayez."
+
+msgid "Page not found"
+msgstr "Page introuvable"
+
+msgid "This page does not exist, or it has moved."
+msgstr "Cette page n'existe pas ou a été déplacée."
+
+msgid "Too many requests"
+msgstr "Trop de requêtes"
+
+msgid "Wait a minute, then try again."
+msgstr "Attendez une minute, puis réessayez."
+
+msgid "Something went wrong"
+msgstr "Une erreur est survenue"
+
+msgid "The server could not complete your request. Try again in a moment; if it keeps happening, tell the administrator of this instance."
+msgstr "Le serveur n'a pas pu traiter votre demande. Réessayez dans un instant ; si cela continue, prévenez l'administrateur de cette instance."
+
+#, python-format
+msgid "Hello from %(name)s!"
+msgstr "Bonjour de la part de %(name)s !"
+
+#, python-format
+msgid "Thank you for using %(name)s."
+msgstr "Merci d'utiliser %(name)s."
+
+msgid "Your account was just signed in from a browser or device we had not seen before."
+msgstr "Votre compte vient d'être utilisé pour se connecter depuis un navigateur ou un appareil que nous n'avions pas encore vu."
+
+msgid "New sign-in to your account"
+msgstr "Nouvelle connexion à votre compte"
+
+msgid "Sign in"
+msgstr "Se connecter"
+
+msgid "Send me a sign-in code"
+msgstr "Envoyez-moi un code de connexion"
+
+msgid "No account yet?"
+msgstr "Pas encore de compte ?"
+
+msgid "Create an account"
+msgstr "Créer un compte"
+
+msgid "Already have an account?"
+msgstr "Vous avez déjà un compte ?"
+
+msgid "Checking that you are not a robot…"
+msgstr "Vérification que vous n'êtes pas un robot…"
+
+msgid "Check done: you can create the account."
+msgstr "Vérification terminée : vous pouvez créer le compte."
+
+msgid "This check needs JavaScript and a secure connection (HTTPS)."
+msgstr "Cette vérification nécessite JavaScript et une connexion sécurisée (HTTPS)."
+
+msgid "This page needs JavaScript to check that you are not a robot."
+msgstr "Cette page nécessite JavaScript pour vérifier que vous n'êtes pas un robot."
+
+msgid "Use a passkey"
+msgstr "Utiliser une clé d'accès"
+
+msgid "Use a passkey saved on this device or on your phone."
+msgstr "Utiliser une clé d'accès enregistrée sur cet appareil ou sur votre téléphone."
+
+msgid "Passkey sign-in did not complete. You can try again or use your password."
+msgstr "La connexion par clé d'accès n'a pas abouti. Vous pouvez réessayer ou utiliser votre mot de passe."
+
+#, python-format
+msgid "Continue with %(provider)s"
+msgstr "Continuer avec %(provider)s"
+
+msgid "Skip to content"
+msgstr "Aller au contenu"
+
+msgid "About"
+msgstr "À propos"
+
+#, python-format
+msgid "version %(version)s"
+msgstr "version %(version)s"
+
+msgid "Free software under the AGPL-3.0 licence."
+msgstr "Logiciel libre sous licence AGPL-3.0."
+
+msgid "Source code and security reports on GitHub."
+msgstr "Code source et signalement de sécurité sur GitHub."
+
+msgid "Developed with an AI agent, under human review."
+msgstr "Développé avec un agent IA, sous revue humaine."
+
+msgid "Welcome"
+msgstr "Bienvenue"
+
+msgid "Go to my homes"
+msgstr "Voir mes logements"
+
+msgid "More"
+msgstr "Plus"
+
+msgid "Homes"
+msgstr "Logements"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Your display name"
+msgstr "Votre nom d'affichage"
+
+msgid "How the Today screen is laid out for you"
+msgstr "La disposition de l'écran Aujourd'hui pour vous"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Where and when your reminders go"
+msgstr "Où et quand partent vos rappels"
+
+msgid "Account security"
+msgstr "Sécurité du compte"
+
+msgid "Passkeys, authenticator app, recovery codes"
+msgstr "Clés d'accès, application d'authentification, codes de récupération"
+
+msgid "Accounts, invitations, audit log"
+msgstr "Comptes, invitations, journal d'audit"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Change the password you sign in with"
+msgstr "Modifier le mot de passe avec lequel vous vous connectez"
+
+msgid "Email addresses"
+msgstr "Adresses e-mail"
+
+msgid "Add or verify the addresses of your account"
+msgstr "Ajouter ou vérifier les adresses de votre compte"
+
+msgid "API documentation"
+msgstr "Documentation de l'API"
+
+msgid "OpenAPI schema and test interface"
+msgstr "Schéma OpenAPI et interface de test"
+
+msgid "Delete my account"
+msgstr "Supprimer mon compte"
+
+msgid "Erase your account and your data"
+msgstr "Effacer votre compte et vos données"
+
+msgid "Sign out"
+msgstr "Se déconnecter"
+
+msgid "Help for this page"
+msgstr "Aide sur cette page"
+
+msgid "Main navigation"
+msgstr "Navigation principale"
+
+msgid "Rooms"
+msgstr "Pièces"
+
+msgid "Stock"
+msgstr "Matériel"

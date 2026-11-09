@@ -50,3 +50,22 @@ free of what changes at every run: `makemessages` (the project's own command in
 `POT-Creation-Date`, and `scripts/build_docs.py --update-catalogs` drops that
 date from the documentation catalogs. A test fails when the French page is not
 served translated, and another when regenerating the catalog changes it.
+
+**Amendment, 2026-11-09: one catalog per app.** With a single
+`src/housecairn/locale/fr/LC_MESSAGES/django.po`, two pull requests that each
+added strings still conflicted on it, at their neighbouring entries, so every
+merge sent the next pull request back for a refresh. Each Django app now has its
+own catalog, `<app>/locale/fr/LC_MESSAGES/django.po`, listed in `LOCALE_PATHS`
+(`core` first, before the catalogs of allauth and Django). The project's
+`makemessages` sends each string to the catalog of the app that owns its file:
+the app's directory, or `templates/<app>/`; the shell, the shared templates and
+the project modules go to `core`. `--app <name>` limits it to one app. Two pull
+requests that add strings to two apps change two files; two strings added to
+the same app may still conflict, and the two sides are kept. A string used by
+two apps is in both catalogs, and `check_translations` fails when its
+translations differ, since only one of them would be shown; `--sources` reports
+a missing string with the catalog it belongs to. The single catalog was split by
+`scripts/split_catalogs.py`, which checks that the pairs of string and
+translation are the same before and after; it can be run again on a branch that
+still adds strings to the former catalog. The paths of the single catalog given
+above describe the state before this amendment.

@@ -92,6 +92,9 @@ def main(argv: list[str] | None = None) -> int:
         sphinx("linkcheck", BUILD_DIR / "linkcheck")
         return 0
 
+    # A page removed since the last build (a folded release notes fragment) must not
+    # leave its template behind: the check would ask for its catalog again.
+    shutil.rmtree(GETTEXT_DIR, ignore_errors=True)
     sphinx("gettext", GETTEXT_DIR)
     if args.update_catalogs:
         for language in TRANSLATIONS:
