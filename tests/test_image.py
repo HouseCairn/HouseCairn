@@ -5,10 +5,15 @@ The image itself is built and started by the `Container image` job of
 """
 
 import re
+import shlex
 from pathlib import Path
 
 import pytest
+from django.core.management import call_command
+from django.test import Client, override_settings
+from django.urls import reverse
 
+from housecairn.accounts.models import User
 from scripts import image_tags
 
 REPO = Path(__file__).resolve().parents[1]
@@ -136,3 +141,59 @@ def test_compose_example_is_hardened() -> None:
         "- housecairn-data:/data",
     ):
         assert setting in compose, setting
+
+
+# What the image leaves out (Redoc, the browsable API's assets, the `.po`
+# sources) and what it must keep: Swagger UI for /api/docs/, the compiled French
+# catalog.
+
+
+def _build_step() -> str:
+    dockerfile = (REPO / "Dockerfile").read_text()
+    build = dockerfile.split(" AS build\n", 1)[1].split("\nFROM ", 1)[0]
+    return next(block for block in build.split("\nRUN ") if "collectstatic" in block)
+
+
+def _collectstatic_ignores() -> list[str]:
+    command = _build_step().split("collectstatic", 1)[1].split("&&", 1)[0]
+    words = shlex.split(command.replace("\\\n", " "))
+    return [words[i + 1] for i, word in enumerate(words) if word == "--ignore"]
+
+
+def test_build_leaves_out_what_the_application_never_serves() -> None:
+    step = _build_step()
+    assert _collectstatic_ignores() == ["drf_spectacular_sidecar/redoc/*", "rest_framework"]
+    assert '"$site/drf_spectacular_sidecar/static/drf_spectacular_sidecar/redoc"' in step
+    assert '"$site/rest_framework/static"' in step
+    # The sources go only after the catalogs are compiled, and the build fails
+    # if the application's French catalog is not there.
+    assert step.index("compilemessages") < step.index("-name '*.po' -delete")
+    assert step.index("-name '*.po' -delete") < step.index(
+        "test -f src/housecairn/locale/fr/LC_MESSAGES/django.mo"
+    )
+    # Nothing is removed from the collected files themselves.
+    assert "/app/static/" not in step.split("collectstatic", 1)[1]
+
+
+@pytest.mark.django_db
+def test_static_files_of_the_image_still_serve_the_api_docs(
+    tmp_path: Path, client: Client, alice: User
+) -> None:
+    root = tmp_path / "static"
+    with override_settings(STATIC_ROOT=root):
+        call_command(
+            "collectstatic",
+            interactive=False,
+            verbosity=0,
+            ignore_patterns=_collectstatic_ignores(),
+        )
+        client.force_login(alice)
+        page = client.get(reverse("api-docs"))
+    assert page.status_code == 200
+    urls = re.findall(r'(?:href|src)="/static/([^"?]+)"', page.content.decode())
+    assert any(url.startswith("drf_spectacular_sidecar/swagger-ui-dist/") for url in urls)
+    missing = [url for url in urls if not (root / url).is_file()]
+    assert missing == []
+    assert (root / "css" / "app.css").is_file()
+    assert not (root / "drf_spectacular_sidecar" / "redoc").exists()
+    assert not (root / "rest_framework").exists()
