@@ -15,7 +15,7 @@ import pytest
 
 from housecairn.core import netguard
 from housecairn.core.netguard import Fetched, RefusedError
-from tests.netservers import can_bind, endless, open_sockets, serving, trickle
+from tests.netservers import AnyPort, can_bind, endless, open_sockets, serving, trickle
 
 pytestmark = pytest.mark.skipif(not can_bind("127.0.0.2"), reason="needs the 127.0.0.0/8 range")
 
@@ -26,6 +26,12 @@ OTHER = "127.0.0.2"
 def only_first_loopback(address: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
     """A test policy: 127.0.0.1 is the one server we may call, everything else is refused."""
     return str(address) == LOOPBACK
+
+
+@pytest.fixture(autouse=True)
+def any_port(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Local servers listen on whatever port the system gave; `TestPorts` restores the rule."""
+    monkeypatch.setattr(netguard, "PUBLIC_PORTS", AnyPort())
 
 
 @pytest.fixture
@@ -144,6 +150,43 @@ class TestAddresses:
 
         monkeypatch.setattr(netguard, "_resolve", unresolved)
         refused("http://nowhere.example.com/", "unresolved")
+
+
+class TestPorts:
+    @pytest.fixture(autouse=True)
+    def no_connection(self, monkeypatch: pytest.MonkeyPatch, local_policy: None) -> None:
+        monkeypatch.setattr(netguard, "PUBLIC_PORTS", frozenset({80, 443}))
+
+        def connected(self: object) -> None:
+            raise AssertionError("a connection was made")
+
+        def resolved(host: str, port: int, **kw: object) -> list[object]:
+            raise AssertionError("a name was resolved")
+
+        monkeypatch.setattr(netguard._Pinned, "connect", connected)
+        monkeypatch.setattr(netguard, "_resolve", resolved)
+
+    @pytest.mark.parametrize("port", [25, 8080, 22, 3306, 65535, 81, 8443])
+    def test_only_the_web_ports_are_called(self, port: int) -> None:
+        refused(f"http://{LOOPBACK}:{port}/", "port")
+        refused(f"https://{LOOPBACK}:{port}/", "port")
+
+    def test_the_default_ports_pass_the_rule(self) -> None:
+        assert 80 in netguard.PUBLIC_PORTS
+        assert 443 in netguard.PUBLIC_PORTS
+        assert 8080 not in netguard.PUBLIC_PORTS
+
+    def test_a_redirect_to_another_port_is_refused_on_that_hop(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.undo()  # the real connection and resolver, for the first hop
+        monkeypatch.setattr(netguard, "is_public", only_first_loopback)
+        with serving(LOOPBACK) as first, serving(LOOPBACK) as second:
+            monkeypatch.setattr(netguard, "PUBLIC_PORTS", {first.port})
+            first.redirect("/", second.url())
+            refused(first.url(), "port")
+            assert first.connections == 1  # the first hop was made, the second never
+            assert second.connections == 0
 
 
 class TestSchemes:

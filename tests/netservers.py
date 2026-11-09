@@ -167,3 +167,10 @@ def can_bind(host: str) -> bool:
     except OSError:
         return False
     return True
+
+
+class AnyPort:
+    """A port rule for the tests: local servers listen on whatever port the system gave."""
+
+    def __contains__(self, port: object) -> bool:
+        return True

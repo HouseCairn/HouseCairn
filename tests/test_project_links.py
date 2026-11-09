@@ -25,7 +25,7 @@ from housecairn.core import netguard
 from housecairn.homes.models import Home
 from housecairn.projects import links, preview, services
 from housecairn.projects.models import MAX_LINKS_PER_PROJECT, Project, ProjectFile, ProjectLink
-from tests.netservers import Server, can_bind, serving
+from tests.netservers import AnyPort, Server, can_bind, serving
 from tests.rooms_support import image_bytes, upload
 
 pytest_plugins = ("tests.rooms_fixtures", "tests.projects_fixtures")
@@ -50,6 +50,7 @@ def only_first_loopback(address: ipaddress.IPv4Address | ipaddress.IPv6Address) 
 @pytest.fixture(autouse=True)
 def local_policy(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(netguard, "is_public", only_first_loopback)
+    monkeypatch.setattr(netguard, "PUBLIC_PORTS", AnyPort())
 
 
 @pytest.fixture

@@ -19,7 +19,8 @@ Two kinds of caller share this module:
   goes to an address that passed, never to the name again, so a resolver that answers
   differently the second time (rebinding) is not asked;
 - a redirect is followed by the same code, hop after hop, at most `MAX_REDIRECTS` times,
-  and only to `http` and `https`;
+  and only to `http` and `https`; the port must be 80 or 443 on every hop (`PUBLIC_PORTS`),
+  so the server cannot be made to speak HTTP to a mail or database service;
 - the whole request, name resolution apart, lasts `seconds` at most, however slowly the
   server answers: a watchdog shuts the sockets down at the deadline, so a read that
   blocks gets the end of the stream at once. Nothing outlives the call: the watchdog is
@@ -37,7 +38,7 @@ import socket
 import ssl
 import threading
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Container
 from contextlib import suppress
 from dataclasses import dataclass
 from typing import Any
@@ -53,6 +54,10 @@ METADATA_ADDRESSES = frozenset(
     for a in ("169.254.169.254", "100.100.100.200", "192.0.0.192", "fd00:ec2::254")
 )
 MAX_REDIRECTS = 3
+# The ports a page of the open web is served on. Any other port is a service that was not
+# meant to answer a web request (mail, databases, admin panels), so the address is refused
+# on every hop, before the name is resolved.
+PUBLIC_PORTS: Container[int] = frozenset({80, 443})
 USER_AGENT = "HouseCairn link preview"
 
 
@@ -107,7 +112,7 @@ def is_public(address: Address) -> bool:
 class RefusedError(Exception):
     """The request was not made or not completed; `reason` is a short code, never an address.
 
-    Codes: `scheme`, `credentials`, `address`, `unresolved`, `redirects`, `timeout`,
+    Codes: `scheme`, `credentials`, `port`, `address`, `unresolved`, `redirects`, `timeout`,
     `connect`, `tls`, `status`, `too_large`.
     """
 
@@ -265,6 +270,8 @@ def _hop(
     except UnicodeError:
         raise RefusedError("unresolved") from None
     number = port or (443 if scheme == "https" else 80)
+    if number not in PUBLIC_PORTS:
+        raise RefusedError("port")
     targets = _addresses(host, number, allowed)
     path = (parts.path or "/") + (f"?{parts.query}" if parts.query else "")
     last: RefusedError = RefusedError("connect")

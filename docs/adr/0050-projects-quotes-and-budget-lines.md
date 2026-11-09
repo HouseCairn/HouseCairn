@@ -131,6 +131,11 @@ convenience and never a requirement:
 - *Redirects* are followed by the same code, hop by hop, three at most, each hop checked
   again from the start. Only `http` and `https`; an address with a user name or a password
   is refused.
+- *Ports.* Only 80 and 443, in the address and on every redirect, checked before the name is
+  resolved. A page of the open web is served there; any other port (mail, databases, admin
+  panels, a service on 8080) is a service that was never meant to answer a request a
+  stranger can steer, and a link to it gains nothing from a preview. Rejected: allowing
+  every port above 1024, which keeps the services most worth protecting reachable.
 - *Limits.* The HTML is read up to 1 MB (Open Graph tags are in the head, so a longer page
   is cut, not refused), a picture up to 5 MB or the file limit of the instance if smaller.
   `Accept-Encoding: identity`, so a small body cannot expand. The time limit is for the whole
@@ -150,6 +155,9 @@ convenience and never a requirement:
   remote picture. The photo list, the photo limit and the `project-files` list leave it out:
   it belongs to its link and goes with it.
 - *Failure is silent.* Any refusal, timeout, bad page or bad picture keeps the address. The
+  character set the page announces is the remote server's word: one that is unknown, is no
+  text encoding or cannot decode (`idna`, `undefined`) falls back to UTF-8, and nothing the
+  page says makes the request fail. The
   log gets a short reason code (`address`, `timeout`, `too_large`...), never the address.
   The audit log records the domain of the link and the title of the project, nothing else.
 - *Roles and isolation.* Owners and members add and delete links; read-only members read
