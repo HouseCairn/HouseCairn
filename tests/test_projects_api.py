@@ -264,6 +264,32 @@ class TestLinesAndQuotes:
         assert ok.status_code == 201
         assert ok.json()["planned"] == "9999999999.99"
 
+    def test_accepting_by_patch_needs_a_line_of_the_same_project(
+        self,
+        client_of_alice: APIClient,
+        alice: User,
+        alice_home: Home,
+        quote: Quote,
+        labour_line: BudgetLine,
+    ) -> None:
+        other = services.create_project(alice, alice_home, title="Other", budget=Decimal("10"))
+        elsewhere = other.lines.get()
+        refused = client_of_alice.patch(
+            api("quote-detail", alice_home, quote_id=quote.id),
+            {"status": "accepted", "budget_line": str(elsewhere.id)},
+            format="json",
+        )
+        assert refused.status_code == 400, refused.content
+        assert "budget_line" in refused.json()
+        quote.refresh_from_db()
+        assert (quote.status, quote.budget_line_id) == ("received", None)
+        accepted = client_of_alice.patch(
+            api("quote-detail", alice_home, quote_id=quote.id),
+            {"status": "accepted", "budget_line": str(labour_line.id)},
+            format="json",
+        )
+        assert accepted.status_code == 200, accepted.content
+
     def test_a_line_or_a_quote_cannot_change_project(
         self,
         client_of_alice: APIClient,
@@ -326,6 +352,102 @@ class TestLinesAndQuotes:
             == 204
         )
         assert not Quote.objects.filter(id=quote.id).exists()
+
+
+class TestHomeFilter:
+    """The API itself keeps to the home; the services would catch a stray row only after it."""
+
+    def test_every_list_holds_only_the_rows_of_the_home(
+        self,
+        client_of_alice: APIClient,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        living_room_project: Project,
+        quote: Quote,
+        foreign_project: Project,
+    ) -> None:
+        mine_task = services.add_task(alice, living_room_project, title="Mine")
+        mine_file = services.add_file(alice, living_room_project, upload=upload(image_bytes()))
+        services.add_task(bob, foreign_project, title="Theirs")
+        services.add_file(bob, foreign_project, upload=upload(image_bytes()))
+        expected = {
+            "project-list": {living_room_project.id},
+            "budget-line-list": set(living_room_project.lines.values_list("id", flat=True)),
+            "quote-list": {quote.id},
+            "project-file-list": {mine_file.id},
+            "project-task-list": {mine_task.project_link.id},  # type: ignore[attr-defined]
+        }
+        for name, ids in expected.items():
+            rows = client_of_alice.get(api(name, alice_home)).json()["results"]
+            assert {uuid.UUID(row["id"]) for row in rows} == ids, name
+
+    def test_the_choices_of_every_serializer_are_the_rows_of_the_home(
+        self,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        bob_home: Home,
+        living_room_project: Project,
+        labour_line: BudgetLine,
+        quote: Quote,
+        foreign_project: Project,
+    ) -> None:
+        from housecairn.projects import api as project_api
+        from housecairn.rooms.models import Room
+        from housecairn.tasks.models import Contractor
+
+        mine = {
+            "project": living_room_project,
+            "budget_line": labour_line,
+            "quote": quote,
+            "room": Room.objects.create(home=alice_home, name="Mine"),
+            "task": task_services.create_task(alice, alice_home, title="Mine"),
+            "contractor": services.contractor_named(alice, alice_home, "Mine"),
+        }
+        theirs = {
+            "project": foreign_project,
+            "budget_line": foreign_project.lines.get(),
+            "quote": foreign_project.quotes.get(),
+            "room": Room.objects.create(home=bob_home, name="Theirs"),
+            "task": task_services.create_task(bob, bob_home, title="Theirs"),
+            "contractor": services.contractor_named(bob, bob_home, "Theirs"),
+        }
+        assert isinstance(mine["contractor"], Contractor)
+        choices = [
+            (project_api.ProjectSerializer, "rooms", "room"),
+            (project_api.BudgetLineSerializer, "project", "project"),
+            (project_api.QuoteSerializer, "project", "project"),
+            (project_api.QuoteSerializer, "budget_line", "budget_line"),
+            (project_api.QuoteSerializer, "contractor", "contractor"),
+            (project_api.ProjectFileSerializer, "project", "project"),
+            (project_api.ProjectFileSerializer, "quote", "quote"),
+            (project_api.ProjectTaskSerializer, "project", "project"),
+            (project_api.ProjectTaskSerializer, "task", "task"),
+            (project_api.ProjectTaskSerializer, "room", "room"),
+        ]
+        for serializer, field, kind in choices:
+            bound = serializer(context={"home": alice_home}).fields[field]
+            queryset = getattr(bound, "child_relation", bound).queryset
+            found = set(queryset.values_list("pk", flat=True))
+            assert mine[kind].pk in found, (serializer.__name__, field)
+            assert theirs[kind].pk not in found, (serializer.__name__, field)
+
+    def test_the_readers_behind_the_viewsets_keep_to_the_home(
+        self,
+        alice: User,
+        bob: User,
+        alice_home: Home,
+        living_room_project: Project,
+        quote: Quote,
+        foreign_project: Project,
+    ) -> None:
+        services.add_task(bob, foreign_project, title="Theirs")
+        assert set(services.projects_of(alice_home)) == {living_room_project}
+        assert set(services.lines_of(alice_home)) == set(living_room_project.lines.all())
+        assert set(services.quotes_of(alice_home)) == {quote}
+        assert not services.links_of(alice_home).exists()
+        assert services.links_of(foreign_project.home).count() == 1
 
 
 class TestTasksOfAProject:

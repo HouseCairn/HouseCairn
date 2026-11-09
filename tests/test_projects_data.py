@@ -235,6 +235,22 @@ class TestErasure:
         BudgetLine.all_objects.filter(id=labour_line.id).delete()
         assert not Quote.all_objects.filter(id=quote.id).exists()
 
+    def test_the_database_keeps_a_task_in_one_project(
+        self, alice: User, alice_home: Home, living_room_project: Project
+    ) -> None:
+        from django.db import IntegrityError, transaction
+
+        from housecairn.projects.models import ProjectTask
+
+        other = services.create_project(alice, alice_home, title="Other")
+        task = services.add_task(alice, living_room_project, title="T")
+        # Not through the service, which would refuse it first.
+        with pytest.raises(IntegrityError), transaction.atomic():
+            ProjectTask.objects.create(home=alice_home, project=other, task=task)
+        with pytest.raises(IntegrityError), transaction.atomic():
+            ProjectTask.objects.create(home=alice_home, project=living_room_project, task=task)
+        assert ProjectTask.all_objects.filter(task=task).count() == 1
+
     def test_the_folder_is_declared(self) -> None:
         from housecairn.homes import files
 
