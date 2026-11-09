@@ -14,7 +14,8 @@ from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 from django.views.generic import FormView
 
-from housecairn.accounts import forms, services
+from housecairn.accounts import forms, provider_names, services
+from housecairn.accounts.models import DisplayNameSource, User
 
 
 def needs_email(view: Callable[..., HttpResponse]) -> Callable[..., HttpResponse]:
@@ -88,6 +89,36 @@ class ProfileView(LoginRequiredMixin, FormView[forms.ProfileForm]):
 
     def get_initial(self) -> dict[str, Any]:
         return {"display_name": self.request.user.display_name}  # type: ignore[union-attr]
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        from housecairn.instance.providers import provider_label
+
+        context = super().get_context_data(**kwargs)
+        user: User = self.request.user  # type: ignore[assignment]
+        by_provider = user.display_name_source == DisplayNameSource.OIDC
+        context["linked"] = provider_names.has_provider(user)
+        context["by_provider"] = by_provider
+        context["taken_from"] = (
+            provider_label(user.display_name_provider)
+            if by_provider and user.display_name_provider and user.display_name
+            else ""
+        )
+        return context
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if "use_provider" not in request.POST:
+            return super().post(request, *args, **kwargs)
+        user: User = request.user  # type: ignore[assignment]
+        if not provider_names.has_provider(user):
+            return redirect("profile")
+        if provider_names.use_provider_name(user):
+            messages.success(request, _("Your display name is now the one of your provider."))
+        else:
+            messages.success(
+                request,
+                _("Your display name will be taken from your provider at your next sign-in."),
+            )
+        return redirect("profile")
 
     def form_valid(self, form: forms.ProfileForm) -> HttpResponse:
         try:

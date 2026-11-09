@@ -9,8 +9,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from housecairn.accounts import names, services
-from housecairn.accounts.models import User
+from housecairn.accounts import names, provider_names, services
+from housecairn.accounts.models import DisplayNameSource, User
 from housecairn.apitokens.models import ApiToken
 from housecairn.homes.scoping import allow
 
@@ -50,11 +50,31 @@ class MeSerializer(serializers.ModelSerializer[User]):
         help_text="The name shown for the person: the display name, then the full name, "
         "then the part of the address before the @."
     )
+    display_name_source = serializers.ChoiceField(
+        choices=DisplayNameSource.choices,
+        required=False,
+        help_text="`oidc`: the sign-in provider sets the display name at each sign-in through "
+        "it (setting it back to `oidc` takes the provider's last name at once when there is "
+        "one); `manual`: the person typed it and no provider changes it. Changing "
+        "`display_name` makes it `manual`.",
+    )
+    display_name_provider = serializers.CharField(
+        read_only=True,
+        help_text="Identifier of the provider the display name was taken from; empty when "
+        "the person typed it.",
+    )
 
     class Meta:
         model = User
-        fields = ["id", "email", "display_name", "name"]
-        read_only_fields = ["id", "email"]
+        fields = [
+            "id",
+            "email",
+            "display_name",
+            "display_name_source",
+            "display_name_provider",
+            "name",
+        ]
+        read_only_fields = ["id", "email", "display_name_provider"]
 
     def get_name(self, user: User) -> str:
         return names.person_name(user)
@@ -84,6 +104,11 @@ class MeView(PersonOnlyToChange, APIView):
                 services.set_display_name(user, serializer.validated_data["display_name"])
             except DjangoValidationError as exc:
                 raise serializers.ValidationError({"display_name": exc.messages}) from exc
+        source = serializer.validated_data.get("display_name_source")
+        if source == DisplayNameSource.OIDC:
+            provider_names.use_provider_name(user)
+        elif source == DisplayNameSource.MANUAL:
+            provider_names.keep_typed_name(user)
         return Response(MeSerializer(user).data)
 
 
