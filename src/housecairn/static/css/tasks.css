@@ -234,3 +234,7 @@
 .material-row .row-body {
   flex: 1 1 14rem;
 }
+
+.button-done {
+  min-height: var(--hc-layout-touch-target-lg);
+}

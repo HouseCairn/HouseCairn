@@ -13,7 +13,7 @@
     <form method="post" action="{% url 'tasks:complete' home_id=home.id task_id=occurrence.task_id occurrence_id=occurrence.id %}">
       {% csrf_token %}
       <input type="hidden" name="next" value="{{ request.get_full_path }}">
-      <button type="submit" class="button-small">{% translate "Done" context "task" %}<span class="visually-hidden"> {{ occurrence.task.title }}</span></button>
+      <button type="submit" class="button-small button-done">{% translate "Done" context "task" %}<span class="visually-hidden"> {{ occurrence.task.title }}</span></button>
     </form>
   {% endif %}
 </li>

@@ -29,7 +29,9 @@ notes. **Photos and files** are described on the [files page](task-files.md).
 
 **Materials** lists the stock items the task needs, with the quantity, what is in
 stock and a label when it is not enough; **Remove** takes one off, the quantity field
-changes it and **Add the stock item** adds one.
+changes it and **Add the stock item** adds one. On a phone the quantity field moves
+under the name, which keeps its full width. The choice of the stock item in the add form
+starts on a dash.
 
 **History** lists the occurrences done or skipped, the most recent first, with the
 real cost and the note. **Details** on a row opens a form to fill in or correct what
