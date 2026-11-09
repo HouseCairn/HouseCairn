@@ -10,10 +10,12 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
+from housecairn.core import navigation
 from housecairn.tasks import forms, services, vcard
 from housecairn.tasks.models import Contractor
 from housecairn.tasks.views import HomeTasksMixin
@@ -67,9 +69,18 @@ class ContractorCreateView(ContractorFormMixin):
         except ValidationError as exc:
             form.add_error(None, exc)
             return self.form_invalid(form)
-        messages.success(self.request, _("Contractor added."))
+        detail = reverse(
+            "tasks:contractor-detail",
+            kwargs={"home_id": self.home.id, "contractor_id": contractor.id},
+        )
         return redirect(
-            "tasks:contractor-detail", home_id=self.home.id, contractor_id=contractor.id
+            navigation.after_create(
+                self.request,
+                detail,
+                "tasks:contractors",
+                added=_("Contractor added"),
+                saved=_("Contractor added."),
+            )
         )
 
 
@@ -88,9 +99,11 @@ class ContractorEditView(ContractorFormMixin):
             form.add_error(None, exc)
             return self.form_invalid(form)
         messages.success(self.request, _("Contractor saved."))
-        return redirect(
-            "tasks:contractor-detail", home_id=self.home.id, contractor_id=contractor.id
+        detail = reverse(
+            "tasks:contractor-detail",
+            kwargs={"home_id": self.home.id, "contractor_id": contractor.id},
         )
+        return redirect(navigation.back_url(self.request, detail))
 
 
 class ContractorDeleteView(HomeContractorsMixin, TemplateView):
@@ -103,9 +116,11 @@ class ContractorDeleteView(HomeContractorsMixin, TemplateView):
         return super().get_context_data(**self.page(contractor=self.get_contractor()), **kwargs)
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        services.delete_contractor(request.user, self.get_contractor())
+        contractor = self.get_contractor()
+        services.delete_contractor(request.user, contractor)
         messages.success(request, _("Contractor deleted."))
-        return redirect("tasks:contractors", home_id=self.home.id)
+        parent = reverse("tasks:contractors", kwargs={"home_id": self.home.id})
+        return redirect(navigation.after_delete(request, parent, [contractor.id]))
 
 
 class ContractorVcardView(HomeContractorsMixin, View):

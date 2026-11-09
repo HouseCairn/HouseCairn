@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras %}
+{% load i18n tasks_extras navigation %}
 {% block head_title %}{{ item.name }}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'rooms:detail' home_id=home.id room_id=item.room_id %}">{% include "components/icon.html" with name="chevron" %}{{ item.room.name }}</a>
+  {% url 'rooms:detail' home_id=home.id room_id=item.room_id as parent %}{% back_link parent item.room.name %}
   <h1>{{ item.name }}</h1>
   <section class="card">
     <p class="small">{{ item.room.name }} · {{ item.get_kind_display }}</p>
@@ -32,7 +32,7 @@
     </dl>
     {% if can_write %}
       <div class="button-row">
-        <a class="button button-secondary button-small" href="{% url 'rooms:item-edit' home_id=home.id item_id=item.id %}">{% translate "Edit the item" %}</a>
+        <a class="button button-secondary button-small" href="{% url_with_next 'rooms:item-edit' home_id=home.id item_id=item.id %}">{% translate "Edit the item" %}</a>
       </div>
     {% endif %}
     <div class="button-row">{% load labels_extras %}{% object_tools "item" item %}</div>
@@ -70,7 +70,7 @@
     <ul class="card-list">
       {% for occurrence in task_rows %}
         <li>
-          <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
+          <a class="row" href="{% url_with_next 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
             <span class="row-body">
               <span class="row-title">{{ occurrence.task.title }}</span>
               <span class="row-text">{% if occurrence.due_on %}{{ occurrence.due_on|date:"SHORT_DATE_FORMAT" }}{% else %}{% translate "No date" %}{% endif %}</span>
@@ -84,7 +84,7 @@
     <p class="empty">{% translate "No task for this yet." %}</p>
   {% endif %}
   {% if can_write %}
-    <a class="button button-secondary button-block" href="{% url 'tasks:create' home_id=home.id %}?item={{ item.id }}">{% translate "Add a task" %}</a>
+    <a class="button button-secondary button-block" href="{% url_with_next 'tasks:create' home_id=home.id q_item=item.id %}">{% translate "Add a task" %}</a>
   {% endif %}
 
   {% comment %}Maintenance log and cost of ownership: shown once the tasks exist (`journal`).{% endcomment %}

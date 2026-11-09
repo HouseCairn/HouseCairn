@@ -1,21 +1,22 @@
 {% extends "base.html" %}
-{% load i18n static %}
+{% load i18n static navigation %}
 {% block head_title %}{% if room %}{% translate "Edit the room" %}{% else %}{% translate "Add a room" %}{% endif %}{% endblock head_title %}
 {% block extra_head %}<script src="{% static 'js/room-form.js' %}" defer></script>{% endblock extra_head %}
 {% block content %}
   {% if room %}
-    <a class="back-link" href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}">{% include "components/icon.html" with name="chevron" %}{{ room.name }}</a>
+    {% url 'rooms:detail' home_id=home.id room_id=room.id as parent %}{% back_link parent room.name %}
     <h1>{% translate "Edit the room" %}</h1>
   {% else %}
-    <a class="back-link" href="{% url 'rooms:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Rooms" %}</a>
+    {% url 'rooms:list' home_id=home.id as parent %}{% back_link parent %}
     <h1>{% translate "Add a room" %}</h1>
   {% endif %}
   <form method="post" class="card">
     {% csrf_token %}
+    {% next_field %}
     {{ form.as_p }}
     <button type="submit" class="button-block">{% if room %}{% translate "Save" %}{% else %}{% translate "Add the room" %}{% endif %}</button>
   </form>
   {% if room %}
-    <a class="button button-danger button-block" href="{% url 'rooms:delete' home_id=home.id room_id=room.id %}">{% translate "Delete the room" %}</a>
+    <a class="button button-danger button-block" href="{% url_with_next 'rooms:delete' home_id=home.id room_id=room.id %}">{% translate "Delete the room" %}</a>
   {% endif %}
 {% endblock content %}

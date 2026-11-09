@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras tabs %}
+{% load i18n tasks_extras tabs navigation %}
 {% block head_title %}{% translate "Today" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Today" %}</h1>
@@ -22,6 +22,6 @@
     <p class="empty">{% translate "Nothing to do for now." %}</p>
   {% endfor %}
   {% if can_write %}
-    <a class="button button-block" href="{% url 'tasks:create' home_id=home.id %}">{% translate "Add a task" %}</a>
+    <a class="button button-block" href="{% url_with_next 'tasks:create' home_id=home.id %}">{% translate "Add a task" %}</a>
   {% endif %}
 {% endblock content %}

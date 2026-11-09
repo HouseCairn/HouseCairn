@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tabs %}
+{% load i18n tabs navigation %}
 {% block head_title %}{% translate "Rooms" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Rooms" %}</h1>
@@ -26,7 +26,7 @@
               <button type="submit" name="direction" value="down" class="button-icon" aria-label="{% blocktranslate with name=room.name %}Move {{ name }} down{% endblocktranslate %}"{% if forloop.last %} disabled{% endif %}>↓</button>
             </form>
           {% else %}
-            <a class="row" href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}">
+            <a class="row" href="{% url_with_next 'rooms:detail' home_id=home.id room_id=room.id %}">
               <span class="row-body">
                 <span class="row-title">{{ room.name }}</span>
                 <span class="row-text">{{ room.get_kind_display }} · {% blocktranslate count counter=room.item_count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktranslate %}</span>
@@ -42,7 +42,7 @@
   {% endif %}
   {% if can_write %}
     <div class="button-row">
-      <a class="button button-secondary" href="{% url 'rooms:create' home_id=home.id %}">{% translate "Add a room" %}</a>
+      <a class="button button-secondary" href="{% url_with_next 'rooms:create' home_id=home.id %}">{% translate "Add a room" %}</a>
       {% if reorder %}
         <a class="button button-secondary" href="{% url 'rooms:list' home_id=home.id %}">{% translate "Done" %}</a>
       {% elif rooms|length > 1 %}

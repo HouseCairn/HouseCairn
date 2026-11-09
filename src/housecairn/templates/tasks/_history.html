@@ -1,5 +1,5 @@
-{% load i18n tasks_extras people %}{# The Done filter of the task list: the history of the home (docs/adr/0017). #}
-  <form method="get" class="history-filters" role="search">
+{% load i18n tasks_extras people navigation %}{# The Done filter of the task list: the history of the home (docs/adr/0017). #}
+  <form method="get" class="history-filters" role="search" aria-label="{% translate "Search the history" %}">
     <input type="hidden" name="status" value="done">
     <details class="history-filter-fields"{% if filtered %} open{% endif %}>
       <summary>{% translate "Filters" %}</summary>
@@ -67,7 +67,7 @@
     <ul class="task-list">
       {% for occurrence in page %}
         <li class="task-row">
-          <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
+          <a class="row" href="{% url_with_next 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
             <span class="row-body">
               <span class="row-title">{{ occurrence.task.title }}</span>
               <span class="row-text">{{ occurrence|where_and_who }}</span>
