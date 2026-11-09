@@ -88,6 +88,27 @@ Each change is in the instance audit log; the client secret never is.
   shares its address: sign in with the local account, then link the identity
   from the account pages.
 
+## Display name
+
+At each sign-in through a provider, HouseCairn takes the person's display name from the
+claims of the identity (userinfo, then the ID token), in this order: `name`, then
+`given_name` and `family_name` together, then `preferred_username`, then `nickname`. Request
+the `profile` scope at the provider for them to be sent. The first claim that is a valid
+display name is used, by the rules of the [profile](../screens/profile.md) screen; a claim
+that would be refused there, or that holds markup (`<` or `>`), is ignored, with one line in
+the log (`housecairn.security` logger) per reason that names the claim but never its value.
+A claim never makes a sign-in fail. When no claim is usable, the name stays as it was.
+
+- The provider follows the name while the person has not typed one: a change at the
+  provider is taken at the next sign-in. Once the person changes it on their profile, no
+  provider overwrites it, until they choose **Use the provider's name**.
+- An account linked to several providers takes the name of the provider it signs in with.
+- An account that existed before this rule and has no display name takes one at its next
+  sign-in through a provider; a display name already typed is kept as the person's own.
+- Nothing else of the identity is stored for it: no address of the provider, no picture.
+  The rule on addresses is unchanged: a provider cannot claim the address of another
+  account.
+
 ## Requiring single sign-on for a home
 
 Providers are declared by the administrator of the instance only, with the

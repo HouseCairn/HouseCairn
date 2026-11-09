@@ -71,6 +71,15 @@ with it on the project's
   contact file (.vcf). Existing trades are matched to the list, otherwise kept under Other.
   See [Tasks and recurrence](guides/tasks-and-recurrence.md).
 
+- **Display name from the sign-in provider.** An account linked to a single sign-on provider
+  takes its display name from the provider at each sign-in through it (`name`, else the
+  given and family names, the username or the nickname), by the same rules as a typed name;
+  a claim that would be refused is ignored and never stops the sign-in. A name typed on the
+  [profile](screens/profile.md) is kept and no provider overwrites it, until **Use the
+  provider's name**. Display names typed before this version are kept; accounts without one
+  take the provider's at their next sign-in. See
+  [Single sign-on](administration/oidc.md#display-name).
+
 ### Fixed
 
 - **Display preferences in the API.** Changing one preference no longer fails because the
