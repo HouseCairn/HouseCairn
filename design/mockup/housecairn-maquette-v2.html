@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Housecairn · maquette v2</title>
+<style>
+:root{
+  --ardoise:#1F3A3D; --ardoise-2:#2B4C50; --sable:#C8A27C; --sable-clair:#F3EBE1; --sauge:#8FA39A; --sauge-clair:#E6ECE9;
+  --pierre:#5F726E; --fond:#F7F5F1; --surface:#FFFFFF; --ligne:#E3DED6; --encre:#1B2422; --muet:#66736F;
+  --retard:#B4532F; --retard-clair:#F6E3DA; --ok:#3E7A5B; --ok-clair:#E0EFE6; --info:#3C6478;
+  --r:14px; --r-s:10px;
+  --font:"Manrope","Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#E9E5DE;color:var(--encre);font-family:var(--font);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+a{color:inherit}
+.stage{display:grid;grid-template-columns:minmax(380px,420px) minmax(320px,560px);gap:28px;justify-content:center;align-items:start;padding:24px 16px 40px}
+@media (max-width:900px){.stage{grid-template-columns:1fr;padding:0}.phone{border-radius:0!important;box-shadow:none!important;height:100dvh!important;max-width:none!important;top:0!important;position:relative!important}.review{margin:0 12px 24px}}
+/* ---------- phone ---------- */
+.phone{position:sticky;top:16px;max-width:420px;height:min(860px,calc(100dvh - 32px));background:var(--fond);border-radius:34px;box-shadow:0 0 0 10px #1B2422,0 24px 60px rgba(0,0,0,.25);overflow:hidden;display:flex;flex-direction:column}
+.appbar{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;background:var(--fond);border-bottom:1px solid transparent}
+.appbar .back{width:40px;height:40px;border:0;background:transparent;border-radius:10px;display:none;place-items:center;cursor:pointer}
+.appbar .back.show{display:grid}
+.appbar .back:hover{background:var(--sable-clair)}
+.appbar h1{font-size:19px;margin:0;font-weight:800;letter-spacing:-.01em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-switch{display:flex;align-items:center;gap:6px;border:1px solid var(--ligne);background:var(--surface);border-radius:999px;padding:6px 10px;font-size:13px;font-weight:600;cursor:pointer}
+.logo{width:26px;height:26px;flex:none}
+.scroll{flex:1;overflow-y:auto;padding:4px 16px 96px;scroll-behavior:smooth}
+.screen{display:none}
+.screen.on{display:block;animation:in .18s ease-out}
+@keyframes in{from{transform:translateY(4px)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.screen.on{animation:none}}
+/* bottom nav */
+.tabbar{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border-top:1px solid var(--ligne);padding:6px 4px calc(8px + env(safe-area-inset-bottom))}
+.phone{position:sticky}
+.phone-inner{position:relative;display:flex;flex-direction:column;height:100%}
+.tab{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muet);padding:6px 0;min-height:48px;cursor:pointer;border-radius:10px}
+.tab svg{width:22px;height:22px}
+.tab.on{color:var(--ardoise)}
+.tab.on svg{stroke:var(--ardoise)}
+.fab{position:absolute;right:18px;bottom:82px;width:56px;height:56px;border-radius:18px;border:0;background:var(--ardoise);color:#fff;font-size:28px;line-height:1;box-shadow:0 8px 20px rgba(31,58,61,.35);cursor:pointer;z-index:5}
+.fab:focus-visible,.tab:focus-visible,.btn:focus-visible,.row:focus-visible{outline:3px solid var(--sable);outline-offset:2px}
+/* typography & blocks */
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muet);margin:22px 2px 8px;font-weight:700}
+h2 .count{color:var(--encre);margin-left:6px}
+h3{font-size:16px;margin:0 0 4px;font-weight:700}
+p{margin:0 0 8px;line-height:1.45}
+.small{font-size:13px;color:var(--muet)}
+.mono{font-family:var(--mono);font-size:12px}
+.card{background:var(--surface);border:1px solid var(--ligne);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.card.flat{background:transparent}
+.list{background:var(--surface);border:1px solid var(--ligne);border-radius:var(--r);overflow:hidden;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--ligne);min-height:56px;cursor:pointer;background:transparent;width:100%;border-left:0;border-right:0;border-bottom:0;text-align:left}
+.row:first-child{border-top:0}
+.row:hover{background:#FBFAF7}
+.row .grow{flex:1;min-width:0}
+.row .t{font-weight:650;font-size:15px;line-height:1.3}
+.row .s{font-size:12.5px;color:var(--muet);margin-top:2px;line-height:1.35}
+.chev{color:#B9B2A7;font-size:18px}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--sauge-clair);color:var(--ardoise);white-space:nowrap}
+.pill.retard{background:var(--retard-clair);color:var(--retard)}
+.pill.ok{background:var(--ok-clair);color:var(--ok)}
+.pill.sable{background:var(--sable-clair);color:#7A5A3A}
+.pill.ha{background:#E3EEF4;color:var(--info)}
+.pill.ghost{background:transparent;border:1px solid var(--ligne);color:var(--muet)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+.chip{border:1px solid var(--ligne);background:var(--surface);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;min-height:36px}
+.chip.on{background:var(--ardoise);color:#fff;border-color:var(--ardoise)}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;font-size:15px;min-height:46px;cursor:pointer;background:var(--ardoise);color:#fff}
+.btn.sec{background:var(--surface);color:var(--ardoise);border:1px solid var(--ligne)}
+.btn.sable{background:var(--sable);color:#2A1E12}
+.btn.block{width:100%}
+.btn.sm{padding:8px 12px;min-height:36px;font-size:13px;border-radius:10px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+/* task row with one-tap done */
+.task{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-top:1px solid var(--ligne);min-height:64px}
+.task:first-child{border-top:0}
+.task .grow{flex:1;min-width:0;cursor:pointer}
+.task .t{font-weight:650;font-size:15px;line-height:1.3}
+.task .s{font-size:12.5px;color:var(--muet);margin-top:3px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.done{flex:none;width:48px;height:48px;border-radius:14px;border:2px solid var(--sauge);background:var(--surface);cursor:pointer;display:grid;place-items:center;color:var(--ardoise)}
+.done:hover{background:var(--sauge-clair)}
+.task.isdone .t{text-decoration:line-through;color:var(--muet)}
+.task.isdone .done{background:var(--ok);border-color:var(--ok);color:#fff}
+.who{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-size:10.5px;font-weight:800;color:#fff;background:var(--pierre)}
+.who.b{background:var(--sable);color:#2A1E12}
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.kpi{background:var(--surface);border:1px solid var(--ligne);border-radius:var(--r-s);padding:10px}
+.kpi .l{font-size:11.5px;color:var(--muet);font-weight:600}
+.kpi .v{font-size:18px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:99px;background:var(--sauge-clair);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.bar .p{background:var(--ardoise)} .bar .e{background:var(--sable)}
+.legend{display:flex;gap:12px;font-size:12px;color:var(--muet);margin-top:6px}
+.legend b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{font-size:11.5px;color:var(--muet);text-align:right;font-weight:700;padding:6px 4px;border-bottom:1px solid var(--ligne)}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t td{padding:8px 4px;border-bottom:1px solid var(--ligne);text-align:right;font-variant-numeric:tabular-nums}
+table.t tr:last-child td{border-bottom:0}
+.neg{color:var(--retard);font-weight:700}
+/* forms */
+label.f{display:block;font-size:12.5px;font-weight:700;color:var(--muet);margin:12px 0 6px}
+.input{width:100%;border:1px solid var(--ligne);border-radius:12px;padding:12px;font:inherit;font-size:15px;background:var(--surface);min-height:46px}
+.input:focus{outline:2px solid var(--sauge);border-color:var(--sauge)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--sable-clair);border-radius:12px;padding:4px;gap:4px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:9px 6px;font-weight:700;font-size:13px;cursor:pointer;min-height:38px}
+.seg button.on{background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.check{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--ligne);font-size:14px}
+.check:first-child{border-top:0}
+.box{width:22px;height:22px;border-radius:6px;border:2px solid var(--sauge);display:grid;place-items:center;flex:none;font-size:13px;font-weight:900;color:#fff}
+.box.on{background:var(--ardoise);border-color:var(--ardoise)}
+.toggle{width:44px;height:26px;border-radius:99px;background:#D8D2C8;position:relative;flex:none;border:0;cursor:pointer}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+.toggle.on{background:var(--ok)}
+.toggle.on::after{left:21px}
+.md{background:var(--fond);border:1px dashed var(--ligne);border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.5}
+.md ol{margin:4px 0 0 18px;padding:0}
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ph{aspect-ratio:1;border-radius:10px;background:repeating-linear-gradient(135deg,var(--sauge-clair) 0 8px,#DCE4E0 8px 16px);display:grid;place-items:end start;padding:6px;font-size:10.5px;font-weight:700;color:var(--ardoise)}
+.ph.s{background:repeating-linear-gradient(135deg,var(--sable-clair) 0 8px,#EADFD1 8px 16px);color:#7A5A3A}
+.swatch{width:36px;height:36px;border-radius:10px;border:1px solid rgba(0,0,0,.08);flex:none}
+.flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;font-size:12.5px;margin:6px 0}
+.flow .n{background:var(--fond);border:1px solid var(--ligne);border-radius:10px;padding:8px;text-align:center;font-weight:700}
+.flow .a{color:var(--pierre);font-weight:800}
+.code{background:#162B2D;color:#E6ECE9;border-radius:10px;padding:10px 12px;font-family:var(--mono);font-size:11.5px;line-height:1.55;overflow-x:auto;white-space:pre}
+.verb{display:inline-block;min-width:52px;font-family:var(--mono);font-size:11px;font-weight:800;padding:2px 6px;border-radius:6px;text-align:center}
+.verb.g{background:var(--ok-clair);color:var(--ok)} .verb.p{background:#E3EEF4;color:var(--info)} .verb.u{background:var(--sable-clair);color:#7A5A3A} .verb.d{background:var(--retard-clair);color:var(--retard)}
+.kanban{display:grid;grid-auto-flow:column;grid-auto-columns:78%;gap:10px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}
+.col{scroll-snap-align:start;background:#EFEBE4;border-radius:var(--r);padding:10px}
+.col h4{margin:2px 2px 8px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muet)}
+.pc{background:var(--surface);border:1px solid var(--ligne);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer}
+.pc .t{font-weight:700}
+.empty{border:1px dashed var(--ligne);border-radius:var(--r);padding:18px;text-align:center;color:var(--muet);font-size:14px}
+.notice{display:flex;gap:10px;align-items:flex-start;background:var(--sable-clair);border-radius:12px;padding:12px;font-size:13.5px;line-height:1.45;margin-bottom:10px}
+.notice.ha{background:#E3EEF4}
+.notice.retard{background:var(--retard-clair)}
+.notice b{font-weight:800}
+/* sheet & toast */
+.scrim{position:absolute;inset:0;background:rgba(20,30,30,.38);display:none;z-index:20}
+.scrim.on{display:block}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:22px 22px 0 0;padding:10px 16px 22px;transform:translateY(105%);visibility:hidden;transition:transform .22s ease,visibility .22s;z-index:21;max-height:86%;overflow-y:auto}
+.sheet.on{transform:none;visibility:visible}
+.grab{width:40px;height:5px;border-radius:9px;background:#D8D2C8;margin:2px auto 12px}
+.toast{position:absolute;left:12px;right:12px;bottom:84px;background:var(--ardoise);color:#fff;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:14px;z-index:15;opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .18s,transform .18s,visibility .18s}
+.toast.on{opacity:1;visibility:visible;transform:none}
+.toast button{margin-left:auto;background:transparent;border:0;color:var(--sable);font-weight:800;cursor:pointer;min-height:36px;padding:0 6px}
+.pl{display:block;width:100%;text-align:left;background:var(--surface);border:1px solid var(--ligne);border-radius:var(--r);padding:14px;margin-bottom:8px;cursor:pointer}
+.pl .t{font-weight:750;font-size:15.5px}
+.pl .meta{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 8px}
+.pl .nums{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muet);margin-top:6px;font-variant-numeric:tabular-nums}
+.attach{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.attach .ph{font-size:10px}
+.lbl-sheet{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.lbl{border:1px dashed var(--pierre);border-radius:10px;padding:8px;display:flex;gap:8px;align-items:center;background:#fff}
+.qr{width:46px;height:46px;flex:none;background:
+ conic-gradient(from 90deg at 30% 30%,#1B2422 25%,transparent 0) 0 0/12px 12px,
+ linear-gradient(#1B2422 0 0) 0 0/14px 14px no-repeat,
+ linear-gradient(#1B2422 0 0) 100% 0/14px 14px no-repeat,
+ linear-gradient(#1B2422 0 0) 0 100%/14px 14px no-repeat;border:2px solid #1B2422;border-radius:4px}
+.lbl .n{font-size:11.5px;font-weight:800;line-height:1.25}
+.lbl .r{font-size:10px;color:var(--muet)}
+.dec{font-size:13.5px;line-height:1.45}
+.dec b{color:var(--ardoise)}
+/* review panel */
+.review{background:var(--surface);border:1px solid var(--ligne);border-radius:20px;padding:20px 20px 24px}
+.review header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.review header h1{font-size:20px;margin:0}
+.review .lead{color:var(--muet);font-size:14px;margin-bottom:14px}
+.rv-screen{background:var(--fond);border-radius:14px;padding:14px;margin-bottom:16px}
+.rv-screen h2{margin:0 0 8px}
+.rv-screen .name{font-size:18px;font-weight:800;margin-bottom:8px}
+.rv-list{margin:0;padding:0;list-style:none}
+.rv-list li{padding:6px 0;border-top:1px solid var(--ligne);font-size:13.5px;line-height:1.45}
+.rv-list li:first-child{border-top:0}
+.bnum{font-family:var(--mono);font-size:11.5px;font-weight:800;background:var(--ardoise);color:#fff;border-radius:6px;padding:1px 6px;margin-right:6px}
+.q{font-weight:700;color:#7A5A3A}
+.matrix{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.mx{border:1px solid var(--ligne);border-radius:10px;padding:8px;font-size:12px;cursor:pointer;background:var(--surface);text-align:left;line-height:1.35}
+.mx:hover{border-color:var(--sauge)}
+.mx .st{display:block;margin-top:4px;font-weight:800;font-size:11px}
+.st.mvp{color:var(--ok)} .st.j3{color:var(--info)} .st.v2{color:#7A5A3A}
+.tw{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}
+.badge-b{display:none;font-family:var(--mono);font-size:10px;font-weight:800;background:var(--sable);color:#2A1E12;border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:2px}
+body.annot .badge-b{display:inline-block}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body class="annot">
+<div class="stage">
+
+<!-- =================== PHONE =================== -->
+<div class="phone" aria-label="Maquette de l'application">
+<div class="phone-inner">
+  <div class="appbar">
+    <button class="back" id="back" aria-label="Retour" onclick="goBack()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <svg class="logo" id="logo" viewBox="0 0 256 256" aria-hidden="true"><path fill="#5F726E" d="M56,203 C54,183 90,174 130,175 C172,176 202,183 201,202 C200,220 168,227 128,227 C88,227 58,222 56,203Z"/><path fill="#8FA39A" d="M76,150 C74,133 100,127 130,127 C160,127 183,133 182,149 C181,164 158,169 128,168 C98,167 78,163 76,150Z"/><path fill="#C8A27C" d="M82,113 C78,104 116,62 123,57 C126,55 130,55 133,57 C141,63 178,102 174,113 C171,120 151,121 128,121 C105,121 85,120 82,113Z"/></svg>
+    <h1 id="title">Aujourd'hui</h1>
+    <button class="home-switch" onclick="go('homes')" aria-label="Changer de logement">Maison <span aria-hidden="true">▾</span></button>
+  </div>
+
+  <div class="scroll" id="scroll">
+
+  <!-- ========== PREMIER DÉMARRAGE ========== -->
+  <section class="screen" data-screen="onboarding" data-title="Bienvenue">
+    <div class="card">
+      <h3>Installer Housecairn</h3>
+      <p class="small">Premier démarrage : le jeton d'installation affiché dans les journaux du conteneur est demandé, pour qu'un visiteur ne devienne pas propriétaire à votre place.</p>
+      <label class="f">Jeton d'installation</label><input class="input mono" value="hc-setup-••••-••••" aria-label="Jeton d'installation">
+      <label class="f">Langue</label>
+      <div class="seg"><button class="on">Français</button><button>English</button></div>
+      <label class="f">Votre compte</label><input class="input" placeholder="Adresse e-mail ou nom d'utilisateur">
+      <p class="small" style="margin-top:8px">Ou se connecter par OIDC (Authentik, Keycloak, Pocket ID…) si l'administrateur l'a configuré.</p>
+    </div>
+    <h2>Votre logement</h2>
+    <div class="card">
+      <label class="f" style="margin-top:0">Nom</label><input class="input" value="Maison">
+      <label class="f">Devise</label><div class="seg"><button class="on">EUR €</button><button>CHF</button><button>USD $</button></div>
+      <label class="f">Qu'avez-vous chez vous ?<span class="badge-b">P5</span></label>
+      <p class="small">Cochez : les tâches d'entretien correspondantes sont créées, avec leur intervalle indicatif et sa source. Tout se modifie ensuite.</p>
+      <div>
+        <div class="check"><span class="box on">✓</span>Détecteurs de fumée <span class="pill ghost" style="margin-left:auto">3</span></div>
+        <div class="check"><span class="box on">✓</span>VMC</div>
+        <div class="check"><span class="box on">✓</span>Chaudière gaz</div>
+        <div class="check"><span class="box"></span>Pompe à chaleur</div>
+        <div class="check"><span class="box on">✓</span>Cheminée ou poêle</div>
+        <div class="check"><span class="box"></span>Adoucisseur</div>
+        <div class="check"><span class="box on">✓</span>Gouttières</div>
+        <div class="check"><span class="box"></span>Fosse septique</div>
+      </div>
+    </div>
+    <button class="btn block" onclick="go('today',true)">Créer 9 tâches et commencer</button>
+    <p class="small" style="text-align:center;margin-top:10px">Ou <a href="#" onclick="go('data');return false">importer un tableur (CSV)</a>.</p>
+  </section>
+
+  <!-- ========== AUJOURD'HUI ========== -->
+  <section class="screen" data-screen="today" data-title="Aujourd'hui" data-tab="today">
+    <div class="chips" role="tablist" aria-label="Filtrer par personne">
+      <button class="chip on" onclick="chip(this)">Tout le foyer</button>
+      <button class="chip" onclick="chip(this)"><span class="who" style="width:18px;height:18px;font-size:9px">C</span> Camille</button>
+      <button class="chip" onclick="chip(this)"><span class="who b" style="width:18px;height:18px;font-size:9px">S</span> Sam</button>
+      <button class="chip" onclick="go('planning')">Calendrier</button>
+      <button class="chip" onclick="go('homeprefs')" aria-label="Personnaliser l'accueil">Personnaliser</button>
+    </div>
+
+    <div class="notice ha" onclick="go('task')" style="cursor:pointer">
+      <span class="pill ha">Home Assistant</span>
+      <div><b>Pile faible : détecteur du couloir.</b> Capteur Home Assistant (optionnel) : la tâche « Changer la pile » vient d'être armée. Il vous reste 1 pile CR123A en stock.<span class="badge-b">B4 B13</span></div>
+    </div>
+
+    <h2>En retard <span class="count">2</span><span class="badge-b">B5</span></h2>
+    <div class="list">
+      <div class="task" data-task>
+        <div class="grow" onclick="go('task')"><div class="t">Changer la pile du détecteur de fumée</div>
+          <div class="s"><span class="pill retard">depuis 2 j</span><span>Couloir</span><span class="pill ha">déclenchée</span><span class="who">C</span></div></div>
+        <button class="done" aria-label="Marquer comme fait" onclick="done(this,'Prochaine : quand Home Assistant signalera la pile faible')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+      </div>
+      <div class="task" data-task>
+        <div class="grow" onclick="go('task')"><div class="t">Nettoyer les bouches de VMC</div>
+          <div class="s"><span class="pill retard">depuis 12 j</span><span>Cuisine, SdB</span><span>tous les 3 mois après la dernière fois</span></div></div>
+        <button class="done" aria-label="Marquer comme fait" onclick="done(this,'Prochaine le 7 févr. 2027, 3 mois après aujourd\'hui')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+      </div>
+    </div>
+
+    <h2>Cette semaine <span class="count">3</span></h2>
+    <div class="list">
+      <div class="task" data-task>
+        <div class="grow" onclick="go('task')"><div class="t">Détartrer le pommeau de douche</div>
+          <div class="s"><span>jeu. 12 nov.</span><span>Salle de bain</span><span class="who b">S</span></div></div>
+        <button class="done" aria-label="Marquer comme fait" onclick="done(this,'Prochaine le 7 mai 2027')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+      </div>
+      <div class="task" data-task>
+        <div class="grow" onclick="go('task')"><div class="t">La porte du garage grince</div>
+          <div class="s"><span class="pill sable">signalé par Sam</span><span>Garage</span><span>ponctuelle</span></div></div>
+        <button class="done" aria-label="Marquer comme fait" onclick="done(this,'Clos : ajouté à l\'historique du garage')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+      </div>
+      <div class="task" data-task>
+        <div class="grow" onclick="go('task')"><div class="t">Entretien annuel de la chaudière</div>
+          <div class="s"><span>ven. 13 nov., 9 h</span><span>Chaufferie</span><span class="pill ghost">intervenant : Chauffage Martin</span></div></div>
+        <button class="done" aria-label="Marquer comme fait" onclick="done(this,'Prochaine le 13 nov. 2027 · détails modifiables dans l\'historique')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+      </div>
+    </div>
+
+    <h2>Automne <span class="count">4</span><span class="badge-b">B19</span></h2>
+    <div class="list">
+      <button class="row" onclick="go('task')"><div class="grow"><div class="t">Nettoyer les gouttières</div><div class="s">avant le 30 nov. · Extérieur</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('task')"><div class="grow"><div class="t">Purger les radiateurs</div><div class="s">avant le 30 nov. · Toute la maison</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('task')"><div class="grow"><div class="t">Ramonage du conduit</div><div class="s">avant le 15 déc. · Salon · obligation annuelle</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('task')"><div class="grow"><div class="t">Couper l'arrivée d'eau extérieure</div><div class="s">avant le 1er déc. · Extérieur</div></div><span class="chev">›</span></button>
+    </div>
+
+    <h2>À acheter avant l'échéance<span class="badge-b">B17</span></h2>
+    <button class="row card" style="border-radius:var(--r)" onclick="go('supplies')"><div class="grow"><div class="t">3 articles pour les 30 prochains jours</div><div class="s">Pile CR123A ×2 · Filtre VMC F7 ×1 · Vinaigre ménager</div></div><span class="chev">›</span></button>
+
+    <h2>Plus tard ce mois</h2>
+    <p class="small" style="margin:0 2px">6 tâches masquées jusqu'à 14 jours avant leur échéance, pour garder la liste courte. <a href="#" onclick="go('planning');return false">Tout voir</a></p>
+  </section>
+
+  <!-- ========== PLANNING ========== -->
+  <section class="screen" data-screen="planning" data-title="Calendrier">
+    <div class="seg" style="margin-bottom:12px"><button>Semaine</button><button class="on">Mois</button><button>Année</button></div>
+    <div class="card" style="padding:10px">
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:12px" id="cal"></div>
+    </div>
+    <h2>Novembre 2026</h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t">12 · Détartrer le pommeau de douche</div><div class="s">Salle de bain · Sam</div></div></div>
+      <div class="row"><div class="grow"><div class="t">13 · Entretien chaudière, 9 h</div><div class="s">Chauffage Martin · contrat annuel</div></div></div>
+      <div class="row"><div class="grow"><div class="t">21 · Week-end gouttières et radiateurs</div><div class="s">2 tâches regroupées · 3 h estimées</div></div></div>
+      <div class="row"><div class="grow"><div class="t">30 · Fin de la fenêtre d'automne</div><div class="s">2 tâches saisonnières à faire avant</div></div></div>
+    </div>
+    <div class="card"><h3>S'abonner dans votre agenda</h3><p class="small">Flux ICS en lecture seule, lisible par tout agenda et par le calendrier de Home Assistant. Lien secret, révocable.<span class="badge-b">J3</span></p>
+      <div class="code">https://maison.example.com/ics/7f3c…e91.ics</div>
+      <div class="btnrow" style="margin-top:8px"><button class="btn sm sec">Copier</button><button class="btn sm sec">Régénérer le lien</button></div></div>
+  </section>
+
+  <!-- ========== DÉTAIL TÂCHE ========== -->
+  <section class="screen" data-screen="task" data-title="Tâche">
+    <div class="card">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><span class="pill retard">en retard de 2 j</span><span class="pill ha">déclenchée par Home Assistant</span><span class="pill ghost">priorité haute</span></div>
+      <h3 style="font-size:20px">Changer la pile du détecteur de fumée</h3>
+      <p class="small">Couloir · <a href="#" onclick="go('item');return false">Détecteur de fumée, couloir</a> · responsable : Camille</p>
+      <div class="btnrow" style="margin-top:10px"><button class="btn" onclick="openDone()">Fait</button><button class="btn sec">Reporter</button><button class="btn sec">Ignorer cette fois</button></div>
+    </div>
+
+    <h2>Quand<span class="badge-b">B1 B4</span></h2>
+    <div class="card">
+      <div class="seg"><button>Date fixe</button><button>Après la dernière fois</button><button>Selon l'usage</button><button class="on">Sur capteur</button></div>
+      <p class="small" style="margin-top:10px">Armée quand un capteur Home Assistant signale « pile faible » (optionnel). Sans Home Assistant : tous les 12 mois après la dernière fois.</p>
+      <div class="list" style="margin-top:8px">
+        <div class="row"><div class="grow"><div class="t" style="font-size:14px">Masquer jusqu'à</div><div class="s">14 jours avant l'échéance</div></div></div>
+        <div class="row"><div class="grow"><div class="t" style="font-size:14px">Saison</div><div class="s">aucune</div></div></div>
+        <div class="row"><div class="grow"><div class="t" style="font-size:14px">Selon l'usage, sans Home Assistant</div><div class="s">compteur tenu dans l'appli : relevé saisi à la main ou envoyé par l'API. Exemple : filtre d'adoucisseur tous les 5 000 L ou 6 mois, le premier atteint.</div></div></div>
+      </div>
+    </div>
+
+    <h2>Exemple : compteur d'usage<span class="badge-b">B4</span></h2>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Adoucisseur : eau traitée</h3><span class="pill">84 %</span></div>
+      <div class="bar" style="margin:8px 0"><i class="p" style="width:84%"></i></div>
+      <p class="small" style="margin:0">Dernier relevé 4 210 L le 2 nov. · filtre à changer à 5 000 L ou le 3 mars, le premier atteint · rythme moyen 38 L/j, soit vers le 23 nov.</p>
+      <div class="btnrow" style="margin-top:8px"><button class="btn sm">Saisir un relevé</button><button class="btn sm sec">Historique des relevés</button></div>
+    </div>
+
+    <h2>Comment faire<span class="badge-b">B6</span></h2>
+    <div class="md">
+      <b>Mode opératoire</b> (Markdown, propre à votre modèle)
+      <ol><li>Monter sur l'escabeau, tourner le détecteur d'un quart de tour.</li><li>Pile CR123A, respecter le sens (+ vers la lumière).</li><li>Appuyer 5 s sur le bouton test : bip long.</li></ol>
+    </div>
+
+    <h2>Il faut<span class="badge-b">B17</span></h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Pile CR123A × 1</div><div class="s">stock : 1 · seuil : 2 · ≈ 4,50 €</div></div><span class="pill sable">à racheter</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Escabeau</div><div class="s">outil, pas de stock</div></div></div>
+    </div>
+
+    <h2>Rappels<span class="badge-b">B14</span></h2>
+    <div class="card"><p class="small" style="margin:0">3 jours avant, puis toutes les 12 h jusqu'à « fait », « reporté » ou « ignoré ». Priorité haute : canal Home Assistant (appli Companion) + ntfy.</p></div>
+
+    <h2>Documents<span class="badge-b">B12</span></h2>
+    <div class="list"><div class="row"><div class="grow"><div class="t" style="font-size:14px">Notice du détecteur</div><div class="s">dans Paperless · ouvert avec votre session Paperless</div></div><span class="chev">↗</span></div></div>
+
+    <h2>Historique de cette tâche<span class="badge-b">B3</span></h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">3 mars 2025 · Camille</div><div class="s">1 pile CR123A · 4,20 € · « test OK »</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">18 janv. 2024 · Sam</div><div class="s">1 pile CR123A · 3,90 €</div></div></div>
+    </div>
+  </section>
+
+  <!-- ========== NOUVELLE TÂCHE ========== -->
+  <section class="screen" data-screen="newtask" data-title="Nouvelle tâche">
+    <label class="f" style="margin-top:0">Titre <span class="small">(seul champ obligatoire)</span><span class="badge-b">B20 P5</span></label>
+    <input class="input" placeholder="Ex. : nettoyer le filtre du lave-vaisselle">
+    <label class="f">Photos, captures, documents<span class="badge-b">B8</span></label>
+    <div class="attach"><div class="ph">+ photo</div><div class="ph s">+ capture</div><div class="ph">+ fichier</div><div class="ph s">+ note vocale</div></div>
+    <p class="small" style="margin-top:6px">Photo du problème, capture d'écran d'un tutoriel ou d'une annonce, PDF. Métadonnées de localisation retirées à l'envoi.</p>
+    <h2>Ou partir d'un modèle</h2>
+    <div class="chips" style="flex-wrap:wrap">
+      <button class="chip">Détecteur de fumée</button><button class="chip">VMC</button><button class="chip">Chaudière</button><button class="chip">Ramonage</button><button class="chip">Gouttières</button><button class="chip">Adoucisseur</button><button class="chip">Lave-vaisselle</button><button class="chip" onclick="go('templates')">Tous les modèles…</button>
+    </div>
+    <h2>Options</h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Pièce et élément</div><div class="s">aucun</div></div><span class="chev">›</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Répétition</div><div class="s">une fois · date fixe · après la dernière fois · selon l'usage · sur capteur</div></div><span class="chev">›</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Responsable</div><div class="s">personne</div></div><span class="chev">›</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Budget estimé</div><div class="s">matériel et main d'œuvre séparés</div></div><span class="chev">›</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Matériel nécessaire</div><div class="s">depuis le stock ou un nouvel article</div></div><span class="chev">›</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Mode opératoire, intervenant, priorité, durée</div><div class="s">facultatif</div></div><span class="chev">›</span></div>
+    </div>
+    <button class="btn block" onclick="go('today',true)">Créer</button>
+  </section>
+
+  <!-- ========== SIGNALER ========== -->
+  <section class="screen" data-screen="report" data-title="Signaler un problème">
+    <p class="small">Pour tout ce qui n'est pas prévu : un bruit, une fuite, une porte qui frotte. Visible par tout le foyer.<span class="badge-b">B23</span></p>
+    <label class="f">Qu'est-ce qui ne va pas ?</label><input class="input" value="La porte du garage grince">
+    <label class="f">Où ?</label>
+    <div class="chips" style="flex-wrap:wrap"><button class="chip">Entrée</button><button class="chip">Cuisine</button><button class="chip">Salle de bain</button><button class="chip on">Garage</button><button class="chip">Extérieur</button></div>
+    <label class="f">Photo ou son (facultatif)</label>
+    <div class="photos"><div class="ph">+ photo</div><div class="ph s">+ note vocale</div></div>
+    <p class="small" style="margin-top:12px">Un problème qui ne se reproduit pas peut rester ouvert en simple note, sans échéance.</p>
+    <button class="btn block" style="margin-top:8px" onclick="go('today',true)">Envoyer</button>
+  </section>
+
+  <!-- ========== PIÈCES ========== -->
+  <section class="screen" data-screen="rooms" data-title="Pièces" data-tab="rooms">
+    <div class="list">
+      <button class="row" onclick="go('room')"><div class="grow"><div class="t">Salon</div><div class="s">2 tâches · 1 projet · 6 éléments</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('room')"><div class="grow"><div class="t">Salle de bain</div><div class="s">1 en retard · projet en cours · 5 éléments</div></div><span class="pill retard">1</span><span class="chev">›</span></button>
+      <button class="row" onclick="go('room')"><div class="grow"><div class="t">Cuisine</div><div class="s">1 en retard · 9 éléments</div></div><span class="pill retard">1</span><span class="chev">›</span></button>
+      <button class="row" onclick="go('room')"><div class="grow"><div class="t">Couloir</div><div class="s">1 en retard · 2 éléments</div></div><span class="pill retard">1</span><span class="chev">›</span></button>
+      <button class="row" onclick="go('room')"><div class="grow"><div class="t">Chambre 1</div><div class="s">rien à faire · 3 éléments</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('room')"><div class="grow"><div class="t">Chaufferie</div><div class="s">1 cette semaine · 3 éléments</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('room')"><div class="grow"><div class="t">Garage</div><div class="s">1 signalement · 4 éléments</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('room')"><div class="grow"><div class="t">Extérieur</div><div class="s">3 tâches d'automne</div></div><span class="chev">›</span></button>
+    </div>
+    <button class="btn sec block">Ajouter une pièce</button>
+  </section>
+
+  <!-- ========== PIÈCE ========== -->
+  <section class="screen" data-screen="room" data-title="Salon">
+    <div class="kpis">
+      <div class="kpi"><div class="l">Dépensé 2026</div><div class="v">412 €</div></div>
+      <div class="kpi"><div class="l">Prévu</div><div class="v">1 250 €</div></div>
+      <div class="kpi"><div class="l">Depuis 2019</div><div class="v">6 870 €</div></div>
+    </div>
+    <div class="chips"><button class="chip on" onclick="chip(this)">Tout</button><button class="chip" onclick="chip(this)">Tâches</button><button class="chip" onclick="chip(this)">Éléments</button><button class="chip" onclick="chip(this)">Mémoire</button><button class="chip" onclick="chip(this)">Historique</button></div>
+
+    <h2>Mémoire de la pièce<span class="badge-b">B16</span></h2>
+    <div class="list">
+      <div class="row"><span class="swatch" style="background:#E8E1D3"></span><div class="grow"><div class="t" style="font-size:14px">Murs : blanc lin, velours</div><div class="s">Marque, référence et lot notés · posé en mars 2023 · reste ½ pot au garage</div></div></div>
+      <div class="row"><span class="swatch" style="background:#B58B62"></span><div class="grow"><div class="t" style="font-size:14px">Sol : parquet chêne contrecollé</div><div class="s">Référence et fournisseur · 2 paquets de réserve</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Photos murs ouverts</div><div class="s">passage des câbles derrière le placo, 2023</div></div></div>
+    </div>
+    <div class="photos" style="margin-bottom:10px"><div class="ph">mur nord</div><div class="ph">gaine TV</div><div class="ph s">étiquette peinture</div></div>
+
+    <h2>À faire</h2>
+    <div class="list">
+      <button class="row" onclick="go('task')"><div class="grow"><div class="t" style="font-size:14px">Ramonage du conduit</div><div class="s">avant le 15 déc.</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('project')"><div class="grow"><div class="t" style="font-size:14px">Projet : repeindre le salon</div><div class="s">planifié · 800 € prévus</div></div><span class="chev">›</span></button>
+    </div>
+
+    <h2>Éléments<span class="badge-b">B15</span></h2>
+    <div class="list">
+      <button class="row" onclick="go('item')"><div class="grow"><div class="t" style="font-size:14px">Insert à bois</div><div class="s">posé en 2019 · garantie jusqu'en 2029</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('item')"><div class="grow"><div class="t" style="font-size:14px">Détecteur de fumée, salon</div><div class="s">pile changée il y a 8 mois</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('item')"><div class="grow"><div class="t" style="font-size:14px">Mur nord</div><div class="s">surface · peinture ci-dessus</div></div><span class="chev">›</span></button>
+    </div>
+    <div class="btnrow"><button class="btn sec sm">Exporter la pièce en PDF</button><button class="btn sec sm" onclick="go('labels')">Étiquettes QR</button></div>
+  </section>
+
+  <!-- ========== ÉLÉMENT ========== -->
+  <section class="screen" data-screen="item" data-title="Chaudière gaz">
+    <div class="card">
+      <h3>Chaudière gaz à condensation</h3>
+      <p class="small">Chaufferie · équipement</p>
+      <table class="t" style="margin-top:6px">
+        <tr><td>Marque, modèle</td><td>exemple · 25 kW</td></tr>
+        <tr><td>N° de série</td><td class="mono">SN 2201-****-17</td></tr>
+        <tr><td>Posée le</td><td>14 sept. 2021</td></tr>
+        <tr><td>Garantie</td><td><span class="pill sable">fin dans 10 mois</span></td></tr>
+        <tr><td>Contrat d'entretien</td><td>Chauffage Martin</td></tr>
+      </table>
+    </div>
+    <div class="notice"><span>⏳</span><div><b>Garantie : 10 mois restants.</b> Un rappel est posé 2 mois avant la fin, pour faire contrôler l'appareil tant qu'il est couvert.<span class="badge-b">B15</span></div></div>
+
+    <h2>Documents dans Paperless<span class="badge-b">B12</span></h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Notice d'installation</div><div class="s">lien vers Paperless, rien n'est copié</div></div><span class="chev">↗</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Facture de pose · 3 480 €</div><div class="s">tag Paperless « Maison »</div></div><span class="chev">↗</span></div>
+    </div>
+
+    <h2>Journal de l'équipement<span class="badge-b">B3</span></h2>
+    <div class="card" style="padding:12px 14px">
+      <div class="kpis" style="margin-bottom:6px"><div class="kpi"><div class="l">Entretiens</div><div class="v">5</div></div><div class="kpi"><div class="l">Réparations</div><div class="v">1</div></div><div class="kpi"><div class="l">Coût total</div><div class="v">4 245 €</div></div></div>
+      <p class="small" style="margin:0">Coût total de possession : achat, pose, entretiens et pièces.</p>
+    </div>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">21 nov. 2025 · entretien annuel</div><div class="s">Chauffage Martin · 145 € · attestation dans Paperless</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">2 févr. 2025 · réparation</div><div class="s">vase d'expansion remplacé · 210 € · pièce : réf. notée</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">18 nov. 2024 · entretien annuel</div><div class="s">Chauffage Martin · 140 €</div></div></div>
+    </div>
+    <div class="btnrow"><button class="btn sec sm">Ajouter une entrée</button><button class="btn sec sm" onclick="go('scan')">Scanner un document</button><button class="btn sec sm" onclick="go('labels')">Étiquette QR</button></div>
+  </section>
+
+  <!-- ========== PROJETS ========== -->
+  <section class="screen" data-screen="projects" data-title="Projets" data-tab="projects">
+    <div class="chips" role="tablist" aria-label="Filtrer par statut">
+      <button class="chip on" onclick="chip(this)">Actifs · 2</button><button class="chip" onclick="chip(this)">Idées · 2</button><button class="chip" onclick="chip(this)">Terminés · 4</button><button class="chip" onclick="chip(this)">Tous</button>
+    </div>
+    <div class="btnrow" style="margin:4px 0 12px"><button class="btn sm" onclick="go('compare')">Comparer pour décider<span class="badge-b">B9</span></button><button class="btn sm sec">Nouveau projet</button></div>
+
+    <h2>En cours</h2>
+    <button class="pl" onclick="go('project')">
+      <div class="t">Refaire la salle de bain</div>
+      <div class="meta"><span class="pill">en cours</span><span class="pill ghost">priorité 1</span><span class="pill retard">plomberie +300 €</span></div>
+      <div class="bar"><i class="p" style="width:31%"></i><i class="e" style="width:38%"></i></div>
+      <div class="nums"><span>payé 2 900 €</span><span>engagé 6 400 €</span><span>prévu 9 200 €</span></div>
+      <div class="nums"><span>prochaine étape : choisir le meuble vasque</span><span>4 tâches</span></div>
+    </button>
+
+    <h2>Planifiés</h2>
+    <button class="pl" onclick="go('project')">
+      <div class="t">Repeindre le salon</div>
+      <div class="meta"><span class="pill sable">printemps 2027</span><span class="pill ghost">priorité 3</span></div>
+      <div class="nums"><span>prévu 800 €</span><span>3 week-ends</span></div>
+    </button>
+
+    <h2>Idées</h2>
+    <div class="list">
+      <button class="row" onclick="go('project')"><div class="grow"><div class="t" style="font-size:14.5px">Isoler les combles</div><div class="s">3 000 à 5 000 € · 2 photos</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('project')"><div class="grow"><div class="t" style="font-size:14.5px">Terrasse bois</div><div class="s">sans estimation · 5 liens</div></div><span class="chev">›</span></button>
+    </div>
+    <p class="small">Une liste par statut, la plus utile en premier. Un projet change de statut depuis sa fiche, sans glisser-déposer.</p>
+  </section>
+
+  <!-- ========== PROJET ========== -->
+  <section class="screen" data-screen="project" data-title="Salle de bain">
+    <div class="card">
+      <div style="display:flex;gap:6px;margin-bottom:6px"><span class="pill">en cours</span><span class="pill ghost">priorité 1</span><span class="pill ghost">3 semaines</span></div>
+      <h3 style="font-size:20px">Refaire la salle de bain</h3>
+      <p class="small">Objectif : douche à l'italienne, remplacer le meuble vasque, refaire les joints et la ventilation.</p>
+    </div>
+    <h2>Budget<span class="badge-b">B10</span></h2>
+    <div class="card">
+      <div class="kpis"><div class="kpi"><div class="l">Prévu</div><div class="v">9 200 €</div></div><div class="kpi"><div class="l">Engagé</div><div class="v">6 400 €</div></div><div class="kpi"><div class="l">Payé</div><div class="v">2 900 €</div></div></div>
+      <div class="bar"><i class="p" style="width:31%"></i><i class="e" style="width:38%"></i></div>
+      <div class="legend"><span><b style="background:var(--ardoise)"></b>payé</span><span><b style="background:var(--sable)"></b>engagé non payé</span><span><b style="background:var(--sauge-clair)"></b>reste prévu</span></div>
+      <table class="t" style="margin-top:10px">
+        <tr><th>Poste</th><th>Prévu</th><th>Engagé</th><th>Payé</th></tr>
+        <tr><td><span class="mono">SDB-01</span> Plomberie</td><td>3 500</td><td>3 800</td><td>1 900</td></tr>
+        <tr><td><span class="mono">SDB-02</span> Carrelage</td><td>2 400</td><td>2 600</td><td>1 000</td></tr>
+        <tr><td><span class="mono">SDB-03</span> Meuble vasque</td><td>900</td><td>—</td><td>—</td></tr>
+        <tr><td><span class="mono">SDB-04</span> VMC, électricité</td><td>1 400</td><td>—</td><td>—</td></tr>
+        <tr><td>Imprévus (10 %)</td><td>1 000</td><td>—</td><td>—</td></tr>
+      </table>
+      <p class="small" style="margin-top:8px"><span class="neg">Plomberie +300 € engagés</span> au-dessus du prévu. L'identifiant du poste (SDB-01) se reprend dans le nom des devis et factures.</p>
+    </div>
+
+    <h2>Devis<span class="badge-b">B9 B12</span></h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Plomberie Durand · 3 800 €</div><div class="s">document Paperless · 2 semaines</div></div><span class="pill ok">retenu</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Sanitaires & Co · 4 350 €</div><div class="s">document Paperless · 3 semaines</div></div><span class="pill ghost">refusé</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Carrelage Petit · 2 600 €</div><div class="s">document Paperless</div></div><span class="pill ok">retenu</span></div>
+    </div>
+    <div class="btnrow" style="margin-bottom:10px"><button class="btn sm sec">Rattacher un document Paperless</button><button class="btn sm sec" onclick="go('scan')">Scanner ou envoyer un fichier</button></div>
+
+    <h2>Dépenses rapprochées de Sure<span class="badge-b">B11</span></h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Acompte Plomberie Durand · 1 900 €</div><div class="s">transaction du 3 nov. · compte joint · rapprochée par Camille</div></div><span class="pill ok">payé</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Acompte Carrelage Petit · 1 000 €</div><div class="s">transaction du 5 nov.</div></div><span class="pill ok">payé</span></div>
+    </div>
+    <button class="btn sec block" onclick="go('reconcile')">2 transactions à rapprocher</button>
+    <p class="small" style="margin-top:6px">Budget Sure lié (optionnel) : « Travaux maison 2026 ». Housecairn le lit, ne crée jamais de transaction et ne modifie rien dans Sure.</p>
+
+    <h2>Inspiration<span class="badge-b">B9</span></h2>
+    <div class="photos"><div class="ph">douche italienne</div><div class="ph s">niche carrelée</div><div class="ph">robinetterie noire</div></div>
+    <p class="small" style="margin-top:6px">Lien collé : titre et image d'aperçu gardés, récupérés au collage seulement.</p>
+
+    <h2>Tâches du projet</h2>
+    <div class="list">
+      <div class="task"><div class="grow"><div class="t">Choisir le meuble vasque</div><div class="s"><span>avant le 20 nov.</span><span class="who">C</span></div></div><button class="done" aria-label="Fait" onclick="done(this,'Fait')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div>
+      <div class="task"><div class="grow"><div class="t">Photos murs ouverts avant carrelage</div><div class="s"><span>pendant les travaux</span><span>ira dans la mémoire de la pièce</span></div></div><button class="done" aria-label="Fait" onclick="done(this,'Fait')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div>
+    </div>
+  </section>
+
+  <!-- ========== COMPARER ========== -->
+  <section class="screen" data-screen="compare" data-title="Comparer les projets">
+    <p class="small">Pour décider dans quel ordre faire les travaux. Trier par une colonne.<span class="badge-b">B9</span></p>
+    <div class="card" style="padding:8px 10px;overflow-x:auto">
+      <table class="t" style="min-width:420px">
+        <tr><th>Projet</th><th>Coût</th><th>Durée</th><th>Priorité</th><th>Saison</th></tr>
+        <tr><td><b>Isoler les combles</b></td><td>3–5 k€</td><td>2 j</td><td>2</td><td>été</td></tr>
+        <tr><td><b>Repeindre le salon</b></td><td>800 €</td><td>3 we</td><td>3</td><td>printemps</td></tr>
+        <tr><td><b>Terrasse bois</b></td><td>?</td><td>?</td><td>4</td><td>printemps</td></tr>
+      </table>
+    </div>
+    <div class="notice"><span>💡</span><div>Budget disponible saisi : <b>4 000 € en 2027</b>. Les projets qui tiennent dedans sont mis en avant.</div></div>
+  </section>
+
+  <!-- ========== BUDGET ========== -->
+  <section class="screen" data-screen="budget" data-title="Budget" data-tab="budget">
+    <div class="seg" style="margin-bottom:10px"><button class="on">2026</button><button>12 mois glissants</button><button>Tout</button></div>
+    <div class="kpis"><div class="kpi"><div class="l">Prévu</div><div class="v">12 450 €</div></div><div class="kpi"><div class="l">Engagé</div><div class="v">7 180 €</div></div><div class="kpi"><div class="l">Payé</div><div class="v">3 610 €</div></div></div>
+    <div class="card" style="padding:12px 14px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>Enveloppe annuelle</b><span class="small">4 000 € disponibles en 2027</span></div><p class="small" style="margin:4px 0 0">Sert à comparer les projets. Peut reprendre un budget Sure (optionnel).</p></div>
+    <div class="notice"><span class="pill">Sure</span><div>Optionnel : le réel vient d'une transaction déjà présente dans Sure, que vous rapprochez. <b>2 transactions</b> attendent.<span class="badge-b">B11</span> <a href="#" onclick="go('reconcile');return false">Rapprocher</a></div></div>
+
+    <div class="seg" style="margin-bottom:8px" id="bseg">
+      <button class="on" onclick="bview('piece',this)">Par pièce</button><button onclick="bview('projet',this)">Par projet</button><button onclick="bview('tache',this)">Par tâche</button>
+    </div>
+    <div class="card" style="padding:8px 12px" data-bv="piece">
+      <table class="t">
+        <tr><th>Pièce</th><th>Prévu</th><th>Payé</th><th>Écart</th></tr>
+        <tr><td>Salle de bain</td><td>9 200</td><td>2 900</td><td class="neg">+300</td></tr>
+        <tr><td>Salon</td><td>1 250</td><td>412</td><td>—</td></tr>
+        <tr><td>Chaufferie</td><td>600</td><td>145</td><td>−5</td></tr>
+        <tr><td>Extérieur</td><td>900</td><td>120</td><td>—</td></tr>
+        <tr><td>Toute la maison</td><td>500</td><td>33</td><td>—</td></tr>
+      </table>
+    </div>
+    <div class="card" style="padding:8px 12px;display:none" data-bv="projet">
+      <table class="t">
+        <tr><th>Projet</th><th>Prévu</th><th>Engagé</th><th>Payé</th></tr>
+        <tr><td><a href="#" onclick="go('project');return false">Salle de bain</a></td><td>9 200</td><td>6 400</td><td>2 900</td></tr>
+        <tr><td>Repeindre le salon</td><td>800</td><td>—</td><td>—</td></tr>
+        <tr><td>Isoler les combles</td><td>4 000</td><td>—</td><td>—</td></tr>
+        <tr><td>Changer les fenêtres <span class="pill ok">fini</span></td><td>7 500</td><td>8 025</td><td>8 025</td></tr>
+      </table>
+      <p class="small" style="margin:6px 0 0">Projet terminé : écart final +7 %.</p>
+    </div>
+    <div class="card" style="padding:8px 12px;display:none" data-bv="tache">
+      <table class="t">
+        <tr><th>Tâche d'entretien</th><th>Par an</th><th>2026</th><th>Total</th></tr>
+        <tr><td>Entretien chaudière</td><td>145</td><td>145</td><td>705</td></tr>
+        <tr><td>Ramonage</td><td>80</td><td>—</td><td>390</td></tr>
+        <tr><td>Piles des détecteurs</td><td>13</td><td>4</td><td>41</td></tr>
+        <tr><td>Filtre adoucisseur</td><td>36</td><td>18</td><td>90</td></tr>
+      </table>
+      <p class="small" style="margin:6px 0 0">Coût moyen par an, de l'année, et depuis le début : le vrai coût de l'entretien.</p>
+    </div>
+
+    <h2>Par nature</h2>
+    <div class="card" style="padding:8px 12px">
+      <table class="t">
+        <tr><th>Nature</th><th>Prévu</th><th>Payé</th></tr>
+        <tr><td>Main d'œuvre</td><td>7 900</td><td>2 900</td></tr>
+        <tr><td>Matériel</td><td>3 550</td><td>565</td></tr>
+        <tr><td>Contrats d'entretien</td><td>1 000</td><td>145</td></tr>
+      </table>
+    </div>
+    <div class="btnrow"><button class="btn sec sm">Exporter CSV</button><button class="btn sec sm">Bilan annuel PDF</button></div>
+  </section>
+
+  <!-- ========== RAPPROCHEMENT ========== -->
+  <section class="screen" data-screen="reconcile" data-title="À rapprocher">
+    <p class="small">Transactions déjà présentes dans Sure qui ressemblent à une dépense prévue. Rapprocher reprend leur montant ; rien n'est rattaché sans votre accord, et Housecairn ne crée ni ne modifie jamais de transaction.<span class="badge-b">B11 P4</span></p>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Brico Dépôt · 86,40 €</h3><span class="small">6 nov.</span></div>
+      <p class="small">Proposé : <b>Salle de bain · SDB-02 Carrelage</b> (montant proche d'un poste engagé, marchand déjà vu sur ce projet)</p>
+      <div class="btnrow"><button class="btn sm">Valider</button><button class="btn sm sec">Autre poste…</button><button class="btn sm sec">Pas lié à la maison</button></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Chauffage Martin · 145,00 €</h3><span class="small">13 nov.</span></div>
+      <p class="small">Proposé : <b>Chaufferie · Entretien annuel chaudière</b> (tâche faite le même jour)</p>
+      <div class="btnrow"><button class="btn sm">Valider</button><button class="btn sm sec">Autre…</button><button class="btn sm sec">Pas lié</button></div>
+    </div>
+    <p class="small">Sans Sure : le coût réel se saisit à la réalisation de la tâche ou à la réception de la facture.</p>
+  </section>
+
+  <!-- ========== MATÉRIEL ========== -->
+  <section class="screen" data-screen="supplies" data-title="Matériel">
+    <div class="seg" style="margin-bottom:12px"><button class="on">30 jours</button><button>60 jours</button><button>90 jours</button></div>
+    <h2>À acheter<span class="badge-b">B17</span></h2>
+    <div class="list">
+      <div class="row" onclick="go('part')"><span class="box"></span><div class="grow"><div class="t" style="font-size:14px">Pile CR123A × 2</div><div class="s">besoin 3 (détecteurs couloir, salon, chambre) − stock 1 · ≈ 9 €</div></div><span class="chev">›</span></div>
+      <div class="row" onclick="go('part')"><span class="box"></span><div class="grow"><div class="t" style="font-size:14px">Filtre VMC F7 × 1</div><div class="s">pour le 7 févr. · réf. fournisseur et lien d'achat</div></div><span class="chev">›</span></div>
+      <div class="row"><span class="box"></span><div class="grow"><div class="t" style="font-size:14px">Vinaigre ménager</div><div class="s">détartrage douche · pas de stock suivi</div></div></div>
+    </div>
+    <div class="btnrow"><button class="btn sm">Partager la liste</button><button class="btn sm sec">Copier</button></div>
+    <h2>Stock et pièces</h2>
+    <input class="input" placeholder="Rechercher : filtre, joint, réf. 4512…" style="margin-bottom:8px">
+    <div class="list">
+      <button class="row" onclick="go('part')"><div class="grow"><div class="t" style="font-size:14px">Pile CR123A</div><div class="s">1 · seuil 2 · garage, étagère 2</div></div><span class="pill sable">bas</span><span class="chev">›</span></button>
+      <button class="row" onclick="go('part')"><div class="grow"><div class="t" style="font-size:14px">Filtre VMC F7</div><div class="s">0 · pour : VMC double flux · 2 fournisseurs</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('part')"><div class="grow"><div class="t" style="font-size:14px">Cartouche adoucisseur</div><div class="s">1 · réf. fabricant notée · photo de l'étiquette</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('part')"><div class="grow"><div class="t" style="font-size:14px">Peinture murs salon</div><div class="s">½ pot · lien vers la mémoire du salon</div></div><span class="chev">›</span></button>
+    </div>
+    <button class="btn sec block">Ajouter un article</button>
+    <p class="small" style="margin-top:8px">Le stock fonctionne seul, sans aucune intégration. Il baisse quand une tâche est faite avec du matériel prévu.</p>
+  </section>
+
+  <!-- ========== HISTORIQUE ========== -->
+  <section class="screen" data-screen="history" data-title="Historique">
+    <div class="chips"><button class="chip on" onclick="chip(this)">Tout</button><button class="chip" onclick="chip(this)">Par pièce</button><button class="chip" onclick="chip(this)">Par élément</button><button class="chip" onclick="chip(this)">Par intervenant</button><button class="chip" onclick="chip(this)">Par personne</button></div>
+    <input class="input" placeholder="Rechercher : joint, filtre, Durand…" style="margin-bottom:10px">
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">6 nov. · Bouches VMC nettoyées</div><div class="s">Cuisine, SdB · Sam · 0 €</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">3 nov. · Acompte plomberie</div><div class="s">Salle de bain · Plomberie Durand · 1 900 €</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">21 nov. 2025 · Entretien chaudière</div><div class="s">Chaufferie · Chauffage Martin · 145 €</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">3 mars 2025 · Pile détecteur couloir</div><div class="s">Couloir · Camille · 4,20 €</div></div></div>
+    </div>
+    <div class="btnrow"><button class="btn sec sm">Exporter CSV</button><button class="btn sec sm">Dossier PDF (vente, assurance)</button></div>
+    <p class="small" style="margin-top:8px">Le dossier PDF rassemble par pièce ce qui a été fait, quand, par qui et pour combien : utile pour une vente, l'assurance ou un bilan annuel.<span class="badge-b">B21</span></p>
+  </section>
+
+  <!-- ========== INTERVENANTS ========== -->
+  <section class="screen" data-screen="pros" data-title="Intervenants">
+    <p class="small">Un nom, un métier, une note : pas un carnet d'adresses. Le téléphone reste dans vos contacts.<span class="badge-b">B18</span></p>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t">Chauffage Martin</div><div class="s">chauffagiste · contrat annuel · 5 interventions · « ponctuel, explique bien »</div></div><span class="pill ok">à rappeler</span></div>
+      <div class="row"><div class="grow"><div class="t">Plomberie Durand</div><div class="s">plombier · SdB 2026 · 1 intervention</div></div></div>
+      <div class="row"><div class="grow"><div class="t">Ramonage du Sud</div><div class="s">ramoneur · attestation annuelle dans Paperless</div></div></div>
+      <div class="row"><div class="grow"><div class="t">Sanitaires & Co</div><div class="s">devis refusé 2026 · « trop long »</div></div><span class="pill ghost">éviter</span></div>
+    </div>
+  </section>
+
+  <!-- ========== DOCUMENTS À RATTACHER ========== -->
+  <section class="screen" data-screen="inbox" data-title="Documents à rattacher">
+    <div class="notice"><span class="pill">Paperless</span><div>Paperless envoie ici les documents tagués « Maison ». Ils restent dans Paperless ; Housecairn ne garde que le lien.<span class="badge-b">B12</span></div></div>
+    <div class="card">
+      <h3>Facture · Plomberie Durand</h3><p class="small">reçu de Paperless le 6 nov. · 1 900 € · correspondant : Plomberie Durand</p>
+      <p class="small">Proposé : <b>Projet Salle de bain · devis retenu · SDB-01</b></p>
+      <div class="btnrow"><button class="btn sm">Rattacher</button><button class="btn sm sec">Ailleurs…</button><button class="btn sm sec">Ignorer</button></div>
+    </div>
+    <div class="card">
+      <h3>Notice · lave-vaisselle</h3><p class="small">reçu le 2 nov. · type : notice</p>
+      <p class="small">Proposé : <b>Cuisine · Lave-vaisselle</b> (créer l'élément s'il n'existe pas)</p>
+      <div class="btnrow"><button class="btn sm">Rattacher</button><button class="btn sm sec">Ailleurs…</button></div>
+    </div>
+  </section>
+
+  <!-- ========== MODÈLES ========== -->
+  <section class="screen" data-screen="templates" data-title="Modèles de tâches">
+    <p class="small">Bibliothèque versionnée dans le dépôt public, relue par PR, en français et en anglais. Chaque intervalle indique sa source et reste indicatif.</p>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Ramonage</div><div class="s">1 à 2 fois par an selon le combustible · réglementation locale à vérifier</div></div><button class="btn sm sec">Ajouter</button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Entretien chaudière gaz</div><div class="s">annuel · obligation en France</div></div><button class="btn sm sec">Ajouter</button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Bouches VMC</div><div class="s">tous les 3 mois après la dernière fois</div></div><button class="btn sm sec">Ajouter</button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Pile détecteur de fumée</div><div class="s">sur pile faible, sinon 12 mois</div></div><button class="btn sm sec">Ajouter</button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Préparer la maison pour l'hiver</div><div class="s">liste saisonnière · 6 tâches</div></div><button class="btn sm sec">Ajouter</button></div>
+    </div>
+  </section>
+
+  <!-- ========== PLUS ========== -->
+  <section class="screen" data-screen="more" data-title="Plus" data-tab="more">
+    <div class="list">
+      <button class="row" onclick="go('supplies')"><div class="grow"><div class="t">Matériel et stock</div></div><span class="pill sable">2</span><span class="chev">›</span></button>
+      <button class="row" onclick="go('history')"><div class="grow"><div class="t">Historique</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('pros')"><div class="grow"><div class="t">Intervenants</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('inbox')"><div class="grow"><div class="t">Documents à rattacher</div></div><span class="pill">2</span><span class="chev">›</span></button>
+      <button class="row" onclick="go('templates')"><div class="grow"><div class="t">Modèles de tâches</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('labels')"><div class="grow"><div class="t">Étiquettes QR</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('planning')"><div class="grow"><div class="t">Calendrier et flux ICS</div></div><span class="chev">›</span></button>
+    </div>
+    <h2>Réglages</h2>
+    <div class="list">
+      <button class="row" onclick="go('homes')"><div class="grow"><div class="t">Logements</div><div class="s">2</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('household')"><div class="grow"><div class="t">Foyer et rôles</div><div class="s">3 personnes</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('homeprefs')"><div class="grow"><div class="t">Mon accueil</div><div class="s">organisation, sections, horizon</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('notifs')"><div class="grow"><div class="t">Notifications</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('integrations')"><div class="grow"><div class="t">Intégrations</div><div class="s">Home Assistant, Paperless, Sure</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('api')"><div class="grow"><div class="t">API et jetons</div><div class="s">2 jetons actifs</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('data')"><div class="grow"><div class="t">Données : export, import, sauvegarde</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('security')"><div class="grow"><div class="t">Sécurité du compte</div><div class="s">passkey, TOTP, sessions</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="go('about')"><div class="grow"><div class="t">À propos</div></div><span class="chev">›</span></button>
+    </div>
+    <button class="row card" style="border-radius:var(--r)" onclick="go('onboarding')"><div class="grow"><div class="t">Revoir le premier démarrage</div><div class="s">écran de la maquette</div></div><span class="chev">›</span></button>
+  </section>
+
+  <!-- ========== LOGEMENTS ========== -->
+  <section class="screen" data-screen="homes" data-title="Logements">
+    <p class="small">Chaque logement a ses pièces, ses tâches, son budget et sa devise. L'accueil montre un logement à la fois, ou tous.<span class="badge-b">B22</span></p>
+    <div class="list">
+      <button class="row" onclick="go('today',true)"><div class="grow"><div class="t">Maison</div><div class="s">résidence principale · 8 pièces · 2 en retard</div></div><span class="pill ok">actif</span></button>
+      <button class="row"><div class="grow"><div class="t">Appartement en location</div><div class="s">locataire en lecture seule · 4 pièces · 1 à venir</div></div><span class="chev">›</span></button>
+      <button class="row"><div class="grow"><div class="t">Tous les logements</div><div class="s">vue combinée</div></div><span class="chev">›</span></button>
+    </div>
+    <button class="btn sec block">Ajouter un logement</button>
+  </section>
+
+  <!-- ========== FOYER ========== -->
+  <section class="screen" data-screen="household" data-title="Foyer et rôles">
+    <div class="list">
+      <div class="row"><span class="who">C</span><div class="grow"><div class="t">Camille</div><div class="s">propriétaire · tout</div></div></div>
+      <div class="row"><span class="who b">S</span><div class="grow"><div class="t">Sam</div><div class="s">membre · tâches, projets, réalisation</div></div></div>
+      <div class="row"><span class="who" style="background:#9AA6A2">L</span><div class="grow"><div class="t">Locataire</div><div class="s">lecture seule · appartement uniquement · peut signaler un problème</div></div></div>
+    </div>
+    <button class="btn block">Inviter quelqu'un</button>
+    <p class="small" style="margin-top:8px">Invitation par lien à usage unique. Rôles : propriétaire, membre, lecture seule. Connexion locale ou OIDC.<span class="badge-b">B7</span></p>
+  </section>
+
+  <!-- ========== NOTIFICATIONS ========== -->
+  <section class="screen" data-screen="notifs" data-title="Notifications">
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Premier rappel</div><div class="s">3 jours avant l'échéance</div></div><span class="chev">›</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Relancer tant que ce n'est pas fait</div><div class="s">toutes les 12 h, priorité haute · toutes les 48 h, normale<span class="badge-b">B14</span></div></div><button class="toggle on" onclick="this.classList.toggle('on')" aria-label="Relances"></button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Résumé</div><div class="s">chaque lundi à 8 h</div></div><button class="toggle on" onclick="this.classList.toggle('on')" aria-label="Résumé"></button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Heures calmes</div><div class="s">22 h – 7 h</div></div><button class="toggle on" onclick="this.classList.toggle('on')" aria-label="Heures calmes"></button></div>
+    </div>
+    <h2>Mes canaux</h2>
+    <p class="small">Par la bibliothèque Apprise, intégrée dès la première version : plus de 100 services. Chacun ajoute le sien par une simple adresse.</p>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Application iOS Housecairn</div><div class="s">échéances en notifications locales · immédiat par relais push chiffré (optionnel)</div></div><span class="pill ok">actif</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">ntfy</div><div class="s mono">ntfys://ntfy.example.com/maison</div></div><button class="btn sm sec">Tester</button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Home Assistant</div><div class="s">relai vers l'appli Companion, par webhook · priorité haute</div></div><button class="btn sm sec">Tester</button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">E-mail</div><div class="s mono">mailtos://…</div></div><button class="btn sm sec">Tester</button></div>
+    </div>
+    <button class="btn sec block">Ajouter un canal (Telegram, Signal, Matrix, Gotify, Pushover, Discord, Slack…)</button>
+    <p class="small" style="margin-top:8px">Les adresses des canaux sont chiffrées au repos et jamais réaffichées en entier.</p>
+  </section>
+
+  <!-- ========== INTÉGRATIONS ========== -->
+  <section class="screen" data-screen="integrations" data-title="Intégrations">
+    <p class="small">Toutes optionnelles et désactivées par défaut : Housecairn fonctionne sans aucune d'elles. Pour chacune : ce qu'elle fait, qui appelle qui, ce que Housecairn détient.<span class="badge-b">P2 P3</span></p>
+    <div class="list">
+      <button class="row" onclick="go('ha')"><div class="grow"><div class="t">Home Assistant</div><div class="s">importer les pièces · capteurs qui arment des tâches · relai de notification</div></div><span class="pill ok">actif</span><span class="chev">›</span></button>
+      <button class="row"><div class="grow"><div class="t">Paperless-ngx</div><div class="s">rapprocher un document existant · envoyer un scan ou un fichier</div></div><span class="pill ok">actif</span><span class="chev">›</span></button>
+      <button class="row"><div class="grow"><div class="t">Sure</div><div class="s">rapprocher une transaction existante, reprendre son montant · lier un budget · jamais de création</div></div><span class="pill ok">actif</span><span class="chev">›</span></button>
+      <button class="row"><div class="grow"><div class="t">Firefly III</div><div class="s">même rôle que Sure, par webhook signé</div></div><span class="pill ghost">désactivé</span><span class="chev">›</span></button>
+      <button class="row" onclick="go('notifs')"><div class="grow"><div class="t">Notifications (Apprise)</div><div class="s">intégrée, plus de 100 services</div></div><span class="chev">›</span></button>
+      <button class="row"><div class="grow"><div class="t">Connexion OIDC</div><div class="s">Authentik, Keycloak, Pocket ID…</div></div><span class="pill ghost">désactivé</span><span class="chev">›</span></button>
+    </div>
+  </section>
+
+  <!-- ========== HOME ASSISTANT ========== -->
+  <section class="screen" data-screen="ha" data-title="Home Assistant">
+    <div class="notice ha"><div><b>Optionnel, et sans jeton Home Assistant.</b> Un jeton HA donne tous les droits de son utilisateur. Ici, c'est Home Assistant qui envoie ses informations à Housecairn, et Housecairn n'appelle qu'un webhook que vous contrôlez.<span class="badge-b">P3</span></div></div>
+
+    <h2>1. Importer les pièces</h2>
+    <div class="flow"><div class="n">Zones de HA<br><span class="small">Salon, Cuisine…</span></div><div class="a">→</div><div class="n">Pièces Housecairn</div></div>
+    <p class="small">Script HA fourni : il envoie la liste de vos zones une fois. Vous choisissez ensuite lesquelles créer ; rien n'est supprimé, et les pièces restent modifiables dans Housecairn.</p>
+    <div class="list">
+      <div class="row"><span class="box on">✓</span><div class="grow"><div class="t" style="font-size:14px">Salon · Cuisine · Salle de bain · Couloir</div><div class="s">4 zones à créer</div></div></div>
+      <div class="row"><span class="box"></span><div class="grow"><div class="t" style="font-size:14px">Jardin, Piscine</div><div class="s">déjà « Extérieur » : fusionner ?</div></div></div>
+    </div>
+
+    <h2>2. Capteurs qui arment des tâches</h2>
+    <div class="flow"><div class="n">Capteur HA<br><span class="small">pile faible, fuite, seuil</span></div><div class="a">→</div><div class="n">Tâche armée</div></div>
+    <p class="small">Blueprint HA « Housecairn : armer une tâche » : il appelle l'API avec un jeton Housecairn de portée <span class="mono">events</span> seulement, rangé dans <span class="mono">secrets.yaml</span>.</p>
+    <div class="list"><div class="row"><div class="grow"><div class="t" style="font-size:14px">Pile faible · détecteur couloir</div><div class="s">reçu il y a 2 j · signature valide · tâche armée</div></div></div></div>
+
+    <h2>3. Relai de notification</h2>
+    <div class="flow"><div class="n">Rappel Housecairn</div><div class="a">→</div><div class="n">Webhook HA<br><span class="small">local_only</span></div></div>
+    <p class="small">Un canal parmi d'autres (voir Notifications). L'automatisation HA décide quoi faire ; jamais d'action destructrice derrière un webhook.</p>
+    <div class="btnrow"><button class="btn sm">Importer le blueprint et le script</button><button class="btn sm sec">Tester</button></div>
+  </section>
+
+  <!-- ========== API ========== -->
+  <section class="screen" data-screen="api" data-title="API et jetons">
+    <p class="small">Tout ce que fait l'interface passe par une API REST documentée (OpenAPI). Housecairn offre le moindre privilège qu'il exige des autres.<span class="badge-b">B13</span></p>
+    <div class="btnrow" style="margin-bottom:10px"><button class="btn sm" onclick="go('apidocs')">Documentation de l'API</button><button class="btn sm sec" onclick="openToken()">Nouveau jeton</button></div>
+    <h2>Jetons actifs</h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Home Assistant</div><div class="s"><span class="mono">events:write</span> · expire le 7 nov. 2027 · utilisé il y a 2 j · hc_…a41f</div></div><button class="btn sm sec">Révoquer</button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Script de sauvegarde</div><div class="s"><span class="mono">read</span> · logement Maison · expire dans 90 j · hc_…07bc</div></div><button class="btn sm sec">Révoquer</button></div>
+    </div>
+    <h2>Webhooks entrants</h2>
+    <div class="list"><div class="row"><div class="grow"><div class="t" style="font-size:14px">Paperless · documents</div><div class="s">signature HMAC · anti-rejeu 5 min · 64 Ko max</div></div><span class="pill ok">actif</span></div></div>
+    <h2>Webhooks sortants</h2>
+    <div class="list"><div class="row"><div class="grow"><div class="t" style="font-size:14px">task.completed, task.overdue, supply.low</div><div class="s">vers un hôte autorisé · signés HMAC · nouvel essai en cas d'échec</div></div><span class="pill ghost">J3</span></div></div>
+    <h2>Serveur MCP</h2>
+    <div class="list"><div class="row"><div class="grow"><div class="t" style="font-size:14px">Pour les assistants vocaux et les agents IA</div><div class="s">lire les tâches, réaliser, signaler · mêmes jetons à portée</div></div><span class="pill ghost">J3</span></div></div>
+    <h2>Exemple</h2>
+    <div class="code">curl -X POST https://maison.example.com/api/v1/events \
+  -H "Authorization: Bearer hc_…" \
+  -d '{"source":"ha","type":"battery_low",
+       "item":"detecteur-couloir"}'</div>
+  </section>
+
+  <!-- ========== API DOCS ========== -->
+  <section class="screen" data-screen="apidocs" data-title="API v1">
+    <p class="small">Schéma OpenAPI 3.1 à <span class="mono">/api/schema/</span>, interface de test à <span class="mono">/api/docs/</span>. Versionnée, pagination par curseur, filtres sur chaque liste.</p>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px"><span class="verb g">GET</span> /homes · /rooms · /items</div><div class="s">logements, pièces, éléments</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px"><span class="verb g">GET</span> /tasks?due_before=&amp;room=&amp;assignee=</div><div class="s">tâches et prochaines occurrences</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px"><span class="verb p">POST</span> /tasks/{id}/complete</div><div class="s">réaliser : coût, note, matériel consommé</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px"><span class="verb p">POST</span> /issues</div><div class="s">signaler un problème</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px"><span class="verb g">GET</span> /projects · /quotes · /budget-lines</div><div class="s">projets, devis, postes prévu / engagé / payé</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px"><span class="verb g">GET</span> /supplies · <span class="verb u">PATCH</span> /stock</div><div class="s">matériel, besoins à 30/60/90 j, stock</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px"><span class="verb g">GET</span> /history · /contractors</div><div class="s">journal, intervenants</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px"><span class="verb p">POST</span> /events</div><div class="s">événements externes (portée events seulement)</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px"><span class="verb g">GET</span> /export · <span class="verb p">POST</span> /import</div><div class="s">export complet JSON versionné, import CSV</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px"><span class="verb g">GET</span> /ics/{secret}.ics</div><div class="s">flux calendrier</div></div></div>
+    </div>
+    <div class="notice"><span>i</span><div><b>Une seule API pour tous les clients</b> : l'interface web, l'application iOS, Home Assistant et le serveur MCP (J3) passent par elle. Aucune fonction n'existe seulement dans le web.</div></div>
+  </section>
+
+  <!-- ========== DONNÉES ========== -->
+  <section class="screen" data-screen="data" data-title="Données">
+    <p class="small">Vos données restent chez vous : aucune télémétrie, aucun compte en ligne, aucun appel sortant non configuré.<span class="badge-b">B21 B24</span></p>
+    <h2>Exporter</h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Export complet JSON</div><div class="s">schéma documenté et versionné · photos incluses</div></div><button class="btn sm sec">Exporter</button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">CSV par type</div><div class="s">tâches, historique, budget, éléments, matériel</div></div><button class="btn sm sec">Choisir</button></div>
+    </div>
+    <h2>Importer</h2>
+    <div class="list"><div class="row"><div class="grow"><div class="t" style="font-size:14px">Depuis un tableur ou une autre appli</div><div class="s">CSV · correspondance des colonnes · aperçu avant import</div></div><button class="btn sm sec">Importer</button></div></div>
+    <h2>Sauvegarde</h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Dernière sauvegarde</div><div class="s">cette nuit, 3 h · base + fichiers · 48 Mo</div></div><span class="pill ok">OK</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Restaurer</div><div class="s">procédure documentée, testée à chaque version</div></div><span class="chev">›</span></div>
+    </div>
+  </section>
+
+  <!-- ========== SÉCURITÉ ========== -->
+  <section class="screen" data-screen="security" data-title="Sécurité du compte">
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Passkey</div><div class="s">téléphone · ajoutée le 2 nov.</div></div><span class="pill ok">active</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Code TOTP</div><div class="s">application d'authentification</div></div><span class="pill ok">actif</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Sessions ouvertes</div><div class="s">2 · déconnecter les autres</div></div><span class="chev">›</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Journal d'audit</div><div class="s">connexions, rôles, jetons, exports</div></div><span class="chev">›</span></div>
+    </div>
+  </section>
+
+  <!-- ========== À PROPOS ========== -->
+  <section class="screen" data-screen="about" data-title="À propos">
+    <div class="card" style="text-align:center">
+      <svg viewBox="0 0 256 256" width="72" height="72" aria-hidden="true"><path fill="#5F726E" d="M56,203 C54,183 90,174 130,175 C172,176 202,183 201,202 C200,220 168,227 128,227 C88,227 58,222 56,203Z"/><path fill="#8FA39A" d="M76,150 C74,133 100,127 130,127 C160,127 183,133 182,149 C181,164 158,169 128,168 C98,167 78,163 76,150Z"/><path fill="#C8A27C" d="M82,113 C78,104 116,62 123,57 C126,55 130,55 133,57 C141,63 178,102 174,113 C171,120 151,121 128,121 C105,121 85,120 82,113Z"/></svg>
+      <h3 style="font-size:20px;margin-top:6px">Housecairn</h3>
+      <p class="small">Housecairn, by Robvred · version 0.1.0</p>
+      <p class="small">Logiciel libre sous licence AGPL-3.0. Code source et signalement de sécurité sur GitHub.</p>
+      <p class="small">Développé avec un agent IA, sous revue humaine.</p>
+    </div>
+  </section>
+
+  <!-- ========== FICHE ARTICLE ========== -->
+  <section class="screen" data-screen="part" data-title="Article">
+    <div class="card">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="ph" style="width:76px;flex:none">étiquette</div>
+        <div><h3>Filtre VMC F7</h3><p class="small" style="margin:0">Pour : VMC double flux (combles)</p><div style="margin-top:6px"><span class="pill sable">stock 0 · seuil 1</span></div></div>
+      </div>
+    </div>
+    <h2>Pour ne plus jamais chercher la référence<span class="badge-b">B15 B17</span></h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Référence fabricant</div><div class="s mono">F7-280x190x48</div></div><button class="btn sm sec">Copier</button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Dimensions, compatibilité</div><div class="s">280 × 190 × 48 mm · classe F7 · aussi compatible : M5 pour l'extraction</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Rangé</div><div class="s">garage, étagère 2, bac « VMC »</div></div></div>
+    </div>
+    <h2>Où l'acheter</h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Fournisseur A · réf. 4512-F7</div><div class="s">dernier prix payé 18,90 € le 6 mai · lien d'achat</div></div><span class="chev">↗</span></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Fournisseur B · réf. VF7-280</div><div class="s">22,50 € · lien d'achat</div></div><span class="chev">↗</span></div>
+    </div>
+    <h2>Mouvements</h2>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">6 mai · −1</div><div class="s">tâche « changer les filtres VMC »</div></div></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">6 mai · +1</div><div class="s">acheté chez Fournisseur A · 18,90 €</div></div></div>
+    </div>
+    <div class="btnrow"><button class="btn sm">+1 en stock</button><button class="btn sm sec">−1</button><button class="btn sm sec" onclick="go('labels')">Étiquette QR</button></div>
+  </section>
+
+  <!-- ========== ÉTIQUETTES QR ========== -->
+  <section class="screen" data-screen="labels" data-title="Étiquettes QR">
+    <p class="small">À imprimer et coller sur l'appareil, le tableau électrique ou le bac de rangement. Le code ouvre la fiche dans l'application iOS, ou dans le navigateur, après connexion.</p>
+    <div class="seg" style="margin-bottom:10px"><button class="on">Planche A4</button><button>Étiqueteuse 62 mm</button></div>
+    <div class="lbl-sheet">
+      <div class="lbl"><div class="qr"></div><div><div class="n">Chaudière gaz</div><div class="r">Chaufferie</div></div></div>
+      <div class="lbl"><div class="qr"></div><div><div class="n">Détecteur couloir</div><div class="r">pile CR123A</div></div></div>
+      <div class="lbl"><div class="qr"></div><div><div class="n">VMC double flux</div><div class="r">filtre F7</div></div></div>
+      <div class="lbl"><div class="qr"></div><div><div class="n">Tableau électrique</div><div class="r">Garage</div></div></div>
+    </div>
+    <p class="small" style="margin-top:8px">Le code ne contient qu'un identifiant opaque : aucune information sur la maison n'est lisible sans compte.</p>
+    <button class="btn block" style="margin-top:6px">Imprimer (PDF)</button>
+  </section>
+
+  <!-- ========== SCAN VERS PAPERLESS ========== -->
+  <section class="screen" data-screen="scan" data-title="Envoyer vers Paperless">
+    <div class="notice"><span class="pill">Paperless</span><div>Optionnel. Le document part dans Paperless, qui reste la référence : OCR, recherche, archivage. Housecairn ne garde que le lien.<span class="badge-b">B12</span></div></div>
+    <div class="attach" style="grid-template-columns:repeat(2,1fr)"><div class="ph" style="aspect-ratio:1.3">Scanner (caméra)</div><div class="ph s" style="aspect-ratio:1.3">Choisir un fichier</div></div>
+    <label class="f">Rattaché à</label><input class="input" value="Projet Salle de bain · devis">
+    <label class="f">Tags Paperless</label><div class="chips"><button class="chip on">Maison</button><button class="chip on">Devis</button><button class="chip">+</button></div>
+    <p class="small" style="margin-top:8px">Envoi seulement sur votre action, avec un compte Paperless dédié qui peut ajouter des documents et lire ceux tagués « Maison », rien d'autre.</p>
+    <button class="btn block" style="margin-top:6px" onclick="goBack()">Envoyer</button>
+  </section>
+
+  <!-- ========== PRÉFÉRENCES D'ACCUEIL ========== -->
+  <section class="screen" data-screen="homeprefs" data-title="Mon accueil">
+    <p class="small">Propre à chaque personne du foyer.</p>
+    <label class="f">Organiser par</label>
+    <div class="seg"><button class="on">Urgence</button><button>Pièce</button><button>Personne</button><button>Calendrier</button></div>
+    <label class="f">Afficher</label>
+    <div class="list">
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Seulement mes tâches</div></div><button class="toggle" onclick="this.classList.toggle('on')" aria-label="Seulement mes tâches"></button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Bloc saisonnier</div></div><button class="toggle on" onclick="this.classList.toggle('on')" aria-label="Bloc saisonnier"></button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Matériel à acheter</div></div><button class="toggle on" onclick="this.classList.toggle('on')" aria-label="Matériel"></button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Projets en cours</div></div><button class="toggle" onclick="this.classList.toggle('on')" aria-label="Projets"></button></div>
+      <div class="row"><div class="grow"><div class="t" style="font-size:14px">Horizon</div><div class="s">14 jours</div></div><span class="chev">›</span></div>
+    </div>
+  </section>
+
+  </div><!-- /scroll -->
+
+  <button class="fab" id="fab" aria-label="Ajouter" onclick="openAdd()">+</button>
+
+  <nav class="tabbar" aria-label="Navigation principale">
+    <button class="tab on" data-tabbtn="today" onclick="go('today',true)"><svg viewBox="0 0 24 24" fill="none" stroke="#66736F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>Aujourd'hui</button>
+    <button class="tab" data-tabbtn="rooms" onclick="go('rooms',true)"><svg viewBox="0 0 24 24" fill="none" stroke="#66736F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M12 20v-6"/></svg>Pièces</button>
+    <button class="tab" data-tabbtn="projects" onclick="go('projects',true)"><svg viewBox="0 0 24 24" fill="none" stroke="#66736F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="10" rx="1.5"/><rect x="17" y="4" width="4" height="7" rx="1.5"/></svg>Projets</button>
+    <button class="tab" data-tabbtn="budget" onclick="go('budget',true)"><svg viewBox="0 0 24 24" fill="none" stroke="#66736F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M21 19H3"/></svg>Budget</button>
+    <button class="tab" data-tabbtn="more" onclick="go('more',true)"><svg viewBox="0 0 24 24" fill="none" stroke="#66736F" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>Plus</button>
+  </nav>
+
+  <div class="toast" id="toast" role="status"><span id="toastmsg">Fait</span><button onclick="undo()">Annuler</button></div>
+
+  <div class="scrim" id="scrim" onclick="closeSheets()"></div>
+
+  <div class="sheet" id="sheetDone" role="dialog" aria-label="Détails de la réalisation">
+    <div class="grab"></div>
+    <h3>Entretien annuel de la chaudière</h3>
+    <p class="small">Tout est facultatif et prérempli. « Fait » seul suffit.<span class="badge-b">B20 B2</span></p>
+    <label class="f">Date</label><input class="input" value="aujourd'hui, 13 nov. 2026">
+    <label class="f">Coût réel</label><input class="input" value="145,00 €">
+    <p class="small" style="margin-top:4px">Avec Sure : laissé vide, il viendra de la transaction rapprochée.</p>
+    <label class="f">Par</label>
+    <div class="chips"><button class="chip">Camille</button><button class="chip">Sam</button><button class="chip on">Chauffage Martin</button></div>
+    <label class="f">Matériel utilisé (décompté du stock)<span class="badge-b">B17</span></label>
+    <div><div class="check"><span class="box on">✓</span>Joint de porte foyer × 1</div><div class="check"><span class="box"></span>Kit de nettoyage × 1</div></div>
+    <label class="f">Note, photo, attestation</label>
+    <div class="photos"><div class="ph">+ photo</div><div class="ph s">+ document Paperless</div></div>
+    <p class="small" style="margin-top:10px">Prochaine occurrence : <b>13 nov. 2027</b> (date fixe, rendez-vous annuel).</p>
+    <div class="btnrow" style="margin-top:10px"><button class="btn" style="flex:1" onclick="closeSheets();toast('Fait · prochaine le 13 nov. 2027')">Fait</button><button class="btn sec" onclick="closeSheets()">Annuler</button></div>
+  </div>
+
+  <div class="sheet" id="sheetAdd" role="dialog" aria-label="Ajouter">
+    <div class="grab"></div>
+    <div class="list">
+      <button class="row" onclick="closeSheets();go('newtask')"><div class="grow"><div class="t">Nouvelle tâche</div><div class="s">entretien ou chose à faire</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="closeSheets();go('report')"><div class="grow"><div class="t">Signaler un problème</div><div class="s">deux champs, pour tout le foyer</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="closeSheets();go('projects')"><div class="grow"><div class="t">Nouveau projet de travaux</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="closeSheets();go('history')"><div class="grow"><div class="t">Noter quelque chose de déjà fait</div><div class="s">directement dans l'historique</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="closeSheets();go('item')"><div class="grow"><div class="t">Scanner une étiquette QR</div><div class="s">ouvre la fiche de l'élément</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="closeSheets();go('scan')"><div class="grow"><div class="t">Scanner un document</div><div class="s">facture, devis, notice · vers Paperless (optionnel)</div></div><span class="chev">›</span></button>
+      <button class="row" onclick="closeSheets();go('supplies')"><div class="grow"><div class="t">Ajouter un article au stock</div></div><span class="chev">›</span></button>
+    </div>
+  </div>
+
+  <div class="sheet" id="sheetToken" role="dialog" aria-label="Nouveau jeton">
+    <div class="grab"></div>
+    <h3>Nouveau jeton d'API</h3>
+    <label class="f">Nom</label><input class="input" value="Home Assistant">
+    <label class="f">Portée</label>
+    <div class="seg"><button>read</button><button>write</button><button class="on">events</button></div>
+    <label class="f">Logements</label><div class="chips"><button class="chip on">Maison</button><button class="chip">Appartement</button></div>
+    <label class="f">Expiration</label><div class="seg"><button>30 j</button><button>90 j</button><button class="on">1 an</button></div>
+    <p class="small" style="margin-top:10px">Le jeton ne sera affiché qu'une fois. Révocable à tout moment.</p>
+    <button class="btn block" style="margin-top:8px" onclick="closeSheets()">Créer le jeton</button>
+  </div>
+</div>
+</div>
+
+<!-- =================== REVIEW PANEL =================== -->
+<aside class="review" aria-label="Notes de revue">
+  <header>
+    <svg viewBox="0 0 256 256" width="34" height="34" aria-hidden="true"><path fill="#5F726E" d="M56,203 C54,183 90,174 130,175 C172,176 202,183 201,202 C200,220 168,227 128,227 C88,227 58,222 56,203Z"/><path fill="#8FA39A" d="M76,150 C74,133 100,127 130,127 C160,127 183,133 182,149 C181,164 158,169 128,168 C98,167 78,163 76,150Z"/><path fill="#C8A27C" d="M82,113 C78,104 116,62 123,57 C126,55 130,55 133,57 C141,63 178,102 174,113 C171,120 151,121 128,121 C105,121 85,120 82,113Z"/></svg>
+    <h1>Housecairn · maquette v2</h1>
+  </header>
+  <p class="lead">Maquette cliquable pour la revue, pas un écran définitif. Données d'exemple fictives. Interface en français ici ; l'application aura l'anglais comme langue source et le français livré en V1.</p>
+  <div class="tw">
+    <button class="btn sm sec" onclick="document.body.classList.toggle('annot')">Afficher / masquer les repères B…</button>
+    <button class="btn sm sec" onclick="go('onboarding')">Premier démarrage</button>
+  </div>
+
+  <div class="rv-screen">
+    <h2>Écran affiché</h2>
+    <div class="name" id="rvName">Aujourd'hui</div>
+    <ul class="rv-list" id="rvList"></ul>
+  </div>
+
+  <h2>Couverture des 24 besoins</h2>
+  <p class="small">Cliquer un besoin ouvre l'écran qui y répond. <b class="st mvp" style="display:inline">MVP</b> = J2, <b class="st j3" style="display:inline">J3</b> = connecteurs, <b class="st v2" style="display:inline">V2</b> = plus tard.</p>
+  <div class="matrix" id="matrix"></div>
+
+  <h2>Décisions du 7 novembre</h2>
+  <ul class="rv-list dec">
+    <li><b>Intégrations optionnelles</b>, rôles limités. Home Assistant : importer les pièces, capteurs, relai de notification. Sure : rapprocher une transaction existante et reprendre son montant, lier un budget ; jamais de création. Paperless : rapprocher un document, ou y envoyer un scan ou un fichier.</li>
+    <li><b>Application iOS native</b>, pas de PWA seule ; elle peut être payante.</li>
+    <li><b>Accueil</b> par urgence, réglable par personne. <b>« Fait » d'un geste</b> pour toutes les tâches.</li>
+    <li><b>Échéances selon l'usage</b> natives ; notifications par Apprise dès le départ, Home Assistant n'est qu'un relai.</li>
+    <li><b>MCP et webhooks sortants</b> au J3. <b>Étiquettes QR</b> au MVP. <b>Enveloppe annuelle</b> gardée.</li>
+    <li><b>Ajouts</b> : photos et captures à la création, stock autonome avec références et liens d'achat, projets en liste, budget par pièce, projet et tâche.</li>
+  </ul>
+
+  <h2>Ce que l'application iOS impose dès le J1</h2>
+  <ul class="rv-list dec">
+    <li><b>API d'abord</b> : chaque écran du web lit et écrit par l'API publique ; HTMX ne sert qu'à l'affichage, aucune règle métier n'y vit.</li>
+    <li><b>Contrat versionné</b> (<span class="mono">/api/v1</span>, OpenAPI) : l'appli et le serveur évoluent chacun à leur rythme.</li>
+    <li><b>Connexion d'application</b> : OAuth 2 avec PKCE, jetons révocables par appareil, passkeys ; l'appli se connecte au serveur de chacun (auto-hébergé).</li>
+    <li><b>Jetons de design partagés</b> : couleurs, typographie, espacements exportés en JSON, repris par le web et par SwiftUI.</li>
+    <li><b>Liens universels</b> : une étiquette QR ou un lien de notification ouvre la bonne fiche dans l'appli.</li>
+    <li><b>Hors ligne</b> : identifiants stables et horodatage des modifications, pour une synchronisation sans conflit plus tard.</li>
+  </ul>
+
+  <h2>Causes d'abandon et réponse</h2>
+  <ul class="rv-list">
+    <li><b>Trop lourd</b> (HomeZada, Grocy, GLPI) : seul le titre est obligatoire, les options se déplient, le premier démarrage crée les tâches d'après les équipements cochés.</li>
+    <li><b>Le conjoint ne s'en sert pas</b> (Micasa, Notion) : téléphone d'abord, « Fait » en un geste avec Annuler, signalement en deux champs, filtres par personne.</li>
+    <li><b>Le tableur devient de la fiction</b> : le réel vient de Sure par rapprochement, les documents restent dans Paperless, rien n'est saisi deux fois.</li>
+    <li><b>Notifications ignorées</b> (Home Keeper) : relance jusqu'à « fait », « reporté » ou « ignoré », priorité et canal par tâche.</li>
+    <li><b>Abandonné par son auteur</b> (HomeLogger, chore-helper, Centriq vendu puis fermé) : AGPL, dépôt public outillé, export complet et import CSV pour ne jamais être prisonnier.</li>
+    <li><b>Appli « vibe codée »</b> : transparence sur l'IA, revue humaine, CI et signatures vérifiables, sécurité ASVS niveau 2.</li>
+    <li><b>Deux systèmes à tenir</b> (Trello, Todoist) : tâches, budget, matériel et documents au même endroit, par pièce.</li>
+    <li><b>Il faut un compte en ligne</b> : aucun compte externe, aucune télémétrie, tout en local.</li>
+  </ul>
+
+  <h2>Tranché ensuite</h2>
+  <ul class="rv-list dec">
+    <li><b>Liens d'inspiration</b> : aperçu seulement, titre et image récupérés au collage, rien d'autre.</li>
+    <li><b>Notifications iOS</b> : locales, calculées sur l'iPhone pour les échéances ; relais push optionnel opéré par l'auteur, contenu chiffré, pour l'immédiat (capteurs).</li>
+    <li><b>Application iOS</b> : code fermé, payante sur l'App Store, cliente de la seule API publique ; le serveur reste AGPL.</li>
+  </ul>
+</aside>
+</div>
+
+<script>
+const notes={
+ onboarding:{n:"Premier démarrage",l:[["P7","Jeton d'installation à usage unique : pas de compte admin par défaut, un visiteur ne peut pas devenir propriétaire."],["P5","Les équipements cochés créent les tâches : jamais d'écran vide, pas de configuration lourde."],["B21","Import CSV proposé d'entrée, pour quitter un tableur."],["Q","Faut-il demander la ville pour adapter les modèles (ramonage, chaudière) à la réglementation ?"]]},
+ today:{n:"Aujourd'hui",l:[["Décidé","Liste par urgence par défaut, paramétrable par chaque personne (Mon accueil)."],["Décidé","« Fait » d'un geste pour toutes les tâches, sans exception ; les détails se complètent ensuite si besoin."],["B5","Arriéré en tête, tant que la tâche n'est ni faite, ni reportée, ni ignorée."],["B20","Bouton « Fait » de 48 px, un geste, Annuler dans le bandeau."],["B2","L'occurrence suivante se crée seule : le bandeau dit quand."],["B1","Récurrence affichée en clair : « tous les 3 mois après la dernière fois »."],["B4 B13","Tâche armée par Home Assistant (pile faible), sans jeton HA."],["B19","Bloc saisonnier « Automne » au lieu d'une liste unique."],["B17","Matériel à acheter avant l'échéance."],["B7","Filtre par personne ; avatars des responsables."],["P5","Tâches lointaines masquées jusqu'à 14 jours avant."]]},
+ planning:{n:"Calendrier",l:[["J3","Flux ICS secret et révocable, lisible par tout agenda et par HA."],["B9","Regroupement de tâches sur un week-end (idée HomeQueue)."],["Q","Faut-il une vue « mes week-ends disponibles » pour planifier automatiquement ?"]]},
+ task:{n:"Détail d'une tâche",l:[["B1","Quatre modes : date fixe, après la dernière fois, selon l'usage, sur capteur."],["B4","Compteur d'usage natif : relevé manuel ou par l'API, sans Home Assistant ; le premier atteint (litres, heures, km ou date)."],["B6","Mode opératoire en Markdown, propre au modèle de l'appareil."],["B17","Matériel nécessaire, stock et seuil."],["B14","Rappels avec relance jusqu'à réalisation, canal selon la priorité."],["B12","Notice dans Paperless, ouverte avec la session Paperless."],["B3","Historique des réalisations de la tâche."]]},
+ newtask:{n:"Nouvelle tâche",l:[["B20 P5","Seul le titre est obligatoire ; le reste est replié."],["B8","Photo du problème, capture d'écran, fichier ou note vocale dès la création."],["P5","Modèles prêts à l'emploi."],["Q","Faut-il une saisie vocale du titre ?"]]},
+ report:{n:"Signaler un problème",l:[["B23","Ticket en deux champs, pour tout le foyer, locataire compris."],["B23","Un bruit non reproduit peut rester ouvert en note, sans échéance."],["B8","Photo ou note vocale prise sur place."]]},
+ rooms:{n:"Pièces",l:[["B16","Chaque pièce porte ses tâches, projets, éléments et sa mémoire."],["B5","Compteur de retards par pièce."]]},
+ room:{n:"Fiche pièce",l:[["B16","Mémoire : peinture (marque, référence, lot), sol, photos murs ouverts."],["B10","Coût de l'année, prévu, et total depuis l'achat."],["B21","Export PDF de la pièce."],["B15","Éléments : équipements et surfaces."],["Idée","Étiquette QR qui ouvre la fiche (module HA Home Maintenance Tracker)."]]},
+ item:{n:"Fiche élément",l:[["B15","Marque, modèle, série, pose, garantie, contrat."],["B15","Alerte avant la fin de garantie."],["B3","Journal type changelog : entretiens, réparations, pièces, coût total de possession."],["B12","Notice et facture laissées dans Paperless."],["B18","Intervenant lié."]]},
+ projects:{n:"Projets",l:[["Retour v1","Le kanban était illisible sur mobile : remplacé par une liste par statut, filtres en tête, actifs d'abord."],["B10","Barre prévu / engagé / payé et prochaine étape sur chaque projet actif."],["B9","Projet terminé gardé avec son écart final."]]},
+ project:{n:"Fiche projet",l:[["B9","Objectif, inspiration, devis, durée, priorité."],["B10","Trois colonnes prévu, engagé, payé ; identifiant de poste repris dans les fichiers (méthode registre)."],["B12","Devis dans Paperless, statut retenu ou refusé."],["B11","Dépenses rapprochées de Sure, sans double saisie."],["B16","Les photos murs ouverts vont dans la mémoire de la pièce."]]},
+ compare:{n:"Comparer les projets",l:[["B9","Coût, durée, priorité, saison, tri par colonne."],["Q","Le budget disponible annuel : utile ou superflu ?"]]},
+ budget:{n:"Budget",l:[["Retour v1","Trois vues : par pièce, par projet, par tâche d'entretien (coût par an et total)."],["Décidé","Enveloppe annuelle gardée, pour comparer les projets."],["B10","Prévu, engagé, payé ; par nature, par année, sur 12 mois."],["B11","Le réel vient de Sure ; Housecairn garde le prévu."],["B21","Export CSV et bilan annuel PDF."]]},
+ reconcile:{n:"Rapprochement",l:[["Décidé","Sure ne sert qu'à rapprocher une transaction existante et reprendre son montant, éventuellement à lier un budget Sure. Jamais de création."],["B11 P4","Proposition (montant, marchand, date, tâche faite) ; rien sans validation."],["P3","Lecture seule : clé read, utilisateur invité dans Sure."]]},
+ supplies:{n:"Matériel",l:[["Retour v1","Stock autonome, sans intégration : chaque article a ses références et ses liens d'achat."],["B17","Besoins à 30, 60, 90 jours moins le stock ; stock décompté à la réalisation."]]},
+ part:{n:"Fiche article",l:[["Retour v1","Référence fabricant, références et liens par fournisseur, dernier prix payé, photo de l'étiquette, rangement : pour ne plus chercher le nom d'une pièce."],["B15","Compatibilité avec les équipements de la maison."],["Q","Faut-il suivre l'historique des prix payés par fournisseur ?"]]},
+ labels:{n:"Étiquettes QR",l:[["Décidé","Au MVP."],["P7","Le code ne porte qu'un identifiant opaque ; la fiche demande une connexion."],["iOS","Le code ouvre la fiche dans l'application iOS (lien universel), sinon dans le navigateur."]]},
+ scan:{n:"Envoyer vers Paperless",l:[["Retour v1","Paperless sert à rapprocher un document existant, ou à y envoyer un scan ou un fichier depuis l'appli."],["P3","Compte Paperless dédié : ajouter des documents et lire ceux tagués, rien d'autre ; envoi seulement sur action de l'utilisateur."]]},
+ homeprefs:{n:"Mon accueil",l:[["Décidé","Par urgence par défaut, réglable par chaque personne : urgence, pièce, personne ou calendrier."]]},
+ history:{n:"Historique",l:[["B3","Par pièce, élément, intervenant, personne ; recherche."],["B18","Retrouver qui a fait quoi, des années après."],["B21","Export CSV et dossier PDF pour une vente ou l'assurance."]]},
+ pros:{n:"Intervenants",l:[["B18","Nom, métier, note, historique ; pas de carnet d'adresses (CardDAV reste la référence)."],["Q","Faut-il le numéro de téléphone malgré tout ?"]]},
+ inbox:{n:"Documents à rattacher",l:[["B12","Paperless pousse les documents tagués par un workflow webhook ; Housecairn ne détient pas de jeton."],["P4","Le document reste dans Paperless, Housecairn garde l'identifiant et le lien."]]},
+ templates:{n:"Modèles",l:[["P5","Bibliothèque relue par PR, bilingue, source de chaque intervalle."],["P1","Pas de calcul maison : récurrence par une bibliothèque RFC 5545."]]},
+ more:{n:"Plus",l:[["P5","Tout ce qui n'est pas quotidien est rangé ici, hors de la barre."]]},
+ homes:{n:"Logements",l:[["B22","Plusieurs logements, devise par logement, vue combinée."],["B7","Locataire en lecture seule sur son logement."]]},
+ household:{n:"Foyer et rôles",l:[["B7","Propriétaire, membre, lecture seule ; invitation par lien."],["P7","OIDC en option, comptes locaux sinon."]]},
+ notifs:{n:"Notifications",l:[["Décidé","Apprise intégré dès la première version : chacun ajoute son service (ntfy, Telegram, Signal, Matrix, e-mail…). Home Assistant n'est qu'un relai parmi d'autres."],["B14","Premier rappel, relance périodique, heures calmes, résumé."],["iOS","Échéances en notifications locales sur l'iPhone ; relais push optionnel, chiffré, opéré par l'auteur, pour les événements immédiats. Désactivable : aucun appel sortant sans accord."]]},
+ integrations:{n:"Intégrations",l:[["P2","Toutes désactivées par défaut ; l'appli marche sans."],["P3","Pour chaque intégration : qui appelle qui, ce que Housecairn détient."]]},
+ ha:{n:"Home Assistant",l:[["Décidé","Optionnel, trois usages : importer les pièces, capteurs qui arment des tâches, relai de notification."],["P3","Aucun jeton HA : HA envoie ses zones et ses événements (jeton Housecairn portée events), Housecairn n'appelle qu'un webhook local_only."],["Retiré","Liste de courses HA et affichage dans HA : hors périmètre."]]},
+ api:{n:"API et jetons",l:[["Décidé","MCP et webhooks sortants au J3."],["iOS","L'application iOS est un client de cette API comme un autre."],["B13","API REST complète, documentée en OpenAPI : l'interface n'utilise rien d'autre."],["P3","Jetons à portée (read, write, events), par logement, avec expiration et révocation."],["P7","Webhooks entrants signés HMAC, anti-rejeu, taille limitée ; sortants vers hôtes autorisés."]]},
+ apidocs:{n:"Documentation de l'API",l:[["B13","Ressources : logements, pièces, éléments, tâches, compteurs, réalisation, signalements, projets, devis, budget, stock, historique, événements, export, ICS."],["iOS","Contrat stable et versionné : l'application iOS, livrée à son rythme, ne casse pas à chaque mise à jour du serveur."]]},
+ data:{n:"Données",l:[["B21","Export JSON complet versionné, CSV par type, import CSV avec correspondance."],["B24","Aucune télémétrie, aucun compte en ligne."],["P6","Sauvegarde et restauration testées en CI."]]},
+ security:{n:"Sécurité",l:[["P7","Passkeys, TOTP, sessions, journal d'audit (django-allauth)."]]},
+ about:{n:"À propos",l:[["Licence","Mention imposée « Housecairn, by Robvred » (AGPL 7(b))."],["IA","Transparence : développé avec un agent IA sous revue humaine."]]}
+};
+const besoins=[
+ ["B1","Récurrence glissante ou fixe","task","mvp"],["B2","Occurrence suivante automatique","today","mvp"],["B3","Historique par équipement","item","mvp"],
+ ["B4","Échéance selon l'usage","task","mvp"],["B5","Arriéré visible","today","mvp"],["B6","Mode opératoire","task","mvp"],
+ ["B7","Tout le foyer, sur téléphone","household","mvp"],["B8","Saisie sur le terrain","report","mvp"],["B9","Fiche projet, prioriser","project","mvp"],
+ ["B10","Prévu, engagé, payé","budget","mvp"],["B11","Pas de double saisie (Sure)","reconcile","j3"],["B12","Documents Paperless liés","inbox","j3"],
+ ["B13","Home Assistant et API","api","j3"],["B14","Relances jusqu'à réalisation","notifs","mvp"],["B15","Fiche équipement, garantie","item","mvp"],
+ ["B16","Mémoire de la pièce","room","mvp"],["B17","Matériel avant l'échéance","supplies","mvp"],["B18","Intervenants","pros","mvp"],
+ ["B19","Listes saisonnières","today","mvp"],["B20","Validation en un geste","today","mvp"],["B21","Export, PDF, migration","data","mvp"],
+ ["B22","Plusieurs logements","homes","mvp"],["B23","Signaler un problème","report","mvp"],["B24","Local, sans compte en ligne","data","mvp"]
+];
+const lbl={mvp:"MVP (J2)",j3:"J3 connecteurs",v2:"V2"};
+const tabs=["today","rooms","projects","budget","more"];
+let stack=[],cur="today",lastDone=null;
+
+function go(id,root){
+  if(root){stack=[]}else if(cur!==id){stack.push(cur)}
+  show(id);
+}
+function goBack(){ if(stack.length) show(stack.pop()); }
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.dataset.screen===id));
+  const s=document.querySelector('[data-screen="'+id+'"]'); if(!s)return;
+  cur=id;
+  document.getElementById('title').textContent=s.dataset.title||'';
+  document.getElementById('back').classList.toggle('show',stack.length>0);
+  document.getElementById('logo').style.display=stack.length>0?'none':'';
+  const tab=s.dataset.tab;
+  if(tab) document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tabbtn===tab));
+  document.getElementById('fab').style.display=(['today','rooms','projects','room','project'].includes(id))?'':'none';
+  document.getElementById('scroll').scrollTop=0;
+  const n=notes[id]||{n:s.dataset.title,l:[]};
+  document.getElementById('rvName').textContent=n.n;
+  document.getElementById('rvList').innerHTML=n.l.map(([b,t])=>'<li>'+(b==='Q'?'<span class="q">À trancher :</span> ':'<span class="bnum">'+b+'</span>')+t+'</li>').join('')||'<li class="small">Pas de note.</li>';
+  try{localStorage.setItem('hc-maquette-ecran',id)}catch(e){}
+}
+function bview(v,btn){btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.querySelectorAll('[data-bv]').forEach(c=>c.style.display=c.dataset.bv===v?'':'none')}
+function chip(el){el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on')}
+function done(btn,msg){const t=btn.closest('.task');t.classList.add('isdone');lastDone=t;toast('Fait · '+msg)}
+function undo(){if(lastDone){lastDone.classList.remove('isdone');lastDone=null}document.getElementById('toast').classList.remove('on')}
+let tt;function toast(m){const e=document.getElementById('toast');document.getElementById('toastmsg').textContent=m;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),5000)}
+function openSheet(id){document.getElementById('scrim').classList.add('on');document.getElementById(id).classList.add('on')}
+function openDone(){openSheet('sheetDone')}
+function openAdd(){openSheet('sheetAdd')}
+function openToken(){openSheet('sheetToken')}
+function closeSheets(){document.getElementById('scrim').classList.remove('on');document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('on'))}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheets()});
+// calendar
+(function(){const c=document.getElementById('cal');const d=['L','M','M','J','V','S','D'];let h=d.map(x=>'<div class="small" style="font-weight:800">'+x+'</div>').join('');
+ const marks={12:'s',13:'a',21:'s',30:'r',7:'r',9:'d'};for(let i=0;i<6;i++)h+='<div></div>';
+ for(let j=1;j<=30;j++){const m=marks[j];const bg=m==='r'?'var(--retard-clair)':m?'var(--sauge-clair)':'transparent';h+='<div style="padding:7px 0;border-radius:8px;background:'+bg+';font-weight:'+(m?'800':'500')+(j===7?';outline:2px solid var(--ardoise)':'')+'">'+j+'</div>'}c.innerHTML=h})();
+// matrix
+document.getElementById('matrix').innerHTML=besoins.map(([b,t,s,st])=>'<button class="mx" onclick="go(\''+s+'\')"><span class="bnum">'+b+'</span>'+t+'<span class="st '+st+'">'+lbl[st]+'</span></button>').join('');
+let start='today';try{start=localStorage.getItem('hc-maquette-ecran')||'today'}catch(e){}
+if(location.hash.length>1&&notes[location.hash.slice(1)])start=location.hash.slice(1);
+window.addEventListener('error',e=>{document.title='ERREUR JS: '+e.message});
+show(start);
+</script>
+</body>
+</html>

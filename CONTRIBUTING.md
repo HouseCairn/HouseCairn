@@ -176,6 +176,13 @@ the queue; if it is removed from the queue, the timeline says why.
   verify the change.
 - All user-facing text is in English in the code and goes through translation
   functions; no hard-coded strings.
+- **Screens follow the [design guide](docs/developer/design-guide.md).** Before
+  adding or changing a screen, read it: where the screen goes in the navigation,
+  where its back link and its forms lead, how its actions behave, and the rules
+  of the visual system. Copy its checklist into the pull request. The navigation
+  prototype is in [design/navigation/](design/navigation/README.md), the visual
+  mock-up in [design/mockup/](design/mockup/README.md), and the decision behind
+  them in [ADR 0053](docs/adr/0053-target-navigation-and-return-rule.md).
 
 ## Documentation
 

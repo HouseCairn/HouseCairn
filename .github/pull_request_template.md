@@ -22,3 +22,4 @@
 
 - [ ] I have signed the [CLA](https://github.com/HouseCairn/housecairn/blob/main/CLA.md).
 - [ ] Every commit has a `Signed-off-by` line (`git commit -s`).
+- [ ] A new or changed screen follows the [design guide](https://github.com/HouseCairn/housecairn/blob/main/docs/developer/design-guide.md) and its checklist (or no screen changed).

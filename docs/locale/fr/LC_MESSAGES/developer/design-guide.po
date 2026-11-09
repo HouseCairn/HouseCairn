@@ -1,0 +1,687 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Design guide"
+msgstr "Guide de conception"
+
+msgid "The rules every screen of HouseCairn follows: where it goes, how people come back from it, how its actions behave and how it looks. They apply to every contributor, human or agent, and the review of a pull request that adds or changes a screen checks them with the [checklist](#new-screen-checklist) below."
+msgstr "Les règles que suit chaque écran de HouseCairn : où il se range, comment on en revient, comment ses actions se comportent et à quoi il ressemble. Elles s'appliquent à tout contributeur, humain ou agent, et la revue d'une pull request qui ajoute ou modifie un écran les vérifie avec la [liste de contrôle](#new-screen-checklist) ci-dessous."
+
+msgid "The rules are normative. **Must** and **must not** are requirements; each comes with its reason in one line. A screen that departs from them is a bug to fix, not a precedent to follow."
+msgstr "Ces règles sont normatives. **Doit** et **ne doit pas** sont des exigences ; chacune donne sa raison en une ligne. Un écran qui s'en écarte est un défaut à corriger, pas un précédent à suivre."
+
+msgid "Where the rules come from:"
+msgstr "D'où viennent ces règles :"
+
+msgid "the navigation decisions of the maintainer, recorded in [ADR 0053](../adr/0053-target-navigation-and-return-rule.md), and the visual system of [ADR 0017](../adr/0017-visual-system-and-brand.md);"
+msgstr "les décisions du mainteneur sur la navigation, consignées dans l'[ADR 0053](../adr/0053-target-navigation-and-return-rule.md), et le système visuel de l'[ADR 0017](../adr/0017-visual-system-and-brand.md) ;"
+
+msgid "the navigation prototype validated by the maintainer on 2026-11-09, `design/navigation/prototype-navigation.html` in the repository: the reference for the **structure** of the screens (sections, tabs, return, actions in place);"
+msgstr "le prototype de navigation validé par le mainteneur le 2026-11-09, `design/navigation/prototype-navigation.html` dans le dépôt : la référence pour la **structure** des écrans (sections, onglets, retour, actions sur place) ;"
+
+msgid "the v2 mock-up, `design/mockup/housecairn-maquette-v2.html`, and the design tokens, [`design/tokens.json`](https://github.com/HouseCairn/housecairn/blob/main/design/tokens.json): the reference for the **look**;"
+msgstr "la maquette v2, `design/mockup/housecairn-maquette-v2.html`, et les jetons de conception, [`design/tokens.json`](https://github.com/HouseCairn/housecairn/blob/main/design/tokens.json) : la référence pour l'**apparence** ;"
+
+msgid "the navigation and design audits of the interface, summed up in the appendix [Why these rules](#why-these-rules)."
+msgstr "les audits de navigation et de design de l'interface, résumés dans l'annexe [Pourquoi ces règles](#why-these-rules)."
+
+msgid "The navigation described here is the target. It is built in several changes; until they are all merged, some screens still differ from it. A change that alters one of these behaviours updates the section of this guide that describes it, in the same pull request."
+msgstr "La navigation décrite ici est la cible. Elle se construit en plusieurs changements ; tant qu'ils ne sont pas tous fusionnés, certains écrans en diffèrent encore. Un changement qui modifie l'un de ces comportements met à jour la section de ce guide qui le décrit, dans la même pull request."
+
+msgid "Information architecture"
+msgstr "Architecture de l'information"
+
+msgid "Five sections"
+msgstr "Cinq sections"
+
+msgid "The application answers one question: what to do in the home, where, when, with what and for how much. Each of the first four sections answers one part of it, and More holds the rest."
+msgstr "L'application répond à une question : quoi faire dans la maison, où, quand, avec quoi et pour combien. Chacune des quatre premières sections répond à une partie de la question, et Plus contient le reste."
+
+msgid "Section"
+msgstr "Section"
+
+msgid "Question"
+msgstr "Question"
+
+msgid "Tabs"
+msgstr "Onglets"
+
+msgid "Today"
+msgstr "Aujourd'hui"
+
+msgid "What to do, and when"
+msgstr "Quoi faire, et quand"
+
+msgid "Today · All · Calendar"
+msgstr "Aujourd'hui · Toutes · Calendrier"
+
+msgid "Rooms"
+msgstr "Pièces"
+
+msgid "Where, and with what"
+msgstr "Où, et avec quoi"
+
+msgid "Rooms · Stock"
+msgstr "Pièces · Matériel"
+
+msgid "Projects"
+msgstr "Projets"
+
+msgid "Which works"
+msgstr "Quels travaux"
+
+msgid "In progress · Ideas · Finished"
+msgstr "En cours · Idées · Terminés"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "For how much"
+msgstr "Pour combien"
+
+msgid "Summary · Rooms · Projects · Upkeep"
+msgstr "Synthèse · Pièces · Projets · Entretien"
+
+msgid "More"
+msgstr "Plus"
+
+msgid "Everything else"
+msgstr "Tout le reste"
+
+msgid "none: groups of links"
+msgstr "aucun : des groupes de liens"
+
+msgid "The main navigation **must** have these five entries, in this order. Material 3 and Apple's guidelines put three to five destinations in a bar; a sixth entry pushed Projects and Budget out of sight."
+msgstr "La navigation principale **doit** avoir ces cinq entrées, dans cet ordre. Material 3 et les recommandations d'Apple placent trois à cinq destinations dans une barre ; une sixième entrée avait fait disparaître Projets et Budget."
+
+msgid "A new entry **must not** be added to the bar without a new decision record. The bar is the map of the product; every entry added makes the others harder to find."
+msgstr "Une nouvelle entrée **ne doit pas** être ajoutée à la barre sans un nouvel enregistrement de décision. La barre est la carte du produit ; chaque entrée ajoutée rend les autres plus difficiles à trouver."
+
+msgid "A section **must** have four tabs at most, all visible at 360 px. A tab hidden by a horizontal scroll is a screen nobody finds."
+msgstr "Une section **doit** avoir quatre onglets au plus, tous visibles à 360 px. Un onglet caché par un défilement horizontal est un écran que personne ne trouve."
+
+msgid "Tabs **must** switch between sister views of the same content, never lead to another section or a setting. Tabs used as a menu hide what they announce."
+msgstr "Les onglets **doivent** basculer entre des vues sœurs d'un même contenu, jamais mener à une autre section ni à un réglage. Des onglets utilisés comme menu cachent ce qu'ils annoncent."
+
+msgid "A page **must** show one row of tabs at most. Two rows on a phone take half of the first screen."
+msgstr "Une page **doit** afficher une seule rangée d'onglets au plus. Deux rangées sur un téléphone occupent la moitié du premier écran."
+
+msgid "The history of the tasks is the **Done** filter of All, and each task shows its own history; it **must not** become a tab. A fourth tab of Today does not fit at 360 px."
+msgstr "L'historique des tâches est le filtre **Faites** de Toutes, et chaque tâche montre son propre historique ; il **ne doit pas** devenir un onglet. Un quatrième onglet d'Aujourd'hui ne tient pas à 360 px."
+
+msgid "The calendar is a tab of Today, and the stock a tab of Rooms. The calendar is another view of the same occurrences; the stock is what is in the home, like the items."
+msgstr "Le calendrier est un onglet d'Aujourd'hui, et le matériel un onglet de Pièces. Le calendrier est une autre vue des mêmes occurrences ; le matériel est ce qu'il y a dans la maison, comme les éléments."
+
+msgid "Phone: the bar at the bottom"
+msgstr "Téléphone : la barre du bas"
+
+msgid "Below 56 rem the sections are a bar fixed at the bottom of the screen. The app bar at the top carries the logo, the current home (a selector from two homes on), search and help."
+msgstr "Sous 56 rem, les sections forment une barre fixée en bas de l'écran. La barre d'application, en haut, porte le logo, le logement courant (un sélecteur à partir de deux logements), la recherche et l'aide."
+
+msgid "Computer: the column on the left"
+msgstr "Ordinateur : la colonne de gauche"
+
+msgid "From 56 rem the same `nav` becomes a column on the left. It lists the first four sections, then the content of More unfolded under them, without a page in between, and Sign out last."
+msgstr "À partir de 56 rem, le même `nav` devient une colonne à gauche. Elle liste les quatre premières sections, puis le contenu de Plus déplié en dessous, sans page intermédiaire, et Se déconnecter en dernier."
+
+msgid "The phone bar and the computer column **must** be one `nav`, laid out by CSS. Two navigations drift apart, and a screen reader would announce both."
+msgstr "La barre du téléphone et la colonne de l'ordinateur **doivent** être un seul `nav`, disposé par CSS. Deux navigations divergent, et un lecteur d'écran annoncerait les deux."
+
+msgid "On a computer, More **must not** have its own page: its content is in the column. The width is there; a page in between costs a click for nothing."
+msgstr "Sur ordinateur, Plus **ne doit pas** avoir sa propre page : son contenu est dans la colonne. La place est là ; une page intermédiaire coûte un clic pour rien."
+
+msgid "What goes in More"
+msgstr "Ce qui va dans Plus"
+
+msgid "More holds four groups, in this order: **Home** (about the home being viewed), **Me** (about the person), **Instance** (administrators only) and **Help**."
+msgstr "Plus contient quatre groupes, dans cet ordre : **Logement** (le logement consulté), **Moi** (la personne), **Instance** (administrateurs seulement) et **Aide**."
+
+msgid "An entry of More **must** belong to one of these groups. A flat list of eleven entries does not read at a glance."
+msgstr "Une entrée de Plus **doit** appartenir à l'un de ces groupes. Une liste à plat de onze entrées ne se lit pas d'un coup d'œil."
+
+msgid "An action that cannot be taken back (deleting the account, a home) **must** be at the bottom of its own page, never on More. A dangerous action does not sit between two everyday settings."
+msgstr "Une action qui ne se rattrape pas (supprimer le compte, un logement) **doit** se trouver en bas de sa propre page, jamais dans Plus. Une action dangereuse ne se place pas entre deux réglages courants."
+
+msgid "Where a new screen goes"
+msgstr "Où ranger un nouvel écran"
+
+msgid "Answer these questions in order, and stop at the first yes:"
+msgstr "Répondez à ces questions dans l'ordre, et arrêtez-vous au premier oui :"
+
+msgid "**Is it another view of the content of an existing section root** (a filter, a period, a grouping)? It is a tab of that section, if the section has fewer than four tabs; otherwise a filter of an existing tab."
+msgstr "**Est-ce une autre vue du contenu d'une racine de section existante** (un filtre, une période, un regroupement) ? C'est un onglet de cette section, si elle a moins de quatre onglets ; sinon un filtre d'un onglet existant."
+
+msgid "**Is it the page of one record** (a room, an item, a task, a quote)? It goes under the page of its parent in the tree: an item under its room, a quote under its project."
+msgstr "**Est-ce la page d'une fiche** (une pièce, un élément, une tâche, un devis) ? Elle se range sous la page de son parent dans l'arbre : un élément sous sa pièce, un devis sous son projet."
+
+msgid "**Is it a form that adds or changes a record?** It is opened from the page or the list it belongs to, with a `next` address (see the [return rule](#return-rule))."
+msgstr "**Est-ce un formulaire qui ajoute ou modifie une fiche ?** Il s'ouvre depuis la page ou la liste à laquelle il appartient, avec une adresse `next` (voir la [règle de retour](#return-rule))."
+
+msgid "**Is it about the home but not daily use** (household, reports, labels, contractors, settings of the home)? More, group Home."
+msgstr "**Cela concerne-t-il le logement, hors usage quotidien** (foyer, signalements, étiquettes, intervenants, réglages du logement) ? Plus, groupe Logement."
+
+msgid "**Is it about the person** (profile, notifications, preferences, security)? More, group Me."
+msgstr "**Cela concerne-t-il la personne** (profil, notifications, préférences, sécurité) ? Plus, groupe Moi."
+
+msgid "**Is it about the instance**? More, group Instance, shown to administrators only."
+msgstr "**Cela concerne-t-il l'instance** ? Plus, groupe Instance, montré aux seuls administrateurs."
+
+msgid "**Is it help or information about the application**? More, group Help."
+msgstr "**Est-ce de l'aide ou une information sur l'application** ? Plus, groupe Aide."
+
+msgid "A screen **must** be reachable from the navigation, never only from an address typed by hand or a link in an email. A page nobody can reach again is lost after the first visit."
+msgstr "Un écran **doit** être accessible depuis la navigation, jamais seulement par une adresse saisie à la main ou un lien dans un e-mail. Une page que personne ne peut retrouver est perdue après la première visite."
+
+msgid "Return rule"
+msgstr "Règle de retour"
+
+msgid "**People always come back to the screen they came from. When it is not known, to the parent in the tree. An action in place does not move them.**"
+msgstr "**On revient toujours à l'écran d'où l'on vient. À défaut, au parent dans l'arbre. Une action sur place ne déplace pas.**"
+
+msgid "The `next` address"
+msgstr "L'adresse `next`"
+
+msgid "A link that opens a record or a form from another screen **must** carry `next=<current path>`. Without it, the page cannot know where the person came from."
+msgstr "Un lien qui ouvre une fiche ou un formulaire depuis un autre écran **doit** porter `next=<chemin courant>`. Sans lui, la page ne peut pas savoir d'où vient la personne."
+
+msgid "`next` **must** be checked by `core.redirects.is_safe_redirect` before any use, through one shared helper, never by a check written again in a view. One rule for every page closes open redirects in one place."
+msgstr "`next` **doit** être vérifié par `core.redirects.is_safe_redirect` avant tout usage, par un utilitaire partagé, jamais par une vérification réécrite dans une vue. Une seule règle pour toutes les pages ferme les redirections ouvertes en un seul endroit."
+
+msgid "`next` **must** be a path relative to the application, cut to a reasonable length, and **must not** be nested: a `next` inside `next` is removed. An address that grows with every screen becomes unreadable and unsafe."
+msgstr "`next` **doit** être un chemin relatif à l'application, tronqué à une longueur raisonnable, et **ne doit pas** être imbriqué : un `next` dans `next` est retiré. Une adresse qui grandit à chaque écran devient illisible et dangereuse."
+
+msgid "`next` **must not** be shown as it is. The label of the back link comes from the route it resolves to. A parameter shown on screen can be forged by anyone who sends a link."
+msgstr "`next` **ne doit pas** être affiché tel quel. Le libellé du lien retour vient de la route vers laquelle il mène. Un paramètre affiché à l'écran peut être falsifié par quiconque envoie un lien."
+
+msgid "A form **must** keep `next` in a hidden field, so that a form sent with an error still knows where to go back."
+msgstr "Un formulaire **doit** garder `next` dans un champ caché, pour qu'un formulaire envoyé avec une erreur sache encore où revenir."
+
+msgid "Back link and breadcrumbs"
+msgstr "Lien retour et fil d'Ariane"
+
+msgid "Level"
+msgstr "Niveau"
+
+msgid "Phone"
+msgstr "Téléphone"
+
+msgid "Computer (from 56 rem)"
+msgstr "Ordinateur (à partir de 56 rem)"
+
+msgid "Section root (Today, Rooms, Projects, Budget, More)"
+msgstr "Racine de section (Aujourd'hui, Pièces, Projets, Budget, Plus)"
+
+msgid "no back link"
+msgstr "pas de lien retour"
+
+msgid "no breadcrumbs"
+msgstr "pas de fil d'Ariane"
+
+msgid "Tab of a section (All, Stock, Ideas, budget by room)"
+msgstr "Onglet d'une section (Toutes, Matériel, Idées, budget par pièce)"
+
+msgid "no back link, the tab is marked"
+msgstr "pas de lien retour, l'onglet est allumé"
+
+msgid "Record (room, task, article, project)"
+msgstr "Fiche (pièce, tâche, article, projet)"
+
+msgid "`‹ <origin>`"
+msgstr "`‹ <origine>`"
+
+msgid "`Section › … › Record`"
+msgstr "`Section › … › Fiche`"
+
+msgid "Form"
+msgstr "Formulaire"
+
+msgid "`‹ Cancel`, main action at the bottom"
+msgstr "`‹ Annuler`, action principale en bas"
+
+msgid "breadcrumbs, then Cancel and Save buttons"
+msgstr "fil d'Ariane, puis boutons Annuler et Enregistrer"
+
+msgid "Page of More"
+msgstr "Page de Plus"
+
+msgid "`‹ More` (or the origin)"
+msgstr "`‹ Plus` (ou l'origine)"
+
+msgid "`Home › Household and roles`"
+msgstr "`Logement › Foyer et rôles`"
+
+msgid "A section root **must not** have a back link. A top-level destination has nowhere to go back to, and a back link there contradicts the bar."
+msgstr "Une racine de section **ne doit pas** avoir de lien retour. Une destination de premier niveau n'a nulle part où revenir, et un lien retour y contredirait la barre."
+
+msgid "Every other page **must** have one, which names its target: never \"‹ Back\" alone. A person must know where the link leads before tapping it."
+msgstr "Toute autre page **doit** en avoir un, qui nomme sa cible : jamais « ‹ Retour » seul. On doit savoir où mène le lien avant de le toucher."
+
+msgid "The back link follows the origin; the breadcrumbs follow the tree."
+msgstr "Le lien retour suit l'origine ; le fil d'Ariane suit l'arbre."
+
+msgid "Breadcrumbs **must** appear on a computer only, as a `nav` with an `aria-label` and `aria-current=\"page\"` on the last element. On a phone they take a line, and their targets would be too small."
+msgstr "Le fil d'Ariane **doit** n'apparaître que sur ordinateur, sous la forme d'un `nav` avec un `aria-label` et `aria-current=\"page\"` sur le dernier élément. Sur téléphone, il prend une ligne et ses cibles seraient trop petites."
+
+msgid "On a computer, the back link **must** appear only on a form or when the origin is not the parent (a room opened from the budget). Otherwise the breadcrumbs already say it."
+msgstr "Sur ordinateur, le lien retour **doit** n'apparaître que sur un formulaire ou quand l'origine n'est pas le parent (une pièce ouverte depuis le budget). Sinon, le fil d'Ariane le dit déjà."
+
+msgid "The entry of the bar that stays marked is the section the person entered by: a room opened from the budget keeps Budget marked, and comes back to it. The bar must never change tab under the finger."
+msgstr "L'entrée de la barre qui reste allumée est la section par laquelle la personne est entrée : une pièce ouverte depuis le budget garde Budget allumé, et y revient. La barre ne doit jamais changer d'onglet sous le doigt."
+
+msgid "After a form"
+msgstr "Après un formulaire"
+
+msgid "**Created from a context** (a task from an item, an item from a room): the form **must** go back to `next`, with a message \"Added · Open\" whose link opens the new record. The person stays where they were working, and the record is one tap away."
+msgstr "**Créée depuis un contexte** (une tâche depuis un élément, un élément depuis une pièce) : le formulaire **doit** revenir à `next`, avec un message « Ajoutée · Ouvrir » dont le lien ouvre la nouvelle fiche. La personne reste là où elle travaillait, et la fiche est à un geste."
+
+msgid "**Created from the list of its own section** (a project from the project list): the form **must** open the new record. The next step is there: adding a quote to a new project."
+msgstr "**Créée depuis la liste de sa propre section** (un projet depuis la liste des projets) : le formulaire **doit** ouvrir la nouvelle fiche. L'étape suivante y est : ajouter un devis à un projet neuf."
+
+msgid "**Cancel** **must** lead to `next` as well, or to the parent without it."
+msgstr "**Annuler** **doit** mener aussi à `next`, ou au parent à défaut."
+
+msgid "**Changed** (edit form): back to `next`, or to the record without it."
+msgstr "**Modifiée** (formulaire de modification) : retour à `next`, ou à la fiche à défaut."
+
+msgid "After a deletion"
+msgstr "Après une suppression"
+
+msgid "A deletion **must** go through a confirmation page: a link to the page, then a post from it, whose Cancel link goes back to the object. This includes photos, files and the revocation of a label. A tap by mistake must not lose a document."
+msgstr "Une suppression **doit** passer par une page de confirmation : un lien vers la page, puis un envoi depuis celle-ci, dont le lien Annuler ramène à l'objet. Cela vaut pour les photos, les fichiers et la révocation d'une étiquette. Un toucher par erreur ne doit pas faire perdre un document."
+
+msgid "After the deletion, the person **must** land on the parent of the deleted object, never on `next` if it points to that object or one of its children. That page no longer exists."
+msgstr "Après la suppression, la personne **doit** arriver sur le parent de l'objet supprimé, jamais sur `next` s'il désigne cet objet ou l'un de ses enfants. Cette page n'existe plus."
+
+msgid "The bar, and the browser's back button"
+msgstr "La barre, et le retour du navigateur"
+
+msgid "Tapping a section in the bar or the column **must** lead to its root. Tapping the section already marked **must** go back to its root and to the top of the page. Both are what iOS and Android do, so people expect them."
+msgstr "Toucher une section dans la barre ou la colonne **doit** mener à sa racine. Toucher la section déjà allumée **doit** remonter à sa racine et en haut de la page. C'est ce que font iOS et Android, et c'est donc ce que l'on attend."
+
+msgid "The browser's back button, or the system one in the installed application, **must** give the same result as the back link. In the installed application on iOS there is no system back button: the back link is then the only way back."
+msgstr "Le bouton retour du navigateur, ou celui du système dans l'application installée, **doit** donner le même résultat que le lien retour. Dans l'application installée sur iOS, il n'y a pas de bouton retour système : le lien retour est alors le seul moyen de revenir."
+
+msgid "A creation form **must** be sent with `Cache-Control: no-store` and a one-time token against a second sending. Going back to a sent form must not create a duplicate."
+msgstr "Un formulaire de création **doit** être envoyé avec `Cache-Control: no-store` et un jeton à usage unique contre un second envoi. Revenir sur un formulaire envoyé ne doit pas créer de doublon."
+
+msgid "A transient state (an undo banner, a message) **must not** live in the address. Going back would show it again, out of date."
+msgstr "Un état transitoire (un bandeau d'annulation, un message) **ne doit pas** vivre dans l'adresse. Le retour l'afficherait de nouveau, périmé."
+
+msgid "Actions in place"
+msgstr "Actions sur place"
+
+msgid "An action that takes one tap and can be undone **must** keep the person where they are: Done, Skip, Undo, postponing by one day, a stock movement, the status of a quote."
+msgstr "Une action qui tient en un geste et qui s'annule **doit** laisser la personne où elle est : Fait, Ignorer, Annuler, reporter d'un jour, un mouvement de stock, le statut d'un devis."
+
+msgid "With JavaScript, the form **must** post with HTMX (`hx-post`) and replace only the fragment concerned (the row of the occurrence). The address does not change. Done is the most frequent gesture; a reload sends the page back to its top, and the person loses their place."
+msgstr "Avec JavaScript, le formulaire **doit** s'envoyer par HTMX (`hx-post`) et ne remplacer que le fragment concerné (la ligne de l'occurrence). L'adresse ne change pas. « Fait » est le geste le plus fréquent ; un rechargement ramène la page en haut, et la personne perd sa place."
+
+msgid "The confirmation **must** be an undo banner at the bottom of the screen, above the bar, in an `aria-live=\"polite\"` region, visible for at least 8 seconds, with an Undo button. Near the finger, announced by screen readers, and long enough to read."
+msgstr "La confirmation **doit** être un bandeau d'annulation en bas de l'écran, au-dessus de la barre, dans une zone `aria-live=\"polite\"`, visible au moins 8 secondes, avec un bouton Annuler. Près du doigt, annoncé par les lecteurs d'écran, et assez long pour être lu."
+
+msgid "The banner and the bar **must not** hide the focused element (WCAG 2.2, 2.4.11)."
+msgstr "Le bandeau et la barre **ne doivent pas** masquer l'élément qui a le focus (WCAG 2.2, 2.4.11)."
+
+msgid "Without JavaScript, the same form **must** still work: a post, then a redirect to `next#<anchor>` (for an occurrence, `#occ-<id>`), which brings the person back to the row. After an undo, the redirect drops the undo state from the address."
+msgstr "Sans JavaScript, le même formulaire **doit** fonctionner : un envoi, puis une redirection vers `next#<ancre>` (pour une occurrence, `#occ-<id>`), qui ramène la personne à la ligne. Après une annulation, la redirection retire l'état d'annulation de l'adresse."
+
+msgid "Done **must not** ask for a confirmation: Undo is the safety net ([ADR 0033](../adr/0033-done-with-undo.md)). A question on every task is the friction that makes people stop using the application."
+msgstr "« Fait » **ne doit pas** demander de confirmation : Annuler est le filet de sécurité ([ADR 0033](../adr/0033-done-with-undo.md)). Une question à chaque tâche est la friction qui fait abandonner l'application."
+
+msgid "An action **must** open a screen instead when:"
+msgstr "Une action **doit** au contraire ouvrir un écran quand :"
+
+msgid "it needs more than one tap of input: the details of a completion (date, cost, note), postponing to a chosen date, a quantity other than the one offered;"
+msgstr "elle demande plus d'un geste de saisie : les détails d'une réalisation (date, coût, note), un report à une date choisie, une quantité autre que celle proposée ;"
+
+msgid "it cannot be taken back: a deletion goes through its confirmation page;"
+msgstr "elle ne se rattrape pas : une suppression passe par sa page de confirmation ;"
+
+msgid "it changes who may do what: roles, transfer of a home, an invitation sent by email."
+msgstr "elle change qui peut faire quoi : les rôles, le transfert d'un logement, une invitation envoyée par e-mail."
+
+msgid "Current home"
+msgstr "Logement courant"
+
+msgid "Most households have one home; some have two or more (a second home, a rented flat)."
+msgstr "La plupart des foyers ont un seul logement ; certains en ont deux ou plus (une résidence secondaire, un appartement loué)."
+
+msgid "The current home **must** be remembered for the session. Every section then opens on it, without a page that asks which home at each change of section."
+msgstr "Le logement courant **doit** être mémorisé pour la session. Chaque section s'ouvre alors sur lui, sans page qui redemande le logement à chaque changement de section."
+
+msgid "The selector of the current home **must** appear in the app bar only from two homes on. A selector with one choice is noise."
+msgstr "Le sélecteur du logement courant **doit** n'apparaître dans la barre d'application qu'à partir de deux logements. Un sélecteur à un seul choix est du bruit."
+
+msgid "Today **must** offer \"All homes\" in the selector; the other sections show one home at a time."
+msgstr "Aujourd'hui **doit** proposer « Tous les logements » dans le sélecteur ; les autres sections montrent un logement à la fois."
+
+msgid "A page of a home **must** keep the home in its address ([ADR 0010](../adr/0010-stable-urls.md)). The current home only chooses where a section root opens; a link to a page always opens the same page."
+msgstr "Une page d'un logement **doit** garder le logement dans son adresse ([ADR 0010](../adr/0010-stable-urls.md)). Le logement courant choisit seulement où s'ouvre une racine de section ; un lien vers une page ouvre toujours la même page."
+
+msgid "**Isolation.** Every query **must** be scoped to the homes of the person ([ADR 0006](../adr/0006-home-scoping.md)), and the current home **must not** replace that check. A value kept in a session is a preference, not a permission. The selector and \"All homes\" list only the homes the person belongs to, and a home they left is dropped from the session."
+msgstr "**Isolation.** Chaque requête **doit** être limitée aux logements de la personne ([ADR 0006](../adr/0006-home-scoping.md)), et le logement courant **ne doit pas** remplacer cette vérification. Une valeur gardée en session est une préférence, pas une permission. Le sélecteur et « Tous les logements » ne listent que les logements dont la personne est membre, et un logement qu'elle a quitté est retiré de la session."
+
+msgid "Screen rules already decided"
+msgstr "Règles d'écran déjà décidées"
+
+msgid "These rules come from earlier decisions; this guide gathers them so that a new screen is checked against all of them at once."
+msgstr "Ces règles viennent de décisions antérieures ; ce guide les réunit pour qu'un nouvel écran soit vérifié contre toutes à la fois."
+
+msgid "**Amounts** **must** be shown in the format of the language of the reader, with the symbol of the currency: `1 250,50 €` in French. Every amount goes through the same template filter. Three formats on three screens read as three different numbers."
+msgstr "Les **montants** **doivent** s'afficher au format de la langue du lecteur, avec le symbole de la devise : `1 250,50 €` en français. Tout montant passe par le même filtre de gabarit. Trois formats sur trois écrans se lisent comme trois nombres différents."
+
+msgid "**Deleting** **must** go through a confirmation page (see [After a deletion](#after-a-deletion)). Only Done and its siblings rely on Undo."
+msgstr "**Supprimer** **doit** passer par une page de confirmation (voir [Après une suppression](#after-a-deletion)). Seuls « Fait » et les actions de la même famille s'appuient sur Annuler."
+
+msgid "**Lists**: wherever a generic list exists (type of room, category of a photo, trade of a contractor), the field **must** offer it, with \"Other\" as its last choice ([ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)). Free text makes filters impossible and translations arbitrary."
+msgstr "**Listes** : partout où une liste générique existe (type de pièce, catégorie de photo, métier d'un intervenant), le champ **doit** la proposer, avec « Autre » en dernier choix ([ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)). Le texte libre rend les filtres impossibles et les traductions arbitraires."
+
+msgid "**People** **must** be shown by their display name (`accounts.names.person_name`), never by their email address, except on a page whose subject is the address (the card of a household member, a contractor). An address on every screen is personal data shown to the whole household."
+msgstr "Les **personnes** **doivent** être affichées par leur nom d'affichage (`accounts.names.person_name`), jamais par leur adresse e-mail, sauf sur une page dont l'adresse est le sujet (la fiche d'un membre du foyer, un intervenant). Une adresse sur chaque écran est une donnée personnelle montrée à tout le foyer."
+
+msgid "**Sign-in** **must** offer one button per configured identity provider, and passkeys through the browser's autofill of the address field, without a passkey button ([ADR 0018](../adr/0018-sign-in-page-and-passkeys.md)). The page stays a form and at most one button per provider."
+msgstr "La **connexion** **doit** proposer un bouton par fournisseur d'identité configuré, et les passkeys par l'autoremplissage du champ d'adresse du navigateur, sans bouton de passkey ([ADR 0018](../adr/0018-sign-in-page-and-passkeys.md)). La page reste un formulaire et au plus un bouton par fournisseur."
+
+msgid "**Touch targets** **must** be at least 44 px (`--hc-layout-touch-target`), and the Done button 48 px (`--hc-layout-touch-target-lg`). A small link in a table is missed by a finger."
+msgstr "Les **cibles tactiles** **doivent** mesurer au moins 44 px (`--hc-layout-touch-target`), et le bouton « Fait » 48 px (`--hc-layout-touch-target-lg`). Un petit lien dans un tableau échappe au doigt."
+
+msgid "**Focus** **must** always be visible: the focus ring of the tokens, never an `outline: none` without a replacement. A keyboard user who cannot see the focus cannot use the page."
+msgstr "Le **focus** **doit** toujours être visible : l'anneau de focus des jetons, jamais un `outline: none` sans remplacement. Une personne au clavier qui ne voit pas le focus ne peut pas utiliser la page."
+
+msgid "**Accessibility**: every screen **must** meet WCAG 2.2 level AA. It is the level the project commits to for every screen, not only for the sign-in pages."
+msgstr "**Accessibilité** : chaque écran **doit** respecter le niveau AA des WCAG 2.2. C'est le niveau auquel le projet s'engage pour chaque écran, pas seulement pour les pages de connexion."
+
+msgid "**Widths**: every screen **must** be tried at 375 px and at 1280 px: no horizontal scroll of the page (a wide table scrolls in its own container), every tab visible. The application is designed for the phone first; the computer layout must not break either."
+msgstr "**Largeurs** : chaque écran **doit** être essayé à 375 px et à 1280 px : aucun défilement horizontal de la page (un tableau large défile dans son propre conteneur), chaque onglet visible. L'application est conçue d'abord pour le téléphone ; la mise en page sur ordinateur ne doit pas casser pour autant."
+
+msgid "**Language**: every string **must** go through the translation functions, with English as the source ([ADR 0013](../adr/0013-internationalization.md)). The French text **must** be written with care: the formal *vous*, agreement with the noun it qualifies, and a `pgettext` context when one English word needs two French words. French ships with the first version, and a mistake in a list is seen on every visit."
+msgstr "**Langue** : chaque chaîne **doit** passer par les fonctions de traduction, avec l'anglais pour source ([ADR 0013](../adr/0013-internationalization.md)). Le texte français **doit** être soigné : le vouvoiement, l'accord avec le nom qualifié, et un contexte `pgettext` quand un même mot anglais demande deux mots français. Le français est livré dès la première version, et une faute dans une liste se voit à chaque visite."
+
+msgid "**Resources**: a screen **must not** load anything from another host, nor use an inline style or script ([ADR 0011](../adr/0011-no-external-resources-and-csp.md)). The strict content security policy refuses them."
+msgstr "**Ressources** : un écran **ne doit** rien charger depuis un autre hôte, ni utiliser de style ou de script en ligne ([ADR 0011](../adr/0011-no-external-resources-and-csp.md)). La politique de sécurité du contenu, stricte, les refuse."
+
+msgid "Visual system"
+msgstr "Système visuel"
+
+msgid "The visual system was laid down with the application shell in J1-F ([ADR 0017](../adr/0017-visual-system-and-brand.md)). The values are in [`design/tokens.json`](https://github.com/HouseCairn/housecairn/blob/main/design/tokens.json) and nowhere else: this guide does not repeat them."
+msgstr "Le système visuel a été posé avec la coquille de l'application en J1-F ([ADR 0017](../adr/0017-visual-system-and-brand.md)). Les valeurs sont dans [`design/tokens.json`](https://github.com/HouseCairn/housecairn/blob/main/design/tokens.json) et nulle part ailleurs : ce guide ne les recopie pas."
+
+msgid "A colour, size, spacing, radius or shadow **must** come from a `--hc-*` variable, never from a value written in a CSS file. A value written twice drifts."
+msgstr "Une couleur, une taille, un espacement, un rayon ou une ombre **doit** venir d'une variable `--hc-*`, jamais d'une valeur écrite dans un fichier CSS. Une valeur écrite deux fois dérive."
+
+msgid "A change of value **must** be made in `design/tokens.json`, then `manage.py build_design_tokens`, and the generated `tokens.css` committed. The contrast test then fails if the change breaks AA."
+msgstr "Un changement de valeur **doit** se faire dans `design/tokens.json`, puis `manage.py build_design_tokens`, avec le `tokens.css` généré commité. Le test de contraste échoue alors si le changement casse le niveau AA."
+
+#, python-brace-format
+msgid "A screen **must** use the components of `static/css/components.css` before creating one: cards, lists and rows, buttons (primary, secondary, sand, danger, icon), fields, pills, alerts and messages, the segmented control, chips and the tab bar (`{% tab_bar %}`). A component made twice looks different twice."
+msgstr "Un écran **doit** utiliser les composants de `static/css/components.css` avant d'en créer un : cartes, listes et lignes, boutons (principal, secondaire, sable, danger, icône), champs, pastilles, alertes et messages, contrôle segmenté, puces et barre d'onglets (`{% tab_bar %}`). Un composant fait deux fois a deux apparences."
+
+msgid "A new component **must** go in `components.css`, built on the tokens, and be usable by every screen. A style local to one page becomes the next inconsistency."
+msgstr "Un nouveau composant **doit** aller dans `components.css`, construit sur les jetons, et être utilisable par tous les écrans. Un style propre à une page devient la prochaine incohérence."
+
+msgid "The danger button **must** be kept for the action that destroys, on its confirmation page. Red everywhere means nothing."
+msgstr "Le bouton danger **doit** être réservé à l'action qui détruit, sur sa page de confirmation. Du rouge partout ne signifie plus rien."
+
+msgid "Icons **must** come from `templates/components/icon.html`, as inline SVG. One set, one look, nothing loaded from elsewhere."
+msgstr "Les icônes **doivent** venir de `templates/components/icon.html`, en SVG en ligne. Un seul jeu, une seule apparence, rien de chargé d'ailleurs."
+
+msgid "The v2 mock-up is the visual reference of every screen; a deviation **must** be recorded in a decision record with its reason, as ADR 0017 does for contrast. The navigation prototype is a reference for structure only: its look does not count."
+msgstr "La maquette v2 est la référence visuelle de chaque écran ; un écart **doit** être consigné dans un enregistrement de décision avec sa raison, comme l'ADR 0017 le fait pour le contraste. Le prototype de navigation n'est une référence que pour la structure : son apparence ne compte pas."
+
+msgid "New screen checklist"
+msgstr "Liste de contrôle d'un nouvel écran"
+
+msgid "Copy this list into the pull request that adds or changes a screen, and tick what holds. The review checks the same list."
+msgstr "Recopiez cette liste dans la pull request qui ajoute ou modifie un écran, et cochez ce qui est vrai. La revue vérifie la même liste."
+
+msgid "[ ] The screen has its place in the tree, found with [Where a new screen goes](#where-a-new-screen-goes), and is reachable from the navigation."
+msgstr "[ ] L'écran a sa place dans l'arbre, trouvée avec [Où ranger un nouvel écran](#where-a-new-screen-goes), et il est accessible depuis la navigation."
+
+msgid "[ ] The bar still has five entries; the section has four tabs at most, all visible at 360 px, and the page shows one row of tabs at most."
+msgstr "[ ] La barre a toujours cinq entrées ; la section a quatre onglets au plus, tous visibles à 360 px, et la page affiche une seule rangée d'onglets au plus."
+
+msgid "[ ] The marked entry of the bar is the section the person entered by."
+msgstr "[ ] L'entrée allumée de la barre est la section par laquelle la personne est entrée."
+
+msgid "[ ] A section root has no back link; any other page has one that names its target."
+msgstr "[ ] Une racine de section n'a pas de lien retour ; toute autre page en a un, qui nomme sa cible."
+
+msgid "[ ] Every link to a record or a form carries `next`, checked by the shared helper, and the form keeps it in a hidden field."
+msgstr "[ ] Chaque lien vers une fiche ou un formulaire porte `next`, vérifié par l'utilitaire partagé, et le formulaire le garde dans un champ caché."
+
+msgid "[ ] After a creation from a context, the person is back in the context with \"Added · Open\"; from the list of its own section, on the new record."
+msgstr "[ ] Après une création depuis un contexte, la personne revient au contexte avec « Ajoutée · Ouvrir » ; depuis la liste de sa propre section, sur la nouvelle fiche."
+
+msgid "[ ] A deletion goes through a confirmation page and lands on the parent."
+msgstr "[ ] Une suppression passe par une page de confirmation et mène au parent."
+
+msgid "[ ] One-tap actions stay in place with HTMX, with the undo banner, and work without JavaScript."
+msgstr "[ ] Les actions en un geste restent sur place avec HTMX, avec le bandeau d'annulation, et fonctionnent sans JavaScript."
+
+msgid "[ ] The screen shows the current home and only data of the person's homes."
+msgstr "[ ] L'écran montre le logement courant et seulement des données des logements de la personne."
+
+msgid "[ ] Amounts in the format of the language with the currency symbol; people by their display name; generic lists with \"Other\"."
+msgstr "[ ] Montants au format de la langue avec le symbole de la devise ; personnes par leur nom d'affichage ; listes génériques avec « Autre »."
+
+msgid "[ ] Touch targets of 44 px at least, visible focus, never hidden by the bar or the banner; WCAG 2.2 AA."
+msgstr "[ ] Cibles tactiles de 44 px au moins, focus visible, jamais masqué par la barre ou le bandeau ; WCAG 2.2 AA."
+
+msgid "[ ] Tried at 375 px and 1280 px, with no horizontal scroll of the page."
+msgstr "[ ] Essayé à 375 px et à 1280 px, sans défilement horizontal de la page."
+
+msgid "[ ] Every string translated, the French text reread."
+msgstr "[ ] Chaque chaîne traduite, le texte français relu."
+
+msgid "[ ] Only `--hc-*` tokens and existing components; no inline style or script, nothing from another host."
+msgstr "[ ] Seulement des jetons `--hc-*` et des composants existants ; aucun style ni script en ligne, rien d'un autre hôte."
+
+msgid "[ ] The screen reference page in `docs/screens/` and this guide, if a rule changed, updated in the same pull request."
+msgstr "[ ] La page de la référence des écrans dans `docs/screens/` et ce guide, si une règle a changé, mis à jour dans la même pull request."
+
+msgid "References"
+msgstr "Références"
+
+msgid "Material Design 3: [navigation bar](https://m3.material.io/components/navigation-bar/guidelines), [navigation drawer](https://m3.material.io/components/navigation-drawer/guidelines), [tabs](https://m3.material.io/components/tabs/guidelines), [snackbar](https://m3.material.io/components/snackbar/guidelines)."
+msgstr "Material Design 3 : [barre de navigation](https://m3.material.io/components/navigation-bar/guidelines), [tiroir de navigation](https://m3.material.io/components/navigation-drawer/guidelines), [onglets](https://m3.material.io/components/tabs/guidelines), [snackbar](https://m3.material.io/components/snackbar/guidelines)."
+
+msgid "Android, [principles of navigation](https://developer.android.com/guide/navigation/principles) (a fixed start destination, Up and Back)."
+msgstr "Android, [principes de navigation](https://developer.android.com/guide/navigation/principles) (une destination de départ fixe, Up et Back)."
+
+msgid "Apple Human Interface Guidelines: [tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars), [navigation bars](https://developer.apple.com/design/human-interface-guidelines/navigation-bars)."
+msgstr "Apple Human Interface Guidelines : [barres d'onglets](https://developer.apple.com/design/human-interface-guidelines/tab-bars), [barres de navigation](https://developer.apple.com/design/human-interface-guidelines/navigation-bars)."
+
+msgid "Nielsen Norman Group: [10 usability heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/), [breadcrumbs](https://www.nngroup.com/articles/breadcrumbs/), [tabs, used right](https://www.nngroup.com/articles/tabs-used-right/)."
+msgstr "Nielsen Norman Group : [les 10 heuristiques d'utilisabilité](https://www.nngroup.com/articles/ten-usability-heuristics/), [fils d'Ariane](https://www.nngroup.com/articles/breadcrumbs/), [bien utiliser les onglets](https://www.nngroup.com/articles/tabs-used-right/)."
+
+msgid "[WCAG 2.2](https://www.w3.org/TR/WCAG22/), in particular [2.5.8 Target size (minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html), [2.4.7 Focus visible](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html), [2.4.11 Focus not obscured (minimum)](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html), [2.4.6 Headings and labels](https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels.html), [3.2.3 Consistent navigation](https://www.w3.org/WAI/WCAG22/Understanding/consistent-navigation.html), [3.2.6 Consistent help](https://www.w3.org/WAI/WCAG22/Understanding/consistent-help.html) and [4.1.3 Status messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html)."
+msgstr "[WCAG 2.2](https://www.w3.org/TR/WCAG22/), en particulier [2.5.8 Taille de la cible (minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html), [2.4.7 Visibilité du focus](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html), [2.4.11 Focus non masqué (minimum)](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html), [2.4.6 En-têtes et étiquettes](https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels.html), [3.2.3 Navigation cohérente](https://www.w3.org/WAI/WCAG22/Understanding/consistent-navigation.html), [3.2.6 Aide cohérente](https://www.w3.org/WAI/WCAG22/Understanding/consistent-help.html) et [4.1.3 Messages d'état](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html)."
+
+msgid "web.dev, [app design](https://web.dev/learn/pwa/app-design): in the installed application, the browser shows no navigation of its own."
+msgstr "web.dev, [conception d'application](https://web.dev/learn/pwa/app-design) : dans l'application installée, le navigateur n'affiche aucune navigation propre."
+
+msgid "Why these rules"
+msgstr "Pourquoi ces règles"
+
+msgid "A navigation audit of the interface, on 2026-11-09, walked through the main journeys at 375 px and 1280 px in French, with three roles (owner, member, read-only). It found 16 problems: 2 blocking, 9 important, 5 minor. The interface itself was sound (touch targets, skip link, consistent help, confirmation before deleting most objects, a `next` already checked); the problems were structural. A design audit a few days earlier had found the same first problem (Projects and Budget out of sight on a phone), and the rules on amounts, deletions and lists."
+msgstr "Un audit de la navigation de l'interface, le 2026-11-09, a parcouru les principaux parcours à 375 px et à 1280 px en français, avec trois rôles (propriétaire, membre, lecture seule). Il a relevé 16 problèmes : 2 bloquants, 9 importants, 5 mineurs. L'interface elle-même était saine (cibles tactiles, lien d'évitement, aide cohérente, confirmation avant la suppression de la plupart des objets, un `next` déjà vérifié) ; les problèmes étaient structurels. Un audit de design, quelques jours plus tôt, avait relevé le même premier problème (Projets et Budget hors de vue sur téléphone), ainsi que les règles sur les montants, les suppressions et les listes."
+
+msgid "Finding"
+msgstr "Constat"
+
+msgid "Severity"
+msgstr "Gravité"
+
+msgid "What the audit saw"
+msgstr "Ce que l'audit a vu"
+
+msgid "Rule that answers it"
+msgstr "Règle qui y répond"
+
+msgid "NAV-01"
+msgstr "NAV-01"
+
+msgid "blocking"
+msgstr "bloquant"
+
+msgid "Six entries in the bar; Projects and Budget were tabs of Tasks, off screen at 375 px."
+msgstr "Six entrées dans la barre ; Projets et Budget étaient des onglets de Tâches, hors de l'écran à 375 px."
+
+msgid "[Five sections](#five-sections)"
+msgstr "[Cinq sections](#five-sections)"
+
+msgid "NAV-02"
+msgstr "NAV-02"
+
+msgid "Every back link pointed to a fixed parent, every form to the new record: a task added from an item left the person three taps from the item."
+msgstr "Chaque lien retour menait à un parent fixe, chaque formulaire à la nouvelle fiche : une tâche ajoutée depuis un élément laissait la personne à trois gestes de l'élément."
+
+msgid "[Return rule](#return-rule)"
+msgstr "[Règle de retour](#return-rule)"
+
+msgid "NAV-03"
+msgstr "NAV-03"
+
+msgid "important"
+msgstr "important"
+
+msgid "Three contradictory signs of position on one screen: the back link, the marked entry, the title."
+msgstr "Trois indications de position contradictoires sur un même écran : le lien retour, l'entrée allumée, le titre."
+
+msgid "[Back link and breadcrumbs](#back-link-and-breadcrumbs)"
+msgstr "[Lien retour et fil d'Ariane](#back-link-and-breadcrumbs)"
+
+msgid "NAV-04"
+msgstr "NAV-04"
+
+msgid "Three home screens; the installed application opened on the least useful."
+msgstr "Trois écrans d'accueil ; l'application installée s'ouvrait sur le moins utile."
+
+msgid "Today is the start screen ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md))"
+msgstr "Aujourd'hui est l'écran de départ ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md))"
+
+msgid "NAV-05"
+msgstr "NAV-05"
+
+msgid "Done reloaded the page and sent it back to the top; the undo banner was far from the finger."
+msgstr "« Fait » rechargeait la page et la remontait en haut ; le bandeau d'annulation était loin du doigt."
+
+msgid "[Actions in place](#actions-in-place)"
+msgstr "[Actions sur place](#actions-in-place)"
+
+msgid "NAV-06"
+msgstr "NAV-06"
+
+msgid "Eight tabs of Tasks mixing views, other sections and a setting."
+msgstr "Huit onglets de Tâches mêlant des vues, d'autres sections et un réglage."
+
+msgid "NAV-07"
+msgstr "NAV-07"
+
+msgid "Six taps for a read-only person to report a problem."
+msgstr "Six gestes pour qu'une personne en lecture seule signale un problème."
+
+msgid "Report a problem on Today, reports in More"
+msgstr "Signaler un problème sur Aujourd'hui, les signalements dans Plus"
+
+msgid "NAV-08"
+msgstr "NAV-08"
+
+msgid "With two homes, every section asked again which home."
+msgstr "Avec deux logements, chaque section redemandait le logement."
+
+msgid "[Current home](#current-home)"
+msgstr "[Logement courant](#current-home)"
+
+msgid "NAV-09"
+msgstr "NAV-09"
+
+msgid "More was a flat list of eleven entries, deleting the account among them."
+msgstr "Plus était une liste à plat de onze entrées, dont la suppression du compte."
+
+msgid "[What goes in More](#what-goes-in-more)"
+msgstr "[Ce qui va dans Plus](#what-goes-in-more)"
+
+msgid "NAV-10"
+msgstr "NAV-10"
+
+msgid "Instance settings on one page of almost ten screens, with nine identical Save buttons."
+msgstr "Les réglages de l'instance sur une seule page de près de dix écrans, avec neuf boutons Enregistrer identiques."
+
+msgid "One index, one page per section"
+msgstr "Un index, une page par section"
+
+msgid "NAV-11"
+msgstr "NAV-11"
+
+msgid "The page of a room did not lead to its budget."
+msgstr "La page d'une pièce ne menait pas à son budget."
+
+msgid "Budget of the room on its page"
+msgstr "Le budget de la pièce sur sa page"
+
+msgid "NAV-12"
+msgstr "NAV-12"
+
+msgid "minor"
+msgstr "mineur"
+
+msgid "The browser's back button showed out-of-date undo banners and reopened sent forms."
+msgstr "Le retour du navigateur montrait des bandeaux d'annulation périmés et rouvrait des formulaires déjà envoyés."
+
+msgid "[The bar, and the browser's back button](#the-bar-and-the-browsers-back-button)"
+msgstr "[La barre, et le retour du navigateur](#the-bar-and-the-browsers-back-button)"
+
+msgid "NAV-13"
+msgstr "NAV-13"
+
+msgid "No breadcrumbs on a computer."
+msgstr "Pas de fil d'Ariane sur ordinateur."
+
+msgid "NAV-14"
+msgstr "NAV-14"
+
+msgid "Ambiguous or duplicate labels (\"Home\" opening \"My home\", one object with two names)."
+msgstr "Des libellés ambigus ou en double (« Accueil » qui ouvrait « Mon accueil », un même objet sous deux noms)."
+
+msgid "One term per concept; bar labels equal the titles of their roots"
+msgstr "Un terme par concept ; les libellés de la barre égalent les titres de leurs racines"
+
+msgid "NAV-15"
+msgstr "NAV-15"
+
+msgid "Repetition folded away when adding a task from an item, whose tasks all repeat."
+msgstr "La récurrence repliée à l'ajout d'une tâche depuis un élément, dont toutes les tâches se répètent."
+
+msgid "Repetition open by default for a task of an item"
+msgstr "La récurrence ouverte d'office pour une tâche d'élément"
+
+msgid "NAV-16"
+msgstr "NAV-16"
+
+msgid "The calendar outside the home, with no back link."
+msgstr "Le calendrier hors du logement, sans lien retour."
+
+msgid "The calendar is a tab of Today"
+msgstr "Le calendrier est un onglet d'Aujourd'hui"
+
+msgid "The audit compared the interface with Material 3, Apple's guidelines, the Nielsen heuristics and WCAG 2.2 (see [References](#references)), and with other home management applications. The full report stays outside the repository; this table and [ADR 0053](../adr/0053-target-navigation-and-return-rule.md) keep what was decided from it."
+msgstr "L'audit a comparé l'interface à Material 3, aux recommandations d'Apple, aux heuristiques de Nielsen et aux WCAG 2.2 (voir [Références](#references)), ainsi qu'à d'autres applications de gestion de la maison. Le rapport complet reste hors du dépôt ; ce tableau et l'[ADR 0053](../adr/0053-target-navigation-and-return-rule.md) gardent ce qui en a été décidé."
+
