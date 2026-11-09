@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Design guide completed.** The [design guide](../../../developer/design-guide.md) now says where the list of a new type of data goes, how dates, reminders and alerts reuse what tasks already do, what the default parent of a record reachable from two places is, and what a new screen must test. The repository also has an `AGENTS.md` for coding agents, which points to the contribution rules."
+msgstr "**Guide de conception complété.** Le [guide de conception](../../../developer/design-guide.md) dit désormais où va la liste d'un nouveau type de données, comment les échéances, rappels et alertes réutilisent ce que font déjà les tâches, quel est le parent par défaut d'une fiche accessible depuis deux endroits, et ce qu'un nouvel écran doit tester. Le dépôt a aussi un `AGENTS.md` pour les agents de code, qui renvoie aux règles de contribution."
+
