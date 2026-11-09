@@ -128,6 +128,27 @@ msgstr "L'historique des tâches est le filtre **Faites** de Toutes, et chaque t
 msgid "The calendar is a tab of Today, and the stock a tab of Rooms. The calendar is another view of the same occurrences; the stock is what is in the home, like the items."
 msgstr "Le calendrier est un onglet d'Aujourd'hui, et le matériel un onglet de Pièces. Le calendrier est une autre vue des mêmes occurrences ; le matériel est ce qu'il y a dans la maison, comme les éléments."
 
+msgid "One home page: Today"
+msgstr "Une seule page d'accueil : Aujourd'hui"
+
+msgid "A signed-in person has one start screen, Today, and every way in leads to it."
+msgstr "Une personne connectée a un seul écran de départ, Aujourd'hui, et toutes les entrées y mènent."
+
+msgid "The root address `/` **must** lead a signed-in person to Today: the one home they can open, else all their homes together on one Today page. The logo, the Today entry of the navigation outside a home, the `start_url` of the web app manifest and `LOGIN_REDIRECT_URL` **must** all be this address, never a second home screen."
+msgstr "L'adresse racine `/` **doit** mener une personne connectée à Aujourd'hui : son seul logement ouvrable, sinon tous ses logements ensemble sur une page Aujourd'hui. Le logo, l'entrée Aujourd'hui de la navigation hors d'un logement, le `start_url` du manifeste de l'application web et `LOGIN_REDIRECT_URL` **doivent** tous être cette adresse, jamais un second écran d'accueil."
+
+msgid "The welcome page **must** be shown only to a visitor who is signed out and to an account with no home to open, with **Add a home**."
+msgstr "La page de bienvenue **doit** n'être montrée qu'à un visiteur déconnecté et à un compte sans logement à ouvrir, avec **Ajouter un logement**."
+
+msgid "With several homes, the page of all homes **must** name each home by a heading that opens its Today. It **must not** repeat a row of tabs per home: rows with the same name are the same landmark to a screen reader."
+msgstr "Avec plusieurs logements, la page de tous les logements **doit** nommer chaque logement par un titre qui ouvre son Aujourd'hui. Elle **ne doit pas** répéter une rangée d'onglets par logement : des rangées de même nom sont le même repère pour un lecteur d'écran."
+
+msgid "**Report a problem** **must** be on Today for every role, a read-only one included: signing a problem is often the only thing that person does, and it takes one tap to open the form instead of six. The count of the reports that wait **must** follow the entry Reports of More, for the members who may write, read once per request."
+msgstr "**Signaler un problème** **doit** être sur Aujourd'hui pour tous les rôles, la lecture seule comprise : signaler est souvent la seule chose que fait cette personne, et il faut un geste pour ouvrir le formulaire au lieu de six. Le nombre de signalements en attente **doit** suivre l'entrée Signalements de Plus, pour les membres qui peuvent écrire, lu une seule fois par requête."
+
+msgid "A screen of an earlier version that was folded into Today (`/me/`) **must** redirect to its successor, keeping the query, so that a saved link or a home-screen icon still works."
+msgstr "Un écran d'une version antérieure fondu dans Aujourd'hui (`/me/`) **doit** rediriger vers son successeur, en gardant la requête, pour qu'un lien enregistré ou une icône d'écran d'accueil fonctionne encore."
+
 msgid "Phone: the bar at the bottom"
 msgstr "Téléphone : la barre du bas"
 
@@ -511,8 +532,8 @@ msgstr "L'application a déjà une façon de rappeler et une façon d'alerter ; 
 msgid "A date that someone must act on **must** be a task with a due date. The task is then shown on Today: overdue, today, and up to the person's horizon, 7 days by default (the `horizon_days` preference, `Horizon.WEEK`). It is also shown on the Calendar and in the calendar feeds, and its reminders go out through the channels of the person ([ADR 0043](../adr/0043-notifications-through-apprise.md)), with the rules of postponing, Done and Skip that every task has. A reminder written again for one screen would ignore the quiet hours and the follow-ups of the person."
 msgstr "Une date à laquelle quelqu'un doit agir **doit** être une tâche avec une échéance. La tâche apparaît alors dans Aujourd'hui : en retard, aujourd'hui, et jusqu'à l'horizon de la personne, 7 jours par défaut (la préférence `horizon_days`, `Horizon.WEEK`). Elle apparaît aussi dans le Calendrier et dans les flux de calendrier, et ses rappels partent par les canaux de la personne ([ADR 0043](../adr/0043-notifications-through-apprise.md)), avec les règles de report, de Fait et d'Ignorer que toute tâche a. Un rappel réécrit pour un écran ignorerait les heures de silence et les relances de la personne."
 
-msgid "A date that only informs (the end of a warranty) **must** be a list of the agenda digest, `housecairn.tasks.agenda.my_home`, shown on My home (`/me/`, the view of Today when the person is not in a home), as the warranties ending soon are today. It is read, not acted on, and sends no notification. This digest is not the daily summary message of the notifications."
-msgstr "Une date qui ne fait qu'informer (la fin d'une garantie) **doit** être une liste du récapitulatif de l'agenda, `housecairn.tasks.agenda.my_home`, affichée dans Mon accueil (`/me/`, la vue d'Aujourd'hui quand on n'est pas dans un logement), comme le sont aujourd'hui les garanties qui se terminent bientôt. Elle se lit, on n'agit pas dessus, et elle n'envoie aucune notification. Ce récapitulatif n'est pas le message de résumé quotidien des notifications."
+msgid "A date that only informs (the end of a warranty) **must** be a list of the agenda digest, `housecairn.tasks.agenda.my_home`, shown on Today for all homes (`/`, when the person has several homes), as the warranties ending soon are today. It is read, not acted on, and sends no notification. This digest is not the daily summary message of the notifications."
+msgstr "Une date qui ne fait qu'informer (la fin d'une garantie) **doit** être une liste du récapitulatif de l'agenda, `housecairn.tasks.agenda.my_home`, affichée dans Aujourd'hui pour tous les logements (`/`, quand la personne a plusieurs logements), comme le sont aujourd'hui les garanties qui se terminent bientôt. Elle se lit, on n'agit pas dessus, et elle n'envoie aucune notification. Ce récapitulatif n'est pas le message de résumé quotidien des notifications."
 
 msgid "An event with no due date (a problem was reported) **must** be an alert of `housecairn.notifications.alerts`, sent in the background to the members who may write, except the person who caused it, with the quiet hours applied. The open reports are also a line on Today with a link, for the members who may write."
 msgstr "Un événement sans échéance (un problème a été signalé) **doit** être une alerte de `housecairn.notifications.alerts`, envoyée en arrière-plan aux membres qui peuvent écrire, sauf à la personne qui l'a provoqué, en respectant les heures de silence. Les signalements ouverts sont aussi une ligne dans Aujourd'hui, avec un lien, pour les membres qui peuvent écrire."
@@ -735,8 +756,8 @@ msgstr "NAV-04"
 msgid "Three home screens; the installed application opened on the least useful."
 msgstr "Trois écrans d'accueil ; l'application installée s'ouvrait sur le moins utile."
 
-msgid "Today is the start screen ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md))"
-msgstr "Aujourd'hui est l'écran de départ ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md))"
+msgid "[One home page](#one-home-page-today) ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md))"
+msgstr "[Une seule page d'accueil](#one-home-page-today) ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md))"
 
 msgid "NAV-05"
 msgstr "NAV-05"
@@ -759,8 +780,8 @@ msgstr "NAV-07"
 msgid "Six taps for a read-only person to report a problem."
 msgstr "Six gestes pour qu'une personne en lecture seule signale un problème."
 
-msgid "Report a problem on Today, reports in More"
-msgstr "Signaler un problème sur Aujourd'hui, les signalements dans Plus"
+msgid "[One home page](#one-home-page-today): Report a problem on Today, the count in More"
+msgstr "[Une seule page d'accueil](#one-home-page-today) : Signaler un problème sur Aujourd'hui, le nombre dans Plus"
 
 msgid "NAV-08"
 msgstr "NAV-08"

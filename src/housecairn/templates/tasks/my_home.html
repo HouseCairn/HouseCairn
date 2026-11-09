@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras tabs navigation %}
-{% block head_title %}{% translate "My home" %}{% endblock head_title %}
+{% load i18n tasks_extras navigation %}
+{% block head_title %}{% translate "Today" %}{% endblock head_title %}
 {% block content %}
-  <h1>{% translate "My home" %}</h1>
+  <h1>{% translate "Today" %}</h1>
   {% if homes|length > 1 %}
     <form method="get" class="filter-row" role="search">
       <label class="visually-hidden" for="filter-home">{% translate "Home" %}</label>
@@ -15,8 +15,8 @@
   {% endif %}
   {% for digest in digests %}
     <section class="digest" aria-labelledby="digest-{{ forloop.counter }}">
-      <h2 id="digest-{{ forloop.counter }}">{{ digest.home.name }}</h2>
-      {% with home=digest.home %}{% tab_bar "today" %}{% endwith %}
+      <h2 id="digest-{{ forloop.counter }}"><a href="{% url 'tasks:today' home_id=digest.home.id %}">{{ digest.home.name }}</a></h2>
+      <p><a class="button button-secondary button-small" href="{% url_with_next 'reports:create' home_id=digest.home.id %}">{% translate "Report a problem" %}</a></p>
       {% if digest.empty %}
         <p class="empty">{% translate "Nothing needs you here." %}</p>
       {% endif %}
@@ -49,9 +49,6 @@
         </ul>
       {% endif %}
     </section>
-  {% empty %}
-    <p class="empty">{% translate "You have no home to open yet." %}</p>
-    <a class="button button-secondary button-block" href="{% url 'homes:create' %}">{% translate "Add a home" %}</a>
   {% endfor %}
   <p class="small"><a href="{% url 'display-preferences' %}?next={{ request.get_full_path|urlencode }}">{% translate "Display preferences" %}</a></p>
 {% endblock content %}

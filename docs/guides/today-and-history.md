@@ -1,17 +1,19 @@
-# Today, My home and history
+# Today and history
 
 Three screens to look at your tasks without setting anything up, and one setting to
 make them yours.
 
-## Start the day on My home
+## Start the day on Today
 
-**Today** in the navigation opens [My home](../screens/my-home.md): what is assigned
-to you, what is late in the home, what nobody has taken yet, and the warranties that
-end soon. With several homes, pick one or look at them all together.
+The application opens on [Today](../screens/today.md), whichever way you come in: the
+logo, **Today** in the navigation, the installed application and signing in lead to
+it. With several homes, [one page](../screens/my-home.md) shows what is assigned to
+you, what is late in each home, what nobody has taken yet and the warranties that end
+soon; pick a home there to open its Today.
 
 ## Do the day on Today
 
-From there, **Today** opens the [Today](../screens/today.md) screen of a home. The
+The
 arrears are on top; then what comes up in the next days; then what is in season.
 **Done** is on every row: one tap, and a banner offers **Undo** if it was a mistake.
 

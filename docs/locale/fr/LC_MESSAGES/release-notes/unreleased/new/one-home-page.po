@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**One home page: Today.** The logo, signing in and the installed application now all open on Today: your only home, or all your homes together if you have several. \"My home\" is gone as a separate screen and its old address redirects. The welcome page stays for visitors and for accounts with no home. **Report a problem** is under the title of Today for every member, a read-only one included, and the number of reports that wait is shown next to **Reports** in More."
+msgstr "**Une seule page d'accueil : Aujourd'hui.** Le logo, la connexion et l'application installée s'ouvrent désormais tous sur Aujourd'hui : votre seul logement, ou tous vos logements ensemble si vous en avez plusieurs. « Mon accueil » n'existe plus comme écran à part et son ancienne adresse redirige. La page de bienvenue reste pour les visiteurs et pour les comptes sans logement. **Signaler un problème** est sous le titre d'Aujourd'hui pour tout membre, la lecture seule comprise, et le nombre de signalements en attente s'affiche à côté de **Signalements** dans Plus."
+

@@ -7,7 +7,8 @@
     <h1>HouseCairn</h1>
     <p class="lead">{% translate "What needs doing in the house, where, when, with what and for how much." %}</p>
     {% if user.is_authenticated %}
-      <a class="button" href="{% url 'homes:list' %}">{% translate "Go to my homes" %}</a>
+      <a class="button" href="{% url 'homes:create' %}">{% translate "Add a home" %}</a>
+      <a class="button button-secondary" href="{% url 'homes:list' %}">{% translate "My homes" %}</a>
     {% else %}
       <a class="button" href="{% url 'account_login' %}">{% translate "Sign in" %}</a>
     {% endif %}

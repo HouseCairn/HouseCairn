@@ -396,26 +396,31 @@ class TestScreens:
     def test_my_home_selects_a_home(self, busy: Home, alice: User, signed_in: Client) -> None:
         second = home_services.create_home(alice, name="Holiday flat")
         services.create_task(alice, second, title="Close the shutters", assignee=alice)
-        both = signed_in.get(reverse("my-home")).content.decode()
+        both = signed_in.get(reverse("index")).content.decode()
         assert "Holiday flat" in both
         assert "Close the shutters" in both
         assert "Due today" in both
-        one = signed_in.get(reverse("my-home"), {"home": str(second.id)}).content.decode()
+        one = signed_in.get(reverse("index"), {"home": str(second.id)}).content.decode()
         assert "Close the shutters" in one
         assert "Due today" not in one
-        unknown = signed_in.get(reverse("my-home"), {"home": "nonsense"}).content.decode()
+        unknown = signed_in.get(reverse("index"), {"home": "nonsense"}).content.decode()
         assert "Due today" in unknown
 
-    def test_my_home_without_a_home(self, client: Client, make_user: Callable[..., User]) -> None:
+    def test_the_start_page_of_an_account_with_no_home_is_the_welcome(
+        self, client: Client, make_user: Callable[..., User]
+    ) -> None:
         client.force_login(make_user("alone@example.com"))
-        assert "You have no home to open yet." in client.get(reverse("my-home")).content.decode()
+        response = client.get(reverse("index"))
+        assert response.status_code == 200
+        assert "Welcome" in response.content.decode()
+        assert reverse("homes:create") in response.content.decode()
 
     def test_navigation_leads_home(self, signed_in: Client, alice_home: Home) -> None:
         content = signed_in.get(reverse("more")).content.decode()
-        assert f'href="{reverse("my-home")}"' in content
+        assert f'href="{reverse("index")}"' in content
         assert content.split('<div class="nav-drawer">')[0].count('aria-current="page"') == 1
         anonymous = Client().get(reverse("index")).content.decode()
-        assert reverse("my-home") not in anonymous
+        assert 'class="nav' not in anonymous
 
     def test_history_page(self, signed_in: Client, past: Home) -> None:
         response = signed_in.get(web("history", past), follow=True)
@@ -480,13 +485,13 @@ class TestScreens:
             reverse("display-preferences"),
             {"today_group": "room", "horizon_days": "7", "next": "https://example.org/"},
         )
-        assert response["Location"] == reverse("my-home")
+        assert response["Location"] == reverse("index")
         for target in ("//\r", "/\\\n", "\\evil.example"):
             response = signed_in.post(
                 reverse("display-preferences"),
                 {"today_group": "room", "horizon_days": "7", "next": target},
             )
-            assert response["Location"] == reverse("my-home"), target
+            assert response["Location"] == reverse("index"), target
         bad = signed_in.post(
             reverse("display-preferences"), {"today_group": "none", "horizon_days": "7"}
         )
@@ -511,7 +516,6 @@ class TestScreens:
         for address in (
             web("today", alice_home),
             web("history", alice_home),
-            reverse("my-home"),
             reverse("display-preferences"),
         ):
             response = client.get(address)
@@ -525,7 +529,7 @@ class TestScreens:
         client.force_login(request.getfixturevalue(who))
         assert client.get(web("today", busy)).status_code == 404
         assert client.get(web("history", busy)).status_code == 404
-        mine = client.get(reverse("my-home")).content.decode()
+        mine = client.get(reverse("index")).content.decode()
         assert "Due today" not in mine
         assert busy.name not in mine
 

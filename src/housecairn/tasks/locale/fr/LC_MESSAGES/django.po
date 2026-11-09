@@ -830,9 +830,6 @@ msgstr "Intervenants"
 msgid "No contractor yet. People and companies who work in this home, with their trade and how to reach them, are kept here."
 msgstr "Aucun intervenant pour l'instant. Les personnes et les entreprises qui travaillent dans ce logement, avec leur métier et le moyen de les joindre, sont gardées ici."
 
-msgid "My home"
-msgstr "Mon accueil"
-
 msgid "Home"
 msgstr "Accueil"
 
@@ -841,6 +838,9 @@ msgstr "Tous mes logements"
 
 msgid "Show"
 msgstr "Afficher"
+
+msgid "Report a problem"
+msgstr "Signaler un problème"
 
 msgid "Nothing needs you here."
 msgstr "Rien ne vous attend ici."

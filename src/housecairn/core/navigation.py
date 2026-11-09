@@ -119,7 +119,7 @@ LABELS: dict[str, Any] = {
     "rooms:detail": Record("rooms.Room", "room_id", "name"),
     "rooms:item-detail": Record("rooms.Item", "item_id", "name"),
     "homes:detail": Record("homes.Home", "home_id", "name"),
-    "my-home": _("My home"),
+    "index": _("Today"),
     "more": _("More"),
 }
 

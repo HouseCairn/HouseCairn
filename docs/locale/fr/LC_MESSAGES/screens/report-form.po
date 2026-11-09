@@ -21,8 +21,8 @@ msgstr ""
 msgid "Report a problem"
 msgstr "Signaler un problème"
 
-msgid "The form at `/h/<home id>/reports/new/`. Every member of the home may use it, a read-only one included; it is the only thing a read-only member writes."
-msgstr "Le formulaire sur `/h/<id du logement>/reports/new/`. Tout membre du logement peut l'utiliser, un membre en lecture seule compris ; c'est la seule chose qu'un membre en lecture seule écrit."
+msgid "The form at `/h/<home id>/reports/new/`. Every member of the home may use it, a read-only one included; it is the only thing a read-only member writes. It is one tap from [Today](today.md), where **Report a problem** is under the title."
+msgstr "Le formulaire sur `/h/<id du logement>/reports/new/`. Tout membre du logement peut l'utiliser, un membre en lecture seule compris ; c'est la seule chose qu'un membre en lecture seule écrit. Il est à un geste d'[Aujourd'hui](today.md), où **Signaler un problème** est sous le titre."
 
 msgid "**What is wrong?** is the only required field: one line, 200 characters at most."
 msgstr "**Qu'est-ce qui ne va pas ?** est le seul champ obligatoire : une ligne, 200 caractères au plus."

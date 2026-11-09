@@ -98,7 +98,7 @@ def test_the_home_of_a_member_names_them_too(
 ) -> None:
     account_services.set_display_name(bob, "Bobby")
     client.force_login(bob)
-    text = client.get(reverse("my-home")).text
+    text = client.get(reverse("tasks:today", kwargs={"home_id": alice_home.id})).text
     assert ADDRESS not in text
     assert "Clean the gutters" in text
 

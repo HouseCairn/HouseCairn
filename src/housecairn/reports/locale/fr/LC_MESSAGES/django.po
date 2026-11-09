@@ -135,6 +135,9 @@ msgstr[1] "%(counter)s problèmes signalés"
 msgid "See the reports"
 msgstr "Voir les signalements"
 
+msgid "Report a problem"
+msgstr "Signaler un problème"
+
 msgid "My reports"
 msgstr "Mes signalements"
 
@@ -171,9 +174,6 @@ msgstr "Classer sans suite"
 
 msgid "Reopen"
 msgstr "Rouvrir"
-
-msgid "Report a problem"
-msgstr "Signaler un problème"
 
 #, python-format
 msgid "A photo is optional: a JPEG, PNG or WebP image, %(max)s at most. Its location and other metadata are removed."

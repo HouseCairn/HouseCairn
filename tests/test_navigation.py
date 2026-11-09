@@ -157,7 +157,7 @@ class TestBar:
     def test_outside_a_home_each_entry_opens_its_entry_page(self, signed_in: Client) -> None:
         html = signed_in.get(reverse("more")).text
         assert [href for _, href, _ in bar(html)] == [
-            reverse("my-home"),
+            reverse("index"),
             reverse("rooms"),
             reverse("projects"),
             reverse("budget"),
@@ -221,7 +221,6 @@ class TestCurrentEntry:
             (reverse("tasks:detail", kwargs={**h, "task_id": task.id}), "Today"),
             (reverse("tasks:create", kwargs=h), "Today"),
             (reverse("calendar:week"), "Today"),
-            (reverse("my-home"), "Today"),
             (reverse("rooms:list", kwargs=h), "Rooms"),
             (reverse("rooms:detail", kwargs={**h, "room_id": owner_room.id}), "Rooms"),
             (reverse("rooms:item-detail", kwargs={**h, "item_id": owner_item.id}), "Rooms"),

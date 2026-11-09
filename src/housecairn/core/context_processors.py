@@ -29,7 +29,7 @@ def nav_section(request: HttpRequest) -> str:
     view = match.view_name
     if view.startswith(_IN_MORE):
         return MORE
-    if view in ("index", "my-home", "tasks") or match.namespace in ("tasks", "calendar"):
+    if view in ("index", "tasks") or match.namespace in ("tasks", "calendar"):
         return TODAY
     if match.namespace in ("rooms", "stock") or view in ("rooms", "stock"):
         return ROOMS
@@ -55,13 +55,10 @@ def _entry(request: HttpRequest, route: str, entry: str) -> str:
 
 
 def today_url(request: HttpRequest) -> str:
-    """Address of the Today entry: Today in the home being viewed, else My home."""
+    """Address of the Today entry: Today in the home being viewed, else the home page."""
     home_id = _home_id(request)
     if home_id:
         return reverse("tasks:today", kwargs={"home_id": home_id})
-    user = getattr(request, "user", None)
-    if user is not None and user.is_authenticated:
-        return reverse("my-home")
     return reverse("index")
 
 
@@ -90,8 +87,13 @@ def more_groups(request: HttpRequest) -> list[dict[str, Any]]:
     user = getattr(request, "user", None)
     if user is None or not user.is_authenticated:
         return []
+    from housecairn.reports.services import waiting_for
+
     match = getattr(request, "resolver_match", None)
-    return more.for_page(user, _home_id(request), match.view_name if match else "")
+    home_id = _home_id(request)
+    return more.for_page(
+        user, home_id, match.view_name if match else "", waiting_for(request, home_id)
+    )
 
 
 def shell(request: HttpRequest) -> dict[str, Any]:

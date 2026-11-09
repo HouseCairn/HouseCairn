@@ -7,7 +7,8 @@ sections. The entries come in four groups:
 
 - **Home**, about the home you are viewing (your only home, on the More page):
   its [settings](home.md) (name, currency, hemisphere, export),
-  [Household and roles](household.md), [Reports](reports.md),
+  [Household and roles](household.md), [Reports](reports.md) (with the number of
+  reports waiting, for the members who may write),
   [Contractors](contractors.md) and [QR labels](qr-labels.md). **My homes**
   lists your [homes](homes.md), to add one or open another.
 - **Me**: your [profile](profile.md) (the name other people see), your

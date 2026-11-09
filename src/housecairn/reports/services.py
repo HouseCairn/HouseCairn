@@ -23,7 +23,7 @@ from housecairn.audit import services as audit
 from housecairn.core.text import without_control_characters
 from housecairn.homes import quotas
 from housecairn.homes import services as home_services
-from housecairn.homes.models import Home
+from housecairn.homes.models import WRITE_ROLES, Home
 from housecairn.reports.models import (
     ATTENTION_STATUSES,
     CLOSED_STATUSES,
@@ -97,6 +97,27 @@ def open_reports(home: Home) -> models.QuerySet[Report]:
 
 def open_count(home: Home) -> int:
     return Report.objects.filter(home=home, status__in=ATTENTION_STATUSES).count()
+
+
+def waiting_for(request: Any, home_id: Any) -> int:
+    """How many reports wait for the person, in one home: 0 unless they may write there.
+
+    One query for the whole request, whichever part of the page asks (the line of Today,
+    the Reports entry of More): the answer is kept on the request.
+    """
+    user = request.user
+    if not home_id or not user.is_authenticated:
+        return 0
+    kept: dict[Any, int] = request.__dict__.setdefault("_reports_waiting", {})
+    if home_id not in kept:
+        kept[home_id] = Report.objects.filter(
+            home_id=home_id,
+            status__in=ATTENTION_STATUSES,
+            home__memberships__user=user,
+            home__memberships__role__in=WRITE_ROLES,
+            home__memberships__deleted_at__isnull=True,
+        ).count()
+    return kept[home_id]
 
 
 def places_for_forms(home: Home) -> dict[str, models.QuerySet[Any]]:

@@ -18,14 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-msgid "My home"
-msgstr "Mon accueil"
+msgid "Today in several homes"
+msgstr "Aujourd'hui avec plusieurs logements"
 
-msgid "What concerns you, at `/me/`; **Today** in the navigation opens it once you are signed in, from a page that is not about one home. With several homes, the selector at the top chooses one, or **All my homes** to see them together."
-msgstr "Ce qui vous concerne, sur `/me/` ; **Aujourd'hui** dans la navigation l'ouvre une fois connecté, depuis une page qui ne concerne pas un logement. Avec plusieurs logements, le sélecteur du haut en choisit un, ou **Tous mes logements** pour les voir ensemble."
+msgid "What concerns you across your homes, at the root address `/`, when you can open more than one home. With one home, `/` opens the [Today](today.md) of that home; with none, it shows the [start page](start-page.md). **Today** in the navigation leads here from a page that is not about one home. The address `/me/` of earlier versions redirects to `/`."
+msgstr "Ce qui vous concerne dans vos logements, sur l'adresse racine `/`, quand vous pouvez en ouvrir plusieurs. Avec un seul logement, `/` ouvre l'[Aujourd'hui](today.md) de ce logement ; sans logement, elle montre la [page de départ](start-page.md). **Aujourd'hui** dans la navigation mène ici depuis une page qui ne concerne pas un logement. L'adresse `/me/` des versions précédentes redirige vers `/`."
 
-msgid "For each home, under its name (with the tabs of [Today](today.md): Today, All and Calendar):"
-msgstr "Pour chaque logement, sous son nom (avec les onglets d'[Aujourd'hui](today.md) : Aujourd'hui, Toutes et Calendrier) :"
+msgid "With several homes, the selector at the top chooses one, or **All my homes** to see them together. Each home has its name as a heading, which opens its [Today](today.md), and **Report a problem** under it, which opens the [form](report-form.md) for that home. Under them:"
+msgstr "Avec plusieurs logements, le sélecteur du haut en choisit un, ou **Tous mes logements** pour les voir ensemble. Chaque logement a son nom en titre, qui ouvre son [Aujourd'hui](today.md), et **Signaler un problème** dessous, qui ouvre le [formulaire](report-form.md) de ce logement. Ensuite :"
 
 msgid "**Assigned to me**: the open tasks that are yours, the late ones first."
 msgstr "**Qui me sont confiées** : les tâches ouvertes qui sont les vôtres, les plus en retard d'abord."
@@ -44,4 +44,13 @@ msgstr "Les listes ne partagent aucune ligne : une tâche en retard qui est la v
 
 msgid "**Display preferences** at the bottom opens the [display preferences](display-preferences.md)."
 msgstr "**Préférences d'affichage**, en bas, ouvre les [préférences d'affichage](display-preferences.md)."
+
+#~ msgid "My home"
+#~ msgstr "Mon accueil"
+
+#~ msgid "What concerns you, at `/me/`; **Today** in the navigation opens it once you are signed in, from a page that is not about one home. With several homes, the selector at the top chooses one, or **All my homes** to see them together."
+#~ msgstr "Ce qui vous concerne, sur `/me/` ; **Aujourd'hui** dans la navigation l'ouvre une fois connecté, depuis une page qui ne concerne pas un logement. Avec plusieurs logements, le sélecteur du haut en choisit un, ou **Tous mes logements** pour les voir ensemble."
+
+#~ msgid "For each home, under its name (with the tabs of [Today](today.md): Today, All and Calendar):"
+#~ msgstr "Pour chaque logement, sous son nom (avec les onglets d'[Aujourd'hui](today.md) : Aujourd'hui, Toutes et Calendrier) :"
 
