@@ -453,6 +453,23 @@ class TestPrinting:
             services.labels_to_print(reader, alice_home, [("room", owner_room.id)])
         assert Label.objects.count() == 1
 
+    def test_a_selection_over_the_ceiling_makes_no_label(
+        self, alice: User, alice_home: Home, owner_item: Item
+    ) -> None:
+        room = room_services.create_room(alice, alice_home, name="Cellar")
+        items = [
+            room_services.create_item(alice, room, name=f"Shelf {number}")
+            for number in range(printing.MAX_LABELS + 1)
+        ]
+        with pytest.raises(ValidationError):
+            services.labels_to_print(alice, alice_home, [("item", item.id) for item in items])
+        assert Label.objects.count() == 0
+        # A repeated box counts once: the ceiling is on the objects, not on the ticks.
+        found = services.labels_to_print(
+            alice, alice_home, [("item", owner_item.id)] * (printing.MAX_LABELS + 5)
+        )
+        assert len(found) == 1
+
 
 class TestScreens:
     @pytest.fixture
