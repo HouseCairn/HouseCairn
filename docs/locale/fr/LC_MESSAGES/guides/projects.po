@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-09 00:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Projects and quotes"
+msgstr "Projets et devis"
+
+msgid "A project is a piece of work with an end: redo the bathroom, paint the living room. It holds the steps as tasks, the quotes you collect and a budget you can follow. Only the title is required, so you can start with an idea and fill in the rest as it firms up."
+msgstr "Un projet est un chantier qui a une fin : refaire la salle de bain, peindre le salon. Il réunit les étapes en tâches, les devis que vous collectez et un budget que vous pouvez suivre. Seul le titre est requis : vous pouvez partir d'une idée et compléter à mesure qu'elle prend forme."
+
+msgid "Start a project"
+msgstr "Démarrer un projet"
+
+msgid "Open **Tasks** in the navigation, then the **Projects** tab, then **Add a project**. Say what it is, its status (idea, planned, in progress, finished, abandoned) and, if you already know it, the **budget**: for \"redo the bathroom, 5000 euros\", type 5000. The amount is in the currency of the home and becomes the first budget line."
+msgstr "Ouvrez **Tâches** dans la navigation, puis l'onglet **Projets**, puis **Ajouter un projet**. Dites ce que c'est, son statut (idée, planifié, en cours, terminé, abandonné) et, si vous le connaissez déjà, le **budget** : pour « refaire la salle de bain, 5000 euros », saisissez 5000. Le montant est dans la devise du logement et devient la première ligne de budget."
+
+msgid "The rooms concerned, the estimated duration and the preferred season are optional and help to compare projects later. The season follows the hemisphere of the home."
+msgstr "Les pièces concernées, la durée estimée et la saison souhaitée sont facultatives et aident à comparer les projets plus tard. La saison suit l'hémisphère du logement."
+
+msgid "List the steps as tasks"
+msgstr "Lister les étapes en tâches"
+
+msgid "On the page of the project, **Add a task to the project** makes a task with a title, an optional date and an optional room. It is a normal task: it shows in the task list and on Today, you tick it done like any other, and its page names the project. A task you already have can be put into a project with **Put an existing task in the project**; a task is in one project at most, and taking it out keeps it."
+msgstr "Sur la page du projet, **Ajouter une tâche au projet** crée une tâche avec un titre, une date facultative et une pièce facultative. C'est une tâche ordinaire : elle apparaît dans la liste des tâches et sur Aujourd'hui, vous la cochez comme les autres, et sa page nomme le projet. Une tâche que vous avez déjà peut être mise dans un projet avec **Mettre une tâche existante dans le projet** ; une tâche est dans un projet au plus, et la retirer du projet la conserve."
+
+msgid "Collect quotes and commit one"
+msgstr "Collecter les devis et en engager un"
+
+msgid "**Add a quote** with the contractor (pick one or type a new name), the amount, the date and how long it is valid, and attach the PDF or the photo of the quote. A quote starts as *requested*, becomes *received* when it arrives, and *accepted* or *rejected* when you decide."
+msgstr "**Ajoutez un devis** avec l'intervenant (choisissez-en un ou saisissez un nouveau nom), le montant, la date et sa durée de validité, et joignez le PDF ou la photo du devis. Un devis commence *demandé*, devient *reçu* quand il arrive, puis *accepté* ou *refusé* quand vous décidez."
+
+msgid "**Accept the quote** next to the budget line it pays for. Its amount is then *committed* on that line. Rejecting it, or deleting the line, releases the commitment. Nothing stops you from accepting several quotes on one line, or none: the commitment is the sum of the accepted ones."
+msgstr "**Acceptez le devis** à côté de la ligne de budget qu'il finance. Son montant est alors *engagé* sur cette ligne. Le refuser, ou supprimer la ligne, libère l'engagement. Rien n'empêche d'accepter plusieurs devis sur une ligne, ou aucun : l'engagé est la somme des devis acceptés."
+
+msgid "Follow the budget"
+msgstr "Suivre le budget"
+
+msgid "Each budget line has three amounts, in the currency of the home:"
+msgstr "Chaque ligne de budget a trois montants, dans la devise du logement :"
+
+msgid "Amount"
+msgstr "Montant"
+
+msgid "Where it comes from"
+msgstr "D'où il vient"
+
+msgid "Planned"
+msgstr "Prévu"
+
+msgid "What you plan to spend; you type it."
+msgstr "Ce que vous prévoyez de dépenser ; vous le saisissez."
+
+msgid "Committed"
+msgstr "Engagé"
+
+msgid "The sum of the quotes accepted on the line."
+msgstr "La somme des devis acceptés sur la ligne."
+
+msgid "Paid"
+msgstr "Payé"
+
+msgid "What has been paid so far; you type it."
+msgstr "Ce qui a été payé jusqu'ici ; vous le saisissez."
+
+msgid "The gap of a line is the planned amount less the more of committed and paid, and the gap of the project is the sum of the gaps of its lines, so that an overrun on one line is not hidden by room left on another. The page says it in words, never by colour alone: **... left**, **On budget** or **Over budget by ...**. For the living room painted with a plan of 800, a quote of 620 accepted and 120 paid, the gap is 180 and the page says \"180.00 EUR left\". Amounts have two decimals and go up to 9,999,999,999.99."
+msgstr "L'écart d'une ligne est le montant prévu moins le plus élevé de l'engagé et du payé, et l'écart du projet est la somme des écarts de ses lignes : un dépassement sur une ligne n'est pas masqué par la marge d'une autre. La page le dit en toutes lettres, jamais par la seule couleur : **... restants**, **Budget respecté** ou **Budget dépassé de ...**. Pour le salon peint avec un prévu de 800, un devis de 620 accepté et 120 payés, l'écart est de 180 et la page dit « 180,00 EUR restants ». Les montants ont deux décimales et vont jusqu'à 9 999 999 999,99."
+
+msgid "Compare and plan the year"
+msgstr "Comparer et planifier l'année"
+
+msgid "Tick projects in the list and **Compare the ticked projects** to see their cost, duration, priority and season side by side. **Set the envelope** on the list gives the amount you want to spend on work this year; the list sets it against the planned budget of the projects that are not finished nor abandoned."
+msgstr "Cochez des projets dans la liste et **Comparer les projets cochés** pour voir côte à côte leur coût, leur durée, leur priorité et leur saison. **Fixer l'enveloppe**, dans la liste, donne le montant que vous voulez consacrer aux travaux cette année ; la liste le compare au budget prévu des projets qui ne sont ni terminés ni abandonnés."
+
+msgid "Share"
+msgstr "Partager"
+
+msgid "Everyone in the home sees the same projects; members and owners change them, read-only members change nothing. The same data is available to scripts through the [API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`, `project-tasks` and `envelope`), with the `read` and `write` scopes of an API token. The projects are part of the [export of the home](../administration/data.md), photos and files of quotes included, and are erased with it."
+msgstr "Tout le monde dans le logement voit les mêmes projets ; les membres et les propriétaires les modifient, les membres en lecture seule ne modifient rien. Les mêmes données sont disponibles pour les scripts par l'[API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`, `project-tasks` et `envelope`), avec les portées `read` et `write` d'un jeton d'API. Les projets font partie de l'[export du logement](../administration/data.md), photos et fichiers de devis compris, et sont effacés avec lui."
+

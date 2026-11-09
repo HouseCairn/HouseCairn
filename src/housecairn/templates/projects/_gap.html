@@ -1,0 +1,6 @@
+{% load i18n projects_extras %}{# The budget gap in words. `amounts`, `currency`. #}
+{% if amounts.planned or amounts.committed or amounts.paid %}
+  {% if amounts.state == "over" %}<span class="pill pill-warning">{% blocktranslate with amount=amounts.over_by|money:currency %}Over budget by {{ amount }}{% endblocktranslate %}</span>
+  {% elif amounts.state == "under" %}<span class="pill pill-success">{% blocktranslate with amount=amounts.gap|money:currency %}{{ amount }} left{% endblocktranslate %}</span>
+  {% else %}<span class="pill pill-info">{% translate "On budget" %}</span>{% endif %}
+{% endif %}

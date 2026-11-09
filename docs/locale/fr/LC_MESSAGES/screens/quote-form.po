@@ -1,0 +1,48 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-09 00:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Quote form"
+msgstr "Formulaire de devis"
+
+msgid "Adds a quote to a [project](project.md) (`/h/<home id>/projects/<project id>/quotes/new/`) or changes one (`/h/<home id>/projects/quotes/<quote id>/edit/`)."
+msgstr "Ajoute un devis à un [projet](project.md) (`/h/<id du logement>/projects/<id du projet>/quotes/new/`) ou en modifie un (`/h/<id du logement>/projects/quotes/<id du devis>/edit/`)."
+
+msgid "**Contractor** is one field: pick a contractor of the home from the suggestions, or type a new name, which joins the [contractors](contractors.md) when you save. Case does not matter; empty means nobody."
+msgstr "**Intervenant** est un seul champ : choisissez un intervenant du logement dans les suggestions, ou saisissez un nouveau nom, qui rejoint les [intervenants](contractors.md) à l'enregistrement. La casse n'a pas d'importance ; vide, cela veut dire personne."
+
+msgid "**Amount** is in the currency of the home, from 0 to 9,999,999,999.99."
+msgstr "**Montant** est dans la devise du logement, de 0 à 9 999 999 999,99."
+
+msgid "**Date** and **Valid until** are optional; the validity cannot end before the date."
+msgstr "**Date** et **Valable jusqu'au** sont facultatives ; la validité ne peut pas finir avant la date."
+
+msgid "**Status** is requested, received, accepted or rejected. An accepted quote is **committed on** a budget line of the project, which you choose; with any other status the line is left empty."
+msgstr "**Statut** est demandé, reçu, accepté ou refusé. Un devis accepté est **engagé sur** une ligne de budget du projet, que vous choisissez ; avec tout autre statut, la ligne reste vide."
+
+msgid "**File of the quote** takes an image, or a PDF, text, Word, Excel or OpenDocument file, checked by its content (up to 5 files for a quote). **Delete** removes one."
+msgstr "**Fichier du devis** prend une image, ou un fichier PDF, texte, Word, Excel ou OpenDocument, vérifié d'après son contenu (5 fichiers au plus par devis). **Supprimer** en retire un."
+
+msgid "**Document in Paperless-ngx** keeps a document number and a link for a later connection: nothing reads them yet."
+msgstr "**Document dans Paperless-ngx** garde un numéro de document et un lien pour une connexion ultérieure : rien ne les lit encore."
+
+msgid "**Delete the quote** asks for confirmation and releases what it committed."
+msgstr "**Supprimer le devis** demande confirmation et libère ce qu'il engageait."
+

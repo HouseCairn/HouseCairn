@@ -16,7 +16,7 @@ The archive is a zip:
 | Part | Content |
 | --- | --- |
 | `export.json` | The data, as JSON (below). |
-| `files/` | The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`. |
+| `files/` | The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`, and the photos and quote files of projects, under `files/projects/`. |
 | `README.txt` | A reminder of the format. |
 
 `export.json` is versioned. Version `1` has these keys:
@@ -36,6 +36,12 @@ The archive is a zip:
 | `stock_items` | `id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`). |
 | `stock_suppliers` | `id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`. |
 | `stock_movements` | `id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`. |
+| `projects` | `id`, `title`, `goal`, `status`, `priority`, `rooms` (room ids), `estimated_minutes`, `season` with `season_start_month` and `season_end_month`, `created_at`. |
+| `project_budget_lines` | `id`, `project`, `label`, `nature`, `planned`, `committed` (the sum of the accepted quotes), `paid`, `created_at`. Amounts are text with two decimals, in the currency of the home. |
+| `project_quotes` | `id`, `project`, `contractor` (an id or `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (the line an accepted quote is committed on, else `null`), `note`, `paperless_id`, `paperless_url`, `created_at`. |
+| `project_files` | `id`, `project`, `quote` (or `null` for a photo of the project), `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path in the archive (`files/projects/<id>.<extension>`, or `null` if the file is missing). |
+| `project_tasks` | `id`, `project`, `task`: the tasks that belong to a project. |
+| `project_envelopes` | `id`, `year`, `amount`: the annual budget envelope. |
 | `tasks` | `id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, the budgets, `notes`, `procedure`, `assignee`, `contractor` (an id), the repeat rule, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` or empty) with `season_start_month` and `season_end_month`, `hide_days_before`. |
 | `contractors` | `id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`. |
 | `labels` | `id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing. |
@@ -59,11 +65,11 @@ home is revoked. **There is no grace period and no way back**: export first.
 The audit log of the instance records that a home was deleted, without its
 name.
 
-The photos, the labels of stock items, and the files attached to tasks are erased from the disk with the home
+The photos, the labels of stock items, the photos and quote files of projects and the files attached to tasks are erased from the disk with the home
 (photos deleted one by one included). If the disk refuses (permissions, a full or
 read-only volume), the home is still deleted and the error is logged by
 `housecairn.files` with the path of the directory (`photos/<home id>`,
-`attachments/<home id>`, or `stock/<home id>`): remove that directory by hand.
+`attachments/<home id>`, `stock/<home id>` or `projects/<home id>`): remove that directory by hand.
 
 ## Erasure of an account
 

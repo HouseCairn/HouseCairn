@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     "housecairn.rooms",
     "housecairn.tasks",
     "housecairn.stock",
+    "housecairn.projects",
     "housecairn.notifications",
     "housecairn.labels",
 ]
