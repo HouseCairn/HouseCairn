@@ -1,6 +1,7 @@
 """Account screens: no dead link without mail, landing page, names in messages, headings."""
 
 import re
+from urllib.parse import urlencode
 
 import pytest
 from django.contrib.messages import get_messages
@@ -71,6 +72,23 @@ class TestLandingPage:
             {"login": alice.email, "password": PASSWORD},
         )
         assert response["Location"] == target
+
+    @pytest.mark.parametrize(
+        "hostile",
+        [
+            "https://evil.example.com/",
+            "//evil.example.com/",
+            "/\\evil.example.com/",
+            "javascript:alert(1)",
+        ],
+    )
+    def test_a_hostile_next_is_ignored(self, client: Client, alice: User, hostile: str) -> None:
+        response = client.post(
+            reverse("account_login") + "?" + urlencode({"next": hostile}),
+            {"login": alice.email, "password": PASSWORD},
+        )
+        assert response.status_code == 302
+        assert response["Location"] == reverse("my-home")
 
 
 class TestMessagesNameThePerson:
