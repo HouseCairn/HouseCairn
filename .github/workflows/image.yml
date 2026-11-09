@@ -2,6 +2,9 @@
 # every merge queue entry (docs/adr/0040), publish to GHCR with signed
 # provenance and SBOM on `main` and release tags.
 # Job names are status checks: rename them only together with the ruleset.
+# arm64 (QEMU, the slowest part) is built on pull requests and merge queue
+# entries only when the `changes` job sees a change that can affect it; every
+# publication builds both platforms (docs/adr/0015, amendment of 2026-11-09).
 name: Image
 
 on:
@@ -30,6 +33,31 @@ env:
   SBOM_SCANNER_IMAGE: docker/buildkit-syft-scanner:1.12.1@sha256:873a7458c3c8ac8e32c7b796c10e1600b07b963d2aa000a72a2d97aaaa2d6315
 
 jobs:
+  changes:
+    name: Image changes
+    # Not a required check. Decides whether the multi-arch job builds arm64;
+    # the required job runs whatever this one answers, and builds both
+    # platforms when this one fails or says nothing.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read # check out the repository
+    outputs:
+      arm64: ${{ steps.arm64.outputs.arm64 }}
+    steps:
+      - name: Check out with the history of the change
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Does the change affect the arm64 build?
+        id: arm64
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+        run: .github/scripts/arm64-needed.sh "$EVENT" "$BASE_SHA" "$HEAD_SHA"
+
   image:
     name: Container image
     runs-on: ubuntu-24.04
@@ -41,6 +69,32 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      - name: Install Grype (checksum verified)
+        env:
+          GITHUB_TOKEN: ${{ github.token }} # read-only; API rate limit only
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/grype"
+          archive="$RUNNER_TEMP/grype.tar.gz"
+          # Through the REST API of the release, with curl's retries on any
+          # error: GitHub's releases/download address answered 504 for minutes
+          # on 2026-11-08 while the API did not (.github/scripts/release-asset.sh).
+          # The last error stays fatal, and the checksum below is verified
+          # whatever the path and the number of attempts.
+          .github/scripts/release-asset.sh anchore/grype "v${GRYPE_VERSION}" \
+            "grype_${GRYPE_VERSION}_linux_amd64.tar.gz" "$archive"
+          echo "${GRYPE_SHA256}  $archive" | sha256sum --check --strict
+          tar -xzf "$archive" -C "$RUNNER_TEMP/grype" grype
+          "$RUNNER_TEMP/grype/grype" version
+
+      - name: Start the Grype database download (in the background)
+        # The database is the slowest part of the first scan (about a minute).
+        # It downloads while the image builds and is tested, and the inventory
+        # step waits for it.
+        env:
+          GRYPE_CHECK_FOR_APP_UPDATE: "false"
+        run: .github/scripts/grype-db.sh start "$RUNNER_TEMP/grype/grype" "$RUNNER_TEMP/grype-db"
 
       - name: "Criterion 1: build the image"
         env:
@@ -79,23 +133,8 @@ jobs:
           docker compose -f compose.yaml --profile postgres config --quiet
           echo "- PASS: compose.yaml is valid, with and without the postgres profile" >>"$GITHUB_STEP_SUMMARY"
 
-      - name: Install Grype (checksum verified)
-        env:
-          GITHUB_TOKEN: ${{ github.token }} # read-only; API rate limit only
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/grype"
-          archive="$RUNNER_TEMP/grype.tar.gz"
-          # Through the REST API of the release, with curl's retries on any
-          # error: GitHub's releases/download address answered 504 for minutes
-          # on 2026-11-08 while the API did not (.github/scripts/release-asset.sh).
-          # The last error stays fatal, and the checksum below is verified
-          # whatever the path and the number of attempts.
-          .github/scripts/release-asset.sh anchore/grype "v${GRYPE_VERSION}" \
-            "grype_${GRYPE_VERSION}_linux_amd64.tar.gz" "$archive"
-          echo "${GRYPE_SHA256}  $archive" | sha256sum --check --strict
-          tar -xzf "$archive" -C "$RUNNER_TEMP/grype" grype
-          "$RUNNER_TEMP/grype/grype" version
+      - name: Wait for the Grype database
+        run: .github/scripts/grype-db.sh wait "$RUNNER_TEMP/grype-db"
 
       - name: Vulnerability inventory (every finding, never fails the job)
         # The complete picture, fixable or not: the job summary and an artifact
@@ -227,15 +266,22 @@ jobs:
 
   multiarch:
     name: Container image (multi-arch build)
-    # Builds amd64 and arm64 exactly as the publication does, without pushing:
-    # a pull request that breaks one architecture fails here, before `main`.
+    # Builds the image exactly as the publication does, without pushing: a
+    # pull request that breaks a platform fails here, before `main`. linux/arm64
+    # runs under QEMU and is built only when `changes` reports a change that can
+    # affect it (Dockerfile, locked dependencies, this workflow); otherwise
+    # linux/amd64 alone, with the same provenance and SBOM. Every publication
+    # builds both. Anything but an explicit `false` from `changes` builds both.
     # Also on the merge queue: the entry is what lands on `main`, and a skipped
     # job would count as a passing required check (docs/adr/0040).
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+    needs: changes
+    if: ${{ !cancelled() && (github.event_name == 'pull_request' || github.event_name == 'merge_group') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read # check out the repository
+    env:
+      PLATFORMS: ${{ needs.changes.outputs.arm64 == 'false' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -245,21 +291,23 @@ jobs:
         run: |
           # Pulled first, with retries: `docker run` and `buildx create` then
           # use the local images (same references, pinned by digest).
-          .github/scripts/retry.sh docker pull -q "$BINFMT_IMAGE"
           .github/scripts/retry.sh docker pull -q "$BUILDKIT_IMAGE"
-          docker run --rm --privileged "$BINFMT_IMAGE" --install arm64
+          if [[ "$PLATFORMS" == *linux/arm64* ]]; then
+            .github/scripts/retry.sh docker pull -q "$BINFMT_IMAGE"
+            docker run --rm --privileged "$BINFMT_IMAGE" --install arm64
+          fi
           docker buildx create --name housecairn --driver docker-container \
             --driver-opt "image=$BUILDKIT_IMAGE" --bootstrap --use
-      - name: Build linux/amd64 and linux/arm64
+      - name: Build the platforms
         env:
           REVISION: ${{ github.sha }}
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 \
+          docker buildx build --platform "$PLATFORMS" \
             --build-arg VERSION=ci --build-arg "REVISION=$REVISION" \
             --provenance=mode=max \
             --attest "type=sbom,generator=$SBOM_SCANNER_IMAGE" \
             --output type=cacheonly .
-          echo "- PASS: linux/amd64 and linux/arm64 built, with provenance and SBOM" >>"$GITHUB_STEP_SUMMARY"
+          echo "- PASS: ${PLATFORMS} built, with provenance and SBOM" >>"$GITHUB_STEP_SUMMARY"
 
   publish:
     name: Publish image
