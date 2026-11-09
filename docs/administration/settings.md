@@ -3,7 +3,8 @@
 Most of what an administrator configures can be set **in the interface** and by an
 **environment variable**, as a pair. The variable wins; without it, the value chosen in
 the interface is used; without either, the default. The screen is
-**Instance administration, Settings** (see [Instance settings](../screens/instance-settings.md)).
+**Instance administration, Settings**: an index of the sections, then one page per section
+with its own Save button (see [Instance settings](../screens/instance-settings.md)).
 
 1. **A variable is set** (and not empty): it decides. In the interface the field is locked,
    shows the value in force and names the variable. The interface and the API refuse to
