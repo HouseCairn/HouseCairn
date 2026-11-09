@@ -1,16 +1,17 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% if line %}{% translate "Edit the budget line" %}{% else %}{% translate "Add a budget line" %}{% endif %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'projects:detail' home_id=home.id project_id=project.id %}">{% include "components/icon.html" with name="chevron" %}{{ project.title }}</a>
+  {% url 'projects:detail' home_id=home.id project_id=project.id as parent %}{% back_link parent project.title %}
   <h1>{% if line %}{% translate "Edit the budget line" %}{% else %}{% translate "Add a budget line" %}{% endif %}</h1>
   <form method="post" class="card" novalidate>
     {% csrf_token %}
+    {% next_field %}
     {{ form.as_p }}
     <p class="small">{% blocktranslate with currency=home.currency %}Amounts are in {{ currency }}, the currency of the home.{% endblocktranslate %}</p>
     <button type="submit" class="button-block">{% translate "Save" %}</button>
   </form>
   {% if line %}
-    <a class="button button-danger button-block" href="{% url 'projects:line-delete' home_id=home.id line_id=line.id %}">{% translate "Delete the budget line" %}</a>
+    <a class="button button-danger button-block" href="{% url_with_next 'projects:line-delete' home_id=home.id line_id=line.id %}">{% translate "Delete the budget line" %}</a>
   {% endif %}
 {% endblock content %}

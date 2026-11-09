@@ -25,7 +25,11 @@ def budget_gap(amounts: services.Amounts, currency: str) -> dict[str, Any]:
     return {"amounts": amounts, "currency": currency}
 
 
-@register.inclusion_tag("projects/_task_link.html")
-def task_project(task: Task, home: Any) -> dict[str, Any]:
+@register.inclusion_tag("projects/_task_link.html", takes_context=True)
+def task_project(context: template.Context, task: Task, home: Any) -> dict[str, Any]:
     """The project a task belongs to, as one line of the page of the task (docs/adr/0050)."""
-    return {"project": services.project_of_task(task), "home": home}
+    return {
+        "project": services.project_of_task(task),
+        "home": home,
+        "request": context["request"],
+    }

@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% if quote %}{% translate "Edit the quote" %}{% else %}{% translate "Add a quote" %}{% endif %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'projects:detail' home_id=home.id project_id=project.id %}">{% include "components/icon.html" with name="chevron" %}{{ project.title }}</a>
+  {% url 'projects:detail' home_id=home.id project_id=project.id as parent %}{% back_link parent project.title %}
   <h1>{% if quote %}{% translate "Edit the quote" %}{% else %}{% translate "Add a quote" %}{% endif %}</h1>
   <form method="post" class="card" enctype="multipart/form-data" novalidate>
     {% csrf_token %}
+    {% next_field %}
     {{ form.non_field_errors }}
     {% include "tasks/_field.html" with field=form.contractor_name %}
     <datalist id="contractor-options">
@@ -40,6 +41,6 @@
         {% endfor %}
       </ul>
     {% endif %}
-    <a class="button button-danger button-block" href="{% url 'projects:quote-delete' home_id=home.id quote_id=quote.id %}">{% translate "Delete the quote" %}</a>
+    <a class="button button-danger button-block" href="{% url_with_next 'projects:quote-delete' home_id=home.id quote_id=quote.id %}">{% translate "Delete the quote" %}</a>
   {% endif %}
 {% endblock content %}

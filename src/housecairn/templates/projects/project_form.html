@@ -1,16 +1,17 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% if project %}{% translate "Edit the project" %}{% else %}{% translate "Add a project" %}{% endif %}{% endblock head_title %}
 {% block content %}
   {% if project %}
-    <a class="back-link" href="{% url 'projects:detail' home_id=home.id project_id=project.id %}">{% include "components/icon.html" with name="chevron" %}{{ project.title }}</a>
+    {% url 'projects:detail' home_id=home.id project_id=project.id as parent %}{% back_link parent project.title %}
     <h1>{% translate "Edit the project" %}</h1>
   {% else %}
-    <a class="back-link" href="{% url 'projects:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Projects" %}</a>
+    {% url 'projects:list' home_id=home.id as parent %}{% back_link parent %}
     <h1>{% translate "Add a project" %}</h1>
   {% endif %}
   <form method="post" class="card" novalidate>
     {% csrf_token %}
+    {% next_field %}
     {{ form.non_field_errors }}
     {% include "tasks/_field.html" with field=form.title %}
     {% include "tasks/_field.html" with field=form.goal %}
@@ -29,6 +30,6 @@
     <button type="submit" class="button-block">{% translate "Save" %}</button>
   </form>
   {% if project %}
-    <a class="button button-danger button-block" href="{% url 'projects:delete' home_id=home.id project_id=project.id %}">{% translate "Delete the project" %}</a>
+    <a class="button button-danger button-block" href="{% url_with_next 'projects:delete' home_id=home.id project_id=project.id %}">{% translate "Delete the project" %}</a>
   {% endif %}
 {% endblock content %}
