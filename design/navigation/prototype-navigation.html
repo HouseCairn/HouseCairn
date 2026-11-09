@@ -196,7 +196,7 @@ const ICON = {
 };
 const svg = (n, cls) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"${cls ? ` class="${cls}"` : ""}>${ICON[n]}</svg>`;
 const LOGO = '<svg class="logo" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4l9 8H11z" fill="#C8A27C"/><ellipse cx="20" cy="21" rx="10" ry="5.5" fill="#8FA39A"/><ellipse cx="20" cy="32" rx="13" ry="5.5" fill="#5F726E"/></svg>';
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 
 /* ---------- fictitious data ---------- */
 const HOMES = ["Maison des Tilleuls", "Studio du bord de mer"];
@@ -243,13 +243,13 @@ function taskRow(t, app) {
   const r = room(t.room);
   const where = esc(r.name + (t.item ? " · " + t.item : ""));
   return `<div class="row${t.over && !t.done ? " over" : ""}${t.done ? " done" : ""}" data-row="${t.id}">
-    <button type="button" class="b" style="border:0;background:none;text-align:left;cursor:pointer;padding:0;min-height:44px" data-go="task" data-p='${JSON.stringify({id: t.id})}'>
+    <button type="button" class="b" style="border:0;background:none;text-align:left;cursor:pointer;padding:0;min-height:44px" data-go="task" data-p='${esc(JSON.stringify({id: t.id}))}'>
       <span class="tt">${esc(t.title)}</span><span class="tx">${where}</span>${t.done ? '<span class="pill">Faite</span>' : `<span class="pill${t.over ? " danger" : ""}">${esc(t.due)}</span>`}
     </button>
     ${t.done ? "" : `<button type="button" class="btn done" data-act="done" data-id="${t.id}" aria-label="Fait : ${esc(t.title)}">Fait</button>`}
   </div>`;
 }
-const navRow = (title, text, go, p, right) => `<button type="button" class="row" data-go="${go}" data-p='${JSON.stringify(p || {})}'><span class="b"><span class="tt">${esc(title)}</span>${text ? `<span class="tx">${esc(text)}</span>` : ""}</span>${right || ""}${svg("chev", "chev")}</button>`;
+const navRow = (title, text, go, p, right) => `<button type="button" class="row" data-go="${go}" data-p='${esc(JSON.stringify(p || {}))}'><span class="b"><span class="tt">${esc(title)}</span>${text ? `<span class="tx">${esc(text)}</span>` : ""}</span>${right || ""}${svg("chev", "chev")}</button>`;
 
 S.today = T("today", () => "Aujourd'hui", null, (a) => {
   const open = TASKS.filter(t => !t.done || t.justDone);
@@ -265,7 +265,7 @@ S.task = T("today", p => (TASKS.find(t => t.id === p.id) || {}).title, () => ["a
   const t = TASKS.find(x => x.id === p.id); const r = room(t.room);
   return `<div class="card"><dl class="facts"><dt>Pièce</dt><dd>${esc(r.name)}</dd>${t.item ? `<dt>Élément</dt><dd>${esc(t.item)}</dd>` : ""}<dt>Échéance</dt><dd>${esc(t.due)}</dd><dt>Répétition</dt><dd>Tous les 3 mois</dd></dl></div>
   ${t.done ? '<p class="note">Faite aujourd\'hui.</p>' : `<button type="button" class="btn block" data-act="done" data-id="${t.id}">Fait</button>`}
-  <div class="formbar"><button type="button" class="btn sec2" data-go="taskForm" data-p='${JSON.stringify({edit: t.id})}'>Modifier</button><button type="button" class="btn sec2" data-toast="Reportée d'une semaine.">Reporter</button></div>
+  <div class="formbar"><button type="button" class="btn sec2" data-go="taskForm" data-p='${esc(JSON.stringify({edit: t.id}))}'>Modifier</button><button type="button" class="btn sec2" data-toast="Reportée d'une semaine.">Reporter</button></div>
   <p class="sec">Lieu</p><div class="list">${t.item ? navRow(t.item, r.name, "item", {name: t.item}) : navRow(r.name, "Pièce", "room", {id: r.id})}</div>`;
 });
 S.taskForm = T("today", p => p.edit ? "Modifier la tâche" : "Ajouter une tâche", p => p.item ? ["item", {name: p.item}] : (p.edit ? ["task", {id: p.edit}] : ["all", {}]), (a, p) => `
@@ -290,8 +290,8 @@ S.item = T("rooms", p => p.name, p => ["room", {id: itemRoom(p.name).id}], (a, p
   const ts = TASKS.filter(t => t.item === p.name);
   return `<div class="card"><dl class="facts"><dt>Pièce</dt><dd>${esc(itemRoom(p.name).name)}</dd><dt>Type</dt><dd>Équipement</dd></dl></div>
   <p class="sec">Tâches de l'élément</p><div class="list">${ts.length ? ts.map(t => taskRow(t, a)).join("") : '<div class="row"><span class="tx">Aucune tâche.</span></div>'}</div>
-  <button type="button" class="btn block" data-go="taskForm" data-p='${JSON.stringify({item: p.name})}'>Ajouter une tâche</button>
-  <button type="button" class="btn sec2 block" data-go="reportForm" data-p='${JSON.stringify({where: p.name})}'>Signaler un problème</button>`;
+  <button type="button" class="btn block" data-go="taskForm" data-p='${esc(JSON.stringify({item: p.name}))}'>Ajouter une tâche</button>
+  <button type="button" class="btn sec2 block" data-go="reportForm" data-p='${esc(JSON.stringify({where: p.name}))}'>Signaler un problème</button>`;
 });
 S.article = T("rooms", p => p.name, () => ["stock", {}], (a, p) => `<div class="card"><dl class="facts"><dt>En stock</dt><dd>${esc((ARTICLES.find(x => x[0] === p.name) || [, ""])[1])}</dd><dt>Rangement</dt><dd>Garage, étagère haute</dd></dl></div>
   <form data-form="move" class="card"><label class="field"><span>Quantité</span><input value="4" inputmode="decimal"></label><div class="formbar"><button type="submit" class="btn">Ajouter au stock</button><button type="button" class="btn sec2" data-toast="Sortie enregistrée. · Annuler">Sortir</button></div><p class="note">L'action reste sur la fiche : la quantité change sur place.</p></form>`);
@@ -423,7 +423,7 @@ class App {
     let top = "";
     if (desk) {
       const ch = this.crumbs();
-      if (ch.length > 1) top = `<nav class="crumbs" aria-label="Fil d'Ariane"><ol>${ch.map((x, i) => i === ch.length - 1 ? `<li aria-current="page">${esc(this.titleOf(x))}</li>` : `<li><button type="button" data-go="${x.s}" data-p='${JSON.stringify(x.p || {})}'>${esc(this.titleOf(x))}</button></li>`).join("")}</ol></nav>`;
+      if (ch.length > 1) top = `<nav class="crumbs" aria-label="Fil d'Ariane"><ol>${ch.map((x, i) => i === ch.length - 1 ? `<li aria-current="page">${esc(this.titleOf(x))}</li>` : `<li><button type="button" data-go="${x.s}" data-p='${esc(JSON.stringify(x.p || {}))}'>${esc(this.titleOf(x))}</button></li>`).join("")}</ol></nav>`;
       const par = sc.parent && sc.parent(p);
       const fromElsewhere = bt && (!par || bt.to.s !== par[0] || JSON.stringify(bt.to.p || {}) !== JSON.stringify(par[1] || {}));
       if (bt && (sc.form || fromElsewhere)) top = `<button type="button" class="back" data-back>${svg("back")}${esc(this.titleOf(bt.to))}</button>` + top;
@@ -435,7 +435,7 @@ class App {
     const secs = ["today", "rooms", "projects", "budget", "more"];
     const secNow = this.screen(this.stack[0]).sec; /* the stack belongs to the section it was opened from (iOS, Material) */
     const bar = desk ? "" : `<nav class="bar" aria-label="Navigation principale">${secs.map(s => `<button type="button" data-section="${s}"${secNow === s ? ' aria-current="page"' : ""}><span class="ic">${svg(s)}</span>${SECTION_LABEL[s]}</button>`).join("")}</nav>`;
-    const sideItem = (go, label, extra) => `<button type="button" class="sub" data-go="${go}" data-p='${JSON.stringify(extra || {})}'${cur.s === go ? ' aria-current="page"' : ""}>${label}</button>`;
+    const sideItem = (go, label, extra) => `<button type="button" class="sub" data-go="${go}" data-p='${esc(JSON.stringify(extra || {}))}'${cur.s === go ? ' aria-current="page"' : ""}>${label}</button>`;
     const side = desk ? `<nav class="side" aria-label="Navigation principale">
       ${secs.slice(0, 4).map(s => `<button type="button" data-section="${s}"${secNow === s ? ' aria-current="page"' : ""}>${svg(s)}${SECTION_LABEL[s]}</button>`).join("")}
       <hr><p class="grp">Logement</p>${sideItem("household", "Foyer et rôles")}${sideItem("reports", "Signalements")}${sideItem("placeholder", "Intervenants", {t: "Intervenants"})}${sideItem("placeholder", "Étiquettes QR", {t: "Étiquettes QR"})}${sideItem("homeSettings", "Réglages du logement")}
