@@ -87,7 +87,9 @@ MaterialFormSet = forms.formset_factory(
 class MaterialSaveForm(forms.Form):
     """The small form of the task page: add a stock item, or change the quantity of one."""
 
-    article = ArticleChoiceField(label=_("Stock item"), queryset=Article.objects.none())
+    article = ArticleChoiceField(
+        label=_("Stock item"), queryset=Article.objects.none(), empty_label="—"
+    )
     quantity = forms.DecimalField(
         label=_("Quantity"), min_value=MIN_QUANTITY, max_digits=10, decimal_places=2
     )

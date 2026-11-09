@@ -8,6 +8,7 @@ from decimal import Decimal
 from unittest import mock
 
 import pytest
+from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models
 from django.template.loader import render_to_string
@@ -688,6 +689,19 @@ class TestScreens:
         assert "2 days late" in content
         assert "tasks/" in content
         assert "/complete/" in content
+
+    def test_the_done_button_has_its_own_48_px_class(
+        self, signed_in: Client, alice_home: Home, owner_occurrence: Occurrence
+    ) -> None:
+        content = signed_in.get(url("today", alice_home)).content.decode()
+        assert 'class="button-small button-done"' in content
+        css = (settings.BASE_DIR / "static" / "css" / "tasks.css").read_text(encoding="utf-8")
+        assert ".button-done {\n  min-height: var(--hc-layout-touch-target-lg);" in css
+
+    def test_a_material_row_wraps_so_the_name_keeps_its_width(self) -> None:
+        css = (settings.BASE_DIR / "static" / "css" / "tasks.css").read_text(encoding="utf-8")
+        assert ".material-row {\n  flex-wrap: wrap;" in css
+        assert ".material-row .row-body {\n  flex: 1 1 14rem;" in css
 
     def test_done_in_one_gesture_then_undo(
         self, signed_in: Client, alice_home: Home, owner_task: Task, owner_occurrence: Occurrence

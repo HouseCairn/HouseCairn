@@ -248,6 +248,13 @@ class TestScreens:
         assert signed_in.post(remove).status_code == 302
         assert lines(owner_task) == []
 
+    def test_the_add_form_has_a_dash_not_a_row_of_hyphens_as_empty_choice(
+        self, signed_in: Client, alice_home: Home, owner_task: Task, article: Article
+    ) -> None:
+        page = signed_in.get(url("detail", alice_home, task_id=owner_task.id))
+        assert "---------" not in page.text
+        assert '<option value="" selected>—</option>' in page.text
+
     def test_a_bad_quantity_on_the_task_page_changes_nothing(
         self, signed_in: Client, alice_home: Home, owner_task: Task, article: Article
     ) -> None:
