@@ -44,3 +44,16 @@ uv run python scripts/build_docs.py --update-catalogs
 A string without translation is shown in English, and the French page then
 says that it is not entirely translated. The build fails when a catalog lacks
 a string of its page, so that the catalogs never lag behind the pages.
+
+The strings of the application itself are in
+`src/housecairn/locale/fr/LC_MESSAGES/django.po`. The compiled `django.mo` is
+built from it and never committed: after `uv sync`, and after every change of
+the catalog, compile it (this needs GNU gettext):
+
+```sh
+uv run python manage.py compilemessages --ignore=.venv --ignore=docs
+```
+
+`makemessages` writes the catalog without source locations, line wrapping or
+creation date, so that two branches which add strings do not conflict. If a
+`.po` conflict remains, keep both sides.
