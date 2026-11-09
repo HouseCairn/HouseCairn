@@ -252,3 +252,42 @@ class TestCurrentEntry:
             response = signed_in.get(url)
             assert response.status_code == 200, url
             assert lit(response.text) == [section], url
+
+
+class TestRoots:
+    def test_a_root_of_a_section_has_no_back_link(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        h = {"home_id": alice_home.id}
+        roots = [
+            reverse("tasks:today", kwargs=h),
+            reverse("tasks:list", kwargs=h),
+            reverse("tasks:list", kwargs=h) + "?status=done",
+            reverse("calendar:week"),
+            reverse("rooms:list", kwargs=h),
+            reverse("stock:list", kwargs=h),
+            reverse("projects:list", kwargs=h),
+            reverse("projects:list", kwargs=h) + "?view=ideas",
+            reverse("projects:list", kwargs=h) + "?view=finished",
+            reverse("budget:overview", kwargs=h),
+            reverse("budget:rooms", kwargs=h),
+            reverse("budget:projects", kwargs=h),
+            reverse("budget:tasks", kwargs=h),
+            reverse("more"),
+        ]
+        for url in roots:
+            response = signed_in.get(url)
+            assert response.status_code == 200, url
+            assert 'class="back-link"' not in response.text, url
+
+    def test_a_page_below_a_root_keeps_its_back_link(
+        self, signed_in: Client, alice: User, alice_home: Home, owner_room: Room
+    ) -> None:
+        h = {"home_id": alice_home.id}
+        for url in (
+            reverse("rooms:detail", kwargs={**h, "room_id": owner_room.id}),
+            reverse("tasks:create", kwargs=h),
+            reverse("more-security"),
+            reverse("notifications:index"),
+        ):
+            assert 'class="back-link"' in signed_in.get(url).text, url

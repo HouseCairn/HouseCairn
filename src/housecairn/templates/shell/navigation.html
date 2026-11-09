@@ -36,9 +36,7 @@
         {% endfor %}
       </ul>
     {% endfor %}
-    <form method="post" action="{% url 'account_logout' %}">
-      {% csrf_token %}
-      <button type="submit" class="nav-sublink nav-signout">{% translate "Sign out" %}</button>
-    </form>
+    {# A link to the sign-out page, which asks for the confirmation: no form, so no anti-forgery token on every page. #}
+    <a class="nav-sublink nav-signout" href="{% url 'account_logout' %}">{% translate "Sign out" %}</a>
   </div>
 </nav>

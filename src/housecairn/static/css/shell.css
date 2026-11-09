@@ -180,16 +180,11 @@
   width: 100%;
   min-height: var(--hc-layout-touch-target);
   padding: var(--hc-space-2) var(--hc-space-3);
-  border: 0;
   border-radius: var(--hc-radius-sm);
-  background: none;
-  font: inherit;
   font-size: var(--hc-font-size-sm);
   font-weight: var(--hc-font-weight-medium);
   color: var(--hc-color-text-muted);
-  text-align: left;
   text-decoration: none;
-  cursor: pointer;
 }
 
 .nav-sublink:hover {
@@ -205,8 +200,6 @@
 
 .nav-signout {
   margin-top: var(--hc-space-4);
-  border-top: 1px solid var(--hc-color-border);
-  border-radius: 0;
 }
 
 .icon {
