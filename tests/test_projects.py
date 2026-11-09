@@ -11,6 +11,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.test import Client
 from django.urls import reverse
+from rest_framework.test import APIClient
 
 from housecairn.accounts.models import User
 from housecairn.audit.models import AuditEvent
@@ -236,6 +237,40 @@ class TestTaskLink:
             services.attach_task(alice, other, task)
         with pytest.raises(IntegrityError), transaction.atomic():
             ProjectTask.objects.create(home=alice_home, project=other, task=task)
+
+    def test_two_people_putting_the_same_task_in_at_once_get_a_clean_refusal(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        signed_in: Client,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+    ) -> None:
+        other = services.create_project(alice, alice_home, title="Other")
+        task = task_services.create_task(alice, alice_home, title="Shared")
+        services.attach_task(alice, living_room_project, task)
+        # The second person read "free" before the first one wrote: only the database is left.
+        monkeypatch.setattr(services, "_task_is_taken", lambda _task: False)
+        with pytest.raises(ValidationError) as refused:
+            services.attach_task(alice, other, task)
+        assert "already in a project" in " ".join(refused.value.messages)
+        assert ProjectTask.all_objects.filter(task=task).count() == 1
+        # On the screen, a message; through the API, a 400.
+        monkeypatch.setattr(services, "attachable_tasks", lambda home: Task.objects.all())
+        page = signed_in.post(
+            url("task-attach", alice_home, project_id=other.id), {"task": task.id}, follow=True
+        )
+        assert page.status_code == 200
+        assert "already in a project" in page.content.decode()
+        api = APIClient()
+        api.force_authenticate(alice)
+        response = api.post(
+            reverse("api-v1:home-project-task-list", kwargs={"home_id": alice_home.id}),
+            {"project": str(other.id), "task": str(task.id)},
+            format="json",
+        )
+        assert response.status_code == 400, response.content
+        assert "task" in response.json()
 
     def test_only_a_task_of_the_home_that_exists_can_be_put_in(
         self, alice: User, bob: User, alice_home: Home, bob_home: Home, living_room_project: Project

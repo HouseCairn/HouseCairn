@@ -18,7 +18,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, SuspiciousOperation, ValidationError
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import UploadedFile
-from django.db import models, transaction
+from django.db import IntegrityError, models, transaction
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
@@ -445,15 +445,27 @@ def add_task(
     return task
 
 
+def _task_is_taken(task: Task) -> bool:
+    return ProjectTask.all_objects.filter(task=task).exists()
+
+
 @transaction.atomic
 def attach_task(actor: AnyUser, project: Project, task: Task) -> ProjectTask:
     """Put an existing task into the project; a task is in one project at most."""
     _require_write(actor, project.home)
     if task.home_id != project.home_id or task.deleted_at is not None:
         raise ValidationError({"task": _("This task is not in this home.")})
-    if ProjectTask.all_objects.filter(task=task).exists():
+    if _task_is_taken(task):
         raise ValidationError({"task": _("This task is already in a project.")})
-    link: ProjectTask = ProjectTask.objects.create(home=project.home, project=project, task=task)
+    try:
+        # A savepoint: two people putting the same task in at once meet the unique constraint of
+        # the database, which is answered like the check above, not with a server error.
+        with transaction.atomic():
+            link: ProjectTask = ProjectTask.objects.create(
+                home=project.home, project=project, task=task
+            )
+    except IntegrityError:
+        raise ValidationError({"task": _("This task is already in a project.")}) from None
     audit.record_object(
         "project.task_added", actor=actor, home_id=project.home_id, title=project.title
     )
