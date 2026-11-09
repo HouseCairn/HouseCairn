@@ -246,6 +246,9 @@ msgstr "Sauvegardes"
 msgid "Deleted data stays in backups until they expire: tell people how long you keep them (see [Backup](backup.md))."
 msgstr "Les données supprimées restent dans les sauvegardes jusqu'à leur expiration : indiquez aux gens combien de temps vous les conservez (voir [Sauvegarde](backup.md))."
 
+msgid "The budget screens (by room, by project, by task, the envelope) keep no data of their own: they are worked out from the projects, tasks and envelopes above, so they are in the export and go with the home."
+msgstr "Les écrans du budget (par pièce, par projet, par tâche, l'enveloppe) ne gardent aucune donnée à eux : ils sont calculés à partir des projets, des tâches et des enveloppes ci-dessus, donc ils sont dans l'export et partent avec le logement."
+
 #~ msgid "`id`, `email`, `name`, `role`, `joined_at` of each member."
 #~ msgstr "`id`, `email`, `name`, `role`, `joined_at` de chaque membre."
 
@@ -269,4 +272,3 @@ msgstr "Les données supprimées restent dans les sauvegardes jusqu'à leur expi
 
 #~ msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
 #~ msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
-

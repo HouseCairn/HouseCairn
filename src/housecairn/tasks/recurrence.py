@@ -7,6 +7,7 @@ and a task set on 29 February falls on 28 February in other years.
 """
 
 import datetime
+from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Any
 
@@ -220,6 +221,109 @@ def next_due(
         return _enter_season(rule, candidate)
     except (OverflowError, ValueError):
         return None
+
+
+def _jump(rule: Rule, current: datetime.date, target: datetime.date) -> datetime.date:
+    """The last date of the unbroken chain `current`, +1 interval, +2... that is not after `target`.
+
+    Only for a chain with no season: each step adds the same interval, so the dates in
+    between need not be visited. A month or a year is only jumped from a day that exists
+    in every month (up to the 28th): from the 29th on, a short month clamps the day and
+    the chain is walked step by step until it settles.
+    """
+    n = rule.interval
+    if rule.unit in (DAY, WEEK):
+        step = n * (7 if rule.unit == WEEK else 1)
+        return current + datetime.timedelta(days=((target - current).days // step) * step)
+    delta = _delta(rule)
+    while current.day > 28 and current + delta <= target:
+        current += delta
+    if current > target or current.day > 28:
+        return current
+    gap = (target.year - current.year) * 12 + target.month - current.month
+    unit = 12 if rule.unit == YEAR else 1
+    steps = max(gap // (unit * n) - 1, 0) * n
+    jumped = current + (
+        relativedelta(years=steps) if rule.unit == YEAR else relativedelta(months=steps)
+    )
+    return jumped if jumped <= target else current
+
+
+def _dates_after(rule: Rule, anchor: datetime.date, last: datetime.date) -> Iterator[datetime.date]:
+    """The dates of the fixed series of `anchor`, from the first one after `last`."""
+    if rule.unit in (DAY, WEEK):  # a whole number of days apart: no need of the rrule engine
+        days = rule.interval * (7 if rule.unit == WEEK else 1)
+        day = anchor + datetime.timedelta(days=((last - anchor).days // days + 1) * days)
+        gap = datetime.timedelta(days=days)
+        while True:
+            yield day
+            day += gap
+    for stamp in _series(rule, anchor, _near(rule, anchor, last)):
+        if stamp.date() > last:
+            yield stamp.date()
+
+
+def coming(
+    rule: Rule,
+    *,
+    anchor: datetime.date | None,
+    after: datetime.date,
+    since: datetime.date,
+    end: datetime.date,
+) -> list[datetime.date]:
+    """The due dates from `since` to `end` that follow an occurrence due on `after`.
+
+    The dates `next_due` would bring one after the other, were each occurrence closed on
+    its due date (what the calendar shows), but only those in the range are worked out:
+    the dates before `since` are skipped, not visited, however far `since` is. The cost
+    follows the range (one year: about 365 dates at most), never the distance from `after`.
+    """
+    if not rule.repeats or after >= end:
+        return []
+    found: list[datetime.date] = []
+    try:
+        if rule.mode == FIXED and anchor and anchor < after:
+            # One series for the whole walk: a date of the series is the anchor plus a whole
+            # number of intervals, so the walk may start anywhere shortly before the range.
+            # A season moves a date out of it to the start of the next season, less than a year
+            # on: so with a season the walk starts a year earlier, to catch such a date.
+            back = 366 if rule.season_start is not None else 1
+            last = max(after, since - datetime.timedelta(days=back))
+            for day in _dates_after(rule, anchor, last):
+                day = _enter_season(rule, day)
+                if day > end:
+                    break
+                if day > last:
+                    last = day
+                    if day >= since:
+                        found.append(day)
+            return found
+        # A chain: each date is the one before plus the interval (`after_last`, or a series
+        # not begun yet: `next_due` counts from the anchor only once it is behind).
+        current = after
+        reach = since - datetime.timedelta(days=1)
+        if rule.mode == FIXED and anchor:
+            reach = min(reach, anchor)
+        if rule.season_start is None and reach > after:
+            current = _jump(rule, after, reach)
+        step = (
+            datetime.timedelta(days=rule.interval * (7 if rule.unit == WEEK else 1))
+            if rule.unit in (DAY, WEEK)
+            else _delta(rule)
+        )
+        while True:
+            current = current + step
+            if rule.season_start is not None:
+                current = _enter_season(rule, current)
+            if current > end:
+                break
+            if current >= since:
+                found.append(current)
+            if rule.mode == FIXED and anchor and current > anchor:
+                return found + coming(rule, anchor=anchor, after=current, since=since, end=end)
+    except (OverflowError, ValueError):
+        pass
+    return found
 
 
 def preview(

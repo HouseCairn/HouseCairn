@@ -74,6 +74,10 @@ read-only volume), the home is still deleted and the error is logged by
 `housecairn.files` with the path of the directory (`photos/<home id>`,
 `attachments/<home id>`, `stock/<home id>` or `projects/<home id>`): remove that directory by hand.
 
+The budget screens (by room, by project, by task, the envelope) keep no data of their own:
+they are worked out from the projects, tasks and envelopes above, so they are in the export
+and go with the home.
+
 ## Erasure of an account
 
 **Delete my account** (see [Account pages](../screens/account.md)) erases the

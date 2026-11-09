@@ -46,6 +46,7 @@ def _tasks(context: template.Context, request: HttpRequest, view: str) -> list[T
         Tab(_("History"), reverse("tasks:history", kwargs=kwargs), view == "tasks:history"),
         Tab(_("Calendar"), reverse("calendar:week"), False),
         Tab(_("Projects"), reverse("projects:list", kwargs=kwargs), view.startswith("projects:")),
+        Tab(_("Budget"), reverse("budget:overview", kwargs=kwargs), view.startswith("budget:")),
         Tab(
             _("Contractors"),
             reverse("tasks:contractors", kwargs=kwargs),
@@ -93,8 +94,22 @@ def _instance(context: template.Context, request: HttpRequest, view: str) -> lis
     ]
 
 
+def _budget(context: template.Context, request: HttpRequest, view: str) -> list[Tab]:
+    home_id = _home_id(context, request)
+    if home_id is None:
+        return []
+    kwargs = {"home_id": home_id}
+    return [
+        Tab(_("Overview"), reverse("budget:overview", kwargs=kwargs), view == "budget:overview"),
+        Tab(_("By room"), reverse("budget:rooms", kwargs=kwargs), view == "budget:rooms"),
+        Tab(_("By project"), reverse("budget:projects", kwargs=kwargs), view == "budget:projects"),
+        Tab(_("By task"), reverse("budget:tasks", kwargs=kwargs), view == "budget:tasks"),
+    ]
+
+
 _GROUPS = {
     "tasks": (_("Tasks"), _tasks),
+    "budget": (_("Budget"), _budget),
     "home": (_("Home"), _home),
     "instance": (_("Instance administration"), _instance),
 }
