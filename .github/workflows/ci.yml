@@ -66,7 +66,7 @@ jobs:
       - name: Install locked dependencies (uv sync --locked)
         run: uv sync --locked
       - name: Compile the translations
-        uses: ./.github/actions/compile-messages
+        uses: $/.github/actions/compile-messages
       - name: Tests with coverage (SQLite)
         run: uv run pytest --cov=housecairn --cov-fail-under=85 --hypothesis-show-statistics
 
@@ -106,7 +106,7 @@ jobs:
       - name: Install locked dependencies with the PostgreSQL driver (uv sync --locked)
         run: uv sync --locked --extra postgres
       - name: Compile the translations
-        uses: ./.github/actions/compile-messages
+        uses: $/.github/actions/compile-messages
       - name: Tests run against PostgreSQL
         env:
           DJANGO_SETTINGS_MODULE: tests.settings
@@ -137,7 +137,7 @@ jobs:
       - name: Install locked dependencies (uv sync --locked)
         run: uv sync --locked
       - name: Compile the translations (also installs GNU gettext, for the scan below)
-        uses: ./.github/actions/compile-messages
+        uses: $/.github/actions/compile-messages
       - name: Migrations are up to date (makemigrations --check)
         env:
           DEBUG: "true"
