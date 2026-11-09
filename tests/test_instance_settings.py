@@ -72,6 +72,11 @@ def admin_api(api_client: APIClient, admin_user: User) -> APIClient:
     return api_client
 
 
+def sub(section: str) -> str:
+    """The page of one section of the settings."""
+    return reverse(WEB, kwargs={"section": section})
+
+
 def post(client: Client, section: str, **data: Any) -> Any:
     """What a browser sends: every field of the section as shown, then the changes."""
     form = SettingsSectionForm(registry.Section(section))
@@ -88,7 +93,7 @@ def post(client: Client, section: str, **data: Any) -> Any:
             sent.pop(key, None)
         else:
             sent[key] = value
-    return client.post(reverse(WEB), sent)
+    return client.post(sub(section), sent)
 
 
 class TestResolution:
@@ -533,35 +538,117 @@ class TestSecrets:
 
 
 class TestWebScreen:
-    def test_an_administrator_sees_the_sections_and_the_server_variables(
-        self, admin_client: Client
-    ) -> None:
-        response = admin_client.get(reverse(WEB))
-        assert response.status_code == 200
-        page = response.text
-        for text in ("Public address", "Open sign-up", "Outgoing email", "SMTP server", "Server"):
-            assert text in page
-        assert "ALLOWED_HOSTS" in page
+    def test_the_index_lists_every_section_and_the_server(self, admin_client: Client) -> None:
+        page = admin_client.get(reverse(WEB)).text
+        for section in registry.Section:
+            assert f'href="{sub(section.value)}"' in page
+            assert str(registry.SECTION_LABELS[section]) in page
+        assert f'href="{sub("server")}"' in page
+        # The index holds no form and no Save button: they are on the sub-pages.
+        assert 'name="csrfmiddlewaretoken"' not in page
+        assert ">Save" not in page
         assert "Restore the default" not in page
+
+    def test_the_server_page_lists_the_variables_read_only(self, admin_client: Client) -> None:
+        page = admin_client.get(sub("server")).text
+        assert "ALLOWED_HOSTS" in page
+        assert 'name="csrfmiddlewaretoken"' not in page
+
+    @pytest.mark.parametrize("section", list(registry.Section))
+    def test_a_section_page_has_one_named_save_button(
+        self, admin_client: Client, section: registry.Section
+    ) -> None:
+        page = admin_client.get(sub(section.value)).text
+        label = str(registry.SECTION_SAVE_LABELS[section])
+        assert page.count(f">{label}</button>") == 1
+        assert ">Save</button>" not in page
+        assert f"<h1>{registry.SECTION_LABELS[section]}</h1>" in page
+        assert str(registry.SECTION_SAVE_LABELS[section]) != "Save"
+
+    def test_the_save_labels_are_distinct(self) -> None:
+        labels = [str(label) for label in registry.SECTION_SAVE_LABELS.values()]
+        assert len(set(labels)) == len(registry.Section) == len(labels)
+
+    def test_a_section_saves_only_its_own_fields(self, admin_client: Client) -> None:
+        # `email_port` belongs to the email section: posted with the invitations, it is dropped.
+        response = post(admin_client, "invitations", invitation_lifetime_days="30", email_port="25")
+        assert response.status_code == 302
+        assert response["Location"] == sub("invitations")
+        assert config.get_setting("invitation_lifetime_days") == 30
+        assert config.get_setting("email_port") == 587
+        assert not SettingValue.objects.filter(key="email_port").exists()
+
+    def test_a_key_of_another_section_cannot_be_restored_from_this_one(
+        self, admin_client: Client, admin_user: User
+    ) -> None:
+        svc.update(admin_user, {"email_port": 25})
+        response = admin_client.post(sub("invitations"), {"reset": "email_port"})
+        assert response.status_code == 404
+        assert config.get_setting("email_port") == 25
+
+    def test_the_connection_test_belongs_to_the_email_page(self, admin_client: Client) -> None:
+        assert admin_client.post(sub("invitations"), {"test_email": "1"}).status_code == 404
+        assert ">Test the connection to the mail server<" in admin_client.get(sub("email")).text
+        assert "Test the connection" not in admin_client.get(sub("invitations")).text
+
+    def test_a_locked_field_does_not_block_the_other_pages(self, admin_client: Client) -> None:
+        with locked("invitation_lifetime_days", HOUSECAIRN_INVITATION_LIFETIME_DAYS=3):
+            index = admin_client.get(reverse(WEB)).text
+            assert "1 set by a variable" in index
+            assert post(admin_client, "email", email_port="25").status_code == 302
+        assert config.get_setting("email_port") == 25
+
+    def test_the_old_addresses_lead_to_the_sub_pages(self, admin_client: Client) -> None:
+        for section in registry.Section:
+            response = admin_client.get(reverse(WEB), {"section": section.value})
+            assert response.status_code == 302
+            assert response["Location"] == sub(section.value)
+        assert admin_client.get(reverse(WEB), {"section": "server"})["Location"] == sub("server")
+        # Anything else is the index.
+        assert admin_client.get(reverse(WEB), {"section": "nothing"}).status_code == 200
+
+    def test_a_form_of_the_old_page_is_sent_on_with_its_body(self, admin_client: Client) -> None:
+        response = admin_client.post(
+            reverse(WEB), {"section": "invitations", "invitation_lifetime_days": "30"}
+        )
+        assert response.status_code == 307
+        assert response["Location"] == sub("invitations")
+        followed = admin_client.post(
+            response["Location"], {"section": "invitations", "invitation_lifetime_days": "30"}
+        )
+        assert followed.status_code == 302
+        assert config.get_setting("invitation_lifetime_days") == 30
+
+    def test_an_unknown_section_page_is_a_404(self, admin_client: Client) -> None:
+        assert admin_client.get(sub("nothing")).status_code == 404
+        assert admin_client.post(sub("nothing"), {}).status_code == 404
+        assert admin_client.post(sub("server"), {"x": "1"}).status_code == 404
+
+    def test_the_reauthentication_comes_back_to_the_same_page(
+        self, client: Client, admin_user: User
+    ) -> None:
+        recent(client, admin_user, age=3600)
+        response = post(client, "email", email_port="25")
+        assert response.status_code == 302
+        assert f"next={sub('email').replace('/', '%2F')}" in response["Location"]
 
     def test_the_screen_never_shows_the_secret_key_nor_a_database_address(
         self, admin_client: Client
     ) -> None:
         from django.conf import settings
 
-        page = admin_client.get(reverse(WEB)).text
+        page = admin_client.get(sub("server")).text
         assert settings.SECRET_KEY not in page
         engine = str(settings.DATABASES["default"]["ENGINE"]).rsplit(".", 1)[-1]
         assert engine in page
-        server_part = page.split("<h2>Server</h2>")[1]
-        assert "DATABASE_URL" in server_part
-        assert "://" not in server_part  # no address with credentials
+        assert "DATABASE_URL" in page
+        assert "://" not in page.split("<h1>Server</h1>")[1]  # no address with credentials
 
     def test_save_a_section_then_restore_a_default(self, admin_client: Client) -> None:
         response = post(admin_client, "invitations", invitation_lifetime_days="30")
         assert response.status_code == 302
         assert config.get_setting("invitation_lifetime_days") == 30
-        page = admin_client.get(reverse(WEB)).text
+        page = admin_client.get(sub("invitations")).text
         assert 'value="30"' in page
         assert "Restore the default" in page
         response = post(admin_client, "invitations", reset="invitation_lifetime_days")
@@ -572,7 +659,7 @@ class TestWebScreen:
         self, admin_client: Client
     ) -> None:
         with locked("invitation_lifetime_days", HOUSECAIRN_INVITATION_LIFETIME_DAYS=3):
-            page = admin_client.get(reverse(WEB)).text
+            page = admin_client.get(sub("invitations")).text
         field = re.search(r'<input[^>]*id="locked-invitation_lifetime_days"[^>]*>', page)
         assert field is not None
         tag = field.group(0)
@@ -588,7 +675,7 @@ class TestWebScreen:
         self, admin_client: Client
     ) -> None:
         with locked("email_use_ssl", EMAIL_USE_SSL=True):
-            page = admin_client.get(reverse(WEB)).text
+            page = admin_client.get(sub("email")).text
         tag = re.search(r'<input[^>]*id="locked-email_use_ssl"[^>]*>', page)
         assert tag is not None
         assert "disabled" in tag.group(0)
@@ -596,7 +683,7 @@ class TestWebScreen:
 
     def test_a_locked_secret_says_set_without_the_value(self, admin_client: Client) -> None:
         with locked("email_host_password", EMAIL_HOST_PASSWORD=SECRET):
-            page = admin_client.get(reverse(WEB)).text
+            page = admin_client.get(sub("email")).text
         assert SECRET not in page
         tag = re.search(r'<input[^>]*id="locked-email_host_password"[^>]*>', page)
         assert tag is not None
@@ -614,7 +701,7 @@ class TestWebScreen:
             assert config.get_setting("invitation_lifetime_days") == 3
             response = post(admin_client, "invitations", reset="invitation_lifetime_days")
             assert response.status_code == 302
-            page = admin_client.get(reverse(WEB)).text
+            page = admin_client.get(sub("invitations")).text
             assert "HOUSECAIRN_INVITATION_LIFETIME_DAYS: change it there." in page
             assert "Default restored." not in page
         assert not SettingValue.objects.exists()
@@ -648,7 +735,7 @@ class TestWebScreen:
                 svc.update(admin_user, {"signup_open": True, "email_host": "smtp.example.com"})
             response = post(admin_client, "email", reset="email_host")
             assert response.status_code == 302
-            page = admin_client.get(reverse(WEB)).text
+            page = admin_client.get(sub("email")).text
             assert "set the SMTP server first" in page
             assert "Default restored." not in page
             assert config.get_setting("email_host") == "smtp.example.com"
@@ -660,7 +747,7 @@ class TestWebScreen:
         response = post(admin_client, "email", email_host_password="", email_port="587")
         assert response.status_code == 302
         assert config.get_setting("email_host_password") == SECRET
-        assert "A secret is stored." in admin_client.get(reverse(WEB)).text
+        assert "A secret is stored." in admin_client.get(sub("email")).text
 
     def test_the_connection_test_reports_and_is_rate_limited(
         self, admin_client: Client, admin_user: User, monkeypatch: Any
@@ -669,14 +756,15 @@ class TestWebScreen:
         monkeypatch.setattr("django.core.mail.backends.smtp.EmailBackend.open", lambda self: True)
         response = post(admin_client, "email", test_email="1")
         assert response.status_code == 302
-        assert "Connected to the mail server." in admin_client.get(reverse(WEB)).text
+        assert "Connected to the mail server." in admin_client.get(sub("email")).text
         for _ in range(6):
             post(admin_client, "email", test_email="1")
-        page = admin_client.get(reverse(WEB)).text
+        page = admin_client.get(sub("email")).text
         assert "Too many tests" in page
 
     def test_an_unknown_section_is_a_404(self, admin_client: Client) -> None:
         assert admin_client.post(reverse(WEB), {"section": "nothing"}).status_code == 404
+        assert admin_client.get(sub("nothing")).status_code == 404
 
     def test_the_screen_is_linked_from_the_overview(self, admin_client: Client) -> None:
         assert reverse(WEB) in admin_client.get(reverse("instance:overview")).text
@@ -686,9 +774,11 @@ class TestWhoMayCome:
     def test_a_member_gets_a_404_everywhere(self, client: Client, alice: User) -> None:
         recent(client, alice)
         assert client.get(reverse(WEB)).status_code == 404
-        assert (
-            client.post(reverse(WEB), {"section": "email", "email_port": "25"}).status_code == 404
-        )
+        assert client.get(sub("email")).status_code == 404
+        assert client.get(sub("server")).status_code == 404
+        assert client.get(reverse(WEB), {"section": "email"}).status_code == 404
+        for url in (reverse(WEB), sub("email")):
+            assert client.post(url, {"section": "email", "email_port": "25"}).status_code == 404
         assert config.get_setting("email_port") == 587
 
     def test_the_api_refuses_a_member_and_an_anonymous_client(
@@ -748,13 +838,13 @@ class TestForgedRequests:
             {"section": "invitations", "reset": "invitation_lifetime_days"},
             {"section": "email", "test_email": "1"},
         ):
-            assert browser.post(reverse(WEB), data).status_code == 403
+            assert browser.post(sub(data["section"]), data).status_code == 403
         assert config.get_setting("invitation_lifetime_days") == 7
         # The same browser, with the token the page gives, is let through.
-        browser.get(reverse(WEB))
+        browser.get(sub("invitations"))
         token = browser.cookies["csrftoken"].value
         response = browser.post(
-            reverse(WEB),
+            sub("invitations"),
             {"section": "invitations", "invitation_lifetime_days": "30"},
             HTTP_X_CSRFTOKEN=token,
         )

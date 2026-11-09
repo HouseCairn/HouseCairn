@@ -205,6 +205,33 @@ msgstr "Notifications"
 msgid "Projects"
 msgstr "Projets"
 
+msgid "Save the public address"
+msgstr "Enregistrer l'adresse publique"
+
+msgid "Save the name, language and time zone"
+msgstr "Enregistrer le nom, la langue et le fuseau horaire"
+
+msgid "Save the sign-up settings"
+msgstr "Enregistrer les réglages d'inscription"
+
+msgid "Save the invitation settings"
+msgstr "Enregistrer les réglages des invitations"
+
+msgid "Save the outgoing email settings"
+msgstr "Enregistrer les réglages du courrier sortant"
+
+msgid "Save the rate limits"
+msgstr "Enregistrer les limites de débit"
+
+msgid "Save the file limits"
+msgstr "Enregistrer les limites de fichiers"
+
+msgid "Save the notification settings"
+msgstr "Enregistrer les réglages des notifications"
+
+msgid "Save the project settings"
+msgstr "Enregistrer les réglages des projets"
+
 msgid "Expected a whole number."
 msgstr "Un nombre entier est attendu."
 
@@ -527,9 +554,6 @@ msgstr "Bienvenue sur HouseCairn. Ajoutez votre premier logement."
 msgid "Invitation accepted. You can add a home."
 msgstr "Invitation acceptée. Vous pouvez ajouter un logement."
 
-msgid "Confirm your sign-in to change settings, then make the change again."
-msgstr "Confirmez votre connexion pour modifier les réglages, puis refaites la modification."
-
 msgid "set"
 msgstr "défini"
 
@@ -542,6 +566,9 @@ msgstr "oui"
 msgid "no"
 msgstr "non"
 
+msgid "Server"
+msgstr "Serveur"
+
 msgid "Settings saved."
 msgstr "Réglages enregistrés."
 
@@ -553,6 +580,9 @@ msgstr "Défaut rétabli."
 
 msgid "Too many tests in a short time. Try again later."
 msgstr "Trop de tests en peu de temps. Réessayez plus tard."
+
+msgid "Confirm your sign-in to change settings, then make the change again."
+msgstr "Confirmez votre connexion pour modifier les réglages, puis refaites la modification."
 
 msgid "Provider added."
 msgstr "Fournisseur ajouté."
@@ -768,6 +798,24 @@ msgstr "Réglages de l'instance"
 msgid "Each setting can be set here or by an environment variable. A variable wins: the field is then locked and shows the value in force. Without a variable, the value you choose is stored and the default is shown."
 msgstr "Chaque réglage peut être posé ici ou par une variable d'environnement. La variable l'emporte : le champ est alors verrouillé et affiche la valeur en vigueur. Sans variable, la valeur choisie est enregistrée et le défaut est affiché."
 
+#, python-format
+msgid "%(counter)s setting"
+msgid_plural "%(counter)s settings"
+msgstr[0] "%(counter)s réglage"
+msgstr[1] "%(counter)s réglages"
+
+#, python-format
+msgid "%(counter)s set by a variable"
+msgid_plural "%(counter)s set by variables"
+msgstr[0] "%(counter)s défini par une variable"
+msgstr[1] "%(counter)s définis par des variables"
+
+msgid "Read only: set by environment variables."
+msgstr "Lecture seule : définis par des variables d'environnement."
+
+msgid "These are set by environment variables only: the instance needs them before it has a database, or they could lock you out. Read only; no secret is shown."
+msgstr "Ces réglages ne passent que par des variables d'environnement : l'instance en a besoin avant d'avoir une base de données, ou ils pourraient vous enfermer dehors. Lecture seule ; aucun secret n'est affiché."
+
 msgid "A secret is stored."
 msgstr "Un secret est enregistré."
 
@@ -790,12 +838,6 @@ msgstr "Tester la connexion au serveur de messagerie"
 
 msgid "Opens a connection with the settings in force and closes it; nothing is sent. You can save without testing."
 msgstr "Ouvre une connexion avec les réglages en vigueur puis la ferme ; rien n'est envoyé. Vous pouvez enregistrer sans tester."
-
-msgid "Server"
-msgstr "Serveur"
-
-msgid "These are set by environment variables only: the instance needs them before it has a database, or they could lock you out. Read only; no secret is shown."
-msgstr "Ces réglages ne passent que par des variables d'environnement : l'instance en a besoin avant d'avoir une base de données, ou ils pourraient vous enfermer dehors. Lecture seule ; aucun secret n'est affiché."
 
 msgid "Files of the homes"
 msgstr "Fichiers des logements"

@@ -246,21 +246,6 @@ class InstanceInvitationView(View):
         return redirect("homes:list")
 
 
-def _reauthenticate(request: HttpRequest) -> HttpResponse | None:
-    """Send the administrator to confirm their sign-in, then back here (nothing is replayed).
-
-    The submitted values are not kept: a secret typed in the form must not be stored in
-    the session while the person re-authenticates.
-    """
-    if signed_in_recently(request):
-        return None
-    messages.warning(
-        request, _("Confirm your sign-in to change settings, then make the change again.")
-    )
-    query = urlencode({"next": reverse("instance:settings")})
-    return redirect(f"{reverse('account_reauthenticate')}?{query}")
-
-
 def _server_rows() -> list[dict[str, Any]]:
     """What the environment alone decides, without any secret."""
     from django.conf import settings
@@ -289,51 +274,113 @@ def _server_rows() -> list[dict[str, Any]]:
     ]
 
 
+SERVER_SECTION = "server"
+
+
+def _section_url(section: str) -> str:
+    """The sub-page of a section. Both routes carry the name `instance:settings`, so that the
+    tab, the help link and the API parity see one screen."""
+    return reverse("instance:settings", kwargs={"section": section})
+
+
+def _section_of(slug: str) -> registry.Section:
+    try:
+        return registry.Section(slug)
+    except ValueError as exc:
+        raise Http404 from exc
+
+
 class SettingsView(InstanceAdminMixin, TemplateView):
-    """The settings of the instance, by section, each paired with its variable (docs/adr/0035)."""
+    """Index of the settings of the instance, one line per section (docs/adr/0035)."""
 
     template_name = "instance/settings.html"
 
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        # The old single page linked its sections by `#section`; `?section=` is the same
+        # request made by hand or by a bookmark.
+        wanted = request.GET.get("section", "")
+        if wanted == SERVER_SECTION or wanted in {s.value for s in registry.Section}:
+            return redirect(_section_url(wanted))
+        response: HttpResponse = super().get(request, *args, **kwargs)
+        return response
+
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        bound: dict[registry.Section, SettingsSectionForm] = kwargs.get("bound", {})
         sections = []
         for section in registry.Section:
-            form = bound.get(section) or SettingsSectionForm(section)
-            items = []
-            for setting in registry.in_section(section):
-                state = config.describe(setting.key)
-                items.append(
-                    {
-                        "state": state,
-                        "setting": setting,
-                        "field": form[setting.key] if setting.key in form.fields else None,
-                        "shown": _display(state),
-                        "default": _display_default(setting),
-                    }
-                )
+            states = [config.describe(s.key) for s in registry.in_section(section)]
             sections.append(
                 {
-                    "id": section.value,
                     "label": registry.SECTION_LABELS[section],
-                    "form": form,
-                    "items": items,
-                    "test_email": section is registry.Section.EMAIL,
+                    "url": _section_url(section.value),
+                    "count": len(states),
+                    "locked": sum(1 for state in states if state.locked),
+                }
+            )
+        context.update(sections=sections, server_url=_section_url(SERVER_SECTION))
+        return context
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        # A form of the old single page, still open in a tab: 307 keeps the method and the
+        # body, so that the sub-page answers it as it would have.
+        section = request.POST.get("section", "")
+        _section_of(section)
+        return HttpResponseRedirect(_section_url(section), status=307)
+
+
+class SettingsSectionView(InstanceAdminMixin, TemplateView):
+    """The settings of one section, each paired with its variable, with one Save button."""
+
+    template_name = "instance/settings_section.html"
+
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
+        self.slug: str = kwargs["section"]
+        self.section: registry.Section | None = None
+        if self.slug != SERVER_SECTION:
+            self.section = _section_of(self.slug)
+        response: HttpResponseBase = super().dispatch(request, *args, **kwargs)
+        return response
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["docs_settings_url"] = docs_page_url("administration/settings/", get_language())
+        if self.section is None:
+            context.update(
+                title=_("Server"),
+                server_rows=_server_rows(),
+                server=True,
+            )
+            return context
+        section = self.section
+        form: SettingsSectionForm = kwargs.get("bound") or SettingsSectionForm(section)
+        items = []
+        for setting in registry.in_section(section):
+            state = config.describe(setting.key)
+            items.append(
+                {
+                    "state": state,
+                    "setting": setting,
+                    "field": form[setting.key] if setting.key in form.fields else None,
+                    "shown": _display(state),
+                    "default": _display_default(setting),
                 }
             )
         context.update(
-            sections=sections,
-            server_rows=_server_rows(),
-            docs_settings_url=docs_page_url("administration/settings/", get_language()),
+            title=registry.SECTION_LABELS[section],
+            save_label=registry.SECTION_SAVE_LABELS[section],
+            form=form,
+            items=items,
+            test_email=section is registry.Section.EMAIL,
+            server=False,
         )
         return context
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        try:
-            section = registry.Section(request.POST.get("section", ""))
-        except ValueError as exc:
-            raise Http404 from exc
-        if (response := _reauthenticate(request)) is not None:
+        if self.section is None:
+            raise Http404
+        section = self.section
+        url = _section_url(self.slug)
+        if (response := _reauthenticate_to(request, url)) is not None:
             return response
         actor: User = request.user  # type: ignore[assignment]
         reset_key = request.POST.get("reset", "")
@@ -341,6 +388,8 @@ class SettingsView(InstanceAdminMixin, TemplateView):
             return self._reset(request, actor, section, reset_key)
         if "test_email" in request.POST:
             return self._test_email(request, actor)
+        # Only the fields of this section are read: a field of another section that comes
+        # with the request is not one of the form's, and is dropped.
         form = SettingsSectionForm(section, request.POST)
         locked_sent = [
             setting
@@ -353,7 +402,7 @@ class SettingsView(InstanceAdminMixin, TemplateView):
             form.is_valid()
             for setting in locked_sent:
                 form.add_error(None, services_settings.locked_message(setting))
-            return self.render_to_response(self.get_context_data(bound={section: form}), status=409)
+            return self.render_to_response(self.get_context_data(bound=form), status=409)
         if form.is_valid():
             try:
                 changed = services_settings.update(actor, form.changes())
@@ -366,27 +415,33 @@ class SettingsView(InstanceAdminMixin, TemplateView):
                     request,
                     _("Settings saved.") if changed else _("Nothing to change."),
                 )
-                return redirect(f"{reverse('instance:settings')}#{section.value}")
-        return self.render_to_response(self.get_context_data(bound={section: form}), status=422)
+                return redirect(url)
+        return self.render_to_response(self.get_context_data(bound=form), status=422)
 
     def _reset(
         self, request: HttpRequest, actor: User, section: registry.Section, key: str
     ) -> HttpResponse:
+        setting = registry.SETTINGS.get(key)
+        if setting is None or setting.section is not section:
+            # Another section's key, or none: refused, so that a page only acts on its own.
+            raise Http404
         try:
             services_settings.reset(actor, key)
         except ValidationError as exc:
             messages.error(request, " ".join(m for ms in exc.message_dict.values() for m in ms))
         else:
             messages.success(request, _("Default restored."))
-        return redirect(f"{reverse('instance:settings')}#{section.value}")
+        return redirect(_section_url(self.slug))
 
     def _test_email(self, request: HttpRequest, actor: User) -> HttpResponse:
+        if self.section is not registry.Section.EMAIL:
+            raise Http404
         if not allow(request, "housecairn_settings_test"):
             messages.error(request, _("Too many tests in a short time. Try again later."))
         else:
             ok, text = services_settings.check_email(actor)
             (messages.success if ok else messages.error)(request, text)
-        return redirect(f"{reverse('instance:settings')}#email")
+        return redirect(_section_url(self.slug))
 
 
 def _reauthenticate_to(request: HttpRequest, url: str) -> HttpResponse | None:
