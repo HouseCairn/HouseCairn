@@ -115,7 +115,8 @@ ADR 0001 is amended by this record:
 | --- | --- | --- | --- |
 | `Container image` | pull request, push to `main`, tag `v*` | `contents: read` | Builds the image for amd64 and runs `.github/scripts/image-smoke.sh` on it, with SQLite then with PostgreSQL: started with `--read-only --cap-drop ALL --security-opt no-new-privileges`, `/tmp` in memory and an empty volume; healthy; `/`, the sign-in page and a hashed static file answer; user 10001; writes outside `/data` and `/tmp` refused; secret key mode 600; clean stop on SIGTERM; restart on the same volume keeps the database and the key and applies no migration; killing the task worker stops the container. Validates `compose.yaml`. Scans the image with Grype: an inventory of every finding (job summary and `grype-inventory` artifact), then the fixable ones for code scanning and the check. |
 | `Container image (code scanning)` | same, except pull requests from forks and Dependabot | `security-events: write` | Uploads the Grype SARIF of the previous job to code scanning; that file holds only vulnerabilities with a fix available. Runs no code of the pull request. |
-| `Container image (multi-arch build)` | pull request | `contents: read` | Builds `linux/amd64` and `linux/arm64` with provenance and SBOM, as the publication does, without pushing. |
+| `Image changes` | pull request, merge queue entry, push | `contents: read` | Not a required check. Runs `.github/scripts/arm64-needed.sh` on the diff of the change and tells the next job whether `linux/arm64` must be built (amendment of 2026-11-09). |
+| `Container image (multi-arch build)` | pull request, merge queue entry | `contents: read` | Builds `linux/amd64` with provenance and SBOM, as the publication does, without pushing, and `linux/arm64` too when `Image changes` reports a change that can affect it. Always reports a status. |
 | `Publish image` | push to `main`, tag `v*`, after `Container image` passed | `contents: read`, `packages: write`, `id-token: write`, `attestations: write` | Builds and pushes both platforms to GHCR, then attests provenance and SBOMs. |
 
 ### Workflow `image-scan.yml`
@@ -347,3 +348,41 @@ be proposed that late. Nothing scanned the published image between pushes.
   Grype pin is duplicated from `image.yml` and updated by hand, together.
 
 Nothing is ignored and the threshold of the blocking scan is unchanged.
+
+## Amendment, 2026-11-09: a shorter image workflow on the merge queue
+
+**Measurement.** Over the 20 latest successful runs of `image.yml` (10 merge
+queue entries, 10 pull requests), the workflow took 155 to 221 s, the longest of
+two parallel jobs. `Container image` took 129 to 191 s: the build 21 to 30 s, the
+two smoke tests 16 to 23 s and 22 to 31 s, and the first Grype scan (inventory)
+49 to 98 s, most of it the download of the vulnerability database, while the
+second scan, on the same database, took 7 to 12 s. `Container image (multi-arch
+build)` took 122 to 199 s, nearly all of it the build under QEMU (`linux/arm64`).
+
+**Changes.**
+
+- The Grype database downloads in the background from the start of the job
+  (`.github/scripts/grype-db.sh`), while the image builds and is tested. The scan
+  waits for it and fails, with the download log, if the download failed: it never
+  runs on a missing database. Nothing is removed from the scan: the inventory,
+  the SARIF for code scanning and the `--only-fixed --fail-on high` check are
+  unchanged, and the image is still started on amd64 with SQLite and PostgreSQL.
+- `linux/arm64` is built on pull requests and queue entries only when the
+  `Image changes` job sees, in the diff of the change, the `Dockerfile`,
+  `.dockerignore`, `uv.lock`, `pyproject.toml`, `image.yml` or the scripts it uses
+  for the build (`retry.sh`, `arm64-needed.sh`). Otherwise `linux/amd64` alone is
+  built, with provenance and SBOM. The filter is in a job, not in the `on:` of the
+  workflow, so that the required check always reports a status. Anything unknown
+  (no base commit, a diff that cannot be read, a failed detection job) builds
+  both platforms. Every `push` (`main`, tags) publishes both, as before.
+- What this gives up: a source change that breaks only on arm64, without touching
+  the files above, is no longer found before `main`. It is found by `Publish
+  image` on the merge commit, which builds both platforms. Dependencies, the
+  usual cause of a platform-specific failure, are in `uv.lock` and keep the full
+  build.
+- Not done, on the measurement: a `type=gha` layer cache and a cache mount for uv.
+  The amd64 build takes 21 to 30 s, `uv sync` 6 s of it, and every build starts on
+  a new builder, so a cache mount would persist nothing; the layer cache would
+  help only the arm64 build, which is now rare, and its layers after
+  `COPY src/` change on almost every pull request. The smoke tests stay in
+  sequence: both clean up a container the other starts (`hc-smoke-postgres`).
