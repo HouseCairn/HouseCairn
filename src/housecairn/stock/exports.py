@@ -48,11 +48,13 @@ def _articles(home: Home) -> list[dict[str, Any]]:
             "dimensions": a.dimensions,
             "storage_location": a.storage_location,
             "unit": a.unit,
+            "unit_other": a.unit_other,
             "threshold": str(a.threshold) if a.threshold is not None else None,
             "quantity": str(a.quantity.quantize(CENT)),  # type: ignore[attr-defined]
             "compatible_items": [
                 str(pk) for pk in a.compatible_items.order_by("id").values_list("id", flat=True)
             ],
+            "rooms": [str(pk) for pk in a.rooms.order_by("id").values_list("id", flat=True)],
             "notes": a.notes,
             "label": f"files/{_archive_name(a)}" if _stored_file(a) else None,
             "created_at": a.created_at.isoformat(),
@@ -88,6 +90,7 @@ def _movements(home: Home) -> list[dict[str, Any]]:
             "delta": str(m.delta),
             "occurred_on": m.occurred_on.isoformat(),
             "note": m.note,
+            "occurrence": str(m.occurrence_id) if m.occurrence_id else None,
             "created_at": m.created_at.isoformat(),
         }
         for m in Movement.objects.filter(home=home, article__deleted_at__isnull=True).order_by(

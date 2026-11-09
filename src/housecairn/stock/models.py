@@ -3,13 +3,15 @@
 from decimal import Decimal
 from typing import Any
 
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext
 
 from housecairn.homes.models import HomeOwnedModel
-from housecairn.rooms.models import Item, WebUrlField, notes_field
+from housecairn.rooms.models import Item, Room, WebUrlField, notes_field
 from housecairn.stock.storage import stock_storage
 
 NON_NEGATIVE = MinValueValidator(Decimal("0"))
@@ -17,6 +19,45 @@ NON_NEGATIVE = MinValueValidator(Decimal("0"))
 
 def quantity_field(label: Any, **options: Any) -> models.DecimalField[Decimal, Decimal]:
     return models.DecimalField(label, max_digits=10, decimal_places=2, **options)
+
+
+class Unit(models.TextChoices):
+    """The units of an article: a short list plus Other, which says its own (docs/adr/0046)."""
+
+    PIECE = "piece", _("Piece")
+    LITRE = "litre", _("Litre")
+    METRE = "metre", _("Metre")
+    KILOGRAM = "kilogram", _("Kilogram")
+    ROLL = "roll", _("Roll")
+    BOX = "box", _("Box")
+    OTHER = "other", _("Other")
+
+
+def unit_text(unit: str, other: str, quantity: Decimal | int = 1) -> str:
+    """The unit as it reads after a quantity: "1 litre", "2 litres" (in the active language).
+
+    Fractions count as plural, except below one in a language that says "0,5 litre".
+    """
+    if unit == Unit.OTHER:
+        return other
+    if quantity == quantity.to_integral_value() if isinstance(quantity, Decimal) else True:
+        count = int(quantity)
+    else:
+        count = 2 if quantity > 1 else 0
+    match unit:
+        case Unit.PIECE:
+            return ngettext("piece", "pieces", count)
+        case Unit.LITRE:
+            return ngettext("litre", "litres", count)
+        case Unit.METRE:
+            return ngettext("metre", "metres", count)
+        case Unit.KILOGRAM:
+            return ngettext("kilogram", "kilograms", count)
+        case Unit.ROLL:
+            return ngettext("roll", "rolls", count)
+        case Unit.BOX:
+            return ngettext("box", "boxes", count)
+    return ""
 
 
 def label_path(article: "Article", filename: str) -> str:
@@ -38,11 +79,13 @@ class Article(HomeOwnedModel):
         blank=True,
         help_text=_("For example: garage, second shelf."),
     )
-    unit = models.CharField(
-        _("unit"),
+    # A code of `Unit`; with Other, what the unit is is said in `unit_other`.
+    unit = models.CharField(_("unit"), max_length=24, choices=Unit.choices, blank=True)
+    unit_other = models.CharField(
+        _("which unit"),
         max_length=24,
         blank=True,
-        help_text=_("For example: pieces, litres, metres."),
+        help_text=_("Only with the unit Other. Example: bag."),
     )
     threshold = quantity_field(
         _("threshold"),
@@ -53,6 +96,13 @@ class Article(HomeOwnedModel):
     )
     compatible_items = models.ManyToManyField(
         Item, blank=True, related_name="+", verbose_name=_("compatible items")
+    )
+    rooms = models.ManyToManyField(
+        Room,
+        blank=True,
+        related_name="+",
+        verbose_name=_("rooms"),
+        help_text=_("Where it is used, besides the rooms of the equipment it fits."),
     )
     notes = notes_field(_("notes"))
     # Photo of the label, re-encoded on upload (housecairn.rooms.images).
@@ -69,6 +119,20 @@ class Article(HomeOwnedModel):
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def unit_label(self) -> str:
+        """The unit in the singular, or what Other stands for; empty when there is none."""
+        return unit_text(self.unit, self.unit_other)
+
+    def unit_for(self, quantity: Decimal | int) -> str:
+        """The unit as it reads after this quantity."""
+        return unit_text(self.unit, self.unit_other, quantity)
+
+    def clean(self) -> None:
+        super().clean()
+        if self.unit == Unit.OTHER and not self.unit_other.strip():
+            raise ValidationError({"unit_other": _("Say which unit.")})
 
 
 class Supplier(HomeOwnedModel):
@@ -112,6 +176,15 @@ class Movement(HomeOwnedModel):
     delta = quantity_field(_("change"), editable=False)
     occurred_on = models.DateField(_("date"), default=timezone.localdate)
     note = models.CharField(_("note"), max_length=200, blank=True)
+    # The occurrence of a task whose closing (or taking back) wrote this line (docs/adr/0046).
+    occurrence = models.ForeignKey(
+        "tasks.Occurrence",
+        null=True,
+        blank=True,
+        editable=False,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
 
     class Meta:
         verbose_name = _("movement")

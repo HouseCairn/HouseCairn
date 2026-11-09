@@ -1,0 +1,40 @@
+{% load i18n stock_extras %}{# Stock items of a task. `materials`, `material_form`, `task`, `home`, `can_write`. #}
+{% if materials %}
+  <ul class="card-list">
+    {% for line in materials %}
+      <li class="row material-row">
+        <span class="row-body">
+          <a class="row-title" href="{% url 'stock:detail' home_id=home.id article_id=line.article_id %}">{{ line.article.name }}</a>
+          <span class="row-text">
+            {% blocktranslate with needed=line.article|amount:line.quantity stocked=line.article|amount:line.stock_quantity %}needs {{ needed }} · {{ stocked }} in stock{% endblocktranslate %}
+            {% if line.stock_quantity < line.quantity %}<span class="pill pill-warning">{% translate "Not enough in stock" %}</span>{% endif %}
+          </span>
+        </span>
+        {% if can_write %}
+          <form method="post" action="{% url 'tasks:material-save' home_id=home.id task_id=task.id %}" class="inline-form">
+            {% csrf_token %}
+            <input type="hidden" name="article" value="{{ line.article_id }}">
+            <label class="visually-hidden" for="quantity-{{ line.id }}">{% blocktranslate with name=line.article.name %}Quantity of {{ name }}{% endblocktranslate %}</label>
+            <input type="number" id="quantity-{{ line.id }}" name="quantity" value="{{ line.quantity|stringformat:'s' }}" min="0.01" step="0.01" inputmode="decimal">
+            <button type="submit" class="button-secondary button-small">{% translate "Save" %}</button>
+          </form>
+          <form method="post" action="{% url 'tasks:material-remove' home_id=home.id task_id=task.id material_id=line.id %}">
+            {% csrf_token %}
+            <button type="submit" class="link-button">{% translate "Remove" %}<span class="visually-hidden"> {{ line.article.name }}</span></button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% elif not can_write %}
+  <p class="empty">{% translate "No stock item needed." %}</p>
+{% endif %}
+{% if can_write %}
+  <form method="post" action="{% url 'tasks:material-save' home_id=home.id task_id=task.id %}" class="card">
+    {% csrf_token %}
+    <p>{{ material_form.article.label_tag }} {{ material_form.article }}</p>
+    <p>{{ material_form.quantity.label_tag }} {{ material_form.quantity }}</p>
+    <button type="submit" class="button-secondary">{% translate "Add the stock item" %}</button>
+    <p class="small">{% translate "Marking the task done takes these quantities from the stock; undoing puts them back." %}</p>
+  </form>
+{% endif %}

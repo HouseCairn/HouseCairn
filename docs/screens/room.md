@@ -3,12 +3,16 @@
 One room, at `/h/<home id>/rooms/<room id>/`. The address stays the same when
 the room is renamed or reordered, so it can be printed on a label.
 
-The page has four parts:
+The page has these parts:
 
 - the **type** and the **notes** of the room, with **Edit the room**;
-- the **room memory**: paint (colour, brand, reference, batch, what is left in
-  stock), floor and wall coverings and free notes, with **Edit the memory**.
-  It is empty until you note something, and nothing in it is required;
+- the **room memory**: paint (colour, brand, reference, batch, and the tin left over
+  with its quantity and place, from the [stock](stock.md)), floor and wall coverings and
+  free notes, with **Edit the memory**. It is empty until you note something, and
+  nothing in it is required;
+- the **stock** that concerns the room: the items listed on it, those compatible with
+  one of its items and its paint left over, with their quantity, where they are kept and
+  a **Low stock** label;
 - **Photos** of the room in one list, with **Add a photo**, see
   [Add a photo](photo-form.md). Each photo shows its category (**General**,
   **Behind the walls**, **Before the work**, **After the work** or **Other**), and the

@@ -14,6 +14,7 @@ from housecairn.rooms.models import (
     RoomKind,
     validate_links,
 )
+from housecairn.stock.models import Article
 
 BRAND_LIST_ID = "brand-suggestions"
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
@@ -70,7 +71,7 @@ class RoomMemoryForm(forms.ModelForm[Room]):
             "paint_brand",
             "paint_reference",
             "paint_batch",
-            "paint_stock",
+            "paint_article",
             "floor_covering",
             "wall_covering",
             "memory_notes",
@@ -87,7 +88,11 @@ class RoomMemoryForm(forms.ModelForm[Room]):
                 "The batch number printed on the tin; shades can differ from one batch to "
                 "another. Example: L23-0457."
             ),
-            "paint_stock": _("What is left of it and where. Example: half a tin, in the garage."),
+            "paint_article": _(
+                "The tin left over, from your stock: its quantity and where it is are shown "
+                "here. Example: Sage wall paint, 2 litres. Add it to the stock first if it is "
+                "not there yet."
+            ),
             "floor_covering": _(
                 "What covers the floor, with its make and reference if you know them. "
                 "Example: oak parquet, matt varnish."
@@ -100,6 +105,13 @@ class RoomMemoryForm(forms.ModelForm[Room]):
                 "done. Example: water pipe along the north wall, 30 cm above the floor."
             ),
         }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        paint = self.fields["paint_article"]
+        assert isinstance(paint, forms.ModelChoiceField)  # noqa: S101 - narrows the type
+        paint.queryset = Article.objects.filter(home=self.instance.home_id)
+        paint.empty_label = "—"
 
 
 def links_to_text(links: list[dict[str, str]]) -> str:
