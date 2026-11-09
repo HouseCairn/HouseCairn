@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Back to where you came from.** In Rooms and Tasks, the link at the top of a page leads back to the screen it was opened from, and names it: a task opened from an item goes back to the item. A task or an item added from a room or an item comes back to it, with **Added · Open** to open the new record; added from the list of its own section, the new record opens. A deletion never leads back to the page of what was deleted. The pages of More no longer show a link back to More on a computer, where the column already shows it."
+msgstr "**Retour là d'où l'on vient.** Dans Pièces et Tâches, le lien du haut d'une page ramène à l'écran d'où elle a été ouverte, et le nomme : une tâche ouverte depuis un élément revient à l'élément. Une tâche ou un élément ajouté depuis une pièce ou un élément y revient, avec **Ajouté · Ouvrir** pour ouvrir la nouvelle fiche ; ajouté depuis la liste de sa propre section, la nouvelle fiche s'ouvre. Une suppression ne ramène jamais à la page de ce qui a été supprimé. Les pages de Plus n'affichent plus de lien vers Plus sur ordinateur, où la colonne le montre déjà."
+

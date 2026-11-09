@@ -17,5 +17,7 @@ print it. **Report a problem** opens the [report form](report-form.md) with the
 **Where?** list already filled in with this item; every member sees it, read-only
 members included.
 
-**Delete the item** (in the edit form) asks for confirmation. Members and owners
+**Delete the item** (in the edit form) asks for confirmation, then leads to the room
+of the item. The link at the top leads back to the screen the item was opened from,
+and to its room otherwise. Members and owners
 change the item; read-only members see it all and change nothing.

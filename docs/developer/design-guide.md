@@ -182,6 +182,53 @@ first visit.
 - A form **must** keep `next` in a hidden field, so that a form sent with an error
   still knows where to go back.
 
+### In code
+
+The rule has one implementation, `housecairn.core.navigation`, and its template tags,
+`{% load navigation %}`. A view or a template **must** use them, never read `next`
+itself.
+
+| Helper | What it does |
+| --- | --- |
+| `back_url(request, default)` | The `next` of the request (the form first, then the query) when it is safe, else `default`. Safe: checked by `is_safe_redirect`, a path starting with one `/`, a nested `next` and `undo` removed, 512 characters at most (past that the query is dropped, then the address is refused). |
+| `safe_next(request)` | The same, or `None` without a safe `next`. |
+| `after_create(request, record_url, section_list, added=…, saved=…)` | Where a creation goes: `next`, with the message "*added* · Open" linking to `record_url`; the record itself when `next` is missing or is the route `section_list` (the list of its own section). |
+| `after_delete(request, parent, gone)` | Where a deletion goes: `next`, unless its route names one of the ids in `gone` (the object and its children), else `parent`. |
+| `label_for(url, request)` | The title of the screen a path leads to, from `LABELS`: a fixed label by route name, or a field of the record the route shows, read only in the homes the person may open. `None` for a route without a label. |
+
+| Tag | Use |
+| --- | --- |
+| `{% back_link default %}`, `{% back_link default label %}` | The back link of the page. It leads to the safe `next` when its route has a label, named after it, else to `default`, named `label` or after the route of `default`. A link to More is shown on a phone only. |
+| `{% back_href default %}`, `{% back_href default as cancel %}` | The same address without the link, for a Cancel button. |
+| `{% url_with_next 'rooms:item-create' home_id=home.id room_id=room.id %}` | The address of a route with `next=<this page>`. A keyword prefixed with `q_` goes to the query: `q_item=item.id` gives `?item=…`. |
+| `{% next_field %}` | The hidden `next` field of a form, with the safe `next` only. |
+
+A form, then, reads:
+
+```django
+{% load i18n navigation %}
+{% url 'rooms:detail' home_id=home.id room_id=room.id as parent %}{% back_link parent room.name %}
+<form method="post">
+  {% csrf_token %}
+  {% next_field %}
+  …
+</form>
+```
+
+and its view ends with:
+
+```python
+return redirect(
+    navigation.after_create(
+        self.request, record_url, "rooms:list", added=_("Item added"), saved=_("Item added.")
+    )
+)
+```
+
+A route that should name a back link is added to `LABELS`. Without it, a `next`
+to that route is not lost for the redirect after a form, but the back link falls back
+to its default: a link must never show an address nor a nameless "Back".
+
 ### Back link and breadcrumbs
 
 | Level | Phone | Computer (from 56 rem) |
@@ -370,8 +417,9 @@ holds. The review checks the same list.
   at 360 px, and the page shows one row of tabs at most.
 - [ ] The marked entry of the bar is the section the person entered by.
 - [ ] A section root has no back link; any other page has one that names its target.
-- [ ] Every link to a record or a form carries `next`, checked by the shared helper,
-  and the form keeps it in a hidden field.
+- [ ] Every link to a record or a form carries `next` (`{% url_with_next %}`), the
+  back link and Cancel use `{% back_link %}` and `{% back_href %}`, and the form keeps
+  `next` with `{% next_field %}`; a route that a back link must name is in `LABELS`.
 - [ ] After a creation from a context, the person is back in the context with
   "Added · Open"; from the list of its own section, on the new record.
 - [ ] A deletion goes through a confirmation page and lands on the parent.

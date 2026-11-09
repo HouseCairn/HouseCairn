@@ -24,6 +24,9 @@ msgstr "Formulaire de tâche"
 msgid "The form to add a task, at `/h/<home id>/tasks/new/`, and to edit it, at `/h/<home id>/tasks/<task id>/edit/`. Only the **title** is required. From a room or an item, **Add a task** fills the room and the item in."
 msgstr "Le formulaire pour ajouter une tâche, sur `/h/<home id>/tasks/new/`, et pour la modifier, sur `/h/<home id>/tasks/<task id>/edit/`. Seul le **titre** est requis. Depuis une pièce ou un élément, **Ajouter une tâche** renseigne déjà la pièce et l'élément."
 
+msgid "The first block holds the title, the room, the item (listed with its room), the due date and, below, five sections that open when you need them:"
+msgstr "Le premier bloc contient le titre, la pièce, l'élément (listé avec sa pièce), la date d'échéance et, en dessous, cinq sections qui s'ouvrent quand on en a besoin :"
+
 msgid "Section"
 msgstr "Section"
 
@@ -47,6 +50,12 @@ msgstr "Durée et budget"
 
 msgid "Estimated duration (a number and a unit: minutes, hours or days), labour and material budgets, in the currency of the home."
 msgstr "Durée estimée (un nombre et une unité : minutes, heures ou jours), budgets main d'œuvre et matériel, dans la devise du logement."
+
+msgid "Materials"
+msgstr "Fournitures"
+
+msgid "The stock items the task needs, one line each: the stock item and the quantity. Two empty lines are offered for more; set a line's stock item to the dash to remove it. Marking the task done takes these quantities from the stock."
+msgstr "Les articles dont la tâche a besoin, une ligne chacun : l'article et la quantité. Deux lignes vides sont proposées pour en ajouter ; remettez l'article d'une ligne sur le tiret pour la retirer. Marquer la tâche faite prend ces quantités dans le stock."
 
 msgid "How to do it"
 msgstr "Comment faire"
@@ -78,11 +87,9 @@ msgstr "Modifier la date déplace l'occurrence qui est ouverte. Supprimer la tâ
 msgid "When you add files together with the task and one of them is refused, the task is created anyway and a message names the file and the reason."
 msgstr "Quand vous ajoutez des fichiers en même temps que la tâche et que l'un d'eux est refusé, la tâche est créée quand même et un message nomme le fichier et la raison."
 
-msgid "The first block holds the title, the room, the item (listed with its room), the due date and, below, five sections that open when you need them:"
-msgstr "Le premier bloc contient le titre, la pièce, l'élément (listé avec sa pièce), la date d'échéance et, en dessous, cinq sections qui s'ouvrent quand on en a besoin :"
+msgid "Going back"
+msgstr "Revenir"
 
-msgid "Materials"
-msgstr "Fournitures"
+msgid "The link at the top and the form once sent lead back to the screen the form was opened from: a task added from an item goes back to the item, with the message **Task added · Open**, whose link opens the new task. Opened from the task list, the form opens the new task instead. A form sent with an error stays open and still goes back to the same screen. After **Delete the task**, the page of the deleted task no longer exists: you land on the task list, or on the screen you came from if it was another one."
+msgstr "Le lien du haut et le formulaire une fois envoyé ramènent à l'écran d'où le formulaire a été ouvert : une tâche ajoutée depuis un élément revient à l'élément, avec le message **Tâche ajoutée · Ouvrir**, dont le lien ouvre la nouvelle tâche. Ouvert depuis la liste des tâches, le formulaire ouvre plutôt la nouvelle tâche. Un formulaire envoyé avec une erreur reste ouvert et ramène toujours au même écran. Après **Supprimer la tâche**, la page de la tâche supprimée n'existe plus : vous arrivez sur la liste des tâches, ou sur l'écran d'où vous veniez s'il s'agit d'un autre."
 
-msgid "The stock items the task needs, one line each: the stock item and the quantity. Two empty lines are offered for more; set a line's stock item to the dash to remove it. Marking the task done takes these quantities from the stock."
-msgstr "Les articles dont la tâche a besoin, une ligne chacun : l'article et la quantité. Deux lignes vides sont proposées pour en ajouter ; remettez l'article d'une ligne sur le tiret pour la retirer. Marquer la tâche faite prend ces quantités dans le stock."

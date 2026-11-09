@@ -19,3 +19,7 @@ The form to add an item to a room, at
 | Notes | Free text, 4,000 characters at most. |
 
 Only the name is required.
+
+The link at the top and the form once sent lead back to the screen the form was
+opened from: an item added from its room goes back to the room, with the message
+**Item added · Open**. Saved changes go back to where the form was opened.

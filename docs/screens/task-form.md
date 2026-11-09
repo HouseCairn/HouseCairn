@@ -44,3 +44,13 @@ and its files from the screens.
 
 When you add files together with the task and one of them is refused, the task is
 created anyway and a message names the file and the reason.
+
+## Going back
+
+The link at the top and the form once sent lead back to the screen the form was
+opened from: a task added from an item goes back to the item, with the message
+**Task added · Open**, whose link opens the new task. Opened from the task list, the
+form opens the new task instead. A form sent with an error stays open and still goes
+back to the same screen. After **Delete the task**, the page of the deleted task no
+longer exists: you land on the task list, or on the screen you came from if it was
+another one.
