@@ -250,7 +250,7 @@ class TestDetail:
                 assert response["Cache-Control"].startswith("private")
                 assert str(report.id) in response["Content-Disposition"]
                 assert "Crack" not in response["Content-Disposition"]
-                response.close()
+                assert b"".join(response.streaming_content)
             assert signed(client, bob).get(address).status_code == 404
 
     def test_a_report_without_photo_has_no_photo_page(
