@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n stock_extras %}
 {% block head_title %}{{ article.name }}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{% url 'stock:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Stock" %}</a>
   <h1>{{ article.name }}</h1>
   <section class="card">
     <p class="stock-quantity">
-      <strong>{{ quantity|floatformat:"-2" }}</strong>{% if article.unit %} {{ article.unit }}{% endif %}
+      <strong>{{ quantity|floatformat:"-2" }}</strong>{% with unit=article|unit_after:quantity %}{% if unit %} {{ unit }}{% endif %}{% endwith %}
       {% if low %}<span class="pill pill-warning">{% translate "Low stock" %}</span>{% endif %}
     </p>
     <dl class="facts">
@@ -62,6 +62,34 @@
     <p class="empty">{% translate "No compatible item chosen." %}</p>
   {% endif %}
 
+  {% if rooms %}
+    <h2>{% translate "Rooms" %}</h2>
+    <ul class="card-list">
+      {% for room in rooms %}
+        <li>
+          <a class="row" href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}">
+            <span class="row-body"><span class="row-title">{{ room.name }}</span></span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if tasks %}
+    <h2>{% translate "Needed by tasks" %}</h2>
+    <ul class="card-list">
+      {% for task in tasks %}
+        <li>
+          <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=task.id %}">
+            <span class="row-body"><span class="row-title">{{ task.title }}</span></span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
   <h2>{% translate "Suppliers" %}</h2>
   {% if suppliers %}
     <ul class="card-list">
@@ -92,8 +120,8 @@
       {% for movement in movements %}
         <li class="row">
           <span class="row-body">
-            <span class="row-title">{{ movement.get_kind_display }} · {% if movement.delta > 0 %}+{% endif %}{{ movement.delta|floatformat:"-2" }}{% if article.unit %} {{ article.unit }}{% endif %}</span>
-            <span class="row-text">{{ movement.occurred_on|date:"SHORT_DATE_FORMAT" }}{% if movement.kind == "inventory" %} · {% blocktranslate with count=movement.quantity|floatformat:"-2" %}counted {{ count }}{% endblocktranslate %}{% endif %}{% if movement.note %} · {{ movement.note }}{% endif %}</span>
+            <span class="row-title">{{ movement.get_kind_display }} · {% if movement.delta > 0 %}+{% endif %}{{ article|amount:movement.delta }}</span>
+            <span class="row-text">{{ movement.occurred_on|date:"SHORT_DATE_FORMAT" }}{% if movement.kind == "inventory" %} · {% blocktranslate with count=movement.quantity|floatformat:"-2" %}counted {{ count }}{% endblocktranslate %}{% endif %}{% if movement.note %} · {{ movement.note }}{% endif %}{% if movement.occurrence %} · <a href="{% url 'tasks:detail' home_id=home.id task_id=movement.occurrence.task_id %}">{{ movement.occurrence.task.title }}</a>{% endif %}</span>
           </span>
         </li>
       {% endfor %}

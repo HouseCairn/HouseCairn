@@ -102,8 +102,8 @@ msgstr "`id`, `kind`, `payload`, `received_at` des événements reçus."
 msgid "`rooms`"
 msgstr "`rooms`"
 
-msgid "`id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch and stock, floor and wall covering, memory notes)."
-msgstr "`id`, `name`, `kind`, `position`, `notes`, `created_at` de chaque pièce, et sa mémoire `memory` (couleur, marque, référence, lot et reste de peinture, revêtements de sol et de mur, notes de mémoire)."
+msgid "`id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch, `paint_article` (a stock item id or `null`), floor and wall covering, memory notes)."
+msgstr "`id`, `name`, `kind`, `position`, `notes`, `created_at` de chaque pièce, et sa `memory` (couleur, marque, référence et lot de la peinture, `paint_article` (l'identifiant d'un article ou `null`), revêtement de sol et de mur, notes de mémoire)."
 
 msgid "`items`"
 msgstr "`items`"
@@ -126,8 +126,8 @@ msgstr "`id`, `task`, `occurrence` ou `null`, `name`, `content_type`, `is_image`
 msgid "`stock_items`"
 msgstr "`stock_items`"
 
-msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
-msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
+msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (a code of the list, or `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (item ids), `rooms` (room ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
+msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (un code de la liste, ou `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `rooms` (identifiants de pièces), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
 
 msgid "`stock_suppliers`"
 msgstr "`stock_suppliers`"
@@ -138,8 +138,20 @@ msgstr "`id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`.
 msgid "`stock_movements`"
 msgstr "`stock_movements`"
 
-msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
-msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
+msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (the occurrence of a task whose closing wrote the line, or `null`), `created_at`."
+msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (l'occurrence d'une tâche dont la clôture a écrit la ligne, ou `null`), `created_at`."
+
+msgid "`task_materials`"
+msgstr "`task_materials`"
+
+msgid "`id`, `task`, `article`, `quantity`, `created_at`: the stock items each task needs."
+msgstr "`id`, `task`, `article`, `quantity`, `created_at` : les articles dont chaque tâche a besoin."
+
+msgid "`stock_draws`"
+msgstr "`stock_draws`"
+
+msgid "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at`: what each closed occurrence took from the stock."
+msgstr "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at` : ce que chaque occurrence close a pris dans le stock."
 
 msgid "`projects`"
 msgstr "`projects`"
@@ -248,4 +260,19 @@ msgstr "Les données supprimées restent dans les sauvegardes jusqu'à leur expi
 
 #~ msgid "**Delete my account** (see [Account pages](../screens/account.md)) erases the account, its sign-in methods, devices and API tokens, the homes where it is the only member, and the invitations to its address. It is refused for the only administrator and for the only owner of a home with other members: hand ownership over, or delete the home, first. The audit log keeps that it happened and no longer says who."
 #~ msgstr "**Supprimer mon compte** (voir [Pages du compte](../screens/account.md)) efface le compte, ses méthodes de connexion, ses appareils et ses jetons d'API, les logements dont il est le seul membre, et les invitations envoyées à son adresse. L'effacement est refusé pour l'unique administrateur et pour l'unique propriétaire d'un logement qui a d'autres membres : transmettez d'abord la propriété, ou supprimez le logement. Le journal d'audit garde la trace de l'opération, sans plus dire qui."
+
+#~ msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, and the photos of the labels of stock items, under `files/stock/`."
+#~ msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, les fichiers des tâches, sous `files/attachments/`, et les photos d'étiquettes des articles du matériel, sous `files/stock/`."
+
+#~ msgid "The photos, the labels of stock items and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>` or `stock/<home id>`): remove that directory by hand."
+#~ msgstr "Les photos, les étiquettes des articles du matériel et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>` ou `stock/<id du logement>`) : supprimez ce dossier à la main."
+
+#~ msgid "`id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch and stock, floor and wall covering, memory notes)."
+#~ msgstr "`id`, `name`, `kind`, `position`, `notes`, `created_at` de chaque pièce, et sa mémoire `memory` (couleur, marque, référence, lot et reste de peinture, revêtements de sol et de mur, notes de mémoire)."
+
+#~ msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
+#~ msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
+
+#~ msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
+#~ msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
 

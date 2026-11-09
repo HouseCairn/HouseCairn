@@ -202,3 +202,27 @@
   padding: 0;
   font-weight: var(--hc-font-weight-bold);
 }
+
+.material-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 8rem);
+  gap: var(--hc-space-2);
+  margin: 0 0 var(--hc-space-2);
+  padding: 0;
+  border: 0;
+}
+
+.material-line > p {
+  margin: 0;
+}
+
+.material-row .inline-form {
+  display: flex;
+  align-items: center;
+  gap: var(--hc-space-2);
+  margin: 0;
+}
+
+.material-row .inline-form input[type="number"] {
+  width: 6rem;
+}

@@ -614,3 +614,200 @@ class TestNavigation:
     def test_the_navigation_links_to_the_stock(self, signed_in: Client) -> None:
         page = signed_in.get(reverse("homes:list")).content.decode()
         assert 'href="/stock/"' in page
+
+
+class TestLedgerRules:
+    def test_a_movement_locks_the_article_before_reading_its_stock(
+        self, alice: User, article: Article, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """`record_movement` asks for `SELECT ... FOR UPDATE` on the article, then sums.
+
+        On PostgreSQL two movements at once wait for each other (the next test); SQLite has no
+        row lock, so what can be checked everywhere is that the lock is requested first.
+        """
+        from typing import Any
+
+        from django.db.models import QuerySet
+
+        order: list[str] = []
+        original_lock = QuerySet.select_for_update
+        original_sum = services.quantity_of
+
+        def spy_lock(self: QuerySet[Any], *args: Any, **kwargs: Any) -> QuerySet[Any]:
+            order.append(f"lock {self.model.__name__}")
+            return original_lock(self, *args, **kwargs)
+
+        def spy_sum(target: Article) -> Decimal:
+            order.append("sum")
+            return original_sum(target)
+
+        monkeypatch.setattr(QuerySet, "select_for_update", spy_lock)
+        monkeypatch.setattr(services, "quantity_of", spy_sum)
+        entry(alice, article, "3")
+        services.record_movement(alice, article, kind="exit", quantity=Decimal("1"))
+        assert order == ["lock Article", "sum", "lock Article", "sum"]
+
+    @pytest.mark.django_db(transaction=True)
+    def test_two_exits_at_once_cannot_both_take_the_last_unit(
+        self, alice: User, article: Article
+    ) -> None:
+        """On PostgreSQL, two connections: the second waits for the lock, then sees zero."""
+        import threading
+
+        from django.db import connection, connections
+
+        if connection.vendor != "postgresql":
+            pytest.skip("a row lock needs PostgreSQL; the request for it is checked above")
+        entry(alice, article, "1")
+        barrier = threading.Barrier(2)
+        outcomes: list[str] = []
+
+        def take() -> None:
+            try:
+                barrier.wait(timeout=10)
+                services.record_movement(alice, article, kind="exit", quantity=Decimal("1"))
+                outcomes.append("taken")
+            except ValidationError:
+                outcomes.append("refused")
+            finally:
+                connections.close_all()
+
+        threads = [threading.Thread(target=take) for _ in range(2)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join(timeout=30)
+        assert sorted(outcomes) == ["refused", "taken"]
+        assert services.quantity_of(article) == Decimal("0")
+
+    def test_a_count_far_from_the_stock_is_an_error_of_the_quantity(
+        self, alice: User, article: Article
+    ) -> None:
+        for _unused in range(10):
+            entry(alice, article, "99999999.99")
+        with pytest.raises(ValidationError) as caught:
+            services.record_movement(alice, article, kind="inventory", quantity=Decimal("0"))
+        assert set(caught.value.message_dict) == {"quantity"}
+        assert "too large" in caught.value.message_dict["quantity"][0]
+        assert Movement.objects.filter(article=article, kind="inventory").count() == 0
+
+    def test_the_api_carries_that_error_on_the_quantity(
+        self, alice: User, alice_home: Home, article: Article
+    ) -> None:
+        from rest_framework.test import APIClient
+
+        for _unused in range(10):
+            entry(alice, article, "99999999.99")
+        client = APIClient()
+        client.force_authenticate(alice)
+        response = client.post(
+            reverse("api-v1:home-movement-list", kwargs={"home_id": alice_home.id}),
+            {"article": str(article.id), "kind": "inventory", "quantity": "0"},
+        )
+        assert response.status_code == 400
+        assert set(response.json()) == {"quantity"}
+
+    def test_a_backdated_count_is_worked_out_against_the_stock_now(
+        self, alice: User, article: Article
+    ) -> None:
+        """The date only places the line in the history; the difference is with today's stock."""
+        entry(alice, article, "10", occurred_on=datetime.date(2026, 1, 10))
+        services.record_movement(
+            alice,
+            article,
+            kind="exit",
+            quantity=Decimal("4"),
+            occurred_on=datetime.date(2026, 3, 1),
+        )
+        counted = services.record_movement(
+            alice,
+            article,
+            kind="inventory",
+            quantity=Decimal("5"),
+            occurred_on=datetime.date(2026, 2, 1),
+        )
+        # 10 - 4 = 6 in stock now; a count of 5, dated before the exit, still costs -1.
+        assert counted.delta == Decimal("-1.00")
+        assert services.quantity_of(article) == Decimal("5.00")
+
+
+class TestLabelFileSwap:
+    def test_a_save_that_fails_keeps_the_old_label_and_leaves_no_new_file(
+        self,
+        alice: User,
+        alice_home: Home,
+        media_root: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        article = services.create_article(
+            alice, alice_home, name="Tin", label=upload(image_bytes())
+        )
+        folder = media_root / "stock" / str(alice_home.id)
+        before = sorted(p.name for p in folder.iterdir())
+
+        def boom(self: Article, *args: object, **kwargs: object) -> None:
+            raise RuntimeError("database down")
+
+        monkeypatch.setattr(Article, "save", boom)
+        with pytest.raises(RuntimeError):
+            services.update_article(alice, article, label=upload(image_bytes("PNG")))
+        assert sorted(p.name for p in folder.iterdir()) == before
+
+    def test_a_creation_that_fails_leaves_no_file(
+        self,
+        alice: User,
+        alice_home: Home,
+        media_root: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        def boom(self: Article, *args: object, **kwargs: object) -> None:
+            raise RuntimeError("database down")
+
+        monkeypatch.setattr(Article, "save", boom)
+        with pytest.raises(RuntimeError):
+            services.create_article(alice, alice_home, name="Tin", label=upload(image_bytes()))
+        folder = media_root / "stock" / str(alice_home.id)
+        assert not folder.exists() or not list(folder.iterdir())
+
+    def test_the_old_file_goes_only_once_the_article_is_saved(
+        self,
+        alice: User,
+        alice_home: Home,
+        media_root: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        article = services.create_article(
+            alice, alice_home, name="Tin", label=upload(image_bytes())
+        )
+        old = Path(article.label.path)
+        seen: list[bool] = []
+        original = Article.save
+
+        def watch(self: Article, *args: object, **kwargs: object) -> None:
+            seen.append(old.is_file())  # still there while the row is written
+            original(self, *args, **kwargs)  # type: ignore[arg-type]
+
+        monkeypatch.setattr(Article, "save", watch)
+        services.update_article(alice, article, label=upload(image_bytes("PNG")))
+        assert seen == [True]
+        assert not old.exists()
+        assert Path(article.label.path).is_file()
+
+    def test_removing_the_label_keeps_the_file_until_the_save(
+        self,
+        alice: User,
+        alice_home: Home,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        article = services.create_article(
+            alice, alice_home, name="Tin", label=upload(image_bytes())
+        )
+        stored = Path(article.label.path)
+
+        def boom(self: Article, *args: object, **kwargs: object) -> None:
+            raise RuntimeError("database down")
+
+        monkeypatch.setattr(Article, "save", boom)
+        with pytest.raises(RuntimeError):
+            services.update_article(alice, article, clear_label=True)
+        assert stored.is_file()

@@ -75,6 +75,8 @@ PARITY: dict[str, tuple[str, ...]] = {
     "tasks:detail": ("api-v1:home-task-detail", "api-v1:home-occurrence-list"),
     "tasks:edit": ("api-v1:home-task-detail",),
     "tasks:delete": ("api-v1:home-task-detail",),
+    "tasks:material-save": ("api-v1:home-task-material-list", "api-v1:home-task-material-detail"),
+    "tasks:material-remove": ("api-v1:home-task-material-detail",),
     "tasks:contractors": ("api-v1:home-contractor-list",),
     "tasks:contractor-create": ("api-v1:home-contractor-list",),
     "tasks:contractor-detail": ("api-v1:home-contractor-detail", "api-v1:home-task-list"),

@@ -16,7 +16,8 @@ garden or the cellar is a room like any other.
 ## Write down the room memory
 
 On the page of a room, **Edit the memory** keeps what you would otherwise search
-for later: the paint (colour, brand, reference, batch, how much is left and where),
+for later: the paint (colour, brand, reference, batch and the tin left over, chosen from the
+[stock](stock.md), whose quantity and place are then shown),
 the floor and wall coverings, and free notes. Take photos before closing a wall or a
 duct and add them with the category **Behind the walls**: in ten years, they tell
 where the cables run and where not to drill. The photos of a room are one list, and

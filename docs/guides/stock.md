@@ -12,9 +12,15 @@ it is kept. A photo of the label saves typing the reference now and finding it a
 later: HouseCairn keeps the picture and nothing else (the location and every other
 piece of information hidden in the file are removed).
 
+The **unit** comes from a list (piece, litre, metre, kilogram, roll, box) plus **Other**,
+where you write your own (bag, pallet). Quantities are then written with it: *1 litre*,
+*2 litres*.
+
 Choose the **compatible items** when the part is made for a given piece of
-equipment, such as the boiler a filter fits. The link is shown on the page of the stock
-item; the page of the equipment itself does not show it yet.
+equipment, such as the boiler a filter fits, and the **rooms** where it is used. The
+links are shown on the page of the stock item, and the page of a room lists the stock
+items that concern it (listed on the room, compatible with one of its items, or its
+paint left over).
 
 ## Count what you have
 
@@ -24,8 +30,21 @@ stock** when you use some, or **Set the count** after counting the shelf, which
 corrects the stock to what you counted. A movement is never edited; a mistake is
 corrected by another one, so the history always explains the figure.
 
+A **count dated in the past** states what is on the shelf now: its difference is worked
+out against the whole stock at the moment you record it, wherever the date puts the line in
+the history. The date only places the line.
+
 Set a **threshold** to see which items are running out: they carry a **Low** label,
 and **Low stock only** in the list keeps them.
+
+## Let the tasks use the stock
+
+A task lists the stock items it needs, with a quantity, in the **Materials** section of its
+form or on its page (see [Tasks and recurrence](tasks-and-recurrence.md)). Marking the task
+**Done** takes those quantities from the stock, in one gesture; **Undo** puts them back. The
+exits and entries this writes name the task on the page of the stock item. If the stock
+holds less than the task needs, **Done** is not refused: the stock goes down to zero and a
+message tells how much was missing.
 
 ## Note where to buy
 
@@ -39,6 +58,6 @@ item by the name of a supplier.
 Everyone in the home sees the same stock; members and owners change it, read-only
 members change nothing. The same data is available to scripts through the
 [API](../api/index.md) (`articles`, `suppliers` and `movements`), with the `read` and
-`write` scopes of an API token. The stock is part of the
+`write` scopes of an API token. The stock, the materials of the tasks and what each closing took are part of the
 [export of the home](../administration/data.md), label photos included, and is erased
 with it.

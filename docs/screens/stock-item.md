@@ -7,8 +7,10 @@ One item of the [stock](stock.md), at `/h/<home id>/stock/<item id>/`.
 - **Record a movement** takes a quantity, a date (today by default) and a note, then
   one button: **Add to stock** (an entry), **Take from stock** (an exit) or **Set the
   count** (an inventory: you state what you counted on the shelf and the stock is
-  corrected to it). Taking more than what is in stock is refused. A movement is
+  corrected to it). Taking more than what is in stock is refused (a task marked done is the exception: the stock stops at zero). A movement is
   never changed or deleted: a mistake is corrected by a new movement.
+- **Rooms** lists the rooms where the item is used, and **Needed by tasks** the tasks that
+  list it in their materials. A movement written by a task names that task.
 - **Compatible items** lists the equipment or surfaces of the home this fits; each
   one opens its [item page](item.md).
 - **Suppliers** lists where to buy it: name, supplier reference, purchase link and

@@ -46,6 +46,7 @@ later record supersedes it.
 | [0042](0042-rate-limits-quotas-language-and-instance-name.md) | Rate limits, quotas per home, language, time zone and name of the instance | 2026-11-08 |
 | [0043](0043-notifications-through-apprise.md) | Notifications through Apprise: channels of a person, reminders, quiet hours | 2026-11-08 |
 | [0045](0045-generic-lists-with-other-tabs-and-audit-of-content.md) | Generic lists with "Other", tabs, language of a person and audit of content | 2026-11-08 |
+| [0046](0046-stock-linked-to-tasks-and-rooms.md) | Stock linked to tasks and rooms, the stock follows Done | 2026-11-09 |
 | [0047](0047-qr-labels.md) | QR labels and reports: an opaque code, a PDF made on the server, a reader who reports | 2026-11-08 |
 | [0050](0050-projects-quotes-and-budget-lines.md) | Projects, quotes and budget lines | 2026-11-09 |
 | [0052](0052-calendar-and-secret-ics-feeds.md) | Calendar views and secret, revocable iCalendar feeds | 2026-11-08 |

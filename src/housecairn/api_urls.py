@@ -50,6 +50,7 @@ for prefix, viewset, basename in (
     ("suppliers", stock_api.SupplierViewSet, "home-supplier"),
     ("movements", stock_api.MovementViewSet, "home-movement"),
     ("attachments", tasks_api.AttachmentViewSet, "home-attachment"),
+    ("task-materials", tasks_api.MaterialViewSet, "home-task-material"),
     ("labels", labels_api.LabelViewSet, "home-label"),
     ("reports", reports_api.ReportViewSet, "home-report"),
     ("projects", projects_api.ProjectViewSet, "home-project"),

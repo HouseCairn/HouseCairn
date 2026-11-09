@@ -25,7 +25,7 @@ from housecairn.tasks.models import Occurrence, Task
 
 pytestmark = pytest.mark.django_db
 
-URL = "tgram://123456:N0t-A-Real-B0t-Token-Anywhere/987654"
+URL = "tgram://123456789:fixture-not-a-token/987654"
 UTC = datetime.UTC
 
 
