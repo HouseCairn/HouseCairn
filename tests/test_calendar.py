@@ -24,7 +24,7 @@ from housecairn.calendar import feeds, ics, services
 from housecairn.calendar.models import Feed
 from housecairn.homes import exports
 from housecairn.homes import services as home_services
-from housecairn.homes.models import Home, Role
+from housecairn.homes.models import Home, Membership, Role
 from housecairn.notifications.models import Preference
 from housecairn.rooms import services as room_services
 from housecairn.rooms.models import Room
@@ -312,6 +312,8 @@ class TestFeedSecret:
         assert events_of(body) == []
         event = AuditEvent.objects.get(action="calendar.feed_revoked")
         assert event.detail == {"kind": "left"}
+        assert event.actor == member
+        assert event.target_user == member
 
     def test_removal_by_an_owner_revokes_it_too(
         self, alice: User, alice_home: Home, member: User
@@ -320,6 +322,25 @@ class TestFeedSecret:
         membership = home_services.members(alice_home).get(user=member)
         home_services.remove_member(alice, membership)
         assert not Feed.objects.exists()
+        # The audit names the owner who removed the person, not the person.
+        event = AuditEvent.objects.get(action="calendar.feed_revoked")
+        assert event.actor == alice
+        assert event.target_user == member
+        assert event.detail == {"kind": "left"}
+
+    def test_a_feed_does_not_come_back_when_the_person_joins_the_home_again(
+        self, anonymous: Client, alice: User, alice_home: Home, member: User
+    ) -> None:
+        _feed, raw = feeds.create_feed(member, alice_home)
+        home_services.remove_member(alice, home_services.members(alice_home).get(user=member))
+        Membership.objects.create(home=alice_home, user=member, role=Role.MEMBER)
+        assert get_feed(anonymous, raw).status_code == 404
+
+    def test_no_audit_entry_when_there_was_no_feed(
+        self, alice: User, alice_home: Home, member: User
+    ) -> None:
+        home_services.remove_member(alice, home_services.members(alice_home).get(user=member))
+        assert not AuditEvent.objects.filter(action="calendar.feed_revoked").exists()
 
     def test_an_inactive_account_has_no_feed(
         self, anonymous: Client, alice: User, feed: tuple[Feed, str]

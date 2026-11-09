@@ -70,7 +70,11 @@ is the earliest are projected, and the answer says it was cut.
   home: a `post_save` receiver on the membership (the same path whoever removes the member).
   The combined feed stays and no longer includes the home. Deleting an account or a home
   deletes its feeds by cascade. The audit log records creation, regeneration and revocation
-  (with the cause "left" when a membership ended it), never the secret or its digest.
+  (with the cause "left" when a membership ended it), never the secret or its digest. For a
+  departure the entry names the actor of the departure: the person who leaves, or the owner who
+  removed them (the person is then the target). The feed itself goes at once with the
+  membership; the entry is written when the departure's own audit entry is, since only that one
+  knows the actor and `homes` is not touched for it.
 - **Content.** Title, home, room, date, status and a link to the task. No note, cost, procedure,
   attachment, person or email address. A test fills every such field and looks for them in the
   document. Dates are all-day events (`DTSTART;VALUE=DATE`); the window runs from 30 days

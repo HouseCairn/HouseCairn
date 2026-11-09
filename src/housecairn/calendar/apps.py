@@ -9,9 +9,13 @@ class CalendarConfig(AppConfig):
     verbose_name = _("Calendar")
 
     def ready(self) -> None:
+        from housecairn.audit.models import AuditEvent
         from housecairn.calendar import feeds
         from housecairn.homes import exports
         from housecairn.homes.models import Membership
 
         post_save.connect(feeds.membership_saved, sender=Membership, dispatch_uid="calendar-leave")
+        post_save.connect(
+            feeds.departure_recorded, sender=AuditEvent, dispatch_uid="calendar-departure"
+        )
         exports.register("calendar_feeds", feeds.export_of)

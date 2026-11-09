@@ -4,6 +4,7 @@ Only a person signed in with a session manages their feeds: an API token never c
 reads or changes one, since a feed address is a credential that outlives the token.
 """
 
+import contextvars
 import secrets
 from typing import Any
 
@@ -16,11 +17,13 @@ from django.utils.translation import gettext as _
 from housecairn.accounts.models import User
 from housecairn.apitokens.services import hash_token
 from housecairn.audit import services as audit
+from housecairn.audit.models import AuditEvent
 from housecairn.calendar.models import Feed
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership
 
 AnyUser = User | AnonymousUser
+DEPARTURES = frozenset({"member.left", "member.removed"})
 
 
 def _person(actor: AnyUser) -> User:
@@ -103,15 +106,52 @@ def find_feed(raw: str) -> Feed | None:
     return feed
 
 
+# The feeds a membership took with it, until the audit entry of the departure says who did it.
+_departed: contextvars.ContextVar[dict[tuple[Any, Any], list[str]] | None] = contextvars.ContextVar(
+    "departed", default=None
+)
+
+
 def membership_saved(sender: Any, instance: Membership, **kwargs: Any) -> None:
-    """A person who leaves a home (or is removed) no longer has a feed of it."""
+    """A person who leaves a home (or is removed) no longer has a feed of it.
+
+    The feed goes at once, in the same transaction, so that an address cannot come back to
+    life if the person joins the home again. Who did it is not known here (`homes` does not
+    say), so the audit entry waits for the departure's own entry: `departure_recorded`.
+    """
     if instance.deleted_at is None:
         return
-    for feed in Feed.objects.filter(user_id=instance.user_id, home_id=instance.home_id):
-        audit.record(
-            "calendar.feed_revoked", actor=instance.user, home_id=instance.home_id, kind="left"
-        )
+    doomed = list(Feed.objects.filter(user_id=instance.user_id, home_id=instance.home_id))
+    if not doomed:
+        return
+    pending = _departed.get() or {}
+    pending[(instance.home_id, instance.user_id)] = [str(feed.pk) for feed in doomed]
+    _departed.set(pending)
+    for feed in doomed:
         feed.delete()
+
+
+def departure_recorded(sender: Any, instance: AuditEvent, created: bool, **kwargs: Any) -> None:
+    """The audit entry of a departure ("left" or "removed") names who revoked the feed.
+
+    A person who leaves is their own actor; an owner who removes someone is the actor, and the
+    person is the target. The entry is written here, not when the membership ends, because
+    only the departure's entry knows the actor.
+    """
+    if not created or instance.action not in DEPARTURES:
+        return
+    pending = _departed.get() or {}
+    revoked = pending.pop((instance.home_id, instance.target_user_id), None)
+    if not revoked:
+        return
+    for _feed in revoked:
+        audit.record(
+            "calendar.feed_revoked",
+            actor=instance.actor,
+            home_id=instance.home_id,
+            target=instance.target_user,
+            kind="left",
+        )
 
 
 def export_of(home: Home) -> list[dict[str, Any]]:
