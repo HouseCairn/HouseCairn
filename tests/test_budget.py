@@ -3,6 +3,7 @@
 import csv
 import datetime
 import io
+import time
 from decimal import Decimal
 
 import pytest
@@ -25,6 +26,7 @@ from housecairn.projects.models import BudgetLine, Project
 from housecairn.projects.services import Amounts
 from housecairn.rooms.models import Room
 from housecairn.tasks import forms as task_forms
+from housecairn.tasks import recurrence
 from housecairn.tasks import services as task_services
 from housecairn.tasks.models import Occurrence, Task
 
@@ -329,7 +331,7 @@ class TestPlannedYearFollowsTheRepetition:
         natures = {line.label: line.amounts for line in services.by_nature(ledger, year)}
         assert natures["material"].planned == D("300.00")
 
-    def test_a_task_off_the_calendar_is_not_walked_for_ever(
+    def test_a_daily_task_counted_from_the_last_time_is_projected_whole_in_a_far_year(
         self, alice: User, alice_home: Home
     ) -> None:
         self.repeating(
@@ -337,8 +339,70 @@ class TestPlannedYearFollowsTheRepetition:
         )
         today = datetime.date(2026, 2, 10)
         row = services.load(alice_home, today).tasks[0]
-        # The walk is bounded, a far year does not hang the page.
-        assert row.projected(2027) <= services.PROJECTION_STEPS
+        # 2032 is a leap year: 366 days, not the first hundred and a bit of a bounded walk.
+        assert row.projected(2032) == 366
+        assert self.planned(alice_home, today, 2032) == D("9150.00")
+        assert row.projected(2035) == 365
+        assert row.projected(2200) == 365
+
+    def test_a_weekly_task_counted_from_the_last_time_is_projected_whole_forty_years_on(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        self.repeating(
+            alice, alice_home, "week", 1, first=datetime.date(2026, 2, 1), mode="after_last"
+        )
+        today = datetime.date(2026, 2, 10)
+        row = services.load(alice_home, today).tasks[0]
+        first = datetime.date(2026, 2, 1)
+        expected = sum(
+            1 for k in range(1, 3000) if (first + datetime.timedelta(weeks=k)).year == 2066
+        )
+        assert expected in (52, 53)
+        assert row.projected(2066) == expected
+
+    def test_a_far_year_is_the_same_as_walking_the_calendar_to_it(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        # A far year is not an estimate: it holds the dates the calendar brings, one by one.
+        for mode in ("fixed", "after_last"):
+            task = self.repeating(
+                alice, alice_home, "month", 2, first=datetime.date(2026, 1, 31), mode=mode
+            )
+            row = services.load(alice_home, datetime.date(2026, 2, 10)).tasks[-1]
+            rule = task.rule
+            walked = recurrence.preview(
+                rule, anchor=task.series_start, due_on=datetime.date(2026, 1, 31), count=500
+            )
+            for year in (2027, 2040, 2080):
+                assert row.projected(year) == sum(1 for day in walked if day.year == year)
+
+    def test_a_far_year_of_many_daily_tasks_is_quick_and_costs_no_more_queries(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        tasks = [
+            Task(
+                home=alice_home,
+                title=f"Task {n}",
+                labour_budget=D("1"),
+                repeat_mode="fixed" if n % 2 else "after_last",
+                repeat_unit="day",
+                repeat_interval=1,
+                series_start=TODAY,
+            )
+            for n in range(500)
+        ]
+        Task.objects.bulk_create(tasks)
+        Occurrence.objects.bulk_create(
+            [Occurrence(home=alice_home, task=t, due_on=TODAY) for t in tasks]
+        )
+        started = time.perf_counter()
+        with CaptureQueriesContext(connection) as context:
+            ledger = services.load(alice_home, TODAY)
+            report = services.by_task(ledger, 2040)
+        elapsed = time.perf_counter() - started
+        assert all(line.amounts.planned == D("366.00") for line in report.lines)  # 2040: leap
+        assert len(context) <= 12
+        assert elapsed < 2  # about 14 s when every date of 14 years was rebuilt one by one
 
 
 class TestYearOfAProject:

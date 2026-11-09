@@ -334,3 +334,63 @@ def test_even_a_series_begun_in_year_one_is_counted_at_once() -> None:
     )
     assert following == D(2026, 6, 16)
     assert time.perf_counter() - began < 0.2
+
+
+class TestComingDates:
+    """`coming` skips to the range instead of visiting every date; it must agree with `next_due`."""
+
+    @staticmethod
+    def walked(rule: Rule, anchor: D | None, after: D, since: D, end: D) -> list[D]:
+        found: list[D] = []
+        current: D | None = after
+        while current is not None:
+            current = recurrence.next_due(rule, anchor=anchor, due_on=current, done_on=current)
+            if current is None or current > end:
+                break
+            if current >= since:
+                found.append(current)
+        return found
+
+    @pytest.mark.parametrize("mode", [FIXED, AFTER_LAST])
+    @pytest.mark.parametrize("unit", [DAY, WEEK, MONTH, YEAR])
+    @pytest.mark.parametrize("season", [(None, None), (3, 10), (11, 3)])
+    def test_the_range_holds_the_dates_the_calendar_brings(
+        self, mode: str, unit: str, season: tuple[int | None, int | None]
+    ) -> None:
+        rule = Rule(mode, unit, 3, *season)
+        for after in (D(2026, 1, 31), D(2026, 3, 15), D(2024, 2, 29), D(2026, 12, 31)):
+            for anchor in (None, D(2024, 1, 31), D(2026, 1, 1), after):
+                for year in (2026, 2028):
+                    since, end = D(year, 1, 1), D(year, 12, 31)
+                    assert recurrence.coming(
+                        rule, anchor=anchor, after=after, since=since, end=end
+                    ) == self.walked(rule, anchor, after, since, end), (after, anchor, year)
+
+    def test_a_far_year_is_reached_without_visiting_the_years_between(self) -> None:
+        rule = Rule(AFTER_LAST, DAY, 1)
+        far = recurrence.coming(
+            rule, anchor=None, after=D(2026, 11, 9), since=D(2200, 1, 1), end=D(2200, 12, 31)
+        )
+        assert len(far) == 365
+        assert far[0] == D(2200, 1, 1)
+        assert far[-1] == D(2200, 12, 31)
+
+    def test_a_task_done_once_or_with_no_range_left_has_nothing(self) -> None:
+        once = Rule(ONCE)
+        assert (
+            recurrence.coming(
+                once, anchor=None, after=D(2026, 1, 1), since=D(2026, 1, 1), end=D(2026, 12, 31)
+            )
+            == []
+        )
+        rule = Rule(FIXED, MONTH, 1)
+        assert (
+            recurrence.coming(
+                rule,
+                anchor=D(2026, 1, 1),
+                after=D(2026, 12, 31),
+                since=D(2026, 1, 1),
+                end=D(2026, 12, 31),
+            )
+            == []
+        )

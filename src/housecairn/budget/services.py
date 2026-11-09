@@ -40,8 +40,6 @@ CENT = Decimal("0.01")
 # A year is 12 months, 52 weeks or 365 days (docs/adr/0051).
 PER_YEAR = {recurrence.MONTH: 12, recurrence.WEEK: 52, recurrence.DAY: 365, recurrence.YEAR: 1}
 _OPEN = (Status.PLANNED, Status.POSTPONED)
-# Dates worked out per task and year, at most: a daily task is 365 a year (docs/adr/0051).
-PROJECTION_STEPS = 2_000
 
 
 def cents(amount: Decimal) -> Decimal:
@@ -101,9 +99,10 @@ class TaskRow:
         """How many times the repetition will still bring the task due in `year`.
 
         Counted after the open occurrence, were each one closed on its due date: the way
-        the calendar projects it (`tasks.recurrence.next_due`, nothing is written). A year
+        the calendar projects it (`tasks.recurrence.coming`, nothing is written). A year
         already over has none: only what happened counts. A task that does not repeat has
-        none, nor one with no open date to count from.
+        none, nor one with no open date to count from. The work follows the year asked, not
+        its distance from the open date, so a far year is projected whole like the next one.
         """
         if year not in self.memo:
             self.memo[year] = len(self._coming(year))
@@ -114,25 +113,13 @@ class TaskRow:
         dates = [day for day in self.open if day]
         if year < self.today.year or not task.repeats or not dates:
             return []
-        end = datetime.date(year, 12, 31)
-        current = max(dates)
-        if current > end:
-            return []
-        if task.repeat_mode == recurrence.FIXED and task.series_start and current.year < year:
-            # A fixed series does not depend on the dates before: start at the last day of
-            # the year before instead of walking every date from the open occurrence.
-            current = datetime.date(year - 1, 12, 31)
-        found: list[datetime.date] = []
-        for _step in range(PROJECTION_STEPS):
-            following = recurrence.next_due(
-                task.rule, anchor=task.series_start, due_on=current, done_on=current
-            )
-            if following is None or following > end:
-                break
-            if following.year == year:
-                found.append(following)
-            current = following
-        return found
+        return recurrence.coming(
+            task.rule,
+            anchor=task.series_start,
+            after=max(dates),
+            since=datetime.date(year, 1, 1),
+            end=datetime.date(year, 12, 31),
+        )
 
     def figures(
         self,
