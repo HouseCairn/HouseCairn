@@ -6,7 +6,7 @@
   <h1>{% translate "Today" %}</h1>
   {% include "tasks/_undo.html" %}
   {% load reports_extras %}{% open_reports_line home %}
-  {% tab_bar "tasks" %}
+  {% tab_bar "today" %}
   {% for section in sections %}
     <section aria-labelledby="section-{{ forloop.counter }}">
       <h2 id="section-{{ forloop.counter }}"{% if section.key == "overdue" %} class="section-overdue"{% endif %}>

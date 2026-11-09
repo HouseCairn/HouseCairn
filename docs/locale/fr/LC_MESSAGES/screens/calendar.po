@@ -24,8 +24,11 @@ msgstr "Calendrier"
 msgid "The tasks of your homes by week, month or year, at `/calendar/` (the **Calendar** tab of **Today**). It shows what is planned, done, postponed and skipped, with the status written in words, and what is still to come for a task that repeats."
 msgstr "Les tâches de vos logements par semaine, par mois ou par année, sur `/calendar/` (l'onglet **Calendrier** d'**Aujourd'hui**). Il montre ce qui est prévu, fait, reporté et ignoré, avec le statut écrit en toutes lettres, et ce qui reste à venir pour une tâche récurrente."
 
-msgid "**Week, Month, Year**: the three views switch from the bar under the title. The week lists each day with its tasks; the month adds a grid in which every day links to its week and says how many tasks it holds; the year counts the tasks of each month by status and links to it."
-msgstr "**Semaine, Mois, Année** : les trois vues se changent depuis la barre sous le titre. La semaine liste chaque jour avec ses tâches ; le mois ajoute une grille où chaque jour renvoie vers sa semaine et dit combien de tâches il contient ; l'année compte les tâches de chaque mois par statut et renvoie vers lui."
+msgid "**Today, All, Calendar**: the tabs of the Today section, when the calendar shows one home (your only home, or the one chosen in the filter)."
+msgstr "**Aujourd'hui, Toutes, Calendrier** : les onglets de la section Aujourd'hui, quand le calendrier montre un seul logement (votre seul logement, ou celui choisi dans le filtre)."
+
+msgid "**Week, Month, Year**: the three views switch from the segmented control under the tabs. The week lists each day with its tasks; the month adds a grid in which every day links to its week and says how many tasks it holds; the year counts the tasks of each month by status and links to it."
+msgstr "**Semaine, Mois, Année** : les trois vues se changent depuis le sélecteur segmenté sous les onglets. La semaine liste chaque jour avec ses tâches ; le mois ajoute une grille où chaque jour renvoie vers sa semaine et dit combien de tâches il contient ; l'année compte les tâches de chaque mois par statut et renvoie vers lui."
 
 msgid "**Filters**: home (when you belong to several, the default is all of them together), room, person, priority. A person is shown by their name, never by their email address."
 msgstr "**Filtres** : logement (si vous en avez plusieurs, tous ensemble par défaut), pièce, personne, priorité. Une personne est affichée par son nom, jamais par son adresse e-mail."
@@ -45,8 +48,8 @@ msgstr "La période est limitée à 400 jours et 5 000 entrées ; au-delà, l'é
 msgid "Feeds"
 msgstr "Flux"
 
-msgid "**Feeds** (`/calendar/feeds/`) gives the address of a calendar that Google Calendar, Apple Calendar, Thunderbird or Home Assistant can subscribe to; see the [guide](../guides/calendar.md). You can have one feed per home and one for all your homes."
-msgstr "**Flux** (`/calendar/feeds/`) donne l'adresse d'un calendrier auquel Google Agenda, Calendrier d'Apple, Thunderbird ou Home Assistant peuvent s'abonner ; voir le [guide](../guides/calendar.md). Vous pouvez avoir un flux par logement et un pour tous vos logements."
+msgid "**Calendar in another application**, in the **Me** group of [More](more.md) (`/calendar/feeds/`), gives the address of a calendar that Google Calendar, Apple Calendar, Thunderbird or Home Assistant can subscribe to; see the [guide](../guides/calendar.md). You can have one feed per home and one for all your homes."
+msgstr "**Calendrier dans une autre application**, dans le groupe **Moi** de [Plus](more.md) (`/calendar/feeds/`), donne l'adresse d'un calendrier auquel Google Agenda, Calendrier d'Apple, Thunderbird ou Home Assistant peuvent s'abonner ; voir le [guide](../guides/calendar.md). Vous pouvez avoir un flux par logement et un pour tous vos logements."
 
 msgid "**Create** shows the address once: copy it then. Only a digest is kept, so nobody, you included, can read it again."
 msgstr "**Créer** affiche l'adresse une seule fois : copiez-la alors. Seule une empreinte est conservée, personne, vous compris, ne peut la relire."

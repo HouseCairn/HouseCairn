@@ -641,6 +641,73 @@ msgstr[1] "%(counter)s jours de retard"
 msgid "No date"
 msgstr "Sans date"
 
+msgid "Filters"
+msgstr "Filtres"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "All rooms"
+msgstr "Toutes les pièces"
+
+msgid "All items"
+msgstr "Tous les éléments"
+
+msgid "Everyone"
+msgstr "Tout le monde"
+
+msgid "Done by"
+msgstr "Fait par"
+
+msgid "Outcome"
+msgstr "Résultat"
+
+msgid "Done or skipped"
+msgstr "Faites ou ignorées"
+
+msgid "From"
+msgstr "Du"
+
+msgid "To"
+msgstr "Au"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+msgid "Clear"
+msgstr "Effacer"
+
+#, python-format
+msgid "%(counter)s entry"
+msgid_plural "%(counter)s entries"
+msgstr[0] "%(counter)s entrée"
+msgstr[1] "%(counter)s entrées"
+
+#, python-format
+msgid "real cost: %(total)s %(currency)s, entered on %(counter)s entry"
+msgid_plural "real cost: %(total)s %(currency)s, entered on %(counter)s entries"
+msgstr[0] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrée"
+msgstr[1] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrées"
+
+msgid "Pages"
+msgstr "Pages"
+
+msgid "Previous"
+msgstr "Précédent"
+
+#, python-format
+msgid "Page %(number)s of %(total)s"
+msgstr "Page %(number)s sur %(total)s"
+
+msgid "Next"
+msgstr "Suivant"
+
+msgid "Nothing matches."
+msgstr "Rien ne correspond."
+
+msgid "Nothing done yet."
+msgstr "Rien de fait pour l'instant."
+
 #, python-format
 msgid "needs %(needed)s · %(stocked)s in stock"
 msgstr "demande %(needed)s · %(stocked)s en stock"
@@ -754,76 +821,6 @@ msgstr "Ajouter un intervenant"
 msgid "No contractor yet. People and companies who work in this home, with their trade and how to reach them, are kept here."
 msgstr "Aucun intervenant pour l'instant. Les personnes et les entreprises qui travaillent dans ce logement, avec leur métier et le moyen de les joindre, sont gardées ici."
 
-msgid "History"
-msgstr "Historique"
-
-msgid "Filters"
-msgstr "Filtres"
-
-msgid "Search"
-msgstr "Rechercher"
-
-msgid "All rooms"
-msgstr "Toutes les pièces"
-
-msgid "All items"
-msgstr "Tous les éléments"
-
-msgid "Everyone"
-msgstr "Tout le monde"
-
-msgid "Done by"
-msgstr "Fait par"
-
-msgid "Outcome"
-msgstr "Résultat"
-
-msgid "Done or skipped"
-msgstr "Faites ou ignorées"
-
-msgid "From"
-msgstr "Du"
-
-msgid "To"
-msgstr "Au"
-
-msgid "Filter"
-msgstr "Filtrer"
-
-msgid "Clear"
-msgstr "Effacer"
-
-#, python-format
-msgid "%(counter)s entry"
-msgid_plural "%(counter)s entries"
-msgstr[0] "%(counter)s entrée"
-msgstr[1] "%(counter)s entrées"
-
-#, python-format
-msgid "real cost: %(total)s %(currency)s, entered on %(counter)s entry"
-msgid_plural "real cost: %(total)s %(currency)s, entered on %(counter)s entries"
-msgstr[0] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrée"
-msgstr[1] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrées"
-
-msgid "Pages"
-msgstr "Pages"
-
-msgid "Previous"
-msgstr "Précédent"
-
-#, python-format
-msgid "Page %(number)s of %(total)s"
-msgstr "Page %(number)s sur %(total)s"
-
-msgid "Next"
-msgstr "Suivant"
-
-msgid "Nothing matches."
-msgstr "Rien ne correspond."
-
-msgid "Nothing done yet."
-msgstr "Rien de fait pour l'instant."
-
 msgid "My home"
 msgstr "Mon accueil"
 
@@ -927,6 +924,9 @@ msgstr "Ajouter des photos ou des fichiers"
 
 msgid "No file yet."
 msgstr "Aucun fichier pour l'instant."
+
+msgid "History"
+msgstr "Historique"
 
 msgid "Add a task"
 msgstr "Ajouter une tâche"

@@ -4,8 +4,8 @@ What concerns you, at `/me/`; **Today** in the navigation opens it once you are
 signed in, from a page that is not about one home. With several homes, the selector at the top chooses one, or **All my
 homes** to see them together.
 
-For each home, under its name (with links to [Today](today.md), the
-[task list](tasks.md) and the [history](history.md)):
+For each home, under its name (with the tabs of [Today](today.md): Today, All and
+Calendar):
 
 - **Assigned to me**: the open tasks that are yours, the late ones first.
 - **Overdue in the home**: what is late for other people or for nobody.

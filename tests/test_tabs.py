@@ -17,7 +17,7 @@ pytestmark = pytest.mark.django_db
 
 def tabs_of(html: str) -> list[tuple[str, bool]]:
     """(label, current) of the links of the tab list, in order."""
-    block = re.search(r'<nav class="tabs".*?</nav>', html, re.S)
+    block = re.search(r'<nav class="tabs[^"]*".*?</nav>', html, re.S)
     assert block, "no tab bar"
     return [
         (label, "aria-current" in attrs)
@@ -29,61 +29,107 @@ def current(html: str) -> list[str]:
     return [label for label, here in tabs_of(html) if here]
 
 
-class TestTaskTabs:
-    def test_every_screen_of_the_tasks_marks_its_tab(
-        self, signed_in: Client, alice_home: Home
+class TestSectionTabs:
+    """Four tabs at most per section, sister views of one content (docs/adr/0017)."""
+
+    def test_today(self, signed_in: Client, alice_home: Home) -> None:
+        for view, label in [("tasks:today", "Today"), ("tasks:list", "All")]:
+            html = signed_in.get(reverse(view, kwargs={"home_id": alice_home.id})).text
+            assert [t for t, _ in tabs_of(html)] == ["Today", "All", "Calendar"]
+            assert current(html) == [label]
+        done = signed_in.get(
+            reverse("tasks:list", kwargs={"home_id": alice_home.id}), {"status": "done"}
+        ).text
+        assert current(done) == ["All"]
+
+    def test_the_calendar_is_a_tab_of_today(self, signed_in: Client, alice_home: Home) -> None:
+        html = signed_in.get(reverse("calendar:week")).text
+        assert [t for t, _ in tabs_of(html)] == ["Today", "All", "Calendar"]
+        assert current(html) == ["Calendar"]
+        assert f"{reverse('calendar:week')}?home={alice_home.id}" in html
+
+    def test_a_calendar_of_several_homes_has_no_tabs(
+        self, signed_in: Client, alice: User, alice_home: Home
     ) -> None:
-        for view, label in [
-            ("today", "Today"),
-            ("list", "All tasks"),
-            ("history", "History"),
-        ]:
-            page = signed_in.get(reverse(f"tasks:{view}", kwargs={"home_id": alice_home.id}))
-            html = page.content.decode()
-            assert [t for t, _ in tabs_of(html)] == [
-                "Today",
-                "All tasks",
-                "History",
-                "Calendar",
-                "Projects",
-                "Budget",
-                "Contractors",
-                "Display preferences",
-            ]
+        from housecairn.homes import services as home_services
+
+        home_services.create_home(alice, name="Cottage")
+        assert 'class="tabs' not in signed_in.get(reverse("calendar:week")).text
+        one = signed_in.get(reverse("calendar:week"), {"home": str(alice_home.id)}).text
+        assert current(one) == ["Calendar"]
+
+    def test_rooms(self, signed_in: Client, alice_home: Home) -> None:
+        for view, label in [("rooms:list", "Rooms"), ("stock:list", "Stock")]:
+            html = signed_in.get(reverse(view, kwargs={"home_id": alice_home.id})).text
+            assert [t for t, _ in tabs_of(html)] == ["Rooms", "Stock"]
             assert current(html) == [label]
 
-    def test_the_preferences_keep_the_tabs_of_the_home_they_came_from(
+    def test_projects(self, signed_in: Client, alice_home: Home) -> None:
+        base = reverse("projects:list", kwargs={"home_id": alice_home.id})
+        for query, label in [
+            ("", "In progress"),
+            ("?view=ideas", "Ideas"),
+            ("?view=finished", "Finished"),
+        ]:
+            html = signed_in.get(base + query).text
+            assert [t for t, _ in tabs_of(html)] == ["In progress", "Ideas", "Finished"]
+            assert current(html) == [label]
+
+    def test_budget(self, signed_in: Client, alice_home: Home) -> None:
+        for view, label in [
+            ("budget:overview", "Summary"),
+            ("budget:rooms", "Rooms"),
+            ("budget:projects", "Projects"),
+            ("budget:tasks", "Upkeep"),
+        ]:
+            html = signed_in.get(reverse(view, kwargs={"home_id": alice_home.id})).text
+            assert html.count('<nav class="tabs') == 1, view
+            assert [t for t, _ in tabs_of(html)] == ["Summary", "Rooms", "Projects", "Upkeep"]
+            assert current(html) == [label]
+
+    def test_section_tabs_share_the_width(self, signed_in: Client, alice_home: Home) -> None:
+        html = signed_in.get(reverse("budget:overview", kwargs={"home_id": alice_home.id})).text
+        assert '<nav class="tabs tabs-fit" aria-label="Budget">' in html
+
+    def test_in_french(self, signed_in: Client, alice_home: Home) -> None:
+        kwargs = {"home_id": alice_home.id}
+        fr = {"Accept-Language": "fr"}
+        assert [
+            t
+            for t, _ in tabs_of(
+                signed_in.get(reverse("tasks:today", kwargs=kwargs), headers=fr).text
+            )
+        ] == [
+            "Aujourd&#x27;hui",
+            "Toutes",
+            "Calendrier",
+        ]
+        assert [
+            t
+            for t, _ in tabs_of(
+                signed_in.get(reverse("rooms:list", kwargs=kwargs), headers=fr).text
+            )
+        ] == [
+            "Pièces",
+            "Matériel",
+        ]
+        projects = signed_in.get(reverse("projects:list", kwargs=kwargs), headers=fr).text
+        assert [t for t, _ in tabs_of(projects)] == ["En cours", "Idées", "Terminés"]
+        budget = signed_in.get(reverse("budget:overview", kwargs=kwargs), headers=fr).text
+        assert [t for t, _ in tabs_of(budget)] == ["Synthèse", "Pièces", "Projets", "Entretien"]
+
+    def test_contractors_and_preferences_have_no_section_tabs(
         self, signed_in: Client, alice_home: Home
     ) -> None:
-        today = reverse("tasks:today", kwargs={"home_id": alice_home.id})
-        html = signed_in.get(reverse("display-preferences"), {"next": today}).content.decode()
-        assert current(html) == ["Display preferences"]
-        assert today in html
-
-    def test_no_tabs_without_a_home(self, signed_in: Client) -> None:
-        html = signed_in.get(reverse("display-preferences")).content.decode()
-        assert 'class="tabs"' not in html
-
-    def test_a_home_the_person_cannot_open_gives_no_tabs(
-        self, signed_in: Client, bob_home: Home
-    ) -> None:
-        stranger = reverse("tasks:today", kwargs={"home_id": bob_home.id})
-        html = signed_in.get(reverse("display-preferences"), {"next": stranger}).content.decode()
-        assert 'class="tabs"' not in html
-
-    def test_an_address_outside_the_application_gives_no_tabs(self, signed_in: Client) -> None:
-        html = signed_in.get(
-            reverse("display-preferences"), {"next": "https://example.com/x"}
-        ).content.decode()
-        assert 'class="tabs"' not in html
+        contractors = reverse("tasks:contractors", kwargs={"home_id": alice_home.id})
+        for url in (contractors, reverse("display-preferences")):
+            assert 'class="tabs' not in signed_in.get(url).text, url
 
     def test_a_tab_is_a_real_link_for_the_keyboard(
         self, signed_in: Client, alice_home: Home
     ) -> None:
-        html = signed_in.get(
-            reverse("tasks:today", kwargs={"home_id": alice_home.id})
-        ).content.decode()
-        assert '<nav class="tabs" aria-label="Tasks">' in html
+        html = signed_in.get(reverse("tasks:today", kwargs={"home_id": alice_home.id})).text
+        assert '<nav class="tabs tabs-fit" aria-label="Today">' in html
 
 
 class TestHomeTabs:

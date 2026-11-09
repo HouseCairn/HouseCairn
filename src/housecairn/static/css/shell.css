@@ -347,3 +347,17 @@
     font-size: var(--hc-font-size-2xl);
   }
 }
+
+/* Tabs of a section (templates/components/tabs.html): four at most, sharing the width,
+   so that all of them stay visible at 360 px without scrolling sideways. */
+.tabs-fit .tabs-list li {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.tabs-fit .tab {
+  justify-content: center;
+  padding-right: var(--hc-space-1);
+  padding-left: var(--hc-space-1);
+  text-align: center;
+}

@@ -1,17 +1,15 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n tabs %}
 {% block head_title %}{% translate "Calendar" %}{% endblock head_title %}
 {% block extra_head %}{% load static %}<script src="{% static 'js/calendar.js' %}" defer></script>{% endblock extra_head %}
 {% block content %}
   <h1>{% translate "Calendar" %}</h1>
   {% if undo %}{% include "tasks/_undo.html" with home=undo.home %}{% endif %}
-  <nav class="tabs" aria-label="{% translate 'Calendar views' %}">
-    <ul class="tabs-list">
-      {% for name, label, url in views %}
-        <li><a class="tab" href="{{ url }}"{% if name == granularity %} aria-current="page"{% endif %}>{{ label }}</a></li>
-      {% endfor %}
-      <li><a class="tab" href="{% url 'calendar:feeds' %}">{% translate "Feeds" %}</a></li>
-    </ul>
+  {% tab_bar "today" %}
+  <nav class="seg" aria-label="{% translate 'Calendar views' %}">
+    {% for name, label, url in views %}
+      <a href="{{ url }}"{% if name == granularity %} aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
   </nav>
   <form method="get" class="filter-row" role="search" aria-label="{% translate 'Filter the calendar' %}">
     <input type="hidden" name="date" value="{{ anchor|date:'Y-m-d' }}">

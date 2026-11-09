@@ -124,20 +124,42 @@ msgstr "À propos"
 msgid "Today"
 msgstr "Aujourd'hui"
 
-msgid "All tasks"
-msgstr "Toutes les tâches"
-
-msgid "History"
-msgstr "Historique"
+msgctxt "tasks"
+msgid "All"
+msgstr "Toutes"
 
 msgid "Calendar"
 msgstr "Calendrier"
 
+msgid "Rooms"
+msgstr "Pièces"
+
+msgid "Stock"
+msgstr "Matériel"
+
+msgid "In progress"
+msgstr "En cours"
+
+msgid "Ideas"
+msgstr "Idées"
+
+msgctxt "projects tab"
+msgid "Finished"
+msgstr "Terminés"
+
+msgid "Summary"
+msgstr "Synthèse"
+
+msgctxt "budget tab"
+msgid "Rooms"
+msgstr "Pièces"
+
+msgctxt "budget tab"
 msgid "Projects"
 msgstr "Projets"
 
-msgid "Budget"
-msgstr "Budget"
+msgid "Upkeep"
+msgstr "Entretien"
 
 msgid "Overview"
 msgstr "Vue d'ensemble"
@@ -154,17 +176,11 @@ msgstr "Fournisseurs de connexion"
 msgid "Files of the homes"
 msgstr "Fichiers des logements"
 
-msgid "By room"
-msgstr "Par pièce"
+msgid "Projects"
+msgstr "Projets"
 
-msgid "By project"
-msgstr "Par projet"
-
-msgid "By task"
-msgstr "Par tâche"
-
-msgid "Tasks"
-msgstr "Tâches"
+msgid "Budget"
+msgstr "Budget"
 
 msgid "Home"
 msgstr "Accueil"
@@ -322,6 +338,3 @@ msgstr "Aide sur cette page"
 
 msgid "Main navigation"
 msgstr "Navigation principale"
-
-msgid "Rooms"
-msgstr "Pièces"

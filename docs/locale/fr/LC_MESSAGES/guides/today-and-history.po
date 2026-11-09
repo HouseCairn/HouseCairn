@@ -42,8 +42,8 @@ msgstr "Par défaut, l'écran est ordonné par urgence sur une semaine. Si vous 
 msgid "Remember what was done"
 msgstr "Se souvenir de ce qui a été fait"
 
-msgid "[History](../screens/history.md) lists what was done or skipped, the most recent first. Search a word of the title or of the note, or narrow by room, item, contractor or person, by outcome and by dates: this is how you find who changed the filter, or when the plumber came last. The total is that of the real costs you entered when closing the tasks; an entry without a cost is not counted."
-msgstr "L'[historique](../screens/history.md) liste ce qui a été fait ou ignoré, le plus récent d'abord. Cherchez un mot du titre ou de la note, ou affinez par pièce, élément, intervenant ou personne, par issue et par dates : c'est ainsi que vous retrouvez qui a changé le filtre, ou quand le plombier est passé pour la dernière fois. Le total est celui des coûts réels saisis à la clôture des tâches ; une entrée sans coût n'est pas comptée."
+msgid "The [history](../screens/history.md), **Done** in the **All** tab, lists what was done or skipped, the most recent first. Search a word of the title or of the note, or narrow by room, item, contractor or person, by outcome and by dates: this is how you find who changed the filter, or when the plumber came last. The total is that of the real costs you entered when closing the tasks; an entry without a cost is not counted."
+msgstr "L'[historique](../screens/history.md), **Fait** dans l'onglet **Toutes**, liste ce qui a été fait ou ignoré, le plus récent d'abord. Cherchez un mot du titre ou de la note, ou affinez par pièce, élément, intervenant ou personne, par issue et par dates : c'est ainsi que vous retrouvez qui a changé le filtre, ou quand le plombier est passé pour la dernière fois. Le total est celui des coûts réels saisis à la clôture des tâches ; une entrée sans coût n'est pas comptée."
 
 msgid "For scripts"
 msgstr "Pour les scripts"

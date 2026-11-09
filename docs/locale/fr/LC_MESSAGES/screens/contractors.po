@@ -21,8 +21,8 @@ msgstr ""
 msgid "Contractors"
 msgstr "Intervenants"
 
-msgid "The people and companies who work in a home, at `/h/<home id>/contractors/` (the **Contractors** tab of the [tasks](tasks.md) screens). Each row shows the name, the trade and the phone number; a row opens the [sheet](contractor.md) of the contractor. **Add a contractor** opens the [form](contractor-form.md)."
-msgstr "Les personnes et les entreprises qui travaillent dans un logement, sur `/h/<home id>/contractors/` (l'onglet **Intervenants** des écrans de [tâches](tasks.md)). Chaque ligne montre le nom, le métier et le numéro de téléphone ; une ligne ouvre la [fiche](contractor.md) de l'intervenant. **Ajouter un intervenant** ouvre le [formulaire](contractor-form.md)."
+msgid "The people and companies who work in a home, at `/h/<home id>/contractors/` (in the **Home** group of [More](more.md)). Each row shows the name, the trade and the phone number; a row opens the [sheet](contractor.md) of the contractor. **Add a contractor** opens the [form](contractor-form.md)."
+msgstr "Les personnes et les entreprises qui travaillent dans un logement, sur `/h/<home id>/contractors/` (dans le groupe **Logement** de [Plus](more.md)). Chaque ligne montre le nom, le métier et le numéro de téléphone ; une ligne ouvre la [fiche](contractor.md) de l'intervenant. **Ajouter un intervenant** ouvre le [formulaire](contractor-form.md)."
 
 msgid "Every member of the home reads the list; read-only members do not see the buttons that change it. A contractor belongs to one home: another home cannot see it, even with its address."
 msgstr "Tous les membres du logement lisent la liste ; les lecteurs seuls ne voient pas les boutons qui la modifient. Un intervenant appartient à un seul logement : un autre logement ne le voit pas, même avec son adresse."

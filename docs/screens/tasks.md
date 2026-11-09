@@ -10,15 +10,17 @@ stay on top and are shown in red (**2 days late**); a task with no date comes
 last. A row opens the [task](task.md); **Done** on the right of the row marks it
 done in one tap, for every task, and a banner offers **Undo** right after.
 
-- The first selector switches between **To do** and **Done** (the history, the
-  most recent first). The second keeps the tasks of one room.
+- The first selector switches between **To do** and **Done**. **Done** is the
+  [history](history.md): what was done or skipped, the most recent first, with its
+  filters and its real cost. With **To do**, the second selector keeps the tasks of
+  one room.
 - A task can be hidden until a few days before its date (see
   [Tasks and recurrence](../guides/tasks-and-recurrence.md)). The page tells how
   many are hidden and **Show them** lists them anyway.
 - The list shows 30 rows at a time.
-- The **tabs** above the selectors open [Today](today.md), the [history](history.md), the
-  [contractors](contractors.md) and the [display preferences](display-preferences.md); the
-  current tab is marked.
+- The **tabs** above the selectors are those of [Today](today.md): **Today**, **All**
+  and **Calendar**. The [contractors](contractors.md) and the
+  [display preferences](display-preferences.md) are in [More](more.md).
 - **Add a task** opens the [task form](task-form.md).
 
 Read-only members see the same list and none of the buttons that change it.
