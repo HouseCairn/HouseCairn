@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 21:32+0000\n"
+"POT-Creation-Date: 2026-11-08 23:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -105,3 +105,13 @@ msgstr "`$proxy_add_x_forwarded_for` garde ce que le client a envoyé et ajoute 
 
 msgid "HouseCairn sets its own security headers (Content Security Policy, HSTS, `X-Frame-Options`); the proxy does not need to add them."
 msgstr "HouseCairn pose ses propres en-têtes de sécurité (Content Security Policy, HSTS, `X-Frame-Options`) ; le proxy n'a pas besoin d'en ajouter."
+
+msgid "Logs and the calendar feed address"
+msgstr "Journaux et adresse du flux de calendrier"
+
+msgid "The address of a [calendar feed](../guides/calendar.md), `/calendar/feed/<secret>.ics`, is a secret that opens the feed. HouseCairn writes it as `/calendar/feed/***.ics` in its own access log and warnings, but the proxy sees the whole path and writes it in its access log unless told otherwise. With nginx, switch the access log off for that path:"
+msgstr "L'adresse d'un [flux de calendrier](../guides/calendar.md), `/calendar/feed/<secret>.ics`, est un secret qui ouvre le flux. HouseCairn l'écrit `/calendar/feed/***.ics` dans son propre journal d'accès et ses avertissements, mais le proxy voit le chemin entier et l'écrit dans son journal d'accès sauf consigne contraire. Avec nginx, coupez le journal d'accès pour ce chemin :"
+
+msgid "Caddy (the `log` directive and its `filter` encoder) and Traefik (`accessLog.fields.names`, `RequestPath` and `RequestLine`) can drop or rewrite the same fields; check their documentation for your version, the project has not tried them. A log that has already kept an address is a leak: regenerate the address."
+msgstr "Caddy (la directive `log` et son encodeur `filter`) et Traefik (`accessLog.fields.names`, `RequestPath` et `RequestLine`) peuvent supprimer ou réécrire les mêmes champs ; consultez leur documentation pour votre version, le projet ne les a pas essayés. Un journal qui a déjà gardé une adresse est une fuite : renouvelez l'adresse."
+

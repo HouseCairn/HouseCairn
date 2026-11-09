@@ -133,6 +133,15 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):  # type: ignore[misc]
         apps: list[Any] = super().list_apps(request, provider=provider, client_id=client_id)
         return apps + providers.social_apps(provider=provider, client_id=client_id)
 
+    def populate_user(self, request: HttpRequest, sociallogin: SocialLogin, data: Any) -> Any:
+        """allauth's suggested account, from the claims that are text only.
+
+        allauth reads `name` and the other common claims as strings; a provider that sends
+        an object or a list there would otherwise fail the sign-in (docs/adr/0045).
+        """
+        data = {key: value for key, value in dict(data).items() if isinstance(value, str)}
+        return super().populate_user(request, sociallogin, data)
+
     def is_open_for_signup(self, request: HttpRequest, sociallogin: SocialLogin) -> bool:
         if services.oidc_signup_decision(*provider_identity(sociallogin)) is Decision.REFUSED:
             raise refuse(request)

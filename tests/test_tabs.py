@@ -44,6 +44,8 @@ class TestTaskTabs:
                 "Today",
                 "All tasks",
                 "History",
+                "Calendar",
+                "Projects",
                 "Contractors",
                 "Display preferences",
             ]

@@ -31,6 +31,8 @@ we would otherwise write (principle "do not reinvent"):
 | Pillow | Decodes and writes again the photos of rooms and items, to check their content and drop their metadata (0030). |
 | markdown-it-py | Renders the Markdown procedure of a task with raw HTML and images off (0031). MIT. |
 | apprise | Sends reminders to the channels of a person (ntfy, Telegram, email...) through one URL per service (0043). BSD-2-Clause. Pulls in `markdown` and `requests-oauthlib`. |
+| icalendar | Writes the iCalendar feed of the calendar and reads it back in the tests (0052). BSD-2-Clause. Needs python-dateutil and tzdata, already in the lock. |
+| reportlab | Draws the PDF of the QR labels and encodes their QR codes, on the server, with no system library (0047). BSD-3-Clause. Pulls in nothing that was not already locked (Pillow, charset-normalizer). |
 | cryptography | Encrypts the secrets an administrator stores from the interface, with a key derived from `SECRET_KEY` (0035). Already installed by django-allauth's passkey support; now a direct dependency. |
 | django-stubs-ext | Lets generic classes such as `ModelAdmin[Home]` be subscripted at runtime for the type checker. Companion of django-stubs, maintained by the same project, no runtime behaviour otherwise. |
 
@@ -41,8 +43,8 @@ Optional runtime dependency, installed with the `postgres` extra
 | --- | --- |
 | psycopg, with its `binary` extra | PostgreSQL driver supported by Django. The `binary` extra ships a prebuilt `libpq`, so no compiler or system library is needed. Added by ADR 0014, which tests every pull request on PostgreSQL. |
 
-Development tools: uv (locking), ruff, mypy with django-stubs and
-djangorestframework-stubs, pytest, pytest-django, pytest-cov.
+Development tools: uv (locking), ruff, mypy with django-stubs, djangorestframework-stubs and
+types-reportlab, pytest, pytest-django, pytest-cov.
 
 ## Consequences
 

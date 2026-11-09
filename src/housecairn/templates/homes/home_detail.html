@@ -30,6 +30,7 @@
       </span>
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>
+    {% load labels_extras %}{% labels_row home %}
   </div>
   {% if role == "owner" %}
     <h2>{% translate "Your data" %}</h2>

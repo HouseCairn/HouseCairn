@@ -31,6 +31,8 @@ STYLE_LAYERS = (
     "rooms.css",
     "tasks.css",
     "stock.css",
+    "calendar.css",
+    "labels.css",
     "utilities.css",
 )
 

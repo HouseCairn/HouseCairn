@@ -1,0 +1,90 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-09 00:02+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Calendar and feeds"
+msgstr "Calendrier et flux"
+
+msgid "HouseCairn shows your tasks in a [calendar](../screens/calendar.md) and publishes them as an iCalendar feed (RFC 5545), so that the calendar you already use can show them."
+msgstr "HouseCairn affiche vos tâches dans un [calendrier](../screens/calendar.md) et les publie sous forme de flux iCalendar (RFC 5545), pour que le calendrier que vous utilisez déjà puisse les afficher."
+
+msgid "Create a feed"
+msgstr "Créer un flux"
+
+msgid "Open **Calendar**, then **Feeds**, and press **Create** for a home or for all your homes. Copy the address that appears: it is shown once. It looks like `https://housecairn.example.com/calendar/feed/<secret>.ics`."
+msgstr "Ouvrez **Calendrier**, puis **Flux**, et appuyez sur **Créer** pour un logement ou pour tous vos logements. Copiez l'adresse qui apparaît : elle n'est affichée qu'une fois. Elle ressemble à `https://housecairn.example.com/calendar/feed/<secret>.ics`."
+
+msgid "The address needs the public address of the instance (`HOUSECAIRN_SITE_URL`, see [Settings](../administration/settings.md)); without it the address uses the one of the page you are on, which may not be the one your calendar application can reach."
+msgstr "L'adresse a besoin de l'adresse publique de l'instance (`HOUSECAIRN_SITE_URL`, voir [Réglages](../administration/settings.md)) ; sans elle, elle reprend celle de la page où vous êtes, qui n'est pas forcément celle que votre application de calendrier peut joindre."
+
+msgid "The feed is **read only** and **updates by itself** as tasks change, but each application polls at its own pace: HouseCairn asks for a refresh every six hours, and applications are free to ignore it. Google Calendar in particular can take many hours to show a change. On the HouseCairn side a change shows in the feed at once; the document is only kept for five minutes at most, to spare the server when an application polls often."
+msgstr "Le flux est en **lecture seule** et **se met à jour tout seul** quand les tâches changent, mais chaque application l'interroge à son rythme : HouseCairn demande une actualisation toutes les six heures, et les applications sont libres de l'ignorer. Google Agenda en particulier peut mettre de nombreuses heures à montrer un changement. Côté HouseCairn, un changement apparaît dans le flux aussitôt ; le document n'est gardé que cinq minutes au plus, pour ménager le serveur quand une application l'interroge souvent."
+
+msgid "What a feed holds"
+msgstr "Ce que contient un flux"
+
+msgid "For each task of the homes in the feed, from 30 days ago to one year ahead: its title, home, room, date, status (planned, done, postponed, skipped, forecast) and a link to the task. The date is an all-day event, without a time. It holds no note, cost, procedure, file, person or email address, and it is not an API token: it opens this feed and nothing else."
+msgstr "Pour chaque tâche des logements du flux, de 30 jours en arrière à un an en avant : son titre, le logement, la pièce, la date, le statut (prévue, faite, reportée, ignorée, prévision) et un lien vers la tâche. La date est un événement sur toute la journée, sans heure. Le flux ne contient ni note, ni coût, ni mode opératoire, ni fichier, ni personne, ni adresse e-mail, et ce n'est pas un jeton d'API : il ouvre ce flux et rien d'autre."
+
+msgid "An event keeps its identity when the task moves on: the forecast of a repeating task becomes the real occurrence when the previous one is done, and a postponed task keeps the identity of the date it was first due, so your calendar application updates the event instead of showing a new one. One case makes a new event: a task that repeats a set time after the last one, done on a day other than its due date, gets a next date that was not the forecast one."
+msgstr "Un événement garde son identité quand la tâche avance : la prévision d'une tâche récurrente devient l'occurrence réelle quand la précédente est faite, et une tâche reportée garde l'identité de la date à laquelle elle était d'abord due ; votre application de calendrier met donc l'événement à jour au lieu d'en afficher un nouveau. Un cas crée un nouvel événement : une tâche qui se répète un certain temps après la dernière fois, faite un autre jour que son échéance, a une prochaine date qui n'était pas celle de la prévision."
+
+msgid "It follows the time zone and language you chose in [Notifications](../screens/notifications.md) (the time zone of the instance when empty)."
+msgstr "Il suit le fuseau horaire et la langue choisis dans [Notifications](../screens/notifications.md) (le fuseau de l'instance quand il est vide)."
+
+msgid "Subscribe"
+msgstr "S'abonner"
+
+msgid "The steps below are those of each application's own documentation. The project has not run them on every application: what was checked is that the document is valid iCalendar, read back by the `icalendar` library in the tests."
+msgstr "Les étapes ci-dessous sont celles de la documentation de chaque application. Le projet ne les a pas exécutées sur chacune : ce qui a été vérifié, c'est que le document est de l'iCalendar valide, relu par la bibliothèque `icalendar` dans les tests."
+
+msgid "**Google Calendar**: in a browser on a computer, **Other calendars**, **+**, **From URL**, paste the address. A subscribed calendar is read only and Google refreshes it when it wants."
+msgstr "**Google Agenda** : dans un navigateur sur ordinateur, **Autres agendas**, **+**, **À partir de l'URL**, collez l'adresse. Un agenda auquel on s'abonne est en lecture seule et Google l'actualise quand il le décide."
+
+msgid "**Apple Calendar**: on a Mac, **File**, **New Calendar Subscription**, paste the address, and choose how often to refresh. On an iPhone, **Settings**, **Calendar**, **Accounts**, **Add Account**, **Other**, **Add Subscribed Calendar**."
+msgstr "**Calendrier d'Apple** : sur un Mac, **Fichier**, **Nouvel abonnement à un calendrier**, collez l'adresse et choisissez la fréquence d'actualisation. Sur un iPhone, **Réglages**, **Calendrier**, **Comptes**, **Ajouter un compte**, **Autre**, **Ajouter un calendrier avec abonnement**."
+
+msgid "**Thunderbird**: **New Calendar**, **On the Network**, paste the address, format **iCalendar (ICS)**. No credentials are needed; the secret is in the address."
+msgstr "**Thunderbird** : **Nouvel agenda**, **Sur le réseau**, collez l'adresse, format **iCalendar (ICS)**. Aucun identifiant n'est nécessaire ; le secret est dans l'adresse."
+
+msgid "**Home Assistant**: **Settings**, **Devices & services**, **Add integration**, **Remote Calendar**, paste the address. What was checked: the page of the integration in the Home Assistant documentation says it reads a calendar from a URL and only reads it, and that its entity shows the next upcoming event. The same page says that Home Assistant leaves out canceled events (a skipped task, which the feed marks `STATUS:CANCELLED`, does not appear and triggers nothing) and, after the first fetch, polls the calendar every 24 hours, so a change reaches it with that delay, whatever the refresh the feed suggests. A task marked done stays in the feed, with `[Done]` in front of its title, and so stays visible to Home Assistant. Whether Home Assistant reads this feed was **not** tested."
+msgstr "**Home Assistant** : **Paramètres**, **Appareils et services**, **Ajouter une intégration**, **Remote Calendar**, collez l'adresse. Ce qui a été vérifié : la page de l'intégration dans la documentation de Home Assistant indique qu'elle lit un calendrier depuis une URL, en lecture seule, et que son entité montre le prochain événement. La même page dit que Home Assistant ignore les événements annulés (une tâche ignorée, que le flux marque `STATUS:CANCELLED`, n'apparaît pas et ne déclenche rien) et, après la première récupération, interroge le calendrier toutes les 24 heures : un changement l'atteint donc avec ce délai, quel que soit le rafraîchissement que suggère le flux. Une tâche marquée faite reste dans le flux, avec `[Fait]` devant son titre, et reste donc visible de Home Assistant. Que Home Assistant lise ce flux n'a **pas** été testé."
+
+msgid "Keep it secret"
+msgstr "La garder secrète"
+
+msgid "The address is the only credential: do not post it, and prefer one feed per person."
+msgstr "L'adresse est le seul secret : ne la publiez pas, et préférez un flux par personne."
+
+msgid "**New address** in **Feeds** stops the old one. **Revoke** deletes the feed."
+msgstr "**Nouvelle adresse** dans **Flux** arrête l'ancienne. **Révoquer** supprime le flux."
+
+msgid "A feed stops working when the person leaves the home (that home's feed is revoked), when the account is deactivated or deleted, or when the home is deleted."
+msgstr "Un flux cesse de fonctionner quand la personne quitte le logement (le flux de ce logement est révoqué), quand le compte est désactivé ou supprimé, ou quand le logement est supprimé."
+
+msgid "A home that requires a sign-in provider has no feed, since the address cannot prove which provider opened a session."
+msgstr "Un logement qui exige un fournisseur de connexion n'a pas de flux, car l'adresse ne peut pas prouver quel fournisseur a ouvert une session."
+
+msgid "The address is in the URL, so it can end up in logs. HouseCairn masks it itself: its access log and its warnings write `/calendar/feed/***.ics`. **Your reverse proxy writes it too**, and HouseCairn cannot change that: turn off or mask the access log of that path there (nginx example in [Reverse proxy](../administration/reverse-proxy.md)). Treat any log that held an address as a leak and regenerate the address."
+msgstr "L'adresse figure dans l'URL, elle peut donc finir dans des journaux. HouseCairn la masque lui-même : son journal d'accès et ses avertissements écrivent `/calendar/feed/***.ics`. **Votre proxy inverse l'écrit aussi**, et HouseCairn ne peut pas le changer : coupez ou masquez le journal d'accès de ce chemin chez lui (exemple nginx dans [Reverse proxy](../administration/reverse-proxy.md)). Considérez tout journal qui a contenu une adresse comme une fuite et renouvelez l'adresse."
+
+msgid "The address is rate limited (60 requests a minute per client address). An unknown address and a revoked one get the same answer."
+msgstr "L'adresse est soumise à une limite de débit (60 requêtes par minute et par adresse client). Une adresse inconnue et une adresse révoquée reçoivent la même réponse."
+

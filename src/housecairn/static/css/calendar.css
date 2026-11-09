@@ -1,0 +1,66 @@
+/* Calendar layer (static/css/app.css): the navigation of a period, the month grid and the
+   year table (docs/adr/0052). Tokens only, no inline style. */
+
+.calendar-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--hc-space-2);
+  margin: var(--hc-space-3) 0;
+}
+
+.calendar-nav h2 {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+}
+
+.calendar-month,
+.calendar-year {
+  width: 100%;
+  margin-bottom: var(--hc-space-3);
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.calendar-month th,
+.calendar-month td,
+.calendar-year th,
+.calendar-year td {
+  padding: var(--hc-space-1);
+  border: 1px solid var(--hc-color-border);
+  text-align: center;
+  vertical-align: top;
+}
+
+.calendar-month td a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: var(--hc-layout-touch-target);
+  color: inherit;
+  text-decoration: none;
+}
+
+.calendar-outside {
+  color: var(--hc-color-text-muted);
+  background: var(--hc-color-surface-muted);
+}
+
+.calendar-today {
+  outline: 2px solid var(--hc-color-border);
+  outline-offset: -2px;
+  font-weight: 700;
+}
+
+.calendar-count {
+  font-size: var(--hc-font-size-sm);
+}
+
+.calendar-year th[scope="row"] {
+  text-align: start;
+}
+
+.calendar-skipped .row-title {
+  text-decoration: line-through;
+}

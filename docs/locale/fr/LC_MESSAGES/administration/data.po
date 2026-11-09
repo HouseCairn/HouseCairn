@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 19:40+0000\n"
+"POT-Creation-Date: 2026-11-09 07:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -49,8 +49,8 @@ msgstr "Les données, au format JSON (ci-dessous)."
 msgid "`files/`"
 msgstr "`files/`"
 
-msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, and the photos of the labels of stock items, under `files/stock/`."
-msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, les fichiers des tâches, sous `files/attachments/`, et les photos d'étiquettes des articles du matériel, sous `files/stock/`."
+msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`, and the photos and quote files of projects, under `files/projects/`."
+msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, les fichiers des tâches, sous `files/attachments/`, les photos d'étiquettes des articles du matériel, sous `files/stock/`, et les photos et fichiers de devis des projets, sous `files/projects/`."
 
 msgid "`README.txt`"
 msgstr "`README.txt`"
@@ -103,6 +103,9 @@ msgstr "`id`, `kind`, `payload`, `received_at` des événements reçus."
 msgid "`rooms`"
 msgstr "`rooms`"
 
+msgid "`id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch, `paint_article` (a stock item id or `null`), floor and wall covering, memory notes)."
+msgstr "`id`, `name`, `kind`, `position`, `notes`, `created_at` de chaque pièce, et sa `memory` (couleur, marque, référence et lot de la peinture, `paint_article` (l'identifiant d'un article ou `null`), revêtement de sol et de mur, notes de mémoire)."
+
 msgid "`items`"
 msgstr "`items`"
 
@@ -124,6 +127,9 @@ msgstr "`id`, `task`, `occurrence` ou `null`, `name`, `content_type`, `is_image`
 msgid "`stock_items`"
 msgstr "`stock_items`"
 
+msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (a code of the list, or `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (item ids), `rooms` (room ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
+msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (un code de la liste, ou `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `rooms` (identifiants de pièces), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
+
 msgid "`stock_suppliers`"
 msgstr "`stock_suppliers`"
 
@@ -132,6 +138,57 @@ msgstr "`id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`.
 
 msgid "`stock_movements`"
 msgstr "`stock_movements`"
+
+msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (the occurrence of a task whose closing wrote the line, or `null`), `created_at`."
+msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (l'occurrence d'une tâche dont la clôture a écrit la ligne, ou `null`), `created_at`."
+
+msgid "`task_materials`"
+msgstr "`task_materials`"
+
+msgid "`id`, `task`, `article`, `quantity`, `created_at`: the stock items each task needs."
+msgstr "`id`, `task`, `article`, `quantity`, `created_at` : les articles dont chaque tâche a besoin."
+
+msgid "`stock_draws`"
+msgstr "`stock_draws`"
+
+msgid "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at`: what each closed occurrence took from the stock."
+msgstr "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at` : ce que chaque occurrence close a pris dans le stock."
+
+msgid "`projects`"
+msgstr "`projects`"
+
+msgid "`id`, `title`, `goal`, `status`, `priority`, `rooms` (room ids), `estimated_minutes`, `season` with `season_start_month` and `season_end_month`, `created_at`."
+msgstr "`id`, `title`, `goal`, `status`, `priority`, `rooms` (identifiants de pièces), `estimated_minutes`, `season` avec `season_start_month` et `season_end_month`, `created_at`."
+
+msgid "`project_budget_lines`"
+msgstr "`project_budget_lines`"
+
+msgid "`id`, `project`, `label`, `nature`, `planned`, `committed` (the sum of the accepted quotes), `paid`, `created_at`. Amounts are text with two decimals, in the currency of the home."
+msgstr "`id`, `project`, `label`, `nature`, `planned`, `committed` (la somme des devis acceptés), `paid`, `created_at`. Les montants sont du texte à deux décimales, dans la devise du logement."
+
+msgid "`project_quotes`"
+msgstr "`project_quotes`"
+
+msgid "`id`, `project`, `contractor` (an id or `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (the line an accepted quote is committed on, else `null`), `note`, `paperless_id`, `paperless_url`, `created_at`."
+msgstr "`id`, `project`, `contractor` (un identifiant ou `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (la ligne sur laquelle un devis accepté est engagé, sinon `null`), `note`, `paperless_id`, `paperless_url`, `created_at`."
+
+msgid "`project_files`"
+msgstr "`project_files`"
+
+msgid "`id`, `project`, `quote` (or `null` for a photo of the project), `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path in the archive (`files/projects/<id>.<extension>`, or `null` if the file is missing)."
+msgstr "`id`, `project`, `quote` (ou `null` pour une photo du projet), `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, et `file`, le chemin dans l'archive (`files/projects/<id>.<extension>`, ou `null` si le fichier manque)."
+
+msgid "`project_tasks`"
+msgstr "`project_tasks`"
+
+msgid "`id`, `project`, `task`: the tasks that belong to a project."
+msgstr "`id`, `project`, `task` : les tâches qui appartiennent à un projet."
+
+msgid "`project_envelopes`"
+msgstr "`project_envelopes`"
+
+msgid "`id`, `year`, `amount`: the annual budget envelope."
+msgstr "`id`, `year`, `amount` : l'enveloppe budgétaire annuelle."
 
 msgid "`tasks`"
 msgstr "`tasks`"
@@ -144,6 +201,18 @@ msgstr "`contractors`"
 
 msgid "`id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`."
 msgstr "`id`, `name`, `trade` (un code de la liste, ou `other`), `trade_other`, `phone`, `email`, `address`, `note`."
+
+msgid "`calendar_feeds`"
+msgstr "`calendar_feeds`"
+
+msgid "`id`, `created_at`, `regenerated_at` of each [calendar feed](../guides/calendar.md) of the home. Never the address or its secret, which is not kept; the combined feed of a person belongs to the person, not to a home."
+msgstr "`id`, `created_at`, `regenerated_at` de chaque [flux de calendrier](../guides/calendar.md) du logement. Jamais l'adresse ni son secret, qui n'est pas conservé ; le flux combiné d'une personne appartient à la personne, pas à un logement."
+
+msgid "`labels`"
+msgstr "`labels`"
+
+msgid "`id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing."
+msgstr "`id`, `kind` (`room`, `item` ou `article`), `target` (l'identifiant de la pièce, de l'élément ou de l'article), `code`, `revoked_at`, `created_at` de chaque étiquette QR. Le `code` est l'identifiant opaque que porte son autocollant : il est exporté pour une étiquette active et vaut `null` pour une étiquette révoquée, qui n'ouvre rien."
 
 msgid "`files`"
 msgstr "`files`"
@@ -160,17 +229,17 @@ msgstr "Chaque lot qui ajoute des données ajoute sa section ici et dans l'archi
 msgid "Deletion of a home"
 msgstr "Suppression d'un logement"
 
-msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
-msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
+msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, calendar feeds, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
+msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, flux de calendrier, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
 
-msgid "The photos, the labels of stock items and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>` or `stock/<home id>`): remove that directory by hand."
-msgstr "Les photos, les étiquettes des articles du matériel et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>` ou `stock/<id du logement>`) : supprimez ce dossier à la main."
+msgid "The photos, the labels of stock items, the photos and quote files of projects and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>`, `stock/<home id>` or `projects/<home id>`): remove that directory by hand."
+msgstr "Les photos, les étiquettes des articles du matériel, les photos et fichiers de devis des projets et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>`, `stock/<id du logement>` ou `projects/<id du logement>`) : supprimez ce dossier à la main."
 
 msgid "Erasure of an account"
 msgstr "Effacement d'un compte"
 
-msgid "**Delete my account** (see [Account pages](../screens/account.md)) erases the account, its sign-in methods, devices and API tokens, the homes where it is the only member, and the invitations to its address. It is refused for the only administrator and for the only owner of a home with other members: hand ownership over, or delete the home, first. The audit log keeps that it happened and no longer says who."
-msgstr "**Supprimer mon compte** (voir [Pages du compte](../screens/account.md)) efface le compte, ses méthodes de connexion, ses appareils et ses jetons d'API, les logements dont il est le seul membre, et les invitations envoyées à son adresse. L'effacement est refusé pour l'unique administrateur et pour l'unique propriétaire d'un logement qui a d'autres membres : transmettez d'abord la propriété, ou supprimez le logement. Le journal d'audit garde la trace de l'opération, sans plus dire qui."
+msgid "**Delete my account** (see [Account pages](../screens/account.md)) erases the account, its sign-in methods, devices, API tokens and calendar feeds, the homes where it is the only member, and the invitations to its address. It is refused for the only administrator and for the only owner of a home with other members: hand ownership over, or delete the home, first. The audit log keeps that it happened and no longer says who."
+msgstr "**Supprimer mon compte** (voir [Pages du compte](../screens/account.md)) efface le compte, ses méthodes de connexion, ses appareils, ses jetons d'API et ses flux de calendrier, les logements dont il est le seul membre, et les invitations envoyées à son adresse. L'effacement est refusé pour l'unique administrateur et pour l'unique propriétaire d'un logement qui a d'autres membres : transmettez d'abord la propriété, ou supprimez le logement. Le journal d'audit garde la trace de l'opération, sans plus dire qui."
 
 msgid "Backups"
 msgstr "Sauvegardes"
@@ -181,23 +250,24 @@ msgstr "Les données supprimées restent dans les sauvegardes jusqu'à leur expi
 #~ msgid "`id`, `email`, `name`, `role`, `joined_at` of each member."
 #~ msgstr "`id`, `email`, `name`, `role`, `joined_at` de chaque membre."
 
-msgid "`id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch, `paint_article` (a stock item id or `null`), floor and wall covering, memory notes)."
-msgstr "`id`, `name`, `kind`, `position`, `notes`, `created_at` de chaque pièce, et sa `memory` (couleur, marque, référence et lot de la peinture, `paint_article` (l'identifiant d'un article ou `null`), revêtement de sol et de mur, notes de mémoire)."
+#~ msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, and the photos of the labels of stock items, under `files/stock/`."
+#~ msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, les fichiers des tâches, sous `files/attachments/`, et les photos d'étiquettes des articles du matériel, sous `files/stock/`."
 
-msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (a code of the list, or `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (item ids), `rooms` (room ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
-msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (un code de la liste, ou `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `rooms` (identifiants de pièces), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
+#~ msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
+#~ msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
 
-msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (the occurrence of a task whose closing wrote the line, or `null`), `created_at`."
-msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (l'occurrence d'une tâche dont la clôture a écrit la ligne, ou `null`), `created_at`."
+#~ msgid "The photos, the labels of stock items and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>` or `stock/<home id>`): remove that directory by hand."
+#~ msgstr "Les photos, les étiquettes des articles du matériel et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>` ou `stock/<id du logement>`) : supprimez ce dossier à la main."
 
-msgid "`task_materials`"
-msgstr "`task_materials`"
+#~ msgid "**Delete my account** (see [Account pages](../screens/account.md)) erases the account, its sign-in methods, devices and API tokens, the homes where it is the only member, and the invitations to its address. It is refused for the only administrator and for the only owner of a home with other members: hand ownership over, or delete the home, first. The audit log keeps that it happened and no longer says who."
+#~ msgstr "**Supprimer mon compte** (voir [Pages du compte](../screens/account.md)) efface le compte, ses méthodes de connexion, ses appareils et ses jetons d'API, les logements dont il est le seul membre, et les invitations envoyées à son adresse. L'effacement est refusé pour l'unique administrateur et pour l'unique propriétaire d'un logement qui a d'autres membres : transmettez d'abord la propriété, ou supprimez le logement. Le journal d'audit garde la trace de l'opération, sans plus dire qui."
 
-msgid "`id`, `task`, `article`, `quantity`, `created_at`: the stock items each task needs."
-msgstr "`id`, `task`, `article`, `quantity`, `created_at` : les articles dont chaque tâche a besoin."
+#~ msgid "`id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch and stock, floor and wall covering, memory notes)."
+#~ msgstr "`id`, `name`, `kind`, `position`, `notes`, `created_at` de chaque pièce, et sa mémoire `memory` (couleur, marque, référence, lot et reste de peinture, revêtements de sol et de mur, notes de mémoire)."
 
-msgid "`stock_draws`"
-msgstr "`stock_draws`"
+#~ msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
+#~ msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
 
-msgid "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at`: what each closed occurrence took from the stock."
-msgstr "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at` : ce que chaque occurrence close a pris dans le stock."
+#~ msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
+#~ msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
+
