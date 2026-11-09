@@ -2,17 +2,10 @@ from typing import Any
 
 from django import template
 
-from housecairn.accounts.models import User
 from housecairn.homes import services as home_services
 from housecairn.reports import services
 
 register = template.Library()
-
-
-@register.filter
-def person_name(user: User | None) -> str:
-    """The reporter, by display name; never an e-mail address."""
-    return services.reporter_name(user)
 
 
 @register.inclusion_tag("reports/_row.html", takes_context=True)

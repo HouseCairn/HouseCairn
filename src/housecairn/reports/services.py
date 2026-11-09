@@ -5,6 +5,7 @@ writes, and it changes nothing else. A reader sees the reports they made and no 
 member who writes sees them all, makes one into a task, closes it and reopens it.
 """
 
+from collections.abc import Iterable
 from typing import Any
 from uuid import UUID
 
@@ -16,6 +17,7 @@ from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from housecairn.accounts import names
 from housecairn.accounts.models import User
 from housecairn.audit import services as audit
 from housecairn.core.text import without_control_characters
@@ -43,12 +45,23 @@ _RELATED = ("reporter", "room", "item__room", "article", "task")
 
 
 def reporter_name(user: User | None) -> str:
-    """How the person is shown: their display name, else their name, else nothing of their
-    address. Never an e-mail address."""
+    """The reporter by the one helper of ADR 0045; "a former member" for a deleted account."""
     if user is None:
         return _("a former member")
-    shown = str(getattr(user, "display_name", "") or user.get_full_name()).strip()
-    return shown or _("a member")
+    return names.person_name(user)
+
+
+def reporter_labels(reports: Iterable[Report]) -> dict[UUID, str]:
+    """The reporter of each report for a list, by report: two people of the same name are told
+    apart by their address in brackets (`accounts.names.labels`, ADR 0045)."""
+    found = list(reports)
+    shown = names.labels(
+        {r.reporter_id: r.reporter for r in found if r.reporter is not None}.values()
+    )
+    return {
+        report.id: shown[report.reporter_id] if report.reporter is not None else reporter_name(None)
+        for report in found
+    }
 
 
 def _require_member(actor: AnyUser, home: Home) -> None:

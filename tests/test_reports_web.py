@@ -189,10 +189,42 @@ class TestLists:
         self, client: Client, alice: User, alice_home: Home, reported: Report
     ) -> None:
         body = signed(client, alice).get(url("list", alice_home)).content.decode()
-        assert "a member" in body
+        assert "· reader<" in body
         assert "reader@example.com" not in body
         detail = client.get(url("detail", alice_home, report_id=reported.id)).content.decode()
         assert "reader@example.com" not in detail
+
+    def test_a_name_with_a_filler_character_does_not_pass_for_another(
+        self,
+        client: Client,
+        alice: User,
+        alice_home: Home,
+        make_user: Callable[..., User],
+        add_member: Callable[..., object],
+    ) -> None:
+        faked = make_user("faked@example.com", display_name="Alice\u3164")
+        add_member(alice_home, faked, Role.READ_ONLY)
+        report = services.create_report(faked, alice_home, title="x")
+        signed(client, alice)
+        assert "· Alice<" in client.get(url("list", alice_home)).content.decode()
+        detail = client.get(url("detail", alice_home, report_id=report.id)).content.decode()
+        assert "Alice\u3164" not in detail
+
+    def test_two_people_of_one_name_are_told_apart_in_the_list(
+        self,
+        client: Client,
+        alice: User,
+        alice_home: Home,
+        make_user: Callable[..., User],
+        add_member: Callable[..., object],
+    ) -> None:
+        for email, name in (("first@example.com", "Sam"), ("second@example.com", "Sam\u3164")):
+            person = make_user(email, display_name=name)
+            add_member(alice_home, person, Role.READ_ONLY)
+            services.create_report(person, alice_home, title="x")
+        body = signed(client, alice).get(url("list", alice_home)).content.decode()
+        assert "Sam (first@example.com)" in body
+        assert "Sam (second@example.com)" in body
 
     def test_the_list_is_paged(self, client: Client, alice: User, alice_home: Home) -> None:
         for i in range(35):

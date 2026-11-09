@@ -11,9 +11,10 @@ from django.test import override_settings
 from django.urls import reverse
 from PIL import Image
 
+from housecairn.accounts import names
 from housecairn.accounts.models import User
 from housecairn.audit.models import AuditEvent
-from housecairn.homes.models import Home
+from housecairn.homes.models import Home, Role
 from housecairn.notifications import alerts, outbound
 from housecairn.notifications import services as notification_services
 from housecairn.reports import services
@@ -331,11 +332,44 @@ class TestWhoSeesWhat:
     ) -> None:
         nameless = make_user("someone@example.com")
         named = make_user("named@example.com", first_name="Sam", last_name="Lee")
-        assert services.reporter_name(nameless) == "a member"
+        assert services.reporter_name(nameless) == "someone"
         assert services.reporter_name(named) == "Sam Lee"
         assert services.reporter_name(None) == "a former member"
         for user in (nameless, named):
             assert "@" not in services.reporter_name(user)
+
+    def test_the_name_is_the_one_of_the_helper_of_the_accounts_filler_characters_included(
+        self, make_user: Callable[..., User]
+    ) -> None:
+        faked = make_user("faked@example.com", display_name="Alice\u3164")
+        assert services.reporter_name(faked) == names.person_name(faked) == "Alice"
+
+    def test_two_people_of_one_name_are_told_apart_in_a_list(
+        self, alice_home: Home, make_user: Callable[..., User], add_member: Callable[..., object]
+    ) -> None:
+        first = make_user("first@example.com", display_name="Alice")
+        second = make_user("second@example.com", display_name="Alice\u3164")
+        other = make_user("other@example.com", display_name="Bea")
+        for person in (first, second, other):
+            add_member(alice_home, person, Role.READ_ONLY)
+        reports = [
+            services.create_report(person, alice_home, title="x")
+            for person in (first, second, other)
+        ]
+        shown = services.reporter_labels(
+            Report.objects.select_related("reporter").filter(pk__in=[r.pk for r in reports])
+        )
+        assert shown[reports[0].id] == "Alice (first@example.com)"
+        assert shown[reports[1].id] == "Alice (second@example.com)"
+        assert shown[reports[2].id] == "Bea"
+
+    def test_a_deleted_account_is_a_former_member_in_a_list(
+        self, alice_home: Home, reader: User
+    ) -> None:
+        report = services.create_report(reader, alice_home, title="x")
+        User.objects.filter(pk=reader.pk).delete()
+        report.refresh_from_db()
+        assert services.reporter_labels([report]) == {report.id: "a former member"}
 
     def test_the_count_that_waits_is_the_open_reports_only(
         self, alice: User, alice_home: Home, reader: User

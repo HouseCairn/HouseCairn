@@ -63,8 +63,8 @@ msgstr "**Marquer comme résolu** ou **Classer sans suite** ;"
 msgid "**Reopen**, if a closed report comes back."
 msgstr "**Rouvrir**, si un signalement classé revient."
 
-msgid "The person who reported sees their own reports under **My reports** and nothing of anyone else's; they cannot change anything else in the home. Reports are shown by the display name of the person, never by e-mail address."
-msgstr "La personne qui a signalé voit ses propres signalements sous **Mes signalements** et rien de ceux des autres ; elle ne peut rien changer d'autre dans le logement. Les signalements sont montrés avec le nom d'affichage de la personne, jamais avec son adresse e-mail."
+msgid "The person who reported sees their own reports under **My reports** and nothing of anyone else's; they cannot change anything else in the home. Reports are shown by the name of the person, as everywhere (two people of one name are told apart by their address in brackets)."
+msgstr "La personne qui a signalé voit ses propres signalements sous **Mes signalements** et rien de ceux des autres ; elle ne peut rien changer d'autre dans le logement. Les signalements sont montrés avec le nom de la personne, comme partout (deux personnes de même nom se distinguent par leur adresse entre parenthèses)."
 
 msgid "Be told"
 msgstr "Être prévenu"

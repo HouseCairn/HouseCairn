@@ -50,8 +50,8 @@ decides. A person who may write opens it on the **Reports** screen, or from the 
 - **Reopen**, if a closed report comes back.
 
 The person who reported sees their own reports under **My reports** and nothing of anyone
-else's; they cannot change anything else in the home. Reports are shown by the display name
-of the person, never by e-mail address.
+else's; they cannot change anything else in the home. Reports are shown by the name of the person, as everywhere
+(two people of one name are told apart by their address in brackets).
 
 ## Be told
 

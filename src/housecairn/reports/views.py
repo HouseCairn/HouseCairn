@@ -54,6 +54,9 @@ class ReportListView(HomeReportsMixin, TemplateView):
         except ValueError:
             number = 1
         page = Paginator(rows, PAGE_SIZE).get_page(number)
+        reporters = services.reporter_labels(page.object_list)
+        for report in page.object_list:
+            report.reporter_label = reporters[report.id]
         filters = (
             [("open", _("Open")), ("closed", _("Closed")), ("all", _("All"))]
             if self.can_write

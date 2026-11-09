@@ -7,7 +7,7 @@ For members who may write, the page lists every report of the home, the newest f
 and the filters **Open** (the default), **Closed** (resolved or closed without action),
 **All** and **Mine**. A report that was made into a task is in **All**, not in **Open**.
 Each row shows what is wrong, where, its state, its date and who reported it (by
-display name, never by e-mail address). A row opens the [report](report.md).
+name; two people of one name are told apart by their address in brackets). A row opens the [report](report.md).
 
 A read-only member opens the same address as **My reports**: they see the reports they
 made and no others.

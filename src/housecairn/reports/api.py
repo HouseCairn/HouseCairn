@@ -66,7 +66,10 @@ class ReportSerializer(serializers.ModelSerializer[Report]):
         read_only_fields = fields
 
     def get_reporter_name(self, report: Report) -> str:
-        return services.reporter_name(report.reporter)
+        # A list gives the labels of the whole page (two people of one name are told apart);
+        # a single report is named alone.
+        shown = self.context.get("reporter_labels") or services.reporter_labels([report])
+        return str(shown[report.id])
 
     def get_mine(self, report: Report) -> bool:
         return bool(report.reporter_id == self.context["request"].user.pk)
@@ -161,7 +164,20 @@ class ReportViewSet(
         ]
     )
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        return super().list(request, *args, **kwargs)
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        found = list(page) if page is not None else list(queryset)
+        serializer = self.get_serializer(
+            found,
+            many=True,
+            context={
+                **self.get_serializer_context(),
+                "reporter_labels": services.reporter_labels(found),
+            },
+        )
+        if page is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data)
 
     @extend_schema(
         request={"multipart/form-data": ReportCreateSerializer},

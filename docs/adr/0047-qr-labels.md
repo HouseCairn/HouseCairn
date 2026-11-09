@@ -110,8 +110,13 @@ migration in `notifications`, and an alert is sent once, by a task, not found by
 nothing else (ADR 0045); `label.revoked` and `label.regenerated` record the name of the
 object. A code is never written in the log.
 
-**Names.** A reporter is shown by display name, else by name, else "a member"; an address
-is never shown, on screen, in the API or in an alert (`reports.services.reporter_name`).
+**Names.** A reporter is named by `accounts.names.person_name` (ADR 0045), like every other
+person: the display name with its filler characters trimmed, else the full name, else the
+part of the address before the `@`. An alert holds no name. A deleted account reads "a former
+member". In a list, on screen and in the API, `accounts.names.labels` tells two people of one
+name apart by their address in brackets (the one place an address is shown, as in the other
+lists), so that a reader cannot pass for a namesake in front of those who write. Reports does
+not name people by a rule of its own.
 
 **Isolation, export, erasure.** Every query is bound to the home; a label or a report of
 another home, a reader's view of others' reports, an administrator of the instance who is

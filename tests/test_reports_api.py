@@ -56,7 +56,7 @@ class TestReports:
             True,
             None,
         )
-        assert body["reporter_name"] == "a member"
+        assert body["reporter_name"] == "reader"
         assert "@" not in str(body)
         assert body["photo_url"] is None
         assert body["place"] == ""
@@ -229,6 +229,38 @@ class TestRoles:
         body = client_of(alice).get(api("list", alice_home)).json()["results"][0]
         assert body["reporter_name"] == "Sam Lee"
         assert "named@example.com" not in str(body)
+
+    def test_a_name_with_a_filler_character_does_not_pass_for_another(
+        self, alice_home: Home, alice: User, make_user: Callable[..., User]
+    ) -> None:
+        from housecairn.homes.models import Membership, Role
+
+        faked = make_user("faked@example.com", display_name="Alice\u3164")
+        Membership.objects.create(home=alice_home, user=faked, role=Role.READ_ONLY)
+        services.create_report(faked, alice_home, title="x")
+        body = client_of(alice).get(api("list", alice_home)).json()["results"][0]
+        assert body["reporter_name"] == "Alice"
+        assert (
+            client_of(alice)
+            .get(api("detail", alice_home, report_id=body["id"]))
+            .json()["reporter_name"]
+            == "Alice"
+        )
+
+    def test_two_people_of_one_name_are_told_apart(
+        self, alice_home: Home, alice: User, make_user: Callable[..., User]
+    ) -> None:
+        from housecairn.homes.models import Membership, Role
+
+        for email, name in (("first@example.com", "Sam"), ("second@example.com", "Sam\u3164")):
+            person = make_user(email, display_name=name)
+            Membership.objects.create(home=alice_home, user=person, role=Role.READ_ONLY)
+            services.create_report(person, alice_home, title="x")
+        shown = {
+            row["reporter_name"]
+            for row in client_of(alice).get(api("list", alice_home)).json()["results"]
+        }
+        assert shown == {"Sam (first@example.com)", "Sam (second@example.com)"}
 
 
 class TestIsolation:
