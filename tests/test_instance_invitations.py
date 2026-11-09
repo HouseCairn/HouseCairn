@@ -2,7 +2,8 @@
 
 import re
 from collections.abc import Callable, Iterator
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
+from unittest import mock
 
 import pytest
 from allauth.account.models import EmailAddress
@@ -22,6 +23,7 @@ from housecairn.instance.models import InstanceInvitation
 
 pytestmark = pytest.mark.django_db
 
+SENT_AT = datetime(2026, 11, 9, 22, 22, 59, 900000, tzinfo=UTC)
 PASSWORD = "a-long-and-unusual-passphrase"
 EMAIL = {
     "EMAIL_HOST": "smtp.example.com",
@@ -169,8 +171,11 @@ class TestRules:
     ) -> None:
         client.force_login(admin_user)
         url = reverse("instance:invite")
-        known = client.post(url, {"email": "bob@example.com"}, follow=True)
-        unknown = client.post(url, {"email": "nobody@example.com"}, follow=True)
+        # The message states when the link expires, to the minute. Freeze the clock so a
+        # minute change between the two sends cannot make the bodies differ.
+        with mock.patch("django.utils.timezone.now", return_value=SENT_AT):
+            known = client.post(url, {"email": "bob@example.com"}, follow=True)
+            unknown = client.post(url, {"email": "nobody@example.com"}, follow=True)
 
         def message(text: str) -> str:
             return re.findall(r'<li class="message[^"]*">([^<]*)</li>', text)[0]
