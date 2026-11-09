@@ -8,7 +8,6 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 06:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -99,4 +98,7 @@ msgstr "Partager"
 
 msgid "Everyone in the home sees the same projects; members and owners change them, read-only members change nothing. The same data is available to scripts through the [API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`, `project-links`, `project-tasks` and `envelope`), with the `read` and `write` scopes of an API token. The projects are part of the [export of the home](../administration/data.md), photos, pictures of links and files of quotes included, and are erased with it."
 msgstr "Tout le monde dans le logement voit les mêmes projets ; les membres et les propriétaires les modifient, les membres en lecture seule ne modifient rien. Les mêmes données sont disponibles pour les scripts par l'[API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`, `project-links`, `project-tasks` et `envelope`), avec les portées `read` et `write` d'un jeton d'API. Les projets font partie de l'[export du logement](../administration/data.md), photos, images de liens et fichiers de devis compris, et sont effacés avec lui."
+
+#~ msgid "Everyone in the home sees the same projects; members and owners change them, read-only members change nothing. The same data is available to scripts through the [API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`, `project-tasks` and `envelope`), with the `read` and `write` scopes of an API token. The projects are part of the [export of the home](../administration/data.md), photos and files of quotes included, and are erased with it."
+#~ msgstr "Tout le monde dans le logement voit les mêmes projets ; les membres et les propriétaires les modifient, les membres en lecture seule ne modifient rien. Les mêmes données sont disponibles pour les scripts par l'[API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`, `project-tasks` et `envelope`), avec les portées `read` et `write` d'un jeton d'API. Les projets font partie de l'[export du logement](../administration/data.md), photos et fichiers de devis compris, et sont effacés avec lui."
 

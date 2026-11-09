@@ -12,6 +12,7 @@ on:
       - "src/**"
       - "design/**"
       - "tests/e2e/**"
+      - ".github/actions/**"
       - ".github/workflows/ui.yml"
   workflow_dispatch:
 
@@ -51,6 +52,8 @@ jobs:
           enable-cache: true
       - name: Install locked dependencies with the docs group (uv sync --locked)
         run: uv sync --locked --group docs
+      - name: Compile the translations
+        uses: $/.github/actions/compile-messages
       - name: Install the browser (playwright install)
         run: uv run playwright install --with-deps --only-shell --no-progress chromium
       - name: Start a stub identity provider (serves only its discovery document)

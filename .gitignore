@@ -51,3 +51,6 @@ Thumbs.db
 /docs/_build/
 /docs/_generated/
 /docs/locale/**/*.mo
+
+# Compiled translations (docs/adr/0013): built by `compilemessages`, never committed.
+*.mo
