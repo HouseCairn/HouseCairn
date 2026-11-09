@@ -408,6 +408,36 @@ class TestGuardedPreview:
         assert (link.title, link.image) == ("", None)
         assert site.requests == ["/page"]
 
+    def test_the_picture_gets_only_the_time_the_page_left(
+        self,
+        alice: User,
+        living_room_project: Project,
+        site: Server,
+        enabled: None,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        import time
+
+        from tests.netservers import trickle
+
+        def slow_page(handler: object) -> tuple[int, dict[str, str], bytes]:
+            time.sleep(1.2)
+            return 200, {"Content-Type": "text/html"}, page()
+
+        monkeypatch.setattr(preview, "PREVIEW_SECONDS", 3.0)
+        site.routes["/page"] = slow_page
+        site.routes["/cover.jpg"] = trickle
+        started = time.monotonic()
+        link = links.add_link(alice, living_room_project, url=site.url("/page"))
+        elapsed = time.monotonic() - started
+        # The ten seconds are one budget for page and picture: 1.2 s for the page, so about
+        # 1.8 s for the picture. A picture given the whole budget again would end at 4.2 s.
+        assert elapsed < 3.6, elapsed
+        assert (link.title, link.image) == ("Tiles", None)
+        assert site.wait_idle()
+        assert not [t for t in threading.enumerate() if isinstance(t, threading.Timer)]
+
+
 class TestFallback:
     @pytest.mark.parametrize("status", [404, 500, 403])
     def test_a_failing_page_leaves_the_address(
