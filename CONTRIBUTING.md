@@ -42,10 +42,11 @@ By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 ## Local development
 
 Requirements: [uv](https://docs.astral.sh/uv/) (it installs Python 3.13 if
-needed) and, to update translations, GNU gettext.
+needed) and GNU gettext, which compiles the translations.
 
 ```sh
 uv sync --locked                 # create .venv with the locked dependencies
+uv run python manage.py compilemessages --ignore=.venv --ignore=docs   # build the .mo catalogs
 cp .env.example .env             # DEBUG=true for development
 uv run python manage.py migrate
 uv run python manage.py createsuperuser
@@ -109,6 +110,11 @@ When you change `design/tokens.json`, run `manage.py build_design_tokens` and
 commit the generated `tokens.css`. When you add or change a user-facing string,
 update the French catalog as described in
 [ADR 0013](docs/adr/0013-internationalization.md).
+Never commit a `.mo` file: it is compiled by `compilemessages` (in the image
+build, in the CI and on your machine), and git ignores it. Run it again after
+you pull a change of `django.po`. If a `.po` conflict remains when you merge
+`main`, keep both sides: the catalogs have no source locations, line wrapping
+or creation date, so the two sides are independent entries.
 
 ## Checks run on every pull request
 

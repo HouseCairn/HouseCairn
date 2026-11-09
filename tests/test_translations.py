@@ -1,7 +1,9 @@
+import re
 import shutil
 from pathlib import Path
 
 import pytest
+from django.conf import settings
 from django.core.management import CommandError, call_command
 from django.test import Client
 from django.urls import reverse
@@ -86,10 +88,34 @@ def test_sources_scan_needs_gettext(monkeypatch: pytest.MonkeyPatch) -> None:
         translations.missing_from_catalog("fr", Path("unused.po"))
 
 
+def test_catalogs_have_no_dates_or_locations() -> None:
+    """Two branches that add a string must merge without a conflict (docs/adr/0013)."""
+    catalogs = [path for _lang, path in translations.po_files()]
+    catalogs += (Path(settings.BASE_DIR).parents[1] / "docs" / "locale").rglob("*.po")
+    assert len(catalogs) > 50  # the application's and the documentation's
+    for path in catalogs:
+        text = path.read_text(encoding="utf-8")
+        assert not re.search(r"^#:|POT-Creation-Date", text, re.MULTILINE), path
+
+
+@pytest.mark.skipif(shutil.which("xgettext") is None, reason="needs GNU gettext")
+def test_regenerating_the_catalog_changes_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(settings.BASE_DIR)
+    for language, path in translations.po_files():
+        before = path.read_bytes()
+        with translations._restored(path):
+            call_command(
+                "makemessages", locale=[language], ignore_patterns=["static/*"], verbosity=0
+            )
+            assert path.read_bytes() == before
+
+
 @pytest.mark.django_db
 def test_french_is_served(client: Client) -> None:
-    response = client.get(reverse("index"), HTTP_ACCEPT_LANGUAGE="fr")
+    """The compiled catalog is there: `compilemessages` ran, in CI as in the image."""
+    response = client.get(reverse("account_login"), HTTP_ACCEPT_LANGUAGE="fr")
     assert response.headers["Content-Language"] == "fr"
     assert '<html lang="fr">' in response.text
+    assert "Se connecter" in response.text
     with translation.override("fr"):
         assert translation.gettext("Sign in") == "Se connecter"

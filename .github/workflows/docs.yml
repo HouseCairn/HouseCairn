@@ -49,6 +49,9 @@ jobs:
       - name: Install locked dependencies with the docs group (uv sync --locked)
         run: uv sync --locked --group docs
 
+      - name: Compile the translations
+        uses: $/.github/actions/compile-messages
+
       - name: Install the browser (playwright install)
         # Official command of the Playwright version in uv.lock; the browser
         # opens the built site for the design checks below (docs/adr/0016).
