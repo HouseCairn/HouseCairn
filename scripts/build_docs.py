@@ -12,6 +12,7 @@ that lags behind its page. Run it with the `docs` dependency group:
 """
 
 import argparse
+import re
 import shutil
 import subprocess
 import sys
@@ -27,6 +28,7 @@ GETTEXT_DIR = BUILD_DIR / "gettext"
 LOCALE_DIR = DOCS_DIR / "locale"
 BASE_URL = "https://docs.housecairn.app/"
 TRANSLATIONS = {"fr": "fr/"}
+POT_CREATION_DATE = re.compile(r'^"POT-Creation-Date:[^\n]*\\n"\n', re.MULTILINE)
 STRICT = ["-W", "--keep-going", "-n", "-q"]
 # The decision records are in English only (docs/adr/0016): no catalog for them.
 UNTRANSLATED_DIRS = ("adr",)
@@ -65,6 +67,15 @@ def stale_catalogs(language: str) -> list[str]:
     return problems
 
 
+def drop_creation_dates(language: str) -> None:
+    """Remove `POT-Creation-Date`: it changes at every run and conflicts between branches."""
+    for path in (LOCALE_DIR / language / "LC_MESSAGES").rglob("*.po"):
+        text = path.read_text(encoding="utf-8")
+        stripped = POT_CREATION_DATE.sub("", text)
+        if stripped != text:
+            path.write_text(stripped, encoding="utf-8")
+
+
 def count_pages(root: Path, exclude: Path | None = None) -> int:
     pages = [p for p in root.rglob("index.html") if exclude is None or exclude not in p.parents]
     return len(pages)
@@ -89,6 +100,7 @@ def main(argv: list[str] | None = None) -> int:
             subprocess.run(command, check=True, cwd=REPO_DIR)  # noqa: S603
             for directory in UNTRANSLATED_DIRS:
                 shutil.rmtree(LOCALE_DIR / language / "LC_MESSAGES" / directory, ignore_errors=True)
+            drop_creation_dates(language)
         return 0
     problems = [p for language in TRANSLATIONS for p in stale_catalogs(language)]
     if problems:

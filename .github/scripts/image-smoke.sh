@@ -146,6 +146,16 @@ code=$(http_get /accounts/login/ "$body")
 grep -q 'type="password"' "$body" || fail "the sign-in page has no password field"
 pass "GET /accounts/login/ answers 200 with the sign-in form"
 
+# The image carries its compiled translations (compilemessages, build stage):
+# the sign-in page is served in French to a browser that asks for it.
+french=$(mktemp)
+code=$(curl -4 -sS -o "$french" -w '%{http_code}' -H 'X-Forwarded-Proto: https' \
+  -H 'Accept-Language: fr' "http://localhost:$PORT/accounts/login/")
+[ "$code" = 200 ] || fail "GET /accounts/login/ in French answered $code"
+grep -q '<html lang="fr">' "$french" || fail "the sign-in page is not served in French"
+grep -q 'Se connecter' "$french" || fail "the French sign-in page is not translated (no compiled catalog?)"
+pass "GET /accounts/login/ with Accept-Language: fr is served in French (compiled catalog in the image)"
+
 css=$(grep -o -m 1 '/static/css/app\.[0-9a-f]*\.css' "$body")
 [ -n "$css" ] || fail "no hashed stylesheet in the sign-in page"
 headers=$(mktemp)

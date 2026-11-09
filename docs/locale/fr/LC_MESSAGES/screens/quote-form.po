@@ -8,7 +8,6 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 06:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -45,4 +44,7 @@ msgstr "**Document dans Paperless-ngx** garde un numéro de document et un lien 
 
 msgid "**Delete the quote** asks for confirmation and releases what it committed."
 msgstr "**Supprimer le devis** demande confirmation et libère ce qu'il engageait."
+
+#~ msgid "**Amount** is in the currency of the home, from 0 to 9,999,999,999.99."
+#~ msgstr "**Montant** est dans la devise du logement, de 0 à 9 999 999 999,99."
 

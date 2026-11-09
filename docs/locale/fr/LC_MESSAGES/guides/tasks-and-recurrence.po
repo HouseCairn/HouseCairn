@@ -8,7 +8,6 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 06:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -111,4 +110,7 @@ msgstr "Tout ce qui précède est disponible par l'[API](../api/index.md) : tâc
 
 #~ msgid "Name the person or the company on the task: pick one that the home already knows or type a new name and trade in the form. The API also lists and edits them."
 #~ msgstr "Nommez la personne ou l'entreprise sur la tâche : choisissez un intervenant que le logement connaît déjà ou saisissez un nouveau nom et un métier dans le formulaire. L'API les liste et les modifie aussi."
+
+#~ msgid "The **How to do it** text is written in Markdown (titles, lists, bold, links to web pages) and shown on the page of the task, safely: HTML is not interpreted and images are not loaded. The budgets (labour, materials) are the planned amounts; the real cost is entered when the task is done. The materials with their quantities come with the stock, in a later version."
+#~ msgstr "Le texte **Comment faire** s'écrit en Markdown (titres, listes, gras, liens vers des pages web) et s'affiche sur la page de la tâche, sans risque : le HTML n'est pas interprété et les images ne sont pas chargées. Les budgets (main d'œuvre, matériel) sont les montants prévus ; le coût réel se saisit quand la tâche est faite. Le matériel avec ses quantités viendra avec le stock, dans une version ultérieure."
 

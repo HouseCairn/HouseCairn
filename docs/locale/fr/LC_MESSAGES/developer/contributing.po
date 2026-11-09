@@ -8,7 +8,6 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 14:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -48,6 +47,12 @@ msgstr "Les pages sont écrites en anglais. Leurs traductions françaises sont d
 
 msgid "A string without translation is shown in English, and the French page then says that it is not entirely translated. The build fails when a catalog lacks a string of its page, so that the catalogs never lag behind the pages."
 msgstr "Une chaîne sans traduction s'affiche en anglais, et la page française indique alors qu'elle n'est pas entièrement traduite. La construction échoue quand un catalogue manque d'une chaîne de sa page, afin que les catalogues ne prennent jamais de retard sur les pages."
+
+msgid "The strings of the application itself are in `src/housecairn/locale/fr/LC_MESSAGES/django.po`. The compiled `django.mo` is built from it and never committed: after `uv sync`, and after every change of the catalog, compile it (this needs GNU gettext):"
+msgstr "Les chaînes de l'application elle-même sont dans `src/housecairn/locale/fr/LC_MESSAGES/django.po`. Le fichier compilé `django.mo` en est tiré et n'est jamais commité : après `uv sync`, et après chaque modification du catalogue, compilez-le (cela demande GNU gettext) :"
+
+msgid "`makemessages` writes the catalog without source locations, line wrapping or creation date, so that two branches which add strings do not conflict. If a `.po` conflict remains, keep both sides."
+msgstr "`makemessages` écrit le catalogue sans emplacements de source, sans retour à la ligne automatique ni date de création, pour que deux branches qui ajoutent des chaînes n'entrent pas en conflit. Si un conflit sur un `.po` subsiste, gardez les deux côtés."
 
 #~ msgid "Screenshots come from a demonstration instance with generated data, in English and French, on a computer and on a phone. They are not committed: the script takes them again before every build."
 #~ msgstr "Les captures d'écran viennent d'une instance de démonstration aux données générées, en anglais et en français, sur ordinateur et sur téléphone. Elles ne sont pas commitées : le script les refait avant chaque construction."
