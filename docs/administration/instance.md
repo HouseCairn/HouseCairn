@@ -13,6 +13,12 @@ administration site (`/admin/`) grants or withdraws the role on an existing
 account (both boxes, audited). Being an administrator adds no home to the
 account: it sees the homes it belongs to, like anyone.
 
+The administration site has no sign-in form of its own: `/admin/login/` sends
+to the usual sign-in page, so the administrator signs in like anyone, with
+their second factor (passkey, authenticator app) and the same limits on failed
+attempts ([Rate limits](rate-limits.md)), then comes back to `/admin/`. An
+account that is not an administrator gets a 403 there.
+
 ## What the administrator can do
 
 - **Accounts**, in the administration site: switch an account on or off, grant

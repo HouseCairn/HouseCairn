@@ -24,6 +24,7 @@ from allauth.socialaccount.models import SocialAccount, SocialLogin
 from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 from django.test import Client, RequestFactory, override_settings
 from django.urls import reverse
@@ -345,6 +346,32 @@ class TestOpenSignup:
         response, _request = sign_in(email="new@example.com", email_verified=True)
         assert response.status_code == 302
         assert not User.objects.get(email="new@example.com").is_staff
+
+    @override_settings(HOUSECAIRN_OIDC_SIGNUP="open")
+    def test_a_handed_over_invitation_needs_the_provider_to_verify_the_address(
+        self, make_user: Callable[..., User]
+    ) -> None:
+        """A link handed over by hand proves nothing: the provider must (docs/adr/0020)."""
+        from housecairn.homes import services as home_services
+
+        owner = make_user("local@example.com")
+        home = home_services.create_home(owner, name="Main house")
+        links = {}
+        for address in ("unverified@example.com", "verified@example.com"):
+            _invitation, raw = home_services.invite(
+                owner, home, email=address, role="member", delivery=home_services.Delivery()
+            )
+            assert raw is not None
+            links[address] = raw
+        sign_in(email="unverified@example.com", email_verified=False)
+        unverified = User.objects.get(email="unverified@example.com")
+        with pytest.raises(PermissionDenied, match="Verify this address"):
+            home_services.accept_invitation(unverified, links["unverified@example.com"])
+        assert home_services.role_of(unverified, home) is None
+        sign_in(email="verified@example.com", email_verified=True)
+        member = User.objects.get(email="verified@example.com")
+        home_services.accept_invitation(member, links["verified@example.com"])
+        assert home_services.role_of(member, home) == "member"
 
     @pytest.mark.parametrize("value", ["true", "invite"])
     def test_invalid_mode_is_refused_at_start(self, value: str) -> None:

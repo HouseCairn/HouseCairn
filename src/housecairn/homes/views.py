@@ -476,11 +476,19 @@ class InvitationView(View):
 
     def context(self, **extra: Any) -> dict[str, Any]:
         user = self.request.user
+        same_address = user.is_authenticated and services.same_address(
+            user.email, self.invitation.email
+        )
         return {
             "invitation": self.invitation,
             "home": self.invitation.home,
-            "same_address": user.is_authenticated
-            and services.same_address(user.email, self.invitation.email),
+            "same_address": same_address,
+            # A link handed over by hand proves nothing: the account verifies the
+            # address first (docs/adr/0020).
+            "needs_verification": same_address
+            and not self.invitation.delivered_by_email
+            and not services.has_verified_address(user, self.invitation.email),  # type: ignore[arg-type]
+            "email_configured": email_is_configured(),
             "account_exists": False,
             "providers": sso.declared_providers(self.request),
             "next_url": self.request.path,
