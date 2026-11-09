@@ -49,12 +49,6 @@ msgstr "Emplacement de rangement"
 msgid "Where it is kept, for example \"garage, second shelf\"."
 msgstr "Où il est rangé, par exemple « garage, deuxième étagère »."
 
-msgid "Unit"
-msgstr "Unité"
-
-msgid "For example pieces, litres, metres."
-msgstr "Par exemple des pièces, des litres, des mètres."
-
 msgid "Threshold"
 msgstr "Seuil"
 
@@ -82,3 +76,14 @@ msgstr "Texte libre, 4 000 caractères au plus."
 msgid "The quantity is not a field: the stock starts at zero and changes with the movements, which you record on the [page of the item](stock-item.md). Only the name is required."
 msgstr "La quantité n'est pas un champ : le stock part de zéro et évolue avec les mouvements, que vous enregistrez sur la [page de l'article](stock-item.md). Seul le nom est requis."
 
+msgid "Unit, Which unit"
+msgstr "Unité, Quelle unité"
+
+msgid "A unit of the list (piece, litre, metre, kilogram, roll, box) or **Other**, with the unit written in **Which unit**."
+msgstr "Une unité de la liste (pièce, litre, mètre, kilogramme, rouleau, boîte) ou **Autre**, avec l'unité écrite dans **Quelle unité**."
+
+msgid "Rooms"
+msgstr "Pièces"
+
+msgid "The rooms where the item is used, besides those of the equipment it fits; only rooms of this home can be chosen."
+msgstr "Les pièces où l'article sert, en plus de celles de l'équipement auquel il convient ; seules les pièces de ce logement peuvent être choisies."

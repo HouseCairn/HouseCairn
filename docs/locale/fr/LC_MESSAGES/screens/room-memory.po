@@ -54,9 +54,6 @@ msgstr ""
 msgid "Paint left in stock"
 msgstr "Peinture restant en stock"
 
-msgid "What is left and where, for example \"half a tin, in the garage\"."
-msgstr "Ce qu'il en reste et où, par exemple « un demi-pot, au garage »."
-
 msgid "Floor covering, wall covering"
 msgstr "Revêtement de sol, revêtement de mur"
 
@@ -88,3 +85,9 @@ msgstr ""
 
 #~ msgid "Free text, 4,000 characters at most."
 #~ msgstr "Texte libre, 4 000 caractères au plus."
+
+msgid "The tin left over, chosen among the items of the [stock](stock.md) of the home; the room page then shows its quantity and where it is kept. Add it to the stock first if it is not there."
+msgstr "Le pot restant, choisi parmi les articles du [matériel](stock.md) du logement ; la page de la pièce affiche alors sa quantité et l'endroit où il est rangé. Ajoutez-le d'abord au matériel s'il n'y est pas."
+
+msgid "Before the stock was linked, this field was free text; it was kept, word for word, as a line `Paint left in stock: ...` of the memory notes."
+msgstr "Avant le lien avec le matériel, ce champ était un texte libre ; il a été conservé, mot pour mot, comme une ligne `Paint left in stock: ...` des notes de mémoire."

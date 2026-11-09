@@ -99,6 +99,8 @@ HELP_PAGES: dict[str, str] = {
     "tasks:attachment": "screens/task-files/",
     "tasks:attachment-thumbnail": "screens/task-files/",
     "tasks:attachment-delete": "screens/task-files/",
+    "tasks:material-save": "screens/task/",
+    "tasks:material-remove": "screens/task/",
     "more": "screens/more/",
     "about": "screens/about/",
 }

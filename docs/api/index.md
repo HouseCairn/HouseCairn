@@ -84,8 +84,15 @@ web interface: every request only sees the homes of its user
   never changed or deleted. `compatible_items` takes item identifiers of the same home;
   `label` (multipart) sets the photo of the label and `GET .../articles/<id>/label/`
   returns it. Articles are filtered with `q` (name, manufacturer reference or supplier)
-  and `low=true`; suppliers and movements with `article`, movements also with `kind`. The
-  scopes are the same as for rooms.
+  and `low=true`, and `room` for those that concern a room; suppliers and movements with
+  `article`, movements also with `kind`. `unit` is a code of the list (`piece`, `litre`,
+  `metre`, `kilogram`, `roll`, `box`, `other`) with `unit_other` for `other`, and `rooms`
+  takes room identifiers of the same home. The materials of the tasks are
+  `.../task-materials/` (`task`, `article`, `quantity`; filtered by `task` and `article`),
+  also listed, read-only, in `materials` on a task
+  ([ADR 0046](../adr/0046-stock-linked-to-tasks-and-rooms.md)). Closing a task takes them
+  from the stock; a movement carries the `occurrence` that wrote it. The scopes are the
+  same as for rooms.
 - **Notifications** of the caller
   ([ADR 0043](../adr/0043-notifications-through-apprise.md)):
   `/api/v1/me/notification-channels/` lists, adds (`name` and `url`, an Apprise address),

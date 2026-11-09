@@ -28,9 +28,6 @@ msgstr "Un article du [matériel](stock.md), à `/h/<id du logement>/stock/<id d
 msgid "**The quantity** at the top is the sum of the movements below; it is stored nowhere else. A **Low stock** label shows when it is at or below the threshold."
 msgstr "**La quantité**, en haut, est la somme des mouvements ci-dessous ; elle n'est stockée nulle part ailleurs. La mention **Stock bas** s'affiche quand elle est au seuil ou en dessous."
 
-msgid "**Record a movement** takes a quantity, a date (today by default) and a note, then one button: **Add to stock** (an entry), **Take from stock** (an exit) or **Set the count** (an inventory: you state what you counted on the shelf and the stock is corrected to it). Taking more than what is in stock is refused. A movement is never changed or deleted: a mistake is corrected by a new movement."
-msgstr "**Enregistrer un mouvement** prend une quantité, une date (aujourd'hui par défaut) et une note, puis un bouton : **Ajouter au stock** (une entrée), **Sortir du stock** (une sortie) ou **Fixer le compte** (un inventaire : vous indiquez ce que vous avez compté sur l'étagère et le stock est corrigé en conséquence). Sortir plus que le stock est refusé. Un mouvement n'est jamais modifié ni supprimé : une erreur se corrige par un nouveau mouvement."
-
 msgid "**Compatible items** lists the equipment or surfaces of the home this fits; each one opens its [item page](item.md)."
 msgstr "**Éléments compatibles** liste les équipements ou surfaces du logement auxquels il convient ; chacun ouvre sa [page d'élément](item.md)."
 
@@ -49,3 +46,8 @@ msgstr "**Modifier l'article** ouvre le [formulaire](stock-item-form.md), où **
 msgid "Read-only members see everything and none of the buttons that change it."
 msgstr "Les membres en lecture seule voient tout et aucun des boutons qui modifient."
 
+msgid "**Record a movement** takes a quantity, a date (today by default) and a note, then one button: **Add to stock** (an entry), **Take from stock** (an exit) or **Set the count** (an inventory: you state what you counted on the shelf and the stock is corrected to it). Taking more than what is in stock is refused (a task marked done is the exception: the stock stops at zero). A movement is never changed or deleted: a mistake is corrected by a new movement."
+msgstr "**Enregistrer un mouvement** prend une quantité, une date (aujourd'hui par défaut) et une note, puis un bouton : **Ajouter au stock** (une entrée), **Sortir du stock** (une sortie) ou **Fixer le compte** (un inventaire : vous dites ce que vous avez compté sur l'étagère et le stock est corrigé en conséquence). Sortir plus que ce qu'il y a en stock est refusé (une tâche marquée faite fait exception : le stock s'arrête à zéro). Un mouvement n'est jamais modifié ni supprimé : une erreur se corrige par un nouveau mouvement."
+
+msgid "**Rooms** lists the rooms where the item is used, and **Needed by tasks** the tasks that list it in their materials. A movement written by a task names that task."
+msgstr "**Pièces** liste les pièces où l'article sert, et **Demandé par des tâches** les tâches qui le listent dans leurs fournitures. Un mouvement écrit par une tâche nomme cette tâche."

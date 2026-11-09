@@ -29,13 +29,15 @@ The archive is a zip:
 | `members` | `id`, `email`, `name` (the display name, else the full name, else the part of the address before the `@`), `role`, `joined_at` of each member. |
 | `pending_invitations` | `id`, `email`, `role`, `sent_at`, `expires_at`; never a link. |
 | `events` | `id`, `kind`, `payload`, `received_at` of the events received. |
-| `rooms` | `id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch and stock, floor and wall covering, memory notes). |
+| `rooms` | `id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch, `paint_article` (a stock item id or `null`), floor and wall covering, memory notes). |
 | `items` | `id`, `room`, `name`, `kind`, `brand`, `model`, `serial_number`, `installed_on`, `warranty_ends_on`, `contract_provider`, `contract_number`, `contract_url`, `links`, `notes`, `created_at` of each item. |
 | `photos` | `id`, `room` or `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the photo in the archive (`files/photos/<id>.<extension>`, or `null` if the file is missing). |
 | `attachments` | `id`, `task`, `occurrence` or `null`, `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the file in the archive (`files/attachments/<id>.<extension>`, or `null` if the file is missing). |
-| `stock_items` | `id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`). |
+| `stock_items` | `id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (a code of the list, or `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (item ids), `rooms` (room ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`). |
 | `stock_suppliers` | `id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`. |
-| `stock_movements` | `id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`. |
+| `stock_movements` | `id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (the occurrence of a task whose closing wrote the line, or `null`), `created_at`. |
+| `task_materials` | `id`, `task`, `article`, `quantity`, `created_at`: the stock items each task needs. |
+| `stock_draws` | `id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at`: what each closed occurrence took from the stock. |
 | `tasks` | `id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, the budgets, `notes`, `procedure`, `assignee`, `contractor` (an id), the repeat rule, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` or empty) with `season_start_month` and `season_end_month`, `hide_days_before`. |
 | `contractors` | `id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`. |
 | `files` | `path` and `size` of each file in `files/`. |

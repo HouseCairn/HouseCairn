@@ -103,9 +103,6 @@ msgstr "`id`, `kind`, `payload`, `received_at` des événements reçus."
 msgid "`rooms`"
 msgstr "`rooms`"
 
-msgid "`id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch and stock, floor and wall covering, memory notes)."
-msgstr "`id`, `name`, `kind`, `position`, `notes`, `created_at` de chaque pièce, et sa mémoire `memory` (couleur, marque, référence, lot et reste de peinture, revêtements de sol et de mur, notes de mémoire)."
-
 msgid "`items`"
 msgstr "`items`"
 
@@ -127,9 +124,6 @@ msgstr "`id`, `task`, `occurrence` ou `null`, `name`, `content_type`, `is_image`
 msgid "`stock_items`"
 msgstr "`stock_items`"
 
-msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
-msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
-
 msgid "`stock_suppliers`"
 msgstr "`stock_suppliers`"
 
@@ -138,9 +132,6 @@ msgstr "`id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`.
 
 msgid "`stock_movements`"
 msgstr "`stock_movements`"
-
-msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
-msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
 
 msgid "`tasks`"
 msgstr "`tasks`"
@@ -190,3 +181,23 @@ msgstr "Les données supprimées restent dans les sauvegardes jusqu'à leur expi
 #~ msgid "`id`, `email`, `name`, `role`, `joined_at` of each member."
 #~ msgstr "`id`, `email`, `name`, `role`, `joined_at` de chaque membre."
 
+msgid "`id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch, `paint_article` (a stock item id or `null`), floor and wall covering, memory notes)."
+msgstr "`id`, `name`, `kind`, `position`, `notes`, `created_at` de chaque pièce, et sa `memory` (couleur, marque, référence et lot de la peinture, `paint_article` (l'identifiant d'un article ou `null`), revêtement de sol et de mur, notes de mémoire)."
+
+msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (a code of the list, or `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (item ids), `rooms` (room ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
+msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (un code de la liste, ou `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `rooms` (identifiants de pièces), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
+
+msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (the occurrence of a task whose closing wrote the line, or `null`), `created_at`."
+msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (l'occurrence d'une tâche dont la clôture a écrit la ligne, ou `null`), `created_at`."
+
+msgid "`task_materials`"
+msgstr "`task_materials`"
+
+msgid "`id`, `task`, `article`, `quantity`, `created_at`: the stock items each task needs."
+msgstr "`id`, `task`, `article`, `quantity`, `created_at` : les articles dont chaque tâche a besoin."
+
+msgid "`stock_draws`"
+msgstr "`stock_draws`"
+
+msgid "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at`: what each closed occurrence took from the stock."
+msgstr "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at` : ce que chaque occurrence close a pris dans le stock."
