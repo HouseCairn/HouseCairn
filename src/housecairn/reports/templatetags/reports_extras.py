@@ -18,7 +18,6 @@ def reports_row(context: dict[str, Any], home: Any) -> dict[str, Any]:
 
 @register.inclusion_tag("reports/_today.html", takes_context=True)
 def open_reports_line(context: dict[str, Any], home: Any) -> dict[str, Any]:
-    """On Today, one line for the members who write: how many reports wait for them."""
+    """On Today, for everyone: Report a problem; for the members who write, how many wait."""
     request = context["request"]
-    waiting = services.open_count(home) if home_services.can_write(request.user, home) else 0
-    return {"home": home, "waiting": waiting}
+    return {"home": home, "request": request, "waiting": services.waiting_for(request, home.pk)}

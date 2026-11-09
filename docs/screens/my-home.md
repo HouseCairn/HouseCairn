@@ -1,11 +1,15 @@
-# My home
+# Today in several homes
 
-What concerns you, at `/me/`; **Today** in the navigation opens it once you are
-signed in, from a page that is not about one home. With several homes, the selector at the top chooses one, or **All my
-homes** to see them together.
+What concerns you across your homes, at the root address `/`, when you can open
+more than one home. With one home, `/` opens the [Today](today.md) of that home;
+with none, it shows the [start page](start-page.md). **Today** in the navigation
+leads here from a page that is not about one home. The address `/me/` of earlier
+versions redirects to `/`.
 
-For each home, under its name (with the tabs of [Today](today.md): Today, All and
-Calendar):
+With several homes, the selector at the top chooses one, or **All my homes** to see
+them together. Each home has its name as a heading, which opens its
+[Today](today.md), and **Report a problem** under it, which opens the
+[form](report-form.md) for that home. Under them:
 
 - **Assigned to me**: the open tasks that are yours, the late ones first.
 - **Overdue in the home**: what is late for other people or for nobody.

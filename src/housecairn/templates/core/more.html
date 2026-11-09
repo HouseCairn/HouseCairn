@@ -10,7 +10,7 @@
         {% for entry in group.entries %}
           <a class="row" href="{{ entry.url }}">
             <span class="row-body">
-              <span class="row-title">{{ entry.label }}</span>
+              <span class="row-title">{{ entry.label }}{% if entry.badge %} ({{ entry.badge }}){% endif %}</span>
               {% if entry.text %}<span class="row-text">{{ entry.text }}</span>{% endif %}
             </span>
             {% include "components/icon.html" with name="chevron" class="chevron" %}

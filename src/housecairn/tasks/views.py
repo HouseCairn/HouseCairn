@@ -663,7 +663,7 @@ class PreferencesView(LoginRequiredMixin, FormView[Any]):
             target, allowed_hosts={self.request.get_host()}, require_https=self.request.is_secure()
         ):
             return target
-        return reverse("my-home")
+        return reverse("index")
 
     def _home(self) -> Home | None:
         """The home the person came from, if `next` is a page of one they may open.

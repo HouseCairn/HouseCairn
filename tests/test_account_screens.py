@@ -58,12 +58,12 @@ class TestForgottenPasswordLink:
 
 
 class TestLandingPage:
-    def test_sign_in_lands_on_my_home(self, client: Client, alice: User) -> None:
+    def test_sign_in_lands_on_the_home_page(self, client: Client, alice: User) -> None:
         response = client.post(
             reverse("account_login"), {"login": alice.email, "password": PASSWORD}
         )
         assert response.status_code == 302
-        assert response["Location"] == reverse("my-home")
+        assert response["Location"] == reverse("index")
 
     def test_an_explicit_next_wins(self, client: Client, alice: User) -> None:
         target = reverse("homes:list")
@@ -88,7 +88,7 @@ class TestLandingPage:
             {"login": alice.email, "password": PASSWORD},
         )
         assert response.status_code == 302
-        assert response["Location"] == reverse("my-home")
+        assert response["Location"] == reverse("index")
 
 
 class TestMessagesNameThePerson:

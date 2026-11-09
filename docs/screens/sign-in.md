@@ -36,7 +36,7 @@ confirm your password.
 
 ## After signing in
 
-You arrive on [My home](my-home.md), unless you came from a page that asked you
+You arrive on [Today](today.md) (see the [start page](start-page.md)), unless you came from a page that asked you
 to sign in first: then you go back to that page. The welcome message names you by
 your display name, never by your email address.
 

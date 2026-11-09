@@ -137,9 +137,6 @@ msgctxt "screen"
 msgid "Search"
 msgstr "Recherche"
 
-msgid "My home"
-msgstr "Mon accueil"
-
 msgid "More"
 msgstr "Plus"
 
@@ -320,8 +317,8 @@ msgstr "Développé avec un agent IA, sous revue humaine."
 msgid "Welcome"
 msgstr "Bienvenue"
 
-msgid "Go to my homes"
-msgstr "Voir mes logements"
+msgid "Add a home"
+msgstr "Ajouter un logement"
 
 msgid "Sign out"
 msgstr "Se déconnecter"

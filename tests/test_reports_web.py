@@ -425,7 +425,7 @@ class TestToday:
         self, client: Client, alice: User, reader: User, alice_home: Home, reported: Report
     ) -> None:
         address = reverse("tasks:today", kwargs={"home_id": alice_home.id})
-        assert "problem" not in signed(client, reader).get(address).content.decode().lower()
+        assert "problem reported" not in signed(client, reader).get(address).content.decode()
         services.close_report(alice, reported, resolution="resolved")
         assert "problem reported" not in signed(client, alice).get(address).content.decode()
 
