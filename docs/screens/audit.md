@@ -5,6 +5,8 @@ Who did what in a home, at `/h/<home id>/audit/`. Only owners see it, from the
 when:
 
 - rooms, items and tasks added, changed or deleted;
+- stock articles and suppliers added, changed or deleted (movements and the stock taken
+  when a task is done are in the ledger of the article, not here);
 - photos of a room or an item, and files of a task, added or deleted;
 - roles changed, members removed or leaving, ownership transferred;
 - invitations sent, sent again, revoked or accepted, with the role, never the
