@@ -8,8 +8,9 @@ from housecairn.core import translations
 
 class Command(BaseCommand):
     help = (
-        "Fail if a catalog has an untranslated or fuzzy string; with --sources, also if "
-        "a string of the code or templates is missing from the catalog."
+        "Fail if a catalog has an untranslated or fuzzy string, or a string translated "
+        "differently in two catalogs; with --sources, also if a string of the code or "
+        "templates is missing from the catalog of its app."
     )
 
     def add_arguments(self, parser: ArgumentParser) -> None:
@@ -21,12 +22,14 @@ class Command(BaseCommand):
 
     def handle(self, *args: Any, **options: Any) -> None:
         problems: list[str] = []
-        for language, path in translations.po_files():
+        for language in translations.languages():
             if options["sources"]:
                 problems += [
                     f"{language}: not in catalog: {msgid}"
-                    for msgid in translations.missing_from_catalog(language, path)
+                    for msgid in translations.missing_from_catalogs(language)
                 ]
+            problems += [f"{language}: {p}" for p in translations.inconsistent(language)]
+        for language, path in translations.po_files():
             problems += [f"{language}: {p}" for p in translations.untranslated(path)]
         if problems:
             raise CommandError("\n".join(problems))

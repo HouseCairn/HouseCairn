@@ -1,0 +1,174 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "This is the only administrator of the instance: make another account an administrator first."
+msgstr "C'est le seul administrateur de l'instance : nommez d'abord un autre compte administrateur."
+
+msgid "Accounts"
+msgstr "Comptes"
+
+msgid "Display name"
+msgstr "Nom d'affichage"
+
+msgid "How the other members of your homes see you, instead of your address. Optional."
+msgstr "Comment les autres membres de vos logements vous voient, à la place de votre adresse. Facultatif."
+
+msgid "Type your email address to confirm"
+msgstr "Saisissez votre adresse e-mail pour confirmer"
+
+msgid "Your password"
+msgstr "Votre mot de passe"
+
+msgid "Too many attempts. Try again later."
+msgstr "Trop de tentatives. Réessayez plus tard."
+
+msgid "This is not the address of your account."
+msgstr "Ce n'est pas l'adresse de votre compte."
+
+msgid "The password is not correct."
+msgstr "Le mot de passe n'est pas correct."
+
+msgid "Sign-up is not open to addresses of this domain."
+msgstr "L'inscription n'est pas ouverte aux adresses de ce domaine."
+
+msgid "The check that you are not a robot did not complete. Wait a few seconds for it on the page, with JavaScript on, then try again."
+msgstr "La vérification que vous n'êtes pas un robot n'a pas abouti. Attendez-la quelques secondes sur la page, avec JavaScript activé, puis réessayez."
+
+msgid "sign-in provider"
+msgstr "fournisseur de connexion"
+
+msgid "typed by the person"
+msgstr "saisi par la personne"
+
+msgid "email address"
+msgstr "adresse e-mail"
+
+msgid "updated at"
+msgstr "modifié le"
+
+msgid "display name"
+msgstr "nom d'affichage"
+
+msgid "How the other members of your homes see you. Optional."
+msgstr "Comment les autres membres de vos logements vous voient. Facultatif."
+
+msgid "source of the display name"
+msgstr "source du nom d'affichage"
+
+msgid "provider of the display name"
+msgstr "fournisseur du nom d'affichage"
+
+msgid "user"
+msgstr "utilisateur"
+
+msgid "users"
+msgstr "utilisateurs"
+
+msgid "first sign-in through OIDC"
+msgstr "première connexion par OIDC"
+
+msgid "created another way"
+msgstr "créé autrement"
+
+msgid "created at"
+msgstr "créé le"
+
+msgid "method"
+msgstr "méthode"
+
+msgid "first account"
+msgstr "premier compte"
+
+msgid "instance setup"
+msgstr "initialisation de l'instance"
+
+msgid "known device"
+msgstr "appareil connu"
+
+msgid "known devices"
+msgstr "appareils connus"
+
+msgid "This is the only administrator of the instance."
+msgstr "C'est le seul administrateur de l'instance."
+
+#, python-format
+msgid "This account is the only owner of %(count)s home(s) that have other members: hand ownership over or delete the home first."
+msgstr "Ce compte est le seul propriétaire de %(count)s logement(s) qui ont d'autres membres : transférez d'abord la propriété ou supprimez le logement."
+
+msgid "A display name cannot contain “@”: it would pass for an address."
+msgstr "Un nom d'affichage ne peut pas contenir « @ » : il passerait pour une adresse."
+
+msgid "Give a name with at least one visible character."
+msgstr "Donnez un nom avec au moins un caractère visible."
+
+msgid "Your account was deleted."
+msgstr "Votre compte a été supprimé."
+
+msgid "Your display name is now the one of your provider."
+msgstr "Votre nom d'affichage est désormais celui de votre fournisseur."
+
+msgid "Your display name will be taken from your provider at your next sign-in."
+msgstr "Votre nom d'affichage sera repris de votre fournisseur à votre prochaine connexion."
+
+msgid "Profile saved."
+msgstr "Profil enregistré."
+
+msgid "Delete my account"
+msgstr "Supprimer mon compte"
+
+msgid "More"
+msgstr "Plus"
+
+msgid "This erases your account, your sign-in methods, your API tokens and the homes where you are the only member. It cannot be undone. Homes shared with others stay with them."
+msgstr "Cela efface votre compte, vos méthodes de connexion, vos jetons d'API et les logements dont vous êtes le seul membre. Cette action est irréversible. Les logements partagés avec d'autres personnes leur restent."
+
+msgid "You are the only administrator of this instance. Make someone else an administrator first."
+msgstr "Vous êtes le seul administrateur de cette instance. Nommez d'abord un autre administrateur."
+
+msgid "You are the only owner of these homes, which have other members. Hand ownership over, or delete the home, first:"
+msgstr "Vous êtes le seul propriétaire de ces logements, qui ont d'autres membres. Transférez d'abord la propriété, ou supprimez le logement :"
+
+msgid "Delete my account for good"
+msgstr "Supprimer définitivement mon compte"
+
+msgid "Sign-in refused"
+msgstr "Connexion refusée"
+
+msgid "No account on this instance matches this identity, and new accounts cannot be created through single sign-on. Ask the administrator of this instance for access."
+msgstr "Aucun compte de cette instance ne correspond à cette identité, et l'authentification unique ne permet pas de créer de nouveaux comptes. Demandez un accès à l'administrateur de cette instance."
+
+msgid "Back to sign-in"
+msgstr "Retour à la connexion"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Your display name is what the other members of your homes see: on tasks you are in charge of, in the history and in the household. Without one, the first part of your address is shown."
+msgstr "Votre nom d'affichage est ce que les autres membres de vos logements voient : sur les tâches dont vous êtes responsable, dans l'historique et dans le foyer. Sans nom, le début de votre adresse est affiché."
+
+#, python-format
+msgid "Taken from %(provider)s. It follows the name your provider gives at each sign-in through it, until you change it here."
+msgstr "Repris de %(provider)s. Il suit le nom que donne votre fournisseur à chaque connexion par celui-ci, jusqu'à ce que vous le modifiiez ici."
+
+msgid "Your provider will give your display name at your next sign-in through it, unless you type one here."
+msgstr "Votre fournisseur donnera votre nom d'affichage à votre prochaine connexion par celui-ci, sauf si vous en saisissez un ici."
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "You typed your display name: sign-in providers do not change it."
+msgstr "Vous avez saisi votre nom d'affichage : les fournisseurs de connexion ne le modifient pas."
+
+msgid "Use the provider's name"
+msgstr "Reprendre le nom du fournisseur"

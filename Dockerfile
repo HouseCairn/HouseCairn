@@ -61,7 +61,7 @@ COPY src/ src/
 # the static files are collected, the copies of these two in the virtual
 # environment are not read either, and no translation catalog source (`.po`)
 # is: Django reads the compiled `.mo` files, the French one of the application
-# included.
+# included (the catalog of `core`, which holds the shared strings).
 RUN DEBUG=true .venv/bin/python manage.py build_design_tokens \
     && DEBUG=true .venv/bin/python manage.py compilemessages --ignore=.venv \
     && DEBUG=false SECRET_KEY=build-time-only-not-a-secret HOUSECAIRN_DATA_DIR=/tmp/build-data \
@@ -72,7 +72,7 @@ RUN DEBUG=true .venv/bin/python manage.py build_design_tokens \
     && rm -rf "$site/drf_spectacular_sidecar/static/drf_spectacular_sidecar/redoc" \
         "$site/rest_framework/static" \
     && find /app -type f -name '*.po' -delete \
-    && test -f src/housecairn/locale/fr/LC_MESSAGES/django.mo \
+    && test -f src/housecairn/core/locale/fr/LC_MESSAGES/django.mo \
     && rm -rf design manage.py /tmp/build-data
 
 # ---------------------------------------------------------------------------

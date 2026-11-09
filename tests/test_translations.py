@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils import translation
 
 from housecairn.core import translations
+from housecairn.core.management.commands import makemessages
 
 SAMPLE = """\
 msgid ""
@@ -108,7 +109,7 @@ def test_every_source_string_is_in_the_catalog(source_copy: Path) -> None:
 def test_sources_scan_needs_gettext(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(shutil, "which", lambda _name: None)
     with pytest.raises(RuntimeError, match="gettext"):
-        translations.missing_from_catalog("fr", Path("unused.po"))
+        translations.missing_from_catalogs("fr")
 
 
 def test_catalogs_have_no_dates_or_locations() -> None:
@@ -122,18 +123,75 @@ def test_catalogs_have_no_dates_or_locations() -> None:
 
 
 @pytest.mark.skipif(shutil.which("xgettext") is None, reason="needs GNU gettext")
-def test_regenerating_the_catalog_changes_nothing(
-    source_copy: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.chdir(source_copy)
-    for language, path in translations.po_files():
-        assert path.is_relative_to(source_copy)
-        before = path.read_bytes()
-        with translations._restored(path):
-            call_command(
-                "makemessages", locale=[language], ignore_patterns=["static/*"], verbosity=0
-            )
-            assert path.read_bytes() == before
+def test_regenerating_the_catalogs_changes_nothing(source_copy: Path) -> None:
+    for language in translations.languages():
+        catalogs = translations.app_catalogs(language)
+        assert catalogs
+        assert all(path.is_relative_to(source_copy) for path in catalogs)
+        before = {path: path.read_bytes() for path in catalogs}
+        with translations._restored(*catalogs):
+            translations.run_makemessages(language)
+            assert translations.app_catalogs(language) == catalogs
+            assert {path: path.read_bytes() for path in catalogs} == before
+
+
+def test_strings_go_to_the_catalog_of_their_app() -> None:
+    base = Path(settings.BASE_DIR)
+    assert makemessages.owner(base / "tasks" / "views.py") == "tasks"
+    assert makemessages.owner(base / "tasks" / "forms" / "task.py") == "tasks"
+    assert makemessages.owner(base / "templates" / "tasks" / "task_detail.html") == "tasks"
+    # The shell, the shared templates and the project modules: the catalog of core.
+    assert makemessages.owner(base / "templates" / "base.html") == "core"
+    assert makemessages.owner(base / "templates" / "shell" / "nav.html") == "core"
+    assert makemessages.owner(base / "templates" / "account" / "login.html") == "core"
+    assert makemessages.owner(base / "settings.py") == "core"
+
+
+def test_each_app_has_its_catalog_and_the_single_one_is_gone() -> None:
+    """One catalog per app (docs/adr/0013), the shared strings first, in core."""
+    base = Path(settings.BASE_DIR)
+    assert not (base / "locale").exists()
+    assert [Path(p) for p in settings.LOCALE_PATHS] == [
+        path.parents[2] for path in sorted(translations.app_catalogs("fr"), key=_core_first)
+    ]
+    assert translations.app_of(translations.po_files().__next__()[1]) == "core"
+    assert len(settings.LOCALE_PATHS) > 10
+    assert translations.inconsistent("fr") == []
+
+
+def _core_first(path: Path) -> tuple[bool, Path]:
+    return (translations.app_of(path) != "core", path.parents[2])
+
+
+def test_a_string_translated_two_ways_is_reported(tmp_path: Path, settings: Any) -> None:
+    settings.BASE_DIR = tmp_path
+    for app, msgstr in (("rooms", "Pièce"), ("tasks", "Salle"), ("stock", "Pièce")):
+        path = translations.catalog_path(tmp_path / app / "locale", "fr")
+        path.parent.mkdir(parents=True)
+        path.write_text(f'msgid ""\nmsgstr ""\n\nmsgid "Room"\nmsgstr "{msgstr}"\n')
+    assert translations.inconsistent("fr") == ["translated differently in rooms and tasks: 'Room'"]
+
+
+@pytest.mark.skipif(shutil.which("xgettext") is None, reason="needs GNU gettext")
+def test_a_new_string_changes_only_the_catalog_of_its_app(source_copy: Path) -> None:
+    """Two pull requests that add strings to two apps touch two different catalogs."""
+    with (source_copy / "templates" / "rooms" / "room_detail.html").open("a") as template:
+        template.write('{% load i18n %}{% translate "A string only rooms has" %}\n')
+    with (source_copy / "budget" / "apps.py").open("a") as module:
+        module.write("\nfrom django.utils.translation import gettext_lazy\n")
+        module.write('NEW = gettext_lazy("A string only budget has")\n')
+    catalogs = translations.app_catalogs("fr")
+    before = {path: path.read_bytes() for path in catalogs}
+    with pytest.raises(CommandError) as raised:
+        call_command("check_translations", "--sources")
+    assert "'A string only rooms has' (catalog of rooms)" in str(raised.value)
+    assert "'A string only budget has' (catalog of budget)" in str(raised.value)
+    with translations._restored(*catalogs):
+        translations.run_makemessages("fr")
+        changed = {translations.app_of(p) for p in catalogs if p.read_bytes() != before[p]}
+        assert changed == {"rooms", "budget"}
+        rooms = translations.catalog_path(source_copy / "rooms" / "locale", "fr")
+        assert 'msgid "A string only rooms has"\nmsgstr ""' in rooms.read_text(encoding="utf-8")
 
 
 @pytest.mark.django_db

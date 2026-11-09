@@ -1,0 +1,517 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Rooms"
+msgstr "Pièces"
+
+msgid "Sets the icon and the filters of the room and, later, the task templates offered for it. Choose Other if none fits."
+msgstr "Détermine l'icône et les filtres de la pièce et, plus tard, les modèles de tâches proposés pour elle. Choisissez Autre si aucun ne convient."
+
+msgid "Fills in by itself from the type; change it to name the room."
+msgstr "Se remplit tout seul d'après le type ; modifiez-le pour nommer la pièce."
+
+msgid "Choose a type"
+msgstr "Choisissez un type"
+
+msgid "Give the room a name."
+msgstr "Donnez un nom à la pièce."
+
+msgid "The colour as you would ask for it. Example: warm white."
+msgstr "La couleur comme vous la demanderiez. Exemple : blanc chaud."
+
+msgid "The make of the paint. Example: Acme Paints."
+msgstr "La marque de la peinture. Exemple : Peintures Acme."
+
+msgid "The reference or the colour code on the tin, to order the same one. Example: AC-1042."
+msgstr "La référence ou le code couleur inscrit sur le pot, pour recommander la même. Exemple : AC-1042."
+
+msgid "The batch number printed on the tin; shades can differ from one batch to another. Example: L23-0457."
+msgstr "Le numéro de lot imprimé sur le pot ; les teintes peuvent différer d'un lot à l'autre. Exemple : L23-0457."
+
+msgid "The tin left over, from your stock: its quantity and where it is are shown here. Example: Sage wall paint, 2 litres. Add it to the stock first if it is not there yet."
+msgstr "Le pot restant, pris dans votre matériel : sa quantité et son emplacement s'affichent ici. Exemple : peinture murale sauge, 2 litres. Ajoutez-le d'abord au matériel s'il n'y est pas encore."
+
+msgid "What covers the floor, with its make and reference if you know them. Example: oak parquet, matt varnish."
+msgstr "Ce qui recouvre le sol, avec sa marque et sa référence si vous les connaissez. Exemple : parquet en chêne, vernis mat."
+
+msgid "What covers the walls, under the paint if any. Example: lining paper, then paint."
+msgstr "Ce qui recouvre les murs, sous la peinture le cas échéant. Exemple : papier de doublage, puis peinture."
+
+msgid "What the walls and floor hide, or anything else to remember about the work done. Example: water pipe along the north wall, 30 cm above the floor."
+msgstr "Ce que cachent les murs et le sol, ou tout autre souvenir des travaux faits. Exemple : canalisation d'eau le long du mur nord, à 30 cm du sol."
+
+msgid "Room"
+msgstr "Pièce"
+
+msgid "Where the item is. Choose another room to move it."
+msgstr "Où se trouve l'élément. Choisissez une autre pièce pour le déplacer."
+
+msgid "Links"
+msgstr "Liens"
+
+msgid "One per line: the address, then a label if you like."
+msgstr "Un par ligne : l'adresse, puis une étiquette si vous le souhaitez."
+
+msgid "Photo"
+msgstr "Photo"
+
+msgid "Caption"
+msgstr "Légende"
+
+msgid "Category"
+msgstr "Catégorie"
+
+msgid "Behind the walls: pipes and cables photographed before the wall is closed, to know where not to drill. Other: say what it is in the caption."
+msgstr "Derrière les murs : tuyaux et câbles photographiés avant la fermeture du mur, pour savoir où ne pas percer. Autre : précisez de quoi il s'agit dans la légende."
+
+msgid "This file is not a valid JPEG, PNG or WebP image."
+msgstr "Ce fichier n'est pas une image JPEG, PNG ou WebP valide."
+
+msgid "This image is too large (more than 40 megapixels)."
+msgstr "Cette image est trop grande (plus de 40 mégapixels)."
+
+msgid "Links must be a list."
+msgstr "Les liens doivent former une liste."
+
+#, python-format
+msgid "At most %(max)d links."
+msgstr "%(max)d liens au plus."
+
+msgid "Each link has a url and, optionally, a label."
+msgstr "Chaque lien a une adresse et, facultativement, une étiquette."
+
+msgid "A link or its label is too long."
+msgstr "Un lien ou son étiquette est trop long."
+
+msgid "Living room"
+msgstr "Salon"
+
+msgid "Kitchen"
+msgstr "Cuisine"
+
+msgid "Bathroom"
+msgstr "Salle de bain"
+
+msgid "Bedroom"
+msgstr "Chambre"
+
+msgid "Hallway"
+msgstr "Couloir"
+
+msgid "Office"
+msgstr "Bureau"
+
+msgid "Utility room"
+msgstr "Local technique"
+
+msgid "Garage"
+msgstr "Garage"
+
+msgid "Cellar"
+msgstr "Cave"
+
+msgid "Attic"
+msgstr "Grenier"
+
+msgid "Outdoor"
+msgstr "Extérieur"
+
+msgid "Other"
+msgstr "Autre"
+
+msgid "name"
+msgstr "nom"
+
+msgid "type"
+msgstr "type"
+
+msgid "position"
+msgstr "position"
+
+msgid "notes"
+msgstr "notes"
+
+msgid "paint colour"
+msgstr "couleur de la peinture"
+
+msgid "paint brand"
+msgstr "marque de la peinture"
+
+msgid "paint reference"
+msgstr "référence de la peinture"
+
+msgid "paint batch"
+msgstr "lot de la peinture"
+
+msgid "paint left in stock"
+msgstr "peinture restant en stock"
+
+msgid "floor covering"
+msgstr "revêtement de sol"
+
+msgid "wall covering"
+msgstr "revêtement de mur"
+
+msgid "memory notes"
+msgstr "notes de mémoire"
+
+msgid "room"
+msgstr "pièce"
+
+msgid "rooms"
+msgstr "pièces"
+
+msgid "Equipment"
+msgstr "Équipement"
+
+msgid "Surface"
+msgstr "Surface"
+
+msgid "brand"
+msgstr "marque"
+
+msgid "model"
+msgstr "modèle"
+
+msgid "serial number"
+msgstr "numéro de série"
+
+msgid "installed on"
+msgstr "posé le"
+
+msgid "warranty ends on"
+msgstr "fin de garantie"
+
+msgid "maintenance contract: provider"
+msgstr "contrat d'entretien : prestataire"
+
+msgid "Who services it. Example: Acme Heating."
+msgstr "Qui l'entretient. Exemple : Acme Chauffage."
+
+msgid "maintenance contract: number"
+msgstr "contrat d'entretien : numéro"
+
+msgid "The number to quote when you call them. Example: C-2024-0187."
+msgstr "Le numéro à donner quand vous les appelez. Exemple : C-2024-0187."
+
+msgid "contract link"
+msgstr "lien du contrat"
+
+msgid "links"
+msgstr "liens"
+
+msgid "item"
+msgstr "élément"
+
+msgid "items"
+msgstr "éléments"
+
+msgid "This room is not in this home."
+msgstr "Cette pièce n'est pas dans ce logement."
+
+msgid "General"
+msgstr "Général"
+
+msgid "Behind the walls"
+msgstr "Derrière les murs"
+
+msgid "Before the work"
+msgstr "Avant les travaux"
+
+msgid "After the work"
+msgstr "Après les travaux"
+
+msgid "Pipes and cables photographed before the wall is closed, to know where not to drill."
+msgstr "Tuyaux et câbles photographiés avant la fermeture du mur, pour savoir où ne pas percer."
+
+msgid "category"
+msgstr "catégorie"
+
+msgid "caption"
+msgstr "légende"
+
+msgid "photo"
+msgstr "photo"
+
+msgid "photos"
+msgstr "photos"
+
+msgid "This stock item is not in this home."
+msgstr "Cet article n'est pas dans ce logement."
+
+msgid "The list holds a room twice, or a room that does not exist."
+msgstr "La liste contient une pièce deux fois, ou une pièce qui n'existe pas."
+
+msgid "Choose up or down."
+msgstr "Choisissez monter ou descendre."
+
+#, python-format
+msgid "This file is too large: the limit is %(limit)s."
+msgstr "Ce fichier est trop volumineux : la limite est de %(limit)s."
+
+msgid "This file is empty."
+msgstr "Ce fichier est vide."
+
+#, python-format
+msgid "At most %(max)d photos for a room or an item."
+msgstr "%(max)d photos au plus pour une pièce ou un élément."
+
+msgid "Room added."
+msgstr "Pièce ajoutée."
+
+msgid "Room saved."
+msgstr "Pièce enregistrée."
+
+msgid "The room, its items and their photos disappear from the screens."
+msgstr "La pièce, ses éléments et leurs photos disparaissent des écrans."
+
+msgid "Room deleted."
+msgstr "Pièce supprimée."
+
+msgid "Item added."
+msgstr "Élément ajouté."
+
+msgid "Item saved."
+msgstr "Élément enregistré."
+
+msgid "The item and its photos disappear from the screens."
+msgstr "L'élément et ses photos disparaissent des écrans."
+
+msgid "Item deleted."
+msgstr "Élément supprimé."
+
+msgid "This file is too large."
+msgstr "Ce fichier est trop volumineux."
+
+msgid "Photo added."
+msgstr "Photo ajoutée."
+
+msgid "Photo deleted."
+msgstr "Photo supprimée."
+
+#, python-format
+msgid "Photo of %(name)s"
+msgstr "Photo de %(name)s"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "this photo"
+msgstr "cette photo"
+
+msgid "Choose the home whose rooms you want to open."
+msgstr "Choisissez le logement dont vous voulez ouvrir les pièces."
+
+msgid "You have no home to open yet."
+msgstr "Vous n'avez pas encore de logement à ouvrir."
+
+msgid "Add a home"
+msgstr "Ajouter un logement"
+
+#, python-format
+msgid "Delete %(name)s?"
+msgstr "Supprimer %(name)s ?"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Brand, model"
+msgstr "Marque, modèle"
+
+msgid "Serial number"
+msgstr "Numéro de série"
+
+msgid "Installed on"
+msgstr "Posé le"
+
+msgid "Warranty"
+msgstr "Garantie"
+
+#, python-format
+msgid "ended on %(date)s"
+msgstr "terminée le %(date)s"
+
+#, python-format
+msgid "until %(date)s"
+msgstr "jusqu'au %(date)s"
+
+msgid "Maintenance contract"
+msgstr "Contrat d'entretien"
+
+msgid "no."
+msgstr "n°"
+
+msgid "open the contract"
+msgstr "ouvrir le contrat"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Edit the item"
+msgstr "Modifier l'élément"
+
+msgid "Photos"
+msgstr "Photos"
+
+msgid "Add a photo"
+msgstr "Ajouter une photo"
+
+msgid "No photo yet."
+msgstr "Aucune photo pour l'instant."
+
+msgid "Tasks"
+msgstr "Tâches"
+
+msgid "No date"
+msgstr "Sans date"
+
+msgid "No task for this yet."
+msgstr "Aucune tâche pour l'instant."
+
+msgid "Add a task"
+msgstr "Ajouter une tâche"
+
+msgid "Maintenance log"
+msgstr "Journal d'entretien"
+
+msgid "Add an item"
+msgstr "Ajouter un élément"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Add the item"
+msgstr "Ajouter l'élément"
+
+msgid "Delete the item"
+msgstr "Supprimer l'élément"
+
+msgid "Upload"
+msgstr "Envoyer"
+
+#, python-format
+msgid "JPEG, PNG or WebP, up to %(size)s. Location data and other information stored in the file are removed."
+msgstr "JPEG, PNG ou WebP, jusqu'à %(size)s. La position et les autres informations stockées dans le fichier sont supprimées."
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Edit the room"
+msgstr "Modifier la pièce"
+
+msgid "Room memory"
+msgstr "Mémoire de la pièce"
+
+msgid "Paint colour"
+msgstr "Couleur de la peinture"
+
+msgid "Paint brand"
+msgstr "Marque de la peinture"
+
+msgid "Paint reference"
+msgstr "Référence de la peinture"
+
+msgid "Paint batch"
+msgstr "Lot de la peinture"
+
+msgid "Paint left in stock"
+msgstr "Peinture restant en stock"
+
+msgid "Floor covering"
+msgstr "Revêtement de sol"
+
+msgid "Wall covering"
+msgstr "Revêtement de mur"
+
+msgid "Memory notes"
+msgstr "Notes de mémoire"
+
+msgid "Nothing noted yet: paint, floor and wall coverings, and what runs behind the walls."
+msgstr "Rien de noté pour l'instant : peinture, revêtements de sol et de murs, et ce qui passe derrière les murs."
+
+msgid "Edit the memory"
+msgstr "Modifier la mémoire"
+
+msgid "Stock"
+msgstr "Matériel"
+
+msgid "Low stock"
+msgstr "Stock bas"
+
+msgid "No stock item for this room yet."
+msgstr "Aucun article pour cette pièce pour l'instant."
+
+msgid "Photo categories"
+msgstr "Catégories de photos"
+
+msgid "All"
+msgstr "Toutes"
+
+msgid "No photo in this category."
+msgstr "Aucune photo dans cette catégorie."
+
+msgid "Items"
+msgstr "Éléments"
+
+#, python-format
+msgid "warranty until %(date)s"
+msgstr "garantie jusqu'au %(date)s"
+
+msgid "No item in this room yet."
+msgstr "Aucun élément dans cette pièce pour l'instant."
+
+msgid "Add a room"
+msgstr "Ajouter une pièce"
+
+msgid "Add the room"
+msgstr "Ajouter la pièce"
+
+msgid "Delete the room"
+msgstr "Supprimer la pièce"
+
+msgid "Search rooms and items"
+msgstr "Rechercher des pièces et des éléments"
+
+msgid "Search"
+msgstr "Rechercher"
+
+#, python-format
+msgid "Move %(name)s up"
+msgstr "Monter %(name)s"
+
+#, python-format
+msgid "Move %(name)s down"
+msgstr "Descendre %(name)s"
+
+#, python-format
+msgid "%(counter)s item"
+msgid_plural "%(counter)s items"
+msgstr[0] "%(counter)s élément"
+msgstr[1] "%(counter)s éléments"
+
+msgid "No room yet."
+msgstr "Aucune pièce pour l'instant."
+
+msgid "Done"
+msgstr "Terminé"
+
+msgid "Change the order"
+msgstr "Changer l'ordre"
+
+msgid "The memory of a room keeps what you can no longer see once the work is finished: the paint, the floor and wall coverings, and what runs behind the walls. Every field is optional."
+msgstr "La mémoire d'une pièce garde ce qu'on ne voit plus une fois les travaux finis : la peinture, les revêtements de sol et de murs, et ce qui passe derrière les murs. Tous les champs sont facultatifs."
+
+#, python-format
+msgid "Nothing matches “%(query)s”."
+msgstr "Rien ne correspond à « %(query)s »."

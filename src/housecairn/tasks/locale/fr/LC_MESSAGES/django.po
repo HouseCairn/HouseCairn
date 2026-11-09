@@ -1,0 +1,962 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "No room"
+msgstr "Aucune pièce"
+
+msgid "Nobody yet"
+msgstr "Personne pour l'instant"
+
+msgid "Today"
+msgstr "Aujourd'hui"
+
+msgid "Coming up"
+msgstr "À venir"
+
+msgid "Overdue"
+msgstr "En retard"
+
+msgid "In season"
+msgstr "De saison"
+
+msgid "Tasks"
+msgstr "Tâches"
+
+msgid "Contractor added."
+msgstr "Intervenant ajouté."
+
+msgid "Contractor saved."
+msgstr "Intervenant enregistré."
+
+msgid "Contractor deleted."
+msgstr "Intervenant supprimé."
+
+msgid "minutes"
+msgstr "minutes"
+
+msgid "hours"
+msgstr "heures"
+
+msgid "days"
+msgstr "jours"
+
+#, python-format
+msgid "%(n)d min"
+msgid_plural "%(n)d min"
+msgstr[0] "%(n)d min"
+msgstr[1] "%(n)d min"
+
+#, python-format
+msgid "%(n)d day"
+msgid_plural "%(n)d days"
+msgstr[0] "%(n)d jour"
+msgstr[1] "%(n)d jours"
+
+msgid "This type of file is not accepted. Use a JPEG, PNG or WebP image, or a PDF, text, Word, Excel or OpenDocument file."
+msgstr "Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou WebP, ou un fichier PDF, texte, Word, Excel ou OpenDocument."
+
+msgid "Quantity"
+msgstr "Quantité"
+
+msgid "Stock item"
+msgstr "Article"
+
+msgid "Give the quantity."
+msgstr "Donnez la quantité."
+
+msgid "Choose the stock item."
+msgstr "Choisissez l'article."
+
+msgid "A stock item is listed once for a task."
+msgstr "Un article ne figure qu'une fois pour une tâche."
+
+msgid "Actual cost"
+msgstr "Coût réel"
+
+msgid "Note"
+msgstr "Note"
+
+#, python-format
+msgid "Used: %(name)s"
+msgstr "Utilisé : %(name)s"
+
+msgid "Taken from the stock when the task was marked done."
+msgstr "Pris dans le stock quand la tâche a été marquée faite."
+
+msgid "New date"
+msgstr "Nouvelle date"
+
+msgid "Photos and files"
+msgstr "Photos et fichiers"
+
+msgid "Choose at least one file."
+msgstr "Choisissez au moins un fichier."
+
+msgid "Language"
+msgstr "Langue"
+
+msgid "Automatic (browser, then instance default)"
+msgstr "Automatique (navigateur, puis défaut de l'instance)"
+
+msgid "Applies to every page you open, on every device you sign in from."
+msgstr "S'applique à toutes les pages que vous ouvrez, sur tous les appareils où vous vous connectez."
+
+msgid "Assignee"
+msgstr "Responsable"
+
+msgid "Item"
+msgstr "Élément"
+
+msgid "Due on"
+msgstr "Échéance"
+
+msgid "Season"
+msgstr "Saison"
+
+msgid "All year"
+msgstr "Toute l'année"
+
+msgid "Custom season starts in"
+msgstr "La saison personnalisée commence en"
+
+msgid "Custom season ends in"
+msgstr "La saison personnalisée finit en"
+
+msgid "Only used with the season Custom months."
+msgstr "Utilisé seulement avec la saison « Mois personnalisés »."
+
+msgid "Estimated duration"
+msgstr "Durée estimée"
+
+msgid "Unit"
+msgstr "Unité"
+
+msgid "Contractor"
+msgstr "Intervenant"
+
+msgid "Pick one from the suggestions or type a new name: it joins the contractors of the home when you save."
+msgstr "Choisissez parmi les suggestions ou saisissez un nouveau nom : il rejoint les intervenants du logement à l'enregistrement."
+
+msgid "Labour budget"
+msgstr "Budget main d'œuvre"
+
+msgid "Material budget"
+msgstr "Budget matériel"
+
+msgid "Room"
+msgstr "Pièce"
+
+msgid "Markdown: how to do it, step by step. Links to web pages only."
+msgstr "Markdown : comment faire, pas à pas. Liens vers des pages web seulement."
+
+#, python-format
+msgid "The season follows the hemisphere of the home (%(hemisphere)s): change it in the settings of the home."
+msgstr "La saison suit l'hémisphère du logement (%(hemisphere)s) : modifiez-le dans les réglages du logement."
+
+msgid "Give a duration between a minute and thirty days."
+msgstr "Indiquez une durée comprise entre une minute et trente jours."
+
+msgid "Give the first and the last month."
+msgstr "Indiquez le premier et le dernier mois."
+
+msgid "This stock item is not in this home."
+msgstr "Cet article n'est pas dans ce logement."
+
+msgid "The quantity must be more than zero."
+msgstr "La quantité doit être supérieure à zéro."
+
+msgid "This stock item is already listed on the task."
+msgstr "Cet article figure déjà sur la tâche."
+
+#, python-format
+msgid "At most %(max)d stock items for a task."
+msgstr "%(max)d articles au plus pour une tâche."
+
+msgid "This stock item was not taken by this task."
+msgstr "Cet article n'a pas été pris par cette tâche."
+
+msgid "The quantity cannot be negative."
+msgstr "La quantité ne peut pas être négative."
+
+msgid "This language is not offered."
+msgstr "Cette langue n'est pas proposée."
+
+msgid "Low"
+msgstr "Basse"
+
+msgid "Normal"
+msgstr "Normale"
+
+msgid "High"
+msgstr "Haute"
+
+msgid "Once"
+msgstr "Une fois"
+
+msgid "Fixed date"
+msgstr "Date fixe"
+
+msgid "After the last time"
+msgstr "Après la dernière fois"
+
+msgid "weeks"
+msgstr "semaines"
+
+msgid "months"
+msgstr "mois"
+
+msgid "years"
+msgstr "ans"
+
+msgid "Spring"
+msgstr "Printemps"
+
+msgid "Summer"
+msgstr "Été"
+
+msgid "Autumn"
+msgstr "Automne"
+
+msgid "Winter"
+msgstr "Hiver"
+
+msgid "Heating season"
+msgstr "Saison de chauffe"
+
+msgid "Custom months"
+msgstr "Mois personnalisés"
+
+msgid "Planned"
+msgstr "Prévue"
+
+msgctxt "task"
+msgid "Done"
+msgstr "Fait"
+
+msgid "Postponed"
+msgstr "Reportée"
+
+msgid "Skipped"
+msgstr "Ignorée"
+
+msgid "Plumber"
+msgstr "Plombier"
+
+msgid "Electrician"
+msgstr "Électricien"
+
+msgid "Heating engineer"
+msgstr "Chauffagiste"
+
+msgid "Roofer"
+msgstr "Couvreur"
+
+msgid "Carpenter"
+msgstr "Menuisier"
+
+msgid "Painter"
+msgstr "Peintre"
+
+msgid "Mason"
+msgstr "Maçon"
+
+msgid "Gardener"
+msgstr "Jardinier"
+
+msgid "Locksmith"
+msgstr "Serrurier"
+
+msgid "Chimney sweep"
+msgstr "Ramoneur"
+
+msgid "Other"
+msgstr "Autre"
+
+msgid "name"
+msgstr "nom"
+
+msgid "trade"
+msgstr "métier"
+
+msgid "which trade"
+msgstr "quel métier"
+
+msgid "Only with the trade Other. Example: Pool maintenance."
+msgstr "Seulement avec le métier Autre. Exemple : entretien de piscine."
+
+msgid "phone"
+msgstr "téléphone"
+
+msgid "Digits, spaces and + ( ) - . / only."
+msgstr "Chiffres, espaces et + ( ) - . / seulement."
+
+msgid "email address"
+msgstr "adresse e-mail"
+
+msgid "address"
+msgstr "adresse"
+
+msgid "note"
+msgstr "note"
+
+msgid "contractor"
+msgstr "intervenant"
+
+msgid "contractors"
+msgstr "intervenants"
+
+msgid "Say which trade."
+msgstr "Dites de quel métier il s'agit."
+
+msgid "title"
+msgstr "titre"
+
+msgid "priority"
+msgstr "priorité"
+
+msgid "estimated duration (minutes)"
+msgstr "durée estimée (minutes)"
+
+msgid "labour budget"
+msgstr "budget main d'œuvre"
+
+msgid "material budget"
+msgstr "budget matériel"
+
+msgid "notes"
+msgstr "notes"
+
+msgid "procedure"
+msgstr "mode opératoire"
+
+msgid "assignee"
+msgstr "responsable"
+
+msgid "repeat"
+msgstr "répétition"
+
+msgid "unit"
+msgstr "unité"
+
+msgid "every"
+msgstr "tous les"
+
+msgid "season"
+msgstr "saison"
+
+msgid "season starts in"
+msgstr "la saison commence en"
+
+msgid "season ends in"
+msgstr "la saison finit en"
+
+msgid "hide until this many days before"
+msgstr "masquer jusqu'à ce nombre de jours avant"
+
+msgid "0 shows the task as soon as it exists."
+msgstr "0 affiche la tâche dès qu'elle existe."
+
+msgid "task"
+msgstr "tâche"
+
+msgid "tasks"
+msgstr "tâches"
+
+msgid "This room is not in this home."
+msgstr "Cette pièce n'est pas dans ce logement."
+
+msgid "This item is not in this home."
+msgstr "Cet élément n'est pas dans ce logement."
+
+msgid "This item is not in this room."
+msgstr "Cet élément n'est pas dans cette pièce."
+
+msgid "This contractor is not in this home."
+msgstr "Cet intervenant n'est pas dans ce logement."
+
+msgid "This interval is out of range."
+msgstr "Cet intervalle est hors limites."
+
+msgid "Give the first and the last month of the season."
+msgstr "Indiquez le premier et le dernier mois de la saison."
+
+msgid "stock item"
+msgstr "article"
+
+msgid "quantity"
+msgstr "quantité"
+
+msgid "task material"
+msgstr "fourniture de tâche"
+
+msgid "task materials"
+msgstr "fournitures de tâche"
+
+msgid "due on"
+msgstr "échéance"
+
+msgid "status"
+msgstr "statut"
+
+msgid "done on"
+msgstr "fait le"
+
+msgid "actual cost"
+msgstr "coût réel"
+
+msgid "occurrence"
+msgstr "occurrence"
+
+msgid "occurrences"
+msgstr "occurrences"
+
+msgid "quantity used"
+msgstr "quantité utilisée"
+
+msgid "quantity taken from the stock"
+msgstr "quantité prise dans le stock"
+
+msgid "stock draw"
+msgstr "prélèvement de stock"
+
+msgid "stock draws"
+msgstr "prélèvements de stock"
+
+msgid "Urgency"
+msgstr "Urgence"
+
+msgid "Person"
+msgstr "Personne"
+
+msgid "Calendar"
+msgstr "Calendrier"
+
+msgid "1 week"
+msgstr "1 semaine"
+
+msgid "2 weeks"
+msgstr "2 semaines"
+
+msgid "1 month"
+msgstr "1 mois"
+
+msgid "2 months"
+msgstr "2 mois"
+
+msgid "3 months"
+msgstr "3 mois"
+
+msgid "group by"
+msgstr "regrouper par"
+
+msgid "look ahead"
+msgstr "voir à l'avance"
+
+msgid "overdue"
+msgstr "en retard"
+
+msgid "coming up"
+msgstr "à venir"
+
+msgid "in season"
+msgstr "de saison"
+
+msgid "language"
+msgstr "langue"
+
+msgid "display preference"
+msgstr "préférence d'affichage"
+
+msgid "display preferences"
+msgstr "préférences d'affichage"
+
+msgid "attachment"
+msgstr "pièce jointe"
+
+msgid "attachments"
+msgstr "pièces jointes"
+
+#, python-format
+msgid "Choose a date within %(years)d years of today."
+msgstr "Choisissez une date à moins de %(years)d ans d'aujourd'hui."
+
+msgid "This person is not a member of this home."
+msgstr "Cette personne n'est pas membre de ce logement."
+
+msgid "A task that repeats on a fixed date needs a date."
+msgstr "Une tâche qui se répète à date fixe a besoin d'une date."
+
+msgid "This occurrence is already closed."
+msgstr "Cette occurrence est déjà clôturée."
+
+msgid "The date cannot be in the future."
+msgstr "La date ne peut pas être dans le futur."
+
+msgid "Choose a date that is not in the past."
+msgstr "Choisissez une date qui n'est pas passée."
+
+msgid "Only a task that was marked done or skipped can be undone."
+msgstr "Seule une tâche marquée comme faite ou ignorée peut être annulée."
+
+msgid "The next occurrence has been changed since: it cannot be undone any more."
+msgstr "L'occurrence suivante a été modifiée depuis : l'annulation n'est plus possible."
+
+msgid "The details can be filled in once the task is done."
+msgstr "Les détails se renseignent une fois la tâche faite."
+
+msgid "This occurrence is not one of this task."
+msgstr "Cette occurrence n'appartient pas à cette tâche."
+
+#, python-format
+msgid "At most %(max)d attachments for a task."
+msgstr "%(max)d pièces jointes au plus pour une tâche."
+
+#, python-format
+msgid "Every day"
+msgid_plural "Every %(n)d days"
+msgstr[0] "Tous les jours"
+msgstr[1] "Tous les %(n)d jours"
+
+#, python-format
+msgid "Every week"
+msgid_plural "Every %(n)d weeks"
+msgstr[0] "Toutes les semaines"
+msgstr[1] "Toutes les %(n)d semaines"
+
+#, python-format
+msgid "Every month"
+msgid_plural "Every %(n)d months"
+msgstr[0] "Tous les mois"
+msgstr[1] "Tous les %(n)d mois"
+
+#, python-format
+msgid "Every year"
+msgid_plural "Every %(n)d years"
+msgstr[0] "Tous les ans"
+msgstr[1] "Tous les %(n)d ans"
+
+#, python-format
+msgid "A day after the last time"
+msgid_plural "%(n)d days after the last time"
+msgstr[0] "Un jour après la dernière fois"
+msgstr[1] "%(n)d jours après la dernière fois"
+
+#, python-format
+msgid "A week after the last time"
+msgid_plural "%(n)d weeks after the last time"
+msgstr[0] "Une semaine après la dernière fois"
+msgstr[1] "%(n)d semaines après la dernière fois"
+
+#, python-format
+msgid "A month after the last time"
+msgid_plural "%(n)d months after the last time"
+msgstr[0] "Un mois après la dernière fois"
+msgstr[1] "%(n)d mois après la dernière fois"
+
+#, python-format
+msgid "A year after the last time"
+msgid_plural "%(n)d years after the last time"
+msgstr[0] "Un an après la dernière fois"
+msgstr[1] "%(n)d ans après la dernière fois"
+
+#, python-format
+msgid "from %(start)s to %(end)s"
+msgstr "de %(start)s à %(end)s"
+
+msgid "Task added."
+msgstr "Tâche ajoutée."
+
+#, python-format
+msgid "File not added: %(reason)s"
+msgstr "Fichier non ajouté : %(reason)s"
+
+msgid "Task saved."
+msgstr "Tâche enregistrée."
+
+msgid "Task deleted."
+msgstr "Tâche supprimée."
+
+msgid "Stock item saved on the task."
+msgstr "Article enregistré sur la tâche."
+
+msgid "Stock item removed from the task."
+msgstr "Article retiré de la tâche."
+
+#, python-format
+msgid "%(name)s: %(drawn)s of %(wanted)s"
+msgstr "%(name)s : %(drawn)s sur %(wanted)s"
+
+#, python-format
+msgid "Not enough in stock, the stock is at zero: %(list)s."
+msgstr "Stock insuffisant, le stock est à zéro : %(list)s."
+
+msgid "Undone."
+msgstr "Annulé."
+
+msgid "Task postponed."
+msgstr "Tâche reportée."
+
+msgid "Details saved."
+msgstr "Détails enregistrés."
+
+msgid "Preferences saved."
+msgstr "Préférences enregistrées."
+
+msgid "This file is too large."
+msgstr "Ce fichier est trop volumineux."
+
+msgid "Some files were added."
+msgstr "Une partie des fichiers a été ajoutée."
+
+msgid "Files added."
+msgstr "Fichiers ajoutés."
+
+msgid "File deleted."
+msgstr "Fichier supprimé."
+
+#, python-format
+msgid "Photo: %(name)s"
+msgstr "Photo : %(name)s"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+#, python-format
+msgid "%(counter)s day late"
+msgid_plural "%(counter)s days late"
+msgstr[0] "%(counter)s jour de retard"
+msgstr[1] "%(counter)s jours de retard"
+
+msgid "No date"
+msgstr "Sans date"
+
+#, python-format
+msgid "needs %(needed)s · %(stocked)s in stock"
+msgstr "demande %(needed)s · %(stocked)s en stock"
+
+msgid "Not enough in stock"
+msgstr "Stock insuffisant"
+
+#, python-format
+msgid "Quantity of %(name)s"
+msgstr "Quantité de %(name)s"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Remove"
+msgstr "Retirer"
+
+msgid "No stock item needed."
+msgstr "Aucun article demandé."
+
+msgid "Add the stock item"
+msgstr "Ajouter l'article"
+
+msgid "Marking the task done takes these quantities from the stock; undoing puts them back."
+msgstr "Marquer la tâche faite prend ces quantités dans le stock ; annuler les remet."
+
+msgid "Stock items the task needs, with the quantity. Marking the task done takes these quantities from the stock. To remove a line, set its stock item to the dash."
+msgstr "Articles dont la tâche a besoin, avec la quantité. Marquer la tâche faite prend ces quantités dans le stock. Pour retirer une ligne, remettez son article sur le tiret."
+
+#, python-format
+msgid "Stock item %(number)s"
+msgstr "Article %(number)s"
+
+msgid "No stock item in the stock of this home yet."
+msgstr "Aucun article dans le matériel de ce logement pour l'instant."
+
+msgid "Marked done."
+msgstr "Marquée comme faite."
+
+msgid "Skipped."
+msgstr "Ignorée."
+
+msgid "Undo"
+msgstr "Annuler"
+
+msgid "Add photos and files"
+msgstr "Ajouter des photos et des fichiers"
+
+msgid "Upload"
+msgstr "Envoyer"
+
+#, python-format
+msgid "Images (JPEG, PNG, WebP) and PDF, text, Word, Excel or OpenDocument files, up to %(size)s each. Location data and other information stored in an image are removed."
+msgstr "Images (JPEG, PNG, WebP) et fichiers PDF, texte, Word, Excel ou OpenDocument, jusqu'à %(size)s chacun. La position et les autres informations stockées dans une image sont supprimées."
+
+msgid "Choose the home whose tasks you want to open."
+msgstr "Choisissez le logement dont vous voulez ouvrir les tâches."
+
+msgid "You have no home to open yet."
+msgstr "Vous n'avez pas encore de logement à ouvrir."
+
+msgid "Add a home"
+msgstr "Ajouter un logement"
+
+msgid "Details of what was done"
+msgstr "Détails de ce qui a été fait"
+
+#, python-format
+msgid "Delete %(name)s?"
+msgstr "Supprimer %(name)s ?"
+
+msgid "The task, its history and its files disappear from the screens."
+msgstr "La tâche, son historique et ses fichiers disparaissent des écrans."
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "The contractor disappears from the screens. The tasks that named them stay, without a contractor."
+msgstr "L'intervenant disparaît des écrans. Les tâches qui le nommaient restent, sans intervenant."
+
+msgid "Contractors"
+msgstr "Intervenants"
+
+msgid "Trade"
+msgstr "Métier"
+
+msgid "Phone"
+msgstr "Téléphone"
+
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Download the contact (.vcf)"
+msgstr "Télécharger la fiche contact (.vcf)"
+
+msgid "No task is linked to this contractor."
+msgstr "Aucune tâche n'est liée à cet intervenant."
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Edit the contractor"
+msgstr "Modifier l'intervenant"
+
+msgid "Add a contractor"
+msgstr "Ajouter un intervenant"
+
+msgid "No contractor yet. People and companies who work in this home, with their trade and how to reach them, are kept here."
+msgstr "Aucun intervenant pour l'instant. Les personnes et les entreprises qui travaillent dans ce logement, avec leur métier et le moyen de les joindre, sont gardées ici."
+
+msgid "History"
+msgstr "Historique"
+
+msgid "Filters"
+msgstr "Filtres"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "All rooms"
+msgstr "Toutes les pièces"
+
+msgid "All items"
+msgstr "Tous les éléments"
+
+msgid "Everyone"
+msgstr "Tout le monde"
+
+msgid "Done by"
+msgstr "Fait par"
+
+msgid "Outcome"
+msgstr "Résultat"
+
+msgid "Done or skipped"
+msgstr "Faites ou ignorées"
+
+msgid "From"
+msgstr "Du"
+
+msgid "To"
+msgstr "Au"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+msgid "Clear"
+msgstr "Effacer"
+
+#, python-format
+msgid "%(counter)s entry"
+msgid_plural "%(counter)s entries"
+msgstr[0] "%(counter)s entrée"
+msgstr[1] "%(counter)s entrées"
+
+#, python-format
+msgid "real cost: %(total)s %(currency)s, entered on %(counter)s entry"
+msgid_plural "real cost: %(total)s %(currency)s, entered on %(counter)s entries"
+msgstr[0] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrée"
+msgstr[1] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrées"
+
+msgid "Pages"
+msgstr "Pages"
+
+msgid "Previous"
+msgstr "Précédent"
+
+#, python-format
+msgid "Page %(number)s of %(total)s"
+msgstr "Page %(number)s sur %(total)s"
+
+msgid "Next"
+msgstr "Suivant"
+
+msgid "Nothing matches."
+msgstr "Rien ne correspond."
+
+msgid "Nothing done yet."
+msgstr "Rien de fait pour l'instant."
+
+msgid "My home"
+msgstr "Mon accueil"
+
+msgid "Home"
+msgstr "Accueil"
+
+msgid "All my homes"
+msgstr "Tous mes logements"
+
+msgid "Show"
+msgstr "Afficher"
+
+msgid "Nothing needs you here."
+msgstr "Rien ne vous attend ici."
+
+msgid "Assigned to me"
+msgstr "Qui me sont confiées"
+
+msgid "Overdue in the home"
+msgstr "En retard dans le logement"
+
+msgid "Nobody has taken these"
+msgstr "Personne ne s'en est chargé"
+
+msgid "Warranties ending soon"
+msgstr "Garanties qui se terminent bientôt"
+
+#, python-format
+msgid "ends %(date)s"
+msgstr "se termine le %(date)s"
+
+msgid "Display preferences"
+msgstr "Préférences d'affichage"
+
+msgid "Postpone"
+msgstr "Reporter"
+
+msgid "Back"
+msgstr "Retour"
+
+msgid "How the Today screen is laid out for you. Other people of your homes keep their own."
+msgstr "La disposition de l'écran Aujourd'hui pour vous. Les autres personnes de vos logements gardent la leur."
+
+msgid "Group by"
+msgstr "Regrouper par"
+
+msgid "Sections"
+msgstr "Sections"
+
+msgid "High priority"
+msgstr "Priorité haute"
+
+msgid "Low priority"
+msgstr "Priorité basse"
+
+#, python-format
+msgid "assigned to %(person)s"
+msgstr "confiée à %(person)s"
+
+msgid "Skip this time"
+msgstr "Ignorer cette fois"
+
+msgid "Edit the task"
+msgstr "Modifier la tâche"
+
+msgid "When"
+msgstr "Quand"
+
+msgid "Repeat"
+msgstr "Répétition"
+
+msgid "Postponed from"
+msgstr "Reportée depuis le"
+
+msgid "Hidden until"
+msgstr "Masquée jusqu'à"
+
+#, python-format
+msgid "%(counter)s day before the date"
+msgid_plural "%(counter)s days before the date"
+msgstr[0] "%(counter)s jour avant la date"
+msgstr[1] "%(counter)s jours avant la date"
+
+msgid "Then"
+msgstr "Ensuite"
+
+msgid "How to do it"
+msgstr "Comment faire"
+
+msgid "Details"
+msgstr "Détails"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Materials"
+msgstr "Matériel"
+
+msgid "Add photos or files"
+msgstr "Ajouter des photos ou des fichiers"
+
+msgid "No file yet."
+msgstr "Aucun fichier pour l'instant."
+
+msgid "Add a task"
+msgstr "Ajouter une tâche"
+
+msgid "Who"
+msgstr "Qui"
+
+msgid "Time and budget"
+msgstr "Durée et budget"
+
+msgid "Add the task"
+msgstr "Ajouter la tâche"
+
+msgid "Delete the task"
+msgstr "Supprimer la tâche"
+
+msgid "To do"
+msgstr "À faire"
+
+msgid "Nothing to do. Add a task to start."
+msgstr "Rien à faire. Ajoutez une tâche pour commencer."
+
+#, python-format
+msgid "%(counter)s task is hidden until its date gets closer."
+msgid_plural "%(counter)s tasks are hidden until their date gets closer."
+msgstr[0] "%(counter)s tâche est masquée jusqu'à ce que sa date approche."
+msgstr[1] "%(counter)s tâches sont masquées jusqu'à ce que leur date approche."
+
+msgid "Show them"
+msgstr "Les afficher"
+
+msgid "Nothing to do for now."
+msgstr "Rien à faire pour l'instant."

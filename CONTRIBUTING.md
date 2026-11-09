@@ -109,14 +109,28 @@ To build the documentation site locally (strict build, checks),
 see [Documentation](#documentation) below.
 
 When you change `design/tokens.json`, run `manage.py build_design_tokens` and
-commit the generated `tokens.css`. When you add or change a user-facing string,
-update the French catalog as described in
-[ADR 0013](docs/adr/0013-internationalization.md).
-Never commit a `.mo` file: it is compiled by `compilemessages` (in the image
-build, in the CI and on your machine), and git ignores it. Run it again after
-you pull a change of `django.po`. If a `.po` conflict remains when you merge
-`main`, keep both sides: the catalogs have no source locations, line wrapping
-or creation date, so the two sides are independent entries.
+commit the generated `tokens.css`.
+
+**Translations: `makemessages` per app.** Each Django app has its own French
+catalog, `src/housecairn/<app>/locale/fr/LC_MESSAGES/django.po`; the shared
+strings (the shell, the common templates) are in the catalog of `core`
+([ADR 0013](docs/adr/0013-internationalization.md)). When you add or change a
+user-facing string, regenerate the catalogs, then translate the new entries:
+
+```sh
+cd src/housecairn
+uv run python ../../manage.py makemessages -l fr -i "static/*"              # every app
+uv run python ../../manage.py makemessages -l fr -i "static/*" --app tasks  # one app
+```
+
+A string goes to the catalog of the app that owns its file, the app's own
+directory or `templates/<app>/`, so two pull requests that add strings to two
+apps never touch the same catalog. Never commit a `.mo` file: it is compiled
+by `compilemessages` (in the image build, in the CI and on your machine), and
+git ignores it. Run it again after you pull a change of a catalog. If a `.po`
+conflict remains when you merge `main` (two strings added to the same app),
+keep both sides: the catalogs have no source locations, line wrapping or
+creation date, so the two sides are independent entries.
 
 ## Checks run on every pull request
 
@@ -200,6 +214,17 @@ translate the new strings in `docs/locale/fr/LC_MESSAGES/`; the build fails
 while a catalog lags behind its page. When you add a screen, give it a page of
 the screen reference and register it in `src/housecairn/core/help.py`, which
 puts the **?** link in its top bar.
+
+**Release notes: one fragment per pull request.** Do not edit
+`docs/release-notes.md` nor its catalog: add your own file,
+`docs/release-notes/unreleased/<category>/<topic>.md`, where the category is
+`new`, `fixed` or `upgrade`, and translate it in its own catalog after
+`--update-catalogs`. The release notes page shows the fragments, and the
+maintainer folds them into it when a version is published
+(`scripts/release_notes.py fold`). The format is in
+[docs/release-notes/unreleased/README.md](docs/release-notes/unreleased/README.md);
+the `Documentation updated` check fails a pull request that edits the release
+notes page instead.
 
 ## AI-assisted contributions
 

@@ -11,6 +11,11 @@
   French page with a screenshot said it was not entirely translated).
 - The page template (`_templates/page.html`) gets its interface strings in the
   language of the build: breadcrumbs, the edit and issue links, the footer.
+- The release notes are assembled from fragments: each pull request adds its own
+  file, `release-notes/unreleased/<category>/<topic>.md`, translated in its own
+  catalog, and the `release-fragments` directive of the release notes shows them,
+  translated, under the heading of their category. Two pull requests never edit
+  the same release notes file nor the same catalog (scripts/release_notes.py).
 """
 
 import json
@@ -25,9 +30,14 @@ from typing import Any, ClassVar
 from urllib.parse import quote, urlencode
 
 from docutils import nodes
+from sphinx import addnodes
 from sphinx.application import Sphinx
+from sphinx.environment import BuildEnvironment
 from sphinx.transforms import SphinxTransform
+from sphinx.util import logging
 from sphinx.util.docutils import SphinxDirective
+
+logger = logging.getLogger(__name__)
 
 DOCS_DIR = Path(__file__).resolve().parents[1]
 REPO_DIR = DOCS_DIR.parent
@@ -281,6 +291,67 @@ class CountTranslatedImageAlt(SphinxTransform):
                 image["translated"] = True
 
 
+# Release notes fragments: one document per pull request and category, never
+# listed in a table of contents, shown on the release notes page.
+RELEASE_NOTES = "release-notes"
+FRAGMENTS_DIR = "release-notes/unreleased"
+FRAGMENT_CATEGORIES = ("new", "fixed", "upgrade")
+
+
+class release_fragments(nodes.General, nodes.Element):  # noqa: N801 (docutils node name)
+    """Where the fragments of a category go, until the page is resolved."""
+
+
+class ReleaseFragments(SphinxDirective):
+    """The fragments of one category, in the order of their file names."""
+
+    required_arguments = 1
+
+    def run(self) -> list[nodes.Node]:
+        category = self.arguments[0]
+        if category not in FRAGMENT_CATEGORIES:
+            raise self.error(f"Unknown category {category!r}: one of {FRAGMENT_CATEGORIES}.")
+        prefix = f"{FRAGMENTS_DIR}/{category}/"
+        docnames = sorted(name for name in self.env.found_docs if name.startswith(prefix))
+        for docname in docnames:
+            self.env.note_dependency(str(self.env.doc2path(docname)))
+        return [release_fragments(category=category, docnames=docnames)]
+
+
+def outdate_release_notes(
+    app: Sphinx, env: BuildEnvironment, added: set[str], changed: set[str], removed: set[str]
+) -> list[str]:
+    """Read the release notes again when a fragment comes, changes or goes."""
+    fragments = [name for name in (*added, *changed, *removed) if name.startswith(FRAGMENTS_DIR)]
+    return [RELEASE_NOTES] if fragments and RELEASE_NOTES in env.found_docs else []
+
+
+def insert_release_fragments(app: Sphinx, doctree: nodes.document, docname: str) -> None:
+    """Put each fragment, as translated with its own catalog, in place of the directive.
+
+    The fragment was read as its own document, so the French build translated it
+    with its own catalog. Its links are resolved again from the release notes page.
+    """
+    for placeholder in list(doctree.findall(release_fragments)):
+        content: list[nodes.Node] = []
+        if app.builder.name == "gettext":
+            # Each fragment's strings go to its own catalog, never to the page's.
+            placeholder.replace_self(content)
+            continue
+        for fragment in placeholder["docnames"]:
+            part = app.env.get_doctree(fragment)
+            if any(isinstance(child, nodes.section) for child in part.children):
+                logger.warning(
+                    "a release notes fragment has no heading: its category gives it one",
+                    location=fragment,
+                )
+            for xref in part.findall(addnodes.pending_xref):
+                xref["refdoc"] = docname
+            app.env.apply_post_transforms(part, docname)
+            content += [child for child in part.children if not isinstance(child, nodes.section)]
+        placeholder.replace_self(content)
+
+
 def issue_url(pagename: str, language: str) -> str:
     """New issue about a page: the bug form, its title naming the page."""
     title = f"bug: documentation page {pagename} ({language})"
@@ -337,6 +408,10 @@ def setup(app: Sphinx) -> dict[str, Any]:
     app.connect("builder-inited", generate_schema)
     app.connect("html-page-context", page_context)
     app.add_directive("openapi-reference", OpenAPIReference)
+    app.add_node(release_fragments)
+    app.add_directive("release-fragments", ReleaseFragments)
+    app.connect("env-get-outdated", outdate_release_notes)
+    app.connect("doctree-resolved", insert_release_fragments)
     app.add_transform(RememberImageAlt)
     app.add_transform(CountTranslatedImageAlt)
     return {"version": "1", "parallel_read_safe": True, "parallel_write_safe": True}

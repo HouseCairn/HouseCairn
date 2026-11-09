@@ -1,0 +1,737 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Projects"
+msgstr "Projets"
+
+msgid "Preview of inspiration links"
+msgstr "Aperçu des liens d'inspiration"
+
+msgid "When a link is added to a project, the server reads the page to find its title and its picture. Off: nothing is read, a link stays a plain address. The server never calls a private network or a cloud metadata service."
+msgstr "Quand un lien est ajouté à un projet, le serveur lit la page pour trouver son titre et son image. Désactivé : rien n'est lu, un lien reste une simple adresse. Le serveur n'appelle jamais un réseau privé ni un service de métadonnées de cloud."
+
+msgid "Rooms concerned"
+msgstr "Pièces concernées"
+
+msgid "Preferred season"
+msgstr "Saison souhaitée"
+
+msgid "Any time"
+msgstr "Toute l'année"
+
+msgid "Custom season starts in"
+msgstr "La saison personnalisée commence en"
+
+msgid "Custom season ends in"
+msgstr "La saison personnalisée finit en"
+
+msgid "Only used with the season Custom months."
+msgstr "Utilisé seulement avec la saison « Mois personnalisés »."
+
+msgid "Estimated duration"
+msgstr "Durée estimée"
+
+msgid "Unit"
+msgstr "Unité"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "The amount you plan to spend. It becomes the first budget line, which you can split into materials and labour later."
+msgstr "Le montant que vous prévoyez de dépenser. Il devient la première ligne de budget, que vous pourrez scinder plus tard en matériel et main-d'œuvre."
+
+#, python-format
+msgid "The season follows the hemisphere of the home (%(hemisphere)s): change it in the settings of the home."
+msgstr "La saison suit l'hémisphère du logement (%(hemisphere)s) : modifiez-le dans les réglages du logement."
+
+msgid "Give a duration between a minute and a year."
+msgstr "Indiquez une durée comprise entre une minute et un an."
+
+msgid "Give the first and the last month."
+msgstr "Indiquez le premier et le dernier mois."
+
+msgid "Planned"
+msgstr "Prévue"
+
+msgid "Paid"
+msgstr "Payé"
+
+msgid "What has been paid so far. The committed amount comes from accepted quotes."
+msgstr "Ce qui a été payé jusqu'ici. Le montant engagé vient des devis acceptés."
+
+msgid "Contractor"
+msgstr "Intervenant"
+
+msgid "Pick one from the suggestions or type a new name: it joins the contractors of the home when you save."
+msgstr "Choisissez parmi les suggestions ou saisissez un nouveau nom : il rejoint les intervenants du logement à l'enregistrement."
+
+msgid "Amount"
+msgstr "Montant"
+
+msgid "Committed on"
+msgstr "Engagé sur"
+
+msgid "The budget line an accepted quote is committed on."
+msgstr "La ligne de budget sur laquelle un devis accepté est engagé."
+
+msgid "File of the quote"
+msgstr "Fichier du devis"
+
+msgid "Choose the budget line the quote is committed on."
+msgstr "Choisissez la ligne de budget sur laquelle le devis est engagé."
+
+msgid "Commit on"
+msgstr "Engager sur"
+
+msgid "New task"
+msgstr "Nouvelle tâche"
+
+msgid "Due on"
+msgstr "Échéance"
+
+msgid "Room"
+msgstr "Pièce"
+
+msgid "Existing task"
+msgstr "Tâche existante"
+
+msgid "Photo"
+msgstr "Photo"
+
+msgid "Address of the page"
+msgstr "Adresse de la page"
+
+msgid "Title"
+msgstr "Titre"
+
+msgid "Optional: left empty, the title of the page is used when it can be read."
+msgstr "Facultatif : laissé vide, le titre de la page est utilisé s'il peut être lu."
+
+msgid "Year"
+msgstr "Année"
+
+msgid "Envelope"
+msgstr "Enveloppe"
+
+msgid "What you want to spend on work this year, in the currency of the home."
+msgstr "Ce que vous voulez dépenser en travaux cette année, dans la devise du logement."
+
+msgid "Give the address of a web page, such as https://example.com."
+msgstr "Indiquez l'adresse d'une page web, par exemple https://example.com."
+
+msgid "The address cannot hold a user name or a password."
+msgstr "L'adresse ne peut pas contenir de nom d'utilisateur ni de mot de passe."
+
+#, python-format
+msgid "At most %(max)d links for a project."
+msgstr "%(max)d liens au plus pour un projet."
+
+msgid "Idea"
+msgstr "Idée"
+
+msgid "In progress"
+msgstr "En cours"
+
+msgid "Finished"
+msgstr "Terminé"
+
+msgid "Abandoned"
+msgstr "Abandonné"
+
+msgid "Materials"
+msgstr "Matériel"
+
+msgid "Labour"
+msgstr "Main-d'œuvre"
+
+msgid "Rental"
+msgstr "Location"
+
+msgid "Other"
+msgstr "Autre"
+
+msgid "Requested"
+msgstr "Demandé"
+
+msgid "Received"
+msgstr "Reçu"
+
+msgid "Accepted"
+msgstr "Accepté"
+
+msgid "Rejected"
+msgstr "Refusé"
+
+msgid "title"
+msgstr "titre"
+
+msgid "goal"
+msgstr "objectif"
+
+msgid "status"
+msgstr "statut"
+
+msgid "priority"
+msgstr "priorité"
+
+msgid "rooms concerned"
+msgstr "pièces concernées"
+
+msgid "estimated duration (minutes)"
+msgstr "durée estimée (minutes)"
+
+msgid "preferred season"
+msgstr "saison souhaitée"
+
+msgid "season starts in"
+msgstr "la saison commence en"
+
+msgid "season ends in"
+msgstr "la saison finit en"
+
+msgid "project"
+msgstr "projet"
+
+msgid "projects"
+msgstr "projets"
+
+msgid "Give the first and the last month of the season."
+msgstr "Indiquez le premier et le dernier mois de la saison."
+
+msgid "Months are for a custom season only."
+msgstr "Les mois ne servent qu'à une saison personnalisée."
+
+msgid "label"
+msgstr "libellé"
+
+msgid "nature"
+msgstr "nature"
+
+msgid "planned"
+msgstr "prévu"
+
+msgid "paid"
+msgstr "payé"
+
+msgid "What has been paid so far; Sure will check it against the real payments."
+msgstr "Ce qui a été payé jusqu'ici ; Sure le rapprochera des paiements réels."
+
+msgid "budget line"
+msgstr "ligne de budget"
+
+msgid "budget lines"
+msgstr "lignes de budget"
+
+msgid "contractor"
+msgstr "intervenant"
+
+msgid "amount"
+msgstr "montant"
+
+msgid "date"
+msgstr "date"
+
+msgid "valid until"
+msgstr "valable jusqu'au"
+
+msgid "note"
+msgstr "note"
+
+msgid "Paperless document number"
+msgstr "Numéro du document Paperless"
+
+msgid "Paperless document link"
+msgstr "Lien du document Paperless"
+
+msgid "quote"
+msgstr "devis"
+
+msgid "quotes"
+msgstr "devis"
+
+msgid "The validity cannot end before the date of the quote."
+msgstr "La validité ne peut pas finir avant la date du devis."
+
+msgid "This contractor is not in this home."
+msgstr "Cet intervenant n'est pas dans ce logement."
+
+msgid "This budget line is not in this project."
+msgstr "Cette ligne de budget n'est pas dans ce projet."
+
+msgid "name"
+msgstr "nom"
+
+msgid "project file"
+msgstr "fichier de projet"
+
+msgid "project files"
+msgstr "fichiers de projet"
+
+msgid "address"
+msgstr "adresse"
+
+msgid "link"
+msgstr "lien"
+
+msgid "links"
+msgstr "liens"
+
+msgid "task of a project"
+msgstr "tâche d'un projet"
+
+msgid "tasks of projects"
+msgstr "tâches de projets"
+
+msgid "year"
+msgstr "année"
+
+msgid "envelope"
+msgstr "enveloppe"
+
+msgid "annual envelope"
+msgstr "enveloppe annuelle"
+
+msgid "annual envelopes"
+msgstr "enveloppes annuelles"
+
+msgid "Give an amount of money, such as 1250.50."
+msgstr "Indiquez un montant, par exemple 1250,50."
+
+msgid "The amount cannot be negative."
+msgstr "Le montant ne peut pas être négatif."
+
+msgid "This amount is too large."
+msgstr "Ce montant est trop élevé."
+
+msgid "At most two decimals."
+msgstr "Deux décimales au plus."
+
+msgid "This room is not in this home."
+msgstr "Cette pièce n'est pas dans ce logement."
+
+msgid "This task is not in this home."
+msgstr "Cette tâche n'est pas dans ce logement."
+
+msgid "This task is already in a project."
+msgstr "Cette tâche est déjà dans un projet."
+
+#, python-format
+msgid "Choose a date within %(years)d years of today."
+msgstr "Choisissez une date à moins de %(years)d ans d'aujourd'hui."
+
+msgid "This quote is not in this project."
+msgstr "Ce devis n'est pas dans ce projet."
+
+#, python-format
+msgid "At most %(max)d photos for a project."
+msgstr "%(max)d photos au plus pour un projet."
+
+#, python-format
+msgid "At most %(max)d files for a quote."
+msgstr "%(max)d fichiers au plus pour un devis."
+
+msgid "This file is too large."
+msgstr "Ce fichier est trop volumineux."
+
+msgid "Envelope saved."
+msgstr "Enveloppe enregistrée."
+
+msgid "Project added."
+msgstr "Projet ajouté."
+
+msgid "Project saved."
+msgstr "Projet enregistré."
+
+msgid "The project, its budget lines, quotes and photos disappear. Its tasks stay: they are only taken out of the project."
+msgstr "Le projet, ses lignes de budget, ses devis et ses photos disparaissent. Ses tâches restent : elles sont seulement retirées du projet."
+
+msgid "Project deleted."
+msgstr "Projet supprimé."
+
+msgid "Task added to the project."
+msgstr "Tâche ajoutée au projet."
+
+msgid "Choose a task that is in no project yet."
+msgstr "Choisissez une tâche qui n'est dans aucun projet."
+
+msgid "Task put in the project."
+msgstr "Tâche mise dans le projet."
+
+msgid "Task taken out of the project."
+msgstr "Tâche retirée du projet."
+
+msgid "Budget line added."
+msgstr "Ligne de budget ajoutée."
+
+msgid "Budget line saved."
+msgstr "Ligne de budget enregistrée."
+
+msgid "The budget line disappears. The quotes accepted on it go back to Received: they commit nothing any more."
+msgstr "La ligne de budget disparaît. Les devis acceptés sur elle repassent à Reçu : ils n'engagent plus rien."
+
+msgid "Budget line deleted."
+msgstr "Ligne de budget supprimée."
+
+msgid "Quote saved."
+msgstr "Devis enregistré."
+
+msgid "Quote accepted and committed on the budget line."
+msgstr "Devis accepté et engagé sur la ligne de budget."
+
+msgid "Choose a status."
+msgstr "Choisissez un statut."
+
+msgid "The quote and its files disappear. What it committed is released."
+msgstr "Le devis et ses fichiers disparaissent. Ce qu'il engageait est libéré."
+
+msgid "this quote"
+msgstr "ce devis"
+
+msgid "Quote deleted."
+msgstr "Devis supprimé."
+
+msgid "Choose a photo."
+msgstr "Choisissez une photo."
+
+msgid "Photo added."
+msgstr "Photo ajoutée."
+
+msgid "The file disappears from the project and from the disk."
+msgstr "Le fichier disparaît du projet et du disque."
+
+msgid "File deleted."
+msgstr "Fichier supprimé."
+
+msgid "Too many links added in a short time. Try again in a minute."
+msgstr "Trop de liens ajoutés en peu de temps. Réessayez dans une minute."
+
+msgid "Link added."
+msgstr "Lien ajouté."
+
+msgid "The link and its picture disappear from the project and from the disk."
+msgstr "Le lien et son image disparaissent du projet et du disque."
+
+msgid "Link deleted."
+msgstr "Lien supprimé."
+
+#, python-format
+msgid "Over budget by %(amount)s"
+msgstr "Budget dépassé de %(amount)s"
+
+#, python-format
+msgid "%(amount)s left"
+msgstr "%(amount)s restants"
+
+msgid "On budget"
+msgstr "Budget respecté"
+
+msgid "Part of the project"
+msgstr "Fait partie du projet"
+
+msgid "Choose the home whose projects you want to open."
+msgstr "Choisissez le logement dont vous voulez ouvrir les projets."
+
+msgid "You have no home to open yet."
+msgstr "Vous n'avez pas encore de logement à ouvrir."
+
+msgid "Add a home"
+msgstr "Ajouter un logement"
+
+msgid "Compare projects"
+msgstr "Comparer les projets"
+
+msgid "Tick at least two projects in the list to compare them."
+msgstr "Cochez au moins deux projets dans la liste pour les comparer."
+
+msgid "The projects side by side"
+msgstr "Les projets côte à côte"
+
+msgid "Project"
+msgstr "Projet"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Planned cost"
+msgstr "Coût prévu"
+
+msgid "Committed"
+msgstr "Engagé"
+
+msgid "Duration"
+msgstr "Durée"
+
+msgid "Priority"
+msgstr "Priorité"
+
+msgid "Season"
+msgstr "Saison"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+#, python-format
+msgid "Delete %(name)s?"
+msgstr "Supprimer %(name)s ?"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Annual envelope"
+msgstr "Enveloppe annuelle"
+
+#, python-format
+msgid "Amounts are in %(currency)s, the currency of the home."
+msgstr "Les montants sont en %(currency)s, la devise du logement."
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Edit the budget line"
+msgstr "Modifier la ligne de budget"
+
+msgid "Add a budget line"
+msgstr "Ajouter une ligne de budget"
+
+msgid "Delete the budget line"
+msgstr "Supprimer la ligne de budget"
+
+msgid "High priority"
+msgstr "Priorité haute"
+
+msgid "Low priority"
+msgstr "Priorité basse"
+
+msgid "Edit the project"
+msgstr "Modifier le projet"
+
+msgid "Tasks"
+msgstr "Tâches"
+
+#, python-format
+msgid "Due %(day)s"
+msgstr "Pour le %(day)s"
+
+msgid "No date"
+msgstr "Sans date"
+
+msgctxt "task"
+msgid "Done"
+msgstr "Fait"
+
+msgid "Take out"
+msgstr "Retirer"
+
+msgid "No task in this project yet."
+msgstr "Aucune tâche dans ce projet pour l'instant."
+
+msgid "Add a task to the project"
+msgstr "Ajouter une tâche au projet"
+
+msgid "Add the task"
+msgstr "Ajouter la tâche"
+
+msgid "Put an existing task in the project"
+msgstr "Mettre une tâche existante dans le projet"
+
+msgid "Put it in the project"
+msgstr "La mettre dans le projet"
+
+#, python-format
+msgid "Budget lines, in %(currency)s"
+msgstr "Lignes de budget, en %(currency)s"
+
+msgid "Line"
+msgstr "Ligne"
+
+msgid "Gap"
+msgstr "Écart"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Committed is the sum of the accepted quotes. The gap is the planned amount less the more of committed and paid."
+msgstr "L'engagé est la somme des devis acceptés. L'écart est le montant prévu moins le plus élevé de l'engagé et du payé."
+
+msgid "No budget line yet. Add one to say what you plan to spend."
+msgstr "Aucune ligne de budget pour l'instant. Ajoutez-en une pour dire ce que vous prévoyez de dépenser."
+
+msgid "Quotes"
+msgstr "Devis"
+
+msgid "No contractor"
+msgstr "Aucun intervenant"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Valid until"
+msgstr "Valable jusqu'au"
+
+msgid "Note"
+msgstr "Note"
+
+msgid "Document in Paperless-ngx"
+msgstr "Document dans Paperless-ngx"
+
+msgid "File"
+msgstr "Fichier"
+
+msgid "Accept the quote"
+msgstr "Accepter le devis"
+
+msgid "Mark as received"
+msgstr "Marquer comme reçu"
+
+msgid "Reject the quote"
+msgstr "Refuser le devis"
+
+msgid "Edit the quote"
+msgstr "Modifier le devis"
+
+msgid "Add a budget line to accept a quote: its amount is committed on it."
+msgstr "Ajoutez une ligne de budget pour accepter un devis : son montant y est engagé."
+
+msgid "No quote yet."
+msgstr "Aucun devis pour l'instant."
+
+msgid "Add a quote"
+msgstr "Ajouter un devis"
+
+msgid "Inspiration"
+msgstr "Inspiration"
+
+msgid "No link yet."
+msgstr "Aucun lien pour l'instant."
+
+msgid "HouseCairn reads the page once, now, to find its title and its picture. The picture is kept on this server. If the page cannot be read, the link stays as you typed it."
+msgstr "HouseCairn lit la page une seule fois, maintenant, pour trouver son titre et son image. L'image est conservée sur ce serveur. Si la page ne peut pas être lue, le lien reste tel que vous l'avez saisi."
+
+msgid "The link is kept as you typed it: this instance does not read the pages."
+msgstr "Le lien est conservé tel que vous l'avez saisi : cette instance ne lit pas les pages."
+
+msgid "Add the link"
+msgstr "Ajouter le lien"
+
+msgid "Photos"
+msgstr "Photos"
+
+msgid "No photo yet."
+msgstr "Aucune photo pour l'instant."
+
+#, python-format
+msgid "JPEG, PNG or WebP, up to %(size)s. HouseCairn keeps the picture and nothing else: the location and every other piece of information hidden in the file are removed."
+msgstr "JPEG, PNG ou WebP, jusqu'à %(size)s. HouseCairn garde l'image et rien d'autre : la position et toute autre information cachée dans le fichier sont supprimées."
+
+msgid "Add the photo"
+msgstr "Ajouter la photo"
+
+msgid "Add a project"
+msgstr "Ajouter un projet"
+
+msgid "Rooms, duration and season"
+msgstr "Pièces, durée et saison"
+
+msgid "Delete the project"
+msgstr "Supprimer le projet"
+
+#, python-format
+msgid "Budget envelope %(year)s"
+msgstr "Enveloppe budgétaire %(year)s"
+
+msgid "No envelope set for this year."
+msgstr "Aucune enveloppe fixée pour cette année."
+
+msgid "Planned for the projects going on"
+msgstr "Prévu pour les projets en cours"
+
+msgid "Paid so far"
+msgstr "Payé jusqu'ici"
+
+msgid "Left in the envelope"
+msgstr "Reste dans l'enveloppe"
+
+#, python-format
+msgid "%(amount)s (over the envelope)"
+msgstr "%(amount)s (au-delà de l'enveloppe)"
+
+msgid "Set the envelope"
+msgstr "Fixer l'enveloppe"
+
+msgid "Search by title or goal"
+msgstr "Rechercher par titre ou objectif"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "All statuses"
+msgstr "Tous les statuts"
+
+msgid "All rooms"
+msgstr "Toutes les pièces"
+
+msgid "Any priority"
+msgstr "Toutes les priorités"
+
+msgid "High"
+msgstr "Haute"
+
+msgid "Normal"
+msgstr "Normale"
+
+msgid "Low"
+msgstr "Basse"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+#, python-format
+msgid "Compare %(title)s"
+msgstr "Comparer %(title)s"
+
+#, python-format
+msgid "Planned %(planned)s"
+msgstr "Prévu : %(planned)s"
+
+msgid "No budget yet"
+msgstr "Pas encore de budget"
+
+msgid "Compare the ticked projects"
+msgstr "Comparer les projets cochés"
+
+msgid "No project yet. A project is a piece of work with an end, such as redoing the bathroom."
+msgstr "Aucun projet pour l'instant. Un projet est un chantier qui a une fin, comme refaire la salle de bain."
+
+msgid "No project matches."
+msgstr "Aucun projet ne correspond."
+
+#, python-format
+msgid "An image, or a PDF, text, Word, Excel or OpenDocument file, up to %(size)s."
+msgstr "Une image, ou un fichier PDF, texte, Word, Excel ou OpenDocument, jusqu'à %(size)s."
+
+msgid "Kept for a later connection to Paperless-ngx: nothing reads these two fields yet."
+msgstr "Gardés pour une connexion ultérieure à Paperless-ngx : rien ne lit encore ces deux champs."
+
+#, python-format
+msgid "The amount is in %(currency)s, the currency of the home."
+msgstr "Le montant est en %(currency)s, la devise du logement."
+
+msgid "Files of the quote"
+msgstr "Fichiers du devis"
+
+msgid "Delete the quote"
+msgstr "Supprimer le devis"

@@ -169,7 +169,7 @@ def test_build_leaves_out_what_the_application_never_serves() -> None:
     # if the application's French catalog is not there.
     assert step.index("compilemessages") < step.index("-name '*.po' -delete")
     assert step.index("-name '*.po' -delete") < step.index(
-        "test -f src/housecairn/locale/fr/LC_MESSAGES/django.mo"
+        "test -f src/housecairn/core/locale/fr/LC_MESSAGES/django.mo"
     )
     # Nothing is removed from the collected files themselves.
     assert "/app/static/" not in step.split("collectstatic", 1)[1]

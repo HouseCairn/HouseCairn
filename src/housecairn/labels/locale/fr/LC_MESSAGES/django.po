@@ -1,0 +1,134 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "QR labels"
+msgstr "Étiquettes QR"
+
+msgid "Room"
+msgstr "Pièce"
+
+msgid "Item"
+msgstr "Élément"
+
+msgid "Stock item"
+msgstr "Article"
+
+msgid "type"
+msgstr "type"
+
+msgid "revoked at"
+msgstr "révoqué le"
+
+msgid "QR label"
+msgstr "Étiquette QR"
+
+msgid "A4 sheet, 3 by 8 labels (63.5 by 33.9 mm)"
+msgstr "Planche A4, 3 par 8 étiquettes (63,5 par 33,9 mm)"
+
+msgid "62 mm roll, one label per page (label printer)"
+msgstr "Rouleau de 62 mm, une étiquette par page (imprimante d'étiquettes)"
+
+msgid "Nothing with this identifier in this home."
+msgstr "Rien avec cet identifiant dans ce logement."
+
+#, python-format
+msgid "Choose between 1 and %(max)d labels."
+msgstr "Choisissez entre 1 et %(max)d étiquettes."
+
+msgid "Choose one of the layouts offered."
+msgstr "Choisissez l'une des mises en page proposées."
+
+msgid "Choose the objects from the list."
+msgstr "Choisissez les objets dans la liste."
+
+#, python-format
+msgid "QR code of %(name)s"
+msgstr "Code QR de %(name)s"
+
+msgid "Only members who can edit make a new label: print the ones that exist."
+msgstr "Seuls les membres qui peuvent modifier créent une nouvelle étiquette : imprimez celles qui existent."
+
+msgid "QR label made."
+msgstr "Étiquette QR créée."
+
+msgid "The old sticker no longer opens anything. Print the new label."
+msgstr "L'ancien autocollant n'ouvre plus rien. Imprimez la nouvelle étiquette."
+
+msgid "QR label revoked: the sticker no longer opens anything."
+msgstr "Étiquette QR révoquée : l'autocollant n'ouvre plus rien."
+
+msgid "Print stickers that open a room, an item or a stock item"
+msgstr "Imprimer des autocollants qui ouvrent une pièce, un élément ou un article"
+
+msgid "Make a QR label"
+msgstr "Créer une étiquette QR"
+
+msgid "Report a problem"
+msgstr "Signaler un problème"
+
+#, python-format
+msgid "QR label of %(name)s"
+msgstr "Étiquette QR de %(name)s"
+
+msgid "The code holds this address and nothing else:"
+msgstr "Le code contient cette adresse et rien d'autre :"
+
+msgid "Open the page"
+msgstr "Ouvrir la page"
+
+msgid "Print"
+msgstr "Imprimer"
+
+msgid "Layout"
+msgstr "Mise en page"
+
+msgid "Print this label"
+msgstr "Imprimer cette étiquette"
+
+msgid "If the sticker is lost or shared"
+msgstr "Si l'autocollant est perdu ou partagé"
+
+msgid "A new label has a new code; the old sticker stops opening anything."
+msgstr "Une nouvelle étiquette a un nouveau code ; l'ancien autocollant n'ouvre plus rien."
+
+msgid "Make a new label"
+msgstr "Créer une nouvelle étiquette"
+
+msgid "Revoke the label"
+msgstr "Révoquer l'étiquette"
+
+msgid "Tick what to label, choose a layout and print the sheet. Scanning a sticker opens the page of the object, for the members of this home."
+msgstr "Cochez ce qu'il faut étiqueter, choisissez une mise en page et imprimez la planche. Scanner un autocollant ouvre la page de l'objet, pour les membres de ce logement."
+
+msgid "No label yet"
+msgstr "Pas encore d'étiquette"
+
+msgid "No label"
+msgstr "Pas d'étiquette"
+
+#, python-format
+msgid "Up to %(max)s labels at a time."
+msgstr "%(max)s étiquettes au plus à la fois."
+
+msgid "A label is made for each object ticked that has none."
+msgstr "Une étiquette est créée pour chaque objet coché qui n'en a pas."
+
+msgid "You can print the labels that exist; members who can edit make new ones."
+msgstr "Vous pouvez imprimer les étiquettes qui existent ; les membres qui peuvent modifier en créent de nouvelles."
+
+msgid "Print the labels"
+msgstr "Imprimer les étiquettes"
+
+msgid "Nothing to label yet: add rooms, items or stock items first."
+msgstr "Rien à étiqueter pour l'instant : ajoutez d'abord des pièces, des éléments ou des articles."

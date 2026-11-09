@@ -26,6 +26,8 @@ exclude_patterns = [
     # Index of the records for readers browsing the repository on GitHub; the
     # site lists them in developer/decisions.md.
     "adr/README.md",
+    # How to write a release notes fragment, for contributors.
+    "release-notes/unreleased/README.md",
 ]
 templates_path = ["_templates"]
 

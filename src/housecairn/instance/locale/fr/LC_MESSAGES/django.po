@@ -1,0 +1,824 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Instance"
+msgstr "Instance"
+
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+msgid "Identifier"
+msgstr "Identifiant"
+
+msgid "In the redirect URI; lowercase letters, digits and hyphens. It never changes and is never given to another provider."
+msgstr "Dans l'URI de redirection ; lettres minuscules, chiffres et tirets. Il ne change jamais et n'est jamais donné à un autre fournisseur."
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "On the button, such as Company SSO."
+msgstr "Sur le bouton, par exemple Company SSO."
+
+msgid "Issuer"
+msgstr "Émetteur"
+
+msgid "https:// address; its OpenID configuration is read below it."
+msgstr "Adresse https:// ; sa configuration OpenID est lue en dessous."
+
+msgid "Client identifier"
+msgstr "Identifiant client"
+
+msgid "Client secret"
+msgstr "Secret client"
+
+msgid "Write only: it is never shown again. Empty: unchanged, but a new issuer clears it."
+msgstr "Écriture seule : il n'est plus jamais affiché. Vide : inchangé, mais un nouvel émetteur l'efface."
+
+msgid "PKCE"
+msgstr "PKCE"
+
+msgid "Recommended; on by default."
+msgstr "Recommandé ; activé par défaut."
+
+msgid "Enabled"
+msgstr "Activé"
+
+msgid "Shown on the sign-in page. Test the issuer before you enable it."
+msgstr "Affiché sur la page de connexion. Testez l'émetteur avant de l'activer."
+
+msgid "email address"
+msgstr "adresse e-mail"
+
+msgid "expires at"
+msgstr "expire le"
+
+msgid "sent at"
+msgstr "envoyée le"
+
+msgid "accepted at"
+msgstr "acceptée le"
+
+msgid "revoked at"
+msgstr "révoqué le"
+
+msgid "instance invitation"
+msgstr "invitation à l'instance"
+
+msgid "instance invitations"
+msgstr "invitations à l'instance"
+
+msgid "identifier"
+msgstr "identifiant"
+
+msgid "name"
+msgstr "nom"
+
+msgid "issuer"
+msgstr "émetteur"
+
+msgid "client identifier"
+msgstr "identifiant client"
+
+msgid "client secret"
+msgstr "secret client"
+
+msgid "enabled"
+msgstr "activé"
+
+msgid "sign-in provider"
+msgstr "fournisseur de connexion"
+
+msgid "sign-in providers"
+msgstr "fournisseurs de connexion"
+
+msgid "instance setting"
+msgstr "réglage de l'instance"
+
+msgid "instance settings"
+msgstr "réglages de l'instance"
+
+msgid "Expected an https:// address."
+msgstr "Une adresse https:// est attendue."
+
+msgid "Expected an https:// address, without query or credentials."
+msgstr "Une adresse https:// est attendue, sans paramètres ni identifiants."
+
+msgid "This address cannot be an identity provider."
+msgstr "Cette adresse ne peut pas être un fournisseur d'identité."
+
+msgid "Expected text."
+msgstr "Du texte est attendu."
+
+msgid "Expected a single line of text."
+msgstr "Une seule ligne de texte est attendue."
+
+msgid "This field is required."
+msgstr "Ce champ est obligatoire."
+
+msgid "From 2 to 32 lowercase letters, digits or hyphens, starting with a letter or a digit."
+msgstr "De 2 à 32 lettres minuscules, chiffres ou tirets, en commençant par une lettre ou un chiffre."
+
+msgid "This identifier is or was already used."
+msgstr "Cet identifiant est ou a déjà été utilisé."
+
+msgid "Expected true or false."
+msgstr "Vrai ou faux est attendu."
+
+msgid "This is your last way to sign in: set a password or a passkey, or link another provider, first."
+msgstr "C'est votre dernier moyen de connexion : définissez d'abord un mot de passe ou une clé d'accès, ou liez un autre fournisseur."
+
+msgid "The client secret is not kept for another issuer: enter it again, or disable the provider to save the new issuer without a secret."
+msgstr "Le secret client n'est pas gardé pour un autre émetteur : saisissez-le de nouveau, ou désactivez le fournisseur pour enregistrer le nouvel émetteur sans secret."
+
+msgid "The identifier of a provider never changes."
+msgstr "L'identifiant d'un fournisseur ne change jamais."
+
+msgid "Unknown field."
+msgstr "Champ inconnu."
+
+msgid "Accounts are linked to this provider: another issuer could sign in as them. Declare a new provider for the new issuer."
+msgstr "Des comptes sont liés à ce fournisseur : un autre émetteur pourrait se connecter à leur place. Déclarez un nouveau fournisseur pour le nouvel émetteur."
+
+#, python-format
+msgid "%(count)s home(s) require this provider: it cannot be deleted. Disable it instead; the owners, or you from the instance page, can then remove the requirement."
+msgstr "%(count)s logement(s) exigent ce fournisseur : il ne peut pas être supprimé. Désactivez-le plutôt ; les propriétaires, ou vous depuis la page de l'instance, pourront alors retirer l'exigence."
+
+msgid "The issuer answers with a valid OpenID configuration."
+msgstr "L'émetteur répond par une configuration OpenID valide."
+
+msgid "The issuer is not a valid https:// address."
+msgstr "L'émetteur n'est pas une adresse https:// valide."
+
+msgid "The issuer resolves to an address the instance does not call."
+msgstr "L'émetteur désigne une adresse que l'instance n'appelle pas."
+
+msgid "The issuer could not be reached."
+msgstr "L'émetteur est injoignable."
+
+msgid "The secure connection to the issuer failed: check its certificate."
+msgstr "La connexion sécurisée à l'émetteur a échoué : vérifiez son certificat."
+
+msgid "The issuer has no OpenID configuration at the usual address."
+msgstr "L'émetteur n'a pas de configuration OpenID à l'adresse habituelle."
+
+msgid "The issuer's answer is not a valid OpenID configuration."
+msgstr "La réponse de l'émetteur n'est pas une configuration OpenID valide."
+
+msgid "The OpenID configuration names another issuer."
+msgstr "La configuration OpenID nomme un autre émetteur."
+
+msgid "Public address"
+msgstr "Adresse publique"
+
+msgid "Name, language and time zone"
+msgstr "Nom, langue et fuseau horaire"
+
+msgid "Sign-up"
+msgstr "Inscription"
+
+msgid "Invitations"
+msgstr "Invitations"
+
+msgid "Outgoing email"
+msgstr "E-mail sortant"
+
+msgid "Rate limits"
+msgstr "Limites de débit"
+
+msgid "Files of a home"
+msgstr "Fichiers d'un logement"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Projects"
+msgstr "Projets"
+
+msgid "Expected a whole number."
+msgstr "Un nombre entier est attendu."
+
+#, python-brace-format
+msgid "Must be at least {n}."
+msgstr "Doit valoir au moins {n}."
+
+#, python-brace-format
+msgid "Must be at most {n}."
+msgstr "Doit valoir au plus {n}."
+
+msgid "Expected a list of domains."
+msgstr "Une liste de domaines est attendue."
+
+#, python-brace-format
+msgid "{item} is not a domain name."
+msgstr "{item} n'est pas un nom de domaine."
+
+#, python-brace-format
+msgid "Must be one of: {choices}."
+msgstr "Doit être l'une de ces valeurs : {choices}."
+
+msgid "Must be an http:// or https:// address without a path."
+msgstr "Doit être une adresse http:// ou https:// sans chemin."
+
+msgid "Must be a host name or an address."
+msgstr "Doit être un nom d'hôte ou une adresse."
+
+#, python-brace-format
+msgid "At most {n} characters, without control characters."
+msgstr "Au plus {n} caractères, sans caractère de contrôle."
+
+msgid "Must be a time zone of the IANA database, such as Europe/Paris."
+msgstr "Doit être un fuseau horaire de la base IANA, tel que Europe/Paris."
+
+msgid "Must be an address, such as HouseCairn <noreply@example.com>."
+msgstr "Doit être une adresse, par exemple HouseCairn <noreply@example.com>."
+
+msgid "Scheme and host of the instance, such as https://home.example.com, used for links in emails. Empty: the address of the request."
+msgstr "Schéma et hôte de l'instance, par exemple https://home.example.com, utilisés pour les liens des e-mails. Vide : l'adresse de la requête."
+
+msgid "Open sign-up"
+msgstr "Inscription ouverte"
+
+msgid "Anyone may create an account from the sign-up page. Needs outgoing email."
+msgstr "Tout le monde peut créer un compte depuis la page d'inscription. Nécessite l'envoi d'e-mails."
+
+msgid "Sign-up through single sign-on"
+msgstr "Inscription par authentification unique"
+
+msgid "closed: only invited people and the first administrator; open: anyone the provider accepts."
+msgstr "closed : seulement les personnes invitées et le premier administrateur ; open : toute personne que le fournisseur accepte."
+
+msgid "Allowed domains"
+msgstr "Domaines autorisés"
+
+msgid "Comma-separated. If set, only these domains may sign up."
+msgstr "Séparés par des virgules. Si renseigné, seuls ces domaines peuvent s'inscrire."
+
+msgid "Blocked domains"
+msgstr "Domaines refusés"
+
+msgid "Comma-separated. These domains may not sign up."
+msgstr "Séparés par des virgules. Ces domaines ne peuvent pas s'inscrire."
+
+msgid "Anti-robot work"
+msgstr "Travail anti-robot"
+
+msgid "Zero bits the browser must find before signing up, from 8 to 24; 16 takes a second."
+msgstr "Nombre de bits à zéro que le navigateur doit trouver avant l'inscription, de 8 à 24 ; 16 prend environ une seconde."
+
+msgid "Invitation lifetime (days)"
+msgstr "Validité d'une invitation (jours)"
+
+msgid "Days an invitation link stays valid, from 1 to 90. Applies to new links."
+msgstr "Nombre de jours de validité d'un lien d'invitation, de 1 à 90. S'applique aux nouveaux liens."
+
+msgid "SMTP server"
+msgstr "Serveur SMTP"
+
+msgid "Host name of the outgoing mail server. Empty: email is off."
+msgstr "Nom d'hôte du serveur d'envoi. Vide : l'envoi d'e-mails est désactivé."
+
+msgid "SMTP port"
+msgstr "Port SMTP"
+
+msgid "587 for STARTTLS, 465 for TLS from the first byte."
+msgstr "587 pour STARTTLS, 465 pour TLS dès le premier octet."
+
+msgid "STARTTLS"
+msgstr "STARTTLS"
+
+msgid "Upgrade the connection with STARTTLS. Ignored when TLS from the first byte is on."
+msgstr "Passe la connexion en TLS avec STARTTLS. Ignoré quand TLS dès le premier octet est activé."
+
+msgid "TLS from the first byte"
+msgstr "TLS dès le premier octet"
+
+msgid "Usually with port 465."
+msgstr "En général avec le port 465."
+
+msgid "SMTP user name"
+msgstr "Nom d'utilisateur SMTP"
+
+msgid "Empty: no authentication."
+msgstr "Vide : pas d'authentification."
+
+msgid "SMTP password"
+msgstr "Mot de passe SMTP"
+
+msgid "Write only: it is never shown again."
+msgstr "Écriture seule : il n'est plus jamais affiché."
+
+msgid "SMTP timeout (seconds)"
+msgstr "Délai SMTP (secondes)"
+
+msgid "How long to wait for the mail server, from 1 to 120."
+msgstr "Délai d'attente du serveur de messagerie, de 1 à 120."
+
+msgid "Sender address"
+msgstr "Adresse d'expédition"
+
+msgid "Address emails come from, such as HouseCairn <noreply@example.com>."
+msgstr "Adresse d'expédition des e-mails, par exemple HouseCairn <noreply@example.com>."
+
+msgid "Name of the instance"
+msgstr "Nom de l'instance"
+
+msgid "In the app bar, the title of the pages and the emails, at most 64 characters. Empty: HouseCairn."
+msgstr "Dans la barre de l'application, le titre des pages et les e-mails, au plus 64 caractères. Vide : HouseCairn."
+
+msgid "Default language"
+msgstr "Langue par défaut"
+
+msgid "en or fr. For people whose browser asks for no language the instance offers; the language a browser asks for always wins."
+msgstr "en ou fr. Pour les personnes dont le navigateur ne demande aucune langue proposée par l'instance ; la langue que demande un navigateur l'emporte toujours."
+
+msgid "Time zone"
+msgstr "Fuseau horaire"
+
+msgid "Of the households, such as Europe/Paris: it decides what today is, and so what is late. Times are stored in UTC."
+msgstr "Celui des foyers, tel que Europe/Paris : il décide du jour d'aujourd'hui, donc de ce qui est en retard. Les heures sont enregistrées en UTC."
+
+msgid "Sign-ins a minute"
+msgstr "Connexions par minute"
+
+msgid "Per client address, from 1 to 1000."
+msgstr "Par adresse client, de 1 à 1000."
+
+msgid "Failed sign-ins in five minutes"
+msgstr "Connexions échouées en cinq minutes"
+
+msgid "Per account, from 1 to 100; then the account waits."
+msgstr "Par compte, de 1 à 100 ; ensuite le compte attend."
+
+msgid "Sign-ups a minute"
+msgstr "Inscriptions par minute"
+
+msgid "Sign-ups a day"
+msgstr "Inscriptions par jour"
+
+msgid "Per client address, from 1 to 100000; not less than a minute's."
+msgstr "Par adresse client, de 1 à 100000 ; pas moins que par minute."
+
+msgid "Password reset requests a minute"
+msgstr "Demandes de réinitialisation du mot de passe par minute"
+
+msgid "Per client address, from 1 to 1000; an address gets at most 5 a minute."
+msgstr "Par adresse client, de 1 à 1000 ; une adresse e-mail en reçoit au plus 5 par minute."
+
+msgid "Invitations sent a minute"
+msgstr "Invitations envoyées par minute"
+
+msgid "Per person, to a home or to the instance, from 1 to 1000."
+msgstr "Par personne, à un logement ou à l'instance, de 1 à 1000."
+
+msgid "Invitations sent a day"
+msgstr "Invitations envoyées par jour"
+
+msgid "Per person, from 1 to 100000; not less than a minute's."
+msgstr "Par personne, de 1 à 100000 ; pas moins que par minute."
+
+msgid "Invitation links opened a minute"
+msgstr "Liens d'invitation ouverts par minute"
+
+msgid "Tests of the mail server or of an issuer a minute"
+msgstr "Tests du serveur de messagerie ou d'un émetteur par minute"
+
+msgid "Per administrator, from 1 to 60."
+msgstr "Par administrateur, de 1 à 60."
+
+msgid "Link previews a minute, per person"
+msgstr "Aperçus de liens par minute, par personne"
+
+msgid "Links added while previews are on, from 1 to 1000; each one makes the server read a web page."
+msgstr "Liens ajoutés quand les aperçus sont activés, de 1 à 1000 ; chacun fait lire une page web au serveur."
+
+msgid "Link previews a minute, per home"
+msgstr "Aperçus de liens par minute, par logement"
+
+msgid "All the members of a home together, from 1 to 1000."
+msgstr "Tous les membres d'un logement ensemble, de 1 à 1000."
+
+msgid "Largest file (bytes)"
+msgstr "Fichier le plus gros (octets)"
+
+msgid "A photo or an attachment, as sent, from 10240 (10 KB) to 104857600 (100 MB); 10485760 is 10 MB."
+msgstr "Une photo ou une pièce jointe, telle qu'envoyée, de 10240 (10 Ko) à 104857600 (100 Mo) ; 10485760 vaut 10 Mo."
+
+msgid "Space for the files of a home (MB)"
+msgstr "Espace des fichiers d'un logement (Mo)"
+
+msgid "Photos, attachments and their thumbnails, deleted ones included until they are purged; from 1 to 1048576 (1 TB)."
+msgstr "Photos, pièces jointes et leurs miniatures, y compris celles supprimées jusqu'à leur purge ; de 1 à 1048576 (1 To)."
+
+msgid "Number of files of a home"
+msgstr "Nombre de fichiers d'un logement"
+
+msgid "Photos and attachments, deleted ones included until they are purged; 1 to 1000000."
+msgstr "Photos et pièces jointes, y compris celles supprimées jusqu'à leur purge ; de 1 à 1000000."
+
+msgid "Secret key of the instance"
+msgstr "Clé secrète de l'instance"
+
+msgid "Host names the instance answers to"
+msgstr "Noms d'hôte auxquels l'instance répond"
+
+msgid "Trusted origins for forms"
+msgstr "Origines de confiance pour les formulaires"
+
+msgid "Database"
+msgstr "Base de données"
+
+msgid "Data directory"
+msgstr "Répertoire de données"
+
+msgid "Behind a TLS reverse proxy"
+msgstr "Derrière un proxy inverse TLS"
+
+msgid "Trusted reverse proxies"
+msgstr "Proxys inverses de confiance"
+
+msgid "Debug mode"
+msgstr "Mode débogage"
+
+msgid "Task worker processes"
+msgstr "Processus de tâches"
+
+msgid "First administrator"
+msgstr "Premier administrateur"
+
+msgid "An invitation to this address is already pending; send it again instead."
+msgstr "Une invitation à cette adresse est déjà en attente : renvoyez-la plutôt."
+
+msgid "This invitation was already accepted or revoked."
+msgstr "Cette invitation a déjà été acceptée ou révoquée."
+
+msgid "This invitation is for another email address."
+msgstr "Cette invitation est destinée à une autre adresse e-mail."
+
+msgid "An account already uses this address: sign in."
+msgstr "Un compte utilise déjà cette adresse : connectez-vous."
+
+#, python-format
+msgid "Set by the variable %(env)s: change it there."
+msgstr "Défini par la variable %(env)s : modifiez-le là."
+
+msgid "Unknown setting."
+msgstr "Réglage inconnu."
+
+msgid "A secret cannot be empty: reset it to remove it."
+msgstr "Un secret ne peut pas être vide : rétablissez le défaut pour le retirer."
+
+msgid "Open sign-up verifies addresses by email: set the SMTP server first, or keep sign-up closed."
+msgstr "L'inscription ouverte vérifie les adresses par e-mail : renseignez d'abord le serveur SMTP, ou laissez l'inscription fermée."
+
+msgid "A day cannot allow fewer than a minute."
+msgstr "Une journée ne peut pas autoriser moins qu'une minute."
+
+msgid "Connected to the mail server."
+msgstr "Connexion au serveur de messagerie établie."
+
+msgid "No SMTP server is set."
+msgstr "Aucun serveur SMTP n'est renseigné."
+
+msgid "The server refused the user name or password."
+msgstr "Le serveur a refusé le nom d'utilisateur ou le mot de passe."
+
+msgid "The secure connection could not be set up: check STARTTLS and the port."
+msgstr "La connexion sécurisée n'a pas pu être établie : vérifiez STARTTLS et le port."
+
+msgid "The mail server could not be reached or refused the connection."
+msgstr "Le serveur de messagerie est injoignable ou a refusé la connexion."
+
+msgid "This instance cannot send email: create the account in the administration site."
+msgstr "Cette instance ne peut pas envoyer d'e-mail : créez le compte dans le site d'administration."
+
+msgid "Too many invitations in a short time. Try again later."
+msgstr "Trop d'invitations en peu de temps. Réessayez plus tard."
+
+msgid "Invitation sent."
+msgstr "Invitation envoyée."
+
+msgid "This instance cannot send email."
+msgstr "Cette instance ne peut pas envoyer d'e-mail."
+
+msgid "Invitation sent again."
+msgstr "Invitation renvoyée."
+
+msgid "Invitation revoked."
+msgstr "Invitation révoquée."
+
+#, python-format
+msgid "Sign-in requirement removed from %(count)s homes."
+msgstr "Exigence de connexion retirée de %(count)s logements."
+
+msgid "Welcome to HouseCairn. Add your first home."
+msgstr "Bienvenue sur HouseCairn. Ajoutez votre premier logement."
+
+msgid "Invitation accepted. You can add a home."
+msgstr "Invitation acceptée. Vous pouvez ajouter un logement."
+
+msgid "Confirm your sign-in to change settings, then make the change again."
+msgstr "Confirmez votre connexion pour modifier les réglages, puis refaites la modification."
+
+msgid "set"
+msgstr "défini"
+
+msgid "not set"
+msgstr "non défini"
+
+msgid "yes"
+msgstr "oui"
+
+msgid "no"
+msgstr "non"
+
+msgid "Settings saved."
+msgstr "Réglages enregistrés."
+
+msgid "Nothing to change."
+msgstr "Rien à modifier."
+
+msgid "Default restored."
+msgstr "Défaut rétabli."
+
+msgid "Too many tests in a short time. Try again later."
+msgstr "Trop de tests en peu de temps. Réessayez plus tard."
+
+msgid "Provider added."
+msgstr "Fournisseur ajouté."
+
+msgid "Provider deleted."
+msgstr "Fournisseur supprimé."
+
+msgid "Provider saved. The new issuer cleared the client secret: enter it again before you enable the provider."
+msgstr "Fournisseur enregistré. Le nouvel émetteur a effacé le secret client : saisissez-le de nouveau avant d'activer le fournisseur."
+
+msgid "Provider saved."
+msgstr "Fournisseur enregistré."
+
+msgid "(none)"
+msgstr "(aucun)"
+
+msgid "Audit log"
+msgstr "Journal d'audit"
+
+msgid "More"
+msgstr "Plus"
+
+msgid "Operations on the instance. Homes' own operations are in each home's log, for its owners; no home content appears here."
+msgstr "Opérations sur l'instance. Les opérations propres aux logements figurent dans le journal de chaque logement, pour ses propriétaires ; aucun contenu de logement n'apparaît ici."
+
+msgid "You are invited to create an account on HouseCairn, the planner for home maintenance and renovation."
+msgstr "Vous êtes invité à créer un compte sur HouseCairn, le planificateur d'entretien et de rénovation du logement."
+
+msgid "Create your account"
+msgstr "Créer votre compte"
+
+#, python-format
+msgid "The link works once and expires on %(date)s."
+msgstr "Le lien ne sert qu'une fois et expire le %(date)s."
+
+msgid "If you did not expect this invitation, ignore this message."
+msgstr "Si vous n'attendiez pas cette invitation, ignorez ce message."
+
+msgid "Open this link to create your account:"
+msgstr "Ouvrez ce lien pour créer votre compte :"
+
+#, python-format
+msgid "%(name)s: you are invited to create an account"
+msgstr "%(name)s : vous êtes invité à créer un compte"
+
+msgid "Invitation"
+msgstr "Invitation"
+
+msgid "Create your HouseCairn account"
+msgstr "Créer votre compte HouseCairn"
+
+#, python-format
+msgid "You are invited with the address %(email)s."
+msgstr "Vous êtes invité avec l'adresse %(email)s."
+
+msgid "Accept the invitation"
+msgstr "Accepter l'invitation"
+
+#, python-format
+msgid "You are signed in with another address. Sign out, then open the link again and sign in as %(email)s."
+msgstr "Vous êtes connecté avec une autre adresse. Déconnectez-vous, rouvrez le lien et connectez-vous avec %(email)s."
+
+msgid "An account already uses this address: sign in to accept the invitation."
+msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter l'invitation."
+
+msgid "Create the account"
+msgstr "Créer le compte"
+
+msgid "Already have an account?"
+msgstr "Vous avez déjà un compte ?"
+
+msgid "Sign in"
+msgstr "Se connecter"
+
+#, python-format
+msgid "Continue with %(provider)s"
+msgstr "Continuer avec %(provider)s"
+
+msgid "Instance administration"
+msgstr "Administration de l'instance"
+
+msgid "You run this instance: accounts, invitations, sign-in providers. You see no home, no task and no document, and no member of a home you do not belong to."
+msgstr "Vous gérez cette instance : comptes, invitations, fournisseurs de connexion. Vous ne voyez aucun logement, aucune tâche ni aucun document, ni aucun membre d'un logement dont vous ne faites pas partie."
+
+msgid "Accounts"
+msgstr "Comptes"
+
+msgid "on"
+msgstr "activée"
+
+msgid "off"
+msgstr "désactivée"
+
+msgid "configured"
+msgstr "configuré"
+
+msgid "not configured"
+msgstr "non configuré"
+
+msgid "Sign-in providers"
+msgstr "Fournisseurs de connexion"
+
+msgid "none"
+msgstr "aucun"
+
+msgid "Invite someone to the instance"
+msgstr "Inviter quelqu'un sur l'instance"
+
+msgid "Invite"
+msgstr "Inviter"
+
+msgid "The person receives a link by email, which works once. They create their account and then their own home."
+msgstr "La personne reçoit par e-mail un lien qui ne fonctionne qu'une fois. Elle crée son compte, puis son propre logement."
+
+msgid "This instance cannot send email, so it cannot invite by link. Set up outgoing email to invite people."
+msgstr "Cette instance ne peut pas envoyer d'e-mail, donc elle ne peut pas inviter par lien. Configurez l'e-mail sortant pour inviter des personnes."
+
+msgid "Pending invitations"
+msgstr "Invitations en attente"
+
+#, python-format
+msgid "until %(date)s"
+msgstr "jusqu'au %(date)s"
+
+msgid "Send again"
+msgstr "Renvoyer"
+
+msgid "Revoke"
+msgstr "Révoquer"
+
+msgid "Homes locked by a removed provider"
+msgstr "Logements verrouillés par un fournisseur retiré"
+
+#, python-format
+msgid "%(counter)s home requires a sign-in provider this instance no longer offers, so nobody can open it."
+msgid_plural "%(counter)s homes require a sign-in provider this instance no longer offers, so nobody can open them."
+msgstr[0] "%(counter)s logement exige un fournisseur de connexion que cette instance ne propose plus, donc personne ne peut l'ouvrir."
+msgstr[1] "%(counter)s logements exigent un fournisseur de connexion que cette instance ne propose plus, donc personne ne peut les ouvrir."
+
+msgid "Remove these requirements"
+msgstr "Retirer ces exigences"
+
+msgid "Deactivate, delete, set the administrators (administration site)"
+msgstr "Désactiver, supprimer, définir les administrateurs (site d'administration)"
+
+msgid "Redirect URI"
+msgstr "URI de redirection"
+
+msgid "The stored secret can no longer be read: enter it again."
+msgstr "Le secret enregistré n'est plus lisible : saisissez-le de nouveau."
+
+msgid "Linked accounts"
+msgstr "Comptes liés"
+
+msgid "Homes that require it"
+msgstr "Logements qui l'exigent"
+
+msgid "Accounts are linked to this provider, so its issuer cannot change: declare a new provider for another issuer."
+msgstr "Des comptes sont liés à ce fournisseur, son émetteur ne peut donc pas changer : déclarez un nouveau fournisseur pour un autre émetteur."
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Test the issuer"
+msgstr "Tester l'émetteur"
+
+msgid "Reads the issuer's OpenID configuration and checks it; nothing is saved. You can save without testing."
+msgstr "Lit la configuration OpenID de l'émetteur et la vérifie ; rien n'est enregistré. Vous pouvez enregistrer sans tester."
+
+msgid "Delete the provider"
+msgstr "Supprimer le fournisseur"
+
+msgid "People can no longer sign in with it; its identifier is never given to another provider. A provider that a home requires cannot be deleted: disable it instead."
+msgstr "On ne peut plus se connecter par lui ; son identifiant n'est jamais donné à un autre fournisseur. Un fournisseur exigé par un logement ne peut pas être supprimé : désactivez-le plutôt."
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "OpenID Connect providers people can sign in with, as well as the built-in sign-in. A provider set by environment variables is shown read only. An identity never reaches an existing account through its address: each person links it once signed in."
+msgstr "Les fournisseurs OpenID Connect par lesquels on peut se connecter, en plus de la connexion intégrée. Un fournisseur défini par des variables d'environnement est affiché en lecture seule. Une identité n'atteint jamais un compte existant par son adresse : chacun la lie une fois connecté."
+
+msgid "Set by the variables <code>OIDC_SERVER_URL</code>, <code>OIDC_CLIENT_ID</code> and the others: change it there."
+msgstr "Défini par les variables <code>OIDC_SERVER_URL</code>, <code>OIDC_CLIENT_ID</code> et les autres : modifiez-le là."
+
+msgid "Documentation"
+msgstr "Documentation"
+
+msgid "disabled"
+msgstr "désactivé"
+
+#, python-format
+msgid "%(counter)s linked account"
+msgid_plural "%(counter)s linked accounts"
+msgstr[0] "%(counter)s compte lié"
+msgstr[1] "%(counter)s comptes liés"
+
+msgid "No provider yet: people sign in with a password or a passkey."
+msgstr "Aucun fournisseur pour l'instant : on se connecte par mot de passe ou par clé d'accès."
+
+msgid "Add a provider"
+msgstr "Ajouter un fournisseur"
+
+#, python-format
+msgid "Redirect URI to register at the provider: <code>%(callback_base)s&lt;identifier&gt;/login/callback/</code>"
+msgstr "URI de redirection à déclarer chez le fournisseur : <code>%(callback_base)s&lt;identifiant&gt;/login/callback/</code>"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Instance settings"
+msgstr "Réglages de l'instance"
+
+msgid "Each setting can be set here or by an environment variable. A variable wins: the field is then locked and shows the value in force. Without a variable, the value you choose is stored and the default is shown."
+msgstr "Chaque réglage peut être posé ici ou par une variable d'environnement. La variable l'emporte : le champ est alors verrouillé et affiche la valeur en vigueur. Sans variable, la valeur choisie est enregistrée et le défaut est affiché."
+
+msgid "A secret is stored."
+msgstr "Un secret est enregistré."
+
+msgid "No secret is stored."
+msgstr "Aucun secret n'est enregistré."
+
+#, python-format
+msgid "Default: %(value)s."
+msgstr "Défaut : %(value)s."
+
+msgid "Restore the default"
+msgstr "Rétablir le défaut"
+
+#, python-format
+msgid "Set by the variable <code>%(env)s</code>. Value in force: %(value)s."
+msgstr "Défini par la variable <code>%(env)s</code>. Valeur en vigueur : %(value)s."
+
+msgid "Test the connection to the mail server"
+msgstr "Tester la connexion au serveur de messagerie"
+
+msgid "Opens a connection with the settings in force and closes it; nothing is sent. You can save without testing."
+msgstr "Ouvre une connexion avec les réglages en vigueur puis la ferme ; rien n'est envoyé. Vous pouvez enregistrer sans tester."
+
+msgid "Server"
+msgstr "Serveur"
+
+msgid "These are set by environment variables only: the instance needs them before it has a database, or they could lock you out. Read only; no secret is shown."
+msgstr "Ces réglages ne passent que par des variables d'environnement : l'instance en a besoin avant d'avoir une base de données, ou ils pourraient vous enfermer dehors. Lecture seule ; aucun secret n'est affiché."
+
+msgid "Files of the homes"
+msgstr "Fichiers des logements"
+
+#, python-format
+msgid "Each home may hold %(files)s files taking %(space)s, deleted files included until they are purged. A home is shown by its identifier and its numbers only: you see no name, no member and no file."
+msgstr "Chaque logement peut contenir %(files)s fichiers occupant %(space)s, fichiers supprimés compris jusqu'à leur purge. Un logement n'apparaît que par son identifiant et ses chiffres : vous ne voyez ni nom, ni membre, ni fichier."
+
+msgid "Change the quotas"
+msgstr "Modifier les quotas"
+
+#, python-format
+msgid "%(space)s in %(files)s files, %(percent)s %% of the quota"
+msgstr "%(space)s en %(files)s fichiers, %(percent)s %% du quota"
+
+msgid "No home yet."
+msgstr "Aucun logement pour l'instant."
+
+msgid "Pages"
+msgstr "Pages"
+
+msgid "Previous"
+msgstr "Précédent"
+
+msgid "Next"
+msgstr "Suivant"

@@ -1,0 +1,508 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Homes"
+msgstr "Logements"
+
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+msgid "Role"
+msgstr "Rôle"
+
+msgid "Sign-in required to open this home"
+msgstr "Connexion exigée pour ouvrir ce logement"
+
+msgid "No requirement"
+msgstr "Aucune exigence"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Password (again)"
+msgstr "Mot de passe (confirmation)"
+
+msgid "The two passwords differ."
+msgstr "Les deux mots de passe diffèrent."
+
+msgid "Type the name of the home to confirm"
+msgstr "Saisissez le nom du logement pour confirmer"
+
+msgid "Owner"
+msgstr "Propriétaire"
+
+msgid "Member"
+msgstr "Membre"
+
+msgid "Read only"
+msgstr "Lecture seule"
+
+msgid "Northern"
+msgstr "Nord"
+
+msgid "Southern"
+msgstr "Sud"
+
+msgid "name"
+msgstr "nom"
+
+msgid "currency"
+msgstr "devise"
+
+msgid "Use an ISO 4217 code, such as EUR."
+msgstr "Utilisez un code ISO 4217, par exemple EUR."
+
+msgid "ISO 4217 code of the currency used for this home's budget."
+msgstr "Code ISO 4217 de la devise du budget de ce logement."
+
+msgid "hemisphere"
+msgstr "hémisphère"
+
+msgid "Where the home is, for the seasons: spring in the north starts in March, in the south in September."
+msgstr "Où se trouve le logement, pour les saisons : le printemps commence en mars dans l'hémisphère nord, en septembre dans l'hémisphère sud."
+
+msgid "required sign-in provider"
+msgstr "fournisseur de connexion exigé"
+
+msgid "home"
+msgstr "logement"
+
+msgid "homes"
+msgstr "logements"
+
+msgid "role"
+msgstr "rôle"
+
+msgid "membership"
+msgstr "appartenance"
+
+msgid "memberships"
+msgstr "appartenances"
+
+msgid "email address"
+msgstr "adresse e-mail"
+
+msgid "expires at"
+msgstr "expire le"
+
+msgid "sent at"
+msgstr "envoyée le"
+
+msgid "accepted at"
+msgstr "acceptée le"
+
+msgid "revoked at"
+msgstr "révoqué le"
+
+msgid "invitation"
+msgstr "invitation"
+
+msgid "invitations"
+msgstr "invitations"
+
+#, python-format
+msgid "This home already holds %(count)d files, its limit: delete some, or ask the administrator of the instance for more."
+msgstr "Ce logement contient déjà %(count)d fichiers, sa limite : supprimez-en, ou demandez-en davantage à l'administrateur de l'instance."
+
+#, python-format
+msgid "There is no room left for this file: the files of this home take %(used)s of %(limit)s. Delete some, or ask the administrator of the instance for more."
+msgstr "Il ne reste pas de place pour ce fichier : les fichiers de ce logement occupent %(used)s sur %(limit)s. Supprimez-en, ou demandez-en davantage à l'administrateur de l'instance."
+
+#, python-format
+msgid "This home requires signing in through %(provider)s."
+msgstr "Ce logement exige une connexion par %(provider)s."
+
+msgid "The invitation is saved, but the email could not be sent. Send it again later."
+msgstr "L'invitation est enregistrée, mais l'e-mail n'a pas pu être envoyé. Renvoyez-la plus tard."
+
+msgid "This sign-in provider is not offered by this instance."
+msgstr "Cette instance ne propose pas ce fournisseur de connexion."
+
+msgid "Sign in through this provider first, then require it for the home."
+msgstr "Connectez-vous d'abord par ce fournisseur, puis exigez-le pour le logement."
+
+msgid "This home's sign-in provider is still offered by this instance."
+msgstr "Le fournisseur de connexion de ce logement est toujours proposé par cette instance."
+
+msgid "Type the exact name of the home to delete it."
+msgstr "Saisissez le nom exact du logement pour le supprimer."
+
+msgid "A home always keeps at least one owner."
+msgstr "Un logement garde toujours au moins un propriétaire."
+
+msgid "Choose another member of the home."
+msgstr "Choisissez un autre membre du logement."
+
+msgid "This person is already a member of the home."
+msgstr "Cette personne est déjà membre du logement."
+
+msgid "An invitation to this address is already pending; send it again instead."
+msgstr "Une invitation à cette adresse est déjà en attente : renvoyez-la plutôt."
+
+msgid "This invitation was already accepted or revoked."
+msgstr "Cette invitation a déjà été acceptée ou révoquée."
+
+msgid "This invitation is for another email address."
+msgstr "Cette invitation est destinée à une autre adresse e-mail."
+
+msgid "Verify this address in your account first, then open the link again."
+msgstr "Vérifiez d'abord cette adresse dans votre compte, puis rouvrez le lien."
+
+msgid "This link was not sent by email: it cannot create an account."
+msgstr "Ce lien n'a pas été envoyé par e-mail : il ne peut pas créer de compte."
+
+msgid "An account already uses this address: sign in to accept."
+msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter."
+
+msgid "Home saved."
+msgstr "Logement enregistré."
+
+msgid "The home was deleted."
+msgstr "Le logement a été supprimé."
+
+msgid "Too many invitations in a short time. Try again later."
+msgstr "Trop d'invitations en peu de temps. Réessayez plus tard."
+
+msgid "Invitation sent."
+msgstr "Invitation envoyée."
+
+msgid "Invitation created: share its link."
+msgstr "Invitation créée : partagez son lien."
+
+msgid "Invitation sent again."
+msgstr "Invitation renvoyée."
+
+msgid "New link created: share it."
+msgstr "Nouveau lien créé : partagez-le."
+
+msgid "Invitation revoked."
+msgstr "Invitation révoquée."
+
+msgid "Choose a role."
+msgstr "Choisissez un rôle."
+
+msgid "Role changed."
+msgstr "Rôle modifié."
+
+msgid "Leave this home?"
+msgstr "Quitter ce logement ?"
+
+msgid "Remove this member?"
+msgstr "Retirer ce membre ?"
+
+#, python-format
+msgid "You will lose access to %(home)s. Someone has to invite you again to return."
+msgstr "Vous perdrez l'accès à %(home)s. Il faudra qu'on vous invite à nouveau pour y revenir."
+
+#, python-format
+msgid "%(who)s will lose access to %(home)s."
+msgstr "%(who)s perdra l'accès à %(home)s."
+
+msgid "Leave"
+msgstr "Quitter"
+
+msgid "Remove"
+msgstr "Retirer"
+
+#, python-format
+msgid "You left %(home)s."
+msgstr "Vous avez quitté %(home)s."
+
+msgid "Member removed."
+msgstr "Membre retiré."
+
+msgid "Sign-in requirement removed."
+msgstr "Exigence de connexion retirée."
+
+msgid "Ownership transferred. You are now a member."
+msgstr "Propriété transférée. Vous êtes désormais membre."
+
+msgid "Choose a sign-in provider."
+msgstr "Choisissez un fournisseur de connexion."
+
+msgid "Sign-in requirement saved."
+msgstr "Exigence de connexion enregistrée."
+
+#, python-format
+msgid "Welcome to %(home)s."
+msgstr "Bienvenue dans %(home)s."
+
+#, python-format
+msgid "You joined %(home)s."
+msgstr "Vous avez rejoint %(home)s."
+
+msgid "owner · everything, the household included"
+msgstr "propriétaire · tout, foyer compris"
+
+msgid "member · tasks, projects, marking work done"
+msgstr "membre · tâches, projets, réalisation"
+
+msgid "read only · sees the home, changes nothing"
+msgstr "lecture seule · voit le logement, ne modifie rien"
+
+msgid "Audit log"
+msgstr "Journal d'audit"
+
+msgid "Who did what in this home and when: rooms, items, tasks, photos and files added, changed or deleted, roles, invitations, the sign-in rule, exports. Each entry names what it concerns by its title only. Only owners see it, and it holds no note, cost, file or procedure."
+msgstr "Qui a fait quoi dans ce logement et quand : pièces, éléments, tâches, photos et fichiers ajoutés, modifiés ou supprimés, rôles, invitations, règle de connexion, exports. Chaque entrée désigne son objet par son titre seulement. Seuls les propriétaires le voient, et il ne contient ni note, ni coût, ni fichier, ni mode opératoire."
+
+msgid "Nothing recorded yet. As people add, change or delete rooms, items, tasks, photos and files, or change roles and invitations, each action appears here with who did it and when, naming what it concerns by its title."
+msgstr "Rien d'enregistré pour l'instant. Quand quelqu'un ajoute, modifie ou supprime des pièces, des éléments, des tâches, des photos ou des fichiers, ou change des rôles ou des invitations, chaque action apparaît ici avec son auteur et sa date, l'objet étant désigné par son titre."
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Delete this home"
+msgstr "Supprimer ce logement"
+
+#, python-format
+msgid "Deleting %(home)s removes it for good, with everything in it, for the %(counter)s person who belongs to it. There is no way back."
+msgid_plural "Deleting %(home)s removes it for good, with everything in it, for the %(counter)s people who belong to it. There is no way back."
+msgstr[0] "La suppression de %(home)s l'efface définitivement, avec tout son contenu, pour la %(counter)s personne qui en fait partie. Il n'y a pas de retour en arrière."
+msgstr[1] "La suppression de %(home)s l'efface définitivement, avec tout son contenu, pour les %(counter)s personnes qui en font partie. Il n'y a pas de retour en arrière."
+
+msgid "Export the home first if you want to keep its data."
+msgstr "Exportez d'abord le logement si vous voulez conserver ses données."
+
+msgid "Export all data"
+msgstr "Exporter toutes les données"
+
+msgid "Delete the home for good"
+msgstr "Supprimer définitivement le logement"
+
+#, python-format
+msgid "You are invited to join the home \"%(home)s\" on HouseCairn, as %(role)s."
+msgstr "Vous êtes invité à rejoindre le logement « %(home)s » sur HouseCairn, avec le rôle %(role)s."
+
+msgid "Accept the invitation"
+msgstr "Accepter l'invitation"
+
+#, python-format
+msgid "The link works once and expires on %(date)s."
+msgstr "Le lien ne sert qu'une fois et expire le %(date)s."
+
+msgid "If you did not expect this invitation, ignore this message."
+msgstr "Si vous n'attendiez pas cette invitation, ignorez ce message."
+
+msgid "Open this link to accept, and to create your account if you have none:"
+msgstr "Ouvrez ce lien pour accepter, et pour créer votre compte si vous n'en avez pas :"
+
+#, python-format
+msgid "%(name)s: you are invited to %(home)s"
+msgstr "%(name)s : vous êtes invité à %(home)s"
+
+msgid "Your role"
+msgstr "Votre rôle"
+
+msgid "Currency"
+msgstr "Devise"
+
+msgid "Hemisphere"
+msgstr "Hémisphère"
+
+msgid "Settings"
+msgstr "Réglages"
+
+msgid "Name, currency and hemisphere"
+msgstr "Nom, devise et hémisphère"
+
+msgid "The hemisphere decides what spring, summer and the other seasons mean for the tasks"
+msgstr "L'hémisphère décide ce que veulent dire le printemps, l'été et les autres saisons pour les tâches"
+
+msgid "Household and roles"
+msgstr "Foyer et rôles"
+
+#, python-format
+msgid "%(counter)s person"
+msgid_plural "%(counter)s people"
+msgstr[0] "%(counter)s personne"
+msgstr[1] "%(counter)s personnes"
+
+msgid "Your data"
+msgstr "Vos données"
+
+msgid "One archive with everything of this home, in an open format."
+msgstr "Une archive avec tout le contenu de ce logement, dans un format ouvert."
+
+msgid "Edit the home"
+msgstr "Modifier le logement"
+
+msgid "Add a home"
+msgstr "Ajouter un logement"
+
+msgid "Each home has its own rooms, tasks, budget and currency. You will be its owner, and can invite the rest of the household."
+msgstr "Chaque logement a ses pièces, ses tâches, son budget et sa devise. Vous en serez propriétaire, et pourrez inviter le reste du foyer."
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Create the home"
+msgstr "Créer le logement"
+
+#, python-format
+msgid "%(provider)s required"
+msgstr "%(provider)s exigé"
+
+msgid "You are not a member of any home yet."
+msgstr "Vous n'êtes membre d'aucun logement pour l'instant."
+
+msgid "you"
+msgstr "vous"
+
+msgid "Invitation link"
+msgstr "Lien d'invitation"
+
+msgid "This instance does not send email. Give this link to the person you invite: it is shown only once and works once."
+msgstr "Cette instance n'envoie pas d'e-mails. Donnez ce lien à la personne invitée : il n'est affiché qu'une fois et ne sert qu'une fois."
+
+msgid "Invite someone"
+msgstr "Inviter quelqu'un"
+
+msgid "Invite"
+msgstr "Inviter"
+
+msgid "The invitation is sent by email, with a link that works once."
+msgstr "L'invitation part par e-mail, avec un lien qui ne sert qu'une fois."
+
+msgid "This instance does not send email: you will get a link to pass on, which works once."
+msgstr "Cette instance n'envoie pas d'e-mails : vous obtiendrez un lien à transmettre, qui ne sert qu'une fois."
+
+#, python-format
+msgid "It expires after %(days)s day."
+msgid_plural "It expires after %(days)s days."
+msgstr[0] "Il expire au bout de %(days)s jour."
+msgstr[1] "Il expire au bout de %(days)s jours."
+
+msgid "Pending invitations"
+msgstr "Invitations en attente"
+
+#, python-format
+msgid "until %(date)s"
+msgstr "jusqu'au %(date)s"
+
+msgid "Send again"
+msgstr "Renvoyer"
+
+msgid "Revoke"
+msgstr "Révoquer"
+
+msgid "Sign-in"
+msgstr "Connexion"
+
+msgid "When a provider is required, members open this home only after signing in through it, not with a password or a passkey alone. Set it from a session signed in through that provider."
+msgstr "Quand un fournisseur est exigé, les membres n'ouvrent ce logement qu'après s'être connectés par lui, pas avec un mot de passe ou une passkey seuls. Réglez-le depuis une session connectée par ce fournisseur."
+
+#, python-format
+msgid "Members open this home by signing in through %(provider)s."
+msgstr "Les membres ouvrent ce logement en se connectant par %(provider)s."
+
+msgid "Only owners invite people and change roles."
+msgstr "Seuls les propriétaires invitent et changent les rôles."
+
+msgid "Invitation"
+msgstr "Invitation"
+
+#, python-format
+msgid "Join %(home)s"
+msgstr "Rejoindre %(home)s"
+
+#, python-format
+msgid "You are invited as %(role)s, with the address %(email)s."
+msgstr "Vous êtes invité avec le rôle %(role)s, à l'adresse %(email)s."
+
+#, python-format
+msgid "This link was handed over, not sent by email, so it does not prove that %(email)s is yours. Verify this address in your account first, then open the link again."
+msgstr "Ce lien vous a été remis, et non envoyé par e-mail : il ne prouve donc pas que l'adresse %(email)s est la vôtre. Vérifiez d'abord cette adresse dans votre compte, puis rouvrez le lien."
+
+msgid "Verify the address"
+msgstr "Vérifier l'adresse"
+
+#, python-format
+msgid "This link was handed over, not sent by email, so it does not prove that %(email)s is yours, and this instance cannot send email to verify it. Ask the administrator of this instance."
+msgstr "Ce lien vous a été remis, et non envoyé par e-mail : il ne prouve donc pas que l'adresse %(email)s est la vôtre, et cette instance ne peut pas envoyer d'e-mail pour la vérifier. Demandez à l'administrateur de cette instance."
+
+msgid "Join the home"
+msgstr "Rejoindre le logement"
+
+#, python-format
+msgid "You are signed in with another address. Sign out, then open the link again and sign in as %(email)s."
+msgstr "Vous êtes connecté avec une autre adresse. Déconnectez-vous, rouvrez le lien et connectez-vous avec %(email)s."
+
+msgid "An account already uses this address: sign in to accept the invitation."
+msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter l'invitation."
+
+msgid "This link was handed over by the person who invited you, not sent by email, so it cannot create an account. Sign in with the invited address, then open the link again. Without an account, ask the administrator of this instance."
+msgstr "Ce lien vous a été remis par la personne qui vous a invité, et non envoyé par e-mail : il ne peut donc pas créer de compte. Connectez-vous avec l'adresse invitée, puis rouvrez le lien. Sans compte, demandez à l'administrateur de cette instance."
+
+msgid "Create your account"
+msgstr "Créer votre compte"
+
+msgid "Create the account and join"
+msgstr "Créer le compte et rejoindre"
+
+msgid "Already have an account?"
+msgstr "Vous avez déjà un compte ?"
+
+msgid "Sign in"
+msgstr "Se connecter"
+
+#, python-format
+msgid "Continue with %(provider)s"
+msgstr "Continuer avec %(provider)s"
+
+msgid "This invitation link does not work"
+msgstr "Ce lien d'invitation ne fonctionne pas"
+
+msgid "It may have been used already, revoked, replaced by a newer link, or it may have expired. Ask the person who invited you to send it again."
+msgstr "Il a peut-être déjà servi, été révoqué, remplacé par un lien plus récent, ou il a expiré. Demandez à la personne qui vous a invité de le renvoyer."
+
+msgid "Back to sign-in"
+msgstr "Retour à la connexion"
+
+msgid "Member since"
+msgstr "Membre depuis"
+
+msgid "Change the role"
+msgstr "Changer le rôle"
+
+msgid "Make owner, and become a member myself"
+msgstr "Le nommer propriétaire, et devenir moi-même membre"
+
+msgid "Remove from the home"
+msgstr "Retirer du logement"
+
+msgid "Leave this home"
+msgstr "Quitter ce logement"
+
+#, python-format
+msgid "This home opens only after signing in through %(provider)s."
+msgstr "Ce logement ne s'ouvre qu'après une connexion par %(provider)s."
+
+msgid "If your account is not linked to this provider yet, link it first from your linked accounts."
+msgstr "Si votre compte n'est pas encore lié à ce fournisseur, liez-le d'abord depuis vos comptes liés."
+
+msgid "Linked accounts"
+msgstr "Comptes liés"
+
+msgid "This instance no longer offers this provider, so nobody can open this home. As an owner, you can remove the requirement: members then sign in as usual."
+msgstr "Cette instance ne propose plus ce fournisseur, donc personne ne peut ouvrir ce logement. En tant que propriétaire, vous pouvez retirer l'exigence : les membres se connectent alors comme d'habitude."
+
+msgid "Remove the sign-in requirement"
+msgstr "Retirer l'exigence de connexion"
+
+msgid "This instance no longer offers this provider. Ask an owner of the home, who can remove the requirement."
+msgstr "Cette instance ne propose plus ce fournisseur. Demandez à un propriétaire du logement, qui peut retirer l'exigence."
+
+msgid "Whatever the requirement, you can leave this home without signing in through the provider."
+msgstr "Quelle que soit l'exigence, vous pouvez quitter ce logement sans vous connecter par le fournisseur."

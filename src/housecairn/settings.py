@@ -180,7 +180,13 @@ AUTHENTICATION_BACKENDS = [
 LANGUAGE_CODE = "en"
 # Each language is named in itself, whatever the language of the page: never translated.
 LANGUAGES = [("en", "English"), ("fr", "Français")]
-LOCALE_PATHS = [BASE_DIR / "locale"]
+# One catalog per app, `<app>/locale/` (docs/adr/0013): two pull requests that add
+# strings to two apps never touch the same file. Listed here, and not only found
+# through INSTALLED_APPS, so that they keep priority over the catalogs of allauth
+# and Django; the shared strings (shell, common templates) are in `core`, first.
+LOCALE_PATHS = sorted(
+    BASE_DIR.glob("*/locale"), key=lambda path: (path.parent.name != "core", path)
+)
 USE_I18N = True
 # The time zone of the households (docs/adr/0032, 0042): the variable, else UTC. The
 # interface can set another one, activated for each request (core.middleware).
