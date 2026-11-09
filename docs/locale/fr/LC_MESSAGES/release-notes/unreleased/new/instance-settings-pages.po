@@ -1,0 +1,22 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Instance settings in sections.** The settings of the instance are no longer one long page with nine Save buttons: **Instance administration, Settings** is now an index, and each section (public address, sign-up, outgoing email, rate limits and the others) has its own page with one button that names what it saves. A variable still locks its field and shows the value in force. The old addresses, `/instance/settings/?section=<section>`, open the page of the section. See [Instance settings](../../../screens/instance-settings.md)."
+msgstr "**Réglages de l'instance par sections.** Les réglages de l'instance ne tiennent plus sur une longue page à neuf boutons Enregistrer : **Administration de l'instance, Réglages** est désormais un index, et chaque section (adresse publique, inscription, e-mail sortant, limites de débit et les autres) a sa propre page avec un bouton qui nomme ce qu'il enregistre. Une variable verrouille toujours son champ et affiche la valeur en vigueur. Les anciennes adresses, `/instance/settings/?section=<section>`, ouvrent la page de la section. Voir [Réglages de l'instance](../../../screens/instance-settings.md)."

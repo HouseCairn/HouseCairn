@@ -21,8 +21,8 @@ msgstr ""
 msgid "Settings"
 msgstr "Réglages"
 
-msgid "Most of what an administrator configures can be set **in the interface** and by an **environment variable**, as a pair. The variable wins; without it, the value chosen in the interface is used; without either, the default. The screen is **Instance administration, Settings** (see [Instance settings](../screens/instance-settings.md))."
-msgstr "La plupart de ce qu'un administrateur configure peut se régler **dans l'interface** et par une **variable d'environnement**, en binôme. La variable l'emporte ; sans elle, la valeur choisie dans l'interface est utilisée ; sans l'une ni l'autre, le défaut. L'écran est **Administration de l'instance, Réglages** (voir [Réglages de l'instance](../screens/instance-settings.md))."
+msgid "Most of what an administrator configures can be set **in the interface** and by an **environment variable**, as a pair. The variable wins; without it, the value chosen in the interface is used; without either, the default. The screen is **Instance administration, Settings**: an index of the sections, then one page per section with its own Save button (see [Instance settings](../screens/instance-settings.md))."
+msgstr "La plupart de ce qu'un administrateur configure peut se régler **dans l'interface** et par une **variable d'environnement**, en binôme. La variable l'emporte ; sans elle, la valeur choisie dans l'interface est utilisée ; sans l'une ni l'autre, le défaut. L'écran est **Administration de l'instance, Réglages** : un index des sections, puis une page par section avec son propre bouton d'enregistrement (voir [Réglages de l'instance](../screens/instance-settings.md))."
 
 msgid "**A variable is set** (and not empty): it decides. In the interface the field is locked, shows the value in force and names the variable. The interface and the API refuse to change it."
 msgstr "**Une variable est posée** (et non vide) : elle décide. Dans l'interface, le champ est verrouillé, affiche la valeur en vigueur et nomme la variable. L'interface et l'API refusent de le modifier."
@@ -292,6 +292,18 @@ msgstr "Tests du serveur de messagerie ou d'un émetteur par minute"
 msgid "`HOUSECAIRN_RATELIMIT_TESTS`"
 msgstr "`HOUSECAIRN_RATELIMIT_TESTS`"
 
+msgid "Link previews a minute, per person"
+msgstr "Aperçus de liens par minute, par personne"
+
+msgid "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS`"
+msgstr "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS`"
+
+msgid "Link previews a minute, per home"
+msgstr "Aperçus de liens par minute, par logement"
+
+msgid "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME`"
+msgstr "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME`"
+
 msgid "Largest file (bytes)"
 msgstr "Fichier le plus gros (octets)"
 
@@ -333,6 +345,15 @@ msgstr "Chercher les rappels toutes les (minutes)"
 
 msgid "`HOUSECAIRN_NOTIFICATIONS_INTERVAL`"
 msgstr "`HOUSECAIRN_NOTIFICATIONS_INTERVAL`"
+
+msgid "Preview of inspiration links"
+msgstr "Aperçu des liens d'inspiration"
+
+msgid "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
+msgstr "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
+
+msgid "Projects"
+msgstr "Projets"
 
 msgid "The start-up checks (`manage.py check`, which `migrate` runs too) read the variables and the defaults, with one exception: `housecairn.E001`, which stops the start when `HOUSECAIRN_SIGNUP_OPEN` opens sign-up without a mail server, also counts a mail server chosen in the interface. That is why the interface refuses to remove that server, or restore its default, while sign-up is open. Otherwise a setting chosen in the interface is checked when it is saved, not at start-up."
 msgstr "Les contrôles de démarrage (`manage.py check`, que `migrate` lance aussi) lisent les variables et les défauts, à une exception près : `housecairn.E001`, qui arrête le démarrage quand `HOUSECAIRN_SIGNUP_OPEN` ouvre l'inscription sans serveur de messagerie, tient compte aussi d'un serveur de messagerie choisi dans l'interface. C'est pourquoi l'interface refuse de retirer ce serveur, ou de rétablir son défaut, tant que l'inscription est ouverte. Pour le reste, un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."
@@ -439,26 +460,6 @@ msgstr "**Fuseau horaire** : un fuseau IANA tel que `Europe/Paris`. Il décide d
 msgid "**Name of the instance**: in the app bar, the title of the pages and the emails, at most 64 characters on one line. Empty, the product name is shown. See [ADR 0042](../adr/0042-rate-limits-quotas-language-and-instance-name.md)."
 msgstr "**Nom de l'instance** : dans la barre de l'application, le titre des pages et les e-mails, au plus 64 caractères sur une ligne. Vide, le nom du produit s'affiche. Voir [ADR 0042](../adr/0042-rate-limits-quotas-language-and-instance-name.md)."
 
-msgid "Preview of inspiration links"
-msgstr "Aperçu des liens d'inspiration"
-
-msgid "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
-msgstr "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
-
-msgid "Projects"
-msgstr "Projets"
-
 #~ msgid "`manage.py check --deploy` reads the variables and the defaults, not the database: a setting chosen in the interface is checked when it is saved, not at start-up."
 #~ msgstr "`manage.py check --deploy` lit les variables et les défauts, pas la base de données : un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."
 
-msgid "Link previews a minute, per person"
-msgstr "Aperçus de liens par minute, par personne"
-
-msgid "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS`"
-msgstr "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS`"
-
-msgid "Link previews a minute, per home"
-msgstr "Aperçus de liens par minute, par logement"
-
-msgid "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME`"
-msgstr "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME`"

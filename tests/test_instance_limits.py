@@ -107,7 +107,8 @@ class TestEverySetting:
             with pytest.raises(ValidationError):
                 svc.update(admin_user, {key: value})
             page = admin_client.post(
-                reverse("instance:settings"), {"section": section_of(key), key: value}
+                reverse("instance:settings", kwargs={"section": section_of(key)}),
+                {"section": section_of(key), key: value},
             )
             assert page.status_code == 422, (key, value)
             answer = admin_api.patch(reverse("api-v1:instance-settings"), {key: value})
@@ -136,7 +137,10 @@ class TestEverySetting:
             assert config.get_setting(key) == read.values[key]
             with pytest.raises(ValidationError, match=setting.env):
                 svc.update(admin_user, {key: setting.default})
-            page = admin_client.get(reverse("instance:settings"), HTTP_ACCEPT_LANGUAGE="en").text
+            page = admin_client.get(
+                reverse("instance:settings", kwargs={"section": section_of(key)}),
+                HTTP_ACCEPT_LANGUAGE="en",
+            ).text
             assert f'id="locked-{key}"' in page
             assert f'name="{key}"' not in page
             assert f"<code>{setting.env}</code>" in page

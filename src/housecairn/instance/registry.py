@@ -67,6 +67,19 @@ SECTION_LABELS: dict[Section, Promise] = {
     Section.PROJECTS: _("Projects"),
 }
 
+# The one button of a section's page: it names what it saves.
+SECTION_SAVE_LABELS: dict[Section, Promise] = {
+    Section.ADDRESS: _("Save the public address"),
+    Section.INSTANCE: _("Save the name, language and time zone"),
+    Section.SIGNUP: _("Save the sign-up settings"),
+    Section.INVITATIONS: _("Save the invitation settings"),
+    Section.EMAIL: _("Save the outgoing email settings"),
+    Section.RATE_LIMITS: _("Save the rate limits"),
+    Section.FILES: _("Save the file limits"),
+    Section.NOTIFICATIONS: _("Save the notification settings"),
+    Section.PROJECTS: _("Save the project settings"),
+}
+
 # The product name: the default name of an instance, and what an empty name shows.
 PRODUCT_NAME = "HouseCairn"
 INSTANCE_NAME_MAX_LENGTH = 64

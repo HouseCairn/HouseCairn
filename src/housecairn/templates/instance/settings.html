@@ -6,62 +6,22 @@
   <h1>{% translate "Instance settings" %}</h1>
   {% tab_bar "instance" %}
   <p class="small">{% translate "Each setting can be set here or by an environment variable. A variable wins: the field is then locked and shows the value in force. Without a variable, the value you choose is stored and the default is shown." %}</p>
-  {% for section in sections %}
-    <section class="card" id="{{ section.id }}">
-      <h2>{{ section.label }}</h2>
-      <form method="post" action="{% url 'instance:settings' %}">
-        {% csrf_token %}
-        <input type="hidden" name="section" value="{{ section.id }}">
-        {{ section.form.non_field_errors }}
-        {% for item in section.items %}
-          {% with key=item.setting.key %}
-            {% if item.field %}
-              {{ item.field.errors }}
-              <p>{{ item.field.label_tag }}{{ item.field }}</p>
-              <p class="small helptext" id="{{ item.field.auto_id }}_helptext">{{ item.setting.help }}
-                {% if item.state.setting.secret %}
-                  {% if item.state.unreadable %}{% translate "The stored secret can no longer be read: enter it again." %}{% elif item.state.is_set %}{% translate "A secret is stored." %}{% else %}{% translate "No secret is stored." %}{% endif %}
-                {% else %}
-                  {% blocktranslate with value=item.default %}Default: {{ value }}.{% endblocktranslate %}
-                {% endif %}
-                {% if item.state.source == "database" %}
-                  <button type="submit" name="reset" value="{{ key }}" formnovalidate class="button-secondary button-small">{% translate "Restore the default" %}</button>
-                {% endif %}
-              </p>
-            {% else %}
-              <p>
-                <label for="locked-{{ key }}">{{ item.setting.label }}</label>
-                {% if item.setting.kind == "boolean" %}
-                  <input type="checkbox" class="setting-locked" id="locked-{{ key }}" disabled {% if item.state.value %}checked{% endif %} aria-describedby="env-{{ key }}">
-                {% else %}
-                  <input type="text" class="setting-locked" id="locked-{{ key }}" value="{{ item.shown }}" readonly aria-readonly="true" aria-describedby="env-{{ key }}">
-                {% endif %}
-              </p>
-              <p class="small helptext" id="env-{{ key }}">
-                {% blocktranslate with env=item.setting.env value=item.shown %}Set by the variable <code>{{ env }}</code>. Value in force: {{ value }}.{% endblocktranslate %}
-                <a href="{{ docs_settings_url }}">{% translate "Documentation" %}</a>
-              </p>
-            {% endif %}
-          {% endwith %}
-        {% endfor %}
-        {% if section.form.fields %}
-          <button type="submit" class="button-block">{% translate "Save" %}</button>
-        {% endif %}
-        {% if section.test_email %}
-          <button type="submit" name="test_email" value="1" formnovalidate class="button-secondary button-block">{% translate "Test the connection to the mail server" %}</button>
-          <p class="small">{% translate "Opens a connection with the settings in force and closes it; nothing is sent. You can save without testing." %}</p>
-        {% endif %}
-      </form>
-    </section>
-  {% endfor %}
-
-  <h2>{% translate "Server" %}</h2>
-  <section class="card">
-    <p class="small">{% translate "These are set by environment variables only: the instance needs them before it has a database, or they could lock you out. Read only; no secret is shown." %}</p>
-    <dl class="facts">
-      {% for row in server_rows %}
-        <div><dt>{{ row.label }} (<code>{{ row.env }}</code>)</dt><dd>{{ row.value }}</dd></div>
-      {% endfor %}
-    </dl>
-  </section>
+  <div class="list">
+    {% for section in sections %}
+      <a class="row" href="{{ section.url }}">
+        <span class="row-body">
+          <span class="row-title">{{ section.label }}</span>
+          <span class="row-text">{% blocktranslate count counter=section.count %}{{ counter }} setting{% plural %}{{ counter }} settings{% endblocktranslate %}{% if section.locked %} · {% blocktranslate count counter=section.locked %}{{ counter }} set by a variable{% plural %}{{ counter }} set by variables{% endblocktranslate %}{% endif %}</span>
+        </span>
+        {% include "components/icon.html" with name="chevron" class="chevron" %}
+      </a>
+    {% endfor %}
+    <a class="row" href="{{ server_url }}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Server" %}</span>
+        <span class="row-text">{% translate "Read only: set by environment variables." %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+  </div>
 {% endblock content %}

@@ -5,7 +5,7 @@
   <a class="back-link" href="{% url 'more' %}">{% include "components/icon.html" with name="chevron" %}{% translate "More" %}</a>
   <h1>{% translate "Files of the homes" %}</h1>
   {% tab_bar "instance" %}
-  <p class="small">{% blocktranslate with space=limits.bytes|filesizeformat files=limits.files %}Each home may hold {{ files }} files taking {{ space }}, deleted files included until they are purged. A home is shown by its identifier and its numbers only: you see no name, no member and no file.{% endblocktranslate %} <a href="{% url 'instance:settings' %}#files">{% translate "Change the quotas" %}</a></p>
+  <p class="small">{% blocktranslate with space=limits.bytes|filesizeformat files=limits.files %}Each home may hold {{ files }} files taking {{ space }}, deleted files included until they are purged. A home is shown by its identifier and its numbers only: you see no name, no member and no file.{% endblocktranslate %} <a href="{% url 'instance:settings' section='files' %}">{% translate "Change the quotas" %}</a></p>
   {% for row in page %}
     <section class="card">
       <p class="row-title"><code>{{ row.id }}</code></p>

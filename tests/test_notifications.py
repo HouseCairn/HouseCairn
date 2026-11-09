@@ -960,7 +960,9 @@ class TestWebAndApi:
         recent(client, admin)
         with override_settings(HOUSECAIRN_ENV_LOCKED=frozenset({"notifications_enabled"})):
             assert config.is_locked("notifications_enabled")
-            page = client.get(reverse("instance:settings")).text
+            page = client.get(
+                reverse("instance:settings", kwargs={"section": "notifications"})
+            ).text
         tag = re.search(r'<input[^>]*id="locked-notifications_enabled"[^>]*>', page)
         assert tag is not None
         assert "disabled" in tag.group(0)

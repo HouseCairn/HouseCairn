@@ -1,26 +1,35 @@
 # Instance settings
 
-The settings of the instance, at `/instance/settings/`, reached from **Instance
-administration**. Administrators only; anyone else gets a 404.
+The settings of the instance, reached from **Instance administration**. Administrators
+only; anyone else gets a 404.
+
+`/instance/settings/` is an **index**: one line per section, with the number of settings
+and how many a variable sets, then **Server**. Each section has its own page,
+`/instance/settings/<section>/` (for example `/instance/settings/rate-limits/`), with a
+single button that names what it saves, such as **Save the rate limits**. A page saves
+only its own settings; another section's fields sent with it are ignored. The old
+addresses still work: `/instance/settings/?section=<section>` opens the page of the
+section.
 
 Each setting is paired with an environment variable (see [Settings](../administration/settings.md)):
 
-- **Editable**: no variable sets it. Change the value and press **Save** at the bottom of
-  its section. The default is shown below the field; **Restore the default** appears when you
+- **Editable**: no variable sets it. Change the value and press the button at the bottom of
+  the page of its section. The default is shown below the field; **Restore the default** appears when you
   have changed it.
 - **Locked**: a variable sets it. The field is read-only and shows the value in force, the
   name of the variable and a link to the documentation.
 - **Secret** (the SMTP password): write only. The screen says whether one is stored; leave
   the field empty to keep it.
 
-Sections: **Public address**, **Name, language and time zone** (name of the instance,
+Sections (the index lists them): **Public address**, **Name, language and time zone** (name of the instance,
 default language, time zone), **Sign-up** (open sign-up, sign-up through single sign-on,
 allowed and blocked domains, anti-robot work), **Invitations** (lifetime), **Outgoing
 email** (server, port, STARTTLS or TLS, user name, password, timeout, sender), **Rate
 limits** (see [Rate limits](../administration/rate-limits.md)) and **Files of a home**
 (largest file, space and number of files of each home). **Test the connection** checks the
 mail server with the settings in force and sends nothing.
-**Server** lists the variables that stay in the environment, read-only.
+**Server**, the last line of the index, lists the variables that stay in the environment,
+read-only.
 
 **Notifications** turns reminders on or off for the whole instance (off by default) and sets
 how often the background worker looks for them, from 1 to 60 minutes (see
@@ -32,5 +41,5 @@ picture (see [Projects and quotes](../guides/projects.md)). It only calls public
 never a private network nor a cloud metadata service.
 
 Saving asks you to have signed in within the last five minutes; if you have not, you
-are sent to confirm your sign-in and then back here, and you make the change again.
+are sent to confirm your sign-in and then back to the same page, and you make the change again.
 Every change is in the [audit log](instance.md).
