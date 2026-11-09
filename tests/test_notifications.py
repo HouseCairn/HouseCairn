@@ -48,7 +48,7 @@ from tests.test_instance_settings import recent
 
 pytestmark = pytest.mark.django_db
 
-TOKEN = "123456:N0t-A-Real-B0t-Token-Anywhere"
+TOKEN = "123456789:fixture-not-a-token"
 URL = f"tgram://{TOKEN}/987654"
 LIST = "api-v1:notification-channel-list"
 
@@ -618,7 +618,7 @@ class TestOutgoingCalls:
             "matrixs://user:pass@matrix.example.com/!room:example.com",
             "mmosts://chat.example.com/token",
             "apprises://api.example.com/token",
-            "tgram://123456789:AAHexampleexampleexampleexampleexa/987654321",
+            "tgram://123456789:fixture-not-a-token/987654321?image=yes",
             "discord://12345/abcdef",
             "slack://T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7FQ/#general",
             "pover://uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -629,7 +629,11 @@ class TestOutgoingCalls:
         payloads: list[str] = []
 
         def capture(self: Any, method: str, url: str, **kwargs: Any) -> requests.Response:
-            payloads.append(json.dumps([kwargs.get("data"), kwargs.get("json")], default=str))
+            payloads.append(
+                json.dumps(
+                    [kwargs.get("data"), kwargs.get("json"), kwargs.get("files")], default=str
+                )
+            )
             answer = requests.Response()
             answer.status_code = 200
             answer._content = b'{"ok": true, "id": 1, "access_token": "t", "room_id": "!r:x"}'
