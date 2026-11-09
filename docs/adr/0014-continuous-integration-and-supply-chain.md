@@ -211,23 +211,13 @@ digest are updated by hand, together.
 
 ### Checks required on `main`
 
-These exact names are to be set as required status checks in the `main`
-ruleset, once each has passed once on GitHub (a check that has never run blocks
-every merge):
-
-- `Lint and types`
-- `Tests (SQLite)`
-- `Tests (PostgreSQL)`
-- `Django and repository checks`
-- `zizmor`
-- `Dependency review`
-- `Conventional Commits title`
-- `Signed-off-by`
-- `CLA` (a commit status set by `cla.js`, not a job; add it last, once
-  `cla.yml` is on `main` and the `cla-signatures` branch exists)
-
-Each of their workflows also runs on the merge queue, where the same names are
-required on every queue entry (ADR 0040).
+A check name becomes a required status check of the `main` ruleset once it has
+passed once on GitHub (a check that has never run blocks every merge). The list
+is not repeated here: it grew after this record (container image, multi-arch
+build, documentation), and the complete list of the thirteen required checks,
+with what each one does on a merge queue entry, is the table of ADR 0040. The
+ruleset itself (`GET /repos/{owner}/{repo}/rules/branches/main`) is the
+reference. `CLA` is a commit status set by `cla.js`, not a job.
 
 Not required: `CLA signatures` (the job that sets the `CLA` status; it runs on
 the default branch, not on the pull request head), `zizmor (code scanning)`

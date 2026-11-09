@@ -3,6 +3,7 @@
 import http.server
 import json
 import os
+import re
 import subprocess
 import threading
 from collections.abc import Iterator
@@ -10,6 +11,7 @@ from pathlib import Path
 from typing import ClassVar
 
 import pytest
+import yaml
 
 from scripts import (
     check_docs_updated,
@@ -597,3 +599,57 @@ def test_more_user_facing_files_need_docs(path: str) -> None:
     assert check_docs_updated.user_facing([path, *internal]) == [path]
     assert check_docs_updated.problems([path], []) != []
     assert check_docs_updated.problems([path, "docs/screens/home.md"], []) == []
+
+
+# Workflow shell steps that cannot pass when they fail
+
+WORKFLOWS = Path(__file__).resolve().parents[1] / ".github" / "workflows"
+
+
+def _run_steps(name: str) -> list[dict[str, str]]:
+    workflow = yaml.safe_load((WORKFLOWS / name).read_text(encoding="utf-8"))
+    return [
+        step for job in workflow["jobs"].values() for step in job.get("steps", []) if "run" in step
+    ]
+
+
+def _all_run_steps() -> list[dict[str, str]]:
+    return [step for path in sorted(WORKFLOWS.glob("*.yml")) for step in _run_steps(path.name)]
+
+
+def test_a_piped_command_fails_its_step() -> None:
+    # GitHub's default shell is `bash -e {0}`, without pipefail: the status of
+    # `cmd | tee` would be the status of `tee`. `shell: bash` adds pipefail;
+    # a script may also read PIPESTATUS itself.
+    unsafe = [
+        step["name"]
+        for step in _all_run_steps()
+        if "| tee" in step["run"]
+        and step.get("shell") != "bash"
+        and "set -o pipefail" not in step["run"]
+        and "set -euo pipefail" not in step["run"]
+        and "PIPESTATUS[0]" not in step["run"]
+    ]
+    assert unsafe == []
+
+
+def test_image_tags_step_fails_with_its_script() -> None:
+    step = next(s for s in _run_steps("image.yml") if s["name"] == "Tags for this ref")
+    assert step["shell"] == "bash"
+
+
+def test_a_wait_loop_ends_with_a_check_that_fails() -> None:
+    # `for ...; do probe && break; sleep 1; done` ends with status 0 whether
+    # the probe succeeded or not: the next line must probe once more and fail.
+    loops = 0
+    for step in _all_run_steps():
+        lines = step["run"].splitlines()
+        for i, line in enumerate(lines):
+            loop = re.match(r"\s*for _ in \$\(seq .*?\); do (.+?) && break; sleep \d+; done$", line)
+            if not loop:
+                continue
+            loops += 1
+            after = lines[i + 1] if i + 1 < len(lines) else ""
+            assert after.strip().startswith(loop.group(1)), step["name"]
+            assert re.search(r"\|\| \{ cat \"[^\"]+\"; exit 1; \}$", after), step["name"]
+    assert loops >= 2

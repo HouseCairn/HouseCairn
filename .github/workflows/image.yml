@@ -283,6 +283,10 @@ jobs:
         env:
           REF: ${{ github.ref }}
           SHA: ${{ github.sha }}
+        # `shell: bash` runs with `-o pipefail`: a failure of the script fails the
+        # step instead of leaving it green with empty tags (the default shell
+        # returns the status of `tee`).
+        shell: bash
         run: python3 scripts/image_tags.py "$REF" "$SHA" | tee -a "$GITHUB_OUTPUT"
 
       - name: Set up QEMU and a BuildKit builder

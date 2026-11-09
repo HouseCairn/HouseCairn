@@ -68,7 +68,9 @@ jobs:
           }
           JSON
           nohup python3 -m http.server 8002 --bind 127.0.0.1 --directory "$RUNNER_TEMP/idp" > "$RUNNER_TEMP/idp-server.log" 2>&1 &
+          # The last try decides: a server that never answers fails here, with its log.
           for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8002/.well-known/openid-configuration && break; sleep 1; done
+          curl -fsS http://127.0.0.1:8002/.well-known/openid-configuration >/dev/null || { cat "$RUNNER_TEMP/idp-server.log"; exit 1; }
       - name: Start the instance for the passkey sign-in (development settings)
         env:
           OIDC_SERVER_URL: http://127.0.0.1:8002
@@ -88,7 +90,9 @@ jobs:
           services.create_home(user, name='Main house')
           "
           nohup uv run python manage.py runserver 127.0.0.1:8001 --noreload > "$RUNNER_TEMP/passkey-server.log" 2>&1 &
+          # The last try decides: a server that never answers fails here, with its log.
           for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8001/healthz && break; sleep 1; done
+          curl -fsS http://127.0.0.1:8001/healthz >/dev/null || { cat "$RUNNER_TEMP/passkey-server.log"; exit 1; }
       - name: Sign in with a passkey (virtual authenticator)
         run: |
           uv run python tests/e2e/browser_checks.py passkey --base http://localhost:8001
