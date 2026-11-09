@@ -1,0 +1,20 @@
+{% load i18n %}{# One occurrence in a list: link, status in words, and Done in one tap. `entry`, `request`. #}
+<li class="task-row calendar-entry calendar-{{ entry.status }}">
+  <a class="row" href="{% url 'tasks:detail' home_id=entry.home.id task_id=entry.task_id %}">
+    <span class="row-body">
+      <span class="row-title">{{ entry.title }}</span>
+      <span class="row-text">
+        {% if homes|length > 1 %}{{ entry.home.name }}{% if entry.room or entry.person %} · {% endif %}{% endif %}{% if entry.room %}{{ entry.room }}{% if entry.person %} · {% endif %}{% endif %}{{ entry.person }}
+      </span>
+      <span class="pill {% if entry.status == 'done' %}pill-success{% elif entry.status == 'postponed' %}pill-warning{% elif entry.status == 'skipped' %}pill-ghost{% else %}pill-sand{% endif %}">{{ entry.status_label }}{% if entry.projected %} · {% translate "forecast" %}{% endif %}</span>
+      {% if entry.priority == "high" %}<span class="pill pill-danger">{% translate "High" %}</span>{% endif %}
+    </span>
+  </a>
+  {% if entry.can_complete %}
+    <form method="post" action="{% url 'tasks:complete' home_id=entry.home.id task_id=entry.task_id occurrence_id=entry.occurrence_id %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button type="submit" class="button-small">{% translate "Done" context "task" %}<span class="visually-hidden"> {{ entry.title }}</span></button>
+    </form>
+  {% endif %}
+</li>

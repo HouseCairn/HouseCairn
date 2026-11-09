@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     "housecairn.stock",
     "housecairn.projects",
     "housecairn.notifications",
+    "housecairn.calendar",
     "housecairn.labels",
 ]
 
@@ -406,7 +407,12 @@ SPECTACULAR_SETTINGS = {
     ],
     "COMPONENT_SPLIT_REQUEST": True,
     # The same three kinds appear in the label, in its creation and in the answer to a scan.
-    "ENUM_NAME_OVERRIDES": {"LabelKindEnum": "housecairn.labels.models.LabelKind"},
+    # The statuses of an occurrence are those of the tasks and of the calendar entries; the name
+    # is the one the schema already gave them.
+    "ENUM_NAME_OVERRIDES": {
+        "LabelKindEnum": "housecairn.labels.models.LabelKind",
+        "OccurrenceStatusEnum": "housecairn.tasks.models.Status",
+    },
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
@@ -452,6 +458,8 @@ if urlsplit(HOUSECAIRN_DOCS_URL).scheme not in {"http", "https"}:
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    # The address of a calendar feed is a secret: django.request writes the path of a 4xx.
+    "filters": {"feed_secrets": {"()": "housecairn.core.log_redaction.RedactFeedAddresses"}},
+    "handlers": {"console": {"class": "logging.StreamHandler", "filters": ["feed_secrets"]}},
     "root": {"handlers": ["console"], "level": env.str("LOG_LEVEL", default="INFO")},
 }

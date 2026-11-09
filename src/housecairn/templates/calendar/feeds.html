@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Calendar feeds" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'calendar:week' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Calendar" %}</a>
+  <h1>{% translate "Calendar feeds" %}</h1>
+  <p class="small">{% translate "A feed lets a calendar application (Google Calendar, Apple Calendar, Thunderbird, Home Assistant) show your tasks. Its address is a secret: anyone who has it sees the tasks of the feed, so share it with nobody. It shows titles, home, room, date and status, never notes, costs or files." %}</p>
+  {% if new_url %}
+    <section class="card" role="status" aria-labelledby="new-feed">
+      <h2 id="new-feed">{% translate "Your new feed address" %}</h2>
+      <p><label for="feed-url">{% translate "Copy it now: it is shown only once." %}</label>
+      <input id="feed-url" type="text" readonly value="{{ new_url }}"></p>
+    </section>
+  {% endif %}
+  <ul class="task-list">
+    {% for home, feed in rows %}
+      <li class="task-row">
+        <span class="row-body">
+          <span class="row-title">{% if home %}{{ home.name }}{% else %}{% translate "All my homes" %}{% endif %}</span>
+          <span class="row-text">{% if feed %}{% blocktranslate with day=feed.created_at|date:"SHORT_DATE_FORMAT" %}Active since {{ day }}{% endblocktranslate %}{% if feed.regenerated_at %} · {% blocktranslate with day=feed.regenerated_at|date:"SHORT_DATE_FORMAT" %}new address on {{ day }}{% endblocktranslate %}{% endif %}{% else %}{% translate "No feed" %}{% endif %}</span>
+        </span>
+        {% if feed %}
+          <form method="post" action="{% url 'calendar:regenerate' feed_id=feed.id %}">
+            {% csrf_token %}
+            <button type="submit" class="button-secondary button-small">{% translate "New address" %}<span class="visually-hidden"> ({% if home %}{{ home.name }}{% else %}{% translate "All my homes" %}{% endif %})</span></button>
+          </form>
+          <form method="post" action="{% url 'calendar:revoke' feed_id=feed.id %}">
+            {% csrf_token %}
+            <button type="submit" class="button-secondary button-small">{% translate "Revoke" %}<span class="visually-hidden"> ({% if home %}{{ home.name }}{% else %}{% translate "All my homes" %}{% endif %})</span></button>
+          </form>
+        {% else %}
+          <form method="post" action="{% url 'calendar:feeds' %}">
+            {% csrf_token %}
+            <input type="hidden" name="home" value="{{ home.id|default:'' }}">
+            <button type="submit" class="button-small">{% translate "Create" %}<span class="visually-hidden"> ({% if home %}{{ home.name }}{% else %}{% translate "All my homes" %}{% endif %})</span></button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  <p class="small">{% translate "A new address stops the old one at once. Revoking deletes the feed. Leaving a home revokes your feed of that home." %}</p>
+{% endblock content %}

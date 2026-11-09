@@ -140,6 +140,7 @@ HELP_PREFIXES: dict[str, str] = {
     "socialaccount_": "screens/account/",
     "openid_connect_": "screens/account/",
     "notifications:": "screens/notifications/",
+    "calendar:": "screens/calendar/",
 }
 # Routes that are not screens of the interface: the API, its schema and
 # explorer, the health check, the web app manifest, and Django's administration site.

@@ -285,6 +285,15 @@ msgstr "Fichier ajouté à la tâche %(title)s"
 msgid "File deleted from the task %(title)s"
 msgstr "Fichier supprimé de la tâche %(title)s"
 
+msgid "Calendar feed created"
+msgstr "Flux de calendrier créé"
+
+msgid "Calendar feed given a new address"
+msgstr "Flux de calendrier : nouvelle adresse"
+
+msgid "Calendar feed revoked"
+msgstr "Flux de calendrier révoqué"
+
 #, python-format
 msgid "QR label revoked: %(title)s"
 msgstr "Étiquette QR révoquée : %(title)s"
@@ -433,6 +442,49 @@ msgstr "entrée d'audit"
 
 msgid "audit entries"
 msgstr "entrées d'audit"
+
+msgid "Calendar"
+msgstr "Calendrier"
+
+msgid "You already have a feed for this. Regenerate it to get a new address."
+msgstr "Vous avez déjà un flux pour cela. Demandez-lui une nouvelle adresse."
+
+msgid "forecast"
+msgstr "prévision"
+
+msgid "Status"
+msgstr "Statut"
+
+msgctxt "calendar"
+msgid "Home"
+msgstr "Logement"
+
+msgid "Room"
+msgstr "Pièce"
+
+msgid "All my homes"
+msgstr "Tous mes logements"
+
+msgid "regenerated at"
+msgstr "adresse renouvelée le"
+
+msgid "calendar feed"
+msgstr "flux de calendrier"
+
+msgid "calendar feeds"
+msgstr "flux de calendrier"
+
+msgid "Week"
+msgstr "Semaine"
+
+msgid "Month"
+msgstr "Mois"
+
+msgid "Year"
+msgstr "Année"
+
+msgid "Feed revoked: its address no longer works."
+msgstr "Flux révoqué : son adresse ne fonctionne plus."
 
 msgid "Core"
 msgstr "Cœur"
@@ -1209,9 +1261,6 @@ msgstr "(aucun)"
 msgid "QR labels"
 msgstr "Étiquettes QR"
 
-msgid "Room"
-msgstr "Pièce"
-
 msgid "Item"
 msgstr "Élément"
 
@@ -1490,9 +1539,6 @@ msgstr "Tâche existante"
 
 msgid "Photo"
 msgstr "Photo"
-
-msgid "Year"
-msgstr "Année"
 
 msgid "Envelope"
 msgstr "Enveloppe"
@@ -2411,9 +2457,6 @@ msgstr "Urgence"
 msgid "Person"
 msgstr "Personne"
 
-msgid "Calendar"
-msgstr "Calendrier"
-
 msgid "1 week"
 msgstr "1 semaine"
 
@@ -2730,6 +2773,93 @@ msgstr "Plus anciennes"
 msgid "Skip to content"
 msgstr "Aller au contenu"
 
+msgid "Calendar views"
+msgstr "Vues du calendrier"
+
+msgid "Feeds"
+msgstr "Flux"
+
+msgid "Filter the calendar"
+msgstr "Filtrer le calendrier"
+
+msgid "All rooms"
+msgstr "Toutes les pièces"
+
+msgid "Everybody"
+msgstr "Tout le monde"
+
+msgid "Priority"
+msgstr "Priorité"
+
+msgid "Any priority"
+msgstr "Toutes les priorités"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+msgid "Period"
+msgstr "Période"
+
+msgid "Previous"
+msgstr "Précédent"
+
+#, python-format
+msgid "Week of %(day)s"
+msgstr "Semaine du %(day)s"
+
+msgid "Next"
+msgstr "Suivant"
+
+msgid "Too many tasks to show them all: narrow the range or use the filters."
+msgstr "Trop de tâches pour tout afficher : réduisez la période ou utilisez les filtres."
+
+msgid "Nothing planned."
+msgstr "Rien de prévu."
+
+#, python-format
+msgid "%(counter)s task"
+msgid_plural "%(counter)s tasks"
+msgstr[0] "%(counter)s tâche"
+msgstr[1] "%(counter)s tâches"
+
+msgid "Nothing planned this month."
+msgstr "Rien de prévu ce mois-ci."
+
+msgid "Calendar feeds"
+msgstr "Flux de calendrier"
+
+msgid "A feed lets a calendar application (Google Calendar, Apple Calendar, Thunderbird, Home Assistant) show your tasks. Its address is a secret: anyone who has it sees the tasks of the feed, so share it with nobody. It shows titles, home, room, date and status, never notes, costs or files."
+msgstr "Un flux permet à une application de calendrier (Google Agenda, Calendrier d'Apple, Thunderbird, Home Assistant) d'afficher vos tâches. Son adresse est secrète : quiconque la possède voit les tâches du flux, ne la partagez donc avec personne. Il montre les titres, le logement, la pièce, la date et le statut, jamais les notes, les coûts ni les fichiers."
+
+msgid "Your new feed address"
+msgstr "L'adresse de votre nouveau flux"
+
+msgid "Copy it now: it is shown only once."
+msgstr "Copiez-la maintenant : elle n'est affichée qu'une fois."
+
+#, python-format
+msgid "Active since %(day)s"
+msgstr "Actif depuis le %(day)s"
+
+#, python-format
+msgid "new address on %(day)s"
+msgstr "nouvelle adresse le %(day)s"
+
+msgid "No feed"
+msgstr "Aucun flux"
+
+msgid "New address"
+msgstr "Nouvelle adresse"
+
+msgid "Revoke"
+msgstr "Révoquer"
+
+msgid "Create"
+msgstr "Créer"
+
+msgid "A new address stops the old one at once. Revoking deletes the feed. Leaving a home revokes your feed of that home."
+msgstr "Une nouvelle adresse arrête l'ancienne aussitôt. Révoquer supprime le flux. Quitter un logement révoque votre flux de ce logement."
+
 msgid "About"
 msgstr "À propos"
 
@@ -2930,9 +3060,6 @@ msgstr "jusqu'au %(date)s"
 
 msgid "Send again"
 msgstr "Renvoyer"
-
-msgid "Revoke"
-msgstr "Révoquer"
 
 msgid "Sign-in"
 msgstr "Connexion"
@@ -3192,12 +3319,6 @@ msgstr "%(space)s en %(files)s fichiers, %(percent)s %% du quota"
 msgid "No home yet."
 msgstr "Aucun logement pour l'instant."
 
-msgid "Previous"
-msgstr "Précédent"
-
-msgid "Next"
-msgstr "Suivant"
-
 msgid "Print stickers that open a room, an item or a stock item"
 msgstr "Imprimer des autocollants qui ouvrent une pièce, un élément ou un article"
 
@@ -3330,9 +3451,6 @@ msgstr "Les projets côte à côte"
 msgid "Project"
 msgstr "Projet"
 
-msgid "Status"
-msgstr "Statut"
-
 msgid "Planned cost"
 msgstr "Coût prévu"
 
@@ -3341,9 +3459,6 @@ msgstr "Engagé"
 
 msgid "Duration"
 msgstr "Durée"
-
-msgid "Priority"
-msgstr "Priorité"
 
 #, python-format
 msgid "Delete %(name)s?"
@@ -3510,15 +3625,6 @@ msgstr "Rechercher"
 
 msgid "All statuses"
 msgstr "Tous les statuts"
-
-msgid "All rooms"
-msgstr "Toutes les pièces"
-
-msgid "Any priority"
-msgstr "Toutes les priorités"
-
-msgid "Filter"
-msgstr "Filtrer"
 
 #, python-format
 msgid "Compare %(title)s"
@@ -3954,9 +4060,6 @@ msgstr "Rien de fait pour l'instant."
 
 msgid "My home"
 msgstr "Mon accueil"
-
-msgid "All my homes"
-msgstr "Tous mes logements"
 
 msgid "Show"
 msgstr "Afficher"

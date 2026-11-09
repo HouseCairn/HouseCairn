@@ -8,6 +8,14 @@ with it on the project's
 
 ### New
 
+- **Calendar and calendar feeds.** See your tasks by week, month or year, with filters by home,
+  room, person and priority, **Done** and **Undo** in place, and the next dates of a task that
+  repeats marked as forecast. **Feeds** gives a secret address per home, or for all your homes,
+  that Google Calendar, Apple Calendar, Thunderbird or Home Assistant can subscribe to: it shows
+  titles, home, room, date and status, never notes, costs or files. You can get a new address or
+  revoke it at any time; leaving a home revokes your feed of it. See
+  [Calendar](screens/calendar.md) and [Calendar and feeds](guides/calendar.md). New dependency:
+  `icalendar`.
 - **QR labels.** Print stickers that open a room, an item or a stock item: a PDF made by
   the server, as an A4 sheet of 3 by 8 labels or a 62 mm roll for a label printer. The
   code on a sticker is a random identifier of 128 bits that names nothing; a sticker

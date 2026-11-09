@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Calendar" %}{% endblock head_title %}
+{% block extra_head %}{% load static %}<script src="{% static 'js/calendar.js' %}" defer></script>{% endblock extra_head %}
+{% block content %}
+  <h1>{% translate "Calendar" %}</h1>
+  {% if undo %}{% include "tasks/_undo.html" with home=undo.home %}{% endif %}
+  <nav class="tabs" aria-label="{% translate 'Calendar views' %}">
+    <ul class="tabs-list">
+      {% for name, label, url in views %}
+        <li><a class="tab" href="{{ url }}"{% if name == granularity %} aria-current="page"{% endif %}>{{ label }}</a></li>
+      {% endfor %}
+      <li><a class="tab" href="{% url 'calendar:feeds' %}">{% translate "Feeds" %}</a></li>
+    </ul>
+  </nav>
+  <form method="get" class="filter-row" role="search" aria-label="{% translate 'Filter the calendar' %}">
+    <input type="hidden" name="date" value="{{ anchor|date:'Y-m-d' }}">
+    {% if homes|length > 1 %}
+      <label class="visually-hidden" for="filter-home">{% translate "Home" context "calendar" %}</label>
+      <select id="filter-home" name="home">
+        <option value="">{% translate "All my homes" %}</option>
+        {% for candidate in homes %}<option value="{{ candidate.id }}"{% if filters.home == candidate.id|stringformat:"s" %} selected{% endif %}>{{ candidate.name }}</option>{% endfor %}
+      </select>
+    {% endif %}
+    <label class="visually-hidden" for="filter-room">{% translate "Room" %}</label>
+    <select id="filter-room" name="room">
+      <option value="">{% translate "All rooms" %}</option>
+      {% for candidate in rooms %}<option value="{{ candidate.id }}"{% if filters.room == candidate.id|stringformat:"s" %} selected{% endif %}>{{ candidate.name }}{% if homes|length > 1 %} ({{ candidate.home.name }}){% endif %}</option>{% endfor %}
+    </select>
+    <label class="visually-hidden" for="filter-person">{% translate "Person" %}</label>
+    <select id="filter-person" name="person">
+      <option value="">{% translate "Everybody" %}</option>
+      <option value="none"{% if filters.person == "none" %} selected{% endif %}>{% translate "Nobody yet" %}</option>
+      {% for id, name in people %}<option value="{{ id }}"{% if filters.person == id|stringformat:"s" %} selected{% endif %}>{{ name }}</option>{% endfor %}
+    </select>
+    <label class="visually-hidden" for="filter-priority">{% translate "Priority" %}</label>
+    <select id="filter-priority" name="priority">
+      <option value="">{% translate "Any priority" %}</option>
+      {% for value, label in priorities %}<option value="{{ value }}"{% if filters.priority == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="button-secondary button-small">{% translate "Filter" %}</button>
+  </form>
+  <div class="calendar" id="calendar" role="region" aria-labelledby="calendar-title">
+    <nav class="calendar-nav" aria-label="{% translate 'Period' %}">
+      <a class="button-secondary button-small" rel="prev" data-calendar="prev" href="{{ prev_url }}">{% translate "Previous" %}</a>
+      <h2 id="calendar-title" aria-live="polite">
+        {% if granularity == "week" %}{% blocktranslate with day=days.0.0|date:"j F Y" %}Week of {{ day }}{% endblocktranslate %}
+        {% elif granularity == "month" %}{{ anchor|date:"F Y" }}
+        {% else %}{{ anchor|date:"Y" }}{% endif %}
+      </h2>
+      <a class="button-secondary button-small" rel="next" data-calendar="next" href="{{ next_url }}">{% translate "Next" %}</a>
+      <a class="button-secondary button-small" data-calendar="today" href="{{ today_url }}">{% translate "Today" %}</a>
+    </nav>
+    {% if truncated %}<p class="card" role="status">{% translate "Too many tasks to show them all: narrow the range or use the filters." %}</p>{% endif %}
+    {% if granularity == "week" %}
+      {% for day, rows in days %}
+        <section aria-labelledby="day-{{ day|date:'Y-m-d' }}">
+          <h3 id="day-{{ day|date:'Y-m-d' }}"{% if day == today %} aria-current="date"{% endif %}>{{ day|date:"l j F" }}{% if day == today %} · {% translate "Today" %}{% endif %}</h3>
+          {% if rows %}
+            <ul class="task-list">{% for entry in rows %}{% include "calendar/_entry.html" %}{% endfor %}</ul>
+          {% else %}<p class="small">{% translate "Nothing planned." %}</p>{% endif %}
+        </section>
+      {% endfor %}
+    {% elif granularity == "month" %}
+      <table class="calendar-month">
+        <caption class="visually-hidden">{{ anchor|date:"F Y" }}</caption>
+        <thead><tr>{% for cell in weeks.0 %}<th scope="col" abbr="{{ cell.date|date:'l' }}">{{ cell.date|date:"D" }}</th>{% endfor %}</tr></thead>
+        <tbody>
+          {% for week in weeks %}
+            <tr>
+              {% for cell in week %}
+                <td class="{% if not cell.in_month %}calendar-outside{% endif %}{% if cell.date == today %} calendar-today{% endif %}">
+                  <a href="{{ week_base }}date={{ cell.date|date:'Y-m-d' }}"{% if cell.date == today %} aria-current="date"{% endif %}>
+                    <span aria-hidden="true">{{ cell.date.day }}</span>
+                    <span class="visually-hidden">{{ cell.date|date:"l j F" }}, </span>
+                    {% if cell.entries %}<span class="calendar-count">{% blocktranslate count counter=cell.entries|length %}{{ counter }} task{% plural %}{{ counter }} tasks{% endblocktranslate %}</span>{% endif %}
+                  </a>
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% for day, rows in days %}
+        <section aria-labelledby="day-{{ day|date:'Y-m-d' }}">
+          <h3 id="day-{{ day|date:'Y-m-d' }}">{{ day|date:"l j F" }}</h3>
+          <ul class="task-list">{% for entry in rows %}{% include "calendar/_entry.html" %}{% endfor %}</ul>
+        </section>
+      {% empty %}<p class="small">{% translate "Nothing planned this month." %}</p>{% endfor %}
+    {% else %}
+      <table class="calendar-year">
+        <caption class="visually-hidden">{{ anchor|date:"Y" }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{% translate "Month" %}</th>
+            <th scope="col">{% translate "Planned" %}</th>
+            <th scope="col">{% translate "Postponed" %}</th>
+            <th scope="col">{% translate "Done" context "task" %}</th>
+            <th scope="col">{% translate "Skipped" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for month in months %}
+            <tr>
+              <th scope="row"><a href="{{ month.url }}">{{ month.date|date:"F" }}</a></th>
+              <td>{{ month.counts.planned }}</td><td>{{ month.counts.postponed }}</td><td>{{ month.counts.done }}</td><td>{{ month.counts.skipped }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+{% endblock content %}

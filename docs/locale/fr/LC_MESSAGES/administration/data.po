@@ -189,6 +189,12 @@ msgstr "`contractors`"
 msgid "`id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`."
 msgstr "`id`, `name`, `trade` (un code de la liste, ou `other`), `trade_other`, `phone`, `email`, `address`, `note`."
 
+msgid "`calendar_feeds`"
+msgstr "`calendar_feeds`"
+
+msgid "`id`, `created_at`, `regenerated_at` of each [calendar feed](../guides/calendar.md) of the home. Never the address or its secret, which is not kept; the combined feed of a person belongs to the person, not to a home."
+msgstr "`id`, `created_at`, `regenerated_at` de chaque [flux de calendrier](../guides/calendar.md) du logement. Jamais l'adresse ni son secret, qui n'est pas conservé ; le flux combiné d'une personne appartient à la personne, pas à un logement."
+
 msgid "`labels`"
 msgstr "`labels`"
 
@@ -210,8 +216,8 @@ msgstr "Chaque lot qui ajoute des données ajoute sa section ici et dans l'archi
 msgid "Deletion of a home"
 msgstr "Suppression d'un logement"
 
-msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
-msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
+msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, calendar feeds, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
+msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, flux de calendrier, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
 
 msgid "The photos, the labels of stock items, the photos and quote files of projects and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>`, `stock/<home id>` or `projects/<home id>`): remove that directory by hand."
 msgstr "Les photos, les étiquettes des articles du matériel, les photos et fichiers de devis des projets et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>`, `stock/<id du logement>` ou `projects/<id du logement>`) : supprimez ce dossier à la main."
@@ -219,8 +225,8 @@ msgstr "Les photos, les étiquettes des articles du matériel, les photos et fic
 msgid "Erasure of an account"
 msgstr "Effacement d'un compte"
 
-msgid "**Delete my account** (see [Account pages](../screens/account.md)) erases the account, its sign-in methods, devices and API tokens, the homes where it is the only member, and the invitations to its address. It is refused for the only administrator and for the only owner of a home with other members: hand ownership over, or delete the home, first. The audit log keeps that it happened and no longer says who."
-msgstr "**Supprimer mon compte** (voir [Pages du compte](../screens/account.md)) efface le compte, ses méthodes de connexion, ses appareils et ses jetons d'API, les logements dont il est le seul membre, et les invitations envoyées à son adresse. L'effacement est refusé pour l'unique administrateur et pour l'unique propriétaire d'un logement qui a d'autres membres : transmettez d'abord la propriété, ou supprimez le logement. Le journal d'audit garde la trace de l'opération, sans plus dire qui."
+msgid "**Delete my account** (see [Account pages](../screens/account.md)) erases the account, its sign-in methods, devices, API tokens and calendar feeds, the homes where it is the only member, and the invitations to its address. It is refused for the only administrator and for the only owner of a home with other members: hand ownership over, or delete the home, first. The audit log keeps that it happened and no longer says who."
+msgstr "**Supprimer mon compte** (voir [Pages du compte](../screens/account.md)) efface le compte, ses méthodes de connexion, ses appareils, ses jetons d'API et ses flux de calendrier, les logements dont il est le seul membre, et les invitations envoyées à son adresse. L'effacement est refusé pour l'unique administrateur et pour l'unique propriétaire d'un logement qui a d'autres membres : transmettez d'abord la propriété, ou supprimez le logement. Le journal d'audit garde la trace de l'opération, sans plus dire qui."
 
 msgid "Backups"
 msgstr "Sauvegardes"
@@ -230,4 +236,10 @@ msgstr "Les données supprimées restent dans les sauvegardes jusqu'à leur expi
 
 #~ msgid "`id`, `email`, `name`, `role`, `joined_at` of each member."
 #~ msgstr "`id`, `email`, `name`, `role`, `joined_at` de chaque membre."
+
+#~ msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
+#~ msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
+
+#~ msgid "**Delete my account** (see [Account pages](../screens/account.md)) erases the account, its sign-in methods, devices and API tokens, the homes where it is the only member, and the invitations to its address. It is refused for the only administrator and for the only owner of a home with other members: hand ownership over, or delete the home, first. The audit log keeps that it happened and no longer says who."
+#~ msgstr "**Supprimer mon compte** (voir [Pages du compte](../screens/account.md)) efface le compte, ses méthodes de connexion, ses appareils et ses jetons d'API, les logements dont il est le seul membre, et les invitations envoyées à son adresse. L'effacement est refusé pour l'unique administrateur et pour l'unique propriétaire d'un logement qui a d'autres membres : transmettez d'abord la propriété, ou supprimez le logement. Le journal d'audit garde la trace de l'opération, sans plus dire qui."
 

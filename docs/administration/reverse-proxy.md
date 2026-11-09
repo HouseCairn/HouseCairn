@@ -154,3 +154,25 @@ count.
 
 HouseCairn sets its own security headers (Content Security Policy, HSTS,
 `X-Frame-Options`); the proxy does not need to add them.
+
+## Logs and the calendar feed address
+
+The address of a [calendar feed](../guides/calendar.md), `/calendar/feed/<secret>.ics`, is a
+secret that opens the feed. HouseCairn writes it as `/calendar/feed/***.ics` in its own access
+log and warnings, but the proxy sees the whole path and writes it in its access log unless told
+otherwise. With nginx, switch the access log off for that path:
+
+```nginx
+    location /calendar/feed/ {
+        access_log off;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+```
+
+Caddy (the `log` directive and its `filter` encoder) and Traefik (`accessLog.fields.names`,
+`RequestPath` and `RequestLine`) can drop or rewrite the same fields; check their documentation
+for your version, the project has not tried them. A log that has already kept an address is a
+leak: regenerate the address.

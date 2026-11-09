@@ -48,3 +48,4 @@ later record supersedes it.
 | [0045](0045-generic-lists-with-other-tabs-and-audit-of-content.md) | Generic lists with "Other", tabs, language of a person and audit of content | 2026-11-08 |
 | [0047](0047-qr-labels.md) | QR labels: an opaque code and a PDF made on the server | 2026-11-08 |
 | [0050](0050-projects-quotes-and-budget-lines.md) | Projects, quotes and budget lines | 2026-11-09 |
+| [0052](0052-calendar-and-secret-ics-feeds.md) | Calendar views and secret, revocable iCalendar feeds | 2026-11-08 |

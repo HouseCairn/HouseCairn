@@ -44,6 +44,7 @@ The archive is a zip:
 | `project_envelopes` | `id`, `year`, `amount`: the annual budget envelope. |
 | `tasks` | `id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, the budgets, `notes`, `procedure`, `assignee`, `contractor` (an id), the repeat rule, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` or empty) with `season_start_month` and `season_end_month`, `hide_days_before`. |
 | `contractors` | `id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`. |
+| `calendar_feeds` | `id`, `created_at`, `regenerated_at` of each [calendar feed](../guides/calendar.md) of the home. Never the address or its secret, which is not kept; the combined feed of a person belongs to the person, not to a home. |
 | `labels` | `id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing. |
 | `files` | `path` and `size` of each file in `files/`. |
 
@@ -60,7 +61,7 @@ holds the home it was made for and nothing of another.
 
 An owner deletes the home from its page (**Delete this home**): type its exact
 name. The home and everything in it go for good, for all its members: members,
-invitations, events, its audit log and its files; an API token left without a
+invitations, events, calendar feeds, its audit log and its files; an API token left without a
 home is revoked. **There is no grace period and no way back**: export first.
 The audit log of the instance records that a home was deleted, without its
 name.
@@ -74,7 +75,7 @@ read-only volume), the home is still deleted and the error is logged by
 ## Erasure of an account
 
 **Delete my account** (see [Account pages](../screens/account.md)) erases the
-account, its sign-in methods, devices and API tokens, the homes where it is
+account, its sign-in methods, devices, API tokens and calendar feeds, the homes where it is
 the only member, and the invitations to its address. It is refused for the only
 administrator and for the only owner of a home with other members: hand
 ownership over, or delete the home, first. The audit log keeps that it happened

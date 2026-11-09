@@ -13,4 +13,5 @@ stock
 qr-labels
 projects
 notifications
+calendar
 ```
