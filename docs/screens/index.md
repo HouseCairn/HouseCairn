@@ -47,6 +47,8 @@ stock-item
 stock-item-form
 supplier-form
 task-files
+qr-labels
+qr-label
 projects
 project
 project-form

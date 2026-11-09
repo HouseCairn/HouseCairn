@@ -108,6 +108,15 @@ PARITY: dict[str, tuple[str, ...]] = {
     "stock:supplier-create": ("api-v1:home-supplier-list",),
     "stock:supplier-edit": ("api-v1:home-supplier-detail",),
     "stock:supplier-delete": ("api-v1:home-supplier-detail",),
+    # QR labels (docs/adr/0047). A sticker opens /l/<code>/; the API resolves the
+    # same code.
+    "label-open": ("api-v1:label-resolve",),
+    "labels:list": ("api-v1:home-label-list",),
+    "labels:create": ("api-v1:home-label-list",),
+    "labels:print": ("api-v1:home-label-print",),
+    "labels:detail": ("api-v1:home-label-detail",),
+    "labels:regenerate": ("api-v1:home-label-regenerate",),
+    "labels:revoke": ("api-v1:home-label-detail",),
     # Projects, budget lines, quotes, photos and the annual envelope (docs/adr/0050). The entry
     # page only leads to the projects of a home, like the rooms one.
     "projects": ("api-v1:home-list",),

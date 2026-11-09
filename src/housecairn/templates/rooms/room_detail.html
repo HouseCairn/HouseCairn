@@ -14,6 +14,7 @@
         <a class="button button-secondary button-small" href="{% url 'rooms:edit' home_id=home.id room_id=room.id %}">{% translate "Edit the room" %}</a>
       </div>
     {% endif %}
+    <div class="button-row">{% load labels_extras %}{% object_tools "room" room %}</div>
   </section>
 
   <h2>{% translate "Room memory" %}</h2>

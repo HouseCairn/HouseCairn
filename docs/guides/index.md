@@ -10,6 +10,7 @@ rooms-and-items
 tasks-and-recurrence
 today-and-history
 stock
+qr-labels
 projects
 budget
 amounts

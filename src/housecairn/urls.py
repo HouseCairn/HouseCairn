@@ -9,6 +9,7 @@ from housecairn.budget import views as budget_views
 from housecairn.core import views as core_views
 from housecairn.homes import views as home_views
 from housecairn.instance import views as instance_views
+from housecairn.labels import views as label_views
 from housecairn.projects import views as project_views
 from housecairn.rooms import views as room_views
 from housecairn.stock import views as stock_views
@@ -41,6 +42,10 @@ urlpatterns = [
     # Stock items, suppliers and movements of a home (docs/adr/0038); /stock/ is the entry.
     path("h/<uuid:home_id>/", include("housecairn.stock.urls")),
     path("stock/", stock_views.EntryView.as_view(), name="stock"),
+    # QR labels of a home (docs/adr/0047). A sticker opens /l/<code>/, which carries
+    # no home: signed in or not, the answer never says whether the code exists.
+    path("h/<uuid:home_id>/", include("housecairn.labels.urls")),
+    path("l/<str:code>/", label_views.OpenView.as_view(), name="label-open"),
     # Projects, budget lines and quotes of a home (docs/adr/0050); /projects/ is the entry.
     path("h/<uuid:home_id>/", include("housecairn.projects.urls")),
     path("projects/", project_views.EntryView.as_view(), name="projects"),

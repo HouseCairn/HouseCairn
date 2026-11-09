@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     "housecairn.projects",
     "housecairn.budget",
     "housecairn.notifications",
+    "housecairn.labels",
 ]
 
 MIDDLEWARE = [
@@ -405,6 +406,8 @@ SPECTACULAR_SETTINGS = {
         "housecairn.apitokens.permissions.TokenScopePermission",
     ],
     "COMPONENT_SPLIT_REQUEST": True,
+    # The same three kinds appear in the label, in its creation and in the answer to a scan.
+    "ENUM_NAME_OVERRIDES": {"LabelKindEnum": "housecairn.labels.models.LabelKind"},
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
