@@ -217,3 +217,4 @@ AI tools are welcome, under these rules:
 
 Do not report vulnerabilities in public issues or pull requests. See
 [SECURITY.md](SECURITY.md).
+
