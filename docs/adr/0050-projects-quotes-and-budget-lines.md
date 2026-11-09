@@ -85,6 +85,13 @@ the planned budget of the projects not finished nor abandoned, what is paid, and
 left; the screen says so in words when the plans exceed the envelope. A later lot
 consolidates the budget by room, project and task.
 
+**Erasing a home or an account.** `Quote.budget_line` is `CASCADE`. The database refuses an
+accepted quote without a line (`quote_accepted_has_line`), so `SET_NULL` made the erasure of a
+home or of an account fail as soon as one quote was accepted. The services never erase a line:
+they soft-delete it and send its accepted quotes back to Received first. Only the erasure of the
+home, which removes every row of it, reaches the cascade, and the quotes go with it anyway.
+`PROTECT` was rejected: it would make the erasure impossible, against ADR 0023.
+
 **Isolation.** Every query goes through the home; a line, a quote, a task, a room or a
 contractor is checked against the home of the project on the web and in the API. Owners and
 members write, read-only members read (ADR 0020), and the services check the role

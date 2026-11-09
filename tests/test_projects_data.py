@@ -193,6 +193,48 @@ class TestErasure:
             assert not model.all_objects.count(), model
         assert not task_services.tasks_of(alice_home).filter(id=task.id).exists()
 
+    def test_a_home_with_an_accepted_quote_can_be_erased(
+        self,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+        labour_line: BudgetLine,
+        quote: Quote,
+    ) -> None:
+        services.accept_quote(alice, quote, labour_line)
+        delete_home(alice, alice_home, "Main house")
+        assert not Quote.all_objects.filter(home_id=alice_home.id).exists()
+        assert not BudgetLine.all_objects.filter(home_id=alice_home.id).exists()
+        assert not Project.all_objects.filter(home_id=alice_home.id).exists()
+
+    def test_an_account_with_an_accepted_quote_can_be_erased(
+        self,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+        labour_line: BudgetLine,
+        quote: Quote,
+    ) -> None:
+        from housecairn.accounts import services as account_services
+
+        services.accept_quote(alice, quote, labour_line)
+        account_services.delete_account(alice)
+        assert not User.objects.filter(pk=alice.pk).exists()
+        assert not Home.objects.filter(pk=alice_home.pk).exists()
+        assert not Quote.all_objects.filter(home_id=alice_home.id).exists()
+
+    def test_erasing_a_line_for_good_takes_its_accepted_quotes_along(
+        self,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+        labour_line: BudgetLine,
+        quote: Quote,
+    ) -> None:
+        services.accept_quote(alice, quote, labour_line)
+        BudgetLine.all_objects.filter(id=labour_line.id).delete()
+        assert not Quote.all_objects.filter(id=quote.id).exists()
+
     def test_the_folder_is_declared(self) -> None:
         from housecairn.homes import files
 

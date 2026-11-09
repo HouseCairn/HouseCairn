@@ -201,11 +201,14 @@ class Quote(HomeOwnedModel):
         _("status"), max_length=10, choices=QuoteStatus.choices, default=QuoteStatus.REQUESTED
     )
     # The line the amount is committed on; set when the quote is accepted, empty otherwise.
+    # CASCADE, not SET_NULL: a line that is really erased (the home or the account goes) takes
+    # its accepted quotes with it, since the database refuses an accepted quote without a line.
+    # The services never erase a line, they soft-delete it and release its quotes first.
     budget_line = models.ForeignKey(
         BudgetLine,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         related_name="quotes",
         verbose_name=_("budget line"),
     )

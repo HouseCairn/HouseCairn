@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
                 ('note', models.CharField(blank=True, max_length=200, verbose_name='note')),
                 ('paperless_id', models.PositiveIntegerField(blank=True, null=True, verbose_name='Paperless document number')),
                 ('paperless_url', housecairn.rooms.models.WebUrlField(blank=True, max_length=500, verbose_name='Paperless document link')),
-                ('budget_line', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='quotes', to='projects.budgetline', verbose_name='budget line')),
+                ('budget_line', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='quotes', to='projects.budgetline', verbose_name='budget line')),
                 ('contractor', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='tasks.contractor', verbose_name='contractor')),
                 ('home', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='homes.home')),
                 ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='quotes', to='projects.project')),
