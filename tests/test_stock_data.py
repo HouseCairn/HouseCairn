@@ -165,5 +165,8 @@ def test_the_stock_migration_is_reversible() -> None:
     assert latest
     call_command("migrate", "stock", "zero", verbosity=0)
     assert "stock_article" not in connection.introspection.table_names()
-    call_command("migrate", "stock", verbosity=0)
+    # Not `migrate stock`: rolling stock back also rolled back the apps that depend on it
+    # (labels, reports, tasks), and only a full `migrate` brings them back. Left as they
+    # were, every later test of the worker would find their tables missing.
+    call_command("migrate", verbosity=0)
     assert "stock_article" in connection.introspection.table_names()
