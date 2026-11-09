@@ -95,6 +95,8 @@ MIDDLEWARE = [
     # the HTTPS redirect or anything else reads them (docs/adr/0012).
     "housecairn.core.proxy.ForwardedHeadersMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    # Switches off the browser features the application never uses.
+    "housecairn.core.middleware.PermissionsPolicyMiddleware",
     # Serves the collected static files, right after the security headers are
     # set (docs/adr/0015).
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -210,7 +212,8 @@ STORAGES = {
 HOUSECAIRN_SOURCE_URL = "https://github.com/HouseCairn/housecairn"
 
 LOGIN_URL = "account_login"
-LOGIN_REDIRECT_URL = "homes:list"
+# After sign-in: "My home", the page of what is to do (an explicit `next` still wins).
+LOGIN_REDIRECT_URL = "my-home"
 
 # Security headers and cookies (docs/adr/0012). Safe values unless DEBUG is on.
 SECURE_SSL_REDIRECT: bool = env.bool("SECURE_SSL_REDIRECT", default=not DEBUG)
@@ -271,8 +274,12 @@ ACCOUNT_EMAIL_VERIFICATION = _VERIFICATION_PINNED or (
 )
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_ADAPTER = "housecairn.accounts.adapters.AccountAdapter"
+# Messages that name the person show the display name, never the address (docs/adr/0045).
+ACCOUNT_USER_DISPLAY = "housecairn.accounts.names.person_name"
 ACCOUNT_FORMS = {
     "login": "housecairn.accounts.forms.LoginForm",
+    "change_password": "housecairn.accounts.forms.ChangePasswordForm",
+    "reauthenticate": "housecairn.accounts.forms.ReauthenticateForm",
     "signup": "housecairn.accounts.forms.SignupForm",
 }
 SOCIALACCOUNT_ADAPTER = "housecairn.accounts.adapters.SocialAccountAdapter"
