@@ -66,7 +66,8 @@ a task. "Today" is the day in the time zone of the instance
 The **How to do it** text is written in Markdown (titles, lists, bold, links to web
 pages) and shown on the page of the task, safely: HTML is not interpreted and
 images are not loaded. The budgets (labour, materials) are the planned amounts; the
-real cost is entered when the task is done.
+real cost is entered when the task is done; the page of the task shows its cost, and the
+[budget](budget.md) adds it all up.
 
 ## Materials and the stock
 

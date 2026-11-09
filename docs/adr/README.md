@@ -49,4 +49,5 @@ later record supersedes it.
 | [0046](0046-stock-linked-to-tasks-and-rooms.md) | Stock linked to tasks and rooms, the stock follows Done | 2026-11-09 |
 | [0047](0047-qr-labels.md) | QR labels and reports: an opaque code, a PDF made on the server, a reader who reports | 2026-11-08 |
 | [0050](0050-projects-quotes-and-budget-lines.md) | Projects, quotes and budget lines | 2026-11-09 |
+| [0051](0051-budget-views-and-annual-envelope.md) | Budget views and the annual envelope | 2026-11-09 |
 | [0052](0052-calendar-and-secret-ics-feeds.md) | Calendar views and secret, revocable iCalendar feeds | 2026-11-08 |

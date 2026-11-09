@@ -5,6 +5,7 @@ from functools import wraps
 from typing import Any
 
 from allauth.account import views as allauth_views
+from allauth.account.adapter import get_adapter
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -48,8 +49,25 @@ class LoginView(allauth_views.LoginView):  # type: ignore[misc]
         return response
 
 
+class EmailView(allauth_views.EmailView):  # type: ignore[misc]
+    """allauth's address page, where only a verified address can become primary.
+
+    The rule is the adapter's (`AccountAdapter.can_mark_as_primary`, docs/adr/0020).
+    """
+
+    def _action_primary(self, request: HttpRequest, *args: Any, **kwargs: Any) -> Any:
+        address = self._get_email_address(request)
+        adapter = get_adapter(request)
+        if address is not None and not adapter.can_mark_as_primary(address):
+            adapter.add_message(
+                request, messages.ERROR, "account/messages/unverified_primary_email.txt"
+            )
+            return None
+        return super()._action_primary(request, *args, **kwargs)
+
+
 login = LoginView.as_view()
-email_addresses = needs_email(allauth_views.email)
+email_addresses = needs_email(EmailView.as_view())
 password_reset = needs_email(allauth_views.password_reset)
 password_reset_done = needs_email(allauth_views.password_reset_done)
 

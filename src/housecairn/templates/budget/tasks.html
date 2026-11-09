@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n l10n projects_extras %}
+{% block head_title %}{% translate "Budget of the upkeep" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  <h1>{% translate "Budget of the upkeep" %}</h1>
+  {% include "budget/_nav.html" %}
+  {% include "budget/_year.html" %}
+  <p class="small">{% blocktranslate with year=year|unlocalize %}The tasks that are in no project, with the occurrences of {{ year }}: those done, the one open, and those the repetition will still bring before the end of the year. The money of a task of a project is in the budget lines of the project.{% endblocktranslate %}</p>
+  {% if report.lines %}
+    <table>
+      <caption class="visually-hidden">{% translate "Estimate, cost a year and what was paid, task by task" %}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{% translate "Task" %}</th>
+          <th scope="col">{% translate "Estimate each time" %}</th>
+          <th scope="col">{% translate "Cost a year" %}</th>
+          {% include "budget/_head_amounts.html" %}
+          <th scope="col">{% translate "Paid in all" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for line in report.lines %}
+          <tr>
+            <th scope="row"><a href="{% url 'tasks:detail' home_id=home.id task_id=line.id %}">{{ line.label }}</a>{% if line.extra.room %}<br><span class="small">{{ line.extra.room }}</span>{% endif %}</th>
+            <td>{% if line.extra.estimate is None %}—{% else %}{{ line.extra.estimate|money:home.currency }}{% endif %}</td>
+            <td>{% if line.extra.annual_cost is None %}—{% else %}{{ line.extra.annual_cost|money:home.currency }}{% endif %}</td>
+            {% include "budget/_row_amounts.html" with amounts=line.amounts %}
+            <td>{{ line.extra.total_paid|money:home.currency }}{% if line.extra.missing_costs %}<br><span class="small">{% blocktranslate count counter=line.extra.missing_costs %}{{ counter }} done without a cost{% plural %}{{ counter }} done without a cost{% endblocktranslate %}</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr><th scope="row">{% translate "Total" %}</th><td></td><td></td>{% include "budget/_row_amounts.html" with amounts=report.total %}<td></td></tr>
+      </tfoot>
+    </table>
+    <p class="small">{% translate "The cost a year follows the repetition: a task every 3 years costs a third of its estimate a year. A task that does not repeat on the calendar has none." %}</p>
+  {% else %}
+    <p class="empty">{% translate "No task has an estimate or a cost yet. Give a task a labour or material budget." %}</p>
+  {% endif %}
+  {% if report.note.unlisted %}<p class="small">{% blocktranslate count counter=report.note.unlisted %}{{ counter }} task without an estimate or a cost is not listed.{% plural %}{{ counter }} tasks without an estimate or a cost are not listed.{% endblocktranslate %}</p>{% endif %}
+{% endblock content %}

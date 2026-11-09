@@ -5,7 +5,16 @@
   <h1>{% blocktranslate with home=home.name %}Join {{ home }}{% endblocktranslate %}</h1>
   <p class="lead">{% blocktranslate with role=invitation.get_role_display email=invitation.email %}You are invited as {{ role }}, with the address {{ email }}.{% endblocktranslate %}</p>
   {% if user.is_authenticated %}
-    {% if same_address %}
+    {% if same_address and needs_verification %}
+      <div class="alert alert-warning" role="status">
+        {% if email_configured %}
+          {% blocktranslate with email=invitation.email %}This link was handed over, not sent by email, so it does not prove that {{ email }} is yours. Verify this address in your account first, then open the link again.{% endblocktranslate %}
+          <a href="{% url 'account_email' %}">{% translate "Verify the address" %}</a>
+        {% else %}
+          {% blocktranslate with email=invitation.email %}This link was handed over, not sent by email, so it does not prove that {{ email }} is yours, and this instance cannot send email to verify it. Ask the administrator of this instance.{% endblocktranslate %}
+        {% endif %}
+      </div>
+    {% elif same_address %}
       <form method="post">
         {% csrf_token %}
         <button type="submit" class="button-block">{% translate "Join the home" %}</button>

@@ -3,6 +3,7 @@
 from collections.abc import Callable
 
 import pytest
+from allauth.account.models import EmailAddress
 from django.test import Client
 from django.urls import reverse
 from rest_framework.test import APIClient
@@ -65,6 +66,8 @@ class TestRecording:
             alice, alice_home, email="carol@example.com", role="read_only", delivery=NO_DELIVERY
         )
         carol = make_user("carol@example.com")
+        # A handed-over link needs the address verified by the account (docs/adr/0020).
+        EmailAddress.objects.create(user=carol, email=carol.email, primary=True, verified=True)
         services.accept_invitation(carol, raw or "")
         membership = Membership.objects.get(home=alice_home, user=carol)
         services.remove_member(alice, membership)

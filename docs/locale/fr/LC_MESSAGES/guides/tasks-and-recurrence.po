@@ -87,6 +87,21 @@ msgstr "Les dates sont des jours, sans heure, donc un passage à l'heure d'été
 msgid "Procedure and budget"
 msgstr "Mode opératoire et budget"
 
+msgid "The **How to do it** text is written in Markdown (titles, lists, bold, links to web pages) and shown on the page of the task, safely: HTML is not interpreted and images are not loaded. The budgets (labour, materials) are the planned amounts; the real cost is entered when the task is done; the page of the task shows its cost, and the [budget](budget.md) adds it all up."
+msgstr "Le texte **Comment faire** s'écrit en Markdown (titres, listes, gras, liens vers des pages web) et s'affiche sur la page de la tâche, sans risque : le HTML n'est pas interprété et les images ne sont pas chargées. Les budgets (main-d'œuvre, fournitures) sont les montants prévus ; le coût réel se saisit quand la tâche est faite ; la page de la tâche montre son coût, et le [budget](budget.md) additionne le tout."
+
+msgid "Materials and the stock"
+msgstr "Fournitures et matériel"
+
+msgid "In **Materials**, on the form and on the page of the task, list the stock items the task needs and how many: three filters, two litres of paint. Only items of the [stock](stock.md) of the same home can be chosen; each is listed once. To remove a line from the form, set its stock item back to the dash; on the page, use **Remove**."
+msgstr "Dans **Fournitures**, sur le formulaire et sur la page de la tâche, listez les articles dont la tâche a besoin et leur nombre : trois filtres, deux litres de peinture. Seuls les articles du [matériel](stock.md) du même logement peuvent être choisis ; chacun figure une fois. Pour retirer une ligne depuis le formulaire, remettez son article sur le tiret ; sur la page, utilisez **Retirer**."
+
+msgid "**Done** takes the planned quantities from the stock, in the same gesture, and the page of each stock item names the task on the movement. **Undo** puts them back with new entries: nothing is erased from the history of the stock. Skipping a task takes nothing."
+msgstr "**Fait** prend les quantités prévues dans le stock, dans le même geste, et la page de chaque article nomme la tâche sur le mouvement. **Annuler** les remet par de nouvelles entrées : rien n'est effacé de l'historique du stock. Ignorer une tâche ne prend rien."
+
+msgid "If the stock holds less than needed, **Done** still goes through: the stock goes down to zero, never below, and a message tells what was missing. The quantity you really used is entered afterwards, in the **Details** of what was done (one field per stock item taken): less puts the difference back, more takes it as far as the stock allows."
+msgstr "Si le stock en contient moins que nécessaire, **Fait** passe quand même : le stock descend à zéro, jamais en dessous, et un message dit ce qui manquait. La quantité réellement utilisée se saisit ensuite, dans les **Détails** de ce qui a été fait (un champ par article pris) : moins remet la différence, plus la prend dans la limite du stock."
+
 msgid "Contractors"
 msgstr "Intervenants"
 
@@ -102,23 +117,18 @@ msgstr "La durée estimée est un nombre et une unité (minutes, heures ou jours
 msgid "For scripts"
 msgstr "Pour les scripts"
 
+msgid "Everything above is available through the [API](../api/index.md): tasks, occurrences (with `complete`, `undo`, `skip` and `postpone`), contractors, attachments and the materials of the tasks (`task-materials`). The answer to `complete` lists in `short` the stock items the stock could not give in full, and a `PATCH` of an occurrence takes `used`, the quantities really used."
+msgstr "Tout ce qui précède est disponible par l'[API](../api/index.md) : les tâches, les occurrences (avec `complete`, `undo`, `skip` et `postpone`), les prestataires, les pièces jointes et les fournitures des tâches (`task-materials`). La réponse à `complete` liste dans `short` les articles que le stock n'a pas pu fournir en entier, et un `PATCH` d'une occurrence accepte `used`, les quantités réellement utilisées."
+
 #~ msgid "Name the person or the company on the task: pick one that the home already knows or type a new name and trade in the form. The API also lists and edits them."
 #~ msgstr "Nommez la personne ou l'entreprise sur la tâche : choisissez un intervenant que le logement connaît déjà ou saisissez un nouveau nom et un métier dans le formulaire. L'API les liste et les modifie aussi."
 
-msgid "The **How to do it** text is written in Markdown (titles, lists, bold, links to web pages) and shown on the page of the task, safely: HTML is not interpreted and images are not loaded. The budgets (labour, materials) are the planned amounts; the real cost is entered when the task is done."
-msgstr "Le texte **Comment faire** s'écrit en Markdown (titres, listes, gras, liens vers des pages web) et s'affiche sur la page de la tâche, sans risque : le HTML n'est pas interprété et les images ne sont pas chargées. Les budgets (main-d'œuvre, fournitures) sont les montants prévus ; le coût réel se saisit quand la tâche est faite."
+#~ msgid "The **How to do it** text is written in Markdown (titles, lists, bold, links to web pages) and shown on the page of the task, safely: HTML is not interpreted and images are not loaded. The budgets (labour, materials) are the planned amounts; the real cost is entered when the task is done. The materials with their quantities come with the stock, in a later version."
+#~ msgstr "Le texte **Comment faire** s'écrit en Markdown (titres, listes, gras, liens vers des pages web) et s'affiche sur la page de la tâche, sans risque : le HTML n'est pas interprété et les images ne sont pas chargées. Les budgets (main d'œuvre, matériel) sont les montants prévus ; le coût réel se saisit quand la tâche est faite. Le matériel avec ses quantités viendra avec le stock, dans une version ultérieure."
 
-msgid "Materials and the stock"
-msgstr "Fournitures et matériel"
+#~ msgid "The **How to do it** text is written in Markdown (titles, lists, bold, links to web pages) and shown on the page of the task, safely: HTML is not interpreted and images are not loaded. The budgets (labour, materials) are the planned amounts; the real cost is entered when the task is done."
+#~ msgstr "Le texte **Comment faire** s'écrit en Markdown (titres, listes, gras, liens vers des pages web) et s'affiche sur la page de la tâche, sans risque : le HTML n'est pas interprété et les images ne sont pas chargées. Les budgets (main-d'œuvre, fournitures) sont les montants prévus ; le coût réel se saisit quand la tâche est faite."
 
-msgid "In **Materials**, on the form and on the page of the task, list the stock items the task needs and how many: three filters, two litres of paint. Only items of the [stock](stock.md) of the same home can be chosen; each is listed once. To remove a line from the form, set its stock item back to the dash; on the page, use **Remove**."
-msgstr "Dans **Fournitures**, sur le formulaire et sur la page de la tâche, listez les articles dont la tâche a besoin et leur nombre : trois filtres, deux litres de peinture. Seuls les articles du [matériel](stock.md) du même logement peuvent être choisis ; chacun figure une fois. Pour retirer une ligne depuis le formulaire, remettez son article sur le tiret ; sur la page, utilisez **Retirer**."
+#~ msgid "Everything above is available through the [API](../api/index.md): tasks, occurrences (with `complete`, `undo`, `skip` and `postpone`), contractors and attachments."
+#~ msgstr "Tout ce qui précède est disponible par l'[API](../api/index.md) : tâches, occurrences (avec `complete`, `undo`, `skip` et `postpone`), intervenants et pièces jointes."
 
-msgid "**Done** takes the planned quantities from the stock, in the same gesture, and the page of each stock item names the task on the movement. **Undo** puts them back with new entries: nothing is erased from the history of the stock. Skipping a task takes nothing."
-msgstr "**Fait** prend les quantités prévues dans le stock, dans le même geste, et la page de chaque article nomme la tâche sur le mouvement. **Annuler** les remet par de nouvelles entrées : rien n'est effacé de l'historique du stock. Ignorer une tâche ne prend rien."
-
-msgid "If the stock holds less than needed, **Done** still goes through: the stock goes down to zero, never below, and a message tells what was missing. The quantity you really used is entered afterwards, in the **Details** of what was done (one field per stock item taken): less puts the difference back, more takes it as far as the stock allows."
-msgstr "Si le stock en contient moins que nécessaire, **Fait** passe quand même : le stock descend à zéro, jamais en dessous, et un message dit ce qui manquait. La quantité réellement utilisée se saisit ensuite, dans les **Détails** de ce qui a été fait (un champ par article pris) : moins remet la différence, plus la prend dans la limite du stock."
-
-msgid "Everything above is available through the [API](../api/index.md): tasks, occurrences (with `complete`, `undo`, `skip` and `postpone`), contractors, attachments and the materials of the tasks (`task-materials`). The answer to `complete` lists in `short` the stock items the stock could not give in full, and a `PATCH` of an occurrence takes `used`, the quantities really used."
-msgstr "Tout ce qui précède est disponible par l'[API](../api/index.md) : les tâches, les occurrences (avec `complete`, `undo`, `skip` et `postpone`), les prestataires, les pièces jointes et les fournitures des tâches (`task-materials`). La réponse à `complete` liste dans `short` les articles que le stock n'a pas pu fournir en entier, et un `PATCH` d'une occurrence accepte `used`, les quantités réellement utilisées."

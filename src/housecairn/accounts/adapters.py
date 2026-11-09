@@ -79,6 +79,16 @@ class AccountAdapter(DefaultAccountAdapter):  # type: ignore[misc]
         """
         return f"{instance_name()}: {subject}"
 
+    def can_mark_as_primary(self, email_address: Any) -> bool:
+        """Only a verified address becomes the account's primary one (docs/adr/0020).
+
+        allauth also lets an unverified address become primary while the account has
+        no verified one; the primary address is then the account's address without
+        proof, which an invitation link handed over by hand would trust. allauth
+        65.21 calls no adapter method there: `accounts.views.EmailView` asks this one.
+        """
+        return bool(email_address.verified)
+
     def is_safe_url(self, url: str | None) -> bool:
         # Every `next` allauth reads (sign-in, sign-up, re-authentication, identity
         # providers) passes the rule shared with HouseCairn's own pages first, then

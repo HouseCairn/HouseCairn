@@ -132,6 +132,17 @@ web interface: every request only sees the homes of its user
   `.../thumbnail/` return the file. `GET` and `PUT .../envelope/` read and set the budget
   envelope of a `year`. Projects are filtered with `status`, `priority`, `season` and
   `room`, the other lists with `project`. The scopes are the same as for rooms.
+- **Budget** ([ADR 0051](../adr/0051-budget-views-and-annual-envelope.md)), figures only,
+  read-only (`GET`, the `read` scope): `/api/v1/homes/<home id>/budget/` (the envelope of a
+  year, then `by_nature`, `by_year` and the last 12 months as `rolling`),
+  `.../budget/rooms/`, `.../budget/projects/` and `.../budget/tasks/`, and `/api/v1/budget/`
+  for all your homes added up by currency, with no conversion. `?year=` picks the year (this
+  year by default; a year that is not one is a 400) and `?export=csv` answers with the same
+  figures as a file. Every amount is a string with two decimals; a row gives `planned`,
+  `committed`, `paid`, `engaged` (shown as *Used*: the more of committed and paid, line by
+  line), `gap` (negative when exceeded), `to_pay` and `budget_state`. `sure_budget` of the
+  envelope is always `null`. A home that is not yours, or that your token is not bound to, is
+  a 404.
 - **Notifications** of the caller
   ([ADR 0043](../adr/0043-notifications-through-apprise.md)):
   `/api/v1/me/notification-channels/` lists, adds (`name` and `url`, an Apprise address),

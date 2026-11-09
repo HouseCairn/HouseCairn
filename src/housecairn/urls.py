@@ -1,10 +1,12 @@
 """Root URLs. Address conventions are in docs/adr/0010."""
 
+from allauth.account.decorators import secure_admin_login
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerSplitView
 
 from housecairn.accounts import views as account_views
+from housecairn.budget import views as budget_views
 from housecairn.core import views as core_views
 from housecairn.homes import views as home_views
 from housecairn.instance import views as instance_views
@@ -13,6 +15,12 @@ from housecairn.projects import views as project_views
 from housecairn.rooms import views as room_views
 from housecairn.stock import views as stock_views
 from housecairn.tasks import views as task_views
+
+# The administration site signs in through allauth's page only, with its second factor
+# and its rate limits: Django's own form would take the password alone (docs/adr/0022).
+# Signed out, /admin/login/ redirects there and reads no password; signed in, it lets
+# staff through and answers 403 to anyone else.
+admin.site.login = secure_admin_login(admin.site.login)  # type: ignore[method-assign]
 
 urlpatterns = [
     path("", core_views.IndexView.as_view(), name="index"),
@@ -52,6 +60,9 @@ urlpatterns = [
     # Projects, budget lines and quotes of a home (docs/adr/0050); /projects/ is the entry.
     path("h/<uuid:home_id>/", include("housecairn.projects.urls")),
     path("projects/", project_views.EntryView.as_view(), name="projects"),
+    # The budget of a home, by room, project and task (docs/adr/0051); /budget/ is the entry.
+    path("h/<uuid:home_id>/", include("housecairn.budget.urls")),
+    path("budget/", budget_views.EntryView.as_view(), name="budget"),
     # Invitation links, opened signed in or not (docs/adr/0020).
     path("invitations/<str:token>/", home_views.InvitationView.as_view(), name="invitation"),
     # Instance invitation links: an account, without a home (docs/adr/0022).
