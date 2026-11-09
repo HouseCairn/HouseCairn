@@ -413,6 +413,9 @@ msgstr "Le fichier disparaît du projet et du disque."
 msgid "File deleted."
 msgstr "Fichier supprimé."
 
+msgid "Too many links added in a short time. Try again in a minute."
+msgstr "Trop de liens ajoutés en peu de temps. Réessayez dans une minute."
+
 msgid "Link added."
 msgstr "Lien ajouté."
 

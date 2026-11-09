@@ -10,10 +10,12 @@ from pathlib import Path
 from typing import Any
 
 from django.core.exceptions import SuspiciousFileOperation
+from django.db.models import Prefetch
 
 from housecairn.homes import exports
 from housecairn.homes.models import Home
 from housecairn.rooms.files import EXTENSIONS
+from housecairn.rooms.models import Item, Room
 from housecairn.stock import services
 from housecairn.stock.models import Article, Movement, Supplier
 from housecairn.stock.storage import stock_storage
@@ -51,15 +53,19 @@ def _articles(home: Home) -> list[dict[str, Any]]:
             "unit_other": a.unit_other,
             "threshold": str(a.threshold) if a.threshold is not None else None,
             "quantity": str(a.quantity.quantize(CENT)),  # type: ignore[attr-defined]
-            "compatible_items": [
-                str(pk) for pk in a.compatible_items.order_by("id").values_list("id", flat=True)
-            ],
-            "rooms": [str(pk) for pk in a.rooms.order_by("id").values_list("id", flat=True)],
+            "compatible_items": [str(i.pk) for i in a.compatible_items.all()],
+            "rooms": [str(r.pk) for r in a.rooms.all()],
             "notes": a.notes,
             "label": f"files/{_archive_name(a)}" if _stored_file(a) else None,
             "created_at": a.created_at.isoformat(),
         }
-        for a in services.articles_of(home).order_by("created_at", "id")
+        for a in services.articles_of(home)
+        .order_by("created_at", "id")
+        .prefetch_related(
+            # One query per relation for all the articles, in the order of the identifiers.
+            Prefetch("compatible_items", queryset=Item.objects.order_by("id")),
+            Prefetch("rooms", queryset=Room.objects.order_by("id")),
+        )
     ]
 
 

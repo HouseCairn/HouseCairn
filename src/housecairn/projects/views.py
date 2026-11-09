@@ -320,7 +320,7 @@ class ProjectDetailView(HomeProjectsMixin, TemplateView):
                 inspiration_links=list(
                     services.inspiration_links_of(self.home).filter(project=project)
                 ),
-                link_form=forms.LinkForm(),
+                link_form=forms.LinkForm(auto_id="id_link_%s"),
                 preview_enabled=link_services.preview_enabled(),
             ),
             **kwargs,
@@ -712,6 +712,11 @@ class LinkAddView(PostView):
         if not form.is_valid():
             messages.error(
                 request, _("Give the address of a web page, such as https://example.com.")
+            )
+            return self.back(project)
+        if not link_services.preview_allowed(request, project):
+            messages.error(
+                request, _("Too many links added in a short time. Try again in a minute.")
             )
             return self.back(project)
         try:

@@ -29,6 +29,9 @@ def rates() -> dict[str, str]:
         "housecairn_invitation": f"{n('invitation_links')}/m/ip",
         "housecairn_settings_test": f"{n('tests')}/m/user",
         "housecairn_delete_account": "5/m/user",
+        # Adding a link while previews are on reads a web page (ADR 0050): per person, and
+        # for all the members of a home together (the key is the home).
+        "housecairn_link_preview": f"{n('link_previews')}/m/user,{n('link_previews_home')}/m/key",
         # The secret address of a calendar feed (ADR 0052): a calendar application polls it.
         "housecairn_calendar_feed": "60/m/ip",
     }

@@ -62,7 +62,10 @@ picture, and keeps the picture on its own server: the page of the project never 
 anything from the other site. If the page cannot be read, for any reason, the link stays as
 you typed it and nothing is said: this is not an error. Only the address of a public web
 page is read; the server never calls a private network. A link is never read again: delete
-it and add it again to refresh the preview. At most 30 links per project.
+it and add it again to refresh the preview. At most 30 links per project. While the preview
+is on, each addition reads a page, so it is limited ([Rate limits](../administration/rate-limits.md)):
+10 a minute per person and 30 a minute per home by default. Beyond that, the page says to try
+again in a minute and the API answers 429; nothing is added and no page is read.
 
 ## Compare and plan the year
 
