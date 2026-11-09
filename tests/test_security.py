@@ -6,6 +6,7 @@ import secrets
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 import pytest
 from django.conf import settings
@@ -160,3 +161,41 @@ class TestRateLimitCache:
         )
         result = _run_python(code, env)
         assert result.stdout.strip().splitlines()[-1] == "v", result.stderr
+
+
+PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+
+
+@pytest.mark.django_db
+class TestPermissionsPolicy:
+    """Browser features the application never uses are switched off, on every response."""
+
+    def test_a_page(self, client: Client) -> None:
+        assert client.get(reverse("index"))["Permissions-Policy"] == PERMISSIONS_POLICY
+
+    def test_the_api(self, client: Client) -> None:
+        response = client.get(reverse("api-v1:home-list"))
+        assert response.status_code in (401, 403)
+        assert response["Permissions-Policy"] == PERMISSIONS_POLICY
+
+    def test_a_not_found_page(self, client: Client) -> None:
+        response = client.get("/no/such/page/")
+        assert response.status_code == 404
+        assert response["Permissions-Policy"] == PERMISSIONS_POLICY
+
+    def test_a_file_served_by_the_application(self, tmp_path: Path, settings: Any) -> None:
+        (tmp_path / "hello.txt").write_text("hello", encoding="utf-8")
+        settings.STATIC_ROOT = tmp_path
+        # A new client builds the middleware chain again, WhiteNoise included.
+        response = Client().get("/static/hello.txt")
+        assert response.status_code == 200
+        assert response["Permissions-Policy"] == PERMISSIONS_POLICY
+
+    def test_the_application_asks_for_none_of_these_features(self) -> None:
+        # The photo fields are plain file inputs: no camera access from the page.
+        for path in (SRC / "templates").rglob("*.html"):
+            assert "capture=" not in path.read_text(encoding="utf-8"), path
+        for path in (SRC / "static" / "js").rglob("*.js"):
+            text = path.read_text(encoding="utf-8")
+            assert "getUserMedia" not in text, path
+            assert "geolocation" not in text, path

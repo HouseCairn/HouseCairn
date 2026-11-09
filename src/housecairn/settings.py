@@ -93,6 +93,8 @@ MIDDLEWARE = [
     # the HTTPS redirect or anything else reads them (docs/adr/0012).
     "housecairn.core.proxy.ForwardedHeadersMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    # Switches off the browser features the application never uses.
+    "housecairn.core.middleware.PermissionsPolicyMiddleware",
     # Serves the collected static files, right after the security headers are
     # set (docs/adr/0015).
     "whitenoise.middleware.WhiteNoiseMiddleware",
