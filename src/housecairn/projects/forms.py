@@ -21,8 +21,27 @@ from housecairn.tasks.models import Priority, Season, Task
 
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
 _MONEY = {"inputmode": "decimal", "autocomplete": "off"}
-# The amounts are typed with a point or a comma; the model keeps two decimals.
-_MONEY_FIELD: dict[str, Any] = {"max_digits": 12, "decimal_places": 2, "min_value": 0}
+# Spaces that group thousands: the space, the no-break space and the narrow ones of French.
+_GROUPING = dict.fromkeys(map(ord, " \u00a0\u2009\u202f"))
+
+
+class MoneyField(forms.DecimalField):
+    """An amount typed the way the person writes it: `1250.50` in English, `1 250,50` in French.
+
+    The decimal mark follows the language (`localize`); the spaces that group thousands are
+    dropped here, since Django only drops the separator of the language when the instance
+    asks for thousand separators. Two decimals at most, as the model keeps; a scientific
+    notation passes only while it stays within the digits of an amount.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        kwargs.setdefault("widget", forms.TextInput(attrs=_MONEY))
+        super().__init__(max_digits=12, decimal_places=2, min_value=0, localize=True, **kwargs)
+
+    def to_python(self, value: Any) -> Any:
+        if isinstance(value, str):
+            value = value.translate(_GROUPING)
+        return super().to_python(value)
 
 
 class ProjectForm(forms.ModelForm[Project]):
@@ -63,15 +82,13 @@ class ProjectForm(forms.ModelForm[Project]):
     duration_unit = forms.ChoiceField(
         label=_("Unit"), choices=durations.UNIT_CHOICES, initial=durations.DAY, required=False
     )
-    budget = forms.DecimalField(
+    budget = MoneyField(
         label=_("Budget"),
         required=False,
-        widget=forms.TextInput(attrs=_MONEY),
         help_text=_(
             "The amount you plan to spend. It becomes the first budget line, which you can "
             "split into materials and labour later."
         ),
-        **_MONEY_FIELD,
     )
 
     field_order = [
@@ -128,15 +145,11 @@ class ProjectForm(forms.ModelForm[Project]):
 
 
 class LineForm(forms.ModelForm[BudgetLine]):
-    planned = forms.DecimalField(
-        label=_("Planned"), widget=forms.TextInput(attrs=_MONEY), initial=0, **_MONEY_FIELD
-    )
-    paid = forms.DecimalField(
+    planned = MoneyField(label=_("Planned"), initial=0)
+    paid = MoneyField(
         label=_("Paid"),
-        widget=forms.TextInput(attrs=_MONEY),
         initial=0,
         help_text=_("What has been paid so far. The committed amount comes from accepted quotes."),
-        **_MONEY_FIELD,
     )
 
     class Meta:
@@ -155,9 +168,7 @@ class QuoteForm(forms.ModelForm[Quote]):
             "the home when you save."
         ),
     )
-    amount = forms.DecimalField(
-        label=_("Amount"), widget=forms.TextInput(attrs=_MONEY), initial=0, **_MONEY_FIELD
-    )
+    amount = MoneyField(label=_("Amount"), initial=0)
     budget_line = forms.ModelChoiceField(
         label=_("Committed on"),
         queryset=BudgetLine.objects.none(),
@@ -270,11 +281,9 @@ class EnvelopeForm(forms.Form):
     year = forms.IntegerField(
         label=_("Year"), min_value=ENVELOPE_YEARS[0], max_value=ENVELOPE_YEARS[1]
     )
-    amount = forms.DecimalField(
+    amount = MoneyField(
         label=_("Envelope"),
-        widget=forms.TextInput(attrs=_MONEY),
         help_text=_("What you want to spend on work this year, in the currency of the home."),
-        **_MONEY_FIELD,
     )
 
 

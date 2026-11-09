@@ -374,6 +374,104 @@ class TestMoney:
         assert not BudgetLine.objects.filter(label="Bad").exists()
 
 
+class TestTypedAmounts:
+    """Amounts are typed the way people write them: a comma in French, a point in English."""
+
+    FRENCH = {"headers": {"accept-language": "fr"}}
+
+    @pytest.mark.parametrize(
+        ("typed", "stored"),
+        [
+            ("540,50", "540.50"),
+            ("1 250,50", "1250.50"),
+            ("1\u00a0250,50", "1250.50"),
+            ("1\u202f250,50", "1250.50"),
+            ("1\u2009250,50", "1250.50"),
+            ("12", "12.00"),
+            ("0,5", "0.50"),
+        ],
+    )
+    def test_french_amounts_take_a_comma_and_a_space_for_the_thousands(
+        self,
+        signed_in: Client,
+        alice_home: Home,
+        living_room_project: Project,
+        typed: str,
+        stored: str,
+    ) -> None:
+        line = signed_in.post(
+            url("line-create", alice_home, project_id=living_room_project.id),
+            {"label": "Tiles", "nature": "material", "planned": typed, "paid": typed},
+            **self.FRENCH,
+        )
+        assert line.status_code == 302, line.content[:300]
+        saved = BudgetLine.objects.get(label="Tiles")
+        assert (saved.planned, saved.paid) == (Decimal(stored), Decimal(stored))
+        quote = signed_in.post(
+            url("quote-create", alice_home, project_id=living_room_project.id),
+            {"amount": typed, "status": "received"},
+            **self.FRENCH,
+        )
+        assert quote.status_code == 302, quote.content[:300]
+        assert Quote.objects.get(project=living_room_project, amount=Decimal(stored))
+        project = signed_in.post(
+            url("create", alice_home),
+            {"title": "Shed", "status": "idea", "priority": "normal", "budget": typed},
+            **self.FRENCH,
+        )
+        assert project.status_code == 302, project.content[:300]
+        shed = Project.objects.get(title="Shed")
+        assert services.amounts_of(shed).planned == Decimal(stored)
+
+    def test_the_french_envelope_takes_a_comma(self, signed_in: Client, alice_home: Home) -> None:
+        year = task_services.today().year
+        response = signed_in.post(
+            url("envelope", alice_home), {"year": year, "amount": "4 000,50"}, **self.FRENCH
+        )
+        assert response.status_code == 302, response.content[:300]
+        assert services.envelope_summary(alice_home, year).envelope == Decimal("4000.50")
+
+    def test_english_amounts_take_a_point(
+        self, signed_in: Client, alice_home: Home, living_room_project: Project
+    ) -> None:
+        response = signed_in.post(
+            url("line-create", alice_home, project_id=living_room_project.id),
+            {"label": "Tiles", "nature": "material", "planned": "1250.50", "paid": "0"},
+        )
+        assert response.status_code == 302, response.content[:300]
+        assert BudgetLine.objects.get(label="Tiles").planned == Decimal("1250.50")
+
+    @pytest.mark.parametrize("language", ["en", "fr"])
+    @pytest.mark.parametrize(
+        "bad", ["abc", "-5", "NaN", "Infinity", "1e20", "1e40", "1e5000", "1,234", "1.234"]
+    )
+    def test_what_is_not_an_amount_is_still_refused(
+        self,
+        signed_in: Client,
+        alice_home: Home,
+        living_room_project: Project,
+        language: str,
+        bad: str,
+    ) -> None:
+        response = signed_in.post(
+            url("line-create", alice_home, project_id=living_room_project.id),
+            {"label": "Bad", "nature": "other", "planned": bad, "paid": "0"},
+            headers={"accept-language": language},
+        )
+        assert response.status_code == 200, (language, bad)
+        assert not BudgetLine.objects.filter(label="Bad").exists()
+
+    def test_the_form_shows_the_amount_the_way_it_is_typed(
+        self, signed_in: Client, alice: User, living_room_project: Project, labour_line: BudgetLine
+    ) -> None:
+        services.update_line(alice, labour_line, planned=Decimal("1250.50"))
+        page = url("line-edit", labour_line.home, line_id=labour_line.id)
+        english = signed_in.get(page).content.decode()
+        assert 'value="1250.50"' in english
+        french = signed_in.get(page, headers={"accept-language": "fr"}).content.decode()
+        assert 'value="1250,50"' in french
+
+
 class TestQuotes:
     def test_accepting_commits_the_amount_on_the_chosen_line(
         self, alice: User, quote: Quote, labour_line: BudgetLine
