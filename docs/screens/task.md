@@ -2,6 +2,10 @@
 
 One task, at `/h/<home id>/tasks/<task id>/`. The address never changes.
 
+The link at the top leads back to the screen the task was opened from, and names it:
+an item, a room, a contractor. Opened from nowhere known, it leads to the
+task list.
+
 **The top card** shows the state of the occurrence to do now (late, today, the
 date, postponed), the priority, how the task repeats, the title, the room and the
 item (both link to their page) and the person it is assigned to. Its buttons:

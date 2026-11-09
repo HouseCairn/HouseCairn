@@ -267,6 +267,9 @@ msgstr "Ce fichier est vide."
 msgid "At most %(max)d photos for a room or an item."
 msgstr "%(max)d photos au plus pour une pièce ou un élément."
 
+msgid "Room added"
+msgstr "Pièce ajoutée"
+
 msgid "Room added."
 msgstr "Pièce ajoutée."
 
@@ -278,6 +281,9 @@ msgstr "La pièce, ses éléments et leurs photos disparaissent des écrans."
 
 msgid "Room deleted."
 msgstr "Pièce supprimée."
+
+msgid "Item added"
+msgstr "Élément ajouté"
 
 msgid "Item added."
 msgstr "Élément ajouté."

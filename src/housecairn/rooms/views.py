@@ -16,6 +16,7 @@ from django.utils.translation import gettext_lazy
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
+from housecairn.core import navigation
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
@@ -111,8 +112,15 @@ class RoomCreateView(RoomFormMixin):
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)
-        messages.success(self.request, _("Room added."))
-        return redirect("rooms:detail", home_id=self.home.id, room_id=room.id)
+        return redirect(
+            navigation.after_create(
+                self.request,
+                _url("detail", home_id=self.home.id, room_id=room.id),
+                "rooms:list",
+                added=_("Room added"),
+                saved=_("Room added."),
+            )
+        )
 
 
 class RoomDetailView(HomeRoomsMixin, TemplateView):
@@ -159,7 +167,9 @@ class RoomEditView(RoomFormMixin):
             _errors(form, exc)
             return self.form_invalid(form)
         messages.success(self.request, _("Room saved."))
-        return redirect("rooms:detail", home_id=self.home.id, room_id=room.id)
+        return redirect(
+            navigation.back_url(self.request, _url("detail", home_id=self.home.id, room_id=room.id))
+        )
 
 
 class RoomMemoryView(RoomEditView):
@@ -185,8 +195,9 @@ class ConfirmDeleteView(HomeRoomsMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         target = self.target()
+        cancel_url = navigation.back_url(self.request, self.cancel_url(target))
         return super().get_context_data(
-            **self.page(target=target, cancel_url=self.cancel_url(target), message=self.message),
+            **self.page(target=target, cancel_url=cancel_url, message=self.message),
             **kwargs,
         )
 
@@ -204,9 +215,12 @@ class RoomDeleteView(ConfirmDeleteView):
         return _url("detail", home_id=self.home.id, room_id=target.id)
 
     def remove(self, target: Room) -> HttpResponse:
+        gone = [target.id, *target.items.values_list("id", flat=True)]
+        gone += list(Photo.objects.filter(room=target).values_list("id", flat=True))
         services.delete_room(self.request.user, target)
         messages.success(self.request, _("Room deleted."))
-        return redirect("rooms:list", home_id=self.home.id)
+        parent = _url("list", home_id=self.home.id)
+        return redirect(navigation.after_delete(self.request, parent, gone))
 
 
 class RoomMoveView(HomeRoomsMixin, View):
@@ -252,8 +266,15 @@ class ItemCreateView(ItemFormMixin):
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)
-        messages.success(self.request, _("Item added."))
-        return redirect("rooms:item-detail", home_id=self.home.id, item_id=item.id)
+        return redirect(
+            navigation.after_create(
+                self.request,
+                _url("item-detail", home_id=self.home.id, item_id=item.id),
+                "rooms:list",
+                added=_("Item added"),
+                saved=_("Item added."),
+            )
+        )
 
 
 class ItemDetailView(HomeRoomsMixin, TemplateView):
@@ -296,7 +317,11 @@ class ItemEditView(ItemFormMixin):
             _errors(form, exc)
             return self.form_invalid(form)
         messages.success(self.request, _("Item saved."))
-        return redirect("rooms:item-detail", home_id=self.home.id, item_id=item.id)
+        return redirect(
+            navigation.back_url(
+                self.request, _url("item-detail", home_id=self.home.id, item_id=item.id)
+            )
+        )
 
 
 class ItemDeleteView(ConfirmDeleteView):
@@ -309,9 +334,11 @@ class ItemDeleteView(ConfirmDeleteView):
         return _url("item-detail", home_id=self.home.id, item_id=target.id)
 
     def remove(self, target: Item) -> HttpResponse:
+        gone = [target.id, *Photo.objects.filter(item=target).values_list("id", flat=True)]
         services.delete_item(self.request.user, target)
         messages.success(self.request, _("Item deleted."))
-        return redirect("rooms:detail", home_id=self.home.id, room_id=target.room_id)
+        parent = _url("detail", home_id=self.home.id, room_id=target.room_id)
+        return redirect(navigation.after_delete(self.request, parent, gone))
 
 
 # ---------- photos ----------

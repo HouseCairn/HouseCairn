@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras tabs %}
+{% load i18n tasks_extras tabs navigation %}
 {% block head_title %}{% translate "My home" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "My home" %}</h1>
@@ -37,7 +37,7 @@
         <ul class="task-list">
           {% for item in digest.warranties %}
             <li class="task-row">
-              <a class="row" href="{% url 'rooms:item-detail' home_id=digest.home.id item_id=item.id %}">
+              <a class="row" href="{% url_with_next 'rooms:item-detail' home_id=digest.home.id item_id=item.id %}">
                 <span class="row-body">
                   <span class="row-title">{{ item.name }}</span>
                   <span class="row-text">{{ item.room.name }}</span>

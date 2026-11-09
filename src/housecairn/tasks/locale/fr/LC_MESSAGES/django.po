@@ -33,6 +33,9 @@ msgstr "De saison"
 msgid "Tasks"
 msgstr "Tâches"
 
+msgid "Contractor added"
+msgstr "Intervenant ajouté"
+
 msgid "Contractor added."
 msgstr "Intervenant ajouté."
 
@@ -574,6 +577,9 @@ msgstr[1] "%(n)d ans après la dernière fois"
 msgid "from %(start)s to %(end)s"
 msgstr "de %(start)s à %(end)s"
 
+msgid "Task added"
+msgstr "Tâche ajoutée"
+
 msgid "Task added."
 msgstr "Tâche ajoutée."
 
@@ -640,6 +646,9 @@ msgstr[1] "%(counter)s jours de retard"
 
 msgid "No date"
 msgstr "Sans date"
+
+msgid "Search the history"
+msgstr "Rechercher dans l'historique"
 
 msgid "Filters"
 msgstr "Filtres"
@@ -788,9 +797,6 @@ msgstr "Annuler"
 msgid "The contractor disappears from the screens. The tasks that named them stay, without a contractor."
 msgstr "L'intervenant disparaît des écrans. Les tâches qui le nommaient restent, sans intervenant."
 
-msgid "Contractors"
-msgstr "Intervenants"
-
 msgid "Trade"
 msgstr "Métier"
 
@@ -817,6 +823,9 @@ msgstr "Modifier l'intervenant"
 
 msgid "Add a contractor"
 msgstr "Ajouter un intervenant"
+
+msgid "Contractors"
+msgstr "Intervenants"
 
 msgid "No contractor yet. People and companies who work in this home, with their trade and how to reach them, are kept here."
 msgstr "Aucun intervenant pour l'instant. Les personnes et les entreprises qui travaillent dans ce logement, avec leur métier et le moyen de les joindre, sont gardées ici."
@@ -857,9 +866,6 @@ msgstr "Préférences d'affichage"
 
 msgid "Postpone"
 msgstr "Reporter"
-
-msgid "Back"
-msgstr "Retour"
 
 msgid "How the Today screen is laid out for you. Other people of your homes keep their own."
 msgstr "La disposition de l'écran Aujourd'hui pour vous. Les autres personnes de vos logements gardent la leur."
@@ -942,6 +948,9 @@ msgstr "Ajouter la tâche"
 
 msgid "Delete the task"
 msgstr "Supprimer la tâche"
+
+msgid "Filter the tasks"
+msgstr "Filtrer les tâches"
 
 msgid "To do"
 msgstr "À faire"

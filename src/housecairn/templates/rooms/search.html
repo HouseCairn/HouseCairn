@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "Search" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'rooms:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Rooms" %}</a>
+  {% url 'rooms:list' home_id=home.id as parent %}{% back_link parent %}
   <h1>{% translate "Search" %}</h1>
   <form method="get" action="{% url 'rooms:search' home_id=home.id %}" class="search-form" role="search">
     <label for="search-q">{% translate "Search rooms and items" %}</label>
@@ -17,7 +17,7 @@
       <ul class="card-list">
         {% for room in results.rooms %}
           <li>
-            <a class="row" href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}">
+            <a class="row" href="{% url_with_next 'rooms:detail' home_id=home.id room_id=room.id %}">
               <span class="row-body"><span class="row-title">{{ room.name }}</span><span class="row-text">{{ room.get_kind_display }}</span></span>
               {% include "components/icon.html" with name="chevron" class="chevron" %}
             </a>
@@ -30,7 +30,7 @@
       <ul class="card-list">
         {% for item in results.items %}
           <li>
-            <a class="row" href="{% url 'rooms:item-detail' home_id=home.id item_id=item.id %}">
+            <a class="row" href="{% url_with_next 'rooms:item-detail' home_id=home.id item_id=item.id %}">
               <span class="row-body"><span class="row-title">{{ item.name }}</span><span class="row-text">{{ item.room.name }}</span></span>
               {% include "components/icon.html" with name="chevron" class="chevron" %}
             </a>

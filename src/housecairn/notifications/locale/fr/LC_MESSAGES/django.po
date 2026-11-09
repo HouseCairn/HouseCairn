@@ -194,9 +194,6 @@ msgstr "Envoyer un message de test"
 msgid "Delete the channel"
 msgstr "Supprimer le canal"
 
-msgid "More"
-msgstr "Plus"
-
 msgid "Notifications are turned off on this instance: its administrator can turn them on."
 msgstr "Les notifications sont désactivées sur cette instance : son administrateur peut les activer."
 

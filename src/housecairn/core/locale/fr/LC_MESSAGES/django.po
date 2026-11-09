@@ -124,15 +124,35 @@ msgstr "À propos"
 msgid "Today"
 msgstr "Aujourd'hui"
 
+msgid "Tasks"
+msgstr "Tâches"
+
+msgid "History"
+msgstr "Historique"
+
+msgid "Rooms"
+msgstr "Pièces"
+
+msgctxt "screen"
+msgid "Search"
+msgstr "Recherche"
+
+msgid "My home"
+msgstr "Mon accueil"
+
+msgid "More"
+msgstr "Plus"
+
+msgctxt "added message"
+msgid "Open"
+msgstr "Ouvrir"
+
 msgctxt "tasks"
 msgid "All"
 msgstr "Toutes"
 
 msgid "Calendar"
 msgstr "Calendrier"
-
-msgid "Rooms"
-msgstr "Pièces"
 
 msgid "Stock"
 msgstr "Matériel"
@@ -302,9 +322,6 @@ msgstr "Bienvenue"
 
 msgid "Go to my homes"
 msgstr "Voir mes logements"
-
-msgid "More"
-msgstr "Plus"
 
 msgid "Sign out"
 msgstr "Se déconnecter"

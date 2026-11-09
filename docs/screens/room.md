@@ -31,6 +31,9 @@ print it. **Report a problem** opens the [report form](report-form.md) with the
 **Where?** list already filled in with this room; every member sees it, read-only
 members included.
 
+The link at the top leads back to the screen the room was opened from, and to the
+list of rooms otherwise. A task or an item added from this page comes back to it.
+
 Members and owners change the room; read-only members see it all and change
 nothing. An address that does not exist, or that belongs to a home you are not
 a member of, answers the same "Page not found".

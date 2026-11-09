@@ -602,9 +602,6 @@ msgstr "(aucun)"
 msgid "Audit log"
 msgstr "Journal d'audit"
 
-msgid "More"
-msgstr "Plus"
-
 msgid "Operations on the instance. Homes' own operations are in each home's log, for its owners; no home content appears here."
 msgstr "Opérations sur l'instance. Les opérations propres aux logements figurent dans le journal de chaque logement, pour ses propriétaires ; aucun contenu de logement n'apparaît ici."
 

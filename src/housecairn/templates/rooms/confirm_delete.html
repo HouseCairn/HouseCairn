@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "Delete" %}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{{ cancel_url }}">{% include "components/icon.html" with name="chevron" %}{{ target.name }}</a>
   <h1>{% blocktranslate with name=target.name %}Delete {{ name }}?{% endblocktranslate %}</h1>
   <form method="post" class="card">
     {% csrf_token %}
+    {% next_field %}
     <p>{{ message }}</p>
     <div class="button-row">
       <button type="submit" class="button-danger">{% translate "Delete" %}</button>

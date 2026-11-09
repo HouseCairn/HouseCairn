@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras tabs %}
+{% load i18n tasks_extras tabs navigation %}
 {% block head_title %}{% translate "Tasks" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Tasks" %}</h1>
   {% include "tasks/_undo.html" %}
   {% tab_bar "today" %}
-  <form method="get" class="filter-row" role="search">
+  <form method="get" class="filter-row" role="search" aria-label="{% translate "Filter the tasks" %}">
     <label class="visually-hidden" for="filter-status">{% translate "Show" %}</label>
     <select id="filter-status" name="status">
       <option value="open"{% if status == "open" %} selected{% endif %}>{% translate "To do" %}</option>
@@ -26,7 +26,7 @@
     <ul class="task-list">
       {% for occurrence in page %}
         <li class="task-row{% if occurrence|late_days:today %} task-row-overdue{% endif %}">
-          <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
+          <a class="row" href="{% url_with_next 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
             <span class="row-body">
               <span class="row-title">{{ occurrence.task.title }}</span>
               <span class="row-text">
@@ -61,6 +61,6 @@
     <p class="small">{% blocktranslate count counter=hidden_count %}{{ counter }} task is hidden until its date gets closer.{% plural %}{{ counter }} tasks are hidden until their date gets closer.{% endblocktranslate %} <a href="{{ show_hidden_url }}">{% translate "Show them" %}</a></p>
   {% endif %}
   {% if can_write %}
-    <a class="button button-block" href="{% url 'tasks:create' home_id=home.id %}{% if room %}?room={{ room.id }}{% endif %}">{% translate "Add a task" %}</a>
+    <a class="button button-block" href="{% url_with_next 'tasks:create' home_id=home.id q_room=room.id %}">{% translate "Add a task" %}</a>
   {% endif %}
 {% endblock content %}

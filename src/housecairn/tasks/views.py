@@ -22,6 +22,7 @@ from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from housecairn.accounts import names
+from housecairn.core import navigation
 from housecairn.core.redirects import has_safe_shape
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import open_homes_for_request
@@ -278,10 +279,16 @@ class TaskCreateView(TaskFormMixin):
                 services.add_attachment(self.request.user, task, upload=upload)
             except ValidationError as exc:
                 refused.append(f"{upload.name}: {' '.join(exc.messages)}")
-        messages.success(self.request, _("Task added."))
+        target = navigation.after_create(
+            self.request,
+            _url("detail", home_id=self.home.id, task_id=task.id),
+            "tasks:list",
+            added=_("Task added"),
+            saved=_("Task added."),
+        )
         for line in refused:
             messages.error(self.request, _("File not added: %(reason)s") % {"reason": line})
-        return redirect("tasks:detail", home_id=self.home.id, task_id=task.id)
+        return redirect(target)
 
 
 class TaskDetailView(HomeTasksMixin, TemplateView):
@@ -346,7 +353,9 @@ class TaskEditView(TaskFormMixin):
             _errors(form, exc)
             return self.form_invalid(form)
         messages.success(self.request, _("Task saved."))
-        return redirect("tasks:detail", home_id=self.home.id, task_id=task.id)
+        return redirect(
+            navigation.back_url(self.request, _url("detail", home_id=self.home.id, task_id=task.id))
+        )
 
 
 class TaskDeleteView(HomeTasksMixin, TemplateView):
@@ -357,17 +366,20 @@ class TaskDeleteView(HomeTasksMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         task = self.get_task()
+        cancel_url = _url("detail", home_id=self.home.id, task_id=task.id)
         return super().get_context_data(
-            **self.page(
-                task=task, cancel_url=_url("detail", home_id=self.home.id, task_id=task.id)
-            ),
+            **self.page(task=task, cancel_url=navigation.back_url(self.request, cancel_url)),
             **kwargs,
         )
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        services.delete_task(request.user, self.get_task())
+        task = self.get_task()
+        gone = [task.id, *task.occurrences.values_list("id", flat=True)]
+        gone += list(task.attachments.values_list("id", flat=True))
+        services.delete_task(request.user, task)
         messages.success(request, _("Task deleted."))
-        return redirect("tasks:list", home_id=self.home.id)
+        parent = _url("list", home_id=self.home.id)
+        return redirect(navigation.after_delete(request, parent, gone))
 
 
 class MaterialSaveView(HomeTasksMixin, View):

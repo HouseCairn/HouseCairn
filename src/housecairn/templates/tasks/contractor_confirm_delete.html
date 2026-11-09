@@ -1,15 +1,16 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "Delete" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'tasks:contractor-detail' home_id=home.id contractor_id=contractor.id %}">{% include "components/icon.html" with name="chevron" %}{{ contractor.name }}</a>
+  {% url 'tasks:contractor-detail' home_id=home.id contractor_id=contractor.id as parent %}{% back_link parent contractor.name %}
   <h1>{% blocktranslate with name=contractor.name %}Delete {{ name }}?{% endblocktranslate %}</h1>
   <form method="post" class="card">
     {% csrf_token %}
+    {% next_field %}
     <p>{% translate "The contractor disappears from the screens. The tasks that named them stay, without a contractor." %}</p>
     <div class="button-row">
       <button type="submit" class="button-danger">{% translate "Delete" %}</button>
-      <a class="button button-secondary" href="{% url 'tasks:contractor-detail' home_id=home.id contractor_id=contractor.id %}">{% translate "Cancel" %}</a>
+      {% back_href parent as cancel %}<a class="button button-secondary" href="{{ cancel }}">{% translate "Cancel" %}</a>
     </div>
   </form>
 {% endblock content %}

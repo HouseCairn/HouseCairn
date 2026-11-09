@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "Display preferences" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{{ next }}">{% include "components/icon.html" with name="chevron" %}{% translate "Back" %}</a>
+  {% url 'my-home' as parent %}{% back_link parent %}
   <h1>{% translate "Display preferences" %}</h1>
   <p class="small">{% translate "How the Today screen is laid out for you. Other people of your homes keep their own." %}</p>
   <form method="post" novalidate>

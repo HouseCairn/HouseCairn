@@ -11,3 +11,6 @@ The form to add a room, at `/h/<home id>/rooms/new/`, and to edit one, at
 
 The paint, the coverings and the photos of the room are kept in its
 [memory](room-memory.md) and on its [page](room.md).
+
+A room added from the list of rooms opens on its page. Saved changes go back to the
+screen the form was opened from.

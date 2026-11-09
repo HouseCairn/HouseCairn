@@ -48,6 +48,9 @@ msgstr "**Supprimer la pièce** (dans le formulaire de modification) demande con
 msgid "**QR label** opens the [label](qr-label.md) of this room; **Make a QR label** makes it when there is none, for members who may write. Read-only members see the label and print it. **Report a problem** opens the [report form](report-form.md) with the **Where?** list already filled in with this room; every member sees it, read-only members included."
 msgstr "**Étiquette QR** ouvre l'[étiquette](qr-label.md) de cette pièce ; **Créer une étiquette QR** la crée quand il n'y en a pas, pour les membres qui peuvent écrire. Les membres en lecture seule voient l'étiquette et l'impriment. **Signaler un problème** ouvre le [formulaire de signalement](report-form.md) avec la liste **Où ?** déjà remplie avec cette pièce ; chaque membre le voit, lecteurs compris."
 
+msgid "The link at the top leads back to the screen the room was opened from, and to the list of rooms otherwise. A task or an item added from this page comes back to it."
+msgstr "Le lien du haut ramène à l'écran d'où la pièce a été ouverte, et à la liste des pièces sinon. Une tâche ou un élément ajouté depuis cette page y revient."
+
 msgid "Members and owners change the room; read-only members see it all and change nothing. An address that does not exist, or that belongs to a home you are not a member of, answers the same \"Page not found\"."
 msgstr "Les membres et les propriétaires modifient la pièce ; les membres en lecture seule voient tout et ne modifient rien. Une adresse qui n'existe pas, ou qui appartient à un logement dont vous n'êtes pas membre, donne la même réponse « Page introuvable »."
 

@@ -1,16 +1,17 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% if task %}{% translate "Edit the task" %}{% else %}{% translate "Add a task" %}{% endif %}{% endblock head_title %}
 {% block content %}
   {% if task %}
-    <a class="back-link" href="{% url 'tasks:detail' home_id=home.id task_id=task.id %}">{% include "components/icon.html" with name="chevron" %}{{ task.title }}</a>
+    {% url 'tasks:detail' home_id=home.id task_id=task.id as parent %}{% back_link parent task.title %}
     <h1>{% translate "Edit the task" %}</h1>
   {% else %}
-    <a class="back-link" href="{% url 'tasks:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Tasks" %}</a>
+    {% url 'tasks:list' home_id=home.id as parent %}{% back_link parent %}
     <h1>{% translate "Add a task" %}</h1>
   {% endif %}
   <form method="post"{% if form.uploads %} enctype="multipart/form-data"{% endif %}>
     {% csrf_token %}
+    {% next_field %}
     {{ form.non_field_errors }}
     <div class="card">
       {% include "tasks/_field.html" with field=form.title %}
@@ -66,6 +67,6 @@
     <button type="submit" class="button-block">{% if task %}{% translate "Save" %}{% else %}{% translate "Add the task" %}{% endif %}</button>
   </form>
   {% if task %}
-    <a class="button button-danger button-block" href="{% url 'tasks:delete' home_id=home.id task_id=task.id %}">{% translate "Delete the task" %}</a>
+    <a class="button button-danger button-block" href="{% url_with_next 'tasks:delete' home_id=home.id task_id=task.id %}">{% translate "Delete the task" %}</a>
   {% endif %}
 {% endblock content %}
