@@ -13,7 +13,8 @@ One [project](projects.md), at `/h/<home id>/projects/<project id>/`.
 - **Budget** is a table of budget lines, in the currency of the home: **Planned** and
   **Paid** are typed; **Committed** is the sum of the quotes accepted on the line; **Gap** is
   the planned amount less the more of committed and paid, said in words (**... left**,
-  **Over budget by ...**, **On budget**), never by colour alone. The last row is the total.
+  **Over budget by ...**, **On budget**), never by colour alone. The last row is the total, whose gap is the sum of the gaps of the
+  lines.
   **Add a budget line** and **Edit** open the [budget line form](budget-line-form.md).
 - **Quotes** lists the quotes with the contractor, the amount, the status (requested,
   received, accepted, rejected), the line an accepted quote is committed on, the dates, the

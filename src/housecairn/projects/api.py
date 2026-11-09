@@ -129,7 +129,10 @@ class ProjectSerializer(AmountsMixin, serializers.ModelSerializer[Project]):
     planned = _amount_field("The sum of the planned amounts of the budget lines.")
     committed = _amount_field("The sum of the quotes accepted on the budget lines.")
     paid = _amount_field("The sum of the paid amounts of the budget lines.")
-    gap = _amount_field("Planned less the more of committed and paid; negative: over budget.")
+    gap = _amount_field(
+        "The sum of the gaps of the lines (each: planned less the more of committed and paid); "
+        "negative: over budget."
+    )
     budget_state = serializers.SerializerMethodField(
         help_text="`over`, `under` or `on` budget, from the gap."
     )

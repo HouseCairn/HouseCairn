@@ -79,8 +79,8 @@ msgstr "Payé"
 msgid "What has been paid so far; you type it."
 msgstr "Ce qui a été payé jusqu'ici ; vous le saisissez."
 
-msgid "The gap is the planned amount less the more of committed and paid. The page says it in words, never by colour alone: **... left**, **On budget** or **Over budget by ...**. For the living room painted with a plan of 800, a quote of 620 accepted and 120 paid, the gap is 180 and the page says \"180.00 EUR left\". Amounts have two decimals and go up to 9,999,999,999.99."
-msgstr "L'écart est le montant prévu moins le plus élevé de l'engagé et du payé. La page le dit en toutes lettres, jamais par la seule couleur : **... restants**, **Budget respecté** ou **Budget dépassé de ...**. Pour le salon peint avec un prévu de 800, un devis de 620 accepté et 120 payés, l'écart est de 180 et la page dit « 180,00 EUR restants ». Les montants ont deux décimales et vont jusqu'à 9 999 999 999,99."
+msgid "The gap of a line is the planned amount less the more of committed and paid, and the gap of the project is the sum of the gaps of its lines, so that an overrun on one line is not hidden by room left on another. The page says it in words, never by colour alone: **... left**, **On budget** or **Over budget by ...**. For the living room painted with a plan of 800, a quote of 620 accepted and 120 paid, the gap is 180 and the page says \"180.00 EUR left\". Amounts have two decimals and go up to 9,999,999,999.99."
+msgstr "L'écart d'une ligne est le montant prévu moins le plus élevé de l'engagé et du payé, et l'écart du projet est la somme des écarts de ses lignes : un dépassement sur une ligne n'est pas masqué par la marge d'une autre. La page le dit en toutes lettres, jamais par la seule couleur : **... restants**, **Budget respecté** ou **Budget dépassé de ...**. Pour le salon peint avec un prévu de 800, un devis de 620 accepté et 120 payés, l'écart est de 180 et la page dit « 180,00 EUR restants ». Les montants ont deux décimales et vont jusqu'à 9 999 999 999,99."
 
 msgid "Compare and plan the year"
 msgstr "Comparer et planifier l'année"

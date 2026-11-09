@@ -34,6 +34,36 @@ def client_of_alice(api_client: APIClient, alice: User) -> APIClient:
     return api_client
 
 
+class TestProjectGap:
+    def test_the_gap_of_a_project_is_the_sum_of_the_gaps_of_its_lines(
+        self,
+        client_of_alice: APIClient,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+        labour_line: BudgetLine,
+    ) -> None:
+        paint = BudgetLine.objects.get(project=living_room_project, label="Paint")
+        services.update_line(alice, paint, paid=Decimal("350"))
+        painter = services.create_quote(alice, living_room_project, amount=Decimal("540.50"))
+        services.accept_quote(alice, painter, labour_line)
+        detail = client_of_alice.get(
+            api("project-detail", alice_home, project_id=living_room_project.id)
+        ).json()
+        assert (detail["planned"], detail["committed"], detail["paid"]) == (
+            "800.00",
+            "540.50",
+            "350.00",
+        )
+        assert (detail["gap"], detail["budget_state"]) == ("-90.50", "over")
+        listed = client_of_alice.get(api("project-list", alice_home)).json()["results"]
+        assert [(p["gap"], p["budget_state"]) for p in listed] == [("-90.50", "over")]
+        lines = client_of_alice.get(
+            api("budget-line-list", alice_home), {"project": str(living_room_project.id)}
+        ).json()["results"]
+        assert sorted(line["gap"] for line in lines) == ["-40.50", "-50.00"]
+
+
 class TestProjects:
     def test_crud_with_amounts_as_exact_strings(
         self, client_of_alice: APIClient, alice_home: Home

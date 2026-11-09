@@ -119,6 +119,41 @@ class TestLivingRoomScenario:
         assert total.state == "over"
         assert total.to_pay == Decimal("0")
 
+    def test_an_overrun_on_one_line_is_not_hidden_by_room_left_on_another(
+        self,
+        signed_in: Client,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+        labour_line: BudgetLine,
+    ) -> None:
+        paint = BudgetLine.objects.get(project=living_room_project, label="Paint")
+        services.update_line(alice, paint, paid=Decimal("350"))
+        painter = services.create_quote(alice, living_room_project, amount=Decimal("540.50"))
+        services.accept_quote(alice, painter, labour_line)
+        total = services.amounts_of(living_room_project)
+        # Paint is over by 50.00 and the painter by 40.50: 90.50 over, not 259.50 left.
+        assert (total.planned, total.committed, total.paid) == (
+            Decimal("800.00"),
+            Decimal("540.50"),
+            Decimal("350.00"),
+        )
+        assert (total.gap, total.state, total.over_by) == (
+            Decimal("-90.50"),
+            "over",
+            Decimal("90.50"),
+        )
+        assert services.compare(alice_home, [living_room_project.id])[0].amounts.gap == (
+            Decimal("-90.50")
+        )
+        for page in (
+            url("detail", alice_home, project_id=living_room_project.id),
+            url("list", alice_home),
+        ):
+            html = signed_in.get(page).content.decode()
+            assert "Over budget by 90.50\u00a0EUR" in html, page
+            assert "259.50" not in html, page
+
     def test_a_project_without_a_budget_has_no_gap_pill(
         self, signed_in: Client, alice: User, alice_home: Home
     ) -> None:

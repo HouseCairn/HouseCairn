@@ -9,6 +9,7 @@ import datetime
 import logging
 from collections.abc import Iterable
 from dataclasses import dataclass
+from dataclasses import field as dataclass_field
 from decimal import Decimal
 from typing import Any
 from uuid import UUID
@@ -187,25 +188,38 @@ def search_projects(
 class Amounts:
     """The three amounts of a line or a project, and what they say together.
 
-    `committed` is the sum of the accepted quotes. The gap is the planned amount less
-    what is already committed or paid, whichever is more: it is negative when the
-    project is over its budget.
+    `committed` is the sum of the accepted quotes. A line is spent for the more of what is
+    committed and what is paid, and its gap is the planned amount less that. The gap of a
+    project is the sum of the gaps of its lines (`engaged` adds up line by line, never from
+    the totals): an overrun on one line is not hidden by the room left on another.
+    Negative: over budget.
     """
 
     planned: Decimal = ZERO
     committed: Decimal = ZERO
     paid: Decimal = ZERO
+    # Sum over the lines of max(committed, paid); worked out for one line when left empty.
+    engaged_sum: Decimal | None = dataclass_field(default=None, repr=False)
+
+    def __post_init__(self) -> None:
+        if self.engaged_sum is None:
+            object.__setattr__(self, "engaged_sum", max(self.committed, self.paid))
+
+    @property
+    def engaged(self) -> Decimal:
+        return max(self.committed, self.paid) if self.engaged_sum is None else self.engaged_sum
 
     def __add__(self, other: "Amounts") -> "Amounts":
         return Amounts(
             self.planned + other.planned,
             self.committed + other.committed,
             self.paid + other.paid,
+            self.engaged + other.engaged,
         )
 
     @property
     def gap(self) -> Decimal:
-        return self.planned - max(self.committed, self.paid)
+        return self.planned - self.engaged
 
     @property
     def state(self) -> str:
@@ -246,16 +260,22 @@ def _summary(line: BudgetLine, quotes: list[Quote]) -> LineSummary:
 
 
 def amounts_by_project(projects: Iterable[Project]) -> dict[UUID, Amounts]:
-    """The total of each project, in two queries; sums are made in `Decimal`, not in SQL."""
+    """The total of each project, in two queries; sums are made in `Decimal`, not in SQL.
+
+    The total is the sum of the amounts of the lines, each line spent for the more of its
+    commitment and its payments, so that the gap of the project is the sum of the gaps.
+    """
     ids = [p.id for p in projects]
     totals: dict[UUID, Amounts] = {pk: Amounts() for pk in ids}
     lines = {line.id: line for line in BudgetLine.objects.filter(project__in=ids)}
-    for line in lines.values():
-        totals[line.project_id] += Amounts(line.planned, ZERO, line.paid)
+    committed = dict.fromkeys(lines, ZERO)
     for quote in Quote.objects.filter(
         project__in=ids, status=QuoteStatus.ACCEPTED, budget_line__in=list(lines)
     ):
-        totals[quote.project_id] += Amounts(ZERO, quote.amount, ZERO)
+        if quote.budget_line_id is not None:
+            committed[quote.budget_line_id] += quote.amount
+    for line in lines.values():
+        totals[line.project_id] += Amounts(line.planned, committed[line.id], line.paid)
     return totals
 
 

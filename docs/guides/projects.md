@@ -44,7 +44,9 @@ Each budget line has three amounts, in the currency of the home:
 | Committed | The sum of the quotes accepted on the line. |
 | Paid | What has been paid so far; you type it. |
 
-The gap is the planned amount less the more of committed and paid. The page says it in
+The gap of a line is the planned amount less the more of committed and paid, and the gap
+of the project is the sum of the gaps of its lines, so that an overrun on one line is not
+hidden by room left on another. The page says it in
 words, never by colour alone: **... left**, **On budget** or **Over budget by ...**. For
 the living room painted with a plan of 800, a quote of 620 accepted and 120 paid, the gap
 is 180 and the page says "180.00 EUR left". Amounts have two decimals and go up to
