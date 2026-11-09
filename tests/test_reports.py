@@ -85,6 +85,20 @@ class TestReporting:
                 services.create_report(reader, alice_home, title="x", **fields)
         assert Report.objects.count() == 0
 
+    def test_the_lists_of_places_offered_hold_this_home_only(
+        self,
+        alice_home: Home,
+        owner_room: Room,
+        owner_item: Item,
+        foreign_item: Item,
+        foreign_article: Article,
+    ) -> None:
+        offered = services.places_for_forms(alice_home)
+        assert set(offered["room"]) == {owner_room}
+        assert foreign_item not in offered["item"]
+        assert owner_item in offered["item"]
+        assert foreign_article not in offered["article"]
+
     @pytest.mark.parametrize("title", ["", "   ", "\x07\u200b", "x" * 201])
     def test_what_is_wrong_must_say_something_and_fit(
         self, alice_home: Home, reader: User, title: str
@@ -238,6 +252,17 @@ class TestDealingWithIt:
         assert Task.objects.count() == 0
         reported.refresh_from_db()
         assert reported.status == ReportStatus.RESOLVED
+
+    def test_the_check_of_reports_itself_refuses_a_reader_before_any_task(
+        self, reader: User, reported: Report, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Without this check, only `tasks.services` would refuse: it is tested alone here.
+        def never(*args: object, **kwargs: object) -> None:
+            raise AssertionError("the task service was reached")
+
+        monkeypatch.setattr(services.task_services, "create_task", never)
+        with pytest.raises(PermissionDenied):
+            services.make_task(reader, reported)
 
     def test_it_is_made_a_task_once(self, alice: User, reported: Report) -> None:
         services.make_task(alice, reported)

@@ -13,6 +13,7 @@ from housecairn.apitokens import services as token_services
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.reports import services
+from housecairn.reports.api import ReportCreateSerializer
 from housecairn.reports.models import Report
 from housecairn.rooms.models import Item, Room
 from housecairn.stock.models import Article
@@ -100,6 +101,19 @@ class TestReports:
         )
         assert response.status_code == 400
         assert Report.objects.count() == 0
+
+    def test_the_serializer_alone_offers_the_places_of_this_home_only(
+        self,
+        alice_home: Home,
+        owner_room: Room,
+        foreign_item: Item,
+        foreign_article: Article,
+    ) -> None:
+        # The service refuses a foreign place too; this is the layer of the API on its own.
+        serializer = ReportCreateSerializer(context={"home": alice_home})
+        assert set(serializer.fields["room"].queryset) == {owner_room}  # type: ignore[attr-defined]
+        assert not serializer.fields["item"].queryset.filter(pk=foreign_item.pk).exists()  # type: ignore[attr-defined]
+        assert not serializer.fields["article"].queryset.filter(pk=foreign_article.pk).exists()  # type: ignore[attr-defined]
 
     def test_two_places_or_no_title_or_a_bad_photo_are_refused(
         self, alice_home: Home, reader: User, owner_room: Room, owner_item: Item

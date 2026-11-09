@@ -12,6 +12,7 @@ from django.urls import reverse
 from housecairn.accounts.models import User
 from housecairn.homes.models import Home, Role
 from housecairn.reports import services
+from housecairn.reports.forms import ReportForm
 from housecairn.reports.models import Report, ReportStatus
 from housecairn.rooms.models import Item, Room
 from housecairn.stock.models import Article
@@ -225,6 +226,39 @@ class TestLists:
         body = signed(client, alice).get(url("list", alice_home)).content.decode()
         assert "Sam (first@example.com)" in body
         assert "Sam (second@example.com)" in body
+
+    def test_the_form_alone_offers_the_places_of_this_home_only(
+        self, alice_home: Home, owner_room: Room, foreign_item: Item, foreign_article: Article
+    ) -> None:
+        # The service refuses a foreign place too; this is the layer of the screen on its own.
+        form = ReportForm(places=services.places_for_forms(alice_home))
+        offered = {
+            value
+            for _group, options in form.fields["place"].choices
+            if _group
+            for value, _l in options
+        }  # type: ignore[attr-defined]
+        assert offered == {f"room:{owner_room.id}"}
+        assert f"item:{foreign_item.id}" not in offered
+        assert f"article:{foreign_article.id}" not in offered
+
+    def test_an_instance_administrator_who_is_not_a_member_gets_nothing(
+        self, client: Client, alice_home: Home, site_admin: User, reported: Report
+    ) -> None:
+        signed(client, site_admin)
+        for address in (
+            url("list", alice_home),
+            url("create", alice_home),
+            url("detail", alice_home, report_id=reported.id),
+            url("photo", alice_home, report_id=reported.id),
+        ):
+            assert client.get(address).status_code == 404, address
+        for name in ("to-task", "close", "reopen"):
+            assert client.post(url(name, alice_home, report_id=reported.id)).status_code == 404
+        assert client.post(url("create", alice_home), {"title": "x"}).status_code == 404
+        assert Report.objects.count() == 1
+        reported.refresh_from_db()
+        assert reported.status == ReportStatus.OPEN
 
     def test_the_list_is_paged(self, client: Client, alice: User, alice_home: Home) -> None:
         for i in range(35):

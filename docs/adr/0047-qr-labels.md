@@ -86,7 +86,8 @@ included**: it is the only thing a reader writes, and it changes nothing else. A
 sees the reports they made and no others; a member who writes sees them all, makes one into
 a task with no date (the link is kept, the report leaves the open list), closes it as
 resolved or as needing no action, and reopens it (back to `task` when it has a task that
-still exists, else `open`). A person has at most 20 reports open at the same time. The
+still exists, else `open`). A person has at most 20 reports open or made into a task (statuses `open` and `task`)
+at the same time; closed ones are not counted. The
 transitions are conditional updates, so that two requests cannot both win.
 
 **The photo** follows the rules of the attachments and the label photo of the stock
