@@ -209,7 +209,9 @@ class _Pinned(http.client.HTTPConnection):
         sock.settimeout(self._session.left())
         sock.connect((self._address, self.port))
         if self._tls:
-            wrapped = ssl.create_default_context().wrap_socket(sock, server_hostname=self.host)
+            context = ssl.create_default_context()
+            context.minimum_version = ssl.TLSVersion.TLSv1_2
+            wrapped = context.wrap_socket(sock, server_hostname=self.host)
             self._session.track(wrapped)
             sock = wrapped
         self.sock = sock

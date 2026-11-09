@@ -356,3 +356,32 @@ def test_a_server_is_a_server() -> None:
                 received += chunk
             assert received.endswith(b"hello")
         assert server.hits == 1
+
+
+class TestTls:
+    def test_the_secure_connection_refuses_old_protocols(
+        self, monkeypatch: pytest.MonkeyPatch, local_policy: None
+    ) -> None:
+        import ssl
+
+        seen: list[Any] = []
+
+        class Context:
+            minimum_version = ssl.TLSVersion.TLSv1
+
+            def wrap_socket(self, sock: socket.socket, server_hostname: str) -> socket.socket:
+                seen.append((self.minimum_version, server_hostname))
+                return sock
+
+        monkeypatch.setattr(netguard.ssl, "create_default_context", lambda: Context())
+        with serving(LOOPBACK) as server:
+            server.serve("/", 200, b"ok")
+            monkeypatch.setattr(
+                netguard,
+                "_resolve",
+                lambda host, port, **kw: [(socket.AF_INET, 1, 6, "", (LOOPBACK, port))],
+            )
+            # The server speaks plain HTTP, so the fake context hands the socket back as is.
+            found = fetch(f"https://secure.example.com:{server.port}/")
+        assert found.body == b"ok"
+        assert seen == [(ssl.TLSVersion.TLSv1_2, "secure.example.com")]
