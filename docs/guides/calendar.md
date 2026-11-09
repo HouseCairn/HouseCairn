@@ -51,8 +51,12 @@ by the `icalendar` library in the tests.
 - **Home Assistant**: **Settings**, **Devices & services**, **Add integration**, **Remote
   Calendar**, paste the address. What was checked: the page of the integration in the Home
   Assistant documentation says it reads a calendar from a URL and only reads it, and that its
-  entity shows the next upcoming event. Whether Home Assistant reads this feed was **not**
-  tested.
+  entity shows the next upcoming event. The same page says that Home Assistant leaves out
+  canceled events (a skipped task, which the feed marks `STATUS:CANCELLED`, does not appear and
+  triggers nothing) and, after the first fetch, polls the calendar every 24 hours, so a change
+  reaches it with that delay, whatever the refresh the feed suggests. A task marked done stays
+  in the feed, with `[Done]` in front of its title, and so stays visible to Home Assistant. Whether
+  Home Assistant reads this feed was **not** tested.
 
 ## Keep it secret
 
