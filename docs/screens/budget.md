@@ -18,8 +18,9 @@ reads it, read-only members included. How the figures are worked out is in the
   spend**, and when the plans or the spending **exceed the envelope**. **Set the envelope**
   (owners and members) leads to the projects screen. **Budget in Sure** says *Not connected*:
   that place is kept for a later version and nothing is fetched.
-- **By nature** splits the year into materials, labour, rental and other. A cost typed on a
-  task that is done has no nature and counts under *Other*.
+- **By nature** splits the year into materials, labour, rental and other. The cost typed on
+  a task that is done is shared between *Materials* and *Labour* as the estimate of the task
+  is, so it stands against its own plan; with no estimate, it counts under *Other*.
 - **By year** lists every year that has a figure, with its envelope.
 - **Last 12 months** is the upkeep done since the same day last year. Payments on projects
   carry no date, so they are not in it.

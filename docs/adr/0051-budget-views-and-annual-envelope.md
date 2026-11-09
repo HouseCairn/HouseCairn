@@ -89,8 +89,14 @@ the order of the rooms, so that the rooms add up to the project exactly. A proje
 room is in "No room".
 
 **By nature.** The natures of budget lines (materials, labour, rental, other, with the list of
-ADR 0045). The estimates of upkeep go to materials and labour. A cost typed on a done task
-has no nature, so it is counted under *Other*, and the page says so.
+ADR 0045). The estimates of upkeep go to materials and labour. The cost typed on a done
+task has no nature of its own: it is shared between materials and labour in proportion to
+the estimate of the task (the material part rounded to the cent, labour taking the rest, so that the two
+add up to what was paid). Counted under *Other* it would stand against a plan of nothing and
+show an overrun that is not one. Alternative rejected: a line of its own for the upkeep,
+which is not a nature of a budget line and would break the list shared with projects. A
+task with no estimate has no proportion to share by, so its cost is counted under *Other*,
+and the page says so.
 
 **By year and over 12 months.** By year lists every year with a figure (a project, a dated
 occurrence, an envelope), newest first. The 12 months slide: from the same day a year ago,

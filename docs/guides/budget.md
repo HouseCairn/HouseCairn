@@ -62,7 +62,8 @@ flagged, so that the gap does not look better than it is.
 
 The overview sets the envelope of a year against the projects counted in it and the upkeep of
 the year, and splits the year by nature (materials, labour, rental, other; the real cost of a
-task has no nature and counts under Other). **By year** lists every year with a figure.
+task is shared between materials and labour as its estimate is, or counts under Other if it
+has no estimate). **By year** lists every year with a figure.
 **Last 12 months** is the upkeep done since the same day last year; payments on projects have
 no date and are not in it. The envelope is set from **Projects**.
 

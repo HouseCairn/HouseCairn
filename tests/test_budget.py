@@ -454,7 +454,7 @@ class TestWindowsOfTime:
         years = [line.year for line in services.by_year(services.load(alice_home, TODAY))]
         assert years == [2028, 2026, 2024]
 
-    def test_by_nature_puts_a_cost_without_nature_under_other(
+    def test_by_nature_shares_the_real_cost_of_a_task_as_its_estimate_is(
         self, alice: User, alice_home: Home, living_room_project: Project
     ) -> None:
         task = make_task(
@@ -468,7 +468,40 @@ class TestWindowsOfTime:
         }
         assert lines["labour"].planned == D("530.00")  # 500 of the project, 30 of the upkeep
         assert lines["material"].planned == D("320.00")
+        # 60 paid on an estimate of 20 materials and 30 labour: 24 and 36, the sum exact.
+        assert lines["material"].paid == D("24.00")
+        assert lines["labour"].paid == D("36.00")
+        assert lines["other"].paid == D("0.00")
+
+    def test_the_share_is_in_whole_cents_and_loses_none(self) -> None:
+        figures = services.TaskFigures(1, D("1"), D("2"), D("100.00"), 0)
+        material, labour = services.real_cost_split(figures, D("1"), D("2"))
+        assert (material, labour) == (D("33.33"), D("66.67"))
+        assert material + labour == D("100.00")
+
+    def test_a_cost_on_a_task_with_no_estimate_has_no_share_and_is_counted_under_other(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = make_task(alice, alice_home, repeat_mode="once")
+        finish(alice, task, on=TODAY, cost="60")
+        lines = {
+            line.label: line.amounts
+            for line in services.by_nature(services.load(alice_home, TODAY), 2026)
+        }
         assert lines["other"].paid == D("60.00")
+        assert lines["material"].paid == lines["labour"].paid == D("0.00")
+
+    def test_the_upkeep_on_target_is_not_shown_as_an_overrun(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = make_task(alice, alice_home, material_budget=D("40"), repeat_mode="once")
+        finish(alice, task, on=TODAY, cost="40")
+        lines = {
+            line.label: line.amounts
+            for line in services.by_nature(services.load(alice_home, TODAY), 2026)
+        }
+        assert lines["material"].gap == D("0.00")
+        assert lines["other"].gap == D("0.00")  # not -40 against a plan of nothing
 
 
 class TestEnvelope:

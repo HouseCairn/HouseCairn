@@ -478,8 +478,29 @@ def by_task(ledger: Ledger, year: int) -> Report:
     )
 
 
+def real_cost_split(
+    figures: TaskFigures, material: Decimal, labour: Decimal
+) -> tuple[Decimal, Decimal]:
+    """What was paid on a task, shared between materials and labour as its estimate is.
+
+    The material part is rounded to the cent and labour takes the rest, so the two always
+    add up to what was paid. Without an estimate there is nothing to share it by: both are
+    zero and the caller counts the cost under Other.
+    """
+    estimate = material + labour
+    if estimate <= ZERO:
+        return ZERO, ZERO
+    in_materials = cents(figures.paid * material / estimate)
+    return in_materials, figures.paid - in_materials
+
+
 def by_nature(ledger: Ledger, year: int) -> list[Line]:
-    """Materials, labour, rental, other. A cost typed on a done task has no nature: Other."""
+    """Materials, labour, rental, other.
+
+    The real cost of a done task is shared between materials and labour as the estimate of
+    the task is, so that it stands against its own plan. A task with no estimate has no such
+    proportion: its cost is counted under Other.
+    """
     found: dict[str, Amounts] = {nature: Amounts() for nature in BudgetNature.values}
     for row in projects_in(ledger, year):
         for nature, amounts in row.by_nature.items():
@@ -487,9 +508,11 @@ def by_nature(ledger: Ledger, year: int) -> list[Line]:
     window = in_year(year)
     for task in ledger.tasks:
         figures = task.figures(window, year=year)
-        found[BudgetNature.MATERIAL] += Amounts(figures.material, ZERO, ZERO)
-        found[BudgetNature.LABOUR] += Amounts(figures.labour, ZERO, ZERO)
-        found[BudgetNature.OTHER] += Amounts(ZERO, ZERO, figures.paid)
+        in_materials, in_labour = real_cost_split(figures, task.material, task.labour)
+        shared = in_materials + in_labour
+        found[BudgetNature.MATERIAL] += Amounts(figures.material, ZERO, in_materials)
+        found[BudgetNature.LABOUR] += Amounts(figures.labour, ZERO, in_labour)
+        found[BudgetNature.OTHER] += Amounts(ZERO, ZERO, figures.paid - shared)
     return [Line(None, nature, found[nature]) for nature in BudgetNature.values]
 
 
