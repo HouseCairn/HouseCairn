@@ -2,6 +2,7 @@
 
 from typing import Any
 
+from allauth.account.forms import ChangePasswordForm as AllauthChangePasswordForm
 from allauth.account.forms import LoginForm as AllauthLoginForm
 from allauth.account.forms import SignupForm as AllauthSignupForm
 from django import forms
@@ -28,6 +29,19 @@ class LoginForm(AllauthLoginForm):  # type: ignore[misc]
             # allauth links "Forgot your password?" under the field; the reset
             # mail could not be sent, so the link would lead nowhere useful.
             self.fields["password"].help_text = ""
+
+
+class ChangePasswordForm(AllauthChangePasswordForm):  # type: ignore[misc]
+    """Password change form without the reset link on an instance that cannot send mail.
+
+    allauth puts "Forgot your password?" under the current password; without outgoing
+    mail the reset page does not exist (404), as for `LoginForm`.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        if not services.email_is_configured():
+            self.fields["oldpassword"].help_text = ""
 
 
 class ProfileForm(forms.Form):
