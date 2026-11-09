@@ -6,7 +6,8 @@ sends email), two-factor
 authentication (authenticator app, recovery codes, passkeys) and the
 identities linked through single sign-on. They come from django-allauth and
 use the layout of the application. They are listed on the
-[More](more.md) page, under *Account security*. How passkeys are used to sign
+[Security and sign-in](security-and-sign-in.md) page, in the **Me** group of
+[More](more.md). How passkeys are used to sign
 in is on the [Sign-in](sign-in.md) page.
 
 ## Security emails
@@ -19,7 +20,8 @@ recognise the change, change your password and review your passkeys.
 
 ## Delete my account
 
-**Delete my account**, on the [More](more.md) page, erases your account for
+**Delete my account**, at the bottom of the
+[Security and sign-in](security-and-sign-in.md) page, erases your account for
 good: your sign-in methods, your API tokens, the homes where you are the only
 member, and the invitations to your address. Homes you share with others stay
 with them. Type your address, and your password if you have one.

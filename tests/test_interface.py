@@ -129,6 +129,7 @@ class TestScreens:
         "index",
         "homes:list",
         "more",
+        "more-security",
         "about",
         "mfa_index",
         "mfa_list_webauthn",
@@ -168,11 +169,11 @@ class TestScreens:
     @override_settings(EMAIL_HOST="smtp.example.com", EMAIL_BACKEND=SMTP_BACKEND)
     def test_signed_in_with_email(self, client: Client, alice: object) -> None:
         client.force_login(alice)  # type: ignore[arg-type]
-        for name in ("account_email", "more"):
+        for name in ("account_email", "more-security"):
             response = _page(client, name)
             assert response.status_code == 200, name
             self._check(response.text)
-        assert reverse("account_email") in _page(client, "more").text
+        assert reverse("account_email") in _page(client, "more-security").text
 
     @pytest.mark.django_db
     def test_more_hides_the_email_page_without_email(self, client: Client, alice: object) -> None:
@@ -228,7 +229,7 @@ class TestScreens:
     def test_more_lists_the_destinations(self, client: Client, alice: object) -> None:
         client.force_login(alice)  # type: ignore[arg-type]
         html = _page(client, "more").text
-        for name in ("homes:list", "mfa_index", "api-docs", "about", "account_logout"):
+        for name in ("homes:list", "more-security", "api-docs", "about", "account_logout"):
             assert reverse(name) in html
 
     @pytest.mark.django_db
@@ -263,9 +264,10 @@ class TestScreens:
     @pytest.mark.django_db
     def test_french(self, client: Client, alice: object) -> None:
         client.force_login(alice)  # type: ignore[arg-type]
-        html = client.get(reverse("more"), headers={"Accept-Language": "fr"}).text
+        html = client.get(reverse("more-security"), headers={"Accept-Language": "fr"}).text
         assert "Sécurité du compte" in html
-        assert "Se déconnecter" in html
+        more = client.get(reverse("more"), headers={"Accept-Language": "fr"}).text
+        assert "Se déconnecter" in more
 
 
 class TestErrorPages:

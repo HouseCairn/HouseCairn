@@ -21,8 +21,8 @@ msgstr ""
 msgid "Account pages"
 msgstr "Pages du compte"
 
-msgid "The other pages under `/accounts/` manage your account: sign-up when it is open, sign-out, password change and reset, email addresses (when the instance sends email), two-factor authentication (authenticator app, recovery codes, passkeys) and the identities linked through single sign-on. They come from django-allauth and use the layout of the application. They are listed on the [More](more.md) page, under *Account security*. How passkeys are used to sign in is on the [Sign-in](sign-in.md) page."
-msgstr "Les autres pages sous `/accounts/` gèrent votre compte : inscription lorsqu'elle est ouverte, déconnexion, changement et réinitialisation du mot de passe, adresses e-mail (quand l'instance envoie des e-mails), authentification à deux facteurs (application d'authentification, codes de récupération, clés d'accès) et identités liées par l'authentification unique. Elles viennent de django-allauth et reprennent la mise en page de l'application. Elles sont listées sur la page [Plus](more.md), sous *Sécurité du compte*. L'usage des clés d'accès pour se connecter est décrit sur la page [Connexion](sign-in.md)."
+msgid "The other pages under `/accounts/` manage your account: sign-up when it is open, sign-out, password change and reset, email addresses (when the instance sends email), two-factor authentication (authenticator app, recovery codes, passkeys) and the identities linked through single sign-on. They come from django-allauth and use the layout of the application. They are listed on the [Security and sign-in](security-and-sign-in.md) page, in the **Me** group of [More](more.md). How passkeys are used to sign in is on the [Sign-in](sign-in.md) page."
+msgstr "Les autres pages sous `/accounts/` gèrent votre compte : inscription lorsqu'elle est ouverte, déconnexion, changement et réinitialisation du mot de passe, adresses e-mail (quand l'instance envoie des e-mails), authentification à deux facteurs (application d'authentification, codes de récupération, clés d'accès) et identités liées par l'authentification unique. Elles viennent de django-allauth et reprennent la mise en page de l'application. Elles sont listées sur la page [Sécurité et connexion](security-and-sign-in.md), dans le groupe **Moi** de [Plus](more.md). L'usage des clés d'accès pour se connecter est décrit sur la page [Connexion](sign-in.md)."
 
 msgid "Security emails"
 msgstr "E-mails de sécurité"
@@ -33,8 +33,8 @@ msgstr "Quand l'instance envoie des e-mails, vous recevez un message quand votre
 msgid "Delete my account"
 msgstr "Supprimer mon compte"
 
-msgid "**Delete my account**, on the [More](more.md) page, erases your account for good: your sign-in methods, your API tokens, the homes where you are the only member, and the invitations to your address. Homes you share with others stay with them. Type your address, and your password if you have one."
-msgstr "**Supprimer mon compte**, sur la page [Plus](more.md), efface définitivement votre compte : vos méthodes de connexion, vos jetons d'API, les logements dont vous êtes le seul membre, et les invitations envoyées à votre adresse. Les logements que vous partagez avec d'autres restent avec eux. Saisissez votre adresse, et votre mot de passe si vous en avez un."
+msgid "**Delete my account**, at the bottom of the [Security and sign-in](security-and-sign-in.md) page, erases your account for good: your sign-in methods, your API tokens, the homes where you are the only member, and the invitations to your address. Homes you share with others stay with them. Type your address, and your password if you have one."
+msgstr "**Supprimer mon compte**, en bas de la page [Sécurité et connexion](security-and-sign-in.md), efface définitivement votre compte : vos méthodes de connexion, vos jetons d'API, les logements dont vous êtes le seul membre, et les invitations envoyées à votre adresse. Les logements que vous partagez avec d'autres restent avec eux. Saisissez votre adresse, et votre mot de passe si vous en avez un."
 
 msgid "If you are the only owner of a home with other members, the page lists it: hand ownership over, or delete the home, first."
 msgstr "Si vous êtes l'unique propriétaire d'un logement qui a d'autres membres, la page le liste : transmettez d'abord la propriété, ou supprimez le logement."
