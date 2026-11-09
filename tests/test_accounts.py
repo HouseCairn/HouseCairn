@@ -46,7 +46,7 @@ class TestSignIn:
             reverse("account_login"), {"login": alice.email, "password": PASSWORD}
         )
         assert response.status_code == 302
-        assert response["Location"] == reverse("homes:list")
+        assert response["Location"] == reverse("my-home")
 
     def test_signup_is_closed_by_default(self, client: Client) -> None:
         response = client.get(reverse("account_signup"))

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n reports_extras %}
+{% block head_title %}{{ report.title }}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'reports:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% if can_write %}{% translate "Reports" %}{% else %}{% translate "My reports" %}{% endif %}</a>
+  <section class="card">
+    <div class="task-pills">
+      <span class="pill {% if report.is_open %}pill-warning{% elif report.status == 'task' %}pill-info{% else %}pill-ghost{% endif %}">{{ report.get_status_display }}</span>
+    </div>
+    <h1>{{ report.title }}</h1>
+    <dl class="facts">
+      {% if report.place %}<div><dt>{% translate "Where" %}</dt><dd>{% if where %}<a href="{{ where_url }}">{{ report.place }}</a>{% else %}{{ report.place }}{% endif %}</dd></div>{% endif %}
+      <div><dt>{% translate "Reported by" %}</dt><dd>{% if mine %}{% translate "you" %}{% else %}{{ reporter }}{% endif %}</dd></div>
+      <div><dt>{% translate "Reported on" %}</dt><dd>{{ report.created_at|date:"DATE_FORMAT" }}</dd></div>
+      {% if report.closed_at %}<div><dt>{% translate "Closed on" %}</dt><dd>{{ report.closed_at|date:"DATE_FORMAT" }}</dd></div>{% endif %}
+      {% if task %}<div><dt>{% translate "Task" %}</dt><dd><a href="{% url 'tasks:detail' home_id=home.id task_id=task.id %}">{{ task.title }}</a></dd></div>{% endif %}
+    </dl>
+    {% if report.has_photo %}
+      <p><a href="{% url 'reports:photo' home_id=home.id report_id=report.id %}"><img class="report-photo" src="{% url 'reports:photo-thumbnail' home_id=home.id report_id=report.id %}" alt="{% blocktranslate with title=report.title %}Photo of the problem: {{ title }}{% endblocktranslate %}" loading="lazy" decoding="async"></a></p>
+    {% endif %}
+  </section>
+  {% if can_write %}
+    <div class="card">
+      <div class="button-row">
+        {% if report.is_open %}
+          <form method="post" action="{% url 'reports:to-task' home_id=home.id report_id=report.id %}">{% csrf_token %}<button type="submit">{% translate "Make it a task" %}</button></form>
+        {% endif %}
+        {% if report.is_open or report.status == "task" %}
+          <form method="post" action="{% url 'reports:close' home_id=home.id report_id=report.id %}">{% csrf_token %}<button type="submit" name="resolution" value="resolved" class="button-secondary">{% translate "Mark as resolved" %}</button></form>
+          <form method="post" action="{% url 'reports:close' home_id=home.id report_id=report.id %}">{% csrf_token %}<button type="submit" name="resolution" value="no_action" class="button-secondary">{% translate "Close without action" %}</button></form>
+        {% else %}
+          <form method="post" action="{% url 'reports:reopen' home_id=home.id report_id=report.id %}">{% csrf_token %}<button type="submit" class="button-secondary">{% translate "Reopen" %}</button></form>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+{% endblock content %}

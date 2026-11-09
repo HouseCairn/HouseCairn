@@ -16,7 +16,9 @@ and the heating season mean for the [tasks](task-form.md): it is never guessed f
 Changing it moves the window of the tasks that use a predefined season. Read-only members
 do not see the row.
 
-Under **Settings**, a row leads to the [QR labels](qr-labels.md) of the home.
+Under **Settings**, two rows lead to the [QR labels](qr-labels.md) and to the
+[reports](reports.md) of the home; the second shows how many reports wait when you
+may write.
 
 ## Your data
 

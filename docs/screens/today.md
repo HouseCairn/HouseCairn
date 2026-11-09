@@ -23,6 +23,9 @@ that offers **Undo**. A row opens the [task](task.md).
   [history](history.md) and the [display preferences](display-preferences.md), switch
   between **Today**, **All tasks**, **History** and **Display preferences**. The current
   tab is marked; on a phone the tabs scroll sideways when they do not all fit.
+- When reports are open, one line under the title says how many, with **See the
+  reports**. It is shown to the members who may write, never to read-only members
+  (see [Reports](reports.md)).
 - A task hidden until a few days before its date does not appear until then.
 - Each section shows at most 200 rows; the task list holds the rest.
 

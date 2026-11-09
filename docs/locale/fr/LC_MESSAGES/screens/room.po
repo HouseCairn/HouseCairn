@@ -45,8 +45,8 @@ msgstr "les **éléments** de la pièce, avec **Ajouter un élément**."
 msgid "**Delete the room** (in the edit form) asks for confirmation. Deleting a room also deletes its items and their photos; they disappear from every screen and from the API."
 msgstr "**Supprimer la pièce** (dans le formulaire de modification) demande confirmation. Supprimer une pièce supprime aussi ses éléments et leurs photos ; ils disparaissent de tous les écrans et de l'API."
 
-msgid "**QR label** opens the [label](qr-label.md) of this room; **Make a QR label** makes it when there is none, for members who may write. Read-only members see the label and print it."
-msgstr "**Étiquette QR** ouvre l'[étiquette](qr-label.md) de cette pièce ; **Créer une étiquette QR** la crée quand il n'y en a pas, pour les membres qui peuvent écrire. Les membres en lecture seule voient l'étiquette et l'impriment."
+msgid "**QR label** opens the [label](qr-label.md) of this room; **Make a QR label** makes it when there is none, for members who may write. Read-only members see the label and print it. **Report a problem** opens the [report form](report-form.md) with the **Where?** list already filled in with this room; every member sees it, read-only members included."
+msgstr "**Étiquette QR** ouvre l'[étiquette](qr-label.md) de cette pièce ; **Créer une étiquette QR** la crée quand il n'y en a pas, pour les membres qui peuvent écrire. Les membres en lecture seule voient l'étiquette et l'impriment. **Signaler un problème** ouvre le [formulaire de signalement](report-form.md) avec la liste **Où ?** déjà remplie avec cette pièce ; chaque membre le voit, lecteurs compris."
 
 msgid "Members and owners change the room; read-only members see it all and change nothing. An address that does not exist, or that belongs to a home you are not a member of, answers the same \"Page not found\"."
 msgstr "Les membres et les propriétaires modifient la pièce ; les membres en lecture seule voient tout et ne modifient rien. Une adresse qui n'existe pas, ou qui appartient à un logement dont vous n'êtes pas membre, donne la même réponse « Page introuvable »."

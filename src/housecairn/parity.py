@@ -119,6 +119,14 @@ PARITY: dict[str, tuple[str, ...]] = {
     "labels:detail": ("api-v1:home-label-detail",),
     "labels:regenerate": ("api-v1:home-label-regenerate",),
     "labels:revoke": ("api-v1:home-label-detail",),
+    "reports:list": ("api-v1:home-report-list",),
+    "reports:create": ("api-v1:home-report-list",),
+    "reports:detail": ("api-v1:home-report-detail",),
+    "reports:photo": ("api-v1:home-report-photo",),
+    "reports:photo-thumbnail": ("api-v1:home-report-thumbnail",),
+    "reports:to-task": ("api-v1:home-report-task",),
+    "reports:close": ("api-v1:home-report-close",),
+    "reports:reopen": ("api-v1:home-report-reopen",),
     # Projects, budget lines, quotes, photos and the annual envelope (docs/adr/0050). The entry
     # page only leads to the projects of a home, like the rooms one.
     "projects": ("api-v1:home-list",),
