@@ -214,8 +214,12 @@ class QuoteForm(forms.ModelForm[Quote]):
         assert isinstance(line, forms.ModelChoiceField)  # noqa: S101 - narrows the type
         line.queryset = BudgetLine.objects.filter(project=project)
         self.contractors = list(contractors)
-        if not self.instance._state.adding and self.instance.contractor is not None:
-            self.initial.setdefault("contractor_name", self.instance.contractor.name)
+        if not self.instance._state.adding:
+            if self.instance.contractor is not None:
+                self.initial.setdefault("contractor_name", self.instance.contractor.name)
+            # The line an accepted quote is committed on is chosen again as it stands, so that
+            # saving without a change is not refused for a missing line.
+            self.initial.setdefault("budget_line", self.instance.budget_line_id)
 
     def clean(self) -> dict[str, Any]:
         data: dict[str, Any] = super().clean() or {}

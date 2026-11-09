@@ -627,6 +627,29 @@ class TestQuotes:
         quote.refresh_from_db()
         assert quote.status == "received"
 
+    def test_editing_an_accepted_quote_keeps_its_line_selected(
+        self,
+        signed_in: Client,
+        alice: User,
+        alice_home: Home,
+        quote: Quote,
+        labour_line: BudgetLine,
+    ) -> None:
+        services.accept_quote(alice, quote, labour_line)
+        page = url("quote-edit", alice_home, quote_id=quote.id)
+        html = signed_in.get(page).content.decode()
+        select = re.search(r'<select name="budget_line".*?</select>', html, re.S)
+        assert select is not None
+        chosen = re.findall(r'<option value="([^"]*)" selected', select.group(0))
+        assert chosen == [str(labour_line.id)]
+        # What the browser sends back when nothing is touched is accepted.
+        response = signed_in.post(
+            page, {"amount": "620.00", "status": "accepted", "budget_line": chosen[0]}
+        )
+        assert response.status_code == 302, response.content[:300]
+        quote.refresh_from_db()
+        assert (quote.status, quote.budget_line_id) == ("accepted", labour_line.id)
+
     def test_the_status_buttons_never_accept(
         self, signed_in: Client, alice_home: Home, quote: Quote
     ) -> None:
