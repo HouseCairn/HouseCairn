@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "QR labels" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  <h1>{% translate "QR labels" %}</h1>
+  <p class="small">{% translate "Tick what to label, choose a layout and print the sheet. Scanning a sticker opens the page of the object, for the members of this home." %}</p>
+  {% if sections %}
+    <form method="post" action="{% url 'labels:print' home_id=home.id %}" class="card">
+      {% csrf_token %}
+      <p>
+        <label for="layout">{% translate "Layout" %}</label>
+        <select id="layout" name="layout">
+          {% for layout in layouts %}<option value="{{ layout.code }}"{% if layout.code == default_layout %} selected{% endif %}>{{ layout.title }}</option>{% endfor %}
+        </select>
+      </p>
+      {% for title, rows in sections %}
+        <fieldset class="check-list">
+          <legend>{{ title }}</legend>
+          {% for entry in rows %}
+            <label class="check-row">
+              <input type="checkbox" name="target" value="{{ entry.key }}">
+              <span class="row-body">
+                <span class="row-title">{{ entry.name }}</span>
+                <span class="row-text">{% if entry.place %}{{ entry.place }} · {% endif %}{% if entry.label %}<a href="{% url 'labels:detail' home_id=home.id label_id=entry.label.id %}">{% translate "QR label" %}</a>{% elif can_write %}{% translate "No label yet" %}{% else %}{% translate "No label" %}{% endif %}</span>
+              </span>
+            </label>
+          {% endfor %}
+        </fieldset>
+      {% endfor %}
+      <p class="small">{% blocktranslate with max=max_labels %}Up to {{ max }} labels at a time.{% endblocktranslate %}{% if can_write %} {% translate "A label is made for each object ticked that has none." %}{% else %} {% translate "You can print the labels that exist; members who can edit make new ones." %}{% endif %}</p>
+      <div class="button-row">
+        <button type="submit">{% translate "Print the labels" %}</button>
+      </div>
+    </form>
+  {% else %}
+    <p class="empty">{% translate "Nothing to label yet: add rooms, items or stock items first." %}</p>
+  {% endif %}
+{% endblock content %}

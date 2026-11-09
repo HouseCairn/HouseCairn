@@ -1,0 +1,7 @@
+{% load i18n %}<a class="row" href="{% url 'labels:list' home_id=home.id %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "QR labels" %}</span>
+        <span class="row-text">{% translate "Print stickers that open a room, an item or a stock item" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>

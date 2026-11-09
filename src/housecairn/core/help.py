@@ -124,6 +124,13 @@ HELP_PAGES: dict[str, str] = {
     "tasks:attachment": "screens/task-files/",
     "tasks:attachment-thumbnail": "screens/task-files/",
     "tasks:attachment-delete": "screens/task-files/",
+    "label-open": "screens/qr-labels/",
+    "labels:list": "screens/qr-labels/",
+    "labels:create": "screens/qr-labels/",
+    "labels:print": "screens/qr-labels/",
+    "labels:detail": "screens/qr-label/",
+    "labels:regenerate": "screens/qr-label/",
+    "labels:revoke": "screens/qr-label/",
     "more": "screens/more/",
     "about": "screens/about/",
 }

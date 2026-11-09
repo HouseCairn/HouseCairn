@@ -35,6 +35,8 @@ LABELS: dict[str, Promise] = {
     "photo.deleted": _("Photo deleted from %(title)s"),
     "attachment.added": _("File added to the task %(title)s"),
     "attachment.deleted": _("File deleted from the task %(title)s"),
+    "label.revoked": _("QR label revoked: %(title)s"),
+    "label.regenerated": _("QR label replaced by a new one: %(title)s"),
     "project.created": _("Project added: %(title)s"),
     "project.updated": _("Project changed: %(title)s"),
     "project.deleted": _("Project deleted: %(title)s"),

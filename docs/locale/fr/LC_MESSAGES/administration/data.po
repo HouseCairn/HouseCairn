@@ -196,6 +196,12 @@ msgstr "`contractors`"
 msgid "`id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`."
 msgstr "`id`, `name`, `trade` (un code de la liste, ou `other`), `trade_other`, `phone`, `email`, `address`, `note`."
 
+msgid "`labels`"
+msgstr "`labels`"
+
+msgid "`id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing."
+msgstr "`id`, `kind` (`room`, `item` ou `article`), `target` (l'identifiant de la pièce, de l'élément ou de l'article), `code`, `revoked_at`, `created_at` de chaque étiquette QR. Le `code` est l'identifiant opaque que porte son autocollant : il est exporté pour une étiquette active et vaut `null` pour une étiquette révoquée, qui n'ouvre rien."
+
 msgid "`files`"
 msgstr "`files`"
 

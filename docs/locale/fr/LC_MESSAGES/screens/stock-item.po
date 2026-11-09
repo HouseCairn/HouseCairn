@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 13:29+0000\n"
+"POT-Creation-Date: 2026-11-08 22:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -45,6 +45,9 @@ msgstr "**La photo de l'étiquette** s'affiche s'il y en a une. Son adresse, `/h
 
 msgid "**Edit the stock item** opens the [form](stock-item-form.md), where **Delete the stock item** asks for confirmation and removes the item, its suppliers and its movements from the screens and the API."
 msgstr "**Modifier l'article** ouvre le [formulaire](stock-item-form.md), où **Supprimer l'article** demande confirmation et retire l'article, ses fournisseurs et ses mouvements des écrans et de l'API."
+
+msgid "**QR label** opens the [label](qr-label.md) of this stock item; **Make a QR label** makes it when there is none, for members who may write. Read-only members see the label and print it."
+msgstr "**Étiquette QR** ouvre l'[étiquette](qr-label.md) de cet article ; **Créer une étiquette QR** la crée quand il n'y en a pas, pour les membres qui peuvent écrire. Les membres en lecture seule voient l'étiquette et l'impriment."
 
 msgid "Read-only members see everything and none of the buttons that change it."
 msgstr "Les membres en lecture seule voient tout et aucun des boutons qui modifient."
