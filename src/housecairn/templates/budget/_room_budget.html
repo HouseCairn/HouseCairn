@@ -1,0 +1,15 @@
+{% load i18n l10n navigation projects_extras %}{# The block "Budget of the room" of a room page (budget_extras.room_budget). `room`, `home`, `year`, `detail`. #}
+<h2>{% translate "Budget of the room" %}</h2>
+<section class="card">
+  {% if detail.projects or detail.tasks %}
+    <dl class="facts">
+      <div><dt>{% blocktranslate with year=year|unlocalize %}Planned in {{ year }}{% endblocktranslate %}</dt><dd>{{ detail.total.planned|money:home.currency }}</dd></div>
+      <div><dt>{% translate "Used" %}</dt><dd>{{ detail.total.engaged|money:home.currency }}</dd></div>
+    </dl>
+  {% else %}
+    <p class="empty">{% translate "No budget yet for this room this year." %}</p>
+  {% endif %}
+  <div class="button-row">
+    <a class="button button-secondary button-small" href="{% url_with_next 'budget:room' home_id=home.id room_id=room.id q_year=year %}">{% translate "See the budget detail" %}</a>
+  </div>
+</section>

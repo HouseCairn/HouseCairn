@@ -6,6 +6,7 @@ from django import template
 from housecairn.budget import services
 from housecairn.projects.models import ZERO
 from housecairn.projects.services import Amounts
+from housecairn.rooms.models import Room
 from housecairn.tasks.models import Occurrence, Task
 
 register = template.Library()
@@ -39,3 +40,18 @@ def occurrence_cost(occurrence: Occurrence, home: Any) -> dict[str, Any]:
         None if all(part is None for part in parts) else sum((p or ZERO for p in parts), ZERO)
     )
     return {"estimate": estimate, "home": home}
+
+
+@register.inclusion_tag("budget/_room_budget.html", takes_context=True)
+def room_budget(context: template.Context, room: Room) -> dict[str, Any]:
+    """The block "Budget of the room" of a room page: this year's total, a link to the detail."""
+    ledger = services.load(room.home)
+    year = ledger.today.year
+    detail = services.room_budget(ledger, year, room)
+    return {
+        "request": context["request"],
+        "room": room,
+        "home": room.home,
+        "year": year,
+        "detail": detail,
+    }
