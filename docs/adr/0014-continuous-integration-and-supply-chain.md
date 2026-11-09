@@ -22,7 +22,7 @@ the `main` ruleset.
 
 | Workflow | Trigger | What it checks |
 | --- | --- | --- |
-| `ci.yml` | pull request, push to `main` | `uv sync --locked`; ruff lint and format; mypy (`src`, `scripts`); pytest with coverage of at least 85 %, on SQLite and on PostgreSQL; `makemigrations --check`; `spectacular --validate --fail-on-warn`; `check --deploy --fail-level WARNING` with `deploy/production.env.example` and a key generated in the job; `build_design_tokens --check`; `check_translations --sources`; no external URL in templates and static files (`scripts/check_external_urls.py`, ADR 0011). |
+| `ci.yml` | pull request, merge queue (not `push` to `main`: ADR 0040) | `uv sync --locked`; ruff lint and format; mypy (`src`, `scripts`); pytest in parallel (pytest-xdist, one worker per vCPU) with combined coverage of at least 85 %, on SQLite and on PostgreSQL; `makemigrations --check`; `spectacular --validate --fail-on-warn`; `check --deploy --fail-level WARNING` with `deploy/production.env.example` and a key generated in the job; `build_design_tokens --check`; `check_translations --sources`; no external URL in templates and static files (`scripts/check_external_urls.py`, ADR 0011). |
 | `zizmor.yml` | pull request, push to `main` | Static analysis of the workflows with zizmor. One job fails on any finding of medium severity or more; another uploads all findings (SARIF) to code scanning. |
 | `dependency-review.yml` | pull request | New dependencies: fails on a known vulnerability of moderate severity or more, or on a license outside the allowed list below. |
 | `pr-title.yml` | pull request opened, edited, synchronized, reopened | The title is a Conventional Commit (`scripts/check_pr_title.py`): it becomes the squash commit message on `main` and feeds the release notes. |
@@ -211,23 +211,13 @@ digest are updated by hand, together.
 
 ### Checks required on `main`
 
-These exact names are to be set as required status checks in the `main`
-ruleset, once each has passed once on GitHub (a check that has never run blocks
-every merge):
-
-- `Lint and types`
-- `Tests (SQLite)`
-- `Tests (PostgreSQL)`
-- `Django and repository checks`
-- `zizmor`
-- `Dependency review`
-- `Conventional Commits title`
-- `Signed-off-by`
-- `CLA` (a commit status set by `cla.js`, not a job; add it last, once
-  `cla.yml` is on `main` and the `cla-signatures` branch exists)
-
-Each of their workflows also runs on the merge queue, where the same names are
-required on every queue entry (ADR 0040).
+A check name becomes a required status check of the `main` ruleset once it has
+passed once on GitHub (a check that has never run blocks every merge). The list
+is not repeated here: it grew after this record (container image, multi-arch
+build, documentation), and the complete list of the thirteen required checks,
+with what each one does on a merge queue entry, is the table of ADR 0040. The
+ruleset itself (`GET /repos/{owner}/{repo}/rules/branches/main`) is the
+reference. `CLA` is a commit status set by `cla.js`, not a job.
 
 Not required: `CLA signatures` (the job that sets the `CLA` status; it runs on
 the default branch, not on the pull request head), `zizmor (code scanning)`

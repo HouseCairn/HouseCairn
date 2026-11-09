@@ -3,6 +3,7 @@
 import http.server
 import json
 import os
+import re
 import subprocess
 import threading
 from collections.abc import Iterator
@@ -10,8 +11,15 @@ from pathlib import Path
 from typing import ClassVar
 
 import pytest
+import yaml
 
-from scripts import check_external_urls, check_pr_title, check_signoff, merge_queue
+from scripts import (
+    check_docs_updated,
+    check_external_urls,
+    check_pr_title,
+    check_signoff,
+    merge_queue,
+)
 
 # Pull request titles
 
@@ -556,3 +564,128 @@ def test_grype_is_downloaded_through_the_api_then_checked() -> None:
     assert "github.com/anchore/grype/releases/download" not in step
     assert "|| true" not in step
     assert "continue-on-error" not in step
+
+
+# Documentation updated (scripts/check_docs_updated.py): user-facing files that
+# the first pattern let through without documentation
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        # Prefixed route and view modules.
+        "src/housecairn/calendar/api_urls.py",
+        "src/housecairn/notifications/api_urls.py",
+        "src/housecairn/tasks/contractor_views.py",
+        # Forms, views and API split into packages.
+        "src/housecairn/tasks/forms/task.py",
+        "src/housecairn/tasks/forms/__init__.py",
+        "src/housecairn/homes/views/members.py",
+        "src/housecairn/tasks/api/occurrences.py",
+        # What the browser loads, and the in-app help links.
+        "src/housecairn/static/css/app.css",
+        "src/housecairn/static/js/calendar.js",
+        "src/housecairn/core/help.py",
+    ],
+)
+def test_more_user_facing_files_need_docs(path: str) -> None:
+    # Internal modules next to them still pass without documentation.
+    internal = [
+        "src/housecairn/tasks/services.py",
+        "src/housecairn/tasks/migrations/0006_task_notes.py",
+        "src/housecairn/core/translations.py",
+        "tests/test_tasks_api.py",
+    ]
+    assert check_docs_updated.user_facing([path, *internal]) == [path]
+    assert check_docs_updated.problems([path], []) != []
+    assert check_docs_updated.problems([path, "docs/screens/home.md"], []) == []
+
+
+# Workflow shell steps that cannot pass when they fail
+
+WORKFLOWS = Path(__file__).resolve().parents[1] / ".github" / "workflows"
+
+
+def _run_steps(name: str) -> list[dict[str, str]]:
+    workflow = yaml.safe_load((WORKFLOWS / name).read_text(encoding="utf-8"))
+    return [
+        step for job in workflow["jobs"].values() for step in job.get("steps", []) if "run" in step
+    ]
+
+
+def _all_run_steps() -> list[dict[str, str]]:
+    return [step for path in sorted(WORKFLOWS.glob("*.yml")) for step in _run_steps(path.name)]
+
+
+def test_a_piped_command_fails_its_step() -> None:
+    # GitHub's default shell is `bash -e {0}`, without pipefail: the status of
+    # `cmd | tee` would be the status of `tee`. `shell: bash` adds pipefail;
+    # a script may also read PIPESTATUS itself.
+    unsafe = [
+        step["name"]
+        for step in _all_run_steps()
+        if "| tee" in step["run"]
+        and step.get("shell") != "bash"
+        and "set -o pipefail" not in step["run"]
+        and "set -euo pipefail" not in step["run"]
+        and "PIPESTATUS[0]" not in step["run"]
+    ]
+    assert unsafe == []
+
+
+def test_image_tags_step_fails_with_its_script() -> None:
+    step = next(s for s in _run_steps("image.yml") if s["name"] == "Tags for this ref")
+    assert step["shell"] == "bash"
+
+
+def test_a_wait_loop_ends_with_a_check_that_fails() -> None:
+    # `for ...; do probe && break; sleep 1; done` ends with status 0 whether
+    # the probe succeeded or not: the next line must probe once more and fail.
+    loops = 0
+    for step in _all_run_steps():
+        lines = step["run"].splitlines()
+        for i, line in enumerate(lines):
+            loop = re.match(r"\s*for _ in \$\(seq .*?\); do (.+?) && break; sleep \d+; done$", line)
+            if not loop:
+                continue
+            loops += 1
+            after = lines[i + 1] if i + 1 < len(lines) else ""
+            assert after.strip().startswith(loop.group(1)), step["name"]
+            assert re.search(r"\|\| \{ cat \"[^\"]+\"; exit 1; \}$", after), step["name"]
+    assert loops >= 2
+
+
+# CI runs: tests in parallel, no third run on `main`
+
+
+def test_ci_does_not_run_again_on_main() -> None:
+    workflow = yaml.safe_load((WORKFLOWS / "ci.yml").read_text(encoding="utf-8"))
+    # PyYAML reads the `on:` key as the boolean True.
+    triggers = workflow[True]
+    assert set(triggers) == {"pull_request", "merge_group"}
+    assert triggers["merge_group"] == {"types": ["checks_requested"]}
+
+
+@pytest.mark.parametrize(
+    ("job", "step"),
+    [
+        ("tests-sqlite", "Tests with coverage (SQLite)"),
+        ("tests-postgresql", "Tests with coverage (PostgreSQL)"),
+    ],
+)
+def test_ci_tests_run_in_parallel_with_the_coverage_threshold(job: str, step: str) -> None:
+    workflow = yaml.safe_load((WORKFLOWS / "ci.yml").read_text(encoding="utf-8"))
+    run = next(s["run"] for s in workflow["jobs"][job]["steps"] if s.get("name") == step)
+    assert " -n auto " in run
+    assert "--cov=housecairn" in run
+    assert "--cov-fail-under=85" in run
+
+
+def test_gettext_lists_are_refreshed_only_when_the_install_fails() -> None:
+    action = WORKFLOWS.parent / "actions" / "compile-messages" / "action.yml"
+    steps = yaml.safe_load(action.read_text(encoding="utf-8"))["runs"]["steps"]
+    script = next(s["run"] for s in steps if s["name"] == "Install GNU gettext")
+    assert "if ! command -v msgfmt" in script
+    first_install = script.index('"${apt[@]}" "${install[@]}"')
+    assert script.index("update -q") > first_install
+    assert "msgfmt --version" in script

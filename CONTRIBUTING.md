@@ -64,7 +64,7 @@ Checks to run before opening a pull request:
 uv run ruff check .
 uv run ruff format --check .
 uv run mypy src scripts
-uv run pytest --cov=housecairn --cov-fail-under=85
+uv run pytest -n auto --cov=housecairn --cov-fail-under=85
 uv run python manage.py makemigrations --check --dry-run
 uv run python manage.py spectacular --validate --fail-on-warn --file /dev/null
 uv run python manage.py build_design_tokens --check
@@ -74,7 +74,9 @@ uv run python scripts/check_external_urls.py
 
 The property-based tests ([ADR 0019](docs/adr/0019-property-based-tests.md))
 try 300 generated examples each by default; `HYPOTHESIS_PROFILE=ci` runs the
-fixed 50 examples of CI, to reproduce a CI failure.
+fixed 50 examples of CI, to reproduce a CI failure. `-n auto` runs the tests
+in parallel, one worker per CPU (pytest-xdist), as CI does; leave it out to
+debug a single test.
 
 To run the tests on PostgreSQL as well, install the driver and point
 `DATABASE_URL` at a server where the user may create databases:
@@ -171,10 +173,10 @@ translation ([ADR 0016](docs/adr/0016-documentation-site.md)).
 configure updates the documentation in the same pull request: a page of the
 screen reference for a new or changed screen, the environment variables page
 for a setting, and so on. The `Documentation updated` check fails a pull
-request that adds or changes a view, a template, a URL route, a setting or an
-API serializer without changing anything under `docs/`. If no page is
-concerned (a refactoring, an internal change), ask the maintainer to add the
-`no-docs-needed` label: the check then passes. Dependabot pull requests and
+request that adds or changes a view, a template, a form, a URL route, a static
+file, a setting or an API module without changing anything under `docs/`. If
+no page is concerned (a refactoring, an internal change), ask the maintainer to
+add the `no-docs-needed` label: the check then passes. Dependabot pull requests and
 pull requests that only change tests, workflows or documentation are never
 concerned.
 

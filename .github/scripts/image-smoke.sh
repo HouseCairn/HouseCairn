@@ -164,6 +164,27 @@ code=$(http_get "$css" /dev/null "$headers")
 grep -qi '^cache-control:.*immutable' "$headers" || fail "$css is not served as immutable"
 pass "static file $css served by the application, immutable"
 
+# The API reference (/api/docs/) is Swagger UI from drf-spectacular-sidecar:
+# the files its page links to are in the image and served. Redoc, the assets of
+# the browsable API and the .po sources of the catalogs are left out of the
+# image (Dockerfile, build stage): nothing serves or reads them.
+swagger=$(manage shell -c "from drf_spectacular.views import SpectacularSwaggerView as View
+for name in ('swagger-ui.css', 'swagger-ui-bundle.js', 'swagger-ui-standalone-preset.js'):
+    print(View._swagger_ui_resource(name))
+print(View._swagger_ui_favicon())" | grep '^/static/' || true)
+[ "$(printf '%s\n' "$swagger" | grep -c .)" = 4 ] || fail "Swagger UI files not found in the static manifest: $swagger"
+for url in $swagger; do
+  code=$(http_get "$url")
+  [ "$code" = 200 ] || fail "GET $url (Swagger UI) answered $code"
+done
+pass "the 4 Swagger UI files of /api/docs/ are served"
+for path in /app/static/drf_spectacular_sidecar/redoc /app/static/rest_framework; do
+  if in_container test -e "$path"; then fail "$path is in the image"; fi
+done
+sources=$(in_container find /app -name '*.po' | wc -l)
+[ "$sources" = 0 ] || fail "$sources .po files in the image"
+pass "no Redoc, no browsable API assets, no .po file in the image"
+
 uid=$(in_container id -u)
 [ "$uid" != 0 ] || fail "the application runs as root"
 [ "$uid" = 10001 ] || fail "unexpected user id $uid"

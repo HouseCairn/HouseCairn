@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import signal
 import sqlite3
 import stat
@@ -218,6 +219,37 @@ def start_supervisor(spec: list[tuple[str, str]], timeout: float = 5.0) -> subpr
     )
 
 
+def wait_until_ready(proc: subprocess.Popen[str], children: int, ignoring: int = 0) -> None:
+    """Wait until the supervisor has started its children (Linux /proc).
+
+    A fixed sleep is not enough on a busy machine (several test workers in
+    parallel): a SIGTERM sent before `Supervisor.run` installs its handler, or
+    before a child ignores it, kills the process instead. `run` installs the
+    handlers before it starts any child, so `children` started children prove
+    the handler is there; `ignoring` of them must also show SIGTERM in their
+    ignored signals.
+    """
+    if not Path(f"/proc/{proc.pid}/task").is_dir():
+        pytest.skip("needs Linux /proc")
+    sigterm = 1 << (signal.SIGTERM - 1)
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        assert proc.poll() is None, "the supervisor stopped before it was ready"
+        pids = Path(f"/proc/{proc.pid}/task/{proc.pid}/children").read_text().split()
+        ignored = 0
+        for pid in pids:
+            try:
+                status = Path(f"/proc/{pid}/status").read_text()
+            except FileNotFoundError:
+                continue
+            mask = re.search(r"^SigIgn:\s*([0-9a-f]+)$", status, re.MULTILINE)
+            ignored += bool(mask and int(mask[1], 16) & sigterm)
+        if len(pids) >= children and ignored >= ignoring:
+            return
+        time.sleep(0.05)
+    raise AssertionError("the supervisor did not start its children within 30 s")
+
+
 class TestSupervisor:
     def test_one_process_exits_so_all_stop(self) -> None:
         proc = start_supervisor([("web", SLEEPER), ("worker", "raise SystemExit(4)")])
@@ -238,7 +270,7 @@ class TestSupervisor:
 
     def test_sigterm_stops_everything_cleanly(self) -> None:
         proc = start_supervisor([("web", SLEEPER), ("worker", SLEEPER)])
-        time.sleep(1.0)
+        wait_until_ready(proc, children=2)
         started = time.monotonic()
         proc.send_signal(signal.SIGTERM)
         _, err = proc.communicate(timeout=30)
@@ -248,7 +280,7 @@ class TestSupervisor:
 
     def test_process_ignoring_sigterm_is_killed(self) -> None:
         proc = start_supervisor([("web", STUBBORN), ("worker", SLEEPER)], timeout=1.0)
-        time.sleep(1.0)
+        wait_until_ready(proc, children=2, ignoring=1)
         proc.send_signal(signal.SIGTERM)
         _, err = proc.communicate(timeout=30)
         assert proc.returncode == 0

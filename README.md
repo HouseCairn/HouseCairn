@@ -2,7 +2,7 @@
 
 # HouseCairn
 
-[![CI](https://github.com/HouseCairn/housecairn/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/HouseCairn/housecairn/actions/workflows/ci.yml?query=branch%3Amain)
+[![CI](https://github.com/HouseCairn/housecairn/actions/workflows/ci.yml/badge.svg?event=merge_group)](https://github.com/HouseCairn/housecairn/actions/workflows/ci.yml?query=event%3Amerge_group)
 [![Image](https://github.com/HouseCairn/housecairn/actions/workflows/image.yml/badge.svg?branch=main)](https://github.com/HouseCairn/housecairn/actions/workflows/image.yml?query=branch%3Amain)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/HouseCairn/housecairn/badge)](https://securityscorecards.dev/viewer/?uri=github.com/HouseCairn/housecairn)
 [![License: AGPL-3.0-only](docs/assets/license-badge.svg)](LICENSE)
