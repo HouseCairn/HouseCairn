@@ -390,6 +390,23 @@ class TestGuardedPreview:
         assert site.wait_idle()
         assert not [t for t in threading.enumerate() if isinstance(t, threading.Timer)]
 
+    @pytest.mark.parametrize(
+        "content_type", ["text/plain", "application/octet-stream", "image/png"]
+    )
+    def test_a_page_of_another_type_gives_no_preview_at_all(
+        self,
+        alice: User,
+        living_room_project: Project,
+        site: Server,
+        enabled: None,
+        content_type: str,
+    ) -> None:
+        # The tags are there and the title is readable: only the type of the answer says no.
+        site.serve("/page", 200, page(), content_type)
+        site.serve("/cover.jpg", 200, image_bytes(), "image/jpeg")
+        link = links.add_link(alice, living_room_project, url=site.url("/page"))
+        assert (link.title, link.image) == ("", None)
+        assert site.requests == ["/page"]
 
 class TestFallback:
     @pytest.mark.parametrize("status", [404, 500, 403])
