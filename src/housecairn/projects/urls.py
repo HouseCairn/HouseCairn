@@ -54,6 +54,10 @@ urlpatterns = [
         name="quote-delete",
     ),
     path("projects/<uuid:project_id>/photos/new/", views.FileAddView.as_view(), name="file-add"),
+    path("projects/<uuid:project_id>/links/new/", views.LinkAddView.as_view(), name="link-add"),
+    path(
+        "projects/links/<uuid:link_id>/delete/", views.LinkDeleteView.as_view(), name="link-delete"
+    ),
     path("projects/files/<uuid:file_id>/", views.FileView.as_view(), name="file"),
     path(
         "projects/files/<uuid:file_id>/thumbnail/",

@@ -116,7 +116,7 @@ web interface: every request only sees the homes of its user
   same as for rooms.
 - **Projects** of a home ([ADR 0050](../adr/0050-projects-quotes-and-budget-lines.md)):
   `/api/v1/homes/<home id>/projects/`, `.../budget-lines/`, `.../quotes/`,
-  `.../project-files/`, `.../project-tasks/` and `.../envelope/`. Only `title` is required
+  `.../project-files/`, `.../project-links/`, `.../project-tasks/` and `.../envelope/`. Only `title` is required
   to create a project; `budget`, on creation only, becomes its first budget line. Every
   amount is a string with two decimals in the currency of the home (`"1250.50"`), from
   `"0.00"` to `"9999999999.99"`; a JSON number (a float or an integer), a negative amount or a
@@ -129,7 +129,10 @@ web interface: every request only sees the homes of its user
   in the project, with optional `due_on` and `room`) or a `task` (an existing one that is
   in no project); deleting a row takes the task out and keeps it. `project-files` takes
   `file` (multipart), with `quote` for the file of a quote, and `GET .../content/` and
-  `.../thumbnail/` return the file. `GET` and `PUT .../envelope/` read and set the budget
+  `.../thumbnail/` return the file. `project-links` takes a `url` (http or https) and an
+  optional `title`; when the instance reads previews, the page is read once, on creation, and
+  `image_url` and `thumbnail_url` point to the picture kept by the server, else they are
+  `null`; a link is created, read or deleted, never changed. `GET` and `PUT .../envelope/` read and set the budget
   envelope of a `year`. Projects are filtered with `status`, `priority`, `season` and
   `room`, the other lists with `project`. The scopes are the same as for rooms.
 - **Budget** ([ADR 0051](../adr/0051-budget-views-and-annual-envelope.md)), figures only,

@@ -40,9 +40,9 @@ from apprise import AppriseAsset, AppriseAttachment, NotifyFormat
 from apprise.plugins.matrix import NotifyMatrix
 from apprise.utils.parse import parse_qsd
 
+from housecairn.core.netguard import METADATA_ADDRESSES, forbidden_address
+from housecairn.core.netguard import embedded_ipv4 as _embedded_ipv4
 from housecairn.instance import crypto
-from housecairn.instance.providers import _embedded_ipv4
-from housecairn.instance.providers import _forbidden_address as forbidden_address
 
 logger = logging.getLogger("housecairn.notifications")
 
@@ -62,12 +62,6 @@ EXTRA_PREFIXES = ("qsd+", "qsd-", "qsd:")
 TIMEOUT_SECONDS = 5.0
 SEND_SECONDS = 8.0
 MAX_URL_LENGTH = 2000
-# Metadata services of cloud providers, refused even though private networks are allowed:
-# AWS, Azure, GCP and others (link-local, refused anyway), Alibaba, Oracle, AWS in IPv6.
-METADATA_ADDRESSES = frozenset(
-    ipaddress.ip_address(a)
-    for a in ("169.254.169.254", "100.100.100.200", "192.0.0.192", "fd00:ec2::254")
-)
 
 
 class RefusedError(ValueError):

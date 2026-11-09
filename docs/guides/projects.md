@@ -52,6 +52,18 @@ the living room painted with a plan of 800, a quote of 620 accepted and 120 paid
 is 180 and the page says "180.00 EUR left". Amounts have two decimals; how to type one
 is in [Entering an amount](amounts.md).
 
+## Keep links of inspiration
+
+**Add the link** of a page that gave you an idea (a bathroom, a paint colour) on the page of the
+project. Say a title if you wish. If the administrator of the instance turned on the preview
+(*Preview of inspiration links* in the [settings](../administration/settings.md); off by
+default), HouseCairn reads the page once, when you add the link, to find its title and its
+picture, and keeps the picture on its own server: the page of the project never loads
+anything from the other site. If the page cannot be read, for any reason, the link stays as
+you typed it and nothing is said: this is not an error. Only the address of a public web
+page is read; the server never calls a private network. A link is never read again: delete
+it and add it again to refresh the preview. At most 30 links per project.
+
 ## Compare and plan the year
 
 Tick projects in the list and **Compare the ticked projects** to see their cost, duration,
@@ -65,6 +77,6 @@ the projects and the upkeep of the year together, room by room and project by pr
 Everyone in the home sees the same projects; members and owners change them, read-only
 members change nothing. The same data is available to scripts through the
 [API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`,
-`project-tasks` and `envelope`), with the `read` and `write` scopes of an API token. The
-projects are part of the [export of the home](../administration/data.md), photos and files
-of quotes included, and are erased with it.
+`project-links`, `project-tasks` and `envelope`), with the `read` and `write` scopes of an API token. The
+projects are part of the [export of the home](../administration/data.md), photos, pictures of
+links and files of quotes included, and are erased with it.

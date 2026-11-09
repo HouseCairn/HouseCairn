@@ -439,9 +439,14 @@ msgstr "**Fuseau horaire** : un fuseau IANA tel que `Europe/Paris`. Il décide d
 msgid "**Name of the instance**: in the app bar, the title of the pages and the emails, at most 64 characters on one line. Empty, the product name is shown. See [ADR 0042](../adr/0042-rate-limits-quotas-language-and-instance-name.md)."
 msgstr "**Nom de l'instance** : dans la barre de l'application, le titre des pages et les e-mails, au plus 64 caractères sur une ligne. Vide, le nom du produit s'affiche. Voir [ADR 0042](../adr/0042-rate-limits-quotas-language-and-instance-name.md)."
 
+msgid "Preview of inspiration links"
+msgstr "Aperçu des liens d'inspiration"
+
+msgid "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
+msgstr "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
+
+msgid "Projects"
+msgstr "Projets"
+
 #~ msgid "`manage.py check --deploy` reads the variables and the defaults, not the database: a setting chosen in the interface is checked when it is saved, not at start-up."
 #~ msgstr "`manage.py check --deploy` lit les variables et les défauts, pas la base de données : un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."
-
-#~ msgid "Single sign-on providers (`OIDC_*`), the rate limits, the default language and time zone and the name of the instance are not in the interface yet: they stay variables, see [Environment variables](variables.md)."
-#~ msgstr "Les fournisseurs d'authentification unique (`OIDC_*`), les limites de débit, la langue et le fuseau horaire par défaut et le nom de l'instance ne sont pas encore dans l'interface : ils restent des variables, voir [Variables d'environnement](variables.md)."
-

@@ -28,6 +28,7 @@ ALLOWED_DETAIL = frozenset(
         "new",
         "title",
         "kind",
+        "domain",
     }
 )
 TITLE_MAX_LENGTH = 120

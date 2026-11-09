@@ -23,6 +23,8 @@ from housecairn.tasks.models import Contractor, Priority, Season, Task
 
 MAX_PHOTOS_PER_PROJECT = 30
 MAX_FILES_PER_QUOTE = 5
+MAX_LINKS_PER_PROJECT = 30
+LINK_TITLE_MAX_LENGTH = 200
 # A project lasts at most a year of elapsed time (a task, thirty days).
 MAX_PROJECT_MINUTES = 365 * 24 * 60
 ENVELOPE_YEARS = (2000, 2200)
@@ -278,6 +280,35 @@ class ProjectFile(HomeOwnedModel):
 
     def __str__(self) -> str:
         return self.name
+
+
+class ProjectLink(HomeOwnedModel):
+    """A link of inspiration: an address, and the title and picture the page gave (adr 0050).
+
+    Title and picture are read once, when the link is added, if the instance allows it. The
+    picture is a `ProjectFile` of the project, stored here like a photo and never fetched
+    again; a page never points to the remote one.
+    """
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="links")
+    url = WebUrlField(_("address"), max_length=500)
+    title = models.CharField(_("title"), max_length=LINK_TITLE_MAX_LENGTH, blank=True)
+    image = models.OneToOneField(
+        ProjectFile,
+        null=True,
+        blank=True,
+        editable=False,
+        on_delete=models.SET_NULL,
+        related_name="link",
+    )
+
+    class Meta:
+        verbose_name = _("link")
+        verbose_name_plural = _("links")
+        ordering = ["created_at", "id"]
+
+    def __str__(self) -> str:
+        return self.title or self.url
 
 
 class ProjectTask(HomeOwnedModel):

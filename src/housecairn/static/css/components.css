@@ -705,3 +705,12 @@ input.setting-locked {
   border-bottom-color: var(--hc-color-accent);
   font-weight: var(--hc-font-weight-bold);
 }
+
+/* A small picture at the start of a row, such as the preview of a link (docs/adr/0050). */
+.row-thumb {
+  flex: none;
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+  border-radius: var(--hc-radius-md);
+}

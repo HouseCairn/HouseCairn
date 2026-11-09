@@ -159,6 +159,32 @@
     <a class="button button-secondary button-block" href="{% url 'projects:quote-create' home_id=home.id project_id=project.id %}">{% translate "Add a quote" %}</a>
   {% endif %}
 
+  <h2>{% translate "Inspiration" %}</h2>
+  {% if inspiration_links %}
+    <ul class="card-list">
+      {% for link in inspiration_links %}
+        <li class="row">
+          {% if link.image %}<img class="row-thumb" src="{% url 'projects:file-thumbnail' home_id=home.id file_id=link.image_id %}" alt="" loading="lazy" decoding="async" width="64" height="64">{% endif %}
+          <a class="row-body" href="{{ link.url }}" rel="noopener noreferrer nofollow" target="_blank">
+            <span class="row-title">{{ link.title|default:link.url }}</span>
+            {% if link.title %}<span class="row-text">{{ link.url }}</span>{% endif %}
+          </a>
+          {% if can_write %}<a class="small" href="{% url 'projects:link-delete' home_id=home.id link_id=link.id %}">{% translate "Delete" %}<span class="visually-hidden"> {{ link.title|default:link.url }}</span></a>{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty">{% translate "No link yet." %}</p>
+  {% endif %}
+  {% if can_write %}
+    <form method="post" action="{% url 'projects:link-add' home_id=home.id project_id=project.id %}" class="card">
+      {% csrf_token %}
+      {{ link_form.as_p }}
+      <p class="small">{% if preview_enabled %}{% translate "HouseCairn reads the page once, now, to find its title and its picture. The picture is kept on this server. If the page cannot be read, the link stays as you typed it." %}{% else %}{% translate "The link is kept as you typed it: this instance does not read the pages." %}{% endif %}</p>
+      <button type="submit" class="button-secondary button-block">{% translate "Add the link" %}</button>
+    </form>
+  {% endif %}
+
   <h2>{% translate "Photos" %}</h2>
   {% if photos %}
     <ul class="photo-grid">

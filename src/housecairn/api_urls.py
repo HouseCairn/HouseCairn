@@ -58,6 +58,7 @@ for prefix, viewset, basename in (
     ("budget-lines", projects_api.BudgetLineViewSet, "home-budget-line"),
     ("quotes", projects_api.QuoteViewSet, "home-quote"),
     ("project-files", projects_api.ProjectFileViewSet, "home-project-file"),
+    ("project-links", projects_api.ProjectLinkViewSet, "home-project-link"),
     ("project-tasks", projects_api.ProjectTaskViewSet, "home-project-task"),
 ):
     router.register(rf"homes/(?P<home_id>[0-9a-f-]{{36}})/{prefix}", viewset, basename=basename)

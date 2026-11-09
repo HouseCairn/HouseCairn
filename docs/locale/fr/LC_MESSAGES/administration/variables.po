@@ -324,12 +324,14 @@ msgstr "Décommentez `depends_on` dans le service `housecairn`, puis `docker com
 msgid "An existing PostgreSQL server works too: set `DATABASE_URL` to it."
 msgstr "Un serveur PostgreSQL existant convient aussi : pointez `DATABASE_URL` vers lui."
 
+msgid "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
+msgstr "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
+
+msgid "Read the title and the picture of a page when a link is added to a project. Off, nothing is read. The server only calls public addresses. Also in the interface. See [Projects](../guides/projects.md)."
+msgstr "Lit le titre et l'image d'une page quand un lien est ajouté à un projet. Désactivé, rien n'est lu. Le serveur n'appelle que des adresses publiques. Aussi dans l'interface. Voir [Projets](../guides/projects.md)."
+
 #~ msgid "Without `EMAIL_HOST`, or with a console or dummy email backend, nothing could be delivered: the *Forgot your password?* link is hidden and the reset page answers 404, and inviting someone shows the invitation link once to the owner, who passes it on."
 #~ msgstr "Sans `EMAIL_HOST`, ou avec un moteur de courriel console ou factice, rien ne pourrait être livré : le lien *Mot de passe oublié ?* est masqué, la page de réinitialisation répond 404, et une invitation affiche son lien une fois au propriétaire, qui le transmet."
 
 #~ msgid "Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. Set it when `ALLOWED_HOSTS` lists several names, so that every email uses the public one."
 #~ msgstr "Les liens des courriels pointent vers `HOUSECAIRN_SITE_URL` quand elle est renseignée. Renseignez-la quand `ALLOWED_HOSTS` liste plusieurs noms, pour que chaque courriel utilise le nom public."
-
-#~ msgid "Time zone of the instance."
-#~ msgstr "Fuseau horaire de l'instance."
-

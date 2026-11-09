@@ -371,6 +371,14 @@ msgid "File deleted from the project %(title)s"
 msgstr "Fichier supprimé du projet %(title)s"
 
 #, python-format
+msgid "Link to %(domain)s added to the project %(title)s"
+msgstr "Lien vers %(domain)s ajouté au projet %(title)s"
+
+#, python-format
+msgid "Link to %(domain)s deleted from the project %(title)s"
+msgstr "Lien vers %(domain)s supprimé du projet %(title)s"
+
+#, python-format
 msgid "Stock article added: %(title)s"
 msgstr "Article de stock ajouté : %(title)s"
 
@@ -1574,6 +1582,12 @@ msgstr "Indiquez le début et la fin des heures calmes, ou aucun des deux."
 msgid "Choose a time zone such as Europe/Paris."
 msgstr "Choisissez un fuseau horaire comme Europe/Paris."
 
+msgid "Preview of inspiration links"
+msgstr "Aperçu des liens d'inspiration"
+
+msgid "When a link is added to a project, the server reads the page to find its title and its picture. Off: nothing is read, a link stays a plain address. The server never calls a private network or a cloud metadata service."
+msgstr "Quand un lien est ajouté à un projet, le serveur lit la page pour trouver son titre et son image. Désactivé : rien n'est lu, un lien reste une simple adresse. Le serveur n'appelle jamais un réseau privé ni un service de métadonnées de cloud."
+
 msgid "Rooms concerned"
 msgstr "Pièces concernées"
 
@@ -1653,11 +1667,30 @@ msgstr "Tâche existante"
 msgid "Photo"
 msgstr "Photo"
 
+msgid "Address of the page"
+msgstr "Adresse de la page"
+
+msgid "Title"
+msgstr "Titre"
+
+msgid "Optional: left empty, the title of the page is used when it can be read."
+msgstr "Facultatif : laissé vide, le titre de la page est utilisé s'il peut être lu."
+
 msgid "Envelope"
 msgstr "Enveloppe"
 
 msgid "What you want to spend on work this year, in the currency of the home."
 msgstr "Ce que vous voulez dépenser en travaux cette année, dans la devise du logement."
+
+msgid "Give the address of a web page, such as https://example.com."
+msgstr "Indiquez l'adresse d'une page web, par exemple https://example.com."
+
+msgid "The address cannot hold a user name or a password."
+msgstr "L'adresse ne peut pas contenir de nom d'utilisateur ni de mot de passe."
+
+#, python-format
+msgid "At most %(max)d links for a project."
+msgstr "%(max)d liens au plus pour un projet."
 
 msgid "Idea"
 msgstr "Idée"
@@ -1794,6 +1827,15 @@ msgstr "fichier de projet"
 msgid "project files"
 msgstr "fichiers de projet"
 
+msgid "address"
+msgstr "adresse"
+
+msgid "link"
+msgstr "lien"
+
+msgid "links"
+msgstr "liens"
+
 msgid "task of a project"
 msgstr "tâche d'un projet"
 
@@ -1919,6 +1961,15 @@ msgstr "Le fichier disparaît du projet et du disque."
 
 msgid "File deleted."
 msgstr "Fichier supprimé."
+
+msgid "Link added."
+msgstr "Lien ajouté."
+
+msgid "The link and its picture disappear from the project and from the disk."
+msgstr "Le lien et son image disparaissent du projet et du disque."
+
+msgid "Link deleted."
+msgstr "Lien supprimé."
 
 msgid "Reports"
 msgstr "Signalements"
@@ -2190,9 +2241,6 @@ msgstr "Le numéro à donner quand vous les appelez. Exemple : C-2024-0187."
 
 msgid "contract link"
 msgstr "lien du contrat"
-
-msgid "links"
-msgstr "liens"
 
 msgid "item"
 msgstr "élément"
@@ -2682,9 +2730,6 @@ msgstr "téléphone"
 
 msgid "Digits, spaces and + ( ) - . / only."
 msgstr "Chiffres, espaces et + ( ) - . / seulement."
-
-msgid "address"
-msgstr "adresse"
 
 msgid "contractors"
 msgstr "intervenants"
@@ -4073,6 +4118,21 @@ msgstr "Aucun devis pour l'instant."
 
 msgid "Add a quote"
 msgstr "Ajouter un devis"
+
+msgid "Inspiration"
+msgstr "Inspiration"
+
+msgid "No link yet."
+msgstr "Aucun lien pour l'instant."
+
+msgid "HouseCairn reads the page once, now, to find its title and its picture. The picture is kept on this server. If the page cannot be read, the link stays as you typed it."
+msgstr "HouseCairn lit la page une seule fois, maintenant, pour trouver son titre et son image. L'image est conservée sur ce serveur. Si la page ne peut pas être lue, le lien reste tel que vous l'avez saisi."
+
+msgid "The link is kept as you typed it: this instance does not read the pages."
+msgstr "Le lien est conservé tel que vous l'avez saisi : cette instance ne lit pas les pages."
+
+msgid "Add the link"
+msgstr "Ajouter le lien"
 
 msgid "Photos"
 msgstr "Photos"

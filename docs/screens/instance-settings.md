@@ -26,6 +26,11 @@ mail server with the settings in force and sends nothing.
 how often the background worker looks for them, from 1 to 60 minutes (see
 [Notifications](../guides/notifications.md)). It shows no channel of anyone.
 
+**Projects** has one switch, **Preview of inspiration links** (off by default). On, the server
+reads the page of a link once, when someone adds it to a project, to find its title and its
+picture (see [Projects and quotes](../guides/projects.md)). It only calls public addresses:
+never a private network nor a cloud metadata service.
+
 Saving asks you to have signed in within the last five minutes; if you have not, you
 are sent to confirm your sign-in and then back here, and you make the change again.
 Every change is in the [audit log](instance.md).

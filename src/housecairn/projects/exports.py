@@ -1,8 +1,8 @@
 """Projects are part of the export of their home (docs/adr/0023, 0050).
 
-Plain objects with identifiers, dates and amounts as text, never a float. The photos and the
-files of quotes go into `files/projects/`, already stripped of their metadata at upload
-(docs/adr/0030) or as received for a document.
+Plain objects with identifiers, dates and amounts as text, never a float. The photos, the
+pictures of links and the files of quotes go into `files/projects/`, already stripped of
+their metadata at upload (docs/adr/0030) or as received for a document.
 """
 
 from collections.abc import Iterator
@@ -134,6 +134,20 @@ def _project_files(home: Home) -> list[dict[str, Any]]:
     ]
 
 
+def _links(home: Home) -> list[dict[str, Any]]:
+    return [
+        {
+            "id": str(link.id),
+            "project": str(link.project_id),
+            "url": link.url,
+            "title": link.title,
+            "image": str(link.image_id) if link.image_id else None,
+            "created_at": link.created_at.isoformat(),
+        }
+        for link in services.inspiration_links_of(home).order_by("created_at", "id")
+    ]
+
+
 def _tasks(home: Home) -> list[dict[str, Any]]:
     return [
         {"id": str(link.id), "project": str(link.project_id), "task": str(link.task_id)}
@@ -160,6 +174,7 @@ def register() -> None:
     exports.register("project_budget_lines", _lines)
     exports.register("project_quotes", _quotes)
     exports.register("project_files", _project_files)
+    exports.register("project_links", _links)
     exports.register("project_tasks", _tasks)
     exports.register("project_envelopes", _envelopes)
     exports.register_files(_files)

@@ -260,6 +260,21 @@ class PhotoForm(forms.Form):
     )
 
 
+class LinkForm(forms.Form):
+    url = forms.URLField(
+        label=_("Address of the page"),
+        max_length=500,
+        assume_scheme="https",
+        widget=forms.URLInput(attrs={"placeholder": "https://example.com/page"}),
+    )
+    title = forms.CharField(
+        label=_("Title"),
+        max_length=200,
+        required=False,
+        help_text=_("Optional: left empty, the title of the page is used when it can be read."),
+    )
+
+
 class EnvelopeForm(forms.Form):
     year = forms.IntegerField(
         label=_("Year"), min_value=ENVELOPE_YEARS[0], max_value=ENVELOPE_YEARS[1]

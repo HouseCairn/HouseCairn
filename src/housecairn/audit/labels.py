@@ -57,6 +57,8 @@ LABELS: dict[str, Promise] = {
     "quote.deleted": _("Quote deleted from the project %(title)s"),
     "project_file.added": _("File added to the project %(title)s"),
     "project_file.deleted": _("File deleted from the project %(title)s"),
+    "project_link.added": _("Link to %(domain)s added to the project %(title)s"),
+    "project_link.deleted": _("Link to %(domain)s deleted from the project %(title)s"),
     "article.created": _("Stock article added: %(title)s"),
     "article.updated": _("Stock article changed: %(title)s"),
     "article.deleted": _("Stock article deleted: %(title)s"),

@@ -21,12 +21,14 @@ from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
 from housecairn.projects import forms, services
+from housecairn.projects import links as link_services
 from housecairn.projects.files import file_response
 from housecairn.projects.models import (
     STATUS_ORDER,
     BudgetLine,
     Project,
     ProjectFile,
+    ProjectLink,
     ProjectStatus,
     ProjectTask,
     Quote,
@@ -94,6 +96,20 @@ class HomeProjectsMixin(WebHomeScopedMixin):
             services.files_of(self.home).select_related("project"), id=self.kwargs["file_id"]
         )
         return stored
+
+    def get_photo(self) -> ProjectFile:
+        """A photo or a file of a quote: not the picture of a link, which goes with its link."""
+        stored: ProjectFile = get_object_or_404(
+            services.photos_of(self.home).select_related("project"), id=self.kwargs["file_id"]
+        )
+        return stored
+
+    def get_link(self) -> ProjectLink:
+        link: ProjectLink = get_object_or_404(
+            services.inspiration_links_of(self.home).select_related("project"),
+            id=self.kwargs["link_id"],
+        )
+        return link
 
     def page(self, **extra: Any) -> dict[str, Any]:
         return {"home": self.home, "can_write": self.can_write, **extra}
@@ -284,7 +300,7 @@ class ProjectDetailView(HomeProjectsMixin, TemplateView):
             )
         }
         lines = services.line_summaries(project)
-        files = list(project.files.all())
+        files = list(project.files.filter(link__isnull=True))
         quotes = list(services.quotes_of(self.home).filter(project=project))
         return super().get_context_data(
             **self.page(
@@ -301,6 +317,11 @@ class ProjectDetailView(HomeProjectsMixin, TemplateView):
                 attach_form=forms.TaskAttachForm(tasks=services.attachable_tasks(self.home)),
                 photo_form=forms.PhotoForm(),
                 max_bytes=conf.photo_max_bytes(),
+                inspiration_links=list(
+                    services.inspiration_links_of(self.home).filter(project=project)
+                ),
+                link_form=forms.LinkForm(),
+                preview_enabled=link_services.preview_enabled(),
             ),
             **kwargs,
         )
@@ -663,7 +684,7 @@ class FileDeleteView(ConfirmDeleteView):
     message = gettext_lazy("The file disappears from the project and from the disk.")
 
     def target(self) -> ProjectFile:
-        return self.get_file()
+        return self.get_photo()
 
     def name_of(self, target: ProjectFile) -> str:
         return target.name
@@ -676,4 +697,52 @@ class FileDeleteView(ConfirmDeleteView):
     def remove(self, target: ProjectFile) -> HttpResponse:
         services.delete_file(self.request.user, target)
         messages.success(self.request, _("File deleted."))
+        return self.back(target.project)
+
+
+# ---------- links of inspiration ----------
+
+
+class LinkAddView(PostView):
+    """Add a link; the page is read once, if the instance allows it, and a failure is silent."""
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        project = self.get_project()
+        form = forms.LinkForm(request.POST)
+        if not form.is_valid():
+            messages.error(
+                request, _("Give the address of a web page, such as https://example.com.")
+            )
+            return self.back(project)
+        try:
+            link_services.add_link(
+                request.user,
+                project,
+                url=form.cleaned_data["url"],
+                title=form.cleaned_data["title"],
+            )
+        except ValidationError as exc:
+            messages.error(request, " ".join(exc.messages))
+        else:
+            messages.success(request, _("Link added."))
+        return self.back(project)
+
+
+class LinkDeleteView(ConfirmDeleteView):
+    message = gettext_lazy("The link and its picture disappear from the project and from the disk.")
+
+    def target(self) -> ProjectLink:
+        return self.get_link()
+
+    def name_of(self, target: ProjectLink) -> str:
+        return target.title or target.url
+
+    def cancel_url(self, target: ProjectLink) -> str:
+        return reverse(
+            "projects:detail", kwargs={"home_id": self.home.id, "project_id": target.project_id}
+        )
+
+    def remove(self, target: ProjectLink) -> HttpResponse:
+        link_services.delete_link(self.request.user, target)
+        messages.success(self.request, _("Link deleted."))
         return self.back(target.project)
