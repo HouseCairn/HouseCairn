@@ -30,11 +30,11 @@
             <button type="submit" class="button-secondary">{% translate "Make owner, and become a member myself" %}</button>
           </form>
         {% endif %}
-        <a class="button button-danger" href="{% url_with_next 'homes:member-remove' home_id=home.id member_id=membership.id %}">{% translate "Remove from the home" %}</a>
+        <a class="button button-danger" href="{% url 'homes:member-remove' home_id=home.id member_id=membership.id %}">{% translate "Remove from the home" %}</a>
       </div>
     {% endif %}
   {% endif %}
   {% if is_me %}
-    <a class="button button-danger button-block" href="{% url_with_next 'homes:leave' home_id=home.id %}">{% translate "Leave this home" %}</a>
+    <a class="button button-danger button-block" href="{% url 'homes:leave' home_id=home.id %}">{% translate "Leave this home" %}</a>
   {% endif %}
 {% endblock content %}
