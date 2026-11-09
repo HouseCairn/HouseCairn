@@ -618,7 +618,7 @@ class TestOutgoingCalls:
             "matrixs://user:pass@matrix.example.com/!room:example.com",
             "mmosts://chat.example.com/token",
             "apprises://api.example.com/token",
-            "tgram://123456789:AAHexampleexampleexampleexampleexa/987654321",
+            "tgram://123456789:fixture-not-a-token/987654321",
             "discord://12345/abcdef",
             "slack://T1JJ3T3L2/A1BRTD4JD/TIiajkdnlazkcOXrIdevi7FQ/#general",
             "pover://uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
