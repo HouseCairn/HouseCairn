@@ -54,8 +54,12 @@ with it on the project's
   (the quotes you accept) and a paid amount, whose gap is said in words. Compare projects
   side by side and set a budget envelope for the year. Screens, API and a guide: see
   [Projects and quotes](guides/projects.md). Photos and quote files are stored in
-  `/data/media/projects/` and are part of the export of the home. Links of inspiration with
-  a preview come in a later change.
+  `/data/media/projects/` and are part of the export of the home. Add links of inspiration to
+  a project; if the administrator turns on **Preview of inspiration links** (off by
+  default), the server reads each page once, when the link is added, for its title and its
+  picture, which it keeps and serves itself. Only public web addresses are read: private
+  networks and cloud metadata services are refused, on every redirect, with limits on size
+  and time.
 
 - **Feedback from the first tests.** Each person can choose their language in the display
   preferences; the sub-navigation of the tasks, of a home and of the instance administration

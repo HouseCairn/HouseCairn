@@ -37,6 +37,7 @@ from housecairn.projects.models import (
     BudgetNature,
     Project,
     ProjectFile,
+    ProjectLink,
     ProjectTask,
     Quote,
     QuoteStatus,
@@ -132,7 +133,19 @@ def quotes_of(home: Home) -> models.QuerySet[Quote]:
 
 
 def files_of(home: Home) -> models.QuerySet[ProjectFile]:
+    """Every stored file of the projects of the home, the pictures of links included."""
     return ProjectFile.objects.filter(home=home, project__deleted_at__isnull=True)
+
+
+def photos_of(home: Home) -> models.QuerySet[ProjectFile]:
+    """The photos of projects and the files of quotes: not the picture of a link."""
+    return files_of(home).filter(link__isnull=True)
+
+
+def inspiration_links_of(home: Home) -> models.QuerySet[ProjectLink]:
+    return ProjectLink.objects.filter(home=home, project__deleted_at__isnull=True).select_related(
+        "image"
+    )
 
 
 def links_of(home: Home) -> models.QuerySet[ProjectTask]:
@@ -393,6 +406,7 @@ def delete_project(actor: AnyUser, project: Project) -> None:
     _require_write(actor, project.home)
     doomed = list(ProjectFile.objects.filter(project=project))
     ProjectTask.objects.filter(project=project).delete()
+    ProjectLink.objects.filter(project=project).soft_delete()  # type: ignore[attr-defined]
     ProjectFile.objects.filter(project=project).soft_delete()  # type: ignore[attr-defined]
     Quote.objects.filter(project=project).soft_delete()  # type: ignore[attr-defined]
     BudgetLine.objects.filter(project=project).soft_delete()  # type: ignore[attr-defined]
@@ -655,6 +669,26 @@ def _looks_like_image(data: bytes) -> bool:
     )
 
 
+def save_stored(
+    stored: ProjectFile, content: bytes, thumbnail: bytes | None, extension: str
+) -> None:
+    """Write the file and its thumbnail under the quotas of the home, then the record.
+
+    Called inside the transaction of the service; a failure leaves no file behind.
+    """
+    stored.full_clean(exclude=["file", "thumbnail"])
+    with quotas.room_for(stored.home, size=len(content) + len(thumbnail or b"")):
+        stored.file.save(extension, ContentFile(content), save=False)
+        if thumbnail is not None:
+            stored.thumbnail.save("-thumb.jpg", ContentFile(thumbnail), save=False)
+        try:
+            stored.save()
+        except Exception:
+            stored.file.delete(save=False)
+            stored.thumbnail.delete(save=False)
+            raise
+
+
 @transaction.atomic
 def add_file(
     actor: AnyUser,
@@ -675,7 +709,7 @@ def add_file(
         raise ValidationError({"quote": _("This quote is not in this project.")})
     held = ProjectFile.objects.filter(project=project)
     if quote is None:
-        if held.filter(quote__isnull=True).count() >= MAX_PHOTOS_PER_PROJECT:
+        if held.filter(quote__isnull=True, link__isnull=True).count() >= MAX_PHOTOS_PER_PROJECT:
             raise ValidationError(
                 _("At most %(max)d photos for a project."), params={"max": MAX_PHOTOS_PER_PROJECT}
             )
@@ -714,17 +748,7 @@ def add_file(
             height=processed.height,
         )
         content, thumbnail, extension = processed.data, processed.thumbnail, processed.extension
-    stored.full_clean(exclude=["file", "thumbnail"])
-    with quotas.room_for(project.home, size=len(content) + len(thumbnail or b"")):
-        stored.file.save(extension, ContentFile(content), save=False)
-        if thumbnail is not None:
-            stored.thumbnail.save("-thumb.jpg", ContentFile(thumbnail), save=False)
-        try:
-            stored.save()
-        except Exception:
-            stored.file.delete(save=False)
-            stored.thumbnail.delete(save=False)
-            raise
+    save_stored(stored, content, thumbnail, extension)
     audit.record_object(
         "project_file.added", actor=actor, home_id=project.home_id, title=project.title
     )

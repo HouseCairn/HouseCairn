@@ -439,6 +439,16 @@ msgstr "Fichier supprimé du projet %(title)s"
 
 #: audit/labels.py
 #, python-format
+msgid "Link to %(domain)s added to the project %(title)s"
+msgstr "Lien vers %(domain)s ajouté au projet %(title)s"
+
+#: audit/labels.py
+#, python-format
+msgid "Link to %(domain)s deleted from the project %(title)s"
+msgstr "Lien vers %(domain)s supprimé du projet %(title)s"
+
+#: audit/labels.py
+#, python-format
 msgid "Annual envelope set for %(title)s"
 msgstr "Enveloppe annuelle fixée pour %(title)s"
 
@@ -576,7 +586,7 @@ msgstr "Toutes les tâches"
 msgid "History"
 msgstr "Historique"
 
-#: core/templatetags/tabs.py projects/apps.py
+#: core/templatetags/tabs.py instance/registry.py projects/apps.py
 #: templates/projects/choose_home.html templates/projects/compare.html
 #: templates/projects/envelope_form.html templates/projects/project_detail.html
 #: templates/projects/project_form.html templates/projects/project_list.html
@@ -1958,6 +1968,21 @@ msgstr "Indiquez le début et la fin des heures calmes, ou aucun des deux."
 msgid "Choose a time zone such as Europe/Paris."
 msgstr "Choisissez un fuseau horaire comme Europe/Paris."
 
+#: projects/conf.py
+msgid "Preview of inspiration links"
+msgstr "Aperçu des liens d'inspiration"
+
+#: projects/conf.py
+msgid ""
+"When a link is added to a project, the server reads the page to find its "
+"title and its picture. Off: nothing is read, a link stays a plain address. "
+"The server never calls a private network or a cloud metadata service."
+msgstr ""
+"Quand un lien est ajouté à un projet, le serveur lit la page pour trouver "
+"son titre et son image. Désactivé : rien n'est lu, un lien reste une "
+"simple adresse. Le serveur n'appelle jamais un réseau privé ni un service "
+"de métadonnées de cloud."
+
 #: projects/forms.py templates/projects/project_detail.html
 msgid "Rooms concerned"
 msgstr "Pièces concernées"
@@ -2097,6 +2122,21 @@ msgid "Photo"
 msgstr "Photo"
 
 #: projects/forms.py
+msgid "Address of the page"
+msgstr "Adresse de la page"
+
+#: projects/forms.py
+msgid "Title"
+msgstr "Titre"
+
+#: projects/forms.py
+msgid ""
+"Optional: left empty, the title of the page is used when it can be read."
+msgstr ""
+"Facultatif : laissé vide, le titre de la page est utilisé s'il peut être "
+"lu."
+
+#: projects/forms.py
 msgid "Year"
 msgstr "Année"
 
@@ -2109,6 +2149,20 @@ msgid "What you want to spend on work this year, in the currency of the home."
 msgstr ""
 "Ce que vous voulez dépenser en travaux cette année, dans la devise du "
 "logement."
+
+#: projects/links.py projects/views.py
+msgid "Give the address of a web page, such as https://example.com."
+msgstr "Indiquez l'adresse d'une page web, par exemple https://example.com."
+
+#: projects/links.py
+msgid "The address cannot hold a user name or a password."
+msgstr ""
+"L'adresse ne peut pas contenir de nom d'utilisateur ni de mot de passe."
+
+#: projects/links.py
+#, python-format
+msgid "At most %(max)d links for a project."
+msgstr "%(max)d liens au plus pour un projet."
 
 #: projects/models.py
 msgid "Idea"
@@ -2466,6 +2520,18 @@ msgstr "Le fichier disparaît du projet et du disque."
 msgid "File deleted."
 msgstr "Fichier supprimé."
 
+#: projects/views.py
+msgid "Link added."
+msgstr "Lien ajouté."
+
+#: projects/views.py
+msgid "The link and its picture disappear from the project and from the disk."
+msgstr "Le lien et son image disparaissent du projet et du disque."
+
+#: projects/views.py
+msgid "Link deleted."
+msgstr "Lien supprimé."
+
 #: rooms/apps.py templates/rooms/choose_home.html
 #: templates/rooms/room_detail.html templates/rooms/room_form.html
 #: templates/rooms/room_list.html templates/rooms/search.html
@@ -2748,7 +2814,11 @@ msgstr "Le numéro à donner quand vous les appelez. Exemple : C-2024-0187."
 msgid "contract link"
 msgstr "lien du contrat"
 
-#: rooms/models.py
+#: projects/models.py
+msgid "link"
+msgstr "lien"
+
+#: projects/models.py rooms/models.py
 msgid "links"
 msgstr "liens"
 
@@ -3299,7 +3369,7 @@ msgstr "téléphone"
 msgid "Digits, spaces and + ( ) - . / only."
 msgstr "Chiffres, espaces et + ( ) - . / seulement."
 
-#: tasks/models.py
+#: projects/models.py tasks/models.py
 msgid "address"
 msgstr "adresse"
 
@@ -4961,6 +5031,35 @@ msgstr "Aucun devis pour l'instant."
 #: templates/projects/project_detail.html templates/projects/quote_form.html
 msgid "Add a quote"
 msgstr "Ajouter un devis"
+
+#: templates/projects/project_detail.html
+msgid "Inspiration"
+msgstr "Inspiration"
+
+#: templates/projects/project_detail.html
+msgid "No link yet."
+msgstr "Aucun lien pour l'instant."
+
+#: templates/projects/project_detail.html
+msgid ""
+"HouseCairn reads the page once, now, to find its title and its picture. The "
+"picture is kept on this server. If the page cannot be read, the link stays "
+"as you typed it."
+msgstr ""
+"HouseCairn lit la page une seule fois, maintenant, pour trouver son titre "
+"et son image. L'image est conservée sur ce serveur. Si la page ne peut pas "
+"être lue, le lien reste tel que vous l'avez saisi."
+
+#: templates/projects/project_detail.html
+msgid ""
+"The link is kept as you typed it: this instance does not read the pages."
+msgstr ""
+"Le lien est conservé tel que vous l'avez saisi : cette instance ne lit pas "
+"les pages."
+
+#: templates/projects/project_detail.html
+msgid "Add the link"
+msgstr "Ajouter le lien"
 
 #: templates/projects/project_detail.html templates/rooms/item_detail.html
 #: templates/rooms/room_detail.html

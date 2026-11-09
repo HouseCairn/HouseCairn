@@ -424,6 +424,8 @@ Q_CLUSTER = {
 # Notifications (docs/adr/0043): on or off, and how often the worker looks for reminders.
 HOUSECAIRN_NOTIFICATIONS_ENABLED: bool = _ENV.values["notifications_enabled"]
 HOUSECAIRN_NOTIFICATIONS_INTERVAL: int = _ENV.values["notifications_interval"]
+# Preview of the links of projects (docs/adr/0050).
+HOUSECAIRN_LINK_PREVIEW_ENABLED: bool = _ENV.values["link_preview_enabled"]
 
 # API tokens (docs/adr/0007).
 HOUSECAIRN_API_TOKEN_DEFAULT_LIFETIME_DAYS: int = env.int(

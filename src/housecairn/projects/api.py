@@ -30,12 +30,13 @@ from rest_framework.views import APIView
 from housecairn.core.pagination import DefaultCursorPagination
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
-from housecairn.projects import services
+from housecairn.projects import links, services
 from housecairn.projects.files import file_response
 from housecairn.projects.models import (
     BudgetLine,
     Project,
     ProjectFile,
+    ProjectLink,
     ProjectStatus,
     ProjectTask,
     Quote,
@@ -679,7 +680,11 @@ class ProjectFileViewSet(
     http_method_names = ["get", "post", "delete", "head", "options"]
 
     def get_queryset(self) -> models.QuerySet[ProjectFile]:
-        stored = services.files_of(self.get_home())
+        # The picture of a link is read through here but belongs to its link: it is neither
+        # listed nor removed on its own.
+        home = self.get_home()
+        reading = self.action in {"content", "thumbnail"}
+        stored = services.files_of(home) if reading else services.photos_of(home)
         project = _uuid_param(self.request, "project")
         return stored.filter(project_id=project) if project is not None else stored
 
@@ -731,6 +736,110 @@ class ProjectFileViewSet(
     def thumbnail(self, request: Request, *args: Any, **kwargs: Any) -> HttpResponseBase:
         """The thumbnail of an image."""
         return file_response(self.get_object(), thumbnail=True)
+
+
+# ---------- links of inspiration ----------
+
+
+class ProjectLinkSerializer(serializers.ModelSerializer[ProjectLink]):
+    project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.none())
+    url = serializers.URLField(
+        max_length=500,
+        help_text="An http or https address. If the instance reads previews, the page is read "
+        "once, when the link is added; a page that cannot be read leaves the address alone.",
+    )
+    title = serializers.CharField(
+        max_length=200,
+        required=False,
+        allow_blank=True,
+        help_text="Empty: the title of the page when it could be read, else empty.",
+    )
+    image_url = serializers.SerializerMethodField(
+        help_text="Address of the picture of the page, kept on this server, or null."
+    )
+    thumbnail_url = serializers.SerializerMethodField(
+        help_text="Address of the thumbnail of that picture, or null."
+    )
+
+    class Meta:
+        model = ProjectLink
+        fields = ["id", "project", "url", "title", "image_url", "thumbnail_url", "created_at"]
+        read_only_fields = ["id", "created_at"]
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        home = _home(self)
+        if home is not None:
+            self.fields["project"].queryset = Project.objects.filter(home=home)  # type: ignore[attr-defined]
+
+    def _file_url(self, link: ProjectLink, name: str) -> str | None:
+        if link.image_id is None:
+            return None
+        return str(
+            reverse(
+                name,
+                kwargs={"home_id": link.home_id, "file_id": link.image_id},
+                request=self.context["request"],
+            )
+        )
+
+    @extend_schema_field(OpenApiTypes.URI)
+    def get_image_url(self, link: ProjectLink) -> str | None:
+        return self._file_url(link, "api-v1:home-project-file-content")
+
+    @extend_schema_field(OpenApiTypes.URI)
+    def get_thumbnail_url(self, link: ProjectLink) -> str | None:
+        return self._file_url(link, "api-v1:home-project-file-thumbnail")
+
+
+class ProjectLinkViewSet(
+    HomeResourceMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet[ProjectLink],
+):
+    """Links of inspiration of the projects of a home. A link is added or removed, not changed.
+
+    When the instance allows previews, adding a link makes the server read the page once to
+    find its title and its picture (Open Graph, else the title of the page), under a guard
+    that refuses private networks, cloud metadata services and redirects to them, and limits
+    size and time. The picture is cleaned like a photo and kept on the server. Whatever goes
+    wrong, the link is saved with its address.
+    """
+
+    serializer_class = ProjectLinkSerializer
+    queryset = ProjectLink.objects.none()
+    pagination_class = ProjectPagination
+    lookup_field = "id"
+    lookup_url_kwarg = "link_id"
+    http_method_names = ["get", "post", "delete", "head", "options"]
+
+    def get_queryset(self) -> models.QuerySet[ProjectLink]:
+        rows = services.inspiration_links_of(self.get_home())
+        project = _uuid_param(self.request, "project")
+        return rows.filter(project_id=project) if project is not None else rows
+
+    @extend_schema(parameters=[PROJECT_PARAM])
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().list(request, *args, **kwargs)
+
+    def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        try:
+            link = links.add_link(
+                request.user, data["project"], url=data["url"], title=data.get("title", "")
+            )
+        except DjangoValidationError as exc:
+            raise _validation(exc) from exc
+        return Response(self.get_serializer(link).data, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        links.delete_link(request.user, self.get_object())
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # ---------- tasks of a project ----------

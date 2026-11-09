@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 00:04+0000\n"
+"POT-Creation-Date: 2026-11-09 06:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -82,6 +82,12 @@ msgstr "Ce qui a été payé jusqu'ici ; vous le saisissez."
 msgid "The gap of a line is the planned amount less the more of committed and paid, and the gap of the project is the sum of the gaps of its lines, so that an overrun on one line is not hidden by room left on another. The page says it in words, never by colour alone: **... left**, **On budget** or **Over budget by ...**. For the living room painted with a plan of 800, a quote of 620 accepted and 120 paid, the gap is 180 and the page says \"180.00 EUR left\". Amounts have two decimals and go up to 9,999,999,999.99."
 msgstr "L'écart d'une ligne est le montant prévu moins le plus élevé de l'engagé et du payé, et l'écart du projet est la somme des écarts de ses lignes : un dépassement sur une ligne n'est pas masqué par la marge d'une autre. La page le dit en toutes lettres, jamais par la seule couleur : **... restants**, **Budget respecté** ou **Budget dépassé de ...**. Pour le salon peint avec un prévu de 800, un devis de 620 accepté et 120 payés, l'écart est de 180 et la page dit « 180,00 EUR restants ». Les montants ont deux décimales et vont jusqu'à 9 999 999 999,99."
 
+msgid "Keep links of inspiration"
+msgstr "Garder des liens d'inspiration"
+
+msgid "**Add the link** of a page that gave you an idea (a bathroom, a paint colour) on the page of the project. Say a title if you wish. If the administrator of the instance turned on the preview (*Preview of inspiration links* in the [settings](../administration/settings.md); off by default), HouseCairn reads the page once, when you add the link, to find its title and its picture, and keeps the picture on its own server: the page of the project never loads anything from the other site. If the page cannot be read, for any reason, the link stays as you typed it and nothing is said: this is not an error. Only the address of a public web page is read; the server never calls a private network. A link is never read again: delete it and add it again to refresh the preview. At most 30 links per project."
+msgstr "**Ajouter le lien** d'une page qui vous a donné une idée (une salle de bain, une couleur de peinture) sur la page du projet. Donnez un titre si vous le souhaitez. Si l'administrateur de l'instance a activé l'aperçu (*Aperçu des liens d'inspiration* dans les [réglages](../administration/settings.md) ; désactivé par défaut), HouseCairn lit la page une seule fois, quand vous ajoutez le lien, pour trouver son titre et son image, et garde l'image sur son propre serveur : la page du projet ne charge jamais rien de l'autre site. Si la page ne peut pas être lue, pour quelque raison que ce soit, le lien reste tel que vous l'avez saisi et rien n'est dit : ce n'est pas une erreur. Seule l'adresse d'une page web publique est lue ; le serveur n'appelle jamais un réseau privé. Un lien n'est jamais relu : supprimez-le et ajoutez-le de nouveau pour rafraîchir l'aperçu. Au plus 30 liens par projet."
+
 msgid "Compare and plan the year"
 msgstr "Comparer et planifier l'année"
 
@@ -91,6 +97,6 @@ msgstr "Cochez des projets dans la liste et **Comparer les projets cochés** pou
 msgid "Share"
 msgstr "Partager"
 
-msgid "Everyone in the home sees the same projects; members and owners change them, read-only members change nothing. The same data is available to scripts through the [API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`, `project-tasks` and `envelope`), with the `read` and `write` scopes of an API token. The projects are part of the [export of the home](../administration/data.md), photos and files of quotes included, and are erased with it."
-msgstr "Tout le monde dans le logement voit les mêmes projets ; les membres et les propriétaires les modifient, les membres en lecture seule ne modifient rien. Les mêmes données sont disponibles pour les scripts par l'[API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`, `project-tasks` et `envelope`), avec les portées `read` et `write` d'un jeton d'API. Les projets font partie de l'[export du logement](../administration/data.md), photos et fichiers de devis compris, et sont effacés avec lui."
+msgid "Everyone in the home sees the same projects; members and owners change them, read-only members change nothing. The same data is available to scripts through the [API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`, `project-links`, `project-tasks` and `envelope`), with the `read` and `write` scopes of an API token. The projects are part of the [export of the home](../administration/data.md), photos, pictures of links and files of quotes included, and are erased with it."
+msgstr "Tout le monde dans le logement voit les mêmes projets ; les membres et les propriétaires les modifient, les membres en lecture seule ne modifient rien. Les mêmes données sont disponibles pour les scripts par l'[API](../api/index.md) (`projects`, `budget-lines`, `quotes`, `project-files`, `project-links`, `project-tasks` et `envelope`), avec les portées `read` et `write` d'un jeton d'API. Les projets font partie de l'[export du logement](../administration/data.md), photos, images de liens et fichiers de devis compris, et sont effacés avec lui."
 

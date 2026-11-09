@@ -52,6 +52,7 @@ class Section(StrEnum):
     RATE_LIMITS = "rate-limits"
     FILES = "files"
     NOTIFICATIONS = "notifications"
+    PROJECTS = "projects"
 
 
 SECTION_LABELS: dict[Section, Promise] = {
@@ -63,6 +64,7 @@ SECTION_LABELS: dict[Section, Promise] = {
     Section.RATE_LIMITS: _("Rate limits"),
     Section.FILES: _("Files of a home"),
     Section.NOTIFICATIONS: _("Notifications"),
+    Section.PROJECTS: _("Projects"),
 }
 
 # The product name: the default name of an instance, and what an empty name shows.
@@ -628,3 +630,8 @@ from housecairn.notifications.conf import SETTINGS as _NOTIFICATIONS  # noqa: E4
 
 _SETTINGS += _NOTIFICATIONS
 SETTINGS.update({s.key: s for s in _NOTIFICATIONS})
+
+from housecairn.projects.conf import SETTINGS as _PROJECTS  # noqa: E402
+
+_SETTINGS += _PROJECTS
+SETTINGS.update({s.key: s for s in _PROJECTS})

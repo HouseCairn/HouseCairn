@@ -61,6 +61,7 @@ time zone and the name of the instance included.
 | Number of files of a home | `HOUSECAIRN_HOME_MAX_FILES` | Files of a home | `5000` | At once |
 | Notifications | `HOUSECAIRN_NOTIFICATIONS_ENABLED` | Notifications | `false` | At once |
 | Check for reminders every (minutes) | `HOUSECAIRN_NOTIFICATIONS_INTERVAL` | Notifications | `5` | At once |
+| Preview of inspiration links | `HOUSECAIRN_LINK_PREVIEW_ENABLED` | Projects | `false` | At once |
 % settings-table:end
 
 The start-up checks (`manage.py check`, which `migrate` runs too) read the variables and the

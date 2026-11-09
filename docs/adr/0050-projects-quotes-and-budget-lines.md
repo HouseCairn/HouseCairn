@@ -106,10 +106,60 @@ the fields changed, never an amount, a goal or a note. The export has the sectio
 `project_files`, `project_tasks` and `project_envelopes`; the files go under
 `files/projects/`.
 
+**Links of inspiration, with a preview read once.** A project has links (`ProjectLink`: an
+address of at most 500 characters, a title, a picture), at most 30. The preview is a
+convenience and never a requirement:
+
+- *When.* Only when the link is added, never again. The service reads the page before it
+  opens its transaction, so a slow site holds no lock on the database; the call lasts ten
+  seconds at most in all, page and picture together.
+- *Setting.* `link_preview_enabled` (`HOUSECAIRN_LINK_PREVIEW_ENABLED`, ADR 0035), **off by
+  default**: HouseCairn makes no outgoing connection that nobody configured. Off, a link is
+  its address.
+- *The guard is `core.netguard`*, where the address rules of ADR 0041 and 0043
+  (`forbidden_address`, `embedded_ipv4`, the metadata addresses) were moved so that nothing
+  is written twice; the two callers keep their names and behaviour. A person types the
+  address of a page on the open web, so the rule is stricter than for a notification
+  server: `is_public`, global addresses only. Private networks, shared address space,
+  loopback, link-local, multicast, reserved and the metadata services of cloud providers are
+  refused, and an IPv6 address that carries an IPv4 one (mapped, NAT64, 6to4, Teredo) is
+  judged by the IPv4 address.
+- *The connection goes to the address that was checked.* The name is resolved once per hop,
+  every address it gives must pass, and the socket is opened on one of them: the name is
+  not resolved again, so a resolver that answers otherwise the second time (rebinding)
+  changes nothing. TLS is verified against the host name.
+- *Redirects* are followed by the same code, hop by hop, three at most, each hop checked
+  again from the start. Only `http` and `https`; an address with a user name or a password
+  is refused.
+- *Limits.* The HTML is read up to 1 MB (Open Graph tags are in the head, so a longer page
+  is cut, not refused), a picture up to 5 MB or the file limit of the instance if smaller.
+  `Accept-Encoding: identity`, so a small body cannot expand. The time limit is for the whole
+  request, slow trickle included: a watchdog shuts the sockets at the deadline, which ends a
+  read that is blocked. Nothing outlives the call: the watchdog is stopped and joined and
+  every socket closed, whatever happened (the lesson of ADR 0043). The one thing not bounded
+  is the system resolver while it resolves a name.
+- *The HTML is tokenized, never run.* `html.parser` reads `<meta>` and `<title>` up to the
+  body and builds nothing; no script runs and no resource is loaded except the one picture
+  the page designates (`og:image`, else `twitter:image`), fetched under the same guard (an
+  address in `file:`, `data:` or an internal one is refused like any other). The title is
+  plain text, cut to 200 characters, without control characters, and the templates escape it.
+- *The picture* goes through the processing of a photo (ADR 0030): the type is found by
+  decoding (SVG and any other format refused), the picture is written again without metadata,
+  and the quotas of the home count it. It is a `ProjectFile` of the project, tied to its link,
+  served by the same views as a photo after the home check; the pages never link to the
+  remote picture. The photo list, the photo limit and the `project-files` list leave it out:
+  it belongs to its link and goes with it.
+- *Failure is silent.* Any refusal, timeout, bad page or bad picture keeps the address. The
+  log gets a short reason code (`address`, `timeout`, `too_large`...), never the address.
+  The audit log records the domain of the link and the title of the project, nothing else.
+- *Roles and isolation.* Owners and members add and delete links; read-only members read
+  them. A link is checked against the home on the web and in the API (`project-links`).
+- *Export and erasure.* The export has a `project_links` section, and the pictures go under
+  `files/projects/` like the other files. Deleting a link, a project, a home or an account
+  removes the pictures from the disk.
+
 ## Out of scope
 
-Inspiration links with a preview of the page (title and image fetched by the server) come
-in a following change, behind the same guard against requests to private services as the
-notifications (ADR 0043) and an instance setting (ADR 0035). The check of payments against
+The check of payments against
 Sure, the opening of a Paperless-ngx document, the consolidation of budgets and the
 purchase forecast belong to later lots.
