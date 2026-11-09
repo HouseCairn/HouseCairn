@@ -47,6 +47,26 @@ If the mail server fails, nothing breaks: an invitation stays saved and the
 page says the email could not be sent, a sign-in goes through, and the failure is
 logged without the address.
 
+## Verifying an address by hand
+
+An invitation to a home that the owner handed over by hand is accepted only by an account that
+verified the invited address. Without outgoing email nobody can verify it: an account made by
+`createsuperuser`, or signed up while verification was off, is stuck. The administrator of the
+server verifies the address from the command line:
+
+```
+manage.py verify_email ivy@example.com
+manage.py verify_email ivy@example.com --primary
+```
+
+The address is found whatever its case. With `--primary` it also becomes the primary address
+of its account, so the sign-in address. The command fails, changing nothing, when no account has
+the address, or when several do (it then lists their identifiers, never other addresses). Run
+again, it changes nothing and says so. A change is recorded in the audit log of the instance.
+
+Use it only for an address you know belongs to the person: it is the check the email would have
+made.
+
 ## Links
 
 Links point to `HOUSECAIRN_SITE_URL`, including those of password reset and

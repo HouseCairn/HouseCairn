@@ -50,6 +50,11 @@ with it on the project's
   administrator turns them on with `HOUSECAIRN_NOTIFICATIONS_ENABLED` or in the settings.
   See [Notifications](guides/notifications.md).
 
+- **Verify an address from the server.** On an instance that sends no email, `manage.py
+  verify_email <address> [--primary]` marks an account's address verified, so that the account
+  can accept an invitation handed over by hand. It is recorded in the audit log of the
+  instance. See [Email](administration/email.md).
+
 - **Rooms, items and photos.** Describe the rooms of a home, what was used in
   them (the room memory), the equipment and surfaces they hold, and add photos.
   Screens, API and a guide: see [Rooms and items](guides/rooms-and-items.md).
