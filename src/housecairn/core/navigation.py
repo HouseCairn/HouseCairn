@@ -106,7 +106,7 @@ class Record:
 
 
 # Route name -> a fixed label, or the record whose field names it. A route missing here
-# has no label: a back link to it falls back to its default. Lot 2b adds its sections.
+# has no label: a back link to it falls back to its default.
 LABELS: dict[str, Any] = {
     "tasks:today": _("Today"),
     "tasks:list": _("Tasks"),
@@ -119,6 +119,22 @@ LABELS: dict[str, Any] = {
     "rooms:detail": Record("rooms.Room", "room_id", "name"),
     "rooms:item-detail": Record("rooms.Item", "item_id", "name"),
     "homes:detail": Record("homes.Home", "home_id", "name"),
+    "homes:list": _("My homes"),
+    "homes:household": _("Household and roles"),
+    "stock:list": _("Stock"),
+    "stock:detail": Record("stock.Article", "article_id", "name"),
+    "projects:list": _("Projects"),
+    "projects:compare": _("Compare"),
+    "projects:detail": Record("projects.Project", "project_id", "title"),
+    "budget:overview": _("Budget"),
+    "budget:rooms": _("Budget"),
+    "budget:room": _("Budget"),
+    "budget:projects": _("Budget"),
+    "budget:tasks": _("Budget"),
+    "reports:list": _("Reports"),
+    "reports:detail": Record("reports.Report", "report_id", "title"),
+    "labels:list": _("QR labels"),
+    "labels:detail": _("QR label"),
     "my-home": _("My home"),
     "more": _("More"),
 }

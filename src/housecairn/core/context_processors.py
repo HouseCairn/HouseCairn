@@ -6,11 +6,12 @@ the tree of the application: a page belongs to the section whose root leads to i
 """
 
 from typing import Any
+from urllib.parse import urlsplit
 
 from django.http import HttpRequest
-from django.urls import reverse
+from django.urls import Resolver404, ResolverMatch, resolve, reverse
 
-from housecairn.core import more
+from housecairn.core import more, navigation
 
 # Sections of the signed-in navigation, in display order.
 TODAY, ROOMS, PROJECTS, BUDGET, MORE = "today", "rooms", "projects", "budget", "more"
@@ -22,10 +23,26 @@ _IN_MORE = ("tasks:contractor", "calendar:feeds", "calendar:regenerate", "calend
 
 
 def nav_section(request: HttpRequest) -> str:
-    """The navigation entry that matches the page being shown ("" on an error page)."""
+    """The navigation entry that matches the page being shown ("" on an error page).
+
+    With a safe `next`, the section is that of the origin: a room opened from the budget
+    keeps Budget marked, so the bar never changes tab under the finger (design guide,
+    "Back link and breadcrumbs").
+    """
     match = getattr(request, "resolver_match", None)
     if match is None:
         return ""
+    origin = navigation.safe_next(request)
+    if origin is not None:
+        try:
+            return _section_of(resolve(urlsplit(origin).path))
+        except Resolver404:
+            pass
+    return _section_of(match)
+
+
+def _section_of(match: ResolverMatch) -> str:
+    """The section a route belongs to, in the tree of the application."""
     view = match.view_name
     if view.startswith(_IN_MORE):
         return MORE

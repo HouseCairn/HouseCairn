@@ -137,6 +137,21 @@ msgctxt "screen"
 msgid "Search"
 msgstr "Recherche"
 
+msgid "Stock"
+msgstr "Matériel"
+
+msgid "Projects"
+msgstr "Projets"
+
+msgid "Compare"
+msgstr "Comparer"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "QR label"
+msgstr "Étiquette QR"
+
 msgid "My home"
 msgstr "Mon accueil"
 
@@ -153,9 +168,6 @@ msgstr "Toutes"
 
 msgid "Calendar"
 msgstr "Calendrier"
-
-msgid "Stock"
-msgstr "Matériel"
 
 msgid "In progress"
 msgstr "En cours"
@@ -195,12 +207,6 @@ msgstr "Fournisseurs de connexion"
 
 msgid "Files of the homes"
 msgstr "Fichiers des logements"
-
-msgid "Projects"
-msgstr "Projets"
-
-msgid "Budget"
-msgstr "Budget"
 
 msgid "Home"
 msgstr "Accueil"
