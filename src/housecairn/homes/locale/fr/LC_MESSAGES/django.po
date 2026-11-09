@@ -165,6 +165,12 @@ msgstr "Ce lien n'a pas été envoyé par e-mail : il ne peut pas créer de comp
 msgid "An account already uses this address: sign in to accept."
 msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter."
 
+msgid "Home added"
+msgstr "Logement ajouté"
+
+msgid "Home added."
+msgstr "Logement ajouté."
+
 msgid "Home saved."
 msgstr "Logement enregistré."
 

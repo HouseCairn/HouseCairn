@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{{ title }}{% endblock head_title %}
 {% block content %}
   <a class="back-link" href="{{ back }}">{% include "components/icon.html" with name="chevron" %}{% translate "Cancel" %}</a>
@@ -8,6 +8,7 @@
     <p>{{ text }}</p>
     <form method="post" action="{{ action }}">
       {% csrf_token %}
+      {% next_field %}
       <div class="button-row">
         <button type="submit" class="button-danger">{{ button }}</button>
         <a class="button button-secondary" href="{{ back }}">{% translate "Cancel" %}</a>

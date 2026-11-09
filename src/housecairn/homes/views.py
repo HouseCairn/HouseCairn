@@ -22,6 +22,7 @@ from housecairn.accounts.models import User
 from housecairn.accounts.names import person_name
 from housecairn.accounts.services import email_is_configured
 from housecairn.audit import services as audit_services
+from housecairn.core import navigation
 from housecairn.homes import exports, forms, services, sso
 from housecairn.homes.models import Home, Invitation, Membership
 from housecairn.homes.scoping import (
@@ -73,7 +74,15 @@ class HomeCreateView(LoginRequiredMixin, FormView[forms.HomeForm]):
             currency=form.cleaned_data["currency"],
             hemisphere=form.cleaned_data["hemisphere"],
         )
-        return redirect("homes:detail", home_id=home.id)
+        return redirect(
+            navigation.after_create(
+                self.request,
+                reverse("homes:detail", kwargs={"home_id": home.id}),
+                "homes:list",
+                added=_("Home added"),
+                saved=_("Home added."),
+            )
+        )
 
 
 class HomeDetailView(WebHomeScopedMixin, DetailView[Home]):
@@ -110,7 +119,9 @@ class HomeEditView(WebHomeScopedMixin, FormView[forms.HomeForm]):
         home = self.get_home()
         services.update_home(self.request.user, home, **form.cleaned_data)
         messages.success(self.request, _("Home saved."))
-        return redirect("homes:detail", home_id=home.id)
+        return redirect(
+            navigation.back_url(self.request, reverse("homes:detail", kwargs={"home_id": home.id}))
+        )
 
 
 class HouseholdView(WebHomeScopedMixin, DetailView[Home]):
@@ -205,7 +216,7 @@ class HomeDeleteView(WebHomeScopedMixin, FormView[forms.DeleteHomeForm]):
             form.add_error("confirmation", exc)
             return self.form_invalid(form)
         messages.success(self.request, _("The home was deleted."))
-        return redirect("homes:list")
+        return redirect(navigation.after_delete(self.request, reverse("homes:list"), [home.id]))
 
 
 class HomeActionView(WebHomeScopedMixin, View):
@@ -224,11 +235,16 @@ class HomeActionView(WebHomeScopedMixin, View):
         except ValidationError as exc:
             for message in exc.messages:
                 messages.error(request, message)
-            return redirect("homes:household", home_id=home.id)
+            return self.household(home)
         except services.DeliveryFailedError:
             messages.warning(request, DELIVERY_FAILED)
-            return redirect("homes:household", home_id=home.id)
-        return response or redirect("homes:household", home_id=home.id)
+            return self.household(home)
+        return response or self.household(home)
+
+    def household(self, home: Home) -> HttpResponse:
+        """The household again, still knowing where it was opened from (an action in place)."""
+        page = reverse("homes:household", kwargs={"home_id": home.id})
+        return redirect(navigation.with_next(page, navigation.safe_next(self.request) or ""))
 
     def act(self, home: Home) -> HttpResponse | None:  # pragma: no cover - abstract
         raise NotImplementedError
