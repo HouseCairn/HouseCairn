@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n tabs projects_extras %}
+{% block head_title %}{% translate "Projects" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  <h1>{% translate "Projects" %}</h1>
+  {% tab_bar "tasks" %}
+  <section class="card" aria-labelledby="envelope-title">
+    <h2 id="envelope-title">{% blocktranslate with year=envelope.year %}Budget envelope {{ year }}{% endblocktranslate %}</h2>
+    {% if envelope.envelope is None %}
+      <p class="small">{% translate "No envelope set for this year." %}</p>
+    {% else %}
+      <dl class="facts">
+        <div><dt>{% translate "Envelope" %}</dt><dd>{{ envelope.envelope|money:home.currency }}</dd></div>
+        <div><dt>{% translate "Planned for the projects going on" %}</dt><dd>{{ envelope.planned|money:home.currency }}</dd></div>
+        <div><dt>{% translate "Paid so far" %}</dt><dd>{{ envelope.paid|money:home.currency }}</dd></div>
+        <div><dt>{% translate "Left in the envelope" %}</dt><dd>{% if envelope.left < 0 %}{% blocktranslate with amount=envelope.left|money:home.currency %}{{ amount }} (over the envelope){% endblocktranslate %}{% else %}{{ envelope.left|money:home.currency }}{% endif %}</dd></div>
+      </dl>
+    {% endif %}
+    {% if can_write %}<a class="button button-secondary button-small" href="{% url 'projects:envelope' home_id=home.id %}">{% translate "Set the envelope" %}</a>{% endif %}
+  </section>
+  <form method="get" class="filter-row" role="search">
+    <label class="visually-hidden" for="filter-q">{% translate "Search by title or goal" %}</label>
+    <input id="filter-q" type="search" name="q" value="{{ chosen.q|default:'' }}" maxlength="120" placeholder="{% translate 'Search' %}" autocomplete="off">
+    <label class="visually-hidden" for="filter-status">{% translate "Status" %}</label>
+    <select id="filter-status" name="status">
+      <option value="">{% translate "All statuses" %}</option>
+      {% for value, label in statuses %}<option value="{{ value }}"{% if chosen.status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <label class="visually-hidden" for="filter-room">{% translate "Room" %}</label>
+    <select id="filter-room" name="room">
+      <option value="">{% translate "All rooms" %}</option>
+      {% for candidate in rooms %}<option value="{{ candidate.id }}"{% if chosen.room == candidate.id %} selected{% endif %}>{{ candidate.name }}</option>{% endfor %}
+    </select>
+    <label class="visually-hidden" for="filter-priority">{% translate "Priority" %}</label>
+    <select id="filter-priority" name="priority">
+      <option value="">{% translate "Any priority" %}</option>
+      <option value="high"{% if chosen.priority == "high" %} selected{% endif %}>{% translate "High" %}</option>
+      <option value="normal"{% if chosen.priority == "normal" %} selected{% endif %}>{% translate "Normal" %}</option>
+      <option value="low"{% if chosen.priority == "low" %} selected{% endif %}>{% translate "Low" %}</option>
+    </select>
+    <button type="submit" class="button-secondary button-small">{% translate "Filter" %}</button>
+  </form>
+  {% if groups %}
+    <form method="get" action="{% url 'projects:compare' home_id=home.id %}">
+      {% for label, rows in groups %}
+        <h2>{{ label }}</h2>
+        <ul class="card-list">
+          {% for project, amounts in rows %}
+            <li class="row">
+              <label class="visually-hidden" for="compare-{{ project.id }}">{% blocktranslate with title=project.title %}Compare {{ title }}{% endblocktranslate %}</label>
+              <input id="compare-{{ project.id }}" type="checkbox" name="p" value="{{ project.id }}">
+              <a class="row-body" href="{% url 'projects:detail' home_id=home.id project_id=project.id %}">
+                <span class="row-title">{{ project.title }}</span>
+                <span class="row-text">
+                  {% if amounts.planned or amounts.committed or amounts.paid %}{% blocktranslate with planned=amounts.planned|money:home.currency %}Planned {{ planned }}{% endblocktranslate %}{% else %}{% translate "No budget yet" %}{% endif %}
+                  {% if project.priority == "high" %} · {% translate "High priority" %}{% endif %}
+                </span>
+                {% budget_gap amounts home.currency %}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endfor %}
+      <button type="submit" class="button-secondary button-block">{% translate "Compare the ticked projects" %}</button>
+    </form>
+  {% elif everything %}
+    <p class="empty">{% translate "No project yet. A project is a piece of work with an end, such as redoing the bathroom." %}</p>
+  {% else %}
+    <p class="empty">{% translate "No project matches." %}</p>
+  {% endif %}
+  {% if can_write %}
+    <a class="button button-secondary button-block" href="{% url 'projects:create' home_id=home.id %}">{% translate "Add a project" %}</a>
+  {% endif %}
+{% endblock content %}

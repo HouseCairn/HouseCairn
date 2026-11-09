@@ -1,0 +1,39 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-09 00:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Budget line form"
+msgstr "Formulaire de ligne de budget"
+
+msgid "Adds a budget line to a [project](project.md) (`/h/<home id>/projects/<project id>/lines/new/`) or changes one (`/h/<home id>/projects/lines/<line id>/edit/`)."
+msgstr "Ajoute une ligne de budget à un [projet](project.md) (`/h/<id du logement>/projects/<id du projet>/lines/new/`) ou en modifie une (`/h/<id du logement>/projects/lines/<id de la ligne>/edit/`)."
+
+msgid "**Label** is what it pays for (\"Paint\", \"Plumber\")."
+msgstr "**Libellé** est ce qu'elle finance (« Peinture », « Plombier »)."
+
+msgid "**Nature** is materials, labour, rental or other."
+msgstr "**Nature** est matériel, main-d'œuvre, location ou autre."
+
+msgid "**Planned** is what you plan to spend; **Paid** is what has been paid so far. Both are amounts in the currency of the home, from 0 to 9,999,999,999.99, with at most two decimals. The committed amount is not typed: it is the sum of the quotes accepted on the line."
+msgstr "**Prévu** est ce que vous prévoyez de dépenser ; **Payé** est ce qui a été payé jusqu'ici. Ce sont deux montants dans la devise du logement, de 0 à 9 999 999 999,99, avec deux décimales au plus. Le montant engagé ne se saisit pas : c'est la somme des devis acceptés sur la ligne."
+
+msgid "**Delete the budget line** asks for confirmation. The quotes accepted on it go back to *received*: they commit nothing any more."
+msgstr "**Supprimer la ligne de budget** demande confirmation. Les devis acceptés sur elle repassent à *reçu* : ils n'engagent plus rien."
+
