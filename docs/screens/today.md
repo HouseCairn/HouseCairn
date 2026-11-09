@@ -16,7 +16,7 @@ The page is made of sections, in this order:
   have no date.
 
 Each row shows the task, its room and item, and its state. **Done**, on the right
-of the row, closes it in one tap, for every task (the button is 48 px high, to be hit with a thumb); the page comes back with a banner
+of the row, closes it in one tap, for every task; the page comes back with a banner
 that offers **Undo**. A row opens the [task](task.md).
 
 - The **tabs** above the list, shared by the [task list](tasks.md), the
