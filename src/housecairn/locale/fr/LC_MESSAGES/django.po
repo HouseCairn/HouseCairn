@@ -4187,8 +4187,8 @@ msgid "Planned, committed and paid, by nature"
 msgstr "Prévu, engagé et payé, par nature"
 
 #: templates/budget/overview.html
-msgid "A cost typed on a done task has no nature: it is counted under Other."
-msgstr "Un coût saisi sur une tâche faite n'a pas de nature : il est compté dans Autre."
+msgid "The cost typed on a done task is shared between Materials and Labour as its estimate is; a task with no estimate has no such share, and its cost is counted under Other."
+msgstr "Le coût saisi sur une tâche faite est réparti entre Matériel et Main-d'œuvre comme son estimation ; une tâche sans estimation n'a pas cette répartition, et son coût est compté dans Autre."
 
 #: templates/budget/overview.html
 msgid "By year"
@@ -4273,9 +4273,10 @@ msgstr "Budget de l'entretien"
 #, python-format
 msgid ""
 "The tasks that are in no project, with the occurrences of %(year)s: those "
-"done, and the one coming. The money of a task of a project is in the budget "
-"lines of the project."
-msgstr "Les tâches qui ne sont dans aucun projet, avec les occurrences de %(year)s : celles qui sont faites, et celle à venir. L'argent d'une tâche de projet est dans les lignes de budget du projet."
+"done, the one open, and those the repetition will still bring before the end "
+"of the year. The money of a task of a project is in the budget lines of the "
+"project."
+msgstr "Les tâches qui ne sont dans aucun projet, avec les occurrences de %(year)s : celles qui sont faites, celle qui est ouverte et celles que la répétition amènera encore avant la fin de l'année. L'argent d'une tâche de projet est dans les lignes de budget du projet."
 
 #: templates/budget/tasks.html
 msgid "Estimate, cost a year and what was paid, task by task"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 06:38+0000\n"
+"POT-Creation-Date: 2026-11-09 08:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -43,8 +43,8 @@ msgstr "L'argent d'une tâche qui est dans un projet est celui du projet : ses l
 msgid "Planned, committed, paid, used, gap"
 msgstr "Prévu, engagé, payé, consommé, écart"
 
-msgid "*Planned* is what you plan to spend. *Committed* is what accepted quotes promise. *Paid* is what was spent. *Used* is the more of committed and paid, line by line, and the *gap* is planned less used: **... left**, **On budget** or **Over budget by ...**. Rows also show a gauge with its percentage; colour is never the only signal."
-msgstr "Le *prévu* est ce que vous comptez dépenser. L'*engagé* est ce que promettent les devis acceptés. Le *payé* est ce qui a été dépensé. Le *consommé* est le plus grand de l'engagé et du payé, ligne par ligne, et l'*écart* est le prévu moins le consommé : **... restants**, **Budget respecté** ou **Budget dépassé de ...**. Les lignes montrent aussi une jauge avec son pourcentage ; la couleur n'est jamais le seul signal."
+msgid "*Planned* is what you plan to spend. *Committed* is what accepted quotes promise. *Paid* is what was spent. *Used* is the more of committed and paid, line by line, and the *gap* is planned less used: **... left**, **On budget** or **Over budget by ...**. Rows also show the *Used* amount, then a gauge with its percentage; colour is never the only signal."
+msgstr "Le *prévu* est ce que vous comptez dépenser. L'*engagé* est ce que promettent les devis acceptés. Le *payé* est ce qui a été dépensé. Le *consommé* est le plus grand de l'engagé et du payé, ligne par ligne, et l'*écart* est le prévu moins le consommé : **... restants**, **Budget respecté** ou **Budget dépassé de ...**. Les lignes montrent aussi le montant *consommé*, puis une jauge avec son pourcentage ; la couleur n'est jamais le seul signal."
 
 msgid "Example: painting the living room"
 msgstr "Exemple : peindre le salon"
@@ -64,14 +64,17 @@ msgstr "**Par projet** : chaque projet une fois, **dans l'année où il commence
 msgid "**By task**: the tasks that are in no project. The **cost a year** follows the repetition: a task every 3 years costs a third of its estimate a year, every 6 months twice, a weekly task 52 times, rounded once to the cent. A task that does not repeat has none, and a task that repeats by use, when there is one, will not be annualised either."
 msgstr "**Par tâche** : les tâches qui ne sont dans aucun projet. Le **coût par an** suit la répétition : une tâche tous les 3 ans coûte un tiers de son estimation par an, tous les 6 mois deux fois, une tâche hebdomadaire 52 fois, arrondi une seule fois au centime. Une tâche qui ne se répète pas n'en a pas, et une tâche qui se répète selon l'usage, quand il y en aura, ne sera pas annualisée non plus."
 
+msgid "For a year, **Planned** counts what the task did that year (each time done, at its estimate), the occurrence that is open, and the times its repetition will still bring before 31 December. A task every month at 25, read in February after a first time in January, plans 12 times 25 for the year, not only the two rows that exist. A year that is over counts only what happened; a year to come counts the whole repetition, and a task that counts from the last time is followed from its open date, as the calendar does. Nothing is written: these times are worked out when you read the page."
+msgstr "Pour une année, le **prévu** compte ce que la tâche a fait cette année-là (chaque fois faite, à son estimation), l'occurrence ouverte, et les fois que sa répétition amènera encore avant le 31 décembre. Une tâche tous les mois à 25, lue en février après une première fois en janvier, prévoit 12 fois 25 pour l'année, et non les deux seules lignes qui existent. Une année révolue ne compte que ce qui s'est passé ; une année à venir compte toute la répétition, et une tâche qui compte à partir de la dernière fois est suivie depuis sa date ouverte, comme le fait le calendrier. Rien n'est écrit : ces fois sont calculées quand vous lisez la page."
+
 msgid "A task done with no cost typed counts at its estimate in the plan and as nothing paid, and is flagged, so that the gap does not look better than it is."
 msgstr "Une tâche faite sans coût saisi compte à son estimation dans le prévu et pour rien dans le payé, et elle est signalée, pour que l'écart ne paraisse pas meilleur qu'il n'est."
 
 msgid "The envelope, years and the last 12 months"
 msgstr "L'enveloppe, les années et les 12 derniers mois"
 
-msgid "The overview sets the envelope of a year against the projects counted in it and the upkeep of the year, and splits the year by nature (materials, labour, rental, other; the real cost of a task has no nature and counts under Other). **By year** lists every year with a figure. **Last 12 months** is the upkeep done since the same day last year; payments on projects have no date and are not in it. The envelope is set from **Projects**."
-msgstr "La vue d'ensemble compare l'enveloppe d'une année aux projets comptés en cette année et à l'entretien de l'année, et découpe l'année par nature (matériel, main-d'œuvre, location, autre ; le coût réel d'une tâche n'a pas de nature et compte dans Autre). **Par année** liste chaque année qui a un chiffre. **12 derniers mois** est l'entretien fait depuis le même jour l'an dernier ; les paiements des projets n'ont pas de date et n'y sont pas. L'enveloppe se fixe depuis **Projets**."
+msgid "The overview sets the envelope of a year against the projects counted in it and the upkeep of the year, and splits the year by nature (materials, labour, rental, other; the real cost of a task is shared between materials and labour as its estimate is, or counts under Other if it has no estimate). **By year** lists every year with a figure. **Last 12 months** is the upkeep done since the same day last year; payments on projects have no date and are not in it. The envelope is set from **Projects**."
+msgstr "La vue d'ensemble compare l'enveloppe d'une année aux projets comptés en cette année et à l'entretien de l'année, et découpe l'année par nature (matériel, main-d'œuvre, location, autre ; le coût réel d'une tâche est réparti entre matériel et main-d'œuvre comme son estimation, ou compte dans Autre s'il n'a pas d'estimation). **Par année** liste chaque année qui a un chiffre. **12 derniers mois** est l'entretien fait depuis le même jour l'an dernier ; les paiements des projets n'ont pas de date et n'y sont pas. L'enveloppe se fixe depuis **Projets**."
 
 msgid "Several homes and currencies"
 msgstr "Plusieurs logements et devises"
