@@ -1,4 +1,4 @@
-"""The export of a home reads it in a number of queries that does not grow with its data.
+"""The export and the API lists read a home in a number of queries that does not grow with it.
 
 Each test measures a small home, adds rows, and checks that the same work takes exactly as
 many queries again: a query per row would show as a difference.
@@ -10,7 +10,10 @@ from typing import Any
 import pytest
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
+from django.urls import reverse
+from rest_framework.test import APIClient
 
+from housecairn.accounts.models import User
 from housecairn.homes import exports
 from housecairn.homes.models import Home
 from housecairn.projects.models import BudgetLine, Project
@@ -77,3 +80,31 @@ def test_the_export_takes_as_many_queries_for_50_items_and_projects_as_for_5(
     with django_assert_num_queries(five):
         archive, _name = exports.build_archive(alice_home)
     assert archive.read()
+
+
+@pytest.mark.parametrize(
+    ("route", "related"),
+    [("article-list", ("compatible_items", "rooms")), ("project-list", ("rooms",))],
+)
+def test_an_api_page_of_50_takes_as_many_queries_as_a_page_of_5(
+    api_client: APIClient,
+    alice: User,
+    alice_home: Home,
+    django_assert_num_queries: Any,
+    route: str,
+    related: tuple[str, ...],
+) -> None:
+    api_client.force_authenticate(alice)
+    url = reverse(f"api-v1:home-{route}", kwargs={"home_id": alice_home.id})
+    fill(alice_home, 5)
+    api_client.get(url)  # the first request also reads what is cached afterwards
+    with CaptureQueriesContext(connection) as context:
+        small = api_client.get(url)
+    assert len(small.json()["results"]) == 5
+    fill(alice_home, 45)
+    with django_assert_num_queries(len(context.captured_queries)):
+        page = api_client.get(url)
+    rows = page.json()["results"]
+    assert len(rows) == 50
+    # Every row still lists its own rooms and items: two of each, from `fill`.
+    assert all(len(row[name]) == 2 for row in rows for name in related)

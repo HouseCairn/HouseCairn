@@ -233,12 +233,16 @@ class ProjectViewSet(
     def get_queryset(self) -> models.QuerySet[Project]:
         params = self.request.query_params
         room = _uuid_param(self.request, "room")
-        return services.projects_of(self.get_home()).filter(
+        projects = services.projects_of(self.get_home()).filter(
             **({"status": params["status"]} if params.get("status") else {}),
             **({"priority": params["priority"]} if params.get("priority") else {}),
             **({"season": params["season"]} if params.get("season") else {}),
             **({"rooms": room} if room is not None else {}),
         )
+        if self.action == "list":
+            # The rooms of a whole page in one query, not one per project.
+            projects = projects.prefetch_related("rooms")
+        return projects
 
     def get_serializer_context(self) -> dict[str, Any]:
         context = super().get_serializer_context()

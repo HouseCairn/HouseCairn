@@ -174,13 +174,17 @@ class ArticleViewSet(
         item = _uuid_param(self.request, "item")
         room = _uuid_param(self.request, "room")
         raw_low = self.request.query_params.get("low", "").lower()
-        return services.search_articles(
+        articles = services.search_articles(
             self.get_home(),
             self.request.query_params.get("q", ""),
             low=raw_low in {"1", "true"},
             item=item,
             room=room,
         )
+        if self.action == "list":
+            # The related identifiers of a whole page in one query per relation, not per row.
+            articles = articles.prefetch_related("compatible_items", "rooms")
+        return articles
 
     @extend_schema(
         parameters=[
