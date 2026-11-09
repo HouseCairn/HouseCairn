@@ -122,6 +122,9 @@ Administration (administrators only)
 Help · About · Sign out
 ```
 
+The diagram is indicative and does not show every entry; the entries are those of
+`housecairn/core/more.py`.
+
 - The phone bar and the computer column **must** be one `nav`, laid out by CSS.
   Two navigations drift apart, and a screen reader would announce both.
 - On a computer, More **must not** have its own page: its content is in the column.
@@ -137,6 +140,9 @@ More holds four groups, in this order: **Home** (about the home being viewed),
 - An action that cannot be taken back (deleting the account, a home) **must** be at
   the bottom of its own page, never on More. A dangerous action does not sit between
   two everyday settings.
+- An entry of More **must** be added in `housecairn/core/more.py`, in its group, with
+  its routes for the marking of the current entry, never in a template. The page of More
+  and the column both show it.
 
 ### Where a new screen goes
 
@@ -148,14 +154,31 @@ Answer these questions in order, and stop at the first yes:
 2. **Is it the page of one record** (a room, an item, a task, a quote)? It goes under
    the page of its parent in the tree: an item under its room, a quote under its
    project.
-3. **Is it a form that adds or changes a record?** It is opened from the page or the
+3. **Is it the list of all the records of a new type of data across the home** (every
+   warranty, every contract, every document of the home)? Choose the first place that
+   fits, in this order:
+   - *The page of a parent*, when each record belongs to one parent and is read from
+     it (the warranty of an item, on the page of the item). A list that is only read
+     from its parent needs no screen of its own.
+   - *A tab of an existing section*, when the list is another view of what the section
+     already shows, used often, and the section has fewer than four tabs. The stock is
+     a tab of Rooms for this reason.
+   - *More, group Home*, otherwise: the list is about the home but looked at now and
+     then, not a daily view.
+
+   A section never gets a fifth tab: that needs a new decision record
+   ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md)). A record that
+   belongs to a parent record (the warranty of its item) keeps that parent in the tree.
+   The cross-home list of More is only an origin, and returns to it with `next`. Only
+   records with no other parent are pages under the list.
+4. **Is it a form that adds or changes a record?** It is opened from the page or the
    list it belongs to, with a `next` address (see the [return rule](#return-rule)).
-4. **Is it about the home but not daily use** (household, reports, labels,
+5. **Is it about the home but not daily use** (household, reports, labels,
    contractors, settings of the home)? More, group Home.
-5. **Is it about the person** (profile, notifications, preferences, security)? More,
+6. **Is it about the person** (profile, notifications, preferences, security)? More,
    group Me.
-6. **Is it about the instance**? More, group Instance, shown to administrators only.
-7. **Is it help or information about the application**? More, group Help.
+7. **Is it about the instance**? More, group Instance, shown to administrators only.
+8. **Is it help or information about the application**? More, group Help.
 
 A screen **must** be reachable from the navigation, never only from an address
 typed by hand or a link in an email. A page nobody can reach again is lost after the
@@ -228,6 +251,24 @@ return redirect(
 A route that should name a back link is added to `LABELS`. Without it, a `next`
 to that route is not lost for the redirect after a form, but the back link falls back
 to its default: a link must never show an address nor a nameless "Back".
+
+### Default parent
+
+A record reachable from two places has one parent in the tree, the section that owns
+it, and the other place is only an origin.
+
+- Without `next` (an address typed by hand, a link in an email or a calendar feed), the
+  back link **must** lead to the parent in the tree, never to a previous screen
+  guessed from the history. A page must not depend on a history the person cannot see.
+- The parent **must** be the same wherever the record is opened from: the parent
+  record when the record belongs to one (the warranty of its item), otherwise the list
+  of its section, as in the tree above. The screen reference page
+  of the record names it.
+- With `next`, the origin wins and the label comes from its route.
+
+Example: a room is listed under Rooms and also opened from the budget by room. Its
+parent is Rooms, so opened without `next` it says "‹ Rooms". Opened from the budget
+with `next`, it says "‹ Budget", keeps Budget marked in the bar and comes back to it.
 
 ### Back link and breadcrumbs
 
@@ -336,6 +377,32 @@ that check. A value kept in a session is a preference, not a permission. The
 selector and "All homes" list only the homes the person belongs to, and a home they
 left is dropped from the session.
 
+## Dates, reminders and alerts
+
+The application already has one way to remind and one way to alert; a new screen uses
+them and does not add a third.
+
+- A date that someone must act on **must** be a task with a due date. The task is then
+  shown on Today: overdue, today, and up to the person's horizon, 7 days by default
+  (the `horizon_days` preference, `Horizon.WEEK`). It is also shown on the Calendar and
+  in the calendar feeds, and its reminders go out through the channels of the person
+  ([ADR 0043](../adr/0043-notifications-through-apprise.md)), with the rules of
+  postponing, Done and Skip that every task has. A reminder written again for one
+  screen would ignore the quiet hours and the follow-ups of the person.
+- A date that only informs (the end of a warranty) **must** be a list of the agenda
+  digest, `housecairn.tasks.agenda.my_home`, shown on My home (`/me/`, the view of Today
+  when the person is not in a home), as the warranties ending soon are today.
+  It is read, not acted on, and sends no notification. This digest is not the daily
+  summary message of the notifications.
+- An event with no due date (a problem was reported) **must** be an alert of
+  `housecairn.notifications.alerts`, sent in the background to the members who may
+  write, except the person who caused it, with the quiet hours applied. The open
+  reports are also a line on Today with a link, for the members who may write.
+- A notification **must** carry the title the person typed, the home and a link, and
+  nothing else: no amount, note or address leaves the instance.
+- A notification **must not** be sent from the screen's own code: it goes through the
+  `notifications` app, which sends it once and only to people who have a channel on.
+
 ## Screen rules already decided
 
 These rules come from earlier decisions; this guide gathers them so that a new screen
@@ -413,6 +480,12 @@ holds. The review checks the same list.
 - [ ] The screen has its place in the tree, found with
   [Where a new screen goes](#where-a-new-screen-goes), and is reachable from the
   navigation.
+- [ ] A new entry of More is added in `housecairn/core/more.py`, in its group, with its
+  routes for the marking, and in no template.
+- [ ] A record reachable from two places has one parent, named in its screen reference
+  page; without `next`, its back link leads to it.
+- [ ] A date to act on is a task; a date that informs is a list of the agenda digest; an event
+  is an alert; none has a reminder of its own.
 - [ ] The bar still has five entries; the section has four tabs at most, all visible
   at 360 px, and the page shows one row of tabs at most.
 - [ ] The marked entry of the bar is the section the person entered by.
@@ -423,6 +496,13 @@ holds. The review checks the same list.
 - [ ] After a creation from a context, the person is back in the context with
   "Added · Open"; from the list of its own section, on the new record.
 - [ ] A deletion goes through a confirmation page and lands on the parent.
+- [ ] Each new named web route has its entry in `housecairn/parity.py` (the API route
+  that does the same, or an exemption with its reason), and its API endpoint, as
+  [ADR 0003](../adr/0003-web-api-parity.md) requires; `tests/test_parity.py` passes.
+- [ ] Tests of the return rule, as [ADR 0053](../adr/0053-target-navigation-and-return-rule.md)
+  announces: for each new link that carries `next` and each new form, the origin, the
+  label of the back link and the target after sending, with and without `next`. They
+  fail on the code without the change.
 - [ ] One-tap actions stay in place with HTMX, with the undo banner, and work without
   JavaScript.
 - [ ] The screen shows the current home and only data of the person's homes.
