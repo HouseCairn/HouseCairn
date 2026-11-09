@@ -30,8 +30,9 @@ Company SSO*. There is one per provider.
 The link *Forgot your password?* under the password field appears only when the
 administrator has set up outgoing email ([Email](../administration/variables.md)).
 Without it, the instance could not send the reset message: the link and the reset
-page are not there, and the administrator has to set a new password. The same goes for the link under
-*Current password* on the password change page.
+page are not there, and the administrator has to set a new password. The same goes for the
+link under *Current password* on the password change page and on the page that asks you to
+confirm your password.
 
 ## After signing in
 

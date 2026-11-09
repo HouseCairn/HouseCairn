@@ -277,6 +277,7 @@ ACCOUNT_USER_DISPLAY = "housecairn.accounts.names.person_name"
 ACCOUNT_FORMS = {
     "login": "housecairn.accounts.forms.LoginForm",
     "change_password": "housecairn.accounts.forms.ChangePasswordForm",
+    "reauthenticate": "housecairn.accounts.forms.ReauthenticateForm",
     "signup": "housecairn.accounts.forms.SignupForm",
 }
 SOCIALACCOUNT_ADAPTER = "housecairn.accounts.adapters.SocialAccountAdapter"

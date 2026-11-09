@@ -37,6 +37,24 @@ class TestForgottenPasswordLink:
         response = client.get(reverse("account_change_password"))
         assert reverse("account_reset_password") in response.text
 
+    @override_settings(**NO_MAIL)
+    def test_the_password_confirmation_page_has_no_dead_link_without_mail(
+        self, client: Client, alice: User
+    ) -> None:
+        client.force_login(alice)
+        response = client.get(reverse("account_reauthenticate"))
+        assert response.status_code == 200
+        assert reverse("account_reset_password") not in response.text
+        assert "Forgot" not in response.text
+
+    @override_settings(**MAIL)
+    def test_the_password_confirmation_page_keeps_the_link_when_mail_works(
+        self, client: Client, alice: User
+    ) -> None:
+        client.force_login(alice)
+        response = client.get(reverse("account_reauthenticate"))
+        assert reverse("account_reset_password") in response.text
+
 
 class TestLandingPage:
     def test_sign_in_lands_on_my_home(self, client: Client, alice: User) -> None:

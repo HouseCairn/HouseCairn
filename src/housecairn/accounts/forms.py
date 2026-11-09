@@ -4,6 +4,7 @@ from typing import Any
 
 from allauth.account.forms import ChangePasswordForm as AllauthChangePasswordForm
 from allauth.account.forms import LoginForm as AllauthLoginForm
+from allauth.account.forms import ReauthenticateForm as AllauthReauthenticateForm
 from allauth.account.forms import SignupForm as AllauthSignupForm
 from django import forms
 from django.conf import settings
@@ -42,6 +43,19 @@ class ChangePasswordForm(AllauthChangePasswordForm):  # type: ignore[misc]
         super().__init__(*args, **kwargs)
         if not services.email_is_configured():
             self.fields["oldpassword"].help_text = ""
+
+
+class ReauthenticateForm(AllauthReauthenticateForm):  # type: ignore[misc]
+    """Password confirmation form without the reset link on an instance that cannot send mail.
+
+    The page is reached before sensitive actions (instance settings, for example);
+    its field carries the same "Forgot your password?" link as the sign-in form.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        if not services.email_is_configured():
+            self.fields["password"].help_text = ""
 
 
 class ProfileForm(forms.Form):

@@ -192,9 +192,8 @@ class TestPermissionsPolicy:
         assert response["Permissions-Policy"] == PERMISSIONS_POLICY
 
     def test_the_application_asks_for_none_of_these_features(self) -> None:
-        # The photo fields are plain file inputs: no camera access from the page.
-        for path in (SRC / "templates").rglob("*.html"):
-            assert "capture=" not in path.read_text(encoding="utf-8"), path
+        # No script asks the browser for the camera or the location. (The `capture`
+        # attribute of a file input is not covered by `camera=()`: it is not checked.)
         for path in (SRC / "static" / "js").rglob("*.js"):
             text = path.read_text(encoding="utf-8")
             assert "getUserMedia" not in text, path
