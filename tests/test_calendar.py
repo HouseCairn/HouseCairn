@@ -540,7 +540,7 @@ class TestIcs:
             "Hall\nEND:VCALENDAR\nBEGIN:VCALENDAR",
             "Semi; colon, comma \\ backslash",
             "Bidi \u202e\u2066 override \u2069",
-            "Zero\u200bwidth \x1b[31m escape \x00 nul \x7f del",
+            "Zero\u200bwidth \x1b[31m escape \x7f del",
         ],
     )
     def test_a_room_and_a_home_name_cannot_inject_lines_or_hide_text_either(
@@ -574,11 +574,39 @@ class TestIcs:
         self, anonymous: Client, alice: User, alice_home: Home, feed: Any
     ) -> None:
         task = make_task(alice, alice_home, "placeholder", 0)
-        Task.objects.filter(pk=task.pk).update(title="A\u202eB\u2066C\u200bD\x1bE\x00F")
+        Task.objects.filter(pk=task.pk).update(title="A\u202eB\u2066C\u200bD\x1bE\x7fF")
         text = get_feed(anonymous, feed[1]).content.decode()
         assert "ABCDEF" in text
-        for char in "\x00\x1b\u200b\u202e\u2066":
+        for char in "\x1b\x7f\u200b\u202e\u2066":
             assert char not in text
+
+    def test_a_nul_byte_in_a_title_a_room_or_a_home_name_never_reaches_the_document(
+        self, alice_home: Home
+    ) -> None:
+        # PostgreSQL refuses NUL in a text field, so it cannot be stored there; the document is
+        # still built from whatever a row holds (SQLite stores it), so test the builder itself.
+        home = Home(id=alice_home.id, name="Ho\x00me")
+        entry = services.Entry(
+            day=TODAY,
+            status="planned",
+            projected=False,
+            title=services.clean_title("Boi\x00ler"),
+            task_id=alice_home.id,
+            occurrence_id=None,
+            home=home,
+            room_id=None,
+            room="Li\x00ving",
+            assignee_id=None,
+            person="",
+            priority="normal",
+            can_write=False,
+            updated_at=datetime.datetime(2026, 6, 15, tzinfo=datetime.UTC),
+        )
+        raw = ics._event(entry, "https://h.example.com", ics.uid_of(entry)).to_ical()
+        assert b"\x00" not in raw
+        assert b"Boiler" in raw
+        assert b"Living" in raw
+        assert b"Home" in raw
 
     def test_nothing_private_leaves_in_the_feed(
         self, anonymous: Client, alice: User, alice_home: Home, owner_room: Any, feed: Any
