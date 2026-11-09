@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "Notifications" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'more' %}">{% include "components/icon.html" with name="chevron" %}{% translate "More" %}</a>
+  {% url 'more' as parent %}{% back_link parent %}
   <h1>{% translate "Notifications" %}</h1>
   {% if not enabled %}
     <p class="card">{% translate "Notifications are turned off on this instance: its administrator can turn them on." %}</p>

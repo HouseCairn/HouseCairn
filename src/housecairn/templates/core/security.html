@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "Security and sign-in" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'more' %}">{% include "components/icon.html" with name="chevron" %}{% translate "More" %}</a>
+  {% url 'more' as parent %}{% back_link parent %}
   <h1>{% translate "Security and sign-in" %}</h1>
   <div class="list">
     <a class="row" href="{% url 'mfa_index' %}">

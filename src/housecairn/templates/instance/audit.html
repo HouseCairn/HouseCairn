@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n tabs %}
+{% load i18n tabs navigation %}
 {% block head_title %}{% translate "Audit log" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'more' %}">{% include "components/icon.html" with name="chevron" %}{% translate "More" %}</a>
+  {% url 'more' as parent %}{% back_link parent %}
   <h1>{% translate "Audit log" %}</h1>
   {% tab_bar "instance" %}
   <p class="small">{% translate "Operations on the instance. Homes' own operations are in each home's log, for its owners; no home content appears here." %}</p>
