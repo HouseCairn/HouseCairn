@@ -17,6 +17,7 @@ from housecairn.audit.models import AuditEvent
 from housecairn.homes.models import Home, Role
 from housecairn.notifications import alerts, outbound
 from housecairn.notifications import services as notification_services
+from housecairn.notifications.models import Channel
 from housecairn.reports import services
 from housecairn.reports.models import MAX_OPEN_PER_REPORTER, Report, ReportStatus
 from housecairn.rooms import conf
@@ -399,9 +400,11 @@ class TestAlerts:
         monkeypatch.setattr(outbound, "send", record)
         return box
 
-    def reachable(self, user: User) -> User:
-        notification_services.add_channel(user, name="Phone", url=URL)
-        return user
+    def reachable(self, user: User, chat: int = 1) -> str:
+        """Give the person a channel; the stored (sealed) address, which `send` receives."""
+        url = URL.rsplit("/", 1)[0] + f"/{chat}"
+        notification_services.add_channel(user, name="Phone", url=url)
+        return str(Channel.objects.get(user=user).url)
 
     def test_the_people_who_write_and_have_a_channel_hear_of_it(
         self,
@@ -409,17 +412,22 @@ class TestAlerts:
         member: User,
         reader: User,
         alice_home: Home,
+        make_user: Callable[..., User],
+        add_member: Callable[..., object],
         outbox: list[tuple[str, str, str]],
         django_capture_on_commit_callbacks: Any,
     ) -> None:
-        for person in (alice, member, reader):
-            self.reachable(person)
+        # The report comes from `member`: the reader is left out as a reader, not as the author.
+        silent = make_user("silent@example.com")
+        add_member(alice_home, silent, Role.OWNER)  # a writer with no channel
+        heard = self.reachable(alice, 1)
+        self.reachable(member, 2)
+        self.reachable(reader, 3)
         with django_capture_on_commit_callbacks(execute=True):
-            services.create_report(reader, alice_home, title="Smell of gas")
-        assert len(outbox) == 2  # alice and member; the reader has a channel but cannot write
-        titles = {title for _sealed, title, _body in outbox}
-        assert titles == {"HouseCairn: problem reported"}
-        for _sealed, _title, body in outbox:
+            services.create_report(member, alice_home, title="Smell of gas")
+        assert [sealed for sealed, _title, _body in outbox] == [heard]
+        for _sealed, title, body in outbox:
+            assert title == "HouseCairn: problem reported"
             assert body.startswith("Smell of gas, Main house")
             assert "@" not in body
 
