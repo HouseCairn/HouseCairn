@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% if quote %}{% translate "Edit the quote" %}{% else %}{% translate "Add a quote" %}{% endif %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'projects:detail' home_id=home.id project_id=project.id %}">{% include "components/icon.html" with name="chevron" %}{{ project.title }}</a>
+  <h1>{% if quote %}{% translate "Edit the quote" %}{% else %}{% translate "Add a quote" %}{% endif %}</h1>
+  <form method="post" class="card" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% include "tasks/_field.html" with field=form.contractor_name %}
+    <datalist id="contractor-options">
+      {% for candidate in form.contractors %}<option value="{{ candidate.name }}">{{ candidate.trade_label }}</option>{% endfor %}
+    </datalist>
+    {% include "tasks/_field.html" with field=form.amount %}
+    {% include "tasks/_field.html" with field=form.status %}
+    {% include "tasks/_field.html" with field=form.budget_line %}
+    {% include "tasks/_field.html" with field=form.issued_on %}
+    {% include "tasks/_field.html" with field=form.valid_until %}
+    {% include "tasks/_field.html" with field=form.note %}
+    {% include "tasks/_field.html" with field=form.upload %}
+    <p class="small">{% blocktranslate with size=max_bytes|filesizeformat %}An image, or a PDF, text, Word, Excel or OpenDocument file, up to {{ size }}.{% endblocktranslate %}</p>
+    <details class="form-section"{% if form.paperless_id.errors or form.paperless_url.errors %} open{% endif %}>
+      <summary>{% translate "Document in Paperless-ngx" %}</summary>
+      <p class="small">{% translate "Kept for a later connection to Paperless-ngx: nothing reads these two fields yet." %}</p>
+      {% include "tasks/_field.html" with field=form.paperless_id %}
+      {% include "tasks/_field.html" with field=form.paperless_url %}
+    </details>
+    <p class="small">{% blocktranslate with currency=home.currency %}The amount is in {{ currency }}, the currency of the home.{% endblocktranslate %}</p>
+    <button type="submit" class="button-block">{% translate "Save" %}</button>
+  </form>
+  {% if quote %}
+    {% if files %}
+      <h2>{% translate "Files of the quote" %}</h2>
+      <ul class="card-list">
+        {% for stored in files %}
+          <li class="row">
+            <a class="row-body" href="{% url 'projects:file' home_id=home.id file_id=stored.id %}"><span class="row-title">{{ stored.name }}</span></a>
+            {% if can_write %}<a class="button button-secondary button-small" href="{% url 'projects:file-delete' home_id=home.id file_id=stored.id %}">{% translate "Delete" %}<span class="visually-hidden"> {{ stored.name }}</span></a>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <a class="button button-danger button-block" href="{% url 'projects:quote-delete' home_id=home.id quote_id=quote.id %}">{% translate "Delete the quote" %}</a>
+  {% endif %}
+{% endblock content %}

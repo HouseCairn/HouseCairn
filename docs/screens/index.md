@@ -1,9 +1,8 @@
 # Screen reference
 
 Each screen of HouseCairn has a help link, **?**, in its top bar, which opens
-its page here. The screens to plan projects and the budget do not exist yet;
-this reference describes the screens that exist today and grows with each
-feature.
+its page here. This reference describes the screens that exist today and grows
+with each feature.
 
 ```{toctree}
 :maxdepth: 1
@@ -48,6 +47,12 @@ stock-item
 stock-item-form
 supplier-form
 task-files
+projects
+project
+project-form
+project-compare
+budget-line-form
+quote-form
 more
 about
 ```

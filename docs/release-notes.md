@@ -48,6 +48,15 @@ with it on the project's
   the label, and the equipment each item fits. Screens, API and a guide: see
   [Stock and supplies](guides/stock.md). Label photos are stored in `/data/media/stock/`.
 
+- **Projects and quotes.** Plan a piece of work such as redoing the bathroom: a project
+  with a status, a priority, rooms, a duration and a season, its steps as tasks created
+  inside it, quotes from contractors, and a budget of lines with a planned, a committed
+  (the quotes you accept) and a paid amount, whose gap is said in words. Compare projects
+  side by side and set a budget envelope for the year. Screens, API and a guide: see
+  [Projects and quotes](guides/projects.md). Photos and quote files are stored in
+  `/data/media/projects/` and are part of the export of the home. Links of inspiration with
+  a preview come in a later change.
+
 - **Feedback from the first tests.** Each person can choose their language in the display
   preferences; the sub-navigation of the tasks, of a home and of the instance administration
   is one set of tabs; the audit log of a home now records what people do to rooms, items,

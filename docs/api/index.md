@@ -86,6 +86,24 @@ web interface: every request only sees the homes of its user
   returns it. Articles are filtered with `q` (name, manufacturer reference or supplier)
   and `low=true`; suppliers and movements with `article`, movements also with `kind`. The
   scopes are the same as for rooms.
+- **Projects** of a home ([ADR 0050](../adr/0050-projects-quotes-and-budget-lines.md)):
+  `/api/v1/homes/<home id>/projects/`, `.../budget-lines/`, `.../quotes/`,
+  `.../project-files/`, `.../project-tasks/` and `.../envelope/`. Only `title` is required
+  to create a project; `budget`, on creation only, becomes its first budget line. Every
+  amount is a string with two decimals in the currency of the home (`"1250.50"`), from
+  `"0.00"` to `"9999999999.99"`; a JSON number (a float or an integer), a negative amount or a
+  third decimal is a 400.
+  A project and a budget line give `planned`, `committed` (the sum of the quotes accepted
+  on it, read-only), `paid`, `gap` and `budget_state` (`over`, `under` or `on`).
+  `POST .../quotes/<id>/accept/` with a `budget_line` of the same project accepts a quote
+  and commits its amount on that line; a quote takes `contractor` (an id) or
+  `contractor_name` (found or created). `project-tasks` takes a `title` (a new task is made
+  in the project, with optional `due_on` and `room`) or a `task` (an existing one that is
+  in no project); deleting a row takes the task out and keeps it. `project-files` takes
+  `file` (multipart), with `quote` for the file of a quote, and `GET .../content/` and
+  `.../thumbnail/` return the file. `GET` and `PUT .../envelope/` read and set the budget
+  envelope of a `year`. Projects are filtered with `status`, `priority`, `season` and
+  `room`, the other lists with `project`. The scopes are the same as for rooms.
 - **Notifications** of the caller
   ([ADR 0043](../adr/0043-notifications-through-apprise.md)):
   `/api/v1/me/notification-channels/` lists, adds (`name` and `url`, an Apprise address),

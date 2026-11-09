@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 19:40+0000\n"
+"POT-Creation-Date: 2026-11-09 00:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -49,8 +49,8 @@ msgstr "Les données, au format JSON (ci-dessous)."
 msgid "`files/`"
 msgstr "`files/`"
 
-msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, and the photos of the labels of stock items, under `files/stock/`."
-msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, les fichiers des tâches, sous `files/attachments/`, et les photos d'étiquettes des articles du matériel, sous `files/stock/`."
+msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`, and the photos and quote files of projects, under `files/projects/`."
+msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, les fichiers des tâches, sous `files/attachments/`, les photos d'étiquettes des articles du matériel, sous `files/stock/`, et les photos et fichiers de devis des projets, sous `files/projects/`."
 
 msgid "`README.txt`"
 msgstr "`README.txt`"
@@ -142,6 +142,42 @@ msgstr "`stock_movements`"
 msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
 msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`."
 
+msgid "`projects`"
+msgstr "`projects`"
+
+msgid "`id`, `title`, `goal`, `status`, `priority`, `rooms` (room ids), `estimated_minutes`, `season` with `season_start_month` and `season_end_month`, `created_at`."
+msgstr "`id`, `title`, `goal`, `status`, `priority`, `rooms` (identifiants de pièces), `estimated_minutes`, `season` avec `season_start_month` et `season_end_month`, `created_at`."
+
+msgid "`project_budget_lines`"
+msgstr "`project_budget_lines`"
+
+msgid "`id`, `project`, `label`, `nature`, `planned`, `committed` (the sum of the accepted quotes), `paid`, `created_at`. Amounts are text with two decimals, in the currency of the home."
+msgstr "`id`, `project`, `label`, `nature`, `planned`, `committed` (la somme des devis acceptés), `paid`, `created_at`. Les montants sont du texte à deux décimales, dans la devise du logement."
+
+msgid "`project_quotes`"
+msgstr "`project_quotes`"
+
+msgid "`id`, `project`, `contractor` (an id or `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (the line an accepted quote is committed on, else `null`), `note`, `paperless_id`, `paperless_url`, `created_at`."
+msgstr "`id`, `project`, `contractor` (un identifiant ou `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (la ligne sur laquelle un devis accepté est engagé, sinon `null`), `note`, `paperless_id`, `paperless_url`, `created_at`."
+
+msgid "`project_files`"
+msgstr "`project_files`"
+
+msgid "`id`, `project`, `quote` (or `null` for a photo of the project), `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path in the archive (`files/projects/<id>.<extension>`, or `null` if the file is missing)."
+msgstr "`id`, `project`, `quote` (ou `null` pour une photo du projet), `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, et `file`, le chemin dans l'archive (`files/projects/<id>.<extension>`, ou `null` si le fichier manque)."
+
+msgid "`project_tasks`"
+msgstr "`project_tasks`"
+
+msgid "`id`, `project`, `task`: the tasks that belong to a project."
+msgstr "`id`, `project`, `task` : les tâches qui appartiennent à un projet."
+
+msgid "`project_envelopes`"
+msgstr "`project_envelopes`"
+
+msgid "`id`, `year`, `amount`: the annual budget envelope."
+msgstr "`id`, `year`, `amount` : l'enveloppe budgétaire annuelle."
+
 msgid "`tasks`"
 msgstr "`tasks`"
 
@@ -172,8 +208,8 @@ msgstr "Suppression d'un logement"
 msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
 msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
 
-msgid "The photos, the labels of stock items and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>` or `stock/<home id>`): remove that directory by hand."
-msgstr "Les photos, les étiquettes des articles du matériel et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>` ou `stock/<id du logement>`) : supprimez ce dossier à la main."
+msgid "The photos, the labels of stock items, the photos and quote files of projects and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>`, `stock/<home id>` or `projects/<home id>`): remove that directory by hand."
+msgstr "Les photos, les étiquettes des articles du matériel, les photos et fichiers de devis des projets et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>`, `stock/<id du logement>` ou `projects/<id du logement>`) : supprimez ce dossier à la main."
 
 msgid "Erasure of an account"
 msgstr "Effacement d'un compte"

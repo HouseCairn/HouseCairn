@@ -1,0 +1,27 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-09 00:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Compare projects"
+msgstr "Comparer les projets"
+
+msgid "Side by side, at `/h/<home id>/projects/compare/?p=<project id>&p=<project id>`, for the projects ticked in the [list](projects.md) (at most six). A table gives for each project its status, its **planned cost** (the total of its planned budget lines), what is **committed** by accepted quotes, its estimated duration, its priority and its preferred season, in the currency of the home. The title of a project opens it. Projects of another home are never shown, whatever the address says. With fewer than two projects, the page asks you to tick more."
+msgstr "Côte à côte, à `/h/<id du logement>/projects/compare/?p=<id du projet>&p=<id du projet>`, pour les projets cochés dans la [liste](projects.md) (six au plus). Un tableau donne pour chaque projet son statut, son **coût prévu** (le total de ses lignes de budget prévues), ce qui est **engagé** par les devis acceptés, sa durée estimée, sa priorité et sa saison souhaitée, dans la devise du logement. Le titre d'un projet l'ouvre. Les projets d'un autre logement ne s'affichent jamais, quelle que soit l'adresse. Avec moins de deux projets, la page invite à en cocher davantage."
+
