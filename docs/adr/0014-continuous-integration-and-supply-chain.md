@@ -22,7 +22,7 @@ the `main` ruleset.
 
 | Workflow | Trigger | What it checks |
 | --- | --- | --- |
-| `ci.yml` | pull request, push to `main` | `uv sync --locked`; ruff lint and format; mypy (`src`, `scripts`); pytest with coverage of at least 85 %, on SQLite and on PostgreSQL; `makemigrations --check`; `spectacular --validate --fail-on-warn`; `check --deploy --fail-level WARNING` with `deploy/production.env.example` and a key generated in the job; `build_design_tokens --check`; `check_translations --sources`; no external URL in templates and static files (`scripts/check_external_urls.py`, ADR 0011). |
+| `ci.yml` | pull request, push to `main` | `uv sync --locked`; ruff lint and format; mypy (`src`, `scripts`); pytest in parallel (pytest-xdist, one worker per vCPU) with combined coverage of at least 85 %, on SQLite and on PostgreSQL; `makemigrations --check`; `spectacular --validate --fail-on-warn`; `check --deploy --fail-level WARNING` with `deploy/production.env.example` and a key generated in the job; `build_design_tokens --check`; `check_translations --sources`; no external URL in templates and static files (`scripts/check_external_urls.py`, ADR 0011). |
 | `zizmor.yml` | pull request, push to `main` | Static analysis of the workflows with zizmor. One job fails on any finding of medium severity or more; another uploads all findings (SARIF) to code scanning. |
 | `dependency-review.yml` | pull request | New dependencies: fails on a known vulnerability of moderate severity or more, or on a license outside the allowed list below. |
 | `pr-title.yml` | pull request opened, edited, synchronized, reopened | The title is a Conventional Commit (`scripts/check_pr_title.py`): it becomes the squash commit message on `main` and feeds the release notes. |

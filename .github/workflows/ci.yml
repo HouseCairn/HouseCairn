@@ -68,7 +68,9 @@ jobs:
       - name: Compile the translations
         uses: $/.github/actions/compile-messages
       - name: Tests with coverage (SQLite)
-        run: uv run pytest --cov=housecairn --cov-fail-under=85 --hypothesis-show-statistics
+        # One worker per vCPU (pytest-xdist); the coverage of the workers is
+        # combined before the threshold is checked.
+        run: uv run pytest -n auto --dist worksteal --cov=housecairn --cov-fail-under=85 --hypothesis-show-statistics
 
   tests-postgresql:
     name: Tests (PostgreSQL)
@@ -117,7 +119,9 @@ jobs:
           print(engine)
           raise SystemExit(engine != "django.db.backends.postgresql")'
       - name: Tests with coverage (PostgreSQL)
-        run: uv run --extra postgres pytest --cov=housecairn --cov-fail-under=85 --hypothesis-show-statistics
+        # One worker per vCPU, each with its own test database
+        # (test_housecairn_gw0, ...); coverage combined as on SQLite.
+        run: uv run --extra postgres pytest -n auto --dist worksteal --cov=housecairn --cov-fail-under=85 --hypothesis-show-statistics
 
   django-checks:
     name: Django and repository checks

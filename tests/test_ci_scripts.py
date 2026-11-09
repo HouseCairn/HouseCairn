@@ -653,3 +653,21 @@ def test_a_wait_loop_ends_with_a_check_that_fails() -> None:
             assert after.strip().startswith(loop.group(1)), step["name"]
             assert re.search(r"\|\| \{ cat \"[^\"]+\"; exit 1; \}$", after), step["name"]
     assert loops >= 2
+
+
+# CI runs: tests in parallel, no third run on `main`
+
+
+@pytest.mark.parametrize(
+    ("job", "step"),
+    [
+        ("tests-sqlite", "Tests with coverage (SQLite)"),
+        ("tests-postgresql", "Tests with coverage (PostgreSQL)"),
+    ],
+)
+def test_ci_tests_run_in_parallel_with_the_coverage_threshold(job: str, step: str) -> None:
+    workflow = yaml.safe_load((WORKFLOWS / "ci.yml").read_text(encoding="utf-8"))
+    run = next(s["run"] for s in workflow["jobs"][job]["steps"] if s.get("name") == step)
+    assert " -n auto " in run
+    assert "--cov=housecairn" in run
+    assert "--cov-fail-under=85" in run
