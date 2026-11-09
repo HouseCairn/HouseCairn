@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 06:16+0000\n"
+"POT-Creation-Date: 2026-11-09 06:23+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -69,6 +69,14 @@ msgstr ""
 "La vérification que vous n'êtes pas un robot n'a pas abouti. Attendez-la "
 "quelques secondes sur la page, avec JavaScript activé, puis réessayez."
 
+#: accounts/models.py instance/models.py
+msgid "sign-in provider"
+msgstr "fournisseur de connexion"
+
+#: accounts/models.py
+msgid "typed by the person"
+msgstr "saisi par la personne"
+
 #: accounts/models.py homes/models.py instance/models.py tasks/models.py
 msgid "email address"
 msgstr "adresse e-mail"
@@ -84,6 +92,14 @@ msgstr "nom d'affichage"
 #: accounts/models.py
 msgid "How the other members of your homes see you. Optional."
 msgstr "Comment les autres membres de vos logements vous voient. Facultatif."
+
+#: accounts/models.py
+msgid "source of the display name"
+msgstr "source du nom d'affichage"
+
+#: accounts/models.py
+msgid "provider of the display name"
+msgstr "fournisseur du nom d'affichage"
 
 #: accounts/models.py
 msgid "user"
@@ -151,6 +167,17 @@ msgstr "Donnez un nom avec au moins un caractère visible."
 #: accounts/views.py
 msgid "Your account was deleted."
 msgstr "Votre compte a été supprimé."
+
+#: accounts/views.py
+msgid "Your display name is now the one of your provider."
+msgstr "Votre nom d'affichage est désormais celui de votre fournisseur."
+
+#: accounts/views.py
+msgid ""
+"Your display name will be taken from your provider at your next sign-in."
+msgstr ""
+"Votre nom d'affichage sera repris de votre fournisseur à votre prochaine "
+"connexion."
 
 #: accounts/views.py
 msgid "Profile saved."
@@ -1078,10 +1105,6 @@ msgstr "secret client"
 #: instance/models.py notifications/models.py templates/instance/providers.html
 msgid "enabled"
 msgstr "activé"
-
-#: instance/models.py
-msgid "sign-in provider"
-msgstr "fournisseur de connexion"
 
 #: instance/models.py
 msgid "sign-in providers"
@@ -3955,6 +3978,23 @@ msgstr ""
 "voient : sur les tâches dont vous êtes responsable, dans l'historique et "
 "dans le foyer. Sans nom, le début de votre adresse est affiché."
 
+#: templates/accounts/profile.html
+#, python-format
+msgid ""
+"Taken from %(provider)s. It follows the name your provider gives at each "
+"sign-in through it, until you change it here."
+msgstr ""
+"Repris de %(provider)s. Il suit le nom que donne votre fournisseur à chaque "
+"connexion par celui-ci, jusqu'à ce que vous le modifiiez ici."
+
+#: templates/accounts/profile.html
+msgid ""
+"Your provider will give your display name at your next sign-in through it, "
+"unless you type one here."
+msgstr ""
+"Votre fournisseur donnera votre nom d'affichage à votre prochaine connexion "
+"par celui-ci, sauf si vous en saisissez un ici."
+
 #: templates/accounts/profile.html templates/homes/home_form.html
 #: templates/homes/household.html templates/instance/provider.html
 #: templates/instance/settings.html templates/notifications/channel.html
@@ -3967,6 +4007,16 @@ msgstr ""
 #: templates/tasks/preferences.html templates/tasks/task_form.html
 msgid "Save"
 msgstr "Enregistrer"
+
+#: templates/accounts/profile.html
+msgid "You typed your display name: sign-in providers do not change it."
+msgstr ""
+"Vous avez saisi votre nom d'affichage : les fournisseurs de connexion ne le "
+"modifient pas."
+
+#: templates/accounts/profile.html
+msgid "Use the provider's name"
+msgstr "Reprendre le nom du fournisseur"
 
 #: templates/allauth/elements/provider.html templates/homes/invitation.html
 #: templates/homes/sso_required.html templates/instance/invitation.html

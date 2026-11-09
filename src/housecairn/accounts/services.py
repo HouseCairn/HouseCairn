@@ -25,7 +25,7 @@ from django.db import IntegrityError, transaction
 from django.utils.translation import gettext as _
 
 from housecairn.accounts import names
-from housecairn.accounts.models import InstanceSetup, SetupMethod, User
+from housecairn.accounts.models import DisplayNameSource, InstanceSetup, SetupMethod, User
 from housecairn.core.text import without_control_characters
 from housecairn.instance.config import get_setting
 
@@ -334,13 +334,13 @@ def note_sign_in(request: Any, user: User) -> str | None:
     return secret
 
 
-def set_display_name(user: User, value: str) -> User:
-    """Change how the person is named.
+def clean_display_name(value: str) -> str:
+    """`value` as a display name, or `ValidationError` when it cannot be one.
 
     One line, no control character, 60 characters at most, and not misleading: no "@" (it
     would pass for an address) and something that draws (a name of fillers is no name).
     Fillers at either end are removed. Empty is allowed: the person is then named as before
-    they chose.
+    they chose. The rule of every way in, the name a sign-in provider gives included.
     """
     cleaned = " ".join(without_control_characters(" ".join(str(value).split())).split())
     if names.looks_like_an_address(cleaned):
@@ -349,7 +349,23 @@ def set_display_name(user: User, value: str) -> User:
         raise ValidationError(_("Give a name with at least one visible character."))
     # A filler at either end draws a gap: "Sam" and "Sam\u3164" would look like two people.
     cleaned = names.trim_fillers(cleaned)
+    probe = User(display_name=cleaned)
+    probe.full_clean(exclude=[f.name for f in User._meta.fields if f.name != "display_name"])
+    return cleaned
+
+
+def set_display_name(user: User, value: str) -> User:
+    """Change how the person is named, by their own hand (`clean_display_name`).
+
+    A name the person changes is theirs: from then on, no sign-in provider overwrites it
+    (docs/adr/0045). Saving the same name again changes nothing, the source included.
+    """
+    cleaned = clean_display_name(value)
+    fields = ["display_name", "updated_at"]
+    if cleaned != user.display_name:
+        user.display_name_source = DisplayNameSource.MANUAL
+        user.display_name_provider = ""
+        fields += ["display_name_source", "display_name_provider"]
     user.display_name = cleaned
-    user.full_clean(exclude=[f.name for f in user._meta.fields if f.name != "display_name"])
-    user.save(update_fields=["display_name", "updated_at"])
+    user.save(update_fields=fields)
     return user

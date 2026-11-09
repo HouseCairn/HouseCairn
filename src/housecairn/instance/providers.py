@@ -161,6 +161,15 @@ def describe(provider: OidcProvider) -> Declared:
     )
 
 
+def provider_label(slug: str) -> str:
+    """The name a provider shows on its button; its identifier once it is gone."""
+    for app in _environment_apps():
+        if str(app.get("provider_id") or "openid_connect") == slug:
+            return str(app.get("name") or slug)
+    name = OidcProvider.objects.filter(slug=slug).values_list("name", flat=True).first()
+    return str(name or slug)
+
+
 def social_apps(provider: str | None = None, client_id: str | None = None) -> list[Any]:
     """The enabled providers of the interface, as the apps django-allauth works with.
 
