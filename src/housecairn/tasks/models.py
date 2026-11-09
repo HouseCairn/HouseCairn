@@ -6,6 +6,7 @@ has exactly one open occurrence; closing it creates the next.
 """
 
 import datetime
+from decimal import Decimal
 from typing import Any
 
 from django.conf import settings
@@ -224,8 +225,6 @@ class Task(HomeOwnedModel):
     )
     # First due date of a fixed series: it carries the day of the month (docs/adr/0031).
     series_start = models.DateField(null=True, blank=True, editable=False)
-    # Room for the materials with quantities of a task: they belong to the stock (a later
-    # lot) and will hang off the task by their own table.
 
     class Meta:
         verbose_name = _("task")
@@ -280,6 +279,46 @@ class Task(HomeOwnedModel):
             raise ValidationError(errors)
 
 
+class TaskMaterial(HomeOwnedModel):
+    """An article of the stock that a task needs, with the quantity planned (docs/adr/0046).
+
+    The article lives in the stock of the same home; the task only names it and says how
+    much. Marking the task done takes that quantity from the stock (`MaterialDraw`).
+    """
+
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="materials")
+    article = models.ForeignKey(
+        "stock.Article",
+        on_delete=models.CASCADE,
+        related_name="task_materials",
+        verbose_name=_("stock item"),
+    )
+    quantity = models.DecimalField(
+        _("quantity"),
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
+
+    class Meta:
+        verbose_name = _("task material")
+        verbose_name_plural = _("task materials")
+        ordering = ["created_at", "id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["task", "article"],
+                condition=models.Q(deleted_at__isnull=True),
+                name="one_material_line_per_article",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(quantity__gt=0), name="task_material_quantity_positive"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.article_id} x {self.quantity}"
+
+
 class Occurrence(HomeOwnedModel):
     """One time a task has to be done: when, and how it ended."""
 
@@ -329,6 +368,45 @@ class Occurrence(HomeOwnedModel):
 
     def is_overdue(self, today: datetime.date) -> bool:
         return self.is_open and self.due_on is not None and self.due_on < today
+
+
+class MaterialDraw(HomeOwnedModel):
+    """What a closed occurrence took from the stock for one article (docs/adr/0046).
+
+    `wanted` is the quantity the occurrence is held to have used (the plan when it was marked
+    done, then what was entered when completing it); `drawn` is what the stock could give
+    (never more than it held). The ledger lines themselves are in `stock.Movement`, which
+    point back to the occurrence. Taking the closing back ends the draw.
+    """
+
+    occurrence = models.ForeignKey(Occurrence, on_delete=models.CASCADE, related_name="draws")
+    article = models.ForeignKey("stock.Article", on_delete=models.CASCADE, related_name="+")
+    wanted = models.DecimalField(_("quantity used"), max_digits=10, decimal_places=2)
+    drawn = models.DecimalField(_("quantity taken from the stock"), max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = _("stock draw")
+        verbose_name_plural = _("stock draws")
+        ordering = ["created_at", "id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["occurrence", "article"],
+                condition=models.Q(deleted_at__isnull=True),
+                name="one_draw_per_article_and_occurrence",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(wanted__gte=0, drawn__gte=0, drawn__lte=models.F("wanted")),
+                name="draw_between_zero_and_wanted",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.article_id} {self.drawn}/{self.wanted}"
+
+    @property
+    def missing(self) -> Decimal:
+        """What the stock could not give."""
+        return self.wanted - self.drawn
 
 
 class TodayGroup(models.TextChoices):

@@ -7,9 +7,11 @@ writing is checked here, by role: owners and members write, read-only reads.
 
 import datetime
 import logging
+from collections.abc import Mapping
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
+from uuid import UUID
 
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import AnonymousUser
@@ -30,7 +32,7 @@ from housecairn.instance.config import instance_zone
 from housecairn.rooms import images
 from housecairn.rooms.models import Item, Room
 from housecairn.rooms.services import _read_upload
-from housecairn.tasks import durations, files, recurrence
+from housecairn.tasks import durations, files, materials, recurrence
 from housecairn.tasks.models import (
     MAX_ATTACHMENTS_PER_TASK,
     OPEN_STATUSES,
@@ -514,10 +516,14 @@ def _spawn_next(occurrence: Occurrence, *, done_on: datetime.date) -> Occurrence
 
 @dataclass(frozen=True)
 class Closing:
-    """An occurrence just closed and the one that follows it, if any."""
+    """An occurrence just closed and the one that follows it, if any.
+
+    `short` lists the stock items the stock could not give in full (docs/adr/0046).
+    """
 
     occurrence: Occurrence
     next: Occurrence | None
+    short: tuple[materials.Shortage, ...] = ()
 
 
 def _close(
@@ -545,7 +551,8 @@ def _close(
         setattr(locked, field, value)
     locked.full_clean()
     locked.save()
-    return Closing(locked, _spawn_next(locked, done_on=closed_on))
+    short = materials.draw_for_done(actor, locked, on=closed_on) if status == Status.DONE else []
+    return Closing(locked, _spawn_next(locked, done_on=closed_on), tuple(short))
 
 
 @transaction.atomic
@@ -621,6 +628,7 @@ def undo(actor: AnyUser, occurrence: Occurrence) -> Occurrence:
                 _("The next occurrence has been changed since: it cannot be undone any more.")
             )
         following.delete()
+    materials.return_draws(actor, locked, on=today())
     locked.status = locked.status_before or Status.PLANNED
     locked.status_before = ""
     locked.completed_on = None
@@ -631,17 +639,35 @@ def undo(actor: AnyUser, occurrence: Occurrence) -> Occurrence:
     return locked
 
 
-def update_occurrence(actor: AnyUser, occurrence: Occurrence, **changes: Any) -> Occurrence:
-    """Complete what is known of a task that is done: the date, the real cost, a note."""
+@transaction.atomic
+def update_occurrence(
+    actor: AnyUser,
+    occurrence: Occurrence,
+    *,
+    used: Mapping[UUID, Decimal] | None = None,
+    **changes: Any,
+) -> Occurrence:
+    """Complete what is known of a task that is done: the date, the real cost, a note.
+
+    `used` gives the quantity really used of the stock items the closing took (by article
+    identifier): the stock follows, by entries or exits (docs/adr/0046).
+    """
     _require_write(actor, occurrence.home)
-    if occurrence.status != Status.DONE:
+    locked = _lock(occurrence)
+    if locked.status != Status.DONE:
         raise ValidationError(_("The details can be filled in once the task is done."))
-    _apply(occurrence, COMPLETION_FIELDS, changes)
-    if occurrence.completed_on and occurrence.completed_on > today():
+    _apply(locked, COMPLETION_FIELDS, changes)
+    if locked.completed_on and locked.completed_on > today():
         raise ValidationError({"completed_on": _("The date cannot be in the future.")})
-    _check_date(occurrence.completed_on, "completed_on")
-    occurrence.full_clean()
-    occurrence.save()
+    _check_date(locked.completed_on, "completed_on")
+    locked.full_clean()
+    locked.save()
+    if used:
+        materials.adjust_draws(actor, locked, used, on=locked.completed_on or today())
+    # The caller's object follows the row, as it did when it was the one saved.
+    for field in COMPLETION_FIELDS:
+        setattr(occurrence, field, getattr(locked, field))
+    occurrence.updated_at = locked.updated_at
     return occurrence
 
 

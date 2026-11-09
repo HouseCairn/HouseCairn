@@ -37,7 +37,7 @@ MEMORY_FIELDS = frozenset(
         "paint_brand",
         "paint_reference",
         "paint_batch",
-        "paint_stock",
+        "paint_article",
         "floor_covering",
         "wall_covering",
         "memory_notes",
@@ -155,12 +155,20 @@ def _name_the_room(room: Room) -> None:
     room.name = str(RoomKind(room.kind).label)
 
 
+def _check_paint(room: Room) -> None:
+    """The tin left over is an item of the stock of this very home (docs/adr/0046)."""
+    article = room.paint_article
+    if article is not None and (article.home_id != room.home_id or article.deleted_at is not None):
+        raise ValidationError({"paint_article": _("This stock item is not in this home.")})
+
+
 @transaction.atomic
 def create_room(actor: AnyUser, home: Home, **fields: Any) -> Room:
     _require_write(actor, home)
     room = Room(home=home)
     _apply(room, ROOM_FIELDS | MEMORY_FIELDS, fields)
     _name_the_room(room)
+    _check_paint(room)
     last = Room.objects.filter(home=home).aggregate(last=models.Max("position"))["last"]
     room.position = 0 if last is None else last + 1
     room.full_clean()
@@ -173,6 +181,8 @@ def update_room(actor: AnyUser, room: Room, **changes: Any) -> Room:
     _require_write(actor, room.home)
     _apply(room, ROOM_FIELDS | MEMORY_FIELDS, changes)
     _name_the_room(room)
+    if "paint_article" in changes:
+        _check_paint(room)
     room.full_clean()
     room.save()
     audit.record_object(

@@ -24,10 +24,10 @@ from housecairn.rooms.api import (
     _uuid_param,
     _validation,
 )
-from housecairn.rooms.models import Item
+from housecairn.rooms.models import Item, Room
 from housecairn.stock import services
 from housecairn.stock.files import label_response
-from housecairn.stock.models import Article, Movement, MovementKind, Supplier
+from housecairn.stock.models import Article, Movement, MovementKind, Supplier, Unit
 
 QUERY = OpenApiParameter(
     "q", str, description="Only names, manufacturer references and suppliers containing this text."
@@ -69,11 +69,25 @@ class ArticleSerializer(serializers.ModelSerializer[Article]):
     low = serializers.SerializerMethodField(
         help_text="True when the quantity is at or below the threshold."
     )
+    unit = serializers.ChoiceField(
+        choices=[("", "none"), *Unit.choices],
+        required=False,
+        help_text="A unit of the list, or `other` with `unit_other` saying which.",
+    )
+    unit_label = serializers.CharField(
+        read_only=True, help_text="The unit as people read it, in the language of the request."
+    )
     compatible_items: serializers.PrimaryKeyRelatedField[Item] = serializers.PrimaryKeyRelatedField(
         many=True,
         required=False,
         queryset=Item.objects.none(),
         help_text="Items of the home this stock item fits.",
+    )
+    rooms: serializers.PrimaryKeyRelatedField[Room] = serializers.PrimaryKeyRelatedField(
+        many=True,
+        required=False,
+        queryset=Room.objects.none(),
+        help_text="Rooms of the home where it is used, besides those of the items it fits.",
     )
     label_url = serializers.SerializerMethodField(
         help_text="Address of the photo of the label, or null."
@@ -94,10 +108,13 @@ class ArticleSerializer(serializers.ModelSerializer[Article]):
             "dimensions",
             "storage_location",
             "unit",
+            "unit_other",
+            "unit_label",
             "threshold",
             "quantity",
             "low",
             "compatible_items",
+            "rooms",
             "notes",
             "label",
             "clear_label",
@@ -114,6 +131,7 @@ class ArticleSerializer(serializers.ModelSerializer[Article]):
             self.fields["compatible_items"].child_relation.queryset = Item.objects.filter(  # type: ignore[attr-defined]
                 home=home
             )
+            self.fields["rooms"].child_relation.queryset = Room.objects.filter(home=home)  # type: ignore[attr-defined]
 
     def get_low(self, article: Article) -> bool:
         return services.is_low(article, article.quantity)  # type: ignore[attr-defined]
@@ -154,12 +172,14 @@ class ArticleViewSet(
 
     def get_queryset(self) -> models.QuerySet[Article]:
         item = _uuid_param(self.request, "item")
+        room = _uuid_param(self.request, "room")
         raw_low = self.request.query_params.get("low", "").lower()
         return services.search_articles(
             self.get_home(),
             self.request.query_params.get("q", ""),
             low=raw_low in {"1", "true"},
             item=item,
+            room=room,
         )
 
     @extend_schema(
@@ -170,6 +190,12 @@ class ArticleViewSet(
             ),
             OpenApiParameter(
                 "item", OpenApiTypes.UUID, description="Only those compatible with this item."
+            ),
+            OpenApiParameter(
+                "room",
+                OpenApiTypes.UUID,
+                description="Only those that concern this room: listed on it, fitting an item "
+                "of it, or its paint left over.",
             ),
         ]
     )
@@ -190,6 +216,7 @@ class ArticleViewSet(
                 request.user,
                 self.get_home(),
                 compatible_items=data.pop("compatible_items", []),
+                rooms=data.pop("rooms", []),
                 label=data.pop("label", None),
                 **data,
             )
@@ -210,6 +237,7 @@ class ArticleViewSet(
                 request.user,
                 article,
                 compatible_items=data.pop("compatible_items", None),
+                rooms=data.pop("rooms", None),
                 label=data.pop("label", None),
                 clear_label=data.pop("clear_label", False),
                 **data,
@@ -332,6 +360,12 @@ class MovementSerializer(serializers.ModelSerializer[Movement]):
         help_text="The amount added or taken; for an inventory, the quantity counted.",
     )
     occurred_on = serializers.DateField(required=False, help_text="Defaults to today.")
+    occurrence = serializers.UUIDField(
+        source="occurrence_id",
+        read_only=True,
+        allow_null=True,
+        help_text="The occurrence of a task whose closing, or taking back, wrote the line.",
+    )
 
     class Meta:
         model = Movement
@@ -343,6 +377,7 @@ class MovementSerializer(serializers.ModelSerializer[Movement]):
             "delta",
             "occurred_on",
             "note",
+            "occurrence",
             "created_at",
         ]
         read_only_fields = ["id", "delta", "created_at"]

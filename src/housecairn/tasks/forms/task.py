@@ -1,63 +1,25 @@
-"""Forms of the task screens. Validation only; rules live in `services`."""
+"""The task form. Validation only; rules live in `services`."""
 
 from typing import Any
 
 from django import forms
-from django.conf import settings
 from django.utils.dates import MONTHS
 from django.utils.translation import gettext_lazy as _
 
-from housecairn.accounts import names
 from housecairn.accounts.models import User
-from housecairn.accounts.names import person_name
 from housecairn.rooms.models import Item
 from housecairn.tasks import durations, files, services
+from housecairn.tasks.forms.fields import (
+    _DATE,
+    ItemChoiceField,
+    MultipleFileField,
+    MultipleFileInput,
+    PersonChoiceField,
+)
 from housecairn.tasks.models import (
-    Contractor,
-    DisplayPreference,
-    Occurrence,
     Season,
     Task,
-    Trade,
 )
-
-_DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
-
-
-class MultipleFileInput(forms.FileInput):
-    allow_multiple_selected = True
-
-
-class MultipleFileField(forms.FileField):
-    """Several files from one chooser; each is checked by the service, by its content."""
-
-    widget = MultipleFileInput
-
-    def clean(self, data: Any, initial: Any = None) -> Any:
-        clean_one = super().clean
-        if isinstance(data, list | tuple):
-            return [clean_one(entry, initial) for entry in data if entry]
-        return [clean_one(data, initial)] if data else []
-
-
-class ItemChoiceField(forms.ModelChoiceField[Item]):
-    """An item, shown with its room: two items can have the same name."""
-
-    def label_from_instance(self, obj: Item) -> str:
-        return f"{obj.room.name} · {obj.name}"
-
-
-class PersonChoiceField(forms.ModelChoiceField[User]):
-    """A member of the home, by their name (docs/adr/0045).
-
-    The address is added, in brackets, only to tell apart two members of the same name.
-    """
-
-    def label_from_instance(self, obj: User) -> str:
-        shown = getattr(self, "_labels", None)
-        if shown is None:
-            shown = self._labels = names.labels(self.queryset or [])
-        return shown.get(obj.pk) or person_name(obj)
 
 
 class TaskForm(forms.ModelForm[Task]):
@@ -211,79 +173,4 @@ class TaskForm(forms.ModelForm[Task]):
             data["season_start_month"] = data["season_end_month"] = None
         elif data.get("season_start_month") is None or data.get("season_end_month") is None:
             self.add_error("season_start_month", _("Give the first and the last month."))
-        return data
-
-
-class ContractorForm(forms.ModelForm[Contractor]):
-    """A contractor: only the name is required (docs/adr/0045)."""
-
-    class Meta:
-        model = Contractor
-        fields = ["name", "trade", "trade_other", "phone", "email", "address", "note"]
-        widgets = {
-            "address": forms.Textarea(attrs={"rows": 3}),
-            "note": forms.Textarea(attrs={"rows": 3}),
-            "phone": forms.TextInput(attrs={"type": "tel", "autocomplete": "off"}),
-        }
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        trade = self.fields["trade"]
-        assert isinstance(trade, forms.ChoiceField)  # noqa: S101 - narrows the type
-        trade.choices = [("", "—"), *Trade.choices]
-        self.fields["trade"].required = False
-
-
-class CompletionForm(forms.ModelForm[Occurrence]):
-    """The details of a task that is done: when, what it cost, a note."""
-
-    class Meta:
-        model = Occurrence
-        fields = ["completed_on", "actual_cost", "completion_note"]
-        widgets = {
-            "completed_on": _DATE,
-            "completion_note": forms.Textarea(attrs={"rows": 3}),
-        }
-        labels = {"completion_note": _("Note")}
-
-
-class PostponeForm(forms.Form):
-    due_on = forms.DateField(label=_("New date"), widget=_DATE)
-
-
-class PreferencesForm(forms.ModelForm[DisplayPreference]):
-    """The Today screen, as one person wants it."""
-
-    class Meta:
-        model = DisplayPreference
-        fields = [
-            "today_group",
-            "horizon_days",
-            "show_overdue",
-            "show_upcoming",
-            "show_season",
-            "language",
-        ]
-        widgets = {"today_group": forms.RadioSelect}
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self.fields["language"] = forms.ChoiceField(
-            label=_("Language"),
-            required=False,
-            choices=[("", _("Automatic (browser, then instance default)")), *settings.LANGUAGES],
-            help_text=_("Applies to every page you open, on every device you sign in from."),
-        )
-
-
-class AttachmentForm(forms.Form):
-    uploads = MultipleFileField(
-        label=_("Photos and files"),
-        widget=MultipleFileInput(attrs={"accept": files.ACCEPT_ATTRIBUTE}),
-    )
-
-    def clean(self) -> dict[str, Any]:
-        data: dict[str, Any] = super().clean() or {}
-        if not data.get("uploads") and "uploads" not in self.errors:
-            self.add_error("uploads", _("Choose at least one file."))
         return data

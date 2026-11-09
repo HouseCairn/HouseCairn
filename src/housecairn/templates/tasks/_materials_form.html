@@ -1,0 +1,13 @@
+{% load i18n %}{# The stock items a task needs. `materials`: the formset. #}
+{{ materials.management_form }}
+{{ materials.non_form_errors }}
+<p class="small">{% translate "Stock items the task needs, with the quantity. Marking the task done takes these quantities from the stock. To remove a line, set its stock item to the dash." %}</p>
+{% for line in materials %}
+  <fieldset class="material-line">
+    <legend class="visually-hidden">{% blocktranslate with number=forloop.counter %}Stock item {{ number }}{% endblocktranslate %}</legend>
+    {{ line.non_field_errors }}
+    {% include "tasks/_field.html" with field=line.article %}
+    {% include "tasks/_field.html" with field=line.quantity %}
+  </fieldset>
+{% endfor %}
+{% if not materials.forms %}<p class="empty">{% translate "No stock item in the stock of this home yet." %}</p>{% endif %}

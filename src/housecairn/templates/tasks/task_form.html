@@ -49,6 +49,12 @@
         {% include "tasks/_field.html" with field=form.material_budget %}
       </div>
     </details>
+    <details class="form-section"{% if materials.is_open %} open{% endif %}>
+      <summary>{% translate "Materials" %}</summary>
+      <div>
+        {% include "tasks/_materials_form.html" %}
+      </div>
+    </details>
     <details class="form-section"{% if form.procedure.errors or form.notes.errors or form.uploads.errors %} open{% endif %}>
       <summary>{% translate "How to do it" %}</summary>
       <div>
