@@ -829,6 +829,8 @@ class ProjectLinkViewSet(
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
+        if not links.preview_allowed(request, data["project"]):
+            raise exceptions.Throttled()
         try:
             link = links.add_link(
                 request.user, data["project"], url=data["url"], title=data.get("title", "")

@@ -105,8 +105,8 @@ msgstr "(fixe)"
 msgid "Each limit is a setting of the instance: change it on **Instance administration, Settings**, in the **Rate limits** section, or by its variable, which then locks the field (see [Settings](settings.md)). A limit goes from 1 to 1000 a minute (100 000 a day, 60 tests a minute): it can be loosened or tightened, never switched off. A change applies within a few seconds, without a restart, and starts that limit's counters again."
 msgstr "Chaque limite est un réglage de l'instance : modifiez-la dans **Administration de l'instance, Réglages**, section **Limites de débit**, ou par sa variable, qui verrouille alors le champ (voir [Réglages](settings.md)). Une limite va de 1 à 1000 par minute (100 000 par jour, 60 tests par minute) : on peut l'assouplir ou la resserrer, jamais la supprimer. Une modification s'applique en quelques secondes, sans redémarrage, et remet à zéro les compteurs de cette limite."
 
-msgid "Beyond a limit, the page for opening an invitation link, and allauth's pages (signing in, signing up, password reset), answer 429. Sending an invitation, to a home or to the instance, and erasing an account on the web stay on their page with a message saying to try again later. The API answers 429 for all of them."
-msgstr "Au-delà d'une limite, la page d'ouverture d'un lien d'invitation et les pages d'allauth (connexion, inscription, réinitialisation du mot de passe) répondent 429. L'envoi d'une invitation, à un logement ou à l'instance, et l'effacement d'un compte sur le web restent sur leur page avec un message qui dit de réessayer plus tard. L'API répond 429 dans tous les cas."
+msgid "Beyond a limit, the page for opening an invitation link, and allauth's pages (signing in, signing up, password reset), answer 429. Sending an invitation, to a home or to the instance, adding a link and erasing an account on the web stay on their page with a message saying to try again later. The API answers 429 for all of them. A link refused for its rate is not added and its page is not read. The two link limits count only the additions that read a page: with the preview off, nothing is limited."
+msgstr "Au-delà d'une limite, la page d'ouverture d'un lien d'invitation et les pages d'allauth (connexion, inscription, réinitialisation du mot de passe) répondent 429. L'envoi d'une invitation, à un logement ou à l'instance, l'ajout d'un lien et l'effacement d'un compte sur le web restent sur leur page avec un message qui dit de réessayer plus tard. L'API répond 429 dans tous les cas. Un lien refusé pour son débit n'est pas ajouté et sa page n'est pas lue. Les deux limites de liens ne comptent que les ajouts qui lisent une page : aperçu désactivé, rien n'est limité."
 
 msgid "Which address"
 msgstr "Quelle adresse"
@@ -134,3 +134,12 @@ msgstr "Lecture d'un [flux de calendrier](../guides/calendar.md)"
 
 msgid "60 a minute per client address"
 msgstr "60 par minute par adresse client"
+
+msgid "Adding an inspiration link while the preview is on"
+msgstr "Ajout d'un lien d'inspiration quand l'aperçu est activé"
+
+msgid "10 a minute per person, and 30 a minute per home"
+msgstr "10 par minute par personne, et 30 par minute par logement"
+
+msgid "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS`, `HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME`"
+msgstr "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS`, `HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME`"

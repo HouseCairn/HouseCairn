@@ -93,6 +93,10 @@ class TestAddresses:
             "2002:c0a8:101::",  # 6to4 to a private network, 192.168/16
             "2002:7f00:1::",  # 6to4 to the loopback
             "ff02::1",
+            "fec0::1",  # site-local: deprecated, yet Python calls it global
+            "fec0::",  # first address of fec0::/10
+            "feff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",  # last address of fec0::/10
+            "fec0:0:0:1::53",  # a site-local resolver
         ],
     )
     def test_everything_else_is_refused(self, address: str | int) -> None:

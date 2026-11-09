@@ -14,6 +14,7 @@ sending invitations, erasing an account
 | Sending or sending again an invitation, to a home or to the instance | 10 a minute and 50 a day per person | `HOUSECAIRN_RATELIMIT_INVITATIONS`, `HOUSECAIRN_RATELIMIT_INVITATIONS_DAY` |
 | Opening or accepting an invitation link | 30 a minute per client address | `HOUSECAIRN_RATELIMIT_INVITATION_LINKS` |
 | Testing the mail server or an issuer | 5 a minute per administrator | `HOUSECAIRN_RATELIMIT_TESTS` |
+| Adding an inspiration link while the preview is on | 10 a minute per person, and 30 a minute per home | `HOUSECAIRN_RATELIMIT_LINK_PREVIEWS`, `HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME` |
 | Erasing an account | 5 a minute per person | (fixed) |
 | Reading a [calendar feed](../guides/calendar.md) | 60 a minute per client address | (fixed) |
 
@@ -25,8 +26,10 @@ seconds, without a restart, and starts that limit's counters again.
 
 Beyond a limit, the page for opening an invitation link, and allauth's pages
 (signing in, signing up, password reset), answer 429. Sending an invitation, to
-a home or to the instance, and erasing an account on the web stay on their page
-with a message saying to try again later. The API answers 429 for all of them.
+a home or to the instance, adding a link and erasing an account on the web stay on their
+page with a message saying to try again later. The API answers 429 for all of them.
+A link refused for its rate is not added and its page is not read. The two link limits
+count only the additions that read a page: with the preview off, nothing is limited.
 
 ## Which address
 

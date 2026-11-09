@@ -158,7 +158,7 @@ def invitation_link(request: HttpRequest | Request, raw: str) -> str:
     return emails.invitation_link(site_url(request), raw)
 
 
-def allow(request: HttpRequest | Request, action: str) -> bool:
+def allow(request: HttpRequest | Request, action: str, *, key: str | None = None) -> bool:
     """Consume one use of a rate limit of `ACCOUNT_RATE_LIMITS` (django-allauth).
 
     The client address is REMOTE_ADDR, set by ForwardedHeadersMiddleware from a
@@ -170,6 +170,6 @@ def allow(request: HttpRequest | Request, action: str) -> bool:
     django_request = request._request if isinstance(request, Request) else request
     user = request.user if request.user.is_authenticated else None
     usage = ratelimit.consume(
-        django_request, app="allauth.account", action=action, user=user, limit_get=True
+        django_request, app="allauth.account", action=action, user=user, key=key, limit_get=True
     )
     return usage is not None
