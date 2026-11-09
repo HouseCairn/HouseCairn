@@ -45,6 +45,12 @@ msgstr "L'inscription n'est pas ouverte aux adresses de ce domaine."
 msgid "The check that you are not a robot did not complete. Wait a few seconds for it on the page, with JavaScript on, then try again."
 msgstr "La vérification que vous n'êtes pas un robot n'a pas abouti. Attendez-la quelques secondes sur la page, avec JavaScript activé, puis réessayez."
 
+msgid "sign-in provider"
+msgstr "fournisseur de connexion"
+
+msgid "typed by the person"
+msgstr "saisi par la personne"
+
 msgid "email address"
 msgstr "adresse e-mail"
 
@@ -56,6 +62,12 @@ msgstr "nom d'affichage"
 
 msgid "How the other members of your homes see you. Optional."
 msgstr "Comment les autres membres de vos logements vous voient. Facultatif."
+
+msgid "source of the display name"
+msgstr "source du nom d'affichage"
+
+msgid "provider of the display name"
+msgstr "fournisseur du nom d'affichage"
 
 msgid "user"
 msgstr "utilisateur"
@@ -102,6 +114,12 @@ msgstr "Donnez un nom avec au moins un caractère visible."
 
 msgid "Your account was deleted."
 msgstr "Votre compte a été supprimé."
+
+msgid "Your display name is now the one of your provider."
+msgstr "Votre nom d'affichage est désormais celui de votre fournisseur."
+
+msgid "Your display name will be taken from your provider at your next sign-in."
+msgstr "Votre nom d'affichage sera repris de votre fournisseur à votre prochaine connexion."
 
 msgid "Profile saved."
 msgstr "Profil enregistré."
@@ -753,9 +771,6 @@ msgstr "secret client"
 
 msgid "enabled"
 msgstr "activé"
-
-msgid "sign-in provider"
-msgstr "fournisseur de connexion"
 
 msgid "sign-in providers"
 msgstr "fournisseurs de connexion"
@@ -2677,8 +2692,21 @@ msgstr "Profil"
 msgid "Your display name is what the other members of your homes see: on tasks you are in charge of, in the history and in the household. Without one, the first part of your address is shown."
 msgstr "Votre nom d'affichage est ce que les autres membres de vos logements voient : sur les tâches dont vous êtes responsable, dans l'historique et dans le foyer. Sans nom, le début de votre adresse est affiché."
 
+#, python-format
+msgid "Taken from %(provider)s. It follows the name your provider gives at each sign-in through it, until you change it here."
+msgstr "Repris de %(provider)s. Il suit le nom que donne votre fournisseur à chaque connexion par celui-ci, jusqu'à ce que vous le modifiiez ici."
+
+msgid "Your provider will give your display name at your next sign-in through it, unless you type one here."
+msgstr "Votre fournisseur donnera votre nom d'affichage à votre prochaine connexion par celui-ci, sauf si vous en saisissez un ici."
+
 msgid "Save"
 msgstr "Enregistrer"
+
+msgid "You typed your display name: sign-in providers do not change it."
+msgstr "Vous avez saisi votre nom d'affichage : les fournisseurs de connexion ne le modifient pas."
+
+msgid "Use the provider's name"
+msgstr "Reprendre le nom du fournisseur"
 
 #, python-format
 msgid "Continue with %(provider)s"

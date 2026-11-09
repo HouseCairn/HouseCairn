@@ -90,6 +90,7 @@ class UserAdmin(admin.ModelAdmin[User]):
     fields = (
         "email",
         "display_name",
+        "display_name_source",
         "first_name",
         "last_name",
         "is_active",
@@ -101,6 +102,7 @@ class UserAdmin(admin.ModelAdmin[User]):
     readonly_fields = (
         "email",
         "display_name",
+        "display_name_source",
         "first_name",
         "last_name",
         "last_login",

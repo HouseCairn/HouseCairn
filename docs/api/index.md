@@ -65,6 +65,11 @@ web interface: every request only sees the homes of its user
   the same as for rooms: `read` to read, `write` to change, and a role that writes.
 - **Me**: `GET` and `PATCH /api/v1/me/` read and change the `display_name` of the person
   signed in (`email` and `id` are read only); `name` is the name shown for them.
+  `display_name_source` says who sets the display name (`oidc`: the sign-in provider, at
+  each sign-in through it; `manual`: the person, which any change of `display_name` makes
+  it); setting it to `oidc` gives the name back to the provider. `display_name_provider`,
+  read only, is the identifier of the provider it was taken from (see
+  [Profile](../screens/profile.md)).
 - **Today, My home, History and display preferences**
   ([ADR 0037](../adr/0037-today-my-home-history-and-display-preferences.md)):
   `GET /api/v1/homes/<home id>/today/` returns the sections of the Today screen as the

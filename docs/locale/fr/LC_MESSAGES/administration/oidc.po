@@ -96,6 +96,24 @@ msgstr "**Adresses invitées** : une identité dont l'adresse a une invitation e
 msgid "An existing local account is never taken over by an identity that only shares its address: sign in with the local account, then link the identity from the account pages."
 msgstr "Un compte local existant n'est jamais repris par une identité qui en partage seulement l'adresse : connectez-vous avec le compte local, puis liez l'identité depuis les pages du compte."
 
+msgid "Display name"
+msgstr "Nom d'affichage"
+
+msgid "At each sign-in through a provider, HouseCairn takes the person's display name from the claims of the identity (userinfo, then the ID token), in this order: `name`, then `given_name` and `family_name` together, then `preferred_username`, then `nickname`. Request the `profile` scope at the provider for them to be sent. The first claim that is a valid display name is used, by the rules of the [profile](../screens/profile.md) screen; a claim that would be refused there, or that holds markup (`<` or `>`), is ignored, with one line in the log (`housecairn.security` logger) per reason that names the claim but never its value. A claim never makes a sign-in fail. When no claim is usable, the name stays as it was."
+msgstr "À chaque connexion par un fournisseur, HouseCairn reprend le nom d'affichage de la personne dans les claims de l'identité (userinfo, puis le jeton d'identité), dans cet ordre : `name`, puis `given_name` et `family_name` ensemble, puis `preferred_username`, puis `nickname`. Demandez la portée `profile` au fournisseur pour qu'ils soient envoyés. Le premier claim qui est un nom d'affichage valable est retenu, selon les règles de l'écran [Profil](../screens/profile.md) ; un claim qui y serait refusé, ou qui contient du balisage (`<` ou `>`), est ignoré, avec une ligne dans le journal (logger `housecairn.security`) par motif, qui nomme le claim mais jamais sa valeur. Un claim ne fait jamais échouer une connexion. Quand aucun claim n'est utilisable, le nom reste tel qu'il était."
+
+msgid "The provider follows the name while the person has not typed one: a change at the provider is taken at the next sign-in. Once the person changes it on their profile, no provider overwrites it, until they choose **Use the provider's name**."
+msgstr "Le fournisseur fait suivre le nom tant que la personne n'en a pas saisi un : un changement chez le fournisseur est repris à la connexion suivante. Dès que la personne le modifie dans son profil, aucun fournisseur ne l'écrase plus, jusqu'à ce qu'elle choisisse **Reprendre le nom du fournisseur**."
+
+msgid "An account linked to several providers takes the name of the provider it signs in with."
+msgstr "Un compte lié à plusieurs fournisseurs prend le nom du fournisseur par lequel il se connecte."
+
+msgid "An account that existed before this rule and has no display name takes one at its next sign-in through a provider; a display name already typed is kept as the person's own."
+msgstr "Un compte antérieur à cette règle et sans nom d'affichage en prend un à sa prochaine connexion par un fournisseur ; un nom d'affichage déjà saisi est gardé comme celui de la personne."
+
+msgid "Nothing else of the identity is stored for it: no address of the provider, no picture. The rule on addresses is unchanged: a provider cannot claim the address of another account."
+msgstr "Rien d'autre de l'identité n'est enregistré pour cela : ni adresse du fournisseur, ni photo. La règle sur les adresses ne change pas : un fournisseur ne peut pas revendiquer l'adresse d'un autre compte."
+
 msgid "Requiring single sign-on for a home"
 msgstr "Exiger l'authentification unique pour un logement"
 
