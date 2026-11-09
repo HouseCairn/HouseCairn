@@ -359,6 +359,30 @@ msgid "File deleted from the project %(title)s"
 msgstr "Fichier supprimé du projet %(title)s"
 
 #, python-format
+msgid "Stock article added: %(title)s"
+msgstr "Article de stock ajouté : %(title)s"
+
+#, python-format
+msgid "Stock article changed: %(title)s"
+msgstr "Article de stock modifié : %(title)s"
+
+#, python-format
+msgid "Stock article deleted: %(title)s"
+msgstr "Article de stock supprimé : %(title)s"
+
+#, python-format
+msgid "Supplier added: %(title)s"
+msgstr "Fournisseur ajouté : %(title)s"
+
+#, python-format
+msgid "Supplier changed: %(title)s"
+msgstr "Fournisseur modifié : %(title)s"
+
+#, python-format
+msgid "Supplier deleted: %(title)s"
+msgstr "Fournisseur supprimé : %(title)s"
+
+#, python-format
 msgid "Annual envelope set for %(title)s"
 msgstr "Enveloppe annuelle fixée pour %(title)s"
 
