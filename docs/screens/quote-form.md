@@ -17,3 +17,6 @@ or changes one (`/h/<home id>/projects/quotes/<quote id>/edit/`).
   nothing reads them yet.
 
 **Delete the quote** asks for confirmation and releases what it committed.
+
+The link at the top and **Cancel** lead back to the screen the form was opened from,
+usually the project, and so does the form once sent.

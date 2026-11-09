@@ -35,3 +35,11 @@ One [project](projects.md), at `/h/<home id>/projects/<project id>/`.
 Deleting the project (in its [form](project-form.md)) removes it, its budget lines, its
 quotes and its photos; its tasks stay. Read-only members see everything and none of the
 buttons that change it.
+
+The link at the top leads back to the screen the project was opened from (Budget, for
+example, which then stays marked in the bar), and to the list of projects otherwise. The
+buttons of the page (a task, a quote's status, a photo, a link) keep it: after them the
+link at the top still leads to the same screen. A quote, a budget line or a change of the
+project made from this page comes back to it. After deleting the project, you are back on
+the screen it was opened from, or on the list of projects when that screen was the
+project itself.

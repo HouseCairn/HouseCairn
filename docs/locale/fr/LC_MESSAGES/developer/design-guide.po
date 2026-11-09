@@ -316,8 +316,15 @@ msgstr "Un formulaire s'écrit donc :"
 msgid "and its view ends with:"
 msgstr "et sa vue se termine par :"
 
-msgid "A route that should name a back link is added to `LABELS`. Without it, a `next` to that route is not lost for the redirect after a form, but the back link falls back to its default: a link must never show an address nor a nameless \"Back\"."
-msgstr "Une route qu'un lien retour doit nommer s'ajoute à `LABELS`. Sans elle, un `next` vers cette route reste valable pour la redirection après un formulaire, mais le lien retour revient à sa valeur par défaut : un lien ne montre jamais une adresse ni un « Retour » sans nom."
+msgid "A route that should name a back link is added to `LABELS`. Without it, a `next` to that route is not lost for the redirect after a form, but the back link falls back to its default: a link must never show an address nor a nameless \"Back\". Every page of Budget is named \"Budget\", so a record opened from any of them says \"‹ Budget\"."
+msgstr "Une route qu'un lien retour doit nommer s'ajoute à `LABELS`. Sans elle, un `next` vers cette route reste valable pour la redirection après un formulaire, mais le lien retour revient à sa valeur par défaut : un lien ne montre jamais une adresse ni un « Retour » sans nom. Toutes les pages de Budget s'appellent « Budget » : une fiche ouverte depuis l'une d'elles affiche « ‹ Budget »."
+
+msgid "The bar follows the origin too: with a safe `next`, `nav_section` in `core/context_processors.py` marks the section of the `next` route, not that of the page. A room opened from the budget of the room keeps Budget marked."
+msgstr "La barre suit aussi l'origine : avec un `next` sûr, `nav_section` dans `core/context_processors.py` marque la section de la route de `next`, et non celle de la page. Une pièce ouverte depuis le budget de la pièce garde Budget marqué."
+
+#, python-brace-format
+msgid "An action in place without JavaScript (a stock movement, the status of a quote, a button of a report or of the household) posts the `next` of its page with `{% next_field %}`, and the view sends the person back to the same page with that `next` (`navigation.with_next(page, navigation.safe_next(request))`), so the back link of the page still leads to its origin."
+msgstr "Une action sur place sans JavaScript (un mouvement de stock, le statut d'un devis, un bouton d'un signalement ou du foyer) envoie le `next` de sa page avec `{% next_field %}`, et la vue renvoie la personne sur la même page avec ce `next` (`navigation.with_next(page, navigation.safe_next(request))`) : le lien retour de la page mène toujours à son origine."
 
 msgid "Default parent"
 msgstr "Parent par défaut"
@@ -334,8 +341,8 @@ msgstr "Le parent **doit** être le même d'où que la fiche soit ouverte : l'en
 msgid "With `next`, the origin wins and the label comes from its route."
 msgstr "Avec `next`, l'origine l'emporte et le libellé vient de sa route."
 
-msgid "Example: a room is listed under Rooms and also opened from the budget by room. Its parent is Rooms, so opened without `next` it says \"‹ Rooms\". Opened from the budget with `next`, it says \"‹ Budget\", keeps Budget marked in the bar and comes back to it."
-msgstr "Exemple : une pièce est listée sous Pièces et aussi ouverte depuis le budget par pièce. Son parent est Pièces : ouverte sans `next`, elle affiche « ‹ Pièces ». Ouverte depuis le budget avec `next`, elle affiche « ‹ Budget », garde Budget marqué dans la barre et y revient."
+msgid "Example: a room is listed under Rooms and also opened from Budget. Its parent is Rooms, so opened without `next` it says \"‹ Rooms\". In Budget, a row of the budget by room opens the budget of that room, a page of Budget; its **Open the room** link opens the room with `next`, so the room says \"‹ Budget\", keeps Budget marked in the bar and comes back to it. The page of the room leads to its budget by its block \"Budget of the room\" only."
+msgstr "Exemple : une pièce est listée sous Pièces et aussi ouverte depuis Budget. Son parent est Pièces : ouverte sans `next`, elle affiche « ‹ Pièces ». Dans Budget, une ligne du budget par pièce ouvre le budget de cette pièce, une page de Budget ; son lien **Ouvrir la pièce** ouvre la pièce avec `next` : la pièce affiche alors « ‹ Budget », garde Budget marqué dans la barre et y revient. La fiche de la pièce mène à son budget par son seul bloc « Budget de la pièce »."
 
 msgid "Back link and breadcrumbs"
 msgstr "Lien retour et fil d'Ariane"
