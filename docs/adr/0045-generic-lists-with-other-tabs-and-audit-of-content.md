@@ -88,6 +88,41 @@ whole address except where the address is the subject (their account, an invitat
 sheet of a member). The administration site still shows the display name read only and
 cannot take an account over (ADR 0022).
 
+**Display name from the sign-in provider.** When single sign-on is used, the name comes from
+it. At each sign-in through an OpenID Connect provider (allauth's `user_logged_in` signal,
+which carries the provider's sign-in for a sign-in and a sign-up alike), the claims of the
+identity, userinfo over the ID token, give the name in this order: `name`, then `given_name`
+and `family_name` joined by a space, then `preferred_username`, then `nickname`
+(`accounts.provider_names`). The first claim that `services.clean_display_name` accepts (the
+rule of the profile screen: one line, 60 characters, no `@`, something visible, fillers
+trimmed) is taken, and a claim that holds `<` or `>` is refused too: markup in a name means a
+provider whose attribute is misconfigured, while a person may still type those characters
+(they are escaped everywhere). A refused claim is skipped, never an error of the sign-in,
+and logged once per reason (`not text`, `too long`, `contains @`, `markup`,
+`nothing visible`, `empty`) with the names of the claims and never their values. When no
+claim is usable the name stays as it was, or absent. allauth's own `populate_user` reads the
+same claims as strings: the adapter hands it only those that are, so that an object in `name`
+cannot fail the sign-in either.
+
+The account records who sets the name, `display_name_source`: `oidc` (the default) or
+`manual`, and `display_name_provider`, the identifier of the provider the current name was
+taken from (empty for a typed name). While the source is `oidc`, each sign-in through a
+provider writes the name it gives, so a change at the provider follows; the provider used
+for the sign-in is the one that counts when an account is linked to several. Any change of
+the name by the person, on the profile screen or by `PATCH /api/v1/me/`, makes it `manual`
+(saving the same name again does not), and no sign-in overwrites it any more. **Use the
+provider's name** (`display_name_source: "oidc"` in the API) sets it back to `oidc` and takes
+the name at once from the claims allauth kept of the identity used last
+(`SocialAccount.extra_data`, stored by allauth before this decision), or else at the next
+sign-in. The profile says **Taken from** and the provider's name. The migration
+`0005_display_name_source` marks every name already typed as `manual`, so that no sign-in
+replaces it, and leaves the others `oidc`: an account linked to a provider without a display
+name takes one at its next sign-in, and an account that is not linked is never touched;
+undone, it drops the two fields and no name moves. Nothing more of the identity is stored for
+this (no address, no claim, no picture), the rule on addresses of ADR 0007 is unchanged, an
+API token cannot change the source (`me/` stays closed to tokens) and the administration site
+shows the source read only.
+
 **Routes under `me/` and API tokens.** What belongs to the person, and not to a home, is
 not an API token's to change: a token is tied to some homes and stands for an integration.
 It may read where it could (the `GET` routes keep the rules they had), and every method
@@ -185,6 +220,9 @@ keeps the `tel:` link of the sheet safe.
 - The household page and the member filters name people without their address; an
   administrator who wants an address finds it on the sheet of the member (owners) or in the
   administration site.
+- With single sign-on, the provider decides the name until the person types one: a person
+  renamed at the provider is renamed here at the next sign-in, and a name typed here is never
+  replaced without the person asking for it.
 - Two members who share a display name are told apart in the lists by their address in
   brackets. Elsewhere they look alike; the sheet of a member tells them apart. The name is a
   courtesy, not an identity.
