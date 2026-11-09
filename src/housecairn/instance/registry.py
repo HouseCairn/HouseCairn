@@ -508,6 +508,25 @@ _SETTINGS += (
         5,
         60,
     ),
+    _rate(
+        "ratelimit_link_previews",
+        "HOUSECAIRN_RATELIMIT_LINK_PREVIEWS",
+        _("Link previews a minute, per person"),
+        _(
+            "Links added while previews are on, from 1 to 1000; each one makes the server "
+            "read a web page."
+        ),
+        10,
+        1000,
+    ),
+    _rate(
+        "ratelimit_link_previews_home",
+        "HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME",
+        _("Link previews a minute, per home"),
+        _("All the members of a home together, from 1 to 1000."),
+        30,
+        1000,
+    ),
     Setting(
         "file_max_bytes",
         "HOUSECAIRN_PHOTO_MAX_BYTES",

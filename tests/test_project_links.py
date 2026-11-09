@@ -14,10 +14,12 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
+from django.core.cache import cache
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.management import call_command
 from django.db import connection
 from django.test import Client
+from django.test.utils import override_settings
 from django.urls import reverse
 from rest_framework.test import APIClient
 
@@ -25,6 +27,8 @@ from housecairn.accounts.models import User
 from housecairn.audit.models import AuditEvent
 from housecairn.core import netguard
 from housecairn.homes.models import Home
+from housecairn.instance import registry
+from housecairn.instance.ratelimits import rates
 from housecairn.projects import links, preview, services
 from housecairn.projects.models import MAX_LINKS_PER_PROJECT, Project, ProjectFile, ProjectLink
 from tests.netservers import AnyPort, Server, can_bind, serving
@@ -764,6 +768,138 @@ class TestFormLabels:
         assert 'for="id_link_title"' in shown
         assert 'id="id_link_title"' in shown
         assert 'id="id_link_url"' in shown
+
+
+PER_PERSON = {"housecairn_link_preview": "2/m/user,100/m/key"}
+PER_HOME = {"housecairn_link_preview": "100/m/user,2/m/key"}
+
+
+@pytest.fixture
+def fresh_counters() -> Iterator[None]:
+    cache.clear()
+    yield
+    cache.clear()
+
+
+def page_reads(site: Server) -> int:
+    return site.requests.count("/page")
+
+
+@pytest.mark.usefixtures("fresh_counters", "enabled")
+class TestRateLimit:
+    """Adding a link reads a page: per person and per home, on the web and in the API."""
+
+    @override_settings(ACCOUNT_RATE_LIMITS=PER_PERSON)
+    def test_the_web_stops_a_person_who_adds_too_many(
+        self,
+        signed_in: Client,
+        alice_home: Home,
+        living_room_project: Project,
+        site: Server,
+    ) -> None:
+        add = link_url("link-add", alice_home, project_id=living_room_project.id)
+        address = serve_page(site)
+        for _ in range(2):
+            assert "Link added." in signed_in.post(add, {"url": address}, follow=True).text
+        shown = signed_in.post(add, {"url": address}, follow=True).text
+        assert "Too many links added in a short time" in shown
+        assert "Link added." not in shown
+        assert ProjectLink.objects.count() == 2
+        assert page_reads(site) == 2
+
+    @override_settings(ACCOUNT_RATE_LIMITS=PER_HOME)
+    def test_the_web_stops_a_home_whoever_adds(
+        self,
+        client: Client,
+        alice: User,
+        member: User,
+        alice_home: Home,
+        living_room_project: Project,
+        site: Server,
+    ) -> None:
+        add = link_url("link-add", alice_home, project_id=living_room_project.id)
+        address = serve_page(site)
+        for who in (alice, member):
+            client.force_login(who)
+            assert "Link added." in client.post(add, {"url": address}, follow=True).text
+        client.force_login(alice)
+        shown = client.post(add, {"url": address}, follow=True).text
+        assert "Too many links added in a short time" in shown
+        assert ProjectLink.objects.count() == 2
+        assert page_reads(site) == 2
+
+    @override_settings(ACCOUNT_RATE_LIMITS=PER_PERSON)
+    def test_the_api_answers_429_and_reads_nothing(
+        self,
+        api_client: APIClient,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+        site: Server,
+    ) -> None:
+        api_client.force_authenticate(alice)
+        base = reverse("api-v1:home-project-link-list", kwargs={"home_id": alice_home.id})
+        body = {"project": str(living_room_project.id), "url": serve_page(site)}
+        for _ in range(2):
+            assert api_client.post(base, body, format="json").status_code == 201
+        refused = api_client.post(base, body, format="json")
+        assert refused.status_code == 429
+        assert ProjectLink.objects.count() == 2
+        assert page_reads(site) == 2
+
+    @override_settings(ACCOUNT_RATE_LIMITS=PER_HOME)
+    def test_the_api_stops_a_home_whoever_adds(
+        self,
+        api_client: APIClient,
+        alice: User,
+        member: User,
+        alice_home: Home,
+        living_room_project: Project,
+        site: Server,
+    ) -> None:
+        base = reverse("api-v1:home-project-link-list", kwargs={"home_id": alice_home.id})
+        body = {"project": str(living_room_project.id), "url": serve_page(site)}
+        for who in (alice, member):
+            api_client.force_authenticate(who)
+            assert api_client.post(base, body, format="json").status_code == 201
+        api_client.force_authenticate(alice)
+        assert api_client.post(base, body, format="json").status_code == 429
+        assert page_reads(site) == 2
+
+    @override_settings(ACCOUNT_RATE_LIMITS={"housecairn_link_preview": "1/m/user,1/m/key"})
+    def test_nothing_is_counted_when_nothing_is_read(
+        self, signed_in: Client, alice_home: Home, living_room_project: Project, settings: object
+    ) -> None:
+        settings.HOUSECAIRN_LINK_PREVIEW_ENABLED = False  # type: ignore[attr-defined]
+        add = link_url("link-add", alice_home, project_id=living_room_project.id)
+        for number in range(3):
+            shown = signed_in.post(add, {"url": f"https://example.com/{number}"}, follow=True)
+            assert "Link added." in shown.text
+        assert ProjectLink.objects.count() == 3
+
+    @override_settings(ACCOUNT_RATE_LIMITS={"housecairn_link_preview": "1/m/user,1/m/key"})
+    def test_a_reader_is_refused_and_uses_nothing(
+        self,
+        client: Client,
+        reader: User,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+        site: Server,
+    ) -> None:
+        add = link_url("link-add", alice_home, project_id=living_room_project.id)
+        client.force_login(reader)
+        for _ in range(2):
+            assert client.post(add, {"url": serve_page(site)}).status_code == 403
+        client.force_login(alice)
+        assert "Link added." in client.post(add, {"url": serve_page(site)}, follow=True).text
+
+    def test_the_limits_are_settings_of_the_instance(self) -> None:
+        for key, default in (("ratelimit_link_previews", 10), ("ratelimit_link_previews_home", 30)):
+            setting = registry.SETTINGS[key]
+            assert setting.section == registry.Section.RATE_LIMITS
+            assert (setting.default, setting.minimum) == (default, 1)
+        assert rates()["housecairn_link_preview"] == "10/m/user,30/m/key"
 
 
 class TestAudit:

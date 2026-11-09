@@ -450,3 +450,15 @@ msgstr "Projets"
 
 #~ msgid "`manage.py check --deploy` reads the variables and the defaults, not the database: a setting chosen in the interface is checked when it is saved, not at start-up."
 #~ msgstr "`manage.py check --deploy` lit les variables et les défauts, pas la base de données : un réglage choisi dans l'interface est contrôlé à l'enregistrement, pas au démarrage."
+
+msgid "Link previews a minute, per person"
+msgstr "Aperçus de liens par minute, par personne"
+
+msgid "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS`"
+msgstr "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS`"
+
+msgid "Link previews a minute, per home"
+msgstr "Aperçus de liens par minute, par logement"
+
+msgid "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME`"
+msgstr "`HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME`"

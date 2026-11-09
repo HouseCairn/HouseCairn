@@ -714,6 +714,11 @@ class LinkAddView(PostView):
                 request, _("Give the address of a web page, such as https://example.com.")
             )
             return self.back(project)
+        if not link_services.preview_allowed(request, project):
+            messages.error(
+                request, _("Too many links added in a short time. Try again in a minute.")
+            )
+            return self.back(project)
         try:
             link_services.add_link(
                 request.user,

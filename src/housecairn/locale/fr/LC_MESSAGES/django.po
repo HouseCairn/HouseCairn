@@ -1238,6 +1238,22 @@ msgstr "Tests du serveur de messagerie ou d'un émetteur par minute"
 msgid "Per administrator, from 1 to 60."
 msgstr "Par administrateur, de 1 à 60."
 
+msgid "Link previews a minute, per person"
+msgstr "Aperçus de liens par minute, par personne"
+
+msgid ""
+"Links added while previews are on, from 1 to 1000; each one makes the server read "
+"a web page."
+msgstr ""
+"Liens ajoutés quand les aperçus sont activés, de 1 à 1000 ; chacun fait lire une "
+"page web au serveur."
+
+msgid "Link previews a minute, per home"
+msgstr "Aperçus de liens par minute, par logement"
+
+msgid "All the members of a home together, from 1 to 1000."
+msgstr "Tous les membres d'un logement ensemble, de 1 à 1000."
+
 msgid "Largest file (bytes)"
 msgstr "Fichier le plus gros (octets)"
 
@@ -1964,6 +1980,9 @@ msgstr "Fichier supprimé."
 
 msgid "Link added."
 msgstr "Lien ajouté."
+
+msgid "Too many links added in a short time. Try again in a minute."
+msgstr "Trop de liens ajoutés en peu de temps. Réessayez dans une minute."
 
 msgid "The link and its picture disappear from the project and from the disk."
 msgstr "Le lien et son image disparaissent du projet et du disque."

@@ -153,6 +153,13 @@ with it on the project's
   address whose host browsers refuse: the redirect failed. Every `next` (sign-in, sign-up,
   invitations, display preferences, task buttons) now refuses a control or space character
   and an address that starts with `//` or `\`, and falls back to the default page.
+- **Inspiration links.** The title field of the form to add a link has its own label and
+  identifier: touching "Title" no longer puts the cursor in the field of the new task, and a
+  screen reader names it. Adding a link while the preview is on is limited, per person (10 a
+  minute) and per home (30 a minute), on the web and in the API (429), two new settings in
+  the **Rate limits** section; a refused link is not added and no page is read. The guard of
+  outgoing requests now also refuses the IPv6 site-local range `fec0::/10`. See
+  [Projects](guides/projects.md) and [Rate limits](administration/rate-limits.md).
 
 ### Upgrade notes
 

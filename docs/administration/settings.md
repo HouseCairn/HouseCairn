@@ -56,6 +56,8 @@ time zone and the name of the instance included.
 | Invitations sent a day | `HOUSECAIRN_RATELIMIT_INVITATIONS_DAY` | Rate limits | `50` | At once |
 | Invitation links opened a minute | `HOUSECAIRN_RATELIMIT_INVITATION_LINKS` | Rate limits | `30` | At once |
 | Tests of the mail server or of an issuer a minute | `HOUSECAIRN_RATELIMIT_TESTS` | Rate limits | `5` | At once |
+| Link previews a minute, per person | `HOUSECAIRN_RATELIMIT_LINK_PREVIEWS` | Rate limits | `10` | At once |
+| Link previews a minute, per home | `HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME` | Rate limits | `30` | At once |
 | Largest file (bytes) | `HOUSECAIRN_PHOTO_MAX_BYTES` | Files of a home | `10485760` | At once |
 | Space for the files of a home (MB) | `HOUSECAIRN_HOME_STORAGE_MB` | Files of a home | `5120` | At once |
 | Number of files of a home | `HOUSECAIRN_HOME_MAX_FILES` | Files of a home | `5000` | At once |

@@ -11,9 +11,12 @@ from urllib.parse import urlsplit
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.http import HttpRequest
 from django.utils.translation import gettext as _
+from rest_framework.request import Request
 
 from housecairn.audit import services as audit
+from housecairn.homes.scoping import allow
 from housecairn.instance.config import get_setting
 from housecairn.projects import preview
 from housecairn.projects.models import MAX_LINKS_PER_PROJECT, Project, ProjectFile, ProjectLink
@@ -33,6 +36,19 @@ MAX_URL_LENGTH = 500
 
 def preview_enabled() -> bool:
     return bool(get_setting("link_preview_enabled"))
+
+
+def preview_allowed(request: HttpRequest | Request, project: Project) -> bool:
+    """Take one use of the preview limits (per person and per home) before a link is added.
+
+    Only an addition that makes the server read a page counts: with previews off nothing
+    leaves the server. A person who cannot write is refused first and uses nothing.
+    False: the limit is reached, and the caller must neither read nor add anything.
+    """
+    _require_write(request.user, project.home)
+    if not preview_enabled():
+        return True
+    return allow(request, "housecairn_link_preview", key=str(project.home_id))
 
 
 def clean_url(raw: str) -> str:
