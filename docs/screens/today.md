@@ -19,10 +19,10 @@ Each row shows the task, its room and item, and its state. **Done**, on the righ
 of the row, closes it in one tap, for every task; the page comes back with a banner
 that offers **Undo**. A row opens the [task](task.md).
 
-- The **tabs** above the list, shared by the [task list](tasks.md), the
-  [history](history.md) and the [display preferences](display-preferences.md), switch
-  between **Today**, **All tasks**, **History** and **Display preferences**. The current
-  tab is marked; on a phone the tabs scroll sideways when they do not all fit.
+- The **tabs** above the list switch between the three views of the Today section:
+  **Today**, **All** (the [task list](tasks.md)) and **Calendar** (the
+  [calendar](calendar.md) of the home). The current tab is marked; all three stay
+  visible on a phone. Today is the root of its section: it has no back link.
 - When reports are open, one line under the title says how many, with **See the
   reports**. It is shown to the members who may write, never to read-only members
   (see [Reports](reports.md)).

@@ -27,8 +27,14 @@ msgstr "Les pièces détachées et les fournitures de la maison : le filtre de l
 msgid "Add a stock item"
 msgstr "Ajouter un article"
 
-msgid "Open **Stock** in the navigation, then **Add a stock item**. Give it a name and, if you have them at hand, the manufacturer reference, the dimensions, the unit and where it is kept. A photo of the label saves typing the reference now and finding it again later: HouseCairn keeps the picture and nothing else (the location and every other piece of information hidden in the file are removed)."
-msgstr "Ouvrez **Matériel** dans la navigation, puis **Ajouter un article**. Donnez-lui un nom et, si vous les avez sous la main, la référence fabricant, les dimensions, l'unité et l'endroit où il est rangé. Une photo de l'étiquette évite de recopier la référence maintenant et de la rechercher plus tard : HouseCairn garde l'image et rien d'autre (la position et toute autre information cachée dans le fichier sont supprimées)."
+msgid "Open **Rooms** in the navigation, then the **Stock** tab, then **Add a stock item**. Give it a name and, if you have them at hand, the manufacturer reference, the dimensions, the unit and where it is kept. A photo of the label saves typing the reference now and finding it again later: HouseCairn keeps the picture and nothing else (the location and every other piece of information hidden in the file are removed)."
+msgstr "Ouvrez **Pièces** dans la navigation, puis l'onglet **Matériel**, puis **Ajouter un article**. Donnez-lui un nom et, si vous les avez sous la main, la référence fabricant, les dimensions, l'unité et l'endroit où il est rangé. Une photo de l'étiquette évite de recopier la référence maintenant et de la rechercher plus tard : HouseCairn garde l'image et rien d'autre (la position et toute autre information cachée dans le fichier sont supprimées)."
+
+msgid "The **unit** comes from a list (piece, litre, metre, kilogram, roll, box) plus **Other**, where you write your own (bag, pallet). Quantities are then written with it: *1 litre*, *2 litres*."
+msgstr "L'**unité** vient d'une liste (pièce, litre, mètre, kilogramme, rouleau, boîte) plus **Autre**, où vous écrivez la vôtre (sac, palette). Les quantités s'écrivent ensuite avec elle : *1 litre*, *2 litres*."
+
+msgid "Choose the **compatible items** when the part is made for a given piece of equipment, such as the boiler a filter fits, and the **rooms** where it is used. The links are shown on the page of the stock item, and the page of a room lists the stock items that concern it (listed on the room, compatible with one of its items, or its paint left over)."
+msgstr "Choisissez les **éléments compatibles** quand la pièce est faite pour un équipement précis, comme la chaudière à laquelle convient un filtre, et les **pièces** où elle sert. Les liens s'affichent sur la page de l'article, et la page d'une pièce liste les articles qui la concernent (rattachés à la pièce, compatibles avec l'un de ses éléments, ou sa peinture restante)."
 
 msgid "Count what you have"
 msgstr "Compter ce que l'on a"
@@ -36,8 +42,17 @@ msgstr "Compter ce que l'on a"
 msgid "The quantity is never typed in: it is the sum of the movements. On the page of an item, enter a quantity and press **Add to stock** after a purchase, **Take from stock** when you use some, or **Set the count** after counting the shelf, which corrects the stock to what you counted. A movement is never edited; a mistake is corrected by another one, so the history always explains the figure."
 msgstr "La quantité ne se saisit jamais : c'est la somme des mouvements. Sur la page d'un article, saisissez une quantité et appuyez sur **Ajouter au stock** après un achat, **Sortir du stock** quand vous en utilisez, ou **Fixer le compte** après avoir compté l'étagère, ce qui corrige le stock à ce que vous avez compté. Un mouvement ne se modifie jamais ; une erreur se corrige par un autre mouvement, de sorte que l'historique explique toujours le chiffre."
 
+msgid "A **count dated in the past** states what is on the shelf now: its difference is worked out against the whole stock at the moment you record it, wherever the date puts the line in the history. The date only places the line."
+msgstr "Un **compte daté dans le passé** dit ce qu'il y a sur l'étagère maintenant : son écart se calcule avec tout le stock au moment où vous l'enregistrez, quelle que soit la place que la date donne à la ligne dans l'historique. La date ne fait que placer la ligne."
+
 msgid "Set a **threshold** to see which items are running out: they carry a **Low** label, and **Low stock only** in the list keeps them."
 msgstr "Fixez un **seuil** pour voir quels articles s'épuisent : ils portent la mention **Bas**, et **Stock bas seulement** dans la liste les isole."
+
+msgid "Let the tasks use the stock"
+msgstr "Laisser les tâches utiliser le matériel"
+
+msgid "A task lists the stock items it needs, with a quantity, in the **Materials** section of its form or on its page (see [Tasks and recurrence](tasks-and-recurrence.md)). Marking the task **Done** takes those quantities from the stock, in one gesture; **Undo** puts them back. The exits and entries this writes name the task on the page of the stock item. If the stock holds less than the task needs, **Done** is not refused: the stock goes down to zero and a message tells how much was missing."
+msgstr "Une tâche liste les articles dont elle a besoin, avec une quantité, dans la section **Fournitures** de son formulaire ou sur sa page (voir [Tâches et récurrence](tasks-and-recurrence.md)). Marquer la tâche **Fait** prend ces quantités dans le stock, en un seul geste ; **Annuler** les remet. Les sorties et les entrées ainsi écrites nomment la tâche sur la page de l'article. Si le stock en contient moins que la tâche n'en demande, **Fait** n'est pas refusé : le stock descend à zéro et un message dit combien il manquait."
 
 msgid "Note where to buy"
 msgstr "Noter où acheter"
@@ -48,20 +63,6 @@ msgstr "Ajoutez un ou plusieurs fournisseurs à un article : le nom, leur réfé
 msgid "Share"
 msgstr "Partager"
 
-msgid "The **unit** comes from a list (piece, litre, metre, kilogram, roll, box) plus **Other**, where you write your own (bag, pallet). Quantities are then written with it: *1 litre*, *2 litres*."
-msgstr "L'**unité** vient d'une liste (pièce, litre, mètre, kilogramme, rouleau, boîte) plus **Autre**, où vous écrivez la vôtre (sac, palette). Les quantités s'écrivent ensuite avec elle : *1 litre*, *2 litres*."
-
-msgid "Choose the **compatible items** when the part is made for a given piece of equipment, such as the boiler a filter fits, and the **rooms** where it is used. The links are shown on the page of the stock item, and the page of a room lists the stock items that concern it (listed on the room, compatible with one of its items, or its paint left over)."
-msgstr "Choisissez les **éléments compatibles** quand la pièce est faite pour un équipement précis, comme la chaudière à laquelle convient un filtre, et les **pièces** où elle sert. Les liens s'affichent sur la page de l'article, et la page d'une pièce liste les articles qui la concernent (rattachés à la pièce, compatibles avec l'un de ses éléments, ou sa peinture restante)."
-
-msgid "A **count dated in the past** states what is on the shelf now: its difference is worked out against the whole stock at the moment you record it, wherever the date puts the line in the history. The date only places the line."
-msgstr "Un **compte daté dans le passé** dit ce qu'il y a sur l'étagère maintenant : son écart se calcule avec tout le stock au moment où vous l'enregistrez, quelle que soit la place que la date donne à la ligne dans l'historique. La date ne fait que placer la ligne."
-
-msgid "Let the tasks use the stock"
-msgstr "Laisser les tâches utiliser le matériel"
-
-msgid "A task lists the stock items it needs, with a quantity, in the **Materials** section of its form or on its page (see [Tasks and recurrence](tasks-and-recurrence.md)). Marking the task **Done** takes those quantities from the stock, in one gesture; **Undo** puts them back. The exits and entries this writes name the task on the page of the stock item. If the stock holds less than the task needs, **Done** is not refused: the stock goes down to zero and a message tells how much was missing."
-msgstr "Une tâche liste les articles dont elle a besoin, avec une quantité, dans la section **Fournitures** de son formulaire ou sur sa page (voir [Tâches et récurrence](tasks-and-recurrence.md)). Marquer la tâche **Fait** prend ces quantités dans le stock, en un seul geste ; **Annuler** les remet. Les sorties et les entrées ainsi écrites nomment la tâche sur la page de l'article. Si le stock en contient moins que la tâche n'en demande, **Fait** n'est pas refusé : le stock descend à zéro et un message dit combien il manquait."
-
 msgid "Everyone in the home sees the same stock; members and owners change it, read-only members change nothing. The same data is available to scripts through the [API](../api/index.md) (`articles`, `suppliers` and `movements`), with the `read` and `write` scopes of an API token. The stock, the materials of the tasks and what each closing took are part of the [export of the home](../administration/data.md), label photos included, and is erased with it."
 msgstr "Tout le monde dans le logement voit le même matériel ; les membres et les propriétaires le modifient, les membres en lecture seule ne modifient rien. Les mêmes données sont disponibles pour les scripts par l'[API](../api/index.md) (`articles`, `suppliers` et `movements`), avec les portées `read` et `write` d'un jeton d'API. Le matériel, les fournitures des tâches et ce que chaque clôture a pris font partie de l'[export du logement](../administration/data.md), photos d'étiquettes comprises, et sont effacés avec lui."
+

@@ -3,84 +3,22 @@
 {% block head_title %}{% translate "More" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "More" %}</h1>
-  <h2>{% translate "Settings" %}</h2>
-  <div class="list">
-    <a class="row" href="{% url 'homes:list' %}">
-      <span class="row-body"><span class="row-title">{% translate "Homes" %}</span></span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    <a class="row" href="{% url 'profile' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Profile" %}</span>
-        <span class="row-text">{% translate "Your display name" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    <a class="row" href="{% url 'display-preferences' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Display preferences" %}</span>
-        <span class="row-text">{% translate "How the Today screen is laid out for you" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    <a class="row" href="{% url 'notifications:index' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Notifications" %}</span>
-        <span class="row-text">{% translate "Where and when your reminders go" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    <a class="row" href="{% url 'mfa_index' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Account security" %}</span>
-        <span class="row-text">{% translate "Passkeys, authenticator app, recovery codes" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    {% if user.is_staff and user.is_superuser %}
-    <a class="row" href="{% url 'instance:overview' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Instance administration" %}</span>
-        <span class="row-text">{% translate "Accounts, invitations, audit log" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    {% endif %}
-    <a class="row" href="{% if user.has_usable_password %}{% url 'account_change_password' %}{% else %}{% url 'account_set_password' %}{% endif %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Password" %}</span>
-        <span class="row-text">{% translate "Change the password you sign in with" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    {% if email_configured %}
-    <a class="row" href="{% url 'account_email' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Email addresses" %}</span>
-        <span class="row-text">{% translate "Add or verify the addresses of your account" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    {% endif %}
-    <a class="row" href="{% url 'api-docs' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "API documentation" %}</span>
-        <span class="row-text">{% translate "OpenAPI schema and test interface" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    <a class="row" href="{% url 'account_delete' %}">
-      <span class="row-body">
-        <span class="row-title">{% translate "Delete my account" %}</span>
-        <span class="row-text">{% translate "Erase your account and your data" %}</span>
-      </span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-    <a class="row" href="{% url 'about' %}">
-      <span class="row-body"><span class="row-title">{% translate "About" %}</span></span>
-      {% include "components/icon.html" with name="chevron" class="chevron" %}
-    </a>
-  </div>
+  {% for group in groups %}
+    <section aria-labelledby="more-{{ group.key }}">
+      <h2 id="more-{{ group.key }}">{{ group.label }}</h2>
+      <div class="list">
+        {% for entry in group.entries %}
+          <a class="row" href="{{ entry.url }}">
+            <span class="row-body">
+              <span class="row-title">{{ entry.label }}</span>
+              {% if entry.text %}<span class="row-text">{{ entry.text }}</span>{% endif %}
+            </span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endfor %}
   <form method="post" action="{% url 'account_logout' %}">
     {% csrf_token %}
     <button type="submit" class="button-secondary button-block">

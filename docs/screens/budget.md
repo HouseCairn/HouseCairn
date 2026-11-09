@@ -1,8 +1,7 @@
 # Budget
 
-The budget of a home, at `/h/<home id>/budget/`. **Tasks** in the navigation opens the
-tasks; **Budget** is one of its tabs, with its own tabs **Overview**, **By room**,
-**By project** and **By task**. `/budget/` goes straight to the budget of your only home, and
+The budget of a home, at `/h/<home id>/budget/`. **Budget** in the navigation opens it,
+with its tabs **Summary**, **Rooms**, **Projects** and **Upkeep**. `/budget/` goes straight to the budget of your only home, and
 adds your homes up by currency when you belong to several (never converting one currency
 into another).
 

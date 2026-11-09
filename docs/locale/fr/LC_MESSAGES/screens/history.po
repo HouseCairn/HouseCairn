@@ -21,11 +21,11 @@ msgstr ""
 msgid "History"
 msgstr "Historique"
 
-msgid "What was done or skipped in a home, at `/h/<home id>/history/`, the most recent first. Each row shows the task, where it is, the contractor and who closed it, the outcome with its date, and the real cost when one was entered. A row opens the [task](task.md)."
-msgstr "Ce qui a été fait ou ignoré dans un logement, sur `/h/<home id>/history/`, le plus récent d'abord. Chaque ligne montre la tâche, où elle se trouve, l'intervenant et qui l'a fermée, le résultat avec sa date, et le coût réel quand il a été saisi. Une ligne ouvre la [tâche](task.md)."
+msgid "What was done or skipped in a home: the **Done** filter of the [task list](tasks.md) (**All**, then **Done**), at `/h/<home id>/tasks/?status=done`, the most recent first. The former address, `/h/<home id>/history/`, leads there with its filters. Each row shows the task, where it is, the contractor and who closed it, the outcome with its date, and the real cost when one was entered. A row opens the [task](task.md)."
+msgstr "Ce qui a été fait ou ignoré dans un logement : le filtre **Fait** de la [liste des tâches](tasks.md) (**Toutes**, puis **Fait**), sur `/h/<home id>/tasks/?status=done`, le plus récent d'abord. L'ancienne adresse, `/h/<home id>/history/`, y mène avec ses filtres. Chaque ligne montre la tâche, où elle se trouve, l'intervenant et qui l'a fermée, le résultat avec sa date, et le coût réel quand il a été saisi. Une ligne ouvre la [tâche](task.md)."
 
-msgid "The tabs above it are those of [Today](today.md). People are named by their [display name](profile.md), never by their address."
-msgstr "Les onglets au-dessus sont ceux d'[Aujourd'hui](today.md). Les personnes sont nommées par leur [nom d'affichage](profile.md), jamais par leur adresse."
+msgid "People are named by their [display name](profile.md), never by their address."
+msgstr "Les personnes sont nommées par leur [nom d'affichage](profile.md), jamais par leur adresse."
 
 msgid "The form at the top narrows the list. It is folded under **Filters** (open when a filter is active), so the list stays in reach on a phone. All fields are optional:"
 msgstr "Le formulaire du haut restreint la liste. Il est replié sous **Filtres** (ouvert quand un filtre est actif), pour que la liste reste à portée sur téléphone. Tous les champs sont facultatifs :"
@@ -36,8 +36,8 @@ msgstr "**Rechercher** cherche dans le titre de la tâche et dans la note écrit
 msgid "**Room**, **Item**, **Contractor** and **Done by**."
 msgstr "**Pièce**, **Élément**, **Intervenant** et **Fait par**."
 
-msgid "**Outcome**: done or skipped."
-msgstr "**Résultat** : faite ou ignorée."
+msgid "**Outcome**: done or skipped (`?outcome=`)."
+msgstr "**Résultat** : faite ou ignorée (`?outcome=`)."
 
 msgid "**From** and **To**: the dates it was closed. A skipped occurrence has no completion date, so the day it was skipped is used."
 msgstr "**Du** et **Au** : les dates de clôture. Une occurrence ignorée n'a pas de date de réalisation : le jour où elle a été ignorée est utilisé."

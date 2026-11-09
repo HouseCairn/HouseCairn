@@ -24,35 +24,145 @@ msgstr "modifié le"
 msgid "deleted at"
 msgstr "supprimé le"
 
-msgid "Today"
-msgstr "Aujourd'hui"
+msgid "Home settings"
+msgstr "Réglages du logement"
 
-msgid "All tasks"
-msgstr "Toutes les tâches"
+msgid "Name, currency, hemisphere, export"
+msgstr "Nom, devise, hémisphère, export"
 
-msgid "History"
-msgstr "Historique"
+msgid "Household and roles"
+msgstr "Foyer et rôles"
 
-msgid "Calendar"
-msgstr "Calendrier"
+msgid "Who shares this home, and with which rights"
+msgstr "Qui partage ce logement, et avec quels droits"
 
-msgid "Projects"
-msgstr "Projets"
+msgid "Reports"
+msgstr "Signalements"
 
-msgid "Budget"
-msgstr "Budget"
+msgid "Problems reported in this home"
+msgstr "Problèmes signalés dans ce logement"
 
 msgid "Contractors"
 msgstr "Intervenants"
 
+msgid "The people and companies who work on the home"
+msgstr "Les personnes et entreprises qui interviennent dans le logement"
+
+msgid "QR labels"
+msgstr "Étiquettes QR"
+
+msgid "Stickers that open a room, an item or an article"
+msgstr "Des autocollants qui ouvrent une pièce, un élément ou un article"
+
+msgid "My homes"
+msgstr "Mes logements"
+
+msgid "Add a home or open another one"
+msgstr "Ajouter un logement ou en ouvrir un autre"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Your display name"
+msgstr "Votre nom d'affichage"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Where and when your reminders go"
+msgstr "Où et quand partent vos rappels"
+
 msgid "Display preferences"
 msgstr "Préférences d'affichage"
 
+msgid "How the Today screen is laid out for you"
+msgstr "La disposition de l'écran Aujourd'hui pour vous"
+
+msgid "Calendar in another application"
+msgstr "Calendrier dans une autre application"
+
+msgid "Secret calendar feeds"
+msgstr "Flux de calendrier secrets"
+
+msgid "Security and sign-in"
+msgstr "Sécurité et connexion"
+
+msgid "Passkeys, password, email addresses, deleting your account"
+msgstr "Clés d'accès, mot de passe, adresses e-mail, suppression du compte"
+
+msgctxt "group of More"
+msgid "Home"
+msgstr "Logement"
+
+msgid "Me"
+msgstr "Moi"
+
+msgid "Instance"
+msgstr "Instance"
+
+msgid "Instance administration"
+msgstr "Administration de l'instance"
+
+msgid "Accounts, invitations, settings, audit log"
+msgstr "Comptes, invitations, réglages, journal d'audit"
+
+msgid "Help"
+msgstr "Aide"
+
+msgid "A guide to every screen"
+msgstr "Le guide de chaque écran"
+
+msgid "API documentation"
+msgstr "Documentation de l'API"
+
+msgid "OpenAPI schema and test interface"
+msgstr "Schéma OpenAPI et interface de test"
+
+msgid "About"
+msgstr "À propos"
+
+msgid "Today"
+msgstr "Aujourd'hui"
+
+msgctxt "tasks"
+msgid "All"
+msgstr "Toutes"
+
+msgid "Calendar"
+msgstr "Calendrier"
+
+msgid "Rooms"
+msgstr "Pièces"
+
+msgid "Stock"
+msgstr "Matériel"
+
+msgid "In progress"
+msgstr "En cours"
+
+msgid "Ideas"
+msgstr "Idées"
+
+msgctxt "projects tab"
+msgid "Finished"
+msgstr "Terminés"
+
+msgid "Summary"
+msgstr "Synthèse"
+
+msgctxt "budget tab"
+msgid "Rooms"
+msgstr "Pièces"
+
+msgctxt "budget tab"
+msgid "Projects"
+msgstr "Projets"
+
+msgid "Upkeep"
+msgstr "Entretien"
+
 msgid "Overview"
 msgstr "Vue d'ensemble"
-
-msgid "Household and roles"
-msgstr "Foyer et rôles"
 
 msgid "Audit log"
 msgstr "Journal d'audit"
@@ -66,23 +176,14 @@ msgstr "Fournisseurs de connexion"
 msgid "Files of the homes"
 msgstr "Fichiers des logements"
 
-msgid "By room"
-msgstr "Par pièce"
+msgid "Projects"
+msgstr "Projets"
 
-msgid "By project"
-msgstr "Par projet"
-
-msgid "By task"
-msgstr "Par tâche"
-
-msgid "Tasks"
-msgstr "Tâches"
+msgid "Budget"
+msgstr "Budget"
 
 msgid "Home"
 msgstr "Accueil"
-
-msgid "Instance administration"
-msgstr "Administration de l'instance"
 
 msgid "What needs doing in the house, where, when, with what and for how much."
 msgstr "Ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
@@ -183,9 +284,6 @@ msgstr "Continuer avec %(provider)s"
 msgid "Skip to content"
 msgstr "Aller au contenu"
 
-msgid "About"
-msgstr "À propos"
-
 #, python-format
 msgid "version %(version)s"
 msgstr "version %(version)s"
@@ -208,32 +306,14 @@ msgstr "Voir mes logements"
 msgid "More"
 msgstr "Plus"
 
-msgid "Homes"
-msgstr "Logements"
-
-msgid "Profile"
-msgstr "Profil"
-
-msgid "Your display name"
-msgstr "Votre nom d'affichage"
-
-msgid "How the Today screen is laid out for you"
-msgstr "La disposition de l'écran Aujourd'hui pour vous"
-
-msgid "Notifications"
-msgstr "Notifications"
-
-msgid "Where and when your reminders go"
-msgstr "Où et quand partent vos rappels"
+msgid "Sign out"
+msgstr "Se déconnecter"
 
 msgid "Account security"
 msgstr "Sécurité du compte"
 
 msgid "Passkeys, authenticator app, recovery codes"
 msgstr "Clés d'accès, application d'authentification, codes de récupération"
-
-msgid "Accounts, invitations, audit log"
-msgstr "Comptes, invitations, journal d'audit"
 
 msgid "Password"
 msgstr "Mot de passe"
@@ -247,29 +327,14 @@ msgstr "Adresses e-mail"
 msgid "Add or verify the addresses of your account"
 msgstr "Ajouter ou vérifier les adresses de votre compte"
 
-msgid "API documentation"
-msgstr "Documentation de l'API"
-
-msgid "OpenAPI schema and test interface"
-msgstr "Schéma OpenAPI et interface de test"
-
 msgid "Delete my account"
 msgstr "Supprimer mon compte"
 
-msgid "Erase your account and your data"
-msgstr "Effacer votre compte et vos données"
-
-msgid "Sign out"
-msgstr "Se déconnecter"
+msgid "Erase your account and your data. You confirm on the next page."
+msgstr "Effacer votre compte et vos données. Vous confirmez à la page suivante."
 
 msgid "Help for this page"
 msgstr "Aide sur cette page"
 
 msgid "Main navigation"
 msgstr "Navigation principale"
-
-msgid "Rooms"
-msgstr "Pièces"
-
-msgid "Stock"
-msgstr "Matériel"

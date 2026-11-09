@@ -1,12 +1,12 @@
 # Projects
 
-The projects of a home, at `/h/<home id>/projects/`. **Tasks** in the navigation opens the
-tasks; **Projects** is one of its tabs. `/projects/` first asks which home when you belong
-to several.
+The projects of a home, at `/h/<home id>/projects/`. **Projects** in the navigation opens
+it; `/projects/` first asks which home when you belong to several.
 
-A project is a piece of work with an end, such as redoing the bathroom. The list groups the
-projects by status, the ones going on first (in progress, planned, idea), then the finished
-and the abandoned ones. It is a plain list, not a board. A row shows the title, the planned
+A project is a piece of work with an end, such as redoing the bathroom. Three tabs split the
+projects by status: **In progress** (in progress and planned, the root of the section, at
+`/h/<home id>/projects/`), **Ideas** (`?view=ideas`) and **Finished** (finished and
+abandoned, `?view=finished`). Within a tab the list groups the projects by status. It is a plain list, not a board. A row shows the title, the planned
 budget and, in words, where the budget stands: **... left**, **Over budget by ...** or
 **On budget**. A row opens the [project](project.md).
 

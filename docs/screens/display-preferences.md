@@ -1,9 +1,7 @@
 # Display preferences
 
 How the [Today](today.md) screen is laid out for you, at `/me/preferences/`
-(**More**, then **Display preferences**, or the **Display preferences** tab of the
-[tasks](tasks.md) screens, which stays one tap away and brings you back to the home you came
-from). They belong to you, for all your homes: the other people of a home keep their own.
+(**More**, then **Display preferences**, in the **Me** group). They belong to you, for all your homes: the other people of a home keep their own.
 
 - **Group by**: **Urgency** (today, then coming up), **Room**, **Person** or
   **Calendar** (one section per day).

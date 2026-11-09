@@ -21,14 +21,14 @@ msgstr ""
 msgid "Tasks"
 msgstr "Tâches"
 
-msgid "The tasks of a home, at `/h/<home id>/tasks/`. **Tasks** in the navigation opens it directly when you belong to a single home; with several homes, it first asks which one (`/tasks/`)."
-msgstr "Les tâches d'un logement, sur `/h/<home id>/tasks/`. **Tâches** dans la navigation l'ouvre directement quand vous appartenez à un seul logement ; avec plusieurs logements, elle demande d'abord lequel (`/tasks/`)."
+msgid "The tasks of a home, at `/h/<home id>/tasks/`: the **All** tab of **Today** in the navigation. `/tasks/` opens it directly when you belong to a single home; with several homes, it first asks which one."
+msgstr "Les tâches d'un logement, sur `/h/<home id>/tasks/` : l'onglet **Toutes** d'**Aujourd'hui** dans la navigation. `/tasks/` l'ouvre directement quand vous appartenez à un seul logement ; avec plusieurs logements, elle demande d'abord lequel."
 
 msgid "Each row is one time a task has to be done (an occurrence): its title, the room and the item it concerns, and when. The oldest dates come first, so the arrears stay on top and are shown in red (**2 days late**); a task with no date comes last. A row opens the [task](task.md); **Done** on the right of the row marks it done in one tap, for every task, and a banner offers **Undo** right after."
 msgstr "Chaque ligne est une fois où une tâche doit être faite (une occurrence) : son titre, la pièce et l'élément concernés, et quand. Les dates les plus anciennes viennent d'abord, si bien que l'arriéré reste en tête et s'affiche en rouge (**2 jours de retard**) ; une tâche sans date vient en dernier. Une ligne ouvre la [tâche](task.md) ; **Fait** à droite de la ligne la marque faite d'un geste, pour toutes les tâches, et un bandeau propose **Annuler** juste après."
 
-msgid "The first selector switches between **To do** and **Done** (the history, the most recent first). The second keeps the tasks of one room."
-msgstr "Le premier sélecteur passe de **À faire** à **Fait** (l'historique, le plus récent d'abord). Le second garde les tâches d'une pièce."
+msgid "The first selector switches between **To do** and **Done**. **Done** is the [history](history.md): what was done or skipped, the most recent first, with its filters and its real cost. With **To do**, the second selector keeps the tasks of one room."
+msgstr "Le premier sélecteur passe de **À faire** à **Fait**. **Fait** est l'[historique](history.md) : ce qui a été fait ou ignoré, le plus récent d'abord, avec ses filtres et son coût réel. Avec **À faire**, le second sélecteur garde les tâches d'une pièce."
 
 msgid "A task can be hidden until a few days before its date (see [Tasks and recurrence](../guides/tasks-and-recurrence.md)). The page tells how many are hidden and **Show them** lists them anyway."
 msgstr "Une tâche peut être masquée jusqu'à quelques jours avant sa date (voir [Tâches et récurrence](../guides/tasks-and-recurrence.md)). La page indique combien sont masquées et **Les afficher** les liste malgré tout."
@@ -36,8 +36,8 @@ msgstr "Une tâche peut être masquée jusqu'à quelques jours avant sa date (vo
 msgid "The list shows 30 rows at a time."
 msgstr "La liste affiche 30 lignes à la fois."
 
-msgid "The **tabs** above the selectors open [Today](today.md), the [history](history.md), the [contractors](contractors.md) and the [display preferences](display-preferences.md); the current tab is marked."
-msgstr "Les **onglets** au-dessus des sélecteurs ouvrent [Aujourd'hui](today.md), l'[historique](history.md), les [intervenants](contractors.md) et les [préférences d'affichage](display-preferences.md) ; l'onglet courant est marqué."
+msgid "The **tabs** above the selectors are those of [Today](today.md): **Today**, **All** and **Calendar**. The [contractors](contractors.md) and the [display preferences](display-preferences.md) are in [More](more.md)."
+msgstr "Les **onglets** au-dessus des sélecteurs sont ceux d'[Aujourd'hui](today.md) : **Aujourd'hui**, **Toutes** et **Calendrier**. Les [intervenants](contractors.md) et les [préférences d'affichage](display-preferences.md) sont dans [Plus](more.md)."
 
 msgid "**Add a task** opens the [task form](task-form.md)."
 msgstr "**Ajouter une tâche** ouvre le [formulaire de tâche](task-form.md)."

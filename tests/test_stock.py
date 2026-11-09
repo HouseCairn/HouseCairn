@@ -598,22 +598,18 @@ class TestRolesAndIsolation:
 
 
 class TestNavigation:
-    def test_the_stock_entry_is_highlighted_on_its_screens(
+    def test_the_rooms_entry_is_highlighted_on_its_screens(
         self, alice_home: Home, article: Article
     ) -> None:
         factory = RequestFactory()
         for address in (url("list", alice_home), url("detail", alice_home, article_id=article.id)):
             request = factory.get(address)
             request.resolver_match = resolve(address)
-            assert nav_section(request) == "stock"
+            assert nav_section(request) == "rooms"
             assert stock_url(request) == url("list", alice_home)
         request = factory.get(reverse("stock"))
         request.resolver_match = resolve(reverse("stock"))
-        assert (nav_section(request), stock_url(request)) == ("stock", reverse("stock"))
-
-    def test_the_navigation_links_to_the_stock(self, signed_in: Client) -> None:
-        page = signed_in.get(reverse("homes:list")).content.decode()
-        assert 'href="/stock/"' in page
+        assert (nav_section(request), stock_url(request)) == ("rooms", reverse("stock"))
 
 
 class TestLedgerRules:

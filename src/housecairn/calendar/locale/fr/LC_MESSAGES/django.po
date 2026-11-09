@@ -65,9 +65,6 @@ msgstr "Fait"
 msgid "Calendar views"
 msgstr "Vues du calendrier"
 
-msgid "Feeds"
-msgstr "Flux"
-
 msgid "Filter the calendar"
 msgstr "Filtrer le calendrier"
 

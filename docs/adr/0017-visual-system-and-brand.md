@@ -49,7 +49,8 @@ label, safe-area padding), a column on the left from 56 rem. The app bar carries
 the brand and an empty `header_actions` block (the documentation link goes there).
 Signed-out pages have no navigation: the wordmark centred above one panel. The page
 title is the `h1` of the content, not a second heading in the bar. Entries after
-the daily ones live on the **More** page, as in the mock-up.
+the daily ones live on the **More** page, as in the mock-up. The entries and the
+column changed with the amendment of 2026-11-09 below.
 
 **Components.** Plain CSS in `static/css/app.css`, no framework: cards, lists and
 rows, buttons (primary, secondary, sand, danger, icon), fields, badges (pills),
@@ -113,3 +114,37 @@ end-to-end passkey sign-in and the one-click single sign-on check
 `Passkey and single sign-on` (it was `Screenshots and passkey sign-in`; it is not a
 required check). "Evidence for review" above describes the state before this
 amendment.
+
+## Amendment, 2026-11-09: five sections, tabs per section, More in groups
+
+The bar had grown to six entries (Home, Homes, Rooms, Tasks, Stock, More) while
+Projects and Budget, two of the four questions of the product, were tabs of Tasks,
+off screen on a phone. The navigation audit of the same date (findings NAV-01,
+NAV-03, NAV-06, NAV-09) and the maintainer's decisions replace the shell clause:
+
+- **Five sections, one per question**: Today (what to do), Rooms (where), Projects
+  (which works), Budget (how much) and More, as in the v2 mock-up. On a phone they
+  are the bar at the bottom. From 56 rem the same `nav` is the column on the left:
+  the first four sections, then the content of More unfolded under them, without a
+  page in between, and sign-out last; the More entry itself is hidden there.
+- **The current entry follows the tree**: a page belongs to the section whose root
+  leads to it (`core/context_processors.py`, `nav_section`). Budget marks Budget;
+  the stock marks Rooms; the calendar marks Today; the contractors, the display
+  preferences, the calendar feeds, the pages of a home (settings, household,
+  reports, QR labels) and the account pages mark More.
+- **Tabs switch between sister views of one section**, four at most, all visible at
+  360 px (`core/templatetags/tabs.py`): Today, All, Calendar; Rooms, Stock;
+  In progress, Ideas, Finished; Summary, Rooms, Projects, Upkeep. The history is
+  the **Done** filter of All, and its address redirects there. A page shows one row
+  of tabs at most.
+- **A section root has no back link**: Today, All, Calendar, Rooms, Stock, the
+  three project lists, the four budget views and More. Every other page keeps one.
+- **More comes in four groups** (`core/more.py`): Home (about the home being
+  viewed), Me, Instance (administrators only) and Help. An action that cannot be
+  taken back is at the bottom of its own page, never on More: deleting the account
+  moved to Security and sign-in (`/more/security/`).
+
+Out of this amendment, in later changes: the return to the screen of origin
+through a safe `next`, the single home screen, actions in place and the selector
+of the current home. Until then, a page reached from another section marks the
+section of its own place in the tree.

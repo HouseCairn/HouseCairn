@@ -87,7 +87,7 @@ class TestLivingRoomScenario:
         assert "620.00" in html
         assert "120.00" in html
         assert "180.00\u00a0EUR left" in html
-        listing = signed_in.get(url("list", alice_home)).content.decode()
+        listing = signed_in.get(url("list", alice_home) + "?view=ideas").content.decode()
         assert "180.00\u00a0EUR left" in listing
 
     def test_a_project_over_its_budget_says_so_in_words(
@@ -149,7 +149,7 @@ class TestLivingRoomScenario:
         )
         for page in (
             url("detail", alice_home, project_id=living_room_project.id),
-            url("list", alice_home),
+            url("list", alice_home) + "?view=ideas",
         ):
             html = signed_in.get(page).content.decode()
             assert "Over budget by 90.50\u00a0EUR" in html, page
@@ -1175,11 +1175,11 @@ class TestAccess:
             with pytest.raises(PermissionDenied):
                 check()
 
-    def test_the_navigation_keeps_the_tasks_tab_marked(
-        self, signed_in: Client, alice_home: Home
-    ) -> None:
+    def test_the_navigation_marks_projects(self, signed_in: Client, alice_home: Home) -> None:
         html = signed_in.get(url("list", alice_home)).content.decode()
-        assert 'aria-current="page">Projects</a>' in html
+        assert re.search(
+            r'class="nav-link"[^>]*aria-current="page">\s*<svg.*?</svg>\s*Projects', html, re.S
+        )
 
 
 class TestWeb:
@@ -1275,16 +1275,20 @@ class TestWeb:
         page = signed_in.get(url("list", alice_home) + "?status=in_progress").content.decode()
         assert "Beta roof" in page
         assert "Alpha shed" not in page
-        page = signed_in.get(url("list", alice_home) + "?q=alpha").content.decode()
+        page = signed_in.get(url("list", alice_home) + "?view=ideas&q=alpha").content.decode()
         assert "Alpha shed" in page
         assert "Beta roof" not in page
         page = signed_in.get(url("list", alice_home) + "?q=zzz").content.decode()
         assert "No project matches" in page
         page = signed_in.get(url("list", alice_home) + "?status=nonsense&room=x").content.decode()
-        assert "Alpha shed" in page
         assert "Beta roof" in page
+        # The tabs: what is going on first, the ideas apart.
         listing = signed_in.get(url("list", alice_home)).content.decode()
-        assert listing.index("Beta roof") < listing.index("Alpha shed")
+        assert "Beta roof" in listing
+        assert "Alpha shed" not in listing
+        ideas = signed_in.get(url("list", alice_home) + "?view=ideas").content.decode()
+        assert "Alpha shed" in ideas
+        assert "Beta roof" not in ideas
 
     def test_the_empty_list_explains_itself(self, signed_in: Client, alice_home: Home) -> None:
         assert "No project yet" in signed_in.get(url("list", alice_home)).content.decode()

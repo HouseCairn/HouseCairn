@@ -1,11 +1,6 @@
-{% extends "base.html" %}
-{% load i18n tasks_extras tabs people %}
-{% block head_title %}{% translate "History" %}{% endblock head_title %}
-{% block content %}
-  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
-  <h1>{% translate "History" %}</h1>
-  {% tab_bar "tasks" %}
+{% load i18n tasks_extras people %}{# The Done filter of the task list: the history of the home (docs/adr/0017). #}
   <form method="get" class="history-filters" role="search">
+    <input type="hidden" name="status" value="done">
     <details class="history-filter-fields"{% if filtered %} open{% endif %}>
       <summary>{% translate "Filters" %}</summary>
       <div class="history-filter-grid">
@@ -14,8 +9,8 @@
       <input id="filter-q" type="search" name="q" value="{{ selection.query }}" maxlength="200">
     </p>
     <p>
-      <label for="filter-room">{% translate "Room" %}</label>
-      <select id="filter-room" name="room">
+      <label for="history-room">{% translate "Room" %}</label>
+      <select id="history-room" name="room">
         <option value="">{% translate "All rooms" %}</option>
         {% for candidate in rooms %}<option value="{{ candidate.id }}"{% if selection.room == candidate.id %} selected{% endif %}>{{ candidate.name }}</option>{% endfor %}
       </select>
@@ -42,8 +37,8 @@
       </select>
     </p>
     <p>
-      <label for="filter-status">{% translate "Outcome" %}</label>
-      <select id="filter-status" name="status">
+      <label for="filter-outcome">{% translate "Outcome" %}</label>
+      <select id="filter-outcome" name="outcome">
         <option value="">{% translate "Done or skipped" %}</option>
         <option value="done"{% if selection.status == "done" %} selected{% endif %}>{% translate "Done" context "task" %}</option>
         <option value="skipped"{% if selection.status == "skipped" %} selected{% endif %}>{% translate "Skipped" %}</option>
@@ -60,7 +55,7 @@
       </div>
     <div class="button-row">
       <button type="submit" class="button-secondary">{% translate "Filter" %}</button>
-      {% if filtered %}<a class="button button-secondary" href="{% url 'tasks:history' home_id=home.id %}">{% translate "Clear" %}</a>{% endif %}
+      {% if filtered %}<a class="button button-secondary" href="{% url 'tasks:list' home_id=home.id %}?status=done">{% translate "Clear" %}</a>{% endif %}
     </div>
     </details>
   </form>
@@ -85,12 +80,11 @@
     </ul>
     {% if page.paginator.num_pages > 1 %}
       <nav class="button-row" aria-label="{% translate 'Pages' %}">
-        {% if page.has_previous %}<a class="button button-secondary button-small" href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+        {% if page.has_previous %}<a class="button button-secondary button-small" href="?{{ query_string }}&amp;page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
         <span class="small">{% blocktranslate with number=page.number total=page.paginator.num_pages %}Page {{ number }} of {{ total }}{% endblocktranslate %}</span>
-        {% if page.has_next %}<a class="button button-secondary button-small" href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+        {% if page.has_next %}<a class="button button-secondary button-small" href="?{{ query_string }}&amp;page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
       </nav>
     {% endif %}
   {% else %}
     <p class="empty">{% if filtered %}{% translate "Nothing matches." %}{% else %}{% translate "Nothing done yet." %}{% endif %}</p>
   {% endif %}
-{% endblock content %}

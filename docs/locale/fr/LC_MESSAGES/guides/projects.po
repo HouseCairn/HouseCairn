@@ -27,8 +27,8 @@ msgstr "Un projet est un chantier qui a une fin : refaire la salle de bain, pein
 msgid "Start a project"
 msgstr "Démarrer un projet"
 
-msgid "Open **Tasks** in the navigation, then the **Projects** tab, then **Add a project**. Say what it is, its status (idea, planned, in progress, finished, abandoned) and, if you already know it, the **budget**: for \"redo the bathroom, 5000 euros\", type 5000. The amount is in the currency of the home and becomes the first budget line."
-msgstr "Ouvrez **Tâches** dans la navigation, puis l'onglet **Projets**, puis **Ajouter un projet**. Dites ce que c'est, son statut (idée, planifié, en cours, terminé, abandonné) et, si vous le connaissez déjà, le **budget** : pour « refaire la salle de bain, 5000 euros », saisissez 5000. Le montant est dans la devise du logement et devient la première ligne de budget."
+msgid "Open **Projects** in the navigation, then **Add a project**. Say what it is, its status (idea, planned, in progress, finished, abandoned) and, if you already know it, the **budget**: for \"redo the bathroom, 5000 euros\", type 5000. The amount is in the currency of the home and becomes the first budget line."
+msgstr "Ouvrez **Projets** dans la navigation, puis **Ajouter un projet**. Dites ce que c'est, son statut (idée, planifié, en cours, terminé, abandonné) et, si vous le connaissez déjà, le **budget** : pour « refaire la salle de bain, 5000 euros », saisissez 5000. Le montant est dans la devise du logement et devient la première ligne de budget."
 
 msgid "The rooms concerned, the estimated duration and the preferred season are optional and help to compare projects later. The season follows the hemisphere of the home."
 msgstr "Les pièces concernées, la durée estimée et la saison souhaitée sont facultatives et aident à comparer les projets plus tard. La saison suit l'hémisphère du logement."

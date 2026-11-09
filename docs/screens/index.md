@@ -64,5 +64,6 @@ budget-rooms
 budget-projects
 budget-tasks
 more
+security-and-sign-in
 about
 ```

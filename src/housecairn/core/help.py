@@ -147,6 +147,7 @@ HELP_PAGES: dict[str, str] = {
     "reports:close": "screens/report/",
     "reports:reopen": "screens/report/",
     "more": "screens/more/",
+    "more-security": "screens/security-and-sign-in/",
     "about": "screens/about/",
 }
 # Other routes of django-allauth (sign-up, password, email addresses,

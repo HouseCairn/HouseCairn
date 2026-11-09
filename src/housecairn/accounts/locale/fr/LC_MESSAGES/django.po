@@ -127,8 +127,8 @@ msgstr "Profil enregistré."
 msgid "Delete my account"
 msgstr "Supprimer mon compte"
 
-msgid "More"
-msgstr "Plus"
+msgid "Security and sign-in"
+msgstr "Sécurité et connexion"
 
 msgid "This erases your account, your sign-in methods, your API tokens and the homes where you are the only member. It cannot be undone. Homes shared with others stay with them."
 msgstr "Cela efface votre compte, vos méthodes de connexion, vos jetons d'API et les logements dont vous êtes le seul membre. Cette action est irréversible. Les logements partagés avec d'autres personnes leur restent."
@@ -153,6 +153,9 @@ msgstr "Retour à la connexion"
 
 msgid "Profile"
 msgstr "Profil"
+
+msgid "More"
+msgstr "Plus"
 
 msgid "Your display name is what the other members of your homes see: on tasks you are in charge of, in the history and in the household. Without one, the first part of your address is shown."
 msgstr "Votre nom d'affichage est ce que les autres membres de vos logements voient : sur les tâches dont vous êtes responsable, dans l'historique et dans le foyer. Sans nom, le début de votre adresse est affiché."

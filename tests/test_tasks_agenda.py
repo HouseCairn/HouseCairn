@@ -413,21 +413,23 @@ class TestScreens:
     def test_navigation_leads_home(self, signed_in: Client, alice_home: Home) -> None:
         content = signed_in.get(reverse("more")).content.decode()
         assert f'href="{reverse("my-home")}"' in content
-        assert content.count('aria-current="page"') == 1
+        assert content.split('<div class="nav-drawer">')[0].count('aria-current="page"') == 1
         anonymous = Client().get(reverse("index")).content.decode()
         assert reverse("my-home") not in anonymous
 
     def test_history_page(self, signed_in: Client, past: Home) -> None:
-        response = signed_in.get(web("history", past))
+        response = signed_in.get(web("history", past), follow=True)
         content = response.content.decode()
         assert response.status_code == 200
         assert content.index("Clean the gutters") < content.index("Paint the hall")
         assert "100.00 EUR" in content
-        filtered = signed_in.get(web("history", past), {"q": "washer", "status": "done"})
+        filtered = signed_in.get(
+            web("history", past), {"q": "washer", "status": "done"}, follow=True
+        )
         assert "Fix the tap" in filtered.content.decode()
         assert "Living room · Pipes Ltd · alice" in content
         assert "Paint the hall" not in filtered.content.decode()
-        nothing = signed_in.get(web("history", past), {"q": "zzz"}).content.decode()
+        nothing = signed_in.get(web("history", past), {"q": "zzz"}, follow=True).content.decode()
         assert "Nothing matches." in nothing
 
     def test_history_ignores_what_is_not_a_filter(self, signed_in: Client, past: Home) -> None:
@@ -435,7 +437,7 @@ class TestScreens:
             {"room": "x", "after": "not a date", "before": "2026-13-45", "status": "open"},
             {"item": "x", "contractor": "x", "person": "x", "page": "9999"},
         ):
-            assert signed_in.get(web("history", past), params).status_code == 200
+            assert signed_in.get(web("history", past), params, follow=True).status_code == 200
 
     def test_history_pages_keep_the_filters(
         self, signed_in: Client, alice: User, alice_home: Home
@@ -443,11 +445,23 @@ class TestScreens:
         for number in range(35):
             task = services.create_task(alice, alice_home, title=f"Chore {number}")
             services.complete(alice, services.open_occurrence_of(task))
-        content = signed_in.get(web("history", alice_home), {"q": "Chore"}).content.decode()
-        assert "?q=Chore&amp;page=2" in content
+        content = signed_in.get(
+            web("list", alice_home), {"status": "done", "q": "Chore"}
+        ).content.decode()
+        assert "?status=done&amp;q=Chore&amp;page=2" in content
 
     def test_history_of_an_empty_home(self, signed_in: Client, alice_home: Home) -> None:
-        assert "Nothing done yet." in signed_in.get(web("history", alice_home)).content.decode()
+        page = signed_in.get(web("history", alice_home), follow=True).content.decode()
+        assert "Nothing done yet." in page
+
+    def test_the_history_address_leads_to_the_done_filter(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        response = signed_in.get(web("history", alice_home), {"q": "tap", "status": "skipped"})
+        assert response.status_code == 302
+        assert response["Location"] == web("list", alice_home) + (
+            "?status=done&q=tap&outcome=skipped"
+        )
 
     def test_preferences_form(self, signed_in: Client, alice: User) -> None:
         assert signed_in.get(reverse("display-preferences")).status_code == 200

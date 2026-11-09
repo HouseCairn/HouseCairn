@@ -129,6 +129,7 @@ class TestScreens:
         "index",
         "homes:list",
         "more",
+        "more-security",
         "about",
         "mfa_index",
         "mfa_list_webauthn",
@@ -168,11 +169,11 @@ class TestScreens:
     @override_settings(EMAIL_HOST="smtp.example.com", EMAIL_BACKEND=SMTP_BACKEND)
     def test_signed_in_with_email(self, client: Client, alice: object) -> None:
         client.force_login(alice)  # type: ignore[arg-type]
-        for name in ("account_email", "more"):
+        for name in ("account_email", "more-security"):
             response = _page(client, name)
             assert response.status_code == 200, name
             self._check(response.text)
-        assert reverse("account_email") in _page(client, "more").text
+        assert reverse("account_email") in _page(client, "more-security").text
 
     @pytest.mark.django_db
     def test_more_hides_the_email_page_without_email(self, client: Client, alice: object) -> None:
@@ -228,7 +229,7 @@ class TestScreens:
     def test_more_lists_the_destinations(self, client: Client, alice: object) -> None:
         client.force_login(alice)  # type: ignore[arg-type]
         html = _page(client, "more").text
-        for name in ("homes:list", "mfa_index", "api-docs", "about", "account_logout"):
+        for name in ("homes:list", "more-security", "api-docs", "about", "account_logout"):
             assert reverse(name) in html
 
     @pytest.mark.django_db
@@ -242,10 +243,11 @@ class TestScreens:
     @pytest.mark.django_db
     def test_current_navigation_entry_is_marked(self, client: Client, alice: object) -> None:
         client.force_login(alice)  # type: ignore[arg-type]
-        for name, label in (("index", "Home"), ("homes:list", "Homes"), ("more", "More")):
+        for name, label in (("index", "Today"), ("homes:list", "More"), ("more", "More")):
             html = _page(client, name).text
-            assert html.count('aria-current="page"') == 1, name
-            current = html.split('aria-current="page"')[1].split("</a>")[0]
+            bar = html.split('<div class="nav-drawer">')[0]
+            assert bar.count('aria-current="page"') == 1, name
+            current = bar.split('aria-current="page"')[1].split("</a>")[0]
             assert label in current, name
 
     def test_navigation_section_of_each_kind_of_page(self) -> None:
@@ -254,8 +256,8 @@ class TestScreens:
             request.resolver_match = resolve(path)
             return nav_section(request)
 
-        assert section("/") == "home"
-        assert section(reverse("homes:list")) == "homes"
+        assert section("/") == "today"
+        assert section(reverse("homes:list")) == "more"
         assert section(reverse("more")) == "more"
         assert section(reverse("mfa_index")) == "more"
         assert nav_section(RequestFactory().get("/nope")) == ""
@@ -263,9 +265,10 @@ class TestScreens:
     @pytest.mark.django_db
     def test_french(self, client: Client, alice: object) -> None:
         client.force_login(alice)  # type: ignore[arg-type]
-        html = client.get(reverse("more"), headers={"Accept-Language": "fr"}).text
+        html = client.get(reverse("more-security"), headers={"Accept-Language": "fr"}).text
         assert "Sécurité du compte" in html
-        assert "Se déconnecter" in html
+        more = client.get(reverse("more"), headers={"Accept-Language": "fr"}).text
+        assert "Se déconnecter" in more
 
 
 class TestErrorPages:

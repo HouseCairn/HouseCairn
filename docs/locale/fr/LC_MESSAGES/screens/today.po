@@ -39,8 +39,8 @@ msgstr "**De saison** : les tâches de la saison en cours dont la date est au-de
 msgid "Each row shows the task, its room and item, and its state. **Done**, on the right of the row, closes it in one tap, for every task; the page comes back with a banner that offers **Undo**. A row opens the [task](task.md)."
 msgstr "Chaque ligne montre la tâche, sa pièce et son élément, et son état. **Fait**, à droite de la ligne, la ferme d'un geste, pour toutes les tâches ; la page revient avec un bandeau qui propose **Annuler**. Une ligne ouvre la [tâche](task.md)."
 
-msgid "The **tabs** above the list, shared by the [task list](tasks.md), the [history](history.md) and the [display preferences](display-preferences.md), switch between **Today**, **All tasks**, **History** and **Display preferences**. The current tab is marked; on a phone the tabs scroll sideways when they do not all fit."
-msgstr "Les **onglets** au-dessus de la liste, communs à la [liste des tâches](tasks.md), à l'[historique](history.md) et aux [préférences d'affichage](display-preferences.md), passent d'**Aujourd'hui** à **Toutes les tâches**, **Historique** et **Préférences d'affichage**. L'onglet courant est marqué ; sur téléphone, les onglets défilent latéralement quand ils ne tiennent pas tous."
+msgid "The **tabs** above the list switch between the three views of the Today section: **Today**, **All** (the [task list](tasks.md)) and **Calendar** (the [calendar](calendar.md) of the home). The current tab is marked; all three stay visible on a phone. Today is the root of its section: it has no back link."
+msgstr "Les **onglets** au-dessus de la liste passent d'une des trois vues de la section Aujourd'hui à l'autre : **Aujourd'hui**, **Toutes** (la [liste des tâches](tasks.md)) et **Calendrier** (le [calendrier](calendar.md) du logement). L'onglet courant est marqué ; les trois restent visibles sur un téléphone. Aujourd'hui est la racine de sa section : elle n'a pas de lien retour."
 
 msgid "When reports are open, one line under the title says how many, with **See the reports**. It is shown to the members who may write, never to read-only members (see [Reports](reports.md))."
 msgstr "Quand des signalements sont ouverts, une ligne sous le titre dit combien, avec **Voir les signalements**. Elle est montrée aux membres qui peuvent écrire, jamais aux membres en lecture seule (voir [Signalements](reports.md))."
@@ -59,4 +59,7 @@ msgstr "Les membres en lecture seule voient la même page et aucun des boutons *
 
 #~ msgid "**All tasks** and **History** open the [task list](tasks.md) and the [history](history.md)."
 #~ msgstr "**Toutes les tâches** et **Historique** ouvrent la [liste des tâches](tasks.md) et l'[historique](history.md)."
+
+#~ msgid "The **tabs** above the list, shared by the [task list](tasks.md), the [history](history.md) and the [display preferences](display-preferences.md), switch between **Today**, **All tasks**, **History** and **Display preferences**. The current tab is marked; on a phone the tabs scroll sideways when they do not all fit."
+#~ msgstr "Les **onglets** au-dessus de la liste, communs à la [liste des tâches](tasks.md), à l'[historique](history.md) et aux [préférences d'affichage](display-preferences.md), passent d'**Aujourd'hui** à **Toutes les tâches**, **Historique** et **Préférences d'affichage**. L'onglet courant est marqué ; sur téléphone, les onglets défilent latéralement quand ils ne tiennent pas tous."
 
