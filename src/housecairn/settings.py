@@ -271,8 +271,11 @@ ACCOUNT_EMAIL_VERIFICATION = _VERIFICATION_PINNED or (
 )
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_ADAPTER = "housecairn.accounts.adapters.AccountAdapter"
+# Messages that name the person show the display name, never the address (docs/adr/0045).
+ACCOUNT_USER_DISPLAY = "housecairn.accounts.names.person_name"
 ACCOUNT_FORMS = {
     "login": "housecairn.accounts.forms.LoginForm",
+    "change_password": "housecairn.accounts.forms.ChangePasswordForm",
     "signup": "housecairn.accounts.forms.SignupForm",
 }
 SOCIALACCOUNT_ADAPTER = "housecairn.accounts.adapters.SocialAccountAdapter"
