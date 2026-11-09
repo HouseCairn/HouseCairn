@@ -19,6 +19,12 @@ memberships.
   instance, not a membership: being one adds no home to `homes_for`, so the
   web, the API and tokens answer 404 for every home of which the account is
   not a member, as for anyone else.
+- **Signing in.** The administration site signs in through django-allauth's
+  page only (`secure_admin_login` on `admin.site.login`): `/admin/login/`
+  reads no password and sends whoever is signed out to `/accounts/login/`,
+  with its second factor and its rate limits, so the most powerful account is
+  not the one protected by a password alone; a signed-in account that is not
+  staff gets 403 there.
 - **What the administrator does.** Accounts (administration site: activate
   or deactivate, grant or withdraw the administrator role, delete),
   invitations to the instance (`/instance/`, `/api/v1/instance/invitations/`),

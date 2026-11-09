@@ -1,5 +1,6 @@
 """Root URLs. Address conventions are in docs/adr/0010."""
 
+from allauth.account.decorators import secure_admin_login
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerSplitView
@@ -13,6 +14,12 @@ from housecairn.projects import views as project_views
 from housecairn.rooms import views as room_views
 from housecairn.stock import views as stock_views
 from housecairn.tasks import views as task_views
+
+# The administration site signs in through allauth's page only, with its second factor
+# and its rate limits: Django's own form would take the password alone (docs/adr/0022).
+# Signed out, /admin/login/ redirects there and reads no password; signed in, it lets
+# staff through and answers 403 to anyone else.
+admin.site.login = secure_admin_login(admin.site.login)  # type: ignore[method-assign]
 
 urlpatterns = [
     path("", core_views.IndexView.as_view(), name="index"),
