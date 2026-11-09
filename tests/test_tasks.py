@@ -701,6 +701,7 @@ class TestScreens:
     def test_a_material_row_wraps_so_the_name_keeps_its_width(self) -> None:
         css = (settings.BASE_DIR / "static" / "css" / "tasks.css").read_text(encoding="utf-8")
         assert ".material-row {\n  flex-wrap: wrap;" in css
+        assert ".material-row .row-body {\n  flex: 1 1 14rem;" in css
 
     def test_done_in_one_gesture_then_undo(
         self, signed_in: Client, alice_home: Home, owner_task: Task, owner_occurrence: Occurrence
