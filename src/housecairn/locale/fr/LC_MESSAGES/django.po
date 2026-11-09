@@ -380,6 +380,9 @@ msgstr "Compte créé"
 msgid "Email address verified from the server"
 msgstr "Adresse e-mail vérifiée depuis le serveur"
 
+msgid "Primary email address changed from the server"
+msgstr "Adresse e-mail principale changée depuis le serveur"
+
 msgid "Account deleted"
 msgstr "Compte supprimé"
 

@@ -62,6 +62,7 @@ LABELS: dict[str, Promise] = {
     "instance_invitation.accepted": _("Instance invitation accepted"),
     "account.created": _("Account created"),
     "account.email_verified": _("Email address verified from the server"),
+    "account.email_primary": _("Primary email address changed from the server"),
     "account.deleted": _("Account deleted"),
     "home.deleted": _("A home was deleted"),
     "homes.unlocked": _("Sign-in requirement removed from %(count)s homes"),

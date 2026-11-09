@@ -12,6 +12,7 @@ from housecairn.accounts.models import User
 from housecairn.audit.models import AuditEvent, Scope
 from housecairn.homes import services
 from housecairn.homes.models import Home, Role
+from housecairn.instance import services as instance_services
 
 pytestmark = pytest.mark.django_db
 
@@ -25,7 +26,7 @@ def run(*args: str) -> str:
 
 
 def local_account(make_user: Callable[..., User], email: str) -> User:
-    """An account whose address was never verified, as after `createsuperuser`."""
+    """An account with an address record that was never verified (signed up without the mail)."""
     user = make_user(email)
     EmailAddress.objects.filter(user=user).delete()
     EmailAddress.objects.create(user=user, email=email, primary=True, verified=False)
@@ -106,6 +107,10 @@ def test_primary_on_an_address_already_verified_only_promotes_it(
     ivy.refresh_from_db()
     assert ivy.email == "second@example.com"
     assert EmailAddress.objects.get(user=ivy, email="second@example.com").primary
+    # Nothing was verified: the audit log must not say so.
+    assert not AuditEvent.objects.filter(action="account.email_verified").exists()
+    entry = AuditEvent.objects.get(action="account.email_primary")
+    assert entry.target_user == ivy
 
 
 def test_several_accounts_fail_with_their_ids_and_no_address(
@@ -136,6 +141,75 @@ def test_the_audit_log_of_the_instance_gets_a_line(make_user: Callable[..., User
     assert label(entry.action, entry.detail) == "Email address verified from the server"
 
 
+class TestAccountWithoutAddressRecord:
+    """`createsuperuser` sets `User.email` and records nothing in allauth."""
+
+    def test_the_superuser_gets_a_verified_primary_record(self) -> None:
+        root = User.objects.create_superuser(email="root@example.com", password="Correct-Horse-9")
+        assert not EmailAddress.objects.filter(user=root).exists()
+        assert "marked verified" in run("Root@Example.com")
+        record = EmailAddress.objects.get(user=root)
+        assert record.email == "root@example.com"
+        assert record.verified
+        assert record.primary
+        assert (
+            AuditEvent.objects.filter(action="account.email_verified", target_user=root).count()
+            == 1
+        )
+
+    def test_it_is_idempotent(self) -> None:
+        User.objects.create_superuser(email="root@example.com", password="Correct-Horse-9")
+        run("root@example.com")
+        assert "Nothing to change" in run("root@example.com", "--primary")
+        assert EmailAddress.objects.filter(email="root@example.com").count() == 1
+        assert AuditEvent.objects.filter(action="account.email_verified").count() == 1
+
+    def test_an_existing_primary_stays_primary(self) -> None:
+        root = User.objects.create_superuser(email="root@example.com", password="Correct-Horse-9")
+        EmailAddress.objects.create(
+            user=root, email="other@example.com", primary=True, verified=True
+        )
+        run("root@example.com")
+        assert EmailAddress.objects.get(user=root, email="root@example.com").verified
+        assert not EmailAddress.objects.get(user=root, email="root@example.com").primary
+        assert EmailAddress.objects.get(user=root, email="other@example.com").primary
+
+    def test_an_address_that_nobody_has_still_fails_and_creates_nothing(self) -> None:
+        User.objects.create_superuser(email="root@example.com", password="Correct-Horse-9")
+        with pytest.raises(CommandError, match="No account has this address"):
+            run("nobody@example.com")
+        assert not EmailAddress.objects.exists()
+
+    def test_an_address_in_the_case_of_two_accounts_is_refused(self) -> None:
+        # `email` is unique, but only to the letter: the case can differ.
+        one = User.objects.create_user(email="ivy@example.com", password="Correct-Horse-9")
+        two = User.objects.create_user(email="IVY@example.com", password="Correct-Horse-9")
+        with pytest.raises(CommandError) as raised:
+            run("ivy@example.com")
+        assert str(one.pk) in str(raised.value)
+        assert str(two.pk) in str(raised.value)
+        assert "example.com" not in str(raised.value)
+        assert not EmailAddress.objects.exists()
+        assert not AuditEvent.objects.filter(action="account.email_verified").exists()
+
+    def test_an_account_of_an_instance_invitation_needs_no_command(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        admin = User.objects.create_superuser(email="root@example.com", password="Correct-Horse-9")
+        box: list[str] = []
+        instance_services.invite(
+            admin, email="new@example.com", send=lambda _invitation, raw: box.append(raw)
+        )
+        user = instance_services.create_account(box[0], password="Correct-Horse-9")
+        assert EmailAddress.objects.get(user=user).verified
+        _invitation, raw = services.invite(
+            alice, alice_home, email="new@example.com", role="member", delivery=NO_DELIVERY
+        )
+        assert raw is not None
+        services.accept_invitation(user, raw)
+        assert services.role_of(user, alice_home) == Role.MEMBER
+
+
 class TestHandedOverInvitation:
     """The reason for the command: a link handed over by hand needs a verified address."""
 
@@ -162,3 +236,17 @@ class TestHandedOverInvitation:
         run("ivy@example.com")
         services.accept_invitation(ivy, raw)
         assert services.role_of(ivy, alice_home) == Role.MEMBER
+
+    def test_accepted_for_a_createsuperuser_account_after_the_command(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        _invitation, raw = services.invite(
+            alice, alice_home, email="Root@Example.com", role="member", delivery=NO_DELIVERY
+        )
+        assert raw is not None
+        root = User.objects.create_superuser(email="root@example.com", password="Correct-Horse-9")
+        with pytest.raises(PermissionDenied, match="Verify this address"):
+            services.accept_invitation(root, raw)
+        run("root@example.com")
+        services.accept_invitation(root, raw)
+        assert services.role_of(root, alice_home) == Role.MEMBER
