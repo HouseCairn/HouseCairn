@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from django.core.exceptions import SuspiciousFileOperation
+from django.db.models import Prefetch
 
 from housecairn.homes import exports
 from housecairn.homes.models import Home
@@ -17,6 +18,7 @@ from housecairn.projects import services
 from housecairn.projects.models import ProjectFile
 from housecairn.projects.storage import project_storage
 from housecairn.rooms.files import EXTENSIONS
+from housecairn.rooms.models import Room
 
 DOCUMENT_EXTENSIONS = {
     "application/pdf": ".pdf",
@@ -61,19 +63,19 @@ def _projects(home: Home) -> list[dict[str, Any]]:
             "goal": p.goal,
             "status": p.status,
             "priority": p.priority,
-            "rooms": [
-                str(pk)
-                for pk in p.rooms.filter(deleted_at__isnull=True)
-                .order_by("id")
-                .values_list("id", flat=True)
-            ],
+            "rooms": [str(r.pk) for r in p.rooms.all()],
             "estimated_minutes": p.estimated_minutes,
             "season": p.season,
             "season_start_month": p.season_start_month,
             "season_end_month": p.season_end_month,
             "created_at": p.created_at.isoformat(),
         }
-        for p in services.projects_of(home).order_by("created_at", "id")
+        for p in services.projects_of(home)
+        .order_by("created_at", "id")
+        .prefetch_related(
+            # One query for the rooms of all the projects, in the order of the identifiers.
+            Prefetch("rooms", queryset=Room.objects.order_by("id"))
+        )
     ]
 
 

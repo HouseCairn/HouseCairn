@@ -2,8 +2,10 @@
 
 import hashlib
 import re
+import secrets
 import time
 from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from types import SimpleNamespace
 from typing import Any
 from unittest import mock
@@ -47,9 +49,27 @@ def challenge_of(page: str) -> tuple[str, int]:
     return (first, int(second)) if len(first) > 3 else (second, int(first))
 
 
-def works(challenge: str, n: int, bits: int) -> bool:
+def works(challenge: str, n: int | str, bits: int) -> bool:
     digest = hashlib.sha256(f"{challenge}:{n}".encode()).digest()
     return antibot.leading_zero_bits(digest) >= bits
+
+
+@contextmanager
+def challenges_unsolved_by(number: str, bits: int) -> Iterator[None]:
+    """Issue only challenges that `number` does not solve.
+
+    A given number solves a random challenge once in 2**bits draws (1 in 256 at the
+    8 bits of these tests): a test that expects a number to be refused must not pass
+    or fail by that luck.
+    """
+
+    def draw(nbytes: int) -> str:
+        while works(challenge := secrets.token_hex(nbytes), number, bits):
+            pass
+        return challenge
+
+    with mock.patch.object(antibot, "secrets", SimpleNamespace(token_hex=draw)):
+        yield
 
 
 def sign_up(
@@ -142,16 +162,19 @@ class TestProofOfWork:
 
     @pytest.mark.parametrize("junk", ["abc", "-1", "1e3", "9" * 40, " 12", "١٢٣"])
     def test_a_malformed_solution_is_refused_without_error(self, client: Client, junk: str) -> None:
-        client.get(reverse("account_signup"))
-        response = client.post(
-            reverse("account_signup"),
-            {
-                "email": "new@example.com",
-                "password1": PASSWORD,
-                "password2": PASSWORD,
-                "pow_solution": junk,
-            },
-        )
+        # The form field strips spaces: " 12" reaches the check as "12", a number that
+        # would solve one challenge in 256.
+        with challenges_unsolved_by(junk.strip(), 8):
+            client.get(reverse("account_signup"))
+            response = client.post(
+                reverse("account_signup"),
+                {
+                    "email": "new@example.com",
+                    "password1": PASSWORD,
+                    "password2": PASSWORD,
+                    "pow_solution": junk,
+                },
+            )
         assert response.status_code == 200
         assert not User.objects.exists()
 
@@ -165,9 +188,13 @@ class TestProofOfWork:
             "password2": PASSWORD,
             "pow_solution": solution,
         }
-        assert client.post(reverse("account_signup"), data).status_code == 302
-        # The same solution again, for another address: the challenge is gone.
-        again = client.post(reverse("account_signup"), {**data, "email": "b@example.com"})
+        # The first sign-up issues the session a new challenge, which the same number
+        # solves by luck once in 256: only challenges it does not solve are issued, so
+        # only a challenge that stays usable can let the replay through.
+        with challenges_unsolved_by(solution, bits):
+            assert client.post(reverse("account_signup"), data).status_code == 302
+            # The same solution again, for another address: the challenge is gone.
+            again = client.post(reverse("account_signup"), {**data, "email": "b@example.com"})
         assert again.status_code == 200
         assert "not a robot" in again.text
         assert not User.objects.filter(email="b@example.com").exists()

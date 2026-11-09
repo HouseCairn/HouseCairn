@@ -49,6 +49,7 @@ Address = ipaddress.IPv4Address | ipaddress.IPv6Address
 NAT64 = ipaddress.IPv6Network("64:ff9b::/96")  # RFC 6052: the IPv4 address is the last 32 bits
 # Metadata services of cloud providers, refused even though private networks are allowed:
 # AWS, Azure, GCP and others (link-local, refused anyway), Alibaba, Oracle, AWS in IPv6.
+SITE_LOCAL = ipaddress.IPv6Network("fec0::/10")  # RFC 3879: deprecated, yet "global" to Python
 METADATA_ADDRESSES = frozenset(
     ipaddress.ip_address(a)
     for a in ("169.254.169.254", "100.100.100.200", "192.0.0.192", "fd00:ec2::254")
@@ -95,14 +96,20 @@ def forbidden_address(address: Address) -> bool:
 
 
 def is_public(address: Address) -> bool:
-    """True for a global address: not private, shared, loopback, link-local, multicast,
-    reserved, unspecified or a metadata service, also when an IPv6 address carries it."""
+    """True for a global address: not private, shared, loopback, link-local, site-local,
+    multicast, reserved, unspecified or a metadata service, also when an IPv6 address
+    carries it.
+
+    The IPv6 site-local range fec0::/10 (deprecated by RFC 3879) is private in all but
+    name, yet Python calls it global: it is refused here.
+    """
     if isinstance(address, ipaddress.IPv6Address):
         embedded = embedded_ipv4(address)
         if embedded is not None:
             address = embedded
     return bool(
         address.is_global
+        and not (isinstance(address, ipaddress.IPv6Address) and address in SITE_LOCAL)
         and not address.is_multicast
         and address not in METADATA_ADDRESSES
         and not forbidden_address(address)
