@@ -377,6 +377,9 @@ msgstr "Invitation à l'instance acceptée"
 msgid "Account created"
 msgstr "Compte créé"
 
+msgid "Email address verified from the server"
+msgstr "Adresse e-mail vérifiée depuis le serveur"
+
 msgid "Account deleted"
 msgstr "Compte supprimé"
 
