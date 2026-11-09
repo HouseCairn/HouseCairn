@@ -81,3 +81,37 @@ def _fresh_instance_settings() -> Iterator[None]:
     config.reset()
     yield
     config.reset()
+
+
+@pytest.fixture(autouse=True)
+def _schema_stays_complete(request: pytest.FixtureRequest) -> Iterator[None]:
+    """A test that migrates backwards must leave every app on its latest migration.
+
+    Tests with a real transaction (`django_db(transaction=True)`) may roll an app
+    back and forward again. `migrate <app> <target>` only touches that app and the
+    apps that depend on it, so a forward `migrate <app>` can leave another app
+    unapplied, and its tables are then missing for every later test of the same
+    worker (xdist reuses the database). The check fails the offending test and
+    repairs the schema so the damage stays contained.
+    """
+    yield
+    marker = request.node.get_closest_marker("django_db")
+    transactional = bool(marker and marker.kwargs.get("transaction")) or (
+        "transactional_db" in request.fixturenames
+    )
+    if not transactional:
+        return
+    from django.core.management import call_command
+    from django.db import connection
+    from django.db.migrations.executor import MigrationExecutor
+
+    executor = MigrationExecutor(connection)
+    pending = executor.migration_plan(executor.loader.graph.leaf_nodes())
+    if pending:
+        names = ", ".join(f"{m.app_label}.{m.name}" for m, _ in pending)
+        call_command("migrate", verbosity=0)
+        pytest.fail(
+            "this test left migrations unapplied (end it with `call_command('migrate')`, "
+            f"not `migrate <app>`): {names}",
+            pytrace=False,
+        )
