@@ -284,9 +284,23 @@ class TestPlannedYearFollowsTheRepetition:
         today = datetime.date(2027, 3, 1)  # the open occurrence of February 2026 is long late
         ledger = services.load(alice_home, today)
         line = services.by_task(ledger, 2026).lines[0]
-        assert line.amounts.planned == D("50.00")  # January (done) and February (open)
+        # Only January happened in 2026: the late occurrence is not a plan of a year that is over.
+        assert line.amounts.planned == D("25.00")
         assert line.amounts.paid == D("25.00")
         assert ledger.tasks[0].projected(2026) == 0
+
+    def test_a_late_occurrence_of_a_year_over_is_counted_in_the_current_year_once(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = self.repeating(alice, alice_home, "month", 1, first=datetime.date(2026, 1, 1))
+        finish(alice, task, on=datetime.date(2026, 1, 1), cost="25")
+        today = datetime.date(2027, 3, 1)
+        ledger = services.load(alice_home, today)
+        # The late February, then the eleven months it still brings: twelve, as the cost a year.
+        assert services.by_task(ledger, 2027).lines[0].amounts.planned == D("300.00")
+        assert ledger.tasks[0].annual_cost == D("300.00")
+        assert 2026 in ledger.years()
+        assert services.envelope(ledger, 2026).upkeep.planned == D("25.00")
 
     def test_the_next_year_is_projected_whole(self, alice: User, alice_home: Home) -> None:
         self.repeating(alice, alice_home, "month", 1, first=datetime.date(2026, 2, 1))

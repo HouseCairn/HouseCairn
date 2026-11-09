@@ -95,6 +95,12 @@ class TaskRow:
     def estimate(self) -> Decimal:
         return self.material + self.labour
 
+    def counted_on(self, day: datetime.date | None) -> datetime.date | None:
+        """The day an open occurrence is counted on: an occurrence late from a year already
+        over is counted in the current year, from 1 January, as the calendar shows it late."""
+        first = datetime.date(self.today.year, 1, 1)
+        return first if day and day < first else day
+
     def projected(self, year: int) -> int:
         """How many times the repetition will still bring the task due in `year`.
 
@@ -110,7 +116,7 @@ class TaskRow:
 
     def _coming(self, year: int) -> list[datetime.date]:
         task = self.task
-        dates = [day for day in self.open if day]
+        dates = [day for day in map(self.counted_on, self.open) if day]
         if year < self.today.year or not task.repeats or not dates:
             return []
         return recurrence.coming(
@@ -134,7 +140,11 @@ class TaskRow:
         plan (none paid yet). The window and the year are the same period.
         """
         done = [(day, cost) for day, cost in self.done if window(day)]
-        coming = [day for day in self.open if window(day)] if open_too else []
+        coming = (
+            [day for day in self.open if window(self.counted_on(day) if year is not None else day)]
+            if open_too
+            else []
+        )
         projected = self.projected(year) if year is not None and open_too else 0
         count = len(done) + len(coming) + projected
         return TaskFigures(
@@ -188,7 +198,7 @@ class Ledger:
         found = {self.today.year, *self.envelopes, *(p.year for p in self.projects)}
         for row in self.tasks:
             found.update(day.year for day, _cost in row.done if day)
-            found.update(day.year for day in row.open if day)
+            found.update(day.year for day in map(row.counted_on, row.open) if day)
         return sorted(found, reverse=True)
 
 
