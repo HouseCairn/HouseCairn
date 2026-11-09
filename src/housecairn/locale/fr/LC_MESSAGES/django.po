@@ -303,6 +303,18 @@ msgid "QR label replaced by a new one: %(title)s"
 msgstr "Étiquette QR remplacée par une nouvelle : %(title)s"
 
 #, python-format
+msgid "Problem reported: %(title)s"
+msgstr "Problème signalé : %(title)s"
+
+#, python-format
+msgid "Report made into a task: %(title)s"
+msgstr "Signalement transformé en tâche : %(title)s"
+
+#, python-format
+msgid "Report closed: %(title)s"
+msgstr "Signalement classé : %(title)s"
+
+#, python-format
 msgid "Project added: %(title)s"
 msgstr "Projet ajouté : %(title)s"
 
@@ -357,6 +369,30 @@ msgstr "Fichier ajouté au projet %(title)s"
 #, python-format
 msgid "File deleted from the project %(title)s"
 msgstr "Fichier supprimé du projet %(title)s"
+
+#, python-format
+msgid "Stock article added: %(title)s"
+msgstr "Article de stock ajouté : %(title)s"
+
+#, python-format
+msgid "Stock article changed: %(title)s"
+msgstr "Article de stock modifié : %(title)s"
+
+#, python-format
+msgid "Stock article deleted: %(title)s"
+msgstr "Article de stock supprimé : %(title)s"
+
+#, python-format
+msgid "Supplier added: %(title)s"
+msgstr "Fournisseur ajouté : %(title)s"
+
+#, python-format
+msgid "Supplier changed: %(title)s"
+msgstr "Fournisseur modifié : %(title)s"
+
+#, python-format
+msgid "Supplier deleted: %(title)s"
+msgstr "Fournisseur supprimé : %(title)s"
 
 #, python-format
 msgid "Annual envelope set for %(title)s"
@@ -1364,12 +1400,12 @@ msgstr "Rouleau de 62 mm, une étiquette par page (imprimante d'étiquettes)"
 msgid "Nothing with this identifier in this home."
 msgstr "Rien avec cet identifiant dans ce logement."
 
-msgid "Choose one of the layouts offered."
-msgstr "Choisissez l'une des mises en page proposées."
-
 #, python-format
 msgid "Choose between 1 and %(max)d labels."
 msgstr "Choisissez entre 1 et %(max)d étiquettes."
+
+msgid "Choose one of the layouts offered."
+msgstr "Choisissez l'une des mises en page proposées."
 
 msgid "Choose the objects from the list."
 msgstr "Choisissez les objets dans la liste."
@@ -1389,6 +1425,13 @@ msgstr "L'ancien autocollant n'ouvre plus rien. Imprimez la nouvelle étiquette.
 
 msgid "QR label revoked: the sticker no longer opens anything."
 msgstr "Étiquette QR révoquée : l'autocollant n'ouvre plus rien."
+
+msgid "HouseCairn: problem reported"
+msgstr "HouseCairn : problème signalé"
+
+#, python-format
+msgid "%(title)s, %(home)s"
+msgstr "%(title)s, %(home)s"
 
 msgid "People may add channels (ntfy, Telegram, email...) and receive reminders. Off: nothing is sent and no channel can be added or tested."
 msgstr "Chacun peut ajouter des canaux (ntfy, Telegram, e-mail…) et recevoir des rappels. Désactivé : rien n'est envoyé et aucun canal ne peut être ajouté ni testé."
@@ -1883,8 +1926,98 @@ msgstr "Le fichier disparaît du projet et du disque."
 msgid "File deleted."
 msgstr "Fichier supprimé."
 
+msgid "Reports"
+msgstr "Signalements"
+
 msgid "Rooms"
 msgstr "Pièces"
+
+msgid "Items"
+msgstr "Éléments"
+
+msgid "Stock"
+msgstr "Matériel"
+
+msgid "What is wrong?"
+msgstr "Qu'est-ce qui ne va pas ?"
+
+msgid "Where?"
+msgstr "Où ?"
+
+msgid "Open"
+msgstr "Ouvert"
+
+msgid "Made into a task"
+msgstr "Transformé en tâche"
+
+msgid "Resolved"
+msgstr "Résolu"
+
+msgid "Closed without action"
+msgstr "Classé sans suite"
+
+msgid "what is wrong"
+msgstr "ce qui ne va pas"
+
+msgid "where"
+msgstr "où"
+
+msgid "report"
+msgstr "signalement"
+
+msgid "reports"
+msgstr "signalements"
+
+msgid "a former member"
+msgstr "un ancien membre"
+
+#, python-format
+msgid "Stock · %(name)s"
+msgstr "Matériel · %(name)s"
+
+msgid "Say what is wrong."
+msgstr "Dites ce qui ne va pas."
+
+#, python-format
+msgid "At most %(max)d characters."
+msgstr "%(max)d caractères au plus."
+
+msgid "Choose one place."
+msgstr "Choisissez un seul lieu."
+
+#, python-format
+msgid "You already have %(max)d reports waiting: they must be dealt with first."
+msgstr "Vous avez déjà %(max)d signalements en attente : il faut d'abord les traiter."
+
+msgid "Only an open report can be made into a task."
+msgstr "Seul un signalement ouvert peut être transformé en tâche."
+
+msgid "Choose resolved or closed without action."
+msgstr "Choisissez résolu ou classé sans suite."
+
+msgid "This report is already closed."
+msgstr "Ce signalement est déjà classé."
+
+msgid "Only a closed report can be reopened."
+msgstr "Seul un signalement classé peut être rouvert."
+
+msgid "Closed"
+msgstr "Classés"
+
+msgid "All"
+msgstr "Toutes"
+
+msgid "Thank you: the problem is reported."
+msgstr "Merci : le problème est signalé."
+
+msgid "Task added from the report."
+msgstr "Tâche créée à partir du signalement."
+
+msgid "Report closed."
+msgstr "Signalement classé."
+
+msgid "Report reopened."
+msgstr "Signalement rouvert."
 
 msgid "Sets the icon and the filters of the room and, later, the task templates offered for it. Choose Other if none fits."
 msgstr "Détermine l'icône et les filtres de la pièce et, plus tard, les modèles de tâches proposés pour elle. Choisissez Autre si aucun ne convient."
@@ -2146,9 +2279,6 @@ msgstr "Élément supprimé."
 
 msgid "Photo deleted."
 msgstr "Photo supprimée."
-
-msgid "Stock"
-msgstr "Matériel"
 
 msgid "Compatible items"
 msgstr "Éléments compatibles"
@@ -3715,6 +3845,9 @@ msgstr "Imprimer des autocollants qui ouvrent une pièce, un élément ou un art
 msgid "Make a QR label"
 msgstr "Créer une étiquette QR"
 
+msgid "Report a problem"
+msgstr "Signaler un problème"
+
 #, python-format
 msgid "QR label of %(name)s"
 msgstr "Étiquette QR de %(name)s"
@@ -4030,6 +4163,74 @@ msgid "Delete the quote"
 msgstr "Supprimer le devis"
 
 #, python-format
+msgid "%(counter)s report waiting"
+msgid_plural "%(counter)s reports waiting"
+msgstr[0] "%(counter)s signalement en attente"
+msgstr[1] "%(counter)s signalements en attente"
+
+msgid "Problems reported by the people of the home"
+msgstr "Les problèmes signalés par les personnes du logement"
+
+#, python-format
+msgid "%(counter)s problem reported"
+msgid_plural "%(counter)s problems reported"
+msgstr[0] "%(counter)s problème signalé"
+msgstr[1] "%(counter)s problèmes signalés"
+
+msgid "See the reports"
+msgstr "Voir les signalements"
+
+msgid "My reports"
+msgstr "Mes signalements"
+
+msgid "Where"
+msgstr "Où"
+
+msgid "Reported by"
+msgstr "Signalé par"
+
+msgid "Reported on"
+msgstr "Signalé le"
+
+msgid "Closed on"
+msgstr "Classé le"
+
+#, python-format
+msgid "Photo of the problem: %(title)s"
+msgstr "Photo du problème : %(title)s"
+
+msgid "Make it a task"
+msgstr "En faire une tâche"
+
+msgid "Mark as resolved"
+msgstr "Marquer comme résolu"
+
+msgid "Close without action"
+msgstr "Classer sans suite"
+
+msgid "Reopen"
+msgstr "Rouvrir"
+
+#, python-format
+msgid "A photo is optional: a JPEG, PNG or WebP image, %(max)s at most. Its location and other metadata are removed."
+msgstr "La photo est facultative : une image JPEG, PNG ou WebP, %(max)s au plus. Sa localisation et ses autres métadonnées sont supprimées."
+
+msgid "Send the report"
+msgstr "Envoyer le signalement"
+
+msgid "Filter the reports"
+msgstr "Filtrer les signalements"
+
+msgid "Mine"
+msgstr "Les miens"
+
+msgid "You have not reported anything."
+msgstr "Vous n'avez rien signalé."
+
+msgid "Nothing to deal with."
+msgstr "Rien à traiter."
+
+#, python-format
 msgid "Photo of %(name)s"
 msgstr "Photo de %(name)s"
 
@@ -4146,14 +4347,8 @@ msgstr "Aucun article pour cette pièce pour l'instant."
 msgid "Photo categories"
 msgstr "Catégories de photos"
 
-msgid "All"
-msgstr "Toutes"
-
 msgid "No photo in this category."
 msgstr "Aucune photo dans cette catégorie."
-
-msgid "Items"
-msgstr "Éléments"
 
 #, python-format
 msgid "warranty until %(date)s"

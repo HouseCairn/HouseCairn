@@ -63,6 +63,16 @@ their values. No note, cost, procedure, file name or file. The entries stay in t
 `target_name` (empty for a deleted account or the system) next to the `actor_email` and
 `target_email` that existed.
 
+**Stock in the audit log.** Creating, changing and deleting a stock article or a supplier are
+recorded like the other content (`article.*`, `supplier.*`): the name as a person typed it
+and, for a change, the names of the fields that changed (`compatible_items`, `rooms` and
+`label` when they were set), never a reference, a price, a link, a note, a storage place or the
+photo. Deleting an article is one line, not one per supplier. Movements (entry, exit,
+inventory) and the draws of a task marked Done are **not** recorded: the ledger of the article
+is their trace, with its date, kind and quantity, and the occurrence that caused a draw
+(ADR 0038, 0046); a second copy in the audit log would be one more place to keep in step and
+would fill the log with every Done. A refused write leaves no line.
+
 **Seasons and the hemisphere of the home.** A task limited to a season takes a `season`:
 `spring`, `summer`, `autumn`, `winter`, `heating` or `custom`, empty for the whole year. The
 predefined ones are whole months: spring March to May, summer June to August, autumn

@@ -1,0 +1,7 @@
+{% load i18n %}<a class="row" href="{% url 'reports:list' home_id=home.id %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Reports" %}</span>
+        <span class="row-text">{% if waiting %}{% blocktranslate count counter=waiting %}{{ counter }} report waiting{% plural %}{{ counter }} reports waiting{% endblocktranslate %}{% else %}{% translate "Problems reported by the people of the home" %}{% endif %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>

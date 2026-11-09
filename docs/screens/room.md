@@ -27,7 +27,9 @@ from the API.
 
 **QR label** opens the [label](qr-label.md) of this room; **Make a QR label** makes it
 when there is none, for members who may write. Read-only members see the label and
-print it.
+print it. **Report a problem** opens the [report form](report-form.md) with the
+**Where?** list already filled in with this room; every member sees it, read-only
+members included.
 
 Members and owners change the room; read-only members see it all and change
 nothing. An address that does not exist, or that belongs to a home you are not

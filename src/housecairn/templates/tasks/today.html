@@ -5,6 +5,7 @@
   <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
   <h1>{% translate "Today" %}</h1>
   {% include "tasks/_undo.html" %}
+  {% load reports_extras %}{% open_reports_line home %}
   {% tab_bar "tasks" %}
   {% for section in sections %}
     <section aria-labelledby="section-{{ forloop.counter }}">

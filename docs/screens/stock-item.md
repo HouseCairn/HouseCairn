@@ -26,6 +26,7 @@ One item of the [stock](stock.md), at `/h/<home id>/stock/<item id>/`.
 
 - **QR label** opens the [label](qr-label.md) of this stock item; **Make a QR label** makes
   it when there is none, for members who may write. Read-only members see the label and
-  print it.
+  print it. **Report a problem** opens the [report form](report-form.md) with this stock
+  item as the place; every member sees it, read-only members included.
 
 Read-only members see everything and none of the buttons that change it.

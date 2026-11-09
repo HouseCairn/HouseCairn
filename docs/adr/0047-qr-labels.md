@@ -1,4 +1,4 @@
-# 0047. QR labels: an opaque code and a PDF made on the server
+# 0047. QR labels and reports: an opaque code, a PDF made on the server, a reader who reports
 
 - Status: accepted
 - Date: 2026-11-08
@@ -8,13 +8,17 @@
 Stickers on the boiler, the water meter and the shelf of the cellar answer "what is this
 and what do I do about it" for the people who live in the house and for the ones who only
 visit it. A sticker is stuck on a wall for years and is read by whoever holds a phone, so
-what it carries is public the day it is photographed.
+what it carries is public the day it is photographed. The same people (a tenant, a
+tradesman, a guest with a read-only role) often see a problem before the person who
+runs the home, and have no right to write anything else.
 
 ## Decision
 
-**A new app, `labels`.** It adds no migration to `tasks`, `rooms`, `stock` or `homes`. Its
-hooks in those apps are one line each: a block of buttons on the page of a room, an item
-and a stock item, and a row on the home page.
+**Two new apps, `labels` and `reports`.** Neither adds a migration to `tasks`, `rooms`,
+`stock` or `homes`. Their hooks in those apps are one line each: a block of buttons on the
+page of a room, an item and a stock item, a row on the home page, one line on Today. The
+creation of a task from a report calls `tasks.services.create_task`; the alert calls the
+new module `notifications.alerts`, which is an addition to `notifications`.
 
 **The code is opaque.** A label has a code of 16 random bytes (128 bits), from
 `secrets.token_urlsafe`, which is 22 URL-safe characters. It holds no identifier of the
@@ -57,8 +61,8 @@ of the batch is a list of check boxes on the screen and a list of identifiers in
 A person who writes gets a label made for each ticked object that has none; a reader
 prints the labels that exist and makes none.
 
-**Libraries.** One new runtime dependency, **ReportLab** (BSD licence, the reference PDF
-library of Python, no system library), added to the list of ADR 0001.
+**Libraries.** One new runtime dependency, **ReportLab** (BSD licence,
+the reference PDF library of Python, no system library), added to the list of ADR 0001.
 The lock holds 5.1.0 (published on 2026-10-22, more than the seven days of ADR 0014). It
 brings no new transitive package that is not already in the lock: Pillow and
 charset-normalizer are there. Its own QR encoder (`reportlab.graphics.barcode.qrencoder`,
@@ -73,14 +77,54 @@ one does both; WeasyPrint, which needs Pango and Cairo in the image; a PDF made 
 browser, which needs a script library and is no use to a client of the API. All
 licenses are on the list of the Dependency review.
 
-**Audit.** `label.revoked` and `label.regenerated` record the name of the object. A code
-is never written in the log.
+**Reports.** `Report` has a title (what is wrong, required, 200 characters), an optional
+place (a room, an item or a stock item, at most one, written down as a text when the
+report is made so that it still reads right after a rename or a deletion), an optional
+photo, a reporter, a status (`open`, `task`, `resolved`, `no_action`) and, when it has
+one, a link to a task. No date, no priority, no owner. **Every member reports, a reader
+included**: it is the only thing a reader writes, and it changes nothing else. A reader
+sees the reports they made and no others; a member who writes sees them all, makes one into
+a task with no date (the link is kept, the report leaves the open list), closes it as
+resolved or as needing no action, and reopens it (back to `task` when it has a task that
+still exists, else `open`). A person has at most 20 reports open or made into a task (statuses `open` and `task`)
+at the same time; closed ones are not counted. The
+transitions are conditional updates, so that two requests cannot both win.
 
-**Isolation, export, erasure.** Every query is bound to the home; a label of another home,
-an administrator of the instance who is not
-a member and a token bound to another home all get a 404 (ADR 0006, 0022). Export:
-`labels`, where the code is exported for an active label and not for a revoked one (ADR
-0023); the erasure of the home removes the rows by cascade. An API token needs `write` to
+**The photo** follows the rules of the attachments and the label photo of the stock
+(ADR 0030, 0034, 0038): type decided by decoding, size limit of the instance, rewritten
+without its metadata, a thumbnail, stored under `MEDIA_ROOT/reports/<home id>/` by
+identifiers only, served only by a view that checks who may see the report, inline with
+`nosniff` and a sandbox policy, counted by the quota of the home, erased with it. Images
+only: a report is a message, not a place for documents.
+
+**Visibility and alerts.** Today shows, to members who write, one line when reports are
+open, with a link; the home page has a row for the reports and one for the labels. When a
+report is made, a message goes, in the background (django-q2, after the commit), to the
+members who write, whose account is active and who have a channel on, except the reporter.
+It holds the title the reporter typed, the name of the home and a link when the instance
+has a public address, like a reminder (ADR 0043): nothing else leaves the instance. Quiet
+hours of the person apply (the message is not sent then; the report is on Today). No new
+table: the existing claim table is not reused, since its list of kinds would need a
+migration in `notifications`, and an alert is sent once, by a task, not found by a scan.
+
+**Audit.** `report.created`, `report.converted` and `report.closed` record the title and
+nothing else (ADR 0045); `label.revoked` and `label.regenerated` record the name of the
+object. A code is never written in the log.
+
+**Names.** A reporter is named by `accounts.names.person_name` (ADR 0045), like every other
+person: the display name with its filler characters trimmed, else the full name, else the
+part of the address before the `@`. An alert holds no name. A deleted account reads "a former
+member". In a list, on screen and in the API, `accounts.names.labels` tells two people of one
+name apart by their address in brackets (the one place an address is shown, as in the other
+lists), so that a reader cannot pass for a namesake in front of those who write. Reports does
+not name people by a rule of its own.
+
+**Isolation, export, erasure.** Every query is bound to the home; a label or a report of
+another home, a reader's view of others' reports, an administrator of the instance who is
+not a member and a token bound to another home all get a 404 (ADR 0006, 0022). Export:
+`labels` (the code is exported for an active label, not for a revoked one) and `reports`,
+with the photos under `files/reports/` (ADR 0023, 0036); the erasure of the home removes
+the rows by cascade and the directory by `homes.files`. An API token needs `write` to
 make, revoke or print (a `POST`) and `read` to list and read, as everywhere (ADR 0007).
 
 ## Consequences
@@ -89,4 +133,7 @@ make, revoke or print (a `POST`) and `read` to list and read, as everywhere (ADR
   another address breaks every printed sticker, and the documentation says so.
 - A person who photographs a sticker learns a code that opens a page only for members of
   the home. Revoking and regenerating are the answer to a lost or shared sticker.
-- The 200-label limit is a constant, not a setting.
+- A report cannot be deleted, only closed; the person who reported cannot withdraw it.
+  Both are left to a later lot if asked for.
+- Quiet hours may hide an alert; nothing hides the report.
+- The 200-label limit and the 20-open-reports limit are constants, not settings.

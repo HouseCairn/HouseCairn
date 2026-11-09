@@ -4,6 +4,7 @@ import re
 import uuid
 from collections.abc import Callable
 from datetime import timedelta
+from typing import Any
 
 import pytest
 from django.urls import reverse
@@ -318,3 +319,26 @@ class TestIsolation:
             api("list", alice_home), {"kind": "item", "target": str(article.id)}, format="json"
         )
         assert made.status_code == 400
+
+    def test_a_member_of_a_locked_home_is_told_which_sign_in_it_needs(
+        self, client_of_alice: APIClient, alice_home: Home, label: Label, settings: Any
+    ) -> None:
+        settings.SOCIALACCOUNT_PROVIDERS = {
+            "openid_connect": {
+                "APPS": [
+                    {
+                        "provider_id": "company",
+                        "name": "Company SSO",
+                        "client_id": "housecairn",
+                        "secret": "not-a-secret",
+                        "settings": {"server_url": "https://id.example.com"},
+                    }
+                ]
+            }
+        }
+        assert client_of_alice.get(resolve(label.code)).status_code == 200
+        alice_home.required_provider = "company"
+        alice_home.save()
+        response = client_of_alice.get(resolve(label.code))
+        assert response.status_code == 403
+        assert "Company SSO" in str(response.json())

@@ -50,6 +50,9 @@ supplier-form
 task-files
 qr-labels
 qr-label
+reports
+report-form
+report
 projects
 project
 project-form

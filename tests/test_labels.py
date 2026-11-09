@@ -453,6 +453,23 @@ class TestPrinting:
             services.labels_to_print(reader, alice_home, [("room", owner_room.id)])
         assert Label.objects.count() == 1
 
+    def test_a_selection_over_the_ceiling_makes_no_label(
+        self, alice: User, alice_home: Home, owner_item: Item
+    ) -> None:
+        room = room_services.create_room(alice, alice_home, name="Cellar")
+        items = [
+            room_services.create_item(alice, room, name=f"Shelf {number}")
+            for number in range(printing.MAX_LABELS + 1)
+        ]
+        with pytest.raises(ValidationError):
+            services.labels_to_print(alice, alice_home, [("item", item.id) for item in items])
+        assert Label.objects.count() == 0
+        # A repeated box counts once: the ceiling is on the objects, not on the ticks.
+        found = services.labels_to_print(
+            alice, alice_home, [("item", owner_item.id)] * (printing.MAX_LABELS + 5)
+        )
+        assert len(found) == 1
+
 
 class TestScreens:
     @pytest.fixture
@@ -568,7 +585,7 @@ class TestScreens:
                 self.url("list", alice_home),
             )
 
-    def test_the_page_of_an_object_offers_its_label(
+    def test_the_page_of_an_object_offers_its_label_and_the_report_button(
         self,
         alice: User,
         signed_in: Client,
@@ -582,11 +599,14 @@ class TestScreens:
         )
         body = signed_in.get(address).content.decode()
         assert "Make a QR label" in body
+        assert "Report a problem" in body
         label = make(alice, alice_home, owner_item)
         body = signed_in.get(address).content.decode()
         assert self.url("detail", alice_home, label_id=label.id) in body
+        assert f"?item={owner_item.id}" in body
         client.force_login(reader)
         body = client.get(address).content.decode()
+        assert "Report a problem" in body
         assert "Make a QR label" not in body
 
     def test_the_pages_of_a_room_and_a_stock_item_offer_them_too(
@@ -598,7 +618,9 @@ class TestScreens:
         stock = signed_in.get(
             reverse("stock:detail", kwargs={"home_id": alice_home.id, "article_id": article.id})
         ).content.decode()
+        assert "?room=" in room
         assert "Make a QR label" in room
+        assert "?article=" in stock
         assert "Make a QR label" in stock
 
 

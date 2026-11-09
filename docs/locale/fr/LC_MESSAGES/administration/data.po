@@ -48,8 +48,8 @@ msgstr "Les données, au format JSON (ci-dessous)."
 msgid "`files/`"
 msgstr "`files/`"
 
-msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`, and the photos and quote files of projects, under `files/projects/`."
-msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, les fichiers des tâches, sous `files/attachments/`, les photos d'étiquettes des articles du matériel, sous `files/stock/`, et les photos et fichiers de devis des projets, sous `files/projects/`."
+msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`, the photos and quote files of projects, under `files/projects/`, and the photos of the reports, under `files/reports/`."
+msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, les fichiers des tâches, sous `files/attachments/`, les photos d'étiquettes des articles du matériel, sous `files/stock/`, les photos et fichiers de devis des projets, sous `files/projects/`, et les photos des signalements, sous `files/reports/`."
 
 msgid "`README.txt`"
 msgstr "`README.txt`"
@@ -213,6 +213,12 @@ msgstr "`labels`"
 msgid "`id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing."
 msgstr "`id`, `kind` (`room`, `item` ou `article`), `target` (l'identifiant de la pièce, de l'élément ou de l'article), `code`, `revoked_at`, `created_at` de chaque étiquette QR. Le `code` est l'identifiant opaque que porte son autocollant : il est exporté pour une étiquette active et vaut `null` pour une étiquette révoquée, qui n'ouvre rien."
 
+msgid "`reports`"
+msgstr "`reports`"
+
+msgid "`id`, `title`, `status`, `place`, `room`, `item` or `stock_item`, `task`, `reporter` (the e-mail address that `members` already holds), `created_at`, `closed_at`, and `file`, the path of the photo in the archive (`files/reports/<id>.<extension>`, or `null`)."
+msgstr "`id`, `title`, `status`, `place`, `room`, `item` ou `stock_item`, `task`, `reporter` (l'adresse e-mail que `members` contient déjà), `created_at`, `closed_at`, et `file`, le chemin de la photo dans l'archive (`files/reports/<id>.<extension>`, ou `null`)."
+
 msgid "`files`"
 msgstr "`files`"
 
@@ -231,8 +237,8 @@ msgstr "Suppression d'un logement"
 msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, calendar feeds, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
 msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, flux de calendrier, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
 
-msgid "The photos, the labels of stock items, the photos and quote files of projects and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>`, `stock/<home id>` or `projects/<home id>`): remove that directory by hand."
-msgstr "Les photos, les étiquettes des articles du matériel, les photos et fichiers de devis des projets et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>`, `stock/<id du logement>` ou `projects/<id du logement>`) : supprimez ce dossier à la main."
+msgid "The photos, the labels of stock items, the photos and quote files of projects, the photos of reports and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>`, `stock/<home id>`, `projects/<home id>` or `reports/<home id>`): remove that directory by hand."
+msgstr "Les photos, les étiquettes des articles du matériel, les photos et fichiers de devis des projets, les photos des signalements et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>`, `stock/<id du logement>`, `projects/<id du logement>` ou `reports/<id du logement>`) : supprimez ce dossier à la main."
 
 msgid "Erasure of an account"
 msgstr "Effacement d'un compte"

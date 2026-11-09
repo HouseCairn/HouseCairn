@@ -29,7 +29,7 @@ def sign_in(page: Page, base: str) -> None:
     page.fill("input[name=login]", EMAIL)
     page.fill("input[name=password]", PASSWORD)
     page.click("main form:has(input[name=login]) button[type=submit]")
-    page.wait_for_url(f"{base}/h/")
+    page.wait_for_url(f"{base}/me/")
 
 
 def sign_out(page: Page, base: str) -> None:
@@ -95,8 +95,8 @@ def passkey(browser: Browser, base: str) -> None:
 
     # Conditional mediation: opening the sign-in page signs in with no click at all.
     page.goto(f"{base}/accounts/login/")
-    page.wait_for_url(f"{base}/h/", timeout=15000)
-    check(True, "conditional (autofill) passkey sign-in reached the homes page")
+    page.wait_for_url(f"{base}/me/", timeout=15000)
+    check(True, "conditional (autofill) passkey sign-in reached My home")
     sign_out(page, base)
 
     # Fallback: a browser without conditional mediation gets a button once an address is typed.
@@ -108,7 +108,7 @@ def passkey(browser: Browser, base: str) -> None:
     page.fill("input[name=login]", "someone@example.com")
     check(offer.is_visible(), "offer shown once an address is typed, whatever the address")
     offer.click()
-    page.wait_for_url(f"{base}/h/", timeout=15000)
+    page.wait_for_url(f"{base}/me/", timeout=15000)
     check(True, "fallback button signs in with the passkey")
     context.close()
 
