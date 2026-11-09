@@ -47,6 +47,14 @@ upkeep in the same room, "Wash the walls", estimated at 50 and done for 80, adds
   task 52 times, rounded once to the cent. A task that does not repeat has none, and a task
   that repeats by use, when there is one, will not be annualised either.
 
+For a year, **Planned** counts what the task did that year (each time done, at its estimate),
+the occurrence that is open, and the times its repetition will still bring before 31
+December. A task every month at 25, read in February after a first time in January, plans 12
+times 25 for the year, not only the two rows that exist. A year that is over counts only what
+happened; a year to come counts the whole repetition, and a task that counts from the last
+time is followed from its open date, as the calendar does. Nothing is written: these times
+are worked out when you read the page.
+
 A task done with no cost typed counts at its estimate in the plan and as nothing paid, and is
 flagged, so that the gap does not look better than it is.
 

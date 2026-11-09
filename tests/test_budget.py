@@ -207,6 +207,129 @@ class TestAnnualisation:
         assert rows["Nothing"].annual_cost is None
 
 
+class TestPlannedYearFollowsTheRepetition:
+    """The plan of a year counts what the repetition will still bring, not only the rows."""
+
+    @staticmethod
+    def repeating(
+        alice: User,
+        home: Home,
+        unit: str,
+        interval: int,
+        *,
+        first: datetime.date,
+        mode: str = "fixed",
+        estimate: str = "25",
+    ) -> Task:
+        return make_task(
+            alice,
+            home,
+            due=first,
+            repeat_mode=mode,
+            repeat_unit=unit,
+            repeat_interval=interval,
+            material_budget=D(estimate),
+        )
+
+    @staticmethod
+    def planned(home: Home, today: datetime.date, year: int) -> Decimal:
+        return services.by_task(services.load(home, today), year).lines[0].amounts.planned
+
+    def test_a_monthly_task_read_in_february_plans_twelve_times_its_estimate(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = self.repeating(alice, alice_home, "month", 1, first=datetime.date(2026, 1, 1))
+        finish(alice, task, on=datetime.date(2026, 1, 1), cost="25")
+        today = datetime.date(2026, 2, 10)
+        row = services.load(alice_home, today).tasks[0]
+        assert row.annual_cost == D("300.00")
+        # One done in January, the open one of February, ten more to come: 12 times.
+        assert self.planned(alice_home, today, 2026) == D("300.00")
+        figures = row.figures(services.in_year(2026), year=2026)
+        assert (figures.count, figures.projected, figures.paid) == (12, 10, D("25.00"))
+
+    def test_every_six_months_plans_two_times(self, alice: User, alice_home: Home) -> None:
+        self.repeating(alice, alice_home, "month", 6, first=datetime.date(2026, 2, 1))
+        today = datetime.date(2026, 2, 10)
+        assert self.planned(alice_home, today, 2026) == D("50.00")  # February and August
+
+    def test_every_three_years_plans_nothing_in_a_year_without_an_occurrence(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        self.repeating(alice, alice_home, "year", 3, first=datetime.date(2026, 3, 1))
+        today = datetime.date(2026, 3, 2)
+        assert self.planned(alice_home, today, 2026) == D("25.00")
+        assert self.planned(alice_home, today, 2027) == D("0.00")
+        assert self.planned(alice_home, today, 2028) == D("0.00")
+        assert self.planned(alice_home, today, 2029) == D("25.00")
+
+    def test_a_year_already_over_counts_only_what_happened(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        task = self.repeating(alice, alice_home, "month", 1, first=datetime.date(2026, 1, 1))
+        finish(alice, task, on=datetime.date(2026, 1, 1), cost="25")
+        today = datetime.date(2027, 3, 1)  # the open occurrence of February 2026 is long late
+        ledger = services.load(alice_home, today)
+        line = services.by_task(ledger, 2026).lines[0]
+        assert line.amounts.planned == D("50.00")  # January (done) and February (open)
+        assert line.amounts.paid == D("25.00")
+        assert ledger.tasks[0].projected(2026) == 0
+
+    def test_the_next_year_is_projected_whole(self, alice: User, alice_home: Home) -> None:
+        self.repeating(alice, alice_home, "month", 1, first=datetime.date(2026, 2, 1))
+        today = datetime.date(2026, 2, 10)
+        assert self.planned(alice_home, today, 2027) == D("300.00")
+        assert self.planned(alice_home, today, 2030) == D("300.00")
+
+    def test_a_task_counted_from_the_last_time_is_projected_from_its_open_date(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        self.repeating(
+            alice, alice_home, "month", 1, first=datetime.date(2026, 3, 1), mode="after_last"
+        )
+        today = datetime.date(2026, 2, 10)
+        assert self.planned(alice_home, today, 2026) == D("250.00")  # March to December
+        assert self.planned(alice_home, today, 2027) == D("300.00")
+
+    def test_a_task_that_does_not_repeat_plans_only_its_open_occurrence(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        make_task(alice, alice_home, due=datetime.date(2026, 5, 1), material_budget=D("25"))
+        today = datetime.date(2026, 2, 10)
+        assert self.planned(alice_home, today, 2026) == D("25.00")
+        assert self.planned(alice_home, today, 2027) == D("0.00")
+
+    def test_the_envelope_the_rooms_and_the_natures_use_the_same_projection(
+        self, alice: User, alice_home: Home, owner_room: Room
+    ) -> None:
+        year = 2026
+        today = datetime.date(2026, 2, 10)
+        task = self.repeating(alice, alice_home, "month", 1, first=datetime.date(2026, 1, 1))
+        Task.objects.filter(id=task.id).update(room=owner_room)
+        finish(alice, task, on=datetime.date(2026, 1, 1), cost="25")
+        project_services.set_envelope(alice, alice_home, year=year, amount=D("1000"))
+        ledger = services.load(alice_home, today)
+        report = services.envelope(ledger, year)
+        assert report.total.planned == D("300.00")
+        assert report.left_to_plan == D("700.00")
+        assert report.left_to_spend == D("975.00")  # 1000 less the 25 paid
+        assert services.by_year(ledger)[0].upkeep.planned == D("300.00")
+        assert services.by_room(ledger, year).lines[0].amounts.planned == D("300.00")
+        natures = {line.label: line.amounts for line in services.by_nature(ledger, year)}
+        assert natures["material"].planned == D("300.00")
+
+    def test_a_task_off_the_calendar_is_not_walked_for_ever(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        self.repeating(
+            alice, alice_home, "day", 1, first=datetime.date(2026, 2, 1), mode="after_last"
+        )
+        today = datetime.date(2026, 2, 10)
+        row = services.load(alice_home, today).tasks[0]
+        # The walk is bounded, a far year does not hang the page.
+        assert row.projected(2027) <= services.PROJECTION_STEPS
+
+
 class TestYearOfAProject:
     def test_a_project_over_two_years_is_counted_whole_in_the_year_it_starts(
         self, alice: User, alice_home: Home, living_room_project: Project
@@ -412,7 +535,16 @@ class TestQueries:
         make_task(alice, alice_home, labour_budget=D("5"))
         few = count()
         tasks = [
-            Task(home=alice_home, title=f"Task {n}", labour_budget=D("3.50")) for n in range(500)
+            Task(
+                home=alice_home,
+                title=f"Task {n}",
+                labour_budget=D("3.50"),
+                repeat_mode="fixed",
+                repeat_unit="month",
+                repeat_interval=1,
+                series_start=TODAY,
+            )
+            for n in range(500)
         ]
         Task.objects.bulk_create(tasks)
         Occurrence.objects.bulk_create(

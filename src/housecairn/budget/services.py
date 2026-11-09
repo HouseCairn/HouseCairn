@@ -40,6 +40,8 @@ CENT = Decimal("0.01")
 # A year is 12 months, 52 weeks or 365 days (docs/adr/0051).
 PER_YEAR = {recurrence.MONTH: 12, recurrence.WEEK: 52, recurrence.DAY: 365, recurrence.YEAR: 1}
 _OPEN = (Status.PLANNED, Status.POSTPONED)
+# Dates worked out per task and year, at most: a daily task is 365 a year (docs/adr/0051).
+PROJECTION_STEPS = 2_000
 
 
 def cents(amount: Decimal) -> Decimal:
@@ -64,11 +66,12 @@ class ProjectRow:
 class TaskFigures:
     """What a maintenance task plans and costs over a period: whole occurrences only."""
 
-    count: int
+    count: int  # done, open and projected
     material: Decimal  # planned
     labour: Decimal  # planned
     paid: Decimal
     missing: int  # done, with no cost typed: counted in the plan, paid as zero
+    projected: int = 0  # of `count`: the times the repetition will still bring (no row yet)
 
     @property
     def amounts(self) -> Amounts:
@@ -86,24 +89,74 @@ class TaskRow:
     has_estimate: bool
     done: tuple[tuple[datetime.date | None, Decimal | None], ...]
     open: tuple[datetime.date | None, ...]
+    today: datetime.date
+    # Projections already worked out, by year: a row is read several times in a page.
+    memo: dict[int, int] = field(default_factory=dict, compare=False, repr=False)
 
     @property
     def estimate(self) -> Decimal:
         return self.material + self.labour
 
+    def projected(self, year: int) -> int:
+        """How many times the repetition will still bring the task due in `year`.
+
+        Counted after the open occurrence, were each one closed on its due date: the way
+        the calendar projects it (`tasks.recurrence.next_due`, nothing is written). A year
+        already over has none: only what happened counts. A task that does not repeat has
+        none, nor one with no open date to count from.
+        """
+        if year not in self.memo:
+            self.memo[year] = len(self._coming(year))
+        return self.memo[year]
+
+    def _coming(self, year: int) -> list[datetime.date]:
+        task = self.task
+        dates = [day for day in self.open if day]
+        if year < self.today.year or not task.repeats or not dates:
+            return []
+        end = datetime.date(year, 12, 31)
+        current = max(dates)
+        if current > end:
+            return []
+        if task.repeat_mode == recurrence.FIXED and task.series_start and current.year < year:
+            # A fixed series does not depend on the dates before: start at the last day of
+            # the year before instead of walking every date from the open occurrence.
+            current = datetime.date(year - 1, 12, 31)
+        found: list[datetime.date] = []
+        for _step in range(PROJECTION_STEPS):
+            following = recurrence.next_due(
+                task.rule, anchor=task.series_start, due_on=current, done_on=current
+            )
+            if following is None or following > end:
+                break
+            if following.year == year:
+                found.append(following)
+            current = following
+        return found
+
     def figures(
-        self, window: Callable[[datetime.date | None], bool], *, open_too: bool = True
+        self,
+        window: Callable[[datetime.date | None], bool],
+        *,
+        open_too: bool = True,
+        year: int | None = None,
     ) -> TaskFigures:
-        """The occurrences done in the window, and the open ones due in it (if asked)."""
+        """The occurrences done in the window, and the open ones due in it (if asked).
+
+        With a `year` the times the repetition will still bring in that year are added to the
+        plan (none paid yet). The window and the year are the same period.
+        """
         done = [(day, cost) for day, cost in self.done if window(day)]
         coming = [day for day in self.open if window(day)] if open_too else []
-        count = len(done) + len(coming)
+        projected = self.projected(year) if year is not None and open_too else 0
+        count = len(done) + len(coming) + projected
         return TaskFigures(
             count,
             self.material * count,
             self.labour * count,
             sum((cost for _day, cost in done if cost is not None), ZERO),
             sum(1 for _day, cost in done if cost is None),
+            projected,
         )
 
     @property
@@ -177,7 +230,12 @@ def _day(cost_day: datetime.date | None, due: datetime.date | None) -> datetime.
     return cost_day or due
 
 
-def _task_row(task: Task, room: Room | None, found: Iterable[tuple[str, Any, Any, Any]]) -> TaskRow:
+def _task_row(
+    task: Task,
+    room: Room | None,
+    found: Iterable[tuple[str, Any, Any, Any]],
+    today: datetime.date,
+) -> TaskRow:
     """A task with its occurrences: (status, due, completed, cost) of each."""
     occurrences = list(found)
     done = tuple(
@@ -194,17 +252,18 @@ def _task_row(task: Task, room: Room | None, found: Iterable[tuple[str, Any, Any
         task.material_budget is not None or task.labour_budget is not None,
         done,
         coming,
+        today,
     )
 
 
-def task_row(task: Task) -> TaskRow | None:
+def task_row(task: Task, today: datetime.date | None = None) -> TaskRow | None:
     """One task, for its own page; `None` for a task of a project (its money is the project's)."""
     if ProjectTask.objects.filter(task=task, project__deleted_at__isnull=True).exists():
         return None
     found = Occurrence.objects.filter(task=task, status__in=[*_OPEN, Status.DONE]).values_list(
         "status", "due_on", "completed_on", "actual_cost"
     )
-    return _task_row(task, None, found)
+    return _task_row(task, None, found, today or task_services.today())
 
 
 def load(home: Home, today: datetime.date | None = None) -> Ledger:
@@ -271,7 +330,7 @@ def load(home: Home, today: datetime.date | None = None) -> Ledger:
         if task.id in in_project:
             continue
         room = room_of.get(task.room_id) if task.room_id else None
-        maintenance.append(_task_row(task, room, occurrences.get(task.id, ())))
+        maintenance.append(_task_row(task, room, occurrences.get(task.id, ()), today))
     envelopes = {e.year: e.amount for e in project_services.envelopes_of(home)}
     return Ledger(home, today, rows, maintenance, envelopes, rooms)
 
@@ -331,8 +390,10 @@ def projects_in(ledger: Ledger, year: int | None) -> list[ProjectRow]:
     return [p for p in ledger.projects if year is None or p.year == year]
 
 
-def maintenance_amounts(ledger: Ledger, window: Callable[[datetime.date | None], bool]) -> Amounts:
-    return _sum(row.figures(window).amounts for row in ledger.tasks)
+def maintenance_amounts(ledger: Ledger, year: int) -> Amounts:
+    """The upkeep of a year: done, open and still to come by the repetition."""
+    window = in_year(year)
+    return _sum(row.figures(window, year=year).amounts for row in ledger.tasks)
 
 
 def by_room(ledger: Ledger, year: int) -> Report:
@@ -347,7 +408,7 @@ def by_room(ledger: Ledger, year: int) -> Report:
             projects[None] += row.amounts
     window = in_year(year)
     for task in ledger.tasks:
-        upkeep[task.room.id if task.room else None] += task.figures(window).amounts
+        upkeep[task.room.id if task.room else None] += task.figures(window, year=year).amounts
     lines = []
     for candidate in [*ledger.rooms, None]:
         key = candidate.id if candidate else None
@@ -392,7 +453,7 @@ def by_task(ledger: Ledger, year: int) -> Report:
         if not row.has_estimate and total.paid == ZERO:
             unlisted += 1
             continue
-        this_year = row.figures(window)
+        this_year = row.figures(window, year=year)
         lines.append(
             Line(
                 row.task.id,
@@ -425,7 +486,7 @@ def by_nature(ledger: Ledger, year: int) -> list[Line]:
             found[nature] += amounts
     window = in_year(year)
     for task in ledger.tasks:
-        figures = task.figures(window)
+        figures = task.figures(window, year=year)
         found[BudgetNature.MATERIAL] += Amounts(figures.material, ZERO, ZERO)
         found[BudgetNature.LABOUR] += Amounts(figures.labour, ZERO, ZERO)
         found[BudgetNature.OTHER] += Amounts(ZERO, ZERO, figures.paid)
@@ -450,7 +511,7 @@ def by_year(ledger: Ledger) -> list[YearLine]:
             year,
             ledger.envelopes.get(year),
             _sum(p.amounts for p in projects_in(ledger, year)),
-            maintenance_amounts(ledger, in_year(year)),
+            maintenance_amounts(ledger, year),
         )
         for year in ledger.years()
     ]
@@ -485,7 +546,7 @@ def envelope(ledger: Ledger, year: int) -> EnvelopeReport:
         year,
         ledger.envelopes.get(year),
         _sum(p.amounts for p in projects_in(ledger, year)),
-        maintenance_amounts(ledger, in_year(year)),
+        maintenance_amounts(ledger, year),
     )
 
 

@@ -58,9 +58,20 @@ it, and its page says so by showing no cost block. For a task:
 
 - *Estimate each time* is the material budget plus the labour budget.
 - *Planned* for a year is the estimate times the occurrences that are done in the year (the
-  date done, else the date due) or open and due in it. *Paid* is the sum of the actual costs
-  of those done. An occurrence done with no cost typed is planned and paid as zero, and is
-  counted and shown ("done without a cost"), never hidden.
+  date done, else the date due), open and due in it, or still to come by the repetition
+  before 31 December. *Paid* is the sum of the actual costs of those done. An occurrence
+  done with no cost typed is planned and paid as zero, and is counted and shown ("done
+  without a cost"), never hidden.
+- *Still to come* is worked out after the latest open occurrence, with
+  `tasks.recurrence.next_due` (the RFC 5545 engine the calendar also uses, ADR 0031), each
+  time taken as closed on its due date; a task that counts from the last time is followed
+  from its open date. A year already over has no projection: only what happened counts. A
+  year to come is projected whole. Nothing is written and no query is made per task, so the
+  number of queries still does not grow with the tasks. A fixed series is entered at the end
+  of the year before, since it does not depend on the dates in between; the walk is bounded
+  to 2000 dates per task and year. Alternative rejected: counting only the rows that exist,
+  which showed 50 for the year of a monthly task at 25 whose cost a year is 300, and so
+  made the plan look far lower than the envelope it is set against.
 - A skipped occurrence counts for nothing. An occurrence with no date at all is in no year;
   it is in the total.
 - *Cost a year* is the estimate times the occurrences a year of its repetition: 12 divided
