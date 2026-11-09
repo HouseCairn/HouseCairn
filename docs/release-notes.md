@@ -25,6 +25,16 @@ with it on the project's
   printing: the address is on the stickers. See [QR labels](guides/qr-labels.md). New
   dependency: ReportLab ([ADR 0047](adr/0047-qr-labels.md)).
 
+- **Budget.** A new **Budget** tab shows the money of a home by room, by project and for the
+  upkeep: planned, committed, paid and the gap, in words and with labelled gauges, for the
+  envelope of a year, by nature, by year and over the last 12 months. A task now shows its
+  cost, with what it comes to in a year when it repeats. Several homes are added up by
+  currency, never converted. Every page downloads as CSV, and the API has the same figures
+  (read only). Amounts are typed the same way everywhere, with the comma in French: see
+  [Budget](guides/budget.md) and [Entering an amount](guides/amounts.md). Nothing new is
+  stored, so there is nothing more to export or erase. *Still to pay* on a project is now
+  worked out line by line, as the gap is.
+
 - **Notifications.** Each person adds their own channels (ntfy, Telegram, Signal, Matrix,
   Gotify, email and other Apprise services) on **More, Notifications**, tests them, and
   chooses when reminders come: days before the due date, time of day, quiet hours, a daily

@@ -27,8 +27,8 @@ msgstr "Ajoute un devis à un [projet](project.md) (`/h/<id du logement>/project
 msgid "**Contractor** is one field: pick a contractor of the home from the suggestions, or type a new name, which joins the [contractors](contractors.md) when you save. Case does not matter; empty means nobody."
 msgstr "**Intervenant** est un seul champ : choisissez un intervenant du logement dans les suggestions, ou saisissez un nouveau nom, qui rejoint les [intervenants](contractors.md) à l'enregistrement. La casse n'a pas d'importance ; vide, cela veut dire personne."
 
-msgid "**Amount** is in the currency of the home, from 0 to 9,999,999,999.99."
-msgstr "**Montant** est dans la devise du logement, de 0 à 9 999 999 999,99."
+msgid "**Amount** is in the currency of the home, from 0 to 9999999999.99 ([how to type one](../guides/amounts.md))."
+msgstr "**Montant** est dans la devise du logement, de 0 à 9999999999.99 ([comment en saisir un](../guides/amounts.md))."
 
 msgid "**Date** and **Valid until** are optional; the validity cannot end before the date."
 msgstr "**Date** et **Valable jusqu'au** sont facultatives ; la validité ne peut pas finir avant la date."
@@ -44,4 +44,7 @@ msgstr "**Document dans Paperless-ngx** garde un numéro de document et un lien 
 
 msgid "**Delete the quote** asks for confirmation and releases what it committed."
 msgstr "**Supprimer le devis** demande confirmation et libère ce qu'il engageait."
+
+#~ msgid "**Amount** is in the currency of the home, from 0 to 9,999,999,999.99."
+#~ msgstr "**Montant** est dans la devise du logement, de 0 à 9 999 999 999,99."
 

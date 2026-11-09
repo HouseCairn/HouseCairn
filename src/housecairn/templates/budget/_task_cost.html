@@ -1,0 +1,14 @@
+{% load i18n projects_extras %}{# The cost of a task: its estimate, a year, what was paid. `row` is empty in a project. #}
+{% if row and row.has_estimate or row and paid %}
+  <h2>{% translate "Cost" %}</h2>
+  <section class="card">
+    <dl class="facts">
+      {% if row.has_estimate %}
+        <div><dt>{% translate "Estimate each time" %}</dt><dd>{{ row.estimate|money:home.currency }}</dd></div>
+        {% if row.annual_cost is not None %}<div><dt>{% translate "Cost a year" %}</dt><dd>{{ row.annual_cost|money:home.currency }}</dd></div>{% endif %}
+      {% endif %}
+      <div><dt>{% translate "Paid so far" %}</dt><dd>{{ paid|money:home.currency }}</dd></div>
+    </dl>
+    {% if missing %}<p class="small">{% blocktranslate count counter=missing %}{{ counter }} time done without a cost: add it in the details of what was done.{% plural %}{{ counter }} times done without a cost: add them in the details of what was done.{% endblocktranslate %}</p>{% endif %}
+  </section>
+{% endif %}

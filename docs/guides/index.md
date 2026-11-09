@@ -12,6 +12,8 @@ today-and-history
 stock
 qr-labels
 projects
+budget
+amounts
 notifications
 calendar
 ```

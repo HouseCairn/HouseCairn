@@ -1,0 +1,6 @@
+{% load projects_extras budget_extras %}{# The cells of the three amounts, the gauge and the words. `amounts`, `home`. #}
+<td>{{ amounts.planned|money:home.currency }}</td>
+<td>{{ amounts.committed|money:home.currency }}</td>
+<td>{{ amounts.paid|money:home.currency }}</td>
+<td>{{ amounts.engaged|money:home.currency }} {% gauge amounts %}</td>
+<td>{% budget_gap amounts home.currency %}</td>

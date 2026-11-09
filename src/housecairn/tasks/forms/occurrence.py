@@ -9,6 +9,7 @@ from django import forms
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
+from housecairn.core.forms import MoneyField
 from housecairn.tasks import files
 from housecairn.tasks.forms.fields import (
     _DATE,
@@ -20,6 +21,8 @@ from housecairn.tasks.models import MaterialDraw, Occurrence
 
 class CompletionForm(forms.ModelForm[Occurrence]):
     """The details of a task that is done: when, what it cost, a note."""
+
+    actual_cost = MoneyField(label=_("Actual cost"), required=False)
 
     class Meta:
         model = Occurrence

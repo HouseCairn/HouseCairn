@@ -447,4 +447,7 @@ class AcceptInvitationView(APIView):
             membership = services.accept_invitation(request.user, raw or "")  # type: ignore[arg-type]
         except Invitation.DoesNotExist as exc:
             raise exceptions.NotFound() from exc
+        except services.UnverifiedAddressError as exc:
+            # The message says what to do: verify the address (docs/adr/0020).
+            raise exceptions.PermissionDenied(exc.args[0]) from exc
         return Response(HomeSerializer(membership.home, context={"request": request}).data)

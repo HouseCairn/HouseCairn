@@ -6,7 +6,7 @@ or changes one (`/h/<home id>/projects/quotes/<quote id>/edit/`).
 - **Contractor** is one field: pick a contractor of the home from the suggestions, or type
   a new name, which joins the [contractors](contractors.md) when you save. Case does not
   matter; empty means nobody.
-- **Amount** is in the currency of the home, from 0 to 9,999,999,999.99.
+- **Amount** is in the currency of the home, from 0 to 9999999999.99 ([how to type one](../guides/amounts.md)).
 - **Date** and **Valid until** are optional; the validity cannot end before the date.
 - **Status** is requested, received, accepted or rejected. An accepted quote is **committed
   on** a budget line of the project, which you choose; with any other status the line is

@@ -12,6 +12,14 @@ and the role you are invited with.
 - **An account already**: **Sign in**, then come back to the link and **Join
   the home**. You can also continue with the instance's single sign-on, if the
   provider confirms the invited address.
+- **A link passed on by hand** proves nothing about the address: to join, your
+  account must have verified the invited address. If it has not, the page says
+  so instead of showing **Join the home**: verify the address from **Verify
+  the address** (the email addresses of your account), then open the link
+  again. An address that is not verified cannot become your primary address.
+  Without outgoing email, the instance cannot verify it: ask its
+  administrator, or ask to be invited again once the instance sends email. A
+  link that came by email proves the address by itself.
 
 The link works once. A link that was used, revoked, replaced by a newer one or
 has expired opens a page saying it no longer works, without any detail: ask the
