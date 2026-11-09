@@ -17,6 +17,7 @@ from django.utils.translation import gettext_lazy
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
+from housecairn.core.templatetags.tabs import PROJECT_VIEWS
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
@@ -154,6 +155,11 @@ class ProjectListView(HomeProjectsMixin, TemplateView):
                 season=chosen.get("season", ""),
             ).distinct()
         )
+        # The tab (docs/adr/0017): going on, ideas or finished; a status filter narrows it.
+        shown = self.request.GET.get("view", "")
+        shown = shown if shown in PROJECT_VIEWS else ""
+        allowed = PROJECT_VIEWS[shown]
+        projects = [p for p in projects if p.status in allowed]
         totals = services.amounts_by_project(projects)
         groups = []
         for status in STATUS_ORDER:
@@ -167,9 +173,10 @@ class ProjectListView(HomeProjectsMixin, TemplateView):
                 filtered=any(chosen.values()),
                 chosen=chosen,
                 rooms=home_rooms(self.home),
-                statuses=ProjectStatus.choices,
+                statuses=[(v, label) for v, label in ProjectStatus.choices if v in allowed],
+                view=shown,
                 envelope=services.envelope_summary(self.home, year),
-                everything=not projects and not any(chosen.values()),
+                everything=not projects and not any(chosen.values()) and not shown,
             ),
             **kwargs,
         )

@@ -716,6 +716,9 @@ msgstr "Comparer les projets cochés"
 msgid "No project yet. A project is a piece of work with an end, such as redoing the bathroom."
 msgstr "Aucun projet pour l'instant. Un projet est un chantier qui a une fin, comme refaire la salle de bain."
 
+msgid "No project in this tab."
+msgstr "Aucun projet dans cet onglet."
+
 msgid "No project matches."
 msgstr "Aucun projet ne correspond."
 

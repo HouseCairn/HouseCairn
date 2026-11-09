@@ -128,6 +128,11 @@ class TaskListView(HomeTasksMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         status = "done" if self.request.GET.get("status") == "done" else "open"
+        if status == "done":
+            # Done is the history (docs/adr/0017): what was done or skipped, filtered.
+            return super().get_context_data(
+                **self.page(status=status, **_history(self.home, self.request)), **kwargs
+            )
         day = services.today()
         show_hidden = self.request.GET.get("hidden") == "1" and status == "open"
         if status == "open":
@@ -576,44 +581,57 @@ def _date_or_none(raw: str) -> datetime.date | None:
         return None
 
 
-class HistoryView(HomeTasksMixin, TemplateView):
+# The filters of the history, and the name each one has in the address of the list.
+HISTORY_FILTERS = ("q", "room", "item", "contractor", "person", "outcome", "after", "before")
+
+
+def _history(home: Home, request: HttpRequest) -> dict[str, Any]:
     """Everything that was done or skipped, filtered and searched, with its real cost."""
+    params = request.GET
+    outcome = params.get("outcome", "")
+    selection = agenda.HistoryFilter(
+        room=_uuid_or_none(params.get("room", "")),
+        item=_uuid_or_none(params.get("item", "")),
+        contractor=_uuid_or_none(params.get("contractor", "")),
+        person=_uuid_or_none(params.get("person", "")),
+        query=params.get("q", "").strip()[:200],
+        status=outcome if outcome in ("done", "skipped") else "",
+        after=_date_or_none(params.get("after", "")),
+        before=_date_or_none(params.get("before", "")),
+    )
+    rows = agenda.history(home, selection)
+    page = Paginator(rows, PAGE_SIZE).get_page(params.get("page"))
+    kept = [(k, v) for k, v in params.items() if k in HISTORY_FILTERS and v]
+    members = list(services.members_for_forms(home))
+    shown = names.labels(members)
+    people = [{"id": m.pk, "label": shown[m.pk]} for m in members]
+    return {
+        "page": page,
+        "selection": selection,
+        "cost": agenda.cost_of(rows),
+        "rooms": services.rooms_for_forms(home),
+        "items": services.items_for_forms(home),
+        "contractors": services.contractors_of(home),
+        "members": people,
+        "query_string": urlencode([("status", "done"), *kept]),
+        "filtered": bool(kept),
+    }
 
-    template_name = "tasks/history.html"
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        params = self.request.GET
-        status = params.get("status", "")
-        selection = agenda.HistoryFilter(
-            room=_uuid_or_none(params.get("room", "")),
-            item=_uuid_or_none(params.get("item", "")),
-            contractor=_uuid_or_none(params.get("contractor", "")),
-            person=_uuid_or_none(params.get("person", "")),
-            query=params.get("q", "").strip()[:200],
-            status=status if status in ("done", "skipped") else "",
-            after=_date_or_none(params.get("after", "")),
-            before=_date_or_none(params.get("before", "")),
-        )
-        rows = agenda.history(self.home, selection)
-        page = Paginator(rows, PAGE_SIZE).get_page(params.get("page"))
-        kept = [(k, v) for k, v in params.items() if k not in ("page", "undo") and v]
-        members = list(services.members_for_forms(self.home))
-        shown = names.labels(members)
-        people = [{"id": m.pk, "label": shown[m.pk]} for m in members]
-        return super().get_context_data(
-            **self.page(
-                page=page,
-                selection=selection,
-                cost=agenda.cost_of(rows),
-                rooms=services.rooms_for_forms(self.home),
-                items=services.items_for_forms(self.home),
-                contractors=services.contractors_of(self.home),
-                members=people,
-                query_string=urlencode(kept),
-                filtered=bool(kept),
-            ),
-            **kwargs,
-        )
+class HistoryView(HomeTasksMixin, View):
+    """The former address of the history: the Done filter of the task list (docs/adr/0017).
+
+    The filters follow, the outcome under its new name (`status` became `outcome`).
+    """
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        renamed = {"status": "outcome"}
+        query = [("status", "done")] + [
+            (renamed.get(k, k), v)
+            for k, v in request.GET.items()
+            if renamed.get(k, k) in (*HISTORY_FILTERS, "page") and v
+        ]
+        return redirect(f"{_url('list', home_id=self.home.id)}?{urlencode(query)}")
 
 
 class PreferencesView(LoginRequiredMixin, FormView[Any]):

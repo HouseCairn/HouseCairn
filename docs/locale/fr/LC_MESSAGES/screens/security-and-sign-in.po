@@ -1,0 +1,38 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Security and sign-in"
+msgstr "Sécurité et connexion"
+
+msgid "How you sign in and how your account is protected, at `/more/security/`, from the **Me** group of [More](more.md):"
+msgstr "Comment vous vous connectez et comment votre compte est protégé, sur `/more/security/`, depuis le groupe **Moi** de [Plus](more.md) :"
+
+msgid "**Account security**: passkeys, the authenticator app and recovery codes."
+msgstr "**Sécurité du compte** : clés d'accès, application d'authentification et codes de récupération."
+
+msgid "**Password**: change it, or set one if you sign in another way."
+msgstr "**Mot de passe** : le changer, ou en définir un si vous vous connectez autrement."
+
+msgid "**Email addresses**, when the instance sends email: add or verify the addresses of your account."
+msgstr "**Adresses e-mail**, quand l'instance envoie des e-mails : ajouter ou vérifier les adresses de votre compte."
+
+msgid "**Delete my account** is at the bottom of the page. It opens a confirmation page, described under [Delete my account](account.md#delete-my-account)."
+msgstr "**Supprimer mon compte** est en bas de la page. Il ouvre une page de confirmation, décrite sous [Supprimer mon compte](account.md#delete-my-account)."
+

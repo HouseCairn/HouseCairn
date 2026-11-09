@@ -1,10 +1,13 @@
 # Calendar
 
-The tasks of your homes by week, month or year, at `/calendar/` (**Tasks**, then **Calendar**).
+The tasks of your homes by week, month or year, at `/calendar/` (the **Calendar** tab of **Today**).
 It shows what is planned, done, postponed and skipped, with the status written in words, and
 what is still to come for a task that repeats.
 
-- **Week, Month, Year**: the three views switch from the bar under the title. The week lists
+- **Today, All, Calendar**: the tabs of the Today section, when the calendar shows one
+  home (your only home, or the one chosen in the filter).
+- **Week, Month, Year**: the three views switch from the segmented control under the
+  tabs. The week lists
   each day with its tasks; the month adds a grid in which every day links to its week and says
   how many tasks it holds; the year counts the tasks of each month by status and links to it.
 - **Filters**: home (when you belong to several, the default is all of them together), room,
@@ -22,7 +25,8 @@ is always the farthest dates; narrowing the filters or the range shows the rest.
 
 ## Feeds
 
-**Feeds** (`/calendar/feeds/`) gives the address of a calendar that Google Calendar, Apple
+**Calendar in another application**, in the **Me** group of [More](more.md)
+(`/calendar/feeds/`), gives the address of a calendar that Google Calendar, Apple
 Calendar, Thunderbird or Home Assistant can subscribe to; see the
 [guide](../guides/calendar.md). You can have one feed per home and one for all your homes.
 

@@ -5,7 +5,7 @@ make them yours.
 
 ## Start the day on My home
 
-**Home** in the navigation opens [My home](../screens/my-home.md): what is assigned
+**Today** in the navigation opens [My home](../screens/my-home.md): what is assigned
 to you, what is late in the home, what nobody has taken yet, and the warranties that
 end soon. With several homes, pick one or look at them all together.
 
@@ -22,7 +22,7 @@ look ahead, and which sections to show. Your choice is yours alone, in every hom
 
 ## Remember what was done
 
-[History](../screens/history.md) lists what was done or skipped, the most recent
+The [history](../screens/history.md), **Done** in the **All** tab, lists what was done or skipped, the most recent
 first. Search a word of the title or of the note, or narrow by room, item, contractor
 or person, by outcome and by dates: this is how you find who changed the filter, or
 when the plumber came last. The total is that of the real costs you entered when

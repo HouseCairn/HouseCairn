@@ -21,11 +21,11 @@ msgstr ""
 msgid "My home"
 msgstr "Mon accueil"
 
-msgid "What concerns you, at `/me/`; **Home** in the navigation opens it once you are signed in. With several homes, the selector at the top chooses one, or **All my homes** to see them together."
-msgstr "Ce qui vous concerne, sur `/me/` ; **Accueil** dans la navigation l'ouvre une fois connecté. Avec plusieurs logements, le sélecteur du haut en choisit un, ou **Tous mes logements** pour les voir ensemble."
+msgid "What concerns you, at `/me/`; **Today** in the navigation opens it once you are signed in, from a page that is not about one home. With several homes, the selector at the top chooses one, or **All my homes** to see them together."
+msgstr "Ce qui vous concerne, sur `/me/` ; **Aujourd'hui** dans la navigation l'ouvre une fois connecté, depuis une page qui ne concerne pas un logement. Avec plusieurs logements, le sélecteur du haut en choisit un, ou **Tous mes logements** pour les voir ensemble."
 
-msgid "For each home, under its name (with links to [Today](today.md), the [task list](tasks.md) and the [history](history.md)):"
-msgstr "Pour chaque logement, sous son nom (avec des liens vers [Aujourd'hui](today.md), la [liste des tâches](tasks.md) et l'[historique](history.md)) :"
+msgid "For each home, under its name (with the tabs of [Today](today.md): Today, All and Calendar):"
+msgstr "Pour chaque logement, sous son nom (avec les onglets d'[Aujourd'hui](today.md) : Aujourd'hui, Toutes et Calendrier) :"
 
 msgid "**Assigned to me**: the open tasks that are yours, the late ones first."
 msgstr "**Qui me sont confiées** : les tâches ouvertes qui sont les vôtres, les plus en retard d'abord."

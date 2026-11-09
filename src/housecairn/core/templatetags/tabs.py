@@ -1,20 +1,30 @@
-"""`{% tab_bar "tasks" %}`: the tabs of an area of the application (docs/adr/0017).
+"""`{% tab_bar "today" %}`: the tabs of a section of the application (docs/adr/0017).
 
-One component for every sub-navigation, so that the current tab, the horizontal scroll on a
-phone, the touch targets and the focus ring are the same everywhere. A group names the
-tabs of an area; a tab is shown only to the people who may open it.
+One component for every sub-navigation, so that the current tab, the touch targets and
+the focus ring are the same everywhere. Tabs switch between sister views of one section,
+four at most, all visible at 360 px: Today, All, Calendar; Rooms, Stock; In progress,
+Ideas, Finished; Summary, Rooms, Projects, Upkeep. A group names the tabs of a section;
+a tab is shown only to the people who may open it.
 """
 
 from dataclasses import dataclass
 from typing import Any
-from urllib.parse import quote
+from uuid import UUID
 
 from django import template
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 register = template.Library()
+
+# The tabs of Projects: the statuses each one lists, by the value of `?view=`.
+PROJECT_VIEWS: dict[str, tuple[str, ...]] = {
+    "": ("in_progress", "planned"),
+    "ideas": ("idea",),
+    "finished": ("done", "abandoned"),
+}
 
 
 @dataclass(frozen=True)
@@ -32,31 +42,87 @@ def _home_id(context: template.Context, request: HttpRequest) -> Any:
     return match.kwargs.get("home_id") if match else None
 
 
-def _tasks(context: template.Context, request: HttpRequest, view: str) -> list[Tab]:
+def _calendar_home(context: template.Context, request: HttpRequest) -> Any:
+    """The home of the calendar: the one chosen in its filter, else the person's only home.
+
+    The calendar has no home in its address; with several homes shown together, there is
+    no Today nor All to switch to, and no tab is shown.
+    """
+    homes = list(context.get("homes") or ())
+    raw = request.GET.get("home", "")
+    try:
+        wanted = UUID(raw) if raw else None
+    except ValueError:
+        wanted = None
+    if wanted is not None:
+        return next((h.pk for h in homes if h.pk == wanted), None)
+    return homes[0].pk if len(homes) == 1 else None
+
+
+def _today(context: template.Context, request: HttpRequest, view: str) -> list[Tab]:
+    on_calendar = view.startswith("calendar:")
+    home_id = _calendar_home(context, request) if on_calendar else _home_id(context, request)
+    if home_id is None:
+        return []
+    kwargs = {"home_id": home_id}
+    return [
+        Tab(_("Today"), reverse("tasks:today", kwargs=kwargs), view == "tasks:today"),
+        Tab(
+            pgettext_lazy("tasks", "All"),
+            reverse("tasks:list", kwargs=kwargs),
+            view in ("tasks:list", "tasks:history"),
+        ),
+        Tab(_("Calendar"), f"{reverse('calendar:week')}?home={home_id}", on_calendar),
+    ]
+
+
+def _rooms(context: template.Context, request: HttpRequest, view: str) -> list[Tab]:
     home_id = _home_id(context, request)
     if home_id is None:
         return []
     kwargs = {"home_id": home_id}
-    here = request.POST.get("next") or request.GET.get("next") or request.get_full_path()
-    if view != "display-preferences":
-        here = request.get_full_path()
     return [
-        Tab(_("Today"), reverse("tasks:today", kwargs=kwargs), view == "tasks:today"),
-        Tab(_("All tasks"), reverse("tasks:list", kwargs=kwargs), view == "tasks:list"),
-        Tab(_("History"), reverse("tasks:history", kwargs=kwargs), view == "tasks:history"),
-        Tab(_("Calendar"), reverse("calendar:week"), False),
-        Tab(_("Projects"), reverse("projects:list", kwargs=kwargs), view.startswith("projects:")),
-        Tab(_("Budget"), reverse("budget:overview", kwargs=kwargs), view.startswith("budget:")),
+        Tab(_("Rooms"), reverse("rooms:list", kwargs=kwargs), view == "rooms:list"),
+        Tab(_("Stock"), reverse("stock:list", kwargs=kwargs), view == "stock:list"),
+    ]
+
+
+def _projects(context: template.Context, request: HttpRequest, view: str) -> list[Tab]:
+    home_id = _home_id(context, request)
+    if home_id is None:
+        return []
+    base = reverse("projects:list", kwargs={"home_id": home_id})
+    shown = request.GET.get("view", "")
+    shown = shown if shown in PROJECT_VIEWS else ""
+    return [
+        Tab(_("In progress"), base, shown == ""),
+        Tab(_("Ideas"), f"{base}?view=ideas", shown == "ideas"),
         Tab(
-            _("Contractors"),
-            reverse("tasks:contractors", kwargs=kwargs),
-            view.startswith("tasks:contractor"),
+            pgettext_lazy("projects tab", "Finished"),
+            f"{base}?view=finished",
+            shown == "finished",
+        ),
+    ]
+
+
+def _budget(context: template.Context, request: HttpRequest, view: str) -> list[Tab]:
+    home_id = _home_id(context, request)
+    if home_id is None:
+        return []
+    kwargs = {"home_id": home_id}
+    return [
+        Tab(_("Summary"), reverse("budget:overview", kwargs=kwargs), view == "budget:overview"),
+        Tab(
+            pgettext_lazy("budget tab", "Rooms"),
+            reverse("budget:rooms", kwargs=kwargs),
+            view == "budget:rooms",
         ),
         Tab(
-            _("Display preferences"),
-            f"{reverse('display-preferences')}?next={quote(here, safe='/')}",
-            view == "display-preferences",
+            pgettext_lazy("budget tab", "Projects"),
+            reverse("budget:projects", kwargs=kwargs),
+            view == "budget:projects",
         ),
+        Tab(_("Upkeep"), reverse("budget:tasks", kwargs=kwargs), view == "budget:tasks"),
     ]
 
 
@@ -94,21 +160,10 @@ def _instance(context: template.Context, request: HttpRequest, view: str) -> lis
     ]
 
 
-def _budget(context: template.Context, request: HttpRequest, view: str) -> list[Tab]:
-    home_id = _home_id(context, request)
-    if home_id is None:
-        return []
-    kwargs = {"home_id": home_id}
-    return [
-        Tab(_("Overview"), reverse("budget:overview", kwargs=kwargs), view == "budget:overview"),
-        Tab(_("By room"), reverse("budget:rooms", kwargs=kwargs), view == "budget:rooms"),
-        Tab(_("By project"), reverse("budget:projects", kwargs=kwargs), view == "budget:projects"),
-        Tab(_("By task"), reverse("budget:tasks", kwargs=kwargs), view == "budget:tasks"),
-    ]
-
-
 _GROUPS = {
-    "tasks": (_("Tasks"), _tasks),
+    "today": (_("Today"), _today),
+    "rooms": (_("Rooms"), _rooms),
+    "projects": (_("Projects"), _projects),
     "budget": (_("Budget"), _budget),
     "home": (_("Home"), _home),
     "instance": (_("Instance administration"), _instance),

@@ -7,7 +7,7 @@ back and how to close it.
 
 ## Add a task
 
-**Tasks** in the navigation, then **Add a task**. From the page of a room or of an
+**Today** in the navigation, then **Add a task**. From the page of a room or of an
 item, **Add a task** already knows where the task belongs. Everything else is in the
 sections of the [form](../screens/task-form.md), opened only when needed. Photos and
 files (a photo of the label, the manual in PDF) can be added right away.

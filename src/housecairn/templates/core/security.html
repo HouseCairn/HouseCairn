@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Security and sign-in" %}{% endblock head_title %}
+{% block content %}
+  <a class="back-link" href="{% url 'more' %}">{% include "components/icon.html" with name="chevron" %}{% translate "More" %}</a>
+  <h1>{% translate "Security and sign-in" %}</h1>
+  <div class="list">
+    <a class="row" href="{% url 'mfa_index' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Account security" %}</span>
+        <span class="row-text">{% translate "Passkeys, authenticator app, recovery codes" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+    <a class="row" href="{% if user.has_usable_password %}{% url 'account_change_password' %}{% else %}{% url 'account_set_password' %}{% endif %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Password" %}</span>
+        <span class="row-text">{% translate "Change the password you sign in with" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+    {% if email_configured %}
+    <a class="row" href="{% url 'account_email' %}">
+      <span class="row-body">
+        <span class="row-title">{% translate "Email addresses" %}</span>
+        <span class="row-text">{% translate "Add or verify the addresses of your account" %}</span>
+      </span>
+      {% include "components/icon.html" with name="chevron" class="chevron" %}
+    </a>
+    {% endif %}
+  </div>
+  <h2>{% translate "Delete my account" %}</h2>
+  <p class="small">{% translate "Erase your account and your data. You confirm on the next page." %}</p>
+  <a class="button button-danger button-block" href="{% url 'account_delete' %}">{% translate "Delete my account" %}</a>
+{% endblock content %}

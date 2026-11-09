@@ -1,14 +1,9 @@
-{% load i18n %}{# Main navigation of signed-in pages: the tab bar at the bottom of a phone screen, the column on the left of a computer screen (static/css/shell.css). #}
+{% load i18n %}{# Main navigation of signed-in pages (docs/adr/0017): five sections in the bar at the bottom of a phone; on a computer, the column on the left shows the first four and the content of More unfolded (static/css/shell.css). #}
 <nav class="nav" aria-label="{% translate 'Main navigation' %}">
   <ul class="nav-list">
     <li>
-      <a class="nav-link" href="{{ home_url }}"{% if nav_section == "home" %} aria-current="page"{% endif %}>
-        {% include "components/icon.html" with name="home" %}{% translate "Home" %}
-      </a>
-    </li>
-    <li>
-      <a class="nav-link" href="{% url 'homes:list' %}"{% if nav_section == "homes" %} aria-current="page"{% endif %}>
-        {% include "components/icon.html" with name="homes" %}{% translate "Homes" %}
+      <a class="nav-link" href="{{ today_url }}"{% if nav_section == "today" %} aria-current="page"{% endif %}>
+        {% include "components/icon.html" with name="today" %}{% translate "Today" %}
       </a>
     </li>
     <li>
@@ -17,19 +12,31 @@
       </a>
     </li>
     <li>
-      <a class="nav-link" href="{{ tasks_url }}"{% if nav_section == "tasks" %} aria-current="page"{% endif %}>
-        {% include "components/icon.html" with name="tasks" %}{% translate "Tasks" %}
+      <a class="nav-link" href="{{ projects_url }}"{% if nav_section == "projects" %} aria-current="page"{% endif %}>
+        {% include "components/icon.html" with name="projects" %}{% translate "Projects" %}
       </a>
     </li>
     <li>
-      <a class="nav-link" href="{{ stock_url }}"{% if nav_section == "stock" %} aria-current="page"{% endif %}>
-        {% include "components/icon.html" with name="stock" %}{% translate "Stock" %}
+      <a class="nav-link" href="{{ budget_url }}"{% if nav_section == "budget" %} aria-current="page"{% endif %}>
+        {% include "components/icon.html" with name="budget" %}{% translate "Budget" %}
       </a>
     </li>
-    <li>
+    <li class="nav-more">
       <a class="nav-link" href="{% url 'more' %}"{% if nav_section == "more" %} aria-current="page"{% endif %}>
         {% include "components/icon.html" with name="more" %}{% translate "More" %}
       </a>
     </li>
   </ul>
+  <div class="nav-drawer">
+    {% for group in nav_more %}
+      <p class="nav-group" id="nav-group-{{ group.key }}">{{ group.label }}</p>
+      <ul class="nav-sublist" aria-labelledby="nav-group-{{ group.key }}">
+        {% for entry in group.entries %}
+          <li><a class="nav-sublink" href="{{ entry.url }}"{% if entry.current %} aria-current="page"{% endif %}>{{ entry.label }}</a></li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+    {# A link to the sign-out page, which asks for the confirmation: no form, so no anti-forgery token on every page. #}
+    <a class="nav-sublink nav-signout" href="{% url 'account_logout' %}">{% translate "Sign out" %}</a>
+  </div>
 </nav>

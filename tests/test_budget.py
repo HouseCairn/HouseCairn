@@ -851,7 +851,8 @@ class TestAccess:
             assert signed_in.get(url("rooms", alice_home) + f"?year={raw}").status_code == 200
 
 
-def test_the_budget_tab_is_in_the_tasks_tabs(signed_in: Client, alice_home: Home) -> None:
+def test_the_budget_has_one_row_of_tabs(signed_in: Client, alice_home: Home) -> None:
     html = signed_in.get(url("rooms", alice_home)).content.decode()
     assert 'href="' + url("overview", alice_home) + '"' in html
-    assert "By room" in html
+    assert html.count('<nav class="tabs') == 1
+    assert "Upkeep" in html

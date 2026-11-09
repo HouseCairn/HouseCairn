@@ -6,7 +6,7 @@ title is required, so you can start with an idea and fill in the rest as it firm
 
 ## Start a project
 
-Open **Tasks** in the navigation, then the **Projects** tab, then **Add a project**. Say
+Open **Projects** in the navigation, then **Add a project**. Say
 what it is, its status (idea, planned, in progress, finished, abandoned) and, if you
 already know it, the **budget**: for "redo the bathroom, 5000 euros", type 5000. The
 amount is in the currency of the home and becomes the first budget line.

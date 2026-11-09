@@ -27,6 +27,7 @@ urlpatterns = [
     path("healthz", core_views.healthz, name="healthz"),
     path("manifest.webmanifest", core_views.manifest, name="manifest"),
     path("more/", core_views.MoreView.as_view(), name="more"),
+    path("more/security/", core_views.SecurityView.as_view(), name="more-security"),
     path("about/", core_views.AboutView.as_view(), name="about"),
     path("h/", include("housecairn.homes.urls")),
     # Rooms, items and photos of a home (docs/adr/0029); /rooms/ is the navigation entry.

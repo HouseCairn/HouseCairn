@@ -16,7 +16,7 @@
   {% for digest in digests %}
     <section class="digest" aria-labelledby="digest-{{ forloop.counter }}">
       <h2 id="digest-{{ forloop.counter }}">{{ digest.home.name }}</h2>
-      {% with home=digest.home %}{% tab_bar "tasks" %}{% endwith %}
+      {% with home=digest.home %}{% tab_bar "today" %}{% endwith %}
       {% if digest.empty %}
         <p class="empty">{% translate "Nothing needs you here." %}</p>
       {% endif %}
