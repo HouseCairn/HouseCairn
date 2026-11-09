@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the HouseCairn package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: HouseCairn \n"
@@ -141,6 +140,9 @@ msgstr "Ordinateur : la colonne de gauche"
 msgid "From 56 rem the same `nav` becomes a column on the left. It lists the first four sections, then the content of More unfolded under them, without a page in between, and Sign out last."
 msgstr "À partir de 56 rem, le même `nav` devient une colonne à gauche. Elle liste les quatre premières sections, puis le contenu de Plus déplié en dessous, sans page intermédiaire, et Se déconnecter en dernier."
 
+msgid "The diagram is indicative and does not show every entry; the entries are those of `housecairn/core/more.py`."
+msgstr "Le schéma est indicatif et ne montre pas toutes les entrées ; les entrées sont celles de `housecairn/core/more.py`."
+
 msgid "The phone bar and the computer column **must** be one `nav`, laid out by CSS. Two navigations drift apart, and a screen reader would announce both."
 msgstr "La barre du téléphone et la colonne de l'ordinateur **doivent** être un seul `nav`, disposé par CSS. Deux navigations divergent, et un lecteur d'écran annoncerait les deux."
 
@@ -159,6 +161,9 @@ msgstr "Une entrée de Plus **doit** appartenir à l'un de ces groupes. Une list
 msgid "An action that cannot be taken back (deleting the account, a home) **must** be at the bottom of its own page, never on More. A dangerous action does not sit between two everyday settings."
 msgstr "Une action qui ne se rattrape pas (supprimer le compte, un logement) **doit** se trouver en bas de sa propre page, jamais dans Plus. Une action dangereuse ne se place pas entre deux réglages courants."
 
+msgid "An entry of More **must** be added in `housecairn/core/more.py`, in its group, with its routes for the marking of the current entry, never in a template. The page of More and the column both show it."
+msgstr "Une entrée de Plus **doit** être ajoutée dans `housecairn/core/more.py`, dans son groupe, avec ses routes pour le marquage de l'entrée courante, jamais dans un gabarit. La page de Plus et la colonne la montrent toutes deux."
+
 msgid "Where a new screen goes"
 msgstr "Où ranger un nouvel écran"
 
@@ -170,6 +175,21 @@ msgstr "**Est-ce une autre vue du contenu d'une racine de section existante** (u
 
 msgid "**Is it the page of one record** (a room, an item, a task, a quote)? It goes under the page of its parent in the tree: an item under its room, a quote under its project."
 msgstr "**Est-ce la page d'une fiche** (une pièce, un élément, une tâche, un devis) ? Elle se range sous la page de son parent dans l'arbre : un élément sous sa pièce, un devis sous son projet."
+
+msgid "**Is it the list of all the records of a new type of data across the home** (every warranty, every contract, every document of the home)? Choose the first place that fits, in this order:"
+msgstr "**Est-ce la liste de tous les enregistrements d'un nouveau type de données du logement** (toutes les garanties, tous les contrats, tous les documents du logement) ? Prenez la première place qui convient, dans cet ordre :"
+
+msgid "*The page of a parent*, when each record belongs to one parent and is read from it (the warranty of an item, on the page of the item). A list that is only read from its parent needs no screen of its own."
+msgstr "*La fiche d'un parent*, quand chaque enregistrement appartient à un seul parent et se lit depuis lui (la garantie d'un élément, sur la fiche de l'élément). Une liste que l'on ne lit que depuis son parent n'a pas besoin d'un écran à elle."
+
+msgid "*A tab of an existing section*, when the list is another view of what the section already shows, used often, and the section has fewer than four tabs. The stock is a tab of Rooms for this reason."
+msgstr "*Un onglet d'une section existante*, quand la liste est une autre vue de ce que la section montre déjà, qu'elle sert souvent et que la section a moins de quatre onglets. Le matériel est un onglet de Pièces pour cette raison."
+
+msgid "*More, group Home*, otherwise: the list is about the home but looked at now and then, not a daily view."
+msgstr "*Plus, groupe Logement*, sinon : la liste concerne le logement mais se consulte de temps en temps, ce n'est pas une vue quotidienne."
+
+msgid "A section never gets a fifth tab: that needs a new decision record ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md)). A record that belongs to a parent record (the warranty of its item) keeps that parent in the tree. The cross-home list of More is only an origin, and returns to it with `next`. Only records with no other parent are pages under the list."
+msgstr "Une section n'a jamais de cinquième onglet : il faudrait une nouvelle décision consignée ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md)). Un enregistrement qui appartient à un enregistrement parent (la garantie de son élément) garde ce parent dans l'arbre. La liste transverse de Plus n'est qu'une origine, et y renvoie par `next`. Seuls les enregistrements sans autre parent sont des fiches sous la liste."
 
 msgid "**Is it a form that adds or changes a record?** It is opened from the page or the list it belongs to, with a `next` address (see the [return rule](#return-rule))."
 msgstr "**Est-ce un formulaire qui ajoute ou modifie une fiche ?** Il s'ouvre depuis la page ou la liste à laquelle il appartient, avec une adresse `next` (voir la [règle de retour](#return-rule))."
@@ -212,6 +232,36 @@ msgstr "`next` **ne doit pas** être affiché tel quel. Le libellé du lien reto
 
 msgid "A form **must** keep `next` in a hidden field, so that a form sent with an error still knows where to go back."
 msgstr "Un formulaire **doit** garder `next` dans un champ caché, pour qu'un formulaire envoyé avec une erreur sache encore où revenir."
+
+msgid "Helpers and template tags"
+msgstr "Utilitaires et balises de gabarit"
+
+msgid "The shared pieces of the return rule are named here so that a screen never writes its own."
+msgstr "Les pièces communes de la règle de retour sont nommées ici pour qu'un écran n'écrive jamais les siennes."
+
+msgid "`core.redirects.is_safe_redirect` checks an address. It is on `main` today."
+msgstr "`core.redirects.is_safe_redirect` vérifie une adresse. Il est déjà sur `main`."
+
+msgid "**Coming:** in a coming change of the navigation, the module `housecairn/core/navigation.py` will hold the helper `url_with_next`, which adds the current path as `next` to the address of a record or a form, and the tag `back_link`, which draws the back link from `next` or from the parent in the tree. Until that change is merged, a view that needs `next` uses `is_safe_redirect` directly and the pull request says so. The merge of that change replaces this paragraph with the exact usage of both, in the same pull request."
+msgstr "**À venir :** dans un prochain changement de la navigation, le module `housecairn/core/navigation.py` contiendra l'utilitaire `url_with_next`, qui ajoute le chemin courant comme `next` à l'adresse d'une fiche ou d'un formulaire, et la balise `back_link`, qui dessine le lien de retour à partir de `next` ou du parent dans l'arbre. Tant que ce changement n'est pas fusionné, une vue qui a besoin de `next` utilise directement `is_safe_redirect` et la pull request le dit. La fusion de ce changement remplace ce paragraphe par l'usage exact des deux, dans la même pull request."
+
+msgid "Default parent"
+msgstr "Parent par défaut"
+
+msgid "A record reachable from two places has one parent in the tree, the section that owns it, and the other place is only an origin."
+msgstr "Une fiche accessible depuis deux endroits a un seul parent dans l'arbre, la section qui la possède ; l'autre endroit n'est qu'une origine."
+
+msgid "Without `next` (an address typed by hand, a link in an email or a calendar feed), the back link **must** lead to the parent in the tree, never to a previous screen guessed from the history. A page must not depend on a history the person cannot see."
+msgstr "Sans `next` (une adresse saisie à la main, un lien dans un e-mail ou un flux de calendrier), le lien de retour **doit** mener au parent dans l'arbre, jamais à un écran précédent deviné d'après l'historique. Une page ne doit pas dépendre d'un historique que la personne ne voit pas."
+
+msgid "The parent **must** be the same wherever the record is opened from: the parent record when the record belongs to one (the warranty of its item), otherwise the list of its section, as in the tree above. The screen reference page of the record names it."
+msgstr "Le parent **doit** être le même d'où que la fiche soit ouverte : l'enregistrement parent quand la fiche en a un (la garantie de son élément), sinon la liste de sa section, comme dans l'arbre ci-dessus. La page de référence de l'écran de la fiche le nomme."
+
+msgid "With `next`, the origin wins and the label comes from its route."
+msgstr "Avec `next`, l'origine l'emporte et le libellé vient de sa route."
+
+msgid "Example: a room is listed under Rooms and also opened from the budget by room. Its parent is Rooms, so opened without `next` it says \"‹ Rooms\". Opened from the budget with `next`, it says \"‹ Budget\", keeps Budget marked in the bar and comes back to it."
+msgstr "Exemple : une pièce est listée sous Pièces et aussi ouverte depuis le budget par pièce. Son parent est Pièces : ouverte sans `next`, elle affiche « ‹ Pièces ». Ouverte depuis le budget avec `next`, elle affiche « ‹ Budget », garde Budget marqué dans la barre et y revient."
 
 msgid "Back link and breadcrumbs"
 msgstr "Lien retour et fil d'Ariane"
@@ -378,6 +428,27 @@ msgstr "Une page d'un logement **doit** garder le logement dans son adresse ([AD
 msgid "**Isolation.** Every query **must** be scoped to the homes of the person ([ADR 0006](../adr/0006-home-scoping.md)), and the current home **must not** replace that check. A value kept in a session is a preference, not a permission. The selector and \"All homes\" list only the homes the person belongs to, and a home they left is dropped from the session."
 msgstr "**Isolation.** Chaque requête **doit** être limitée aux logements de la personne ([ADR 0006](../adr/0006-home-scoping.md)), et le logement courant **ne doit pas** remplacer cette vérification. Une valeur gardée en session est une préférence, pas une permission. Le sélecteur et « Tous les logements » ne listent que les logements dont la personne est membre, et un logement qu'elle a quitté est retiré de la session."
 
+msgid "Dates, reminders and alerts"
+msgstr "Échéances, rappels et alertes"
+
+msgid "The application already has one way to remind and one way to alert; a new screen uses them and does not add a third."
+msgstr "L'application a déjà une façon de rappeler et une façon d'alerter ; un nouvel écran les utilise et n'en ajoute pas une troisième."
+
+msgid "A date that someone must act on **must** be a task with a due date. The task is then shown on Today: overdue, today, and up to the person's horizon, 7 days by default (the `horizon_days` preference, `Horizon.WEEK`). It is also shown on the Calendar and in the calendar feeds, and its reminders go out through the channels of the person ([ADR 0043](../adr/0043-notifications-through-apprise.md)), with the rules of postponing, Done and Skip that every task has. A reminder written again for one screen would ignore the quiet hours and the follow-ups of the person."
+msgstr "Une date à laquelle quelqu'un doit agir **doit** être une tâche avec une échéance. La tâche apparaît alors dans Aujourd'hui : en retard, aujourd'hui, et jusqu'à l'horizon de la personne, 7 jours par défaut (la préférence `horizon_days`, `Horizon.WEEK`). Elle apparaît aussi dans le Calendrier et dans les flux de calendrier, et ses rappels partent par les canaux de la personne ([ADR 0043](../adr/0043-notifications-through-apprise.md)), avec les règles de report, de Fait et d'Ignorer que toute tâche a. Un rappel réécrit pour un écran ignorerait les heures de silence et les relances de la personne."
+
+msgid "A date that only informs (the end of a warranty) **must** be a list of the agenda digest, `housecairn.tasks.agenda.my_home`, shown on My home (`/me/`, the view of Today when the person is not in a home), as the warranties ending soon are today. It is read, not acted on, and sends no notification. This digest is not the daily summary message of the notifications."
+msgstr "Une date qui ne fait qu'informer (la fin d'une garantie) **doit** être une liste du récapitulatif de l'agenda, `housecairn.tasks.agenda.my_home`, affichée dans Mon accueil (`/me/`, la vue d'Aujourd'hui quand on n'est pas dans un logement), comme le sont aujourd'hui les garanties qui se terminent bientôt. Elle se lit, on n'agit pas dessus, et elle n'envoie aucune notification. Ce récapitulatif n'est pas le message de résumé quotidien des notifications."
+
+msgid "An event with no due date (a problem was reported) **must** be an alert of `housecairn.notifications.alerts`, sent in the background to the members who may write, except the person who caused it, with the quiet hours applied. The open reports are also a line on Today with a link, for the members who may write."
+msgstr "Un événement sans échéance (un problème a été signalé) **doit** être une alerte de `housecairn.notifications.alerts`, envoyée en arrière-plan aux membres qui peuvent écrire, sauf à la personne qui l'a provoqué, en respectant les heures de silence. Les signalements ouverts sont aussi une ligne dans Aujourd'hui, avec un lien, pour les membres qui peuvent écrire."
+
+msgid "A notification **must** carry the title the person typed, the home and a link, and nothing else: no amount, note or address leaves the instance."
+msgstr "Une notification **doit** porter le titre saisi par la personne, le logement et un lien, et rien d'autre : aucun montant, aucune note ni aucune adresse ne quitte l'instance."
+
+msgid "A notification **must not** be sent from the screen's own code: it goes through the `notifications` app, which sends it once and only to people who have a channel on."
+msgstr "Une notification **ne doit pas** être envoyée par le code propre à l'écran : elle passe par l'application `notifications`, qui l'envoie une seule fois et seulement aux personnes qui ont un canal activé."
+
 msgid "Screen rules already decided"
 msgstr "Règles d'écran déjà décidées"
 
@@ -454,6 +525,15 @@ msgstr "Recopiez cette liste dans la pull request qui ajoute ou modifie un écra
 msgid "[ ] The screen has its place in the tree, found with [Where a new screen goes](#where-a-new-screen-goes), and is reachable from the navigation."
 msgstr "[ ] L'écran a sa place dans l'arbre, trouvée avec [Où ranger un nouvel écran](#where-a-new-screen-goes), et il est accessible depuis la navigation."
 
+msgid "[ ] A new entry of More is added in `housecairn/core/more.py`, in its group, with its routes for the marking, and in no template."
+msgstr "[ ] Une nouvelle entrée de Plus est ajoutée dans `housecairn/core/more.py`, dans son groupe, avec ses routes pour le marquage, et dans aucun gabarit."
+
+msgid "[ ] A record reachable from two places has one parent, named in its screen reference page; without `next`, its back link leads to it."
+msgstr "[ ] Une fiche accessible depuis deux endroits a un seul parent, nommé dans sa page de référence ; sans `next`, son lien de retour y mène."
+
+msgid "[ ] A date to act on is a task; a date that informs is a list of the agenda digest; an event is an alert; none has a reminder of its own."
+msgstr "[ ] Une date à laquelle agir est une tâche ; une date qui informe est une liste du récapitulatif de l'agenda ; un événement est une alerte ; aucun n'a un rappel propre."
+
 msgid "[ ] The bar still has five entries; the section has four tabs at most, all visible at 360 px, and the page shows one row of tabs at most."
 msgstr "[ ] La barre a toujours cinq entrées ; la section a quatre onglets au plus, tous visibles à 360 px, et la page affiche une seule rangée d'onglets au plus."
 
@@ -471,6 +551,12 @@ msgstr "[ ] Après une création depuis un contexte, la personne revient au cont
 
 msgid "[ ] A deletion goes through a confirmation page and lands on the parent."
 msgstr "[ ] Une suppression passe par une page de confirmation et mène au parent."
+
+msgid "[ ] Each new named web route has its entry in `housecairn/parity.py` (the API route that does the same, or an exemption with its reason), and its API endpoint, as [ADR 0003](../adr/0003-web-api-parity.md) requires; `tests/test_parity.py` passes."
+msgstr "[ ] Chaque nouvelle route web nommée a son entrée dans `housecairn/parity.py` (la route d'API qui fait la même chose, ou une exemption avec sa raison) et son point d'accès d'API, comme l'exige l'[ADR 0003](../adr/0003-web-api-parity.md) ; `tests/test_parity.py` passe."
+
+msgid "[ ] Tests of the return rule, as [ADR 0053](../adr/0053-target-navigation-and-return-rule.md) announces: for each new link that carries `next` and each new form, the origin, the label of the back link and the target after sending, with and without `next`. They fail on the code without the change."
+msgstr "[ ] Des tests de la règle de retour, comme l'annonce l'[ADR 0053](../adr/0053-target-navigation-and-return-rule.md) : pour chaque nouveau lien qui porte `next` et chaque nouveau formulaire, l'origine, le libellé du lien de retour et la cible après l'envoi, avec et sans `next`. Ils échouent sur le code sans le changement."
 
 msgid "[ ] One-tap actions stay in place with HTMX, with the undo banner, and work without JavaScript."
 msgstr "[ ] Les actions en un geste restent sur place avec HTMX, avec le bandeau d'annulation, et fonctionnent sans JavaScript."
