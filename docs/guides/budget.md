@@ -51,9 +51,12 @@ For a year, **Planned** counts what the task did that year (each time done, at i
 the occurrence that is open, and the times its repetition will still bring before 31
 December. A task every month at 25, read in February after a first time in January, plans 12
 times 25 for the year, not only the two rows that exist. A year that is over counts only what
-happened; a year to come counts the whole repetition, and a task that counts from the last
-time is followed from its open date, as the calendar does. Nothing is written: these times
-are worked out when you read the page.
+happened: an occurrence still open that fell due in it counts in the current year, as the
+calendar shows it late. A year to come counts the whole repetition, however far it is, and a
+task that counts from the last time is followed from its open date, as the calendar does.
+The plan of a year can differ by one time from the cost a year, since a weekly task falls 52
+or 53 times in a year and a daily one 365 or 366. Nothing is written: these times are worked
+out when you read the page.
 
 A task done with no cost typed counts at its estimate in the plan and as nothing paid, and is
 flagged, so that the gap does not look better than it is.

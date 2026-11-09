@@ -63,15 +63,28 @@ it, and its page says so by showing no cost block. For a task:
   done with no cost typed is planned and paid as zero, and is counted and shown ("done
   without a cost"), never hidden.
 - *Still to come* is worked out after the latest open occurrence, with
-  `tasks.recurrence.next_due` (the RFC 5545 engine the calendar also uses, ADR 0031), each
-  time taken as closed on its due date; a task that counts from the last time is followed
-  from its open date. A year already over has no projection: only what happened counts. A
-  year to come is projected whole. Nothing is written and no query is made per task, so the
-  number of queries still does not grow with the tasks. A fixed series is entered at the end
-  of the year before, since it does not depend on the dates in between; the walk is bounded
-  to 2000 dates per task and year. Alternative rejected: counting only the rows that exist,
-  which showed 50 for the year of a monthly task at 25 whose cost a year is 300, and so
-  made the plan look far lower than the envelope it is set against.
+  `tasks.recurrence.coming` (the same dates as `next_due`, the RFC 5545 engine the calendar
+  also uses, ADR 0031), each time taken as closed on its due date; a task that counts from
+  the last time is followed from its open date. Nothing is written and no query is made per
+  task, so the number of queries still does not grow with the tasks.
+  - *Only the year asked is worked out.* A fixed series is entered near the start of the
+    year, and a chain (counted from the last time) jumps straight to it, so the cost follows
+    the length of the year and not its distance from the open date: 2040 is projected as
+    cheaply as next year, and a daily task gives 366 dates in 2032, a leap year. No bound on
+    the walk is left to reach, so a count is never partial without saying so (a first version
+    stopped after 2000 dates and gave 122 days in 2032 and none in 2035).
+  - *A year already over has no projection*: only what happened counts. An occurrence still
+    open that fell due in such a year is not part of that year's plan any more; it is counted
+    in the current year, from 1 January, as the calendar shows it late, and the repetition is
+    projected from there (a monthly task at 25 left late over a new year plans 12 times 25,
+    not 13). A year to come is projected whole.
+  - *The plan of a year and the cost a year may differ by one time.* The cost a year divides
+    52 weeks or 365 days evenly; the calendar does not: a weekly task falls 52 or 53 times in
+    a year, a daily one 365 or 366. The plan of the year follows the calendar, so it can
+    exceed or fall short of the cost a year by one estimate.
+  - Alternative rejected: counting only the rows that exist, which showed 50 for the year of
+    a monthly task at 25 whose cost a year is 300, and so made the plan look far lower than
+    the envelope it is set against.
 - A skipped occurrence counts for nothing. An occurrence with no date at all is in no year;
   it is in the total.
 - *Cost a year* is the estimate times the occurrences a year of its repetition: 12 divided
