@@ -1,0 +1,54 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 22:50+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "QR labels"
+msgstr "Étiquettes QR"
+
+msgid "Stickers that open the page of a boiler, a room or a shelf of the cellar when scanned."
+msgstr "Des autocollants qui ouvrent, une fois scannés, la page d'une chaudière, d'une pièce ou d'une étagère de la cave."
+
+msgid "Print stickers"
+msgstr "Imprimer des autocollants"
+
+msgid "Open **QR labels** on the home page, tick the rooms, items and stock items to label, choose a layout and press **Print the labels**. You get a PDF: an A4 sheet of 3 by 8 labels (63.5 by 33.9 mm, the format of common adhesive sheets) or a 62 mm roll with one label per page for a label printer of the Brother QL kind. Print at 100 %: no scaling, no \"fit to page\". Each label has the QR code, the name of the object and where it is (the room of an item, the storage location of a stock item)."
+msgstr "Ouvrez **Étiquettes QR** sur la page du logement, cochez les pièces, éléments et articles à étiqueter, choisissez une mise en page et appuyez sur **Imprimer les étiquettes**. Vous obtenez un PDF : une planche A4 de 3 par 8 étiquettes (63,5 par 33,9 mm, le format des planches adhésives courantes) ou un rouleau de 62 mm avec une étiquette par page pour une imprimante d'étiquettes de type Brother QL. Imprimez à 100 % : sans mise à l'échelle, sans « ajuster à la page ». Chaque étiquette porte le code QR, le nom de l'objet et l'endroit où il se trouve (la pièce d'un élément, l'emplacement de rangement d'un article)."
+
+msgid "The code holds the address of the instance and a random identifier of 22 characters, and nothing else: no name, no room, no number that could be guessed. **Set the public address** of the instance (the `HOUSECAIRN_SITE_URL` setting) **before printing**: without it the code holds the address the page was opened from, which may not be the one other people use. If the instance later moves to another address, the stickers already stuck stop working and must be printed again."
+msgstr "Le code contient l'adresse de l'instance et un identifiant aléatoire de 22 caractères, et rien d'autre : ni nom, ni pièce, ni numéro qu'on pourrait deviner. **Définissez l'adresse publique** de l'instance (le réglage `HOUSECAIRN_SITE_URL`) **avant d'imprimer** : sans elle, le code contient l'adresse depuis laquelle la page a été ouverte, qui n'est peut-être pas celle qu'utilisent les autres. Si l'instance change d'adresse plus tard, les autocollants déjà collés cessent de fonctionner et doivent être imprimés de nouveau."
+
+msgid "What a sticker does"
+msgstr "Ce que fait un autocollant"
+
+msgid "Scanning opens `/l/<code>/`. If you are not signed in, you sign in and come back. A member of the home goes to the page of the object, read-only members included. Anyone else sees \"Page not found\", the same page as for a sticker that was revoked, deleted or never issued, so a code tells nothing to someone who is not in the home."
+msgstr "Scanner ouvre `/l/<code>/`. Si vous n'êtes pas connecté, vous vous connectez puis revenez. Un membre du logement arrive sur la page de l'objet, lecteurs compris. Tout autre voit « Page introuvable », la même page que pour un autocollant révoqué, supprimé ou jamais émis : un code n'apprend donc rien à qui n'est pas dans le logement."
+
+msgid "A sticker that is lost, photographed or shared is replaced: open the label and press **Make a new label** (the old sticker stops opening anything) or **Revoke the label**."
+msgstr "Un autocollant perdu, photographié ou partagé se remplace : ouvrez l'étiquette et appuyez sur **Créer une nouvelle étiquette** (l'ancien autocollant n'ouvre plus rien) ou sur **Révoquer l'étiquette**."
+
+msgid "The address is built to work as a universal link of a future iOS application, which would claim `/l/*` through an `apple-app-site-association` file. That file is not served yet."
+msgstr "L'adresse est conçue pour servir de lien universel à une future application iOS, qui réclamerait `/l/*` par un fichier `apple-app-site-association`. Ce fichier n'est pas encore servi."
+
+msgid "Scripts"
+msgstr "Scripts"
+
+msgid "Labels are in the [API](../api/index.md) (`labels`), with the same rules as the screens. They are in the [export of the home](../administration/data.md) and are erased with it."
+msgstr "Les étiquettes sont dans l'[API](../api/index.md) (`labels`), avec les mêmes règles que les écrans. Elles sont dans l'[export du logement](../administration/data.md) et sont effacées avec lui."
+

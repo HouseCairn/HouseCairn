@@ -1,0 +1,33 @@
+/* Labels layer (static/css/app.css): the QR code on screen and the list of what to label
+   (docs/adr/0047). Tokens only, no inline style. */
+
+.qr-frame {
+  width: min(100%, 16rem);
+  margin: 0 auto var(--hc-space-3);
+  border: 1px solid var(--hc-color-border);
+  border-radius: var(--hc-radius-sm);
+}
+
+.qr-code {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.check-list {
+  margin: 0 0 var(--hc-space-3);
+  padding: 0;
+  border: 0;
+}
+
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--hc-space-3);
+  padding: var(--hc-space-2) 0;
+}
+
+.check-row input[type="checkbox"] {
+  flex: none;
+  margin-top: var(--hc-space-1);
+}
