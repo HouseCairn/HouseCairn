@@ -216,11 +216,13 @@ def labels_to_print(
     that has none; a reader only prints labels that exist."""
     can_write = home_services.can_write(actor, home)
     found: list[Label] = []
-    seen: set[tuple[str, uuid.UUID]] = set()
-    for kind, target_id in selection:
-        if (kind, target_id) in seen:
-            continue
-        seen.add((kind, target_id))
+    wanted = list(dict.fromkeys(selection))
+    # Before any label is made: a selection that cannot be printed makes none.
+    if len(wanted) > printing.MAX_LABELS:
+        raise ValidationError(
+            {"labels": _("Choose between 1 and %(max)d labels.") % {"max": printing.MAX_LABELS}}
+        )
+    for kind, target_id in wanted:
         if can_write:
             label, _created = create_label(actor, home, kind=kind, target_id=target_id)
         else:

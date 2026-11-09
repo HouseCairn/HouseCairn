@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-msgid "QR labels"
-msgstr "Étiquettes QR"
+msgid "QR labels and reports"
+msgstr "Étiquettes QR et signalements"
 
-msgid "Stickers that open the page of a boiler, a room or a shelf of the cellar when scanned."
-msgstr "Des autocollants qui ouvrent, une fois scannés, la page d'une chaudière, d'une pièce ou d'une étagère de la cave."
+msgid "Two things for the people who share a house: **stickers** that open the page of a boiler, a room or a shelf of the cellar when scanned, and a **report** that anyone, a tenant or a tradesman included, can send in two taps when something is wrong."
+msgstr "Deux outils pour les personnes qui partagent une maison : des **autocollants** qui ouvrent, une fois scannés, la page d'une chaudière, d'une pièce ou d'une étagère de la cave, et un **signalement** que tout le monde, locataire ou artisan compris, peut envoyer en deux gestes quand quelque chose ne va pas."
 
 msgid "Print stickers"
 msgstr "Imprimer des autocollants"
@@ -45,9 +45,39 @@ msgstr "Un autocollant perdu, photographié ou partagé se remplace : ouvrez l'�
 msgid "The address is built to work as a universal link of a future iOS application, which would claim `/l/*` through an `apple-app-site-association` file. That file is not served yet."
 msgstr "L'adresse est conçue pour servir de lien universel à une future application iOS, qui réclamerait `/l/*` par un fichier `apple-app-site-association`. Ce fichier n'est pas encore servi."
 
+msgid "Report a problem"
+msgstr "Signaler un problème"
+
+msgid "Every member of the home has **Report a problem**, on the page of a room, an item or a stock item (the place is then filled in), on the list of reports and after scanning a sticker. The form has two fields and a photo: *What is wrong?* (required) and *Where?* (a room, an item or a stock item, optional). The photo is optional too: it is checked by its content, stripped of its location and counts in the storage of the home."
+msgstr "Tout membre du logement a **Signaler un problème**, sur la page d'une pièce, d'un élément ou d'un article (le lieu est alors rempli), sur la liste des signalements et après avoir scanné un autocollant. Le formulaire a deux champs et une photo : *Qu'est-ce qui ne va pas ?* (obligatoire) et *Où ?* (une pièce, un élément ou un article, facultatif). La photo est facultative aussi : elle est vérifiée par son contenu, privée de sa localisation et comptée dans le stockage du logement."
+
+msgid "A report is not a task: it has no date and no owner, and may stay open as long as nobody decides. A person who may write opens it on the **Reports** screen, or from the line on **Today**, and chooses:"
+msgstr "Un signalement n'est pas une tâche : il n'a ni date ni responsable, et peut rester ouvert tant que personne ne décide. Une personne qui peut écrire l'ouvre sur l'écran **Signalements**, ou depuis la ligne d'**Aujourd'hui**, et choisit :"
+
+msgid "**Make it a task**: a task with the same title, place and no date, linked to the report;"
+msgstr "**En faire une tâche** : une tâche avec le même titre, le même lieu et sans date, liée au signalement ;"
+
+msgid "**Mark as resolved** or **Close without action**;"
+msgstr "**Marquer comme résolu** ou **Classer sans suite** ;"
+
+msgid "**Reopen**, if a closed report comes back."
+msgstr "**Rouvrir**, si un signalement classé revient."
+
+msgid "The person who reported sees their own reports under **My reports** and nothing of anyone else's; they cannot change anything else in the home. Reports are shown by the name of the person, as everywhere (two people of one name are told apart by their address in brackets)."
+msgstr "La personne qui a signalé voit ses propres signalements sous **Mes signalements** et rien de ceux des autres ; elle ne peut rien changer d'autre dans le logement. Les signalements sont montrés avec le nom de la personne, comme partout (deux personnes de même nom se distinguent par leur adresse entre parenthèses)."
+
+msgid "Be told"
+msgstr "Être prévenu"
+
+msgid "When a report is sent, a message goes to the members who may write, whose account is active and who added a notification channel (see [Notifications](notifications.md)), except the person who reported. It holds the title typed by the reporter, the name of the home and, when the instance has a public address, a link. Quiet hours apply: the message is not sent during them, and the report is on Today in the morning. Nothing is sent when notifications are off on the instance."
+msgstr "Quand un signalement est envoyé, un message part vers les membres qui peuvent écrire, dont le compte est actif et qui ont ajouté un canal de notification (voir [Notifications](notifications.md)), sauf la personne qui a signalé. Il contient le titre saisi par la personne, le nom du logement et, quand l'instance a une adresse publique, un lien. Les heures calmes s'appliquent : le message n'est pas envoyé pendant ces heures, et le signalement est dans Aujourd'hui le matin. Rien n'est envoyé quand les notifications sont désactivées sur l'instance."
+
 msgid "Scripts"
 msgstr "Scripts"
 
-msgid "Labels are in the [API](../api/index.md) (`labels`), with the same rules as the screens. They are in the [export of the home](../administration/data.md) and are erased with it."
-msgstr "Les étiquettes sont dans l'[API](../api/index.md) (`labels`), avec les mêmes règles que les écrans. Elles sont dans l'[export du logement](../administration/data.md) et sont effacées avec lui."
+msgid "Labels and reports are in the [API](../api/index.md) (`labels` and `reports`), with the same rules as the screens. They are in the [export of the home](../administration/data.md) and are erased with it."
+msgstr "Les étiquettes et les signalements sont dans l'[API](../api/index.md) (`labels` et `reports`), avec les mêmes règles que les écrans. Ils sont dans l'[export du logement](../administration/data.md) et sont effacés avec lui."
+
+#~ msgid "Stickers that open the page of a boiler, a room or a shelf of the cellar when scanned."
+#~ msgstr "Des autocollants qui ouvrent, une fois scannés, la page d'une chaudière, d'une pièce ou d'une étagère de la cave."
 

@@ -16,6 +16,13 @@ with it on the project's
   revoke it at any time; leaving a home revokes your feed of it. See
   [Calendar](screens/calendar.md) and [Calendar and feeds](guides/calendar.md). New dependency:
   `icalendar`.
+- **Reports.** Every member of a home, a read-only one included (a tenant, a tradesman), can
+  **Report a problem** with a title, a place and a photo, from a form or from a scanned
+  sticker. Members who may write see the open reports on Today, make one into a task, close
+  it or reopen it, and are told on their notification channels; the person who reported
+  keeps a list of their own reports and sees nothing of the others. Reports are in the API,
+  in the export of a home and are erased with it. See [QR labels and reports](guides/qr-labels.md)
+  and [ADR 0047](adr/0047-qr-labels.md).
 - **QR labels.** Print stickers that open a room, an item or a stock item: a PDF made by
   the server, as an A4 sheet of 3 by 8 labels or a 62 mm roll for a label printer. The
   code on a sticker is a random identifier of 128 bits that names nothing; a sticker

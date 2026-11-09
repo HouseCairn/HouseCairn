@@ -11,9 +11,9 @@ register = template.Library()
 
 @register.inclusion_tag("labels/_tools.html", takes_context=True)
 def object_tools(context: dict[str, Any], kind: str, target: Any) -> dict[str, Any]:
-    """On the page of a room, an item or a stock item: its QR label.
+    """On the page of a room, an item or a stock item: its QR label, and "Report a problem".
 
-    Every member sees the label; only a member who writes can make one that does not exist.
+    Every member sees both; only a member who writes can make a label that does not exist.
     """
     request = context["request"]
     home = context["home"]

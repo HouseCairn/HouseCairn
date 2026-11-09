@@ -1,0 +1,41 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Report"
+msgstr "Signalement"
+
+msgid "One report, at `/h/<home id>/reports/<report id>/`: its state (**Open**, **Made into a task**, **Resolved** or **Closed without action**), what is wrong, where (a link to the room, item or stock item when it still exists), who reported it and when, the task made from it (a link, kept even after the task is done) and the photo, which opens full size."
+msgstr "Un signalement, sur `/h/<id du logement>/reports/<id du signalement>/` : son état (**Ouvert**, **Transformé en tâche**, **Résolu** ou **Classé sans suite**), ce qui ne va pas, où (un lien vers la pièce, l'élément ou l'article quand il existe encore), qui l'a signalé et quand, la tâche qui en a été faite (un lien, conservé même une fois la tâche terminée) et la photo, qui s'ouvre en grand."
+
+msgid "The person who reported sees their own report and no other. Members who may write see every report and have the buttons:"
+msgstr "La personne qui a signalé voit son propre signalement et aucun autre. Les membres qui peuvent écrire voient tous les signalements et ont les boutons :"
+
+msgid "**Make it a task** creates a task with the same title, in the same room or item, with no date, and keeps the link. Only an open report can be made into a task."
+msgstr "**En faire une tâche** crée une tâche avec le même titre, dans la même pièce ou le même élément, sans date, et garde le lien. Seul un signalement ouvert peut devenir une tâche."
+
+msgid "**Mark as resolved** and **Close without action** close the report, from open or from task. The date and the person are kept."
+msgstr "**Marquer comme résolu** et **Classer sans suite** classent le signalement, qu'il soit ouvert ou transformé en tâche. La date et la personne sont conservées."
+
+msgid "**Reopen** brings a closed report back: to *Made into a task* when it has a task that still exists, else to *Open*."
+msgstr "**Rouvrir** ramène un signalement classé : à *Transformé en tâche* quand il a une tâche qui existe encore, sinon à *Ouvert*."
+
+msgid "Creation, conversion into a task and closing are recorded in the [audit log](audit.md) with the title and nothing else. An address that belongs to another home, or to a report you may not see, answers \"Page not found\"."
+msgstr "La création, la transformation en tâche et le classement sont consignés dans le [journal d'audit](audit.md) avec le titre et rien d'autre. Une adresse qui appartient à un autre logement, ou à un signalement que vous ne pouvez pas voir, répond « Page introuvable »."
+
