@@ -195,6 +195,7 @@ msgstr "`calendar_feeds`"
 
 msgid "`id`, `created_at`, `regenerated_at` of each [calendar feed](../guides/calendar.md) of the home. Never the address or its secret, which is not kept; the combined feed of a person belongs to the person, not to a home."
 msgstr "`id`, `created_at`, `regenerated_at` de chaque [flux de calendrier](../guides/calendar.md) du logement. Jamais l'adresse ni son secret, qui n'est pas conservé ; le flux combiné d'une personne appartient à la personne, pas à un logement."
+
 msgid "`labels`"
 msgstr "`labels`"
 
