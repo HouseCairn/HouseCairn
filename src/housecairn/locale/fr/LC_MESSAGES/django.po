@@ -285,6 +285,15 @@ msgstr "Fichier ajouté à la tâche %(title)s"
 msgid "File deleted from the task %(title)s"
 msgstr "Fichier supprimé de la tâche %(title)s"
 
+msgid "Calendar feed created"
+msgstr "Flux de calendrier créé"
+
+msgid "Calendar feed given a new address"
+msgstr "Flux de calendrier : nouvelle adresse"
+
+msgid "Calendar feed revoked"
+msgstr "Flux de calendrier révoqué"
+
 #, python-format
 msgid "QR label revoked: %(title)s"
 msgstr "Étiquette QR révoquée : %(title)s"
@@ -506,6 +515,40 @@ msgstr "Nature"
 
 msgid "Last 12 months"
 msgstr "12 derniers mois"
+
+msgid "Calendar"
+msgstr "Calendrier"
+
+msgid "You already have a feed for this. Regenerate it to get a new address."
+msgstr "Vous avez déjà un flux pour cela. Demandez-lui une nouvelle adresse."
+
+msgid "forecast"
+msgstr "prévision"
+
+msgctxt "calendar"
+msgid "Home"
+msgstr "Logement"
+
+msgid "All my homes"
+msgstr "Tous mes logements"
+
+msgid "regenerated at"
+msgstr "adresse renouvelée le"
+
+msgid "calendar feed"
+msgstr "flux de calendrier"
+
+msgid "calendar feeds"
+msgstr "flux de calendrier"
+
+msgid "Week"
+msgstr "Semaine"
+
+msgid "Month"
+msgstr "Mois"
+
+msgid "Feed revoked: its address no longer works."
+msgstr "Flux révoqué : son adresse ne fonctionne plus."
 
 msgid "Core"
 msgstr "Cœur"
@@ -1858,8 +1901,8 @@ msgstr "La référence ou le code couleur inscrit sur le pot, pour recommander l
 msgid "The batch number printed on the tin; shades can differ from one batch to another. Example: L23-0457."
 msgstr "Le numéro de lot imprimé sur le pot ; les teintes peuvent différer d'un lot à l'autre. Exemple : L23-0457."
 
-msgid "What is left of it and where. Example: half a tin, in the garage."
-msgstr "Ce qu'il en reste et où. Exemple : un demi-pot, dans le garage."
+msgid "The tin left over, from your stock: its quantity and where it is are shown here. Example: Sage wall paint, 2 litres. Add it to the stock first if it is not there yet."
+msgstr "Le pot restant, pris dans votre matériel : sa quantité et son emplacement s'affichent ici. Exemple : peinture murale sauge, 2 litres. Ajoutez-le d'abord au matériel s'il n'y est pas encore."
 
 msgid "What covers the floor, with its make and reference if you know them. Example: oak parquet, matt varnish."
 msgstr "Ce qui recouvre le sol, avec sa marque et sa référence si vous les connaissez. Exemple : parquet en chêne, vernis mat."
@@ -1961,9 +2004,6 @@ msgstr "lot de la peinture"
 msgid "paint left in stock"
 msgstr "peinture restant en stock"
 
-msgid "For example: half a tin, in the garage."
-msgstr "Par exemple : un demi-pot, au garage."
-
 msgid "floor covering"
 msgstr "revêtement de sol"
 
@@ -2051,6 +2091,9 @@ msgstr "photo"
 msgid "photos"
 msgstr "photos"
 
+msgid "This stock item is not in this home."
+msgstr "Cet article n'est pas dans ce logement."
+
 msgid "The list holds a room twice, or a room that does not exist."
 msgstr "La liste contient une pièce deux fois, ou une pièce qui n'existe pas."
 
@@ -2104,6 +2147,9 @@ msgstr "Éléments compatibles"
 msgid "The equipment this fits, such as the boiler a filter is made for."
 msgstr "L'équipement concerné, par exemple la chaudière pour laquelle un filtre est fait."
 
+msgid "Where it is used, besides the rooms of the equipment it fits."
+msgstr "Où il sert, en plus des pièces de l'équipement auquel il convient."
+
 msgid "Photo of the label"
 msgstr "Photo de l'étiquette"
 
@@ -2118,6 +2164,54 @@ msgstr "Date"
 
 msgid "Note"
 msgstr "Note"
+
+msgid "Piece"
+msgstr "Pièce"
+
+msgid "Litre"
+msgstr "Litre"
+
+msgid "Metre"
+msgstr "Mètre"
+
+msgid "Kilogram"
+msgstr "Kilogramme"
+
+msgid "Roll"
+msgstr "Rouleau"
+
+msgid "Box"
+msgstr "Boîte"
+
+msgid "piece"
+msgid_plural "pieces"
+msgstr[0] "pièce"
+msgstr[1] "pièces"
+
+msgid "litre"
+msgid_plural "litres"
+msgstr[0] "litre"
+msgstr[1] "litres"
+
+msgid "metre"
+msgid_plural "metres"
+msgstr[0] "mètre"
+msgstr[1] "mètres"
+
+msgid "kilogram"
+msgid_plural "kilograms"
+msgstr[0] "kilogramme"
+msgstr[1] "kilogrammes"
+
+msgid "roll"
+msgid_plural "rolls"
+msgstr[0] "rouleau"
+msgstr[1] "rouleaux"
+
+msgid "box"
+msgid_plural "boxes"
+msgstr[0] "boîte"
+msgstr[1] "boîtes"
 
 msgid "manufacturer reference"
 msgstr "référence fabricant"
@@ -2134,8 +2228,11 @@ msgstr "Par exemple : garage, deuxième étagère."
 msgid "unit"
 msgstr "unité"
 
-msgid "For example: pieces, litres, metres."
-msgstr "Par exemple : pièces, litres, mètres."
+msgid "which unit"
+msgstr "quelle unité"
+
+msgid "Only with the unit Other. Example: bag."
+msgstr "Seulement avec l'unité Autre. Exemple : sac."
 
 msgid "threshold"
 msgstr "seuil"
@@ -2151,6 +2248,9 @@ msgstr "article"
 
 msgid "stock items"
 msgstr "articles"
+
+msgid "Say which unit."
+msgstr "Dites de quelle unité il s'agit."
 
 msgid "supplier reference"
 msgstr "référence fournisseur"
@@ -2190,6 +2290,9 @@ msgstr "mouvements"
 
 msgid "This item is not in this home."
 msgstr "Cet élément n'est pas dans ce logement."
+
+msgid "The difference with the stock is too large to be recorded."
+msgstr "L'écart avec le stock est trop grand pour être enregistré."
 
 msgid "Choose entry, exit or inventory."
 msgstr "Choisissez entrée, sortie ou inventaire."
@@ -2273,6 +2376,43 @@ msgstr[1] "%(n)d jours"
 msgid "This type of file is not accepted. Use a JPEG, PNG or WebP image, or a PDF, text, Word, Excel or OpenDocument file."
 msgstr "Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou WebP, ou un fichier PDF, texte, Word, Excel ou OpenDocument."
 
+msgid "Give the quantity."
+msgstr "Donnez la quantité."
+
+msgid "Choose the stock item."
+msgstr "Choisissez l'article."
+
+msgid "A stock item is listed once for a task."
+msgstr "Un article ne figure qu'une fois pour une tâche."
+
+msgid "Actual cost"
+msgstr "Coût réel"
+
+#, python-format
+msgid "Used: %(name)s"
+msgstr "Utilisé : %(name)s"
+
+msgid "Taken from the stock when the task was marked done."
+msgstr "Pris dans le stock quand la tâche a été marquée faite."
+
+msgid "New date"
+msgstr "Nouvelle date"
+
+msgid "Photos and files"
+msgstr "Photos et fichiers"
+
+msgid "Choose at least one file."
+msgstr "Choisissez au moins un fichier."
+
+msgid "Language"
+msgstr "Langue"
+
+msgid "Automatic (browser, then instance default)"
+msgstr "Automatique (navigateur, puis défaut de l'instance)"
+
+msgid "Applies to every page you open, on every device you sign in from."
+msgstr "S'applique à toutes les pages que vous ouvrez, sur tous les appareils où vous vous connectez."
+
 msgid "Assignee"
 msgstr "Responsable"
 
@@ -2288,32 +2428,24 @@ msgstr "Budget main d'œuvre"
 msgid "Material budget"
 msgstr "Budget matériel"
 
-msgid "Photos and files"
-msgstr "Photos et fichiers"
-
 msgid "Markdown: how to do it, step by step. Links to web pages only."
 msgstr "Markdown : comment faire, pas à pas. Liens vers des pages web seulement."
 
 msgid "Give a duration between a minute and thirty days."
 msgstr "Indiquez une durée comprise entre une minute et trente jours."
 
-msgid "Actual cost"
-msgstr "Coût réel"
+msgid "This stock item is already listed on the task."
+msgstr "Cet article figure déjà sur la tâche."
 
-msgid "New date"
-msgstr "Nouvelle date"
+#, python-format
+msgid "At most %(max)d stock items for a task."
+msgstr "%(max)d articles au plus pour une tâche."
 
-msgid "Language"
-msgstr "Langue"
+msgid "This stock item was not taken by this task."
+msgstr "Cet article n'a pas été pris par cette tâche."
 
-msgid "Automatic (browser, then instance default)"
-msgstr "Automatique (navigateur, puis défaut de l'instance)"
-
-msgid "Applies to every page you open, on every device you sign in from."
-msgstr "S'applique à toutes les pages que vous ouvrez, sur tous les appareils où vous vous connectez."
-
-msgid "Choose at least one file."
-msgstr "Choisissez au moins un fichier."
+msgid "The quantity cannot be negative."
+msgstr "La quantité ne peut pas être négative."
 
 msgid "This language is not offered."
 msgstr "Cette langue n'est pas proposée."
@@ -2466,6 +2598,12 @@ msgstr "Cet élément n'est pas dans cette pièce."
 msgid "This interval is out of range."
 msgstr "Cet intervalle est hors limites."
 
+msgid "task material"
+msgstr "fourniture de tâche"
+
+msgid "task materials"
+msgstr "fournitures de tâche"
+
 msgid "due on"
 msgstr "échéance"
 
@@ -2481,14 +2619,23 @@ msgstr "occurrence"
 msgid "occurrences"
 msgstr "occurrences"
 
+msgid "quantity used"
+msgstr "quantité utilisée"
+
+msgid "quantity taken from the stock"
+msgstr "quantité prise dans le stock"
+
+msgid "stock draw"
+msgstr "prélèvement de stock"
+
+msgid "stock draws"
+msgstr "prélèvements de stock"
+
 msgid "Urgency"
 msgstr "Urgence"
 
 msgid "Person"
 msgstr "Personne"
-
-msgid "Calendar"
-msgstr "Calendrier"
 
 msgid "1 week"
 msgstr "1 semaine"
@@ -2627,6 +2774,20 @@ msgstr "Tâche enregistrée."
 
 msgid "Task deleted."
 msgstr "Tâche supprimée."
+
+msgid "Stock item saved on the task."
+msgstr "Article enregistré sur la tâche."
+
+msgid "Stock item removed from the task."
+msgstr "Article retiré de la tâche."
+
+#, python-format
+msgid "%(name)s: %(drawn)s of %(wanted)s"
+msgstr "%(name)s : %(drawn)s sur %(wanted)s"
+
+#, python-format
+msgid "Not enough in stock, the stock is at zero: %(list)s."
+msgstr "Stock insuffisant, le stock est à zéro : %(list)s."
 
 msgid "Undone."
 msgstr "Annulé."
@@ -2985,6 +3146,93 @@ msgid_plural "%(counter)s tasks without an estimate or a cost are not listed."
 msgstr[0] "%(counter)s tâche sans estimation ni coût n'est pas listée."
 msgstr[1] "%(counter)s tâches sans estimation ni coût ne sont pas listées."
 
+msgid "Calendar views"
+msgstr "Vues du calendrier"
+
+msgid "Feeds"
+msgstr "Flux"
+
+msgid "Filter the calendar"
+msgstr "Filtrer le calendrier"
+
+msgid "All rooms"
+msgstr "Toutes les pièces"
+
+msgid "Everybody"
+msgstr "Tout le monde"
+
+msgid "Priority"
+msgstr "Priorité"
+
+msgid "Any priority"
+msgstr "Toutes les priorités"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+msgid "Period"
+msgstr "Période"
+
+msgid "Previous"
+msgstr "Précédent"
+
+#, python-format
+msgid "Week of %(day)s"
+msgstr "Semaine du %(day)s"
+
+msgid "Next"
+msgstr "Suivant"
+
+msgid "Too many tasks to show them all: narrow the range or use the filters."
+msgstr "Trop de tâches pour tout afficher : réduisez la période ou utilisez les filtres."
+
+msgid "Nothing planned."
+msgstr "Rien de prévu."
+
+#, python-format
+msgid "%(counter)s task"
+msgid_plural "%(counter)s tasks"
+msgstr[0] "%(counter)s tâche"
+msgstr[1] "%(counter)s tâches"
+
+msgid "Nothing planned this month."
+msgstr "Rien de prévu ce mois-ci."
+
+msgid "Calendar feeds"
+msgstr "Flux de calendrier"
+
+msgid "A feed lets a calendar application (Google Calendar, Apple Calendar, Thunderbird, Home Assistant) show your tasks. Its address is a secret: anyone who has it sees the tasks of the feed, so share it with nobody. It shows titles, home, room, date and status, never notes, costs or files."
+msgstr "Un flux permet à une application de calendrier (Google Agenda, Calendrier d'Apple, Thunderbird, Home Assistant) d'afficher vos tâches. Son adresse est secrète : quiconque la possède voit les tâches du flux, ne la partagez donc avec personne. Il montre les titres, le logement, la pièce, la date et le statut, jamais les notes, les coûts ni les fichiers."
+
+msgid "Your new feed address"
+msgstr "L'adresse de votre nouveau flux"
+
+msgid "Copy it now: it is shown only once."
+msgstr "Copiez-la maintenant : elle n'est affichée qu'une fois."
+
+#, python-format
+msgid "Active since %(day)s"
+msgstr "Actif depuis le %(day)s"
+
+#, python-format
+msgid "new address on %(day)s"
+msgstr "nouvelle adresse le %(day)s"
+
+msgid "No feed"
+msgstr "Aucun flux"
+
+msgid "New address"
+msgstr "Nouvelle adresse"
+
+msgid "Revoke"
+msgstr "Révoquer"
+
+msgid "Create"
+msgstr "Créer"
+
+msgid "A new address stops the old one at once. Revoking deletes the feed. Leaving a home revokes your feed of that home."
+msgstr "Une nouvelle adresse arrête l'ancienne aussitôt. Révoquer supprime le flux. Quitter un logement révoque votre flux de ce logement."
+
 msgid "About"
 msgstr "À propos"
 
@@ -3182,9 +3430,6 @@ msgstr "jusqu'au %(date)s"
 
 msgid "Send again"
 msgstr "Renvoyer"
-
-msgid "Revoke"
-msgstr "Révoquer"
 
 msgid "Sign-in"
 msgstr "Connexion"
@@ -3444,12 +3689,6 @@ msgstr "%(space)s en %(files)s fichiers, %(percent)s %% du quota"
 msgid "No home yet."
 msgstr "Aucun logement pour l'instant."
 
-msgid "Previous"
-msgstr "Précédent"
-
-msgid "Next"
-msgstr "Suivant"
-
 msgid "Print stickers that open a room, an item or a stock item"
 msgstr "Imprimer des autocollants qui ouvrent une pièce, un élément ou un article"
 
@@ -3581,9 +3820,6 @@ msgstr "Coût prévu"
 
 msgid "Duration"
 msgstr "Durée"
-
-msgid "Priority"
-msgstr "Priorité"
 
 #, python-format
 msgid "Delete %(name)s?"
@@ -3736,15 +3972,6 @@ msgstr "Rechercher"
 msgid "All statuses"
 msgstr "Tous les statuts"
 
-msgid "All rooms"
-msgstr "Toutes les pièces"
-
-msgid "Any priority"
-msgstr "Toutes les priorités"
-
-msgid "Filter"
-msgstr "Filtrer"
-
 #, python-format
 msgid "Compare %(title)s"
 msgstr "Comparer %(title)s"
@@ -3890,6 +4117,12 @@ msgstr "Rien de noté pour l'instant : peinture, revêtements de sol et de murs,
 msgid "Edit the memory"
 msgstr "Modifier la mémoire"
 
+msgid "Low stock"
+msgstr "Stock bas"
+
+msgid "No stock item for this room yet."
+msgstr "Aucun article pour cette pièce pour l'instant."
+
 msgid "Photo categories"
 msgstr "Catégories de photos"
 
@@ -3957,9 +4190,6 @@ msgstr "Aide sur cette page"
 msgid "Main navigation"
 msgstr "Navigation principale"
 
-msgid "Low stock"
-msgstr "Stock bas"
-
 msgid "Threshold"
 msgstr "Seuil"
 
@@ -3996,6 +4226,9 @@ msgstr "« Fixer le compte » indique ce que vous avez compté sur l'étagère ;
 
 msgid "No compatible item chosen."
 msgstr "Aucun élément compatible choisi."
+
+msgid "Needed by tasks"
+msgstr "Demandé par des tâches"
 
 msgid "Suppliers"
 msgstr "Fournisseurs"
@@ -4075,6 +4308,33 @@ msgid "%(counter)s day late"
 msgid_plural "%(counter)s days late"
 msgstr[0] "%(counter)s jour de retard"
 msgstr[1] "%(counter)s jours de retard"
+
+#, python-format
+msgid "needs %(needed)s · %(stocked)s in stock"
+msgstr "demande %(needed)s · %(stocked)s en stock"
+
+msgid "Not enough in stock"
+msgstr "Stock insuffisant"
+
+#, python-format
+msgid "Quantity of %(name)s"
+msgstr "Quantité de %(name)s"
+
+msgid "No stock item needed."
+msgstr "Aucun article demandé."
+
+msgid "Marking the task done takes these quantities from the stock; undoing puts them back."
+msgstr "Marquer la tâche faite prend ces quantités dans le stock ; annuler les remet."
+
+msgid "Stock items the task needs, with the quantity. Marking the task done takes these quantities from the stock. To remove a line, set its stock item to the dash."
+msgstr "Articles dont la tâche a besoin, avec la quantité. Marquer la tâche faite prend ces quantités dans le stock. Pour retirer une ligne, remettez son article sur le tiret."
+
+#, python-format
+msgid "Stock item %(number)s"
+msgstr "Article %(number)s"
+
+msgid "No stock item in the stock of this home yet."
+msgstr "Aucun article dans le matériel de ce logement pour l'instant."
 
 msgid "Marked done."
 msgstr "Marquée comme faite."
@@ -4179,9 +4439,6 @@ msgstr "Rien de fait pour l'instant."
 
 msgid "My home"
 msgstr "Mon accueil"
-
-msgid "All my homes"
-msgstr "Tous mes logements"
 
 msgid "Nothing needs you here."
 msgstr "Rien ne vous attend ici."

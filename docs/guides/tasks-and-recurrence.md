@@ -67,8 +67,23 @@ The **How to do it** text is written in Markdown (titles, lists, bold, links to 
 pages) and shown on the page of the task, safely: HTML is not interpreted and
 images are not loaded. The budgets (labour, materials) are the planned amounts; the
 real cost is entered when the task is done; the page of the task shows its cost, and the
-[budget](budget.md) adds it all up. The materials with their quantities
-come with the stock, in a later version.
+[budget](budget.md) adds it all up.
+
+## Materials and the stock
+
+In **Materials**, on the form and on the page of the task, list the stock items the task
+needs and how many: three filters, two litres of paint. Only items of the
+[stock](stock.md) of the same home can be chosen; each is listed once. To remove a line
+from the form, set its stock item back to the dash; on the page, use **Remove**.
+
+**Done** takes the planned quantities from the stock, in the same gesture, and the page of
+each stock item names the task on the movement. **Undo** puts them back with new entries:
+nothing is erased from the history of the stock. Skipping a task takes nothing.
+
+If the stock holds less than needed, **Done** still goes through: the stock goes down to
+zero, never below, and a message tells what was missing. The quantity you really used is
+entered afterwards, in the **Details** of what was done (one field per stock item taken):
+less puts the difference back, more takes it as far as the stock allows.
 
 ## Contractors
 
@@ -86,5 +101,7 @@ charge is shown by their [display name](../screens/profile.md), never by their a
 ## For scripts
 
 Everything above is available through the [API](../api/index.md): tasks,
-occurrences (with `complete`, `undo`, `skip` and `postpone`), contractors and
-attachments.
+occurrences (with `complete`, `undo`, `skip` and `postpone`), contractors,
+attachments and the materials of the tasks (`task-materials`). The answer to `complete`
+lists in `short` the stock items the stock could not give in full, and a `PATCH` of an
+occurrence takes `used`, the quantities really used.

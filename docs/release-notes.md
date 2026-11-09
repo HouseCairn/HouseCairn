@@ -8,6 +8,14 @@ with it on the project's
 
 ### New
 
+- **Calendar and calendar feeds.** See your tasks by week, month or year, with filters by home,
+  room, person and priority, **Done** and **Undo** in place, and the next dates of a task that
+  repeats marked as forecast. **Feeds** gives a secret address per home, or for all your homes,
+  that Google Calendar, Apple Calendar, Thunderbird or Home Assistant can subscribe to: it shows
+  titles, home, room, date and status, never notes, costs or files. You can get a new address or
+  revoke it at any time; leaving a home revokes your feed of it. See
+  [Calendar](screens/calendar.md) and [Calendar and feeds](guides/calendar.md). New dependency:
+  `icalendar`.
 - **QR labels.** Print stickers that open a room, an item or a stock item: a PDF made by
   the server, as an A4 sheet of 3 by 8 labels or a 62 mm roll for a label printer. The
   code on a sticker is a random identifier of 128 bits that names nothing; a sticker
@@ -99,6 +107,17 @@ with it on the project's
   contact file (.vcf). Existing trades are matched to the list, otherwise kept under Other.
   See [Tasks and recurrence](guides/tasks-and-recurrence.md).
 
+- **The stock follows the tasks and the rooms.** A task lists the stock items it needs, with
+  a quantity (the **Materials** section of its form and its page, and `task-materials` in the
+  API). Marking the task **Done** takes them from the stock, in the same gesture; **Undo**
+  puts them back with new entries, nothing is erased from the ledger; the quantity really
+  used is entered afterwards in the details of what was done. **Done** is never refused for
+  lack of stock: the stock stops at zero and a message (`short` in the API) says what was
+  missing. A room shows the stock items that concern it, and its paint left over is a link
+  to a stock item, with its quantity and place. The unit of a stock item is a list (piece,
+  litre, metre, kilogram, roll, box) plus Other. See [Stock and supplies](guides/stock.md),
+  [Tasks and recurrence](guides/tasks-and-recurrence.md) and
+  [ADR 0046](adr/0046-stock-linked-to-tasks-and-rooms.md).
 - **Display name from the sign-in provider.** An account linked to a single sign-on provider
   takes its display name from the provider at each sign-in through it (`name`, else the
   given and family names, the username or the nickname), by the same rules as a typed name;
@@ -125,6 +144,16 @@ with it on the project's
   and an address that starts with `//` or `\`, and falls back to the default page.
 
 ### Upgrade notes
+
+- **The paint left in stock and the unit of a stock item change shape.** The field
+  `paint_stock` of a room is replaced by `paint_article` (a stock item of the home); the
+  old text is kept, word for word, as a line `Paint left in stock: ...` of the memory
+  notes, which can then exceed the 4,000 characters usual for notes until it is shortened.
+  `unit` of a stock item now accepts the codes of the list (`piece`, `litre`, `metre`,
+  `kilogram`, `roll`, `box`, `other`) with `unit_other`; usual spellings (pieces, litres,
+  kg, rouleau) become the matching code, anything else is kept under Other. Both migrations
+  are reversible: going back writes the text again (the plural of the list for a unit).
+  Clients of the API must use the new names.
 
 - **Photo categories and the contract of an item change shape.** The category `open_walls`
   of a photo is now `behind_walls`, in the API and in exports; the field `contract` of an

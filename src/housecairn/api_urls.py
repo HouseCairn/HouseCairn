@@ -50,6 +50,7 @@ for prefix, viewset, basename in (
     ("suppliers", stock_api.SupplierViewSet, "home-supplier"),
     ("movements", stock_api.MovementViewSet, "home-movement"),
     ("attachments", tasks_api.AttachmentViewSet, "home-attachment"),
+    ("task-materials", tasks_api.MaterialViewSet, "home-task-material"),
     ("labels", labels_api.LabelViewSet, "home-label"),
     ("projects", projects_api.ProjectViewSet, "home-project"),
     ("budget-lines", projects_api.BudgetLineViewSet, "home-budget-line"),
@@ -118,4 +119,5 @@ urlpatterns = [
     path("homes/<uuid:home_id>/search/", rooms_api.SearchView.as_view(), name="home-search"),
     path("invitations/accept/", AcceptInvitationView.as_view(), name="invitation-accept"),
     path("", include("housecairn.notifications.api_urls")),  # docs/adr/0043
+    path("", include("housecairn.calendar.api_urls")),  # docs/adr/0052
 ]

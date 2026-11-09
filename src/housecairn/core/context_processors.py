@@ -16,7 +16,7 @@ def nav_section(request: HttpRequest) -> str:
         return HOMES
     if match.namespace == "rooms" or match.view_name == "rooms":
         return ROOMS
-    if match.namespace in ("tasks", "projects", "budget") or match.view_name in (
+    if match.namespace in ("tasks", "calendar", "projects", "budget") or match.view_name in (
         "tasks",
         "projects",
         "budget",

@@ -15,4 +15,5 @@ projects
 budget
 amounts
 notifications
+calendar
 ```

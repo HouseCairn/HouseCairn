@@ -77,6 +77,9 @@
 
   {% task_cost task home %}
 
+  <h2>{% translate "Materials" %}</h2>
+  {% include "tasks/_materials.html" %}
+
   <h2>{% translate "Photos and files" %}</h2>
   {% include "tasks/_attachments.html" %}
   {% if can_write %}

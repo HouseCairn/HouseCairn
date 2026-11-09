@@ -100,8 +100,15 @@ web interface: every request only sees the homes of its user
   never changed or deleted. `compatible_items` takes item identifiers of the same home;
   `label` (multipart) sets the photo of the label and `GET .../articles/<id>/label/`
   returns it. Articles are filtered with `q` (name, manufacturer reference or supplier)
-  and `low=true`; suppliers and movements with `article`, movements also with `kind`. The
-  scopes are the same as for rooms.
+  and `low=true`, and `room` for those that concern a room; suppliers and movements with
+  `article`, movements also with `kind`. `unit` is a code of the list (`piece`, `litre`,
+  `metre`, `kilogram`, `roll`, `box`, `other`) with `unit_other` for `other`, and `rooms`
+  takes room identifiers of the same home. The materials of the tasks are
+  `.../task-materials/` (`task`, `article`, `quantity`; filtered by `task` and `article`),
+  also listed, read-only, in `materials` on a task
+  ([ADR 0046](../adr/0046-stock-linked-to-tasks-and-rooms.md)). Closing a task takes them
+  from the stock; a movement carries the `occurrence` that wrote it. The scopes are the
+  same as for rooms.
 - **Projects** of a home ([ADR 0050](../adr/0050-projects-quotes-and-budget-lines.md)):
   `/api/v1/homes/<home id>/projects/`, `.../budget-lines/`, `.../quotes/`,
   `.../project-files/`, `.../project-tasks/` and `.../envelope/`. Only `title` is required
@@ -144,6 +151,17 @@ web interface: every request only sees the homes of its user
   scope reads them (any other token gets a 403); adding, renaming, deleting and testing a
   channel and changing the reminders are for the person signed in, and a token gets a 403
   there. Someone else's channel is a 404.
+- **Calendar** ([ADR 0052](../adr/0052-calendar-and-secret-ics-feeds.md)):
+  `GET /api/v1/calendar/?from=YYYY-MM-DD&to=YYYY-MM-DD` returns the occurrences of the
+  caller's homes (at most 400 days; `truncated` tells when the limit of 5 000 entries, or of 1 000 repeating
+  tasks, cut the answer, always on the farthest dates) with the filters `home`, `room`, `person` (an id, or `none`) and `priority`. Dates of a
+  task that repeats and has no occurrence yet are returned with `projected: true` and
+  `occurrence: null`. A token needs the `read` scope and only sees the homes it is bound to;
+  `can_complete` is false for a reader and for a token without the `write` scope. `/api/v1/me/calendar-feeds/` lists, creates (`home`, or
+  empty for all homes), regenerates (`POST .../<id>/regenerate/`) and deletes the caller's
+  [feeds](../guides/calendar.md); the secret `url` is in the answer that creates or regenerates a
+  feed and nowhere else. These endpoints are for a person signed in: **an API token of any
+  scope is refused**, since an address read with a token would outlive it.
 
 The [reference](reference.md) lists every operation. It is generated from the
 OpenAPI 3.1 schema of the code at each build of this site:

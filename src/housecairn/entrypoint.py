@@ -134,6 +134,8 @@ def web_command() -> list[str]:
         "--no-control-socket",
         "--access-logfile=-",
         "--error-logfile=-",
+        # The address of a calendar feed is a secret: the access log masks it (docs/adr/0052).
+        "--logger-class=housecairn.core.gunicorn_logging.Logger",
         # Proxy headers count from the reverse proxies of
         # HOUSECAIRN_FORWARDED_ALLOW_IPS only, in gunicorn as in Django
         # (docs/adr/0012). Without HOUSECAIRN_BEHIND_TLS_PROXY, no peer may mark
