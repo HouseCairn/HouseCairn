@@ -307,9 +307,26 @@ class TestTime:
     def test_a_header_block_that_trickles_is_given_up_on(self, local_policy: None) -> None:
         with serving(LOOPBACK) as server:
             server.routes["/"] = lambda h: trickle(h, headers_first=True)
+            outcome: list[BaseException | None] = []
+
+            def attempt() -> None:
+                try:
+                    fetch(server.url(), seconds=1.0)
+                except BaseException as exc:
+                    outcome.append(exc)
+                else:
+                    outcome.append(None)
+
+            # A guard of the test's own: without the watchdog of `fetch` the read never
+            # ends, and the test must fail instead of hanging the suite.
             started = time.monotonic()
-            refused(server.url(), "timeout", seconds=1.0)
+            worker = threading.Thread(target=attempt, daemon=True)
+            worker.start()
+            worker.join(timeout=6.0)
+            assert not worker.is_alive(), "the header block was never given up on"
             assert time.monotonic() - started < 3.0
+            assert isinstance(outcome[0], RefusedError)
+            assert outcome[0].reason == "timeout"
             assert server.wait_idle()
 
     def test_a_server_that_never_answers(self, local_policy: None) -> None:
