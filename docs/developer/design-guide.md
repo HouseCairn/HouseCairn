@@ -215,8 +215,8 @@ own.
   `housecairn/core/navigation.py` will hold the helper `url_with_next`, which adds the current path as `next` to the
   address of a record or a form, and the tag `back_link`, which draws the back link from
   `next` or from the parent in the tree. Until that change is merged, a view that needs
-  `next` uses `is_safe_redirect` directly and the pull request says so. The merge of the
-  lot replaces this paragraph with the exact usage of both, in the same pull request.
+  `next` uses `is_safe_redirect` directly and the pull request says so. The merge of
+  that change replaces this paragraph with the exact usage of both, in the same pull request.
 
 ### Default parent
 
@@ -349,15 +349,15 @@ The application already has one way to remind and one way to alert; a new screen
 them and does not add a third.
 
 - A date that someone must act on **must** be a task with a due date. The task is then
-  shown in the summary of My home (`/me/`, the view of Today when the person is not in a
-  home): overdue, today, and up to the person's horizon, 7 days by default
+  shown on Today: overdue, today, and up to the person's horizon, 7 days by default
   (the `horizon_days` preference, `Horizon.WEEK`). It is also shown on the Calendar and
   in the calendar feeds, and its reminders go out through the channels of the person
   ([ADR 0043](../adr/0043-notifications-through-apprise.md)), with the rules of
   postponing, Done and Skip that every task has. A reminder written again for one
   screen would ignore the quiet hours and the follow-ups of the person.
 - A date that only informs (the end of a warranty) **must** be a list of the agenda
-  digest, `housecairn.tasks.agenda.my_home`, as the warranties ending soon are today.
+  digest, `housecairn.tasks.agenda.my_home`, shown on My home (`/me/`, the view of Today
+  when the person is not in a home), as the warranties ending soon are today.
   It is read, not acted on, and sends no notification. This digest is not the daily
   summary message of the notifications.
 - An event with no due date (a problem was reported) **must** be an alert of
