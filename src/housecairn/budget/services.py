@@ -108,7 +108,10 @@ class TaskRow:
 
     @property
     def per_year(self) -> Decimal | None:
-        """Times a year (exact), or `None` for a task that does not repeat on the calendar."""
+        """Times a year (to 28 digits), or `None` for a task off the calendar.
+
+        For display only: the cost a year is not worked out from this rounded rate.
+        """
         task = self.task
         if not task.repeats or task.repeat_unit not in PER_YEAR:
             return None
@@ -116,11 +119,15 @@ class TaskRow:
 
     @property
     def annual_cost(self) -> Decimal | None:
-        """The estimate times the times a year, rounded once, half up, to the cent."""
-        rate = self.per_year
-        if rate is None or not self.has_estimate:
+        """The estimate times the times a year, rounded once, half up, to the cent.
+
+        The multiplication comes before the division, so that no digit is lost before the
+        one rounding: 0.24 every 48 years is 0.005 a year, which rounds to 0.01.
+        """
+        task = self.task
+        if self.per_year is None or not self.has_estimate:
             return None
-        return cents(self.estimate * rate)
+        return cents(self.estimate * PER_YEAR[task.repeat_unit] / task.repeat_interval)
 
 
 @dataclass(frozen=True)

@@ -152,6 +152,9 @@ class TestAnnualisation:
             ("after_last", "week", 1, "7.50", "390.00"),
             ("after_last", "day", 30, "10", "121.67"),
             ("after_last", "week", 7, "100", "742.86"),  # 52/7 times, rounded once, half up
+            # The rate 1/48 is rounded to 28 digits (0.0208333...): the product with 0.24 then
+            # falls just under half a cent. Multiplying first gives the exact 0.005, so 0.01.
+            ("after_last", "year", 48, "0.24", "0.01"),
         ],
     )
     def test_the_cost_of_a_year_follows_the_repetition(

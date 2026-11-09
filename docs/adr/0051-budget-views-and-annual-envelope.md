@@ -66,7 +66,9 @@ it, and its page says so by showing no cost block. For a task:
 - *Cost a year* is the estimate times the occurrences a year of its repetition: 12 divided
   by the interval for months, 52 for weeks, 365 for days, 1 for years (so a task every 3
   years is a third of its estimate, every 6 months twice). It is rounded once, at the end, to
-  the cent, half up. A task that does not repeat has none. There is no repetition by use yet
+  the cent, half up: the estimate is multiplied by the times a year, then divided by the
+  interval, so that the rate is never rounded before it meets the estimate (0.24 every 48
+  years is 0.01). A task that does not repeat has none. There is no repetition by use yet
   (every 200 hours of running); when there is, it will not be annualised either, since its
   pace is not on the calendar, and the screens will say so. Seasons do not change the rate.
 
