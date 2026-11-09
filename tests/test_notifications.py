@@ -48,7 +48,7 @@ from tests.test_instance_settings import recent
 
 pytestmark = pytest.mark.django_db
 
-TOKEN = "123456:N0t-A-Real-B0t-Token-Anywhere"
+TOKEN = "123456789:fixture-not-a-token"
 URL = f"tgram://{TOKEN}/987654"
 LIST = "api-v1:notification-channel-list"
 
