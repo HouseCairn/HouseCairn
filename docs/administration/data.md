@@ -29,13 +29,15 @@ The archive is a zip:
 | `members` | `id`, `email`, `name` (the display name, else the full name, else the part of the address before the `@`), `role`, `joined_at` of each member. |
 | `pending_invitations` | `id`, `email`, `role`, `sent_at`, `expires_at`; never a link. |
 | `events` | `id`, `kind`, `payload`, `received_at` of the events received. |
-| `rooms` | `id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch and stock, floor and wall covering, memory notes). |
+| `rooms` | `id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch, `paint_article` (a stock item id or `null`), floor and wall covering, memory notes). |
 | `items` | `id`, `room`, `name`, `kind`, `brand`, `model`, `serial_number`, `installed_on`, `warranty_ends_on`, `contract_provider`, `contract_number`, `contract_url`, `links`, `notes`, `created_at` of each item. |
 | `photos` | `id`, `room` or `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the photo in the archive (`files/photos/<id>.<extension>`, or `null` if the file is missing). |
 | `attachments` | `id`, `task`, `occurrence` or `null`, `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the file in the archive (`files/attachments/<id>.<extension>`, or `null` if the file is missing). |
-| `stock_items` | `id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`). |
+| `stock_items` | `id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (a code of the list, or `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (item ids), `rooms` (room ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`). |
 | `stock_suppliers` | `id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`. |
-| `stock_movements` | `id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `created_at`. |
+| `stock_movements` | `id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (the occurrence of a task whose closing wrote the line, or `null`), `created_at`. |
+| `task_materials` | `id`, `task`, `article`, `quantity`, `created_at`: the stock items each task needs. |
+| `stock_draws` | `id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at`: what each closed occurrence took from the stock. |
 | `projects` | `id`, `title`, `goal`, `status`, `priority`, `rooms` (room ids), `estimated_minutes`, `season` with `season_start_month` and `season_end_month`, `created_at`. |
 | `project_budget_lines` | `id`, `project`, `label`, `nature`, `planned`, `committed` (the sum of the accepted quotes), `paid`, `created_at`. Amounts are text with two decimals, in the currency of the home. |
 | `project_quotes` | `id`, `project`, `contractor` (an id or `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (the line an accepted quote is committed on, else `null`), `note`, `paperless_id`, `paperless_url`, `created_at`. |
@@ -45,6 +47,7 @@ The archive is a zip:
 | `project_envelopes` | `id`, `year`, `amount`: the annual budget envelope. |
 | `tasks` | `id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, the budgets, `notes`, `procedure`, `assignee`, `contractor` (an id), the repeat rule, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` or empty) with `season_start_month` and `season_end_month`, `hide_days_before`. |
 | `contractors` | `id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`. |
+| `calendar_feeds` | `id`, `created_at`, `regenerated_at` of each [calendar feed](../guides/calendar.md) of the home. Never the address or its secret, which is not kept; the combined feed of a person belongs to the person, not to a home. |
 | `labels` | `id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing. |
 | `files` | `path` and `size` of each file in `files/`. |
 
@@ -61,7 +64,7 @@ holds the home it was made for and nothing of another.
 
 An owner deletes the home from its page (**Delete this home**): type its exact
 name. The home and everything in it go for good, for all its members: members,
-invitations, events, its audit log and its files; an API token left without a
+invitations, events, calendar feeds, its audit log and its files; an API token left without a
 home is revoked. **There is no grace period and no way back**: export first.
 The audit log of the instance records that a home was deleted, without its
 name.
@@ -72,10 +75,14 @@ read-only volume), the home is still deleted and the error is logged by
 `housecairn.files` with the path of the directory (`photos/<home id>`,
 `attachments/<home id>`, `stock/<home id>` or `projects/<home id>`): remove that directory by hand.
 
+The budget screens (by room, by project, by task, the envelope) keep no data of their own:
+they are worked out from the projects, tasks and envelopes above, so they are in the export
+and go with the home.
+
 ## Erasure of an account
 
 **Delete my account** (see [Account pages](../screens/account.md)) erases the
-account, its sign-in methods, devices and API tokens, the homes where it is
+account, its sign-in methods, devices, API tokens and calendar feeds, the homes where it is
 the only member, and the invitations to its address. It is refused for the only
 administrator and for the only owner of a home with other members: hand
 ownership over, or delete the home, first. The audit log keeps that it happened

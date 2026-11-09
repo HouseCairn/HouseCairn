@@ -76,11 +76,15 @@ class Room(HomeOwnedModel):
     paint_brand = models.CharField(_("paint brand"), max_length=120, blank=True)
     paint_reference = models.CharField(_("paint reference"), max_length=120, blank=True)
     paint_batch = models.CharField(_("paint batch"), max_length=120, blank=True)
-    paint_stock = models.CharField(
-        _("paint left in stock"),
-        max_length=120,
+    # The tin left over is an item of the stock (docs/adr/0046): its quantity and where it is
+    # are read from there, so they are never out of date.
+    paint_article = models.ForeignKey(
+        "stock.Article",
+        null=True,
         blank=True,
-        help_text=_("For example: half a tin, in the garage."),
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("paint left in stock"),
     )
     floor_covering = models.CharField(_("floor covering"), max_length=200, blank=True)
     wall_covering = models.CharField(_("wall covering"), max_length=200, blank=True)
@@ -104,7 +108,7 @@ class Room(HomeOwnedModel):
                 "paint_brand",
                 "paint_reference",
                 "paint_batch",
-                "paint_stock",
+                "paint_article_id",
                 "floor_covering",
                 "wall_covering",
                 "memory_notes",

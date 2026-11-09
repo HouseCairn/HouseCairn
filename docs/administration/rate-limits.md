@@ -15,6 +15,7 @@ sending invitations, erasing an account
 | Opening or accepting an invitation link | 30 a minute per client address | `HOUSECAIRN_RATELIMIT_INVITATION_LINKS` |
 | Testing the mail server or an issuer | 5 a minute per administrator | `HOUSECAIRN_RATELIMIT_TESTS` |
 | Erasing an account | 5 a minute per person | (fixed) |
+| Reading a [calendar feed](../guides/calendar.md) | 60 a minute per client address | (fixed) |
 
 Each limit is a setting of the instance: change it on **Instance administration, Settings**,
 in the **Rate limits** section, or by its variable, which then locks the field (see

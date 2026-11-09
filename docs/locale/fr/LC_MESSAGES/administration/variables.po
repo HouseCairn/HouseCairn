@@ -335,6 +335,3 @@ msgstr "Lit le titre et l'image d'une page quand un lien est ajouté à un proje
 
 #~ msgid "Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. Set it when `ALLOWED_HOSTS` lists several names, so that every email uses the public one."
 #~ msgstr "Les liens des courriels pointent vers `HOUSECAIRN_SITE_URL` quand elle est renseignée. Renseignez-la quand `ALLOWED_HOSTS` liste plusieurs noms, pour que chaque courriel utilise le nom public."
-
-#~ msgid "Time zone of the instance."
-#~ msgstr "Fuseau horaire de l'instance."

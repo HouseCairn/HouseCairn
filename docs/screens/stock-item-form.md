@@ -8,8 +8,9 @@ to edit one, at `/h/<home id>/stock/<item id>/edit/`.
 | Name | Required, 120 characters at most. |
 | Manufacturer reference, dimensions | Free text, 120 characters at most each. |
 | Storage location | Where it is kept, for example "garage, second shelf". |
-| Unit | For example pieces, litres, metres. |
+| Unit, Which unit | A unit of the list (piece, litre, metre, kilogram, roll, box) or **Other**, with the unit written in **Which unit**. |
 | Threshold | The item is flagged when the stock falls to this quantity or below. |
+| Rooms | The rooms where the item is used, besides those of the equipment it fits; only rooms of this home can be chosen. |
 | Compatible items | The equipment or surfaces of the home this fits; only items of this home can be chosen. |
 | Photo of the label | JPEG, PNG or WebP, treated like the [photos of a room](photo-form.md): the content is checked, the location and the other information stored in the file are removed, a large picture is reduced. The default limit is 10 MB. |
 | Notes | Free text, 4,000 characters at most. |

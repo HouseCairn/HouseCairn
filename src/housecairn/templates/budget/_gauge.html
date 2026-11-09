@@ -1,0 +1,7 @@
+{% load i18n %}{# Engaged against planned. `percent` is empty when nothing is planned. #}
+{% if percent is None %}
+  <span class="small">{% if amounts.engaged %}{% translate "No budget set" %}{% else %}—{% endif %}</span>
+{% else %}
+  <progress max="100" value="{{ shown }}" aria-label="{% translate 'Used against planned' %}">{{ percent }} %</progress>
+  <span class="small">{% blocktranslate %}{{ percent }} % used{% endblocktranslate %}</span>
+{% endif %}

@@ -20,7 +20,7 @@ def article(alice: User, alice_home: Home, owner_item: Item) -> Article:
         compatible_items=[owner_item],
         name="Boiler filter",
         manufacturer_reference="BF-200",
-        unit="pieces",
+        unit="piece",
         threshold=Decimal("2"),
         storage_location="Garage",
     )

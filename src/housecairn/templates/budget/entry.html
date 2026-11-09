@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n l10n projects_extras budget_extras %}
+{% block head_title %}{% translate "Budget" %}{% endblock head_title %}
+{% block content %}
+  <h1>{% translate "Budget" %}</h1>
+  {% if combined %}
+    <form method="get" class="filter-row">
+      <label for="budget-year">{% translate "Year" %}</label>
+      <input id="budget-year" type="number" name="year" value="{{ year|unlocalize }}" min="2000" max="2200">
+      <button type="submit" class="button-secondary button-small">{% translate "Show" %}</button>
+    </form>
+    <p class="small">{% translate "Homes are added by currency. Amounts in different currencies are never converted." %}</p>
+    {% for currency, entry in combined.items %}
+      <section class="card" aria-labelledby="currency-{{ currency }}">
+        <h2 id="currency-{{ currency }}">{{ currency }}</h2>
+        <dl class="facts">
+          {% if entry.envelope is not None %}<div><dt>{% translate "Envelope" %}</dt><dd>{{ entry.envelope|money:currency }}</dd></div>{% endif %}
+          <div><dt>{% translate "Planned" context "amount" %}</dt><dd>{{ entry.total.planned|money:currency }}</dd></div>
+          <div><dt>{% translate "Used" %}</dt><dd>{{ entry.total.engaged|money:currency }}</dd></div>
+          <div><dt>{% translate "Paid" %}</dt><dd>{{ entry.total.paid|money:currency }}</dd></div>
+          <div><dt>{% translate "Where it stands" %}</dt><dd>{% budget_gap entry.total currency %}</dd></div>
+        </dl>
+        <ul class="card-list">
+          {% for home, report in entry.homes %}
+            <li>
+              <a class="row" href="{% url 'budget:overview' home_id=home.id %}?year={{ year|unlocalize }}">
+                <span class="row-body">
+                  <span class="row-title">{{ home.name }}</span>
+                  <span class="row-text">{% blocktranslate with planned=report.total.planned|money:currency paid=report.total.paid|money:currency %}Planned {{ planned }}, paid {{ paid }}{% endblocktranslate %}</span>
+                </span>
+                {% include "components/icon.html" with name="chevron" class="chevron" %}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endfor %}
+  {% else %}
+    <p class="empty">{% translate "You have no home to open yet." %}</p>
+    <a class="button button-secondary button-block" href="{% url 'homes:create' %}">{% translate "Add a home" %}</a>
+  {% endif %}
+{% endblock content %}

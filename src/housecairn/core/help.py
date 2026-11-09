@@ -114,6 +114,11 @@ HELP_PAGES: dict[str, str] = {
     "projects:file": "screens/project/",
     "projects:file-thumbnail": "screens/project/",
     "projects:file-delete": "screens/project/",
+    "budget": "screens/budget/",
+    "budget:overview": "screens/budget/",
+    "budget:rooms": "screens/budget-rooms/",
+    "budget:projects": "screens/budget-projects/",
+    "budget:tasks": "screens/budget-tasks/",
     "tasks:contractors": "screens/contractors/",
     "tasks:contractor-detail": "screens/contractor/",
     "tasks:contractor-vcard": "screens/contractor/",
@@ -124,6 +129,8 @@ HELP_PAGES: dict[str, str] = {
     "tasks:attachment": "screens/task-files/",
     "tasks:attachment-thumbnail": "screens/task-files/",
     "tasks:attachment-delete": "screens/task-files/",
+    "tasks:material-save": "screens/task/",
+    "tasks:material-remove": "screens/task/",
     "label-open": "screens/qr-labels/",
     "labels:list": "screens/qr-labels/",
     "labels:create": "screens/qr-labels/",
@@ -142,6 +149,7 @@ HELP_PREFIXES: dict[str, str] = {
     "socialaccount_": "screens/account/",
     "openid_connect_": "screens/account/",
     "notifications:": "screens/notifications/",
+    "calendar:": "screens/calendar/",
 }
 # Routes that are not screens of the interface: the API, its schema and
 # explorer, the health check, the web app manifest, and Django's administration site.

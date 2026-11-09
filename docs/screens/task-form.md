@@ -5,13 +5,14 @@ The form to add a task, at `/h/<home id>/tasks/new/`, and to edit it, at
 or an item, **Add a task** fills the room and the item in.
 
 The first block holds the title, the room, the item (listed with its room), the
-due date and, below, four sections that open when you need them:
+due date and, below, five sections that open when you need them:
 
 | Section | Content |
 | --- | --- |
 | Repeat | **Once**, **Fixed date** (every N days, weeks, months or years from the first date) or **After the last time** (N units after the day it was done). A **season** outside of which nothing falls (see below), and the number of days before the date from which the task shows. |
 | Who | Priority, the person in charge (a member of the home, shown by name) and the contractor, in one field: pick one of the home from the suggestions or type a new name, which is added to the contractors of the home when you save. Empty the field to remove the contractor. |
 | Time and budget | Estimated duration (a number and a unit: minutes, hours or days), labour and material budgets, in the currency of the home. |
+| Materials | The stock items the task needs, one line each: the stock item and the quantity. Two empty lines are offered for more; set a line's stock item to the dash to remove it. Marking the task done takes these quantities from the stock. |
 | How to do it | The procedure in Markdown, notes and, when adding, photos and files. |
 
 ## Season

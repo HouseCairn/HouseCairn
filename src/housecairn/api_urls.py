@@ -4,6 +4,7 @@ from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
 from housecairn.accounts.api import AccountDeleteView, MeView
+from housecairn.budget import api as budget_api
 from housecairn.events.api import EventCreateView
 from housecairn.homes.api import AcceptInvitationView, HomeViewSet, InvitationViewSet, MemberViewSet
 from housecairn.instance.api import (
@@ -49,6 +50,7 @@ for prefix, viewset, basename in (
     ("suppliers", stock_api.SupplierViewSet, "home-supplier"),
     ("movements", stock_api.MovementViewSet, "home-movement"),
     ("attachments", tasks_api.AttachmentViewSet, "home-attachment"),
+    ("task-materials", tasks_api.MaterialViewSet, "home-task-material"),
     ("labels", labels_api.LabelViewSet, "home-label"),
     ("projects", projects_api.ProjectViewSet, "home-project"),
     ("budget-lines", projects_api.BudgetLineViewSet, "home-budget-line"),
@@ -96,9 +98,27 @@ urlpatterns = [
     path(
         "homes/<uuid:home_id>/envelope/", projects_api.EnvelopeView.as_view(), name="home-envelope"
     ),
+    path("budget/", budget_api.CombinedView.as_view(), name="budget-combined"),
+    path("homes/<uuid:home_id>/budget/", budget_api.OverviewView.as_view(), name="home-budget"),
+    path(
+        "homes/<uuid:home_id>/budget/rooms/",
+        budget_api.RoomsView.as_view(),
+        name="home-budget-rooms",
+    ),
+    path(
+        "homes/<uuid:home_id>/budget/projects/",
+        budget_api.ProjectsView.as_view(),
+        name="home-budget-projects",
+    ),
+    path(
+        "homes/<uuid:home_id>/budget/tasks/",
+        budget_api.TasksView.as_view(),
+        name="home-budget-tasks",
+    ),
     *router.urls,
     path("homes/<uuid:home_id>/events/", EventCreateView.as_view(), name="home-events"),
     path("homes/<uuid:home_id>/search/", rooms_api.SearchView.as_view(), name="home-search"),
     path("invitations/accept/", AcceptInvitationView.as_view(), name="invitation-accept"),
     path("", include("housecairn.notifications.api_urls")),  # docs/adr/0043
+    path("", include("housecairn.calendar.api_urls")),  # docs/adr/0052
 ]

@@ -49,8 +49,8 @@ of the project is the sum of the gaps of its lines, so that an overrun on one li
 hidden by room left on another. The page says it in
 words, never by colour alone: **... left**, **On budget** or **Over budget by ...**. For
 the living room painted with a plan of 800, a quote of 620 accepted and 120 paid, the gap
-is 180 and the page says "180.00 EUR left". Amounts have two decimals and go up to
-9,999,999,999.99.
+is 180 and the page says "180.00 EUR left". Amounts have two decimals; how to type one
+is in [Entering an amount](amounts.md).
 
 ## Keep links of inspiration
 
@@ -69,7 +69,8 @@ it and add it again to refresh the preview. At most 30 links per project.
 Tick projects in the list and **Compare the ticked projects** to see their cost, duration,
 priority and season side by side. **Set the envelope** on the list gives the amount you
 want to spend on work this year; the list sets it against the planned budget of the
-projects that are not finished nor abandoned.
+projects that are not finished nor abandoned. The [budget](budget.md) sets the envelope against
+the projects and the upkeep of the year together, room by room and project by project.
 
 ## Share
 

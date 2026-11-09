@@ -22,7 +22,6 @@ MEMORY_FIELDS = (
     "paint_brand",
     "paint_reference",
     "paint_batch",
-    "paint_stock",
     "floor_covering",
     "wall_covering",
     "memory_notes",
@@ -37,7 +36,10 @@ def _rooms(home: Home) -> list[dict[str, Any]]:
             "kind": r.kind,
             "position": r.position,
             "notes": r.notes,
-            "memory": {name: getattr(r, name) for name in MEMORY_FIELDS},
+            "memory": {
+                **{name: getattr(r, name) for name in MEMORY_FIELDS},
+                "paint_article": str(r.paint_article_id) if r.paint_article_id else None,
+            },
             "created_at": r.created_at.isoformat(),
         }
         for r in Room.objects.filter(home=home).order_by("position", "created_at", "id")

@@ -213,3 +213,86 @@ def test_a_duration_of_zero_becomes_unset_and_the_rest_is_kept() -> None:
         assert apps.get_model("tasks", "Task").objects.get(title="Zero").estimated_minutes is None
     finally:
         to_latest()
+
+
+def test_the_paint_left_in_stock_text_moves_to_the_notes_and_comes_back() -> None:
+    try:
+        apps = apps_at(("rooms", "0003_item_contract_provider_and_number"))
+        home = make_home(apps)
+        room_model = apps.get_model("rooms", "Room")
+        room_model.objects.create(home=home, name="Hall", paint_stock="half a tin, in the garage")
+        room_model.objects.create(
+            home=home, name="Lounge", paint_stock="1 tin", memory_notes="Two coats"
+        )
+        room_model.objects.create(home=home, name="Cellar", memory_notes="Damp wall")
+        apps = apps_at(("rooms", "0004_room_paint_article"))
+        notes = dict(apps.get_model("rooms", "Room").objects.values_list("name", "memory_notes"))
+        assert notes == {
+            "Hall": "Paint left in stock: half a tin, in the garage",
+            "Lounge": "Two coats\nPaint left in stock: 1 tin",
+            "Cellar": "Damp wall",
+        }
+        assert not apps.get_model("rooms", "Room").objects.exclude(paint_article=None).exists()
+        apps = apps_at(("rooms", "0003_item_contract_provider_and_number"))
+        back = {
+            r.name: (r.paint_stock, r.memory_notes)
+            for r in apps.get_model("rooms", "Room").objects.all()
+        }
+        assert back == {
+            "Hall": ("half a tin, in the garage", ""),
+            "Lounge": ("1 tin", "Two coats"),
+            "Cellar": ("", "Damp wall"),
+        }
+        apps = apps_at(("rooms", "0004_room_paint_article"))
+        assert apps.get_model("rooms", "Room").objects.count() == 3
+    finally:
+        to_latest()
+
+
+def test_a_unit_becomes_one_of_the_list_or_other_and_comes_back() -> None:
+    try:
+        apps = apps_at(("stock", "0003_article_rooms"))
+        home = make_home(apps)
+        article_model = apps.get_model("stock", "Article")
+        units = {
+            "Filter": "pieces",
+            "Paint": "  Litres ",
+            "Cable": "mètre",
+            "Sand": "bags",
+            "Tape": "ROULEAU",
+            "Screws": "boîte",
+            "Salt": "kg",
+            "Nothing": "",
+        }
+        for name, unit in units.items():
+            article_model.objects.create(home=home, name=name, unit=unit)
+        apps = apps_at(("stock", "0004_unit_list"))
+        rows = {
+            a.name: (a.unit, a.unit_other) for a in apps.get_model("stock", "Article").objects.all()
+        }
+        assert rows == {
+            "Filter": ("piece", ""),
+            "Paint": ("litre", ""),
+            "Cable": ("metre", ""),
+            "Sand": ("other", "bags"),
+            "Tape": ("roll", ""),
+            "Screws": ("box", ""),
+            "Salt": ("kilogram", ""),
+            "Nothing": ("", ""),
+        }
+        apps = apps_at(("stock", "0003_article_rooms"))
+        back = {a.name: a.unit for a in apps.get_model("stock", "Article").objects.all()}
+        assert back == {
+            "Filter": "pieces",
+            "Paint": "litres",
+            "Cable": "metres",
+            "Sand": "bags",
+            "Tape": "rolls",
+            "Screws": "boxes",
+            "Salt": "kilograms",
+            "Nothing": "",
+        }
+        apps = apps_at(("stock", "0004_unit_list"))
+        assert apps.get_model("stock", "Article").objects.count() == len(units)
+    finally:
+        to_latest()

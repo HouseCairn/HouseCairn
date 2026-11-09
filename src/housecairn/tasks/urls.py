@@ -15,6 +15,16 @@ urlpatterns = [
     path("tasks/<uuid:task_id>/edit/", views.TaskEditView.as_view(), name="edit"),
     path("tasks/<uuid:task_id>/delete/", views.TaskDeleteView.as_view(), name="delete"),
     path(
+        "tasks/<uuid:task_id>/materials/",
+        views.MaterialSaveView.as_view(),
+        name="material-save",
+    ),
+    path(
+        "tasks/<uuid:task_id>/materials/<uuid:material_id>/delete/",
+        views.MaterialRemoveView.as_view(),
+        name="material-remove",
+    ),
+    path(
         "tasks/<uuid:task_id>/attachments/new/",
         views.AttachmentAddView.as_view(),
         name="attachment-add",

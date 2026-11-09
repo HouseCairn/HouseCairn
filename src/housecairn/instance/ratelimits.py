@@ -29,6 +29,8 @@ def rates() -> dict[str, str]:
         "housecairn_invitation": f"{n('invitation_links')}/m/ip",
         "housecairn_settings_test": f"{n('tests')}/m/user",
         "housecairn_delete_account": "5/m/user",
+        # The secret address of a calendar feed (ADR 0052): a calendar application polls it.
+        "housecairn_calendar_feed": "60/m/ip",
     }
 
 

@@ -6,13 +6,14 @@ writing is checked here, by role: owners and members write, read-only reads.
 """
 
 import datetime
+import logging
 from collections.abc import Iterable
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
 from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied, SuspiciousOperation, ValidationError
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import UploadedFile
 from django.db import models, transaction
@@ -21,12 +22,20 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.audit import services as audit
+from housecairn.core.text import without_control_characters
 from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms import conf, images
-from housecairn.rooms.models import Item
-from housecairn.stock.models import Article, Movement, MovementKind, Supplier
+from housecairn.rooms.models import Item, Room
+from housecairn.stock.models import Article, Movement, MovementKind, Supplier, Unit
+from housecairn.stock.storage import stock_storage
+
+if TYPE_CHECKING:
+    from housecairn.tasks.models import Occurrence
+
+logger = logging.getLogger(__name__)
 
 AnyUser = User | AnonymousUser
 
@@ -37,6 +46,7 @@ ARTICLE_FIELDS = frozenset(
         "dimensions",
         "storage_location",
         "unit",
+        "unit_other",
         "threshold",
         "notes",
     }
@@ -48,6 +58,15 @@ _ZERO = Decimal("0")
 def _require_write(actor: AnyUser, home: Home) -> None:
     if not home_services.can_write(actor, home):
         raise PermissionDenied
+
+
+def _tidy_unit(article: Article) -> None:
+    """The text of Other is one clean line, and only kept with the unit Other."""
+    article.unit_other = (
+        " ".join(without_control_characters(article.unit_other).split())
+        if article.unit == Unit.OTHER
+        else ""
+    )
 
 
 def _apply(instance: models.Model, allowed: frozenset[str], changes: dict[str, Any]) -> None:
@@ -67,10 +86,14 @@ def plain(quantity: Decimal) -> str:
 # ---------- reading ----------
 
 
-def articles_of(home: Home) -> models.QuerySet[Article]:
-    """Articles of the home, each with `quantity`: the sum of its movements."""
+def quantity_expression(article: str = "pk") -> Coalesce:
+    """The stock of an article as a query expression: the sum of its movements.
+
+    `article` names the column that holds the article's identifier in the query it is
+    used in (`pk` on an article, `article_id` on a row that points to one).
+    """
     total = (
-        Movement.objects.filter(article=models.OuterRef("pk"))
+        Movement.objects.filter(article=models.OuterRef(article))
         .order_by()
         .values("article")
         .annotate(total=models.Sum("delta"))
@@ -79,21 +102,47 @@ def articles_of(home: Home) -> models.QuerySet[Article]:
     decimal: models.DecimalField[Decimal, Decimal] = models.DecimalField(
         max_digits=12, decimal_places=2
     )
+    return Coalesce(
+        models.Subquery(total, output_field=decimal),
+        models.Value(_ZERO, output_field=decimal),
+    )
+
+
+def articles_of(home: Home) -> models.QuerySet[Article]:
+    """Articles of the home, each with `quantity`: the sum of its movements."""
     articles: models.QuerySet[Article] = Article.objects.filter(home=home).annotate(
-        quantity=Coalesce(
-            models.Subquery(total, output_field=decimal),
-            models.Value(_ZERO, output_field=decimal),
-        )
+        quantity=quantity_expression()
     )
     return articles
 
 
+def articles_of_room(home: Home, room: UUID) -> models.QuerySet[Article]:
+    """The articles that concern a room: kept there, fitting its equipment, or its paint.
+
+    Three ways, in this order of meaning: the room is listed on the article, the article is
+    compatible with an item of the room, or it is the tin of paint left over in the memory
+    of the room (docs/adr/0046).
+    """
+    concerned = (
+        models.Q(rooms=room)
+        | models.Q(compatible_items__room=room, compatible_items__deleted_at__isnull=True)
+        | models.Q(pk__in=Room.objects.filter(pk=room).values("paint_article"))
+    )
+    return articles_of(home).filter(concerned).distinct()
+
+
 def search_articles(
-    home: Home, query: str = "", *, low: bool = False, item: UUID | None = None
+    home: Home,
+    query: str = "",
+    *,
+    low: bool = False,
+    item: UUID | None = None,
+    room: UUID | None = None,
 ) -> models.QuerySet[Article]:
     """Articles whose name, manufacturer reference or supplier matches `query`.
 
-    `low` keeps those at or below their threshold; `item` those compatible with an item.
+    `low` keeps those at or below their threshold; `item` those compatible with an item;
+    `room` those that concern a room (see `articles_of_room`).
     """
     articles = articles_of(home)
     query = query.strip()
@@ -113,6 +162,8 @@ def search_articles(
         )
     if item is not None:
         articles = articles.filter(compatible_items=item)
+    if room is not None:
+        articles = articles.filter(pk__in=articles_of_room(home, room).values("pk"))
     return articles
 
 
@@ -163,24 +214,41 @@ def _check_label(upload: UploadedFile) -> images.ProcessedPhoto:
         raise ValidationError({"label": exc.messages}) from exc
 
 
-def _clear_label(article: Article) -> None:
-    if article.label:
-        article.label.delete(save=False)
+def _forget_label(article: Article) -> str:
+    """Detach the label from the article; return the name of the file it was."""
+    previous = article.label.name if article.label else ""
     article.label = ""
     article.label_content_type = ""
+    return previous
 
 
-def _write_label(article: Article, processed: images.ProcessedPhoto) -> None:
-    # A new label replaces the old one: one more file only when there was none.
+def _erase_label_file(name: str) -> None:
+    """Remove a label file from the disk. A failure is logged, never raised: it is leftover."""
+    if not name:
+        return
     try:
+        stock_storage.delete(name)
+    except (OSError, ValueError, SuspiciousOperation):
+        logger.error("Could not erase a label file of the stock: %s", name)
+
+
+def _write_label(article: Article, processed: images.ProcessedPhoto) -> str:
+    """Write the new label file; return the name of the one it replaces ("" if none).
+
+    The old file is not touched here: it goes once the article is saved, so that a save
+    that fails leaves the old label in place, and the new file is removed.
+    """
+    previous = article.label.name if article.label else ""
+    try:
+        # A new label replaces the old one: one more file only when there was none.
         with quotas.room_for(
-            article.home, size=len(processed.data), new_files=0 if article.label else 1
+            article.home, size=len(processed.data), new_files=0 if previous else 1
         ):
-            _clear_label(article)
             article.label.save(processed.extension, ContentFile(processed.data), save=False)
     except ValidationError as exc:
         raise ValidationError({"label": exc.messages}) from exc
     article.label_content_type = processed.content_type
+    return previous
 
 
 # ---------- articles ----------
@@ -193,25 +261,42 @@ def _check_items(home: Home, items: Iterable[Item]) -> list[Item]:
     return chosen
 
 
+def _check_rooms(home: Home, rooms: Iterable[Room]) -> list[Room]:
+    chosen = list(rooms)
+    if any(room.home_id != home.id for room in chosen):
+        raise ValidationError({"rooms": _("This room is not in this home.")})
+    return chosen
+
+
 @transaction.atomic
 def create_article(
     actor: AnyUser,
     home: Home,
     *,
     compatible_items: Iterable[Item] = (),
+    rooms: Iterable[Room] = (),
     label: UploadedFile | None = None,
     **fields: Any,
 ) -> Article:
     _require_write(actor, home)
     article = Article(home=home)
     _apply(article, ARTICLE_FIELDS, fields)
+    _tidy_unit(article)
     article.full_clean(exclude=["label"])
     items = _check_items(home, compatible_items)
+    chosen_rooms = _check_rooms(home, rooms)
     processed = _check_label(label) if label is not None else None
     if processed is not None:
         _write_label(article, processed)
-    article.save()
-    article.compatible_items.set(items)
+    try:
+        article.save()
+        article.compatible_items.set(items)
+        article.rooms.set(chosen_rooms)
+    except Exception:
+        if processed is not None:
+            _erase_label_file(article.label.name)
+        raise
+    audit.record_object("article.created", actor=actor, home_id=home.id, title=article.name)
     return article
 
 
@@ -221,6 +306,7 @@ def update_article(
     article: Article,
     *,
     compatible_items: Iterable[Item] | None = None,
+    rooms: Iterable[Room] | None = None,
     label: UploadedFile | None = None,
     clear_label: bool = False,
     **changes: Any,
@@ -228,16 +314,41 @@ def update_article(
     """Change the article; `label` replaces the photo, `clear_label` removes it."""
     _require_write(actor, article.home)
     _apply(article, ARTICLE_FIELDS, changes)
+    _tidy_unit(article)
     article.full_clean(exclude=["label"])
     items = None if compatible_items is None else _check_items(article.home, compatible_items)
+    chosen_rooms = None if rooms is None else _check_rooms(article.home, rooms)
     processed = _check_label(label) if label is not None else None
+    previous = ""
     if processed is not None:
-        _write_label(article, processed)
+        previous = _write_label(article, processed)
     elif clear_label:
-        _clear_label(article)
-    article.save()
-    if items is not None:
-        article.compatible_items.set(items)
+        previous = _forget_label(article)
+    try:
+        article.save()
+        if items is not None:
+            article.compatible_items.set(items)
+        if chosen_rooms is not None:
+            article.rooms.set(chosen_rooms)
+    except Exception:
+        if processed is not None:
+            _erase_label_file(article.label.name)
+        raise
+    _erase_label_file(previous)
+    audit.record_object(
+        "article.updated",
+        actor=actor,
+        home_id=article.home_id,
+        title=article.name,
+        fields=sorted(
+            [
+                *changes,
+                *(["compatible_items"] if items is not None else []),
+                *(["rooms"] if chosen_rooms is not None else []),
+                *(["label"] if processed is not None or clear_label else []),
+            ]
+        ),
+    )
     return article
 
 
@@ -248,6 +359,7 @@ def delete_article(actor: AnyUser, article: Article) -> None:
     Supplier.objects.filter(article=article).soft_delete()  # type: ignore[attr-defined]
     Movement.objects.filter(article=article).soft_delete()  # type: ignore[attr-defined]
     article.soft_delete()
+    audit.record_object("article.deleted", actor=actor, home_id=article.home_id, title=article.name)
 
 
 # ---------- suppliers ----------
@@ -259,6 +371,9 @@ def create_supplier(actor: AnyUser, article: Article, **fields: Any) -> Supplier
     _apply(supplier, SUPPLIER_FIELDS, fields)
     supplier.full_clean()
     supplier.save()
+    audit.record_object(
+        "supplier.created", actor=actor, home_id=supplier.home_id, title=supplier.name
+    )
     return supplier
 
 
@@ -267,15 +382,68 @@ def update_supplier(actor: AnyUser, supplier: Supplier, **changes: Any) -> Suppl
     _apply(supplier, SUPPLIER_FIELDS, changes)
     supplier.full_clean()
     supplier.save()
+    audit.record_object(
+        "supplier.updated",
+        actor=actor,
+        home_id=supplier.home_id,
+        title=supplier.name,
+        fields=sorted(changes),
+    )
     return supplier
 
 
 def delete_supplier(actor: AnyUser, supplier: Supplier) -> None:
     _require_write(actor, supplier.home)
     supplier.soft_delete()
+    audit.record_object(
+        "supplier.deleted", actor=actor, home_id=supplier.home_id, title=supplier.name
+    )
 
 
 # ---------- movements ----------
+
+
+def _lock_stock(article: Article) -> Decimal:
+    """Lock the article row and read its stock, so that no two movements read the same one."""
+    Article.objects.select_for_update().get(pk=article.pk)
+    return quantity_of(article)
+
+
+def _append(
+    article: Article,
+    *,
+    kind: str,
+    quantity: Decimal,
+    delta: Decimal,
+    occurred_on: datetime.date | None,
+    note: str = "",
+    occurrence: "Occurrence | None" = None,
+) -> Movement:
+    movement = Movement(
+        home=article.home,
+        article=article,
+        kind=kind,
+        quantity=quantity,
+        delta=delta,
+        note=note,
+        occurrence=occurrence,
+    )
+    if occurred_on is not None:
+        movement.occurred_on = occurred_on
+    try:
+        movement.full_clean()
+    except ValidationError as exc:
+        # `delta` is worked out, not typed: a count too far from the stock to be recorded
+        # is the person's quantity to correct.
+        errors = exc.message_dict
+        if "delta" in errors:
+            del errors["delta"]
+            errors.setdefault("quantity", []).append(
+                _("The difference with the stock is too large to be recorded.")
+            )
+        raise ValidationError(errors) from exc
+    movement.save()
+    return movement
 
 
 @transaction.atomic
@@ -298,9 +466,7 @@ def record_movement(
         raise ValidationError({"kind": _("Choose entry, exit or inventory.")})
     if kind != MovementKind.INVENTORY and quantity <= _ZERO:
         raise ValidationError({"quantity": _("The quantity must be more than zero.")})
-    # Lock the article so that two movements at once cannot both read the same stock.
-    Article.objects.select_for_update().get(pk=article.pk)
-    current = quantity_of(article)
+    current = _lock_stock(article)
     if kind == MovementKind.ENTRY:
         delta = quantity
     elif kind == MovementKind.EXIT:
@@ -311,11 +477,62 @@ def record_movement(
         delta = -quantity
     else:
         delta = quantity - current
-    movement = Movement(
-        home=article.home, article=article, kind=kind, quantity=quantity, delta=delta, note=note
+    return _append(
+        article, kind=kind, quantity=quantity, delta=delta, occurred_on=occurred_on, note=note
     )
-    if occurred_on is not None:
-        movement.occurred_on = occurred_on
-    movement.full_clean()
-    movement.save()
-    return movement
+
+
+@transaction.atomic
+def draw_for_task(
+    actor: AnyUser,
+    article: Article,
+    wanted: Decimal,
+    *,
+    occurrence: "Occurrence",
+    occurred_on: datetime.date | None = None,
+) -> Decimal:
+    """Take up to `wanted` of the article for a task that is done; return what was taken.
+
+    The one place where an exit is not refused for lack of stock (docs/adr/0046): marking a
+    task done is never blocked, so the stock goes down to zero and the caller says how much
+    is missing. Locks the article like `record_movement`.
+    """
+    _require_write(actor, article.home)
+    if wanted <= _ZERO:
+        return _ZERO
+    available = _lock_stock(article)
+    taken = min(wanted, max(available, _ZERO))
+    if taken > _ZERO:
+        _append(
+            article,
+            kind=MovementKind.EXIT,
+            quantity=taken,
+            delta=-taken,
+            occurred_on=occurred_on,
+            occurrence=occurrence,
+        )
+    return taken
+
+
+@transaction.atomic
+def give_back_for_task(
+    actor: AnyUser,
+    article: Article,
+    quantity: Decimal,
+    *,
+    occurrence: "Occurrence",
+    occurred_on: datetime.date | None = None,
+) -> None:
+    """Put back what a task took (it was undone, or less was used): an entry, never an erasure."""
+    _require_write(actor, article.home)
+    if quantity <= _ZERO:
+        return
+    _lock_stock(article)
+    _append(
+        article,
+        kind=MovementKind.ENTRY,
+        quantity=quantity,
+        delta=quantity,
+        occurred_on=occurred_on,
+        occurrence=occurrence,
+    )

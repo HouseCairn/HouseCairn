@@ -38,6 +38,7 @@ dependencies = [
   "pillow>=12",
   "markdown-it-py>=4",
   "apprise>=2.1",
+  "icalendar>=7.3,<8",
   "reportlab>=5.1",
 ]
 
@@ -116,6 +117,7 @@ module = [
   "allauth.*",
   "django_q.*",
   "environ.*",
+  "gunicorn.*",
   "csp.*",
   "drf_spectacular.*",
   "drf_spectacular_sidecar.*",

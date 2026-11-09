@@ -16,7 +16,8 @@ from django.db import models
 
 from housecairn.homes import exports
 from housecairn.homes.models import Home
-from housecairn.tasks.models import Attachment, Contractor, Occurrence, Task
+from housecairn.tasks import materials
+from housecairn.tasks.models import Attachment, Contractor, MaterialDraw, Occurrence, Task
 from housecairn.tasks.storage import attachment_storage
 
 
@@ -62,6 +63,36 @@ def _tasks(home: Home) -> list[dict[str, Any]]:
             "created_at": t.created_at.isoformat(),
         }
         for t in rows
+    ]
+
+
+def _materials(home: Home) -> list[dict[str, Any]]:
+    return [
+        {
+            "id": str(m.id),
+            "task": str(m.task_id),
+            "article": str(m.article_id),
+            "quantity": str(m.quantity),
+            "created_at": m.created_at.isoformat(),
+        }
+        for m in materials.materials_of_home(home).order_by("created_at", "id")
+    ]
+
+
+def _draws(home: Home) -> list[dict[str, Any]]:
+    rows = MaterialDraw.objects.filter(
+        home=home, occurrence__task__deleted_at__isnull=True, article__deleted_at__isnull=True
+    ).order_by("created_at", "id")
+    return [
+        {
+            "id": str(d.id),
+            "occurrence": str(d.occurrence_id),
+            "article": str(d.article_id),
+            "wanted": str(d.wanted),
+            "drawn": str(d.drawn),
+            "created_at": d.created_at.isoformat(),
+        }
+        for d in rows
     ]
 
 
@@ -139,6 +170,8 @@ def _files(home: Home) -> Iterator[exports.ExportedFile]:
 def register() -> None:
     exports.register("contractors", _contractors)
     exports.register("tasks", _tasks)
+    exports.register("task_materials", _materials)
     exports.register("occurrences", _occurrences)
+    exports.register("stock_draws", _draws)
     exports.register("attachments", _attachments)
     exports.register_files(_files)

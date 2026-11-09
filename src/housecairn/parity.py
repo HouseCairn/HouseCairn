@@ -75,6 +75,8 @@ PARITY: dict[str, tuple[str, ...]] = {
     "tasks:detail": ("api-v1:home-task-detail", "api-v1:home-occurrence-list"),
     "tasks:edit": ("api-v1:home-task-detail",),
     "tasks:delete": ("api-v1:home-task-detail",),
+    "tasks:material-save": ("api-v1:home-task-material-list", "api-v1:home-task-material-detail"),
+    "tasks:material-remove": ("api-v1:home-task-material-detail",),
     "tasks:contractors": ("api-v1:home-contractor-list",),
     "tasks:contractor-create": ("api-v1:home-contractor-list",),
     "tasks:contractor-detail": ("api-v1:home-contractor-detail", "api-v1:home-task-list"),
@@ -151,6 +153,13 @@ PARITY: dict[str, tuple[str, ...]] = {
     "projects:file": ("api-v1:home-project-file-content",),
     "projects:file-thumbnail": ("api-v1:home-project-file-thumbnail",),
     "projects:file-delete": ("api-v1:home-project-file-detail",),
+    # The budget of a home and of all of them (docs/adr/0051). The entry page adds the homes
+    # up by currency.
+    "budget": ("api-v1:budget-combined",),
+    "budget:overview": ("api-v1:home-budget",),
+    "budget:rooms": ("api-v1:home-budget-rooms",),
+    "budget:projects": ("api-v1:home-budget-projects",),
+    "budget:tasks": ("api-v1:home-budget-tasks",),
     "notifications:index": ("api-v1:notification-channel-list", "api-v1:notification-preferences"),
     "notifications:add": ("api-v1:notification-channel-list",),
     "notifications:channel": ("api-v1:notification-channel-detail",),
@@ -158,6 +167,15 @@ PARITY: dict[str, tuple[str, ...]] = {
     "notifications:delete": ("api-v1:notification-channel-detail",),
     "notifications:preferences": ("api-v1:notification-preferences",),
     "notifications:export": ("api-v1:notification-export",),
+    # Calendar and its feeds (docs/adr/0052). The feed itself is a document for a calendar
+    # application, at a secret address (see EXEMPT).
+    "calendar:index": ("api-v1:calendar",),
+    "calendar:week": ("api-v1:calendar",),
+    "calendar:month": ("api-v1:calendar",),
+    "calendar:year": ("api-v1:calendar",),
+    "calendar:feeds": ("api-v1:calendar-feed-list",),
+    "calendar:regenerate": ("api-v1:calendar-feed-regenerate",),
+    "calendar:revoke": ("api-v1:calendar-feed-detail",),
     "tasks:attachment-add": ("api-v1:home-attachment-list",),
     "tasks:attachment": ("api-v1:home-attachment-content",),
     "tasks:attachment-thumbnail": ("api-v1:home-attachment-thumbnail",),
@@ -173,6 +191,7 @@ EXEMPT: dict[str, str] = {
     "manifest": "web app manifest read by browsers",
     "more": "navigation page that links to other screens",
     "about": "static information page",
+    "calendar:feed": "iCalendar document read by a calendar application, at a secret address",
 }
 
 # Third-party route trees: sign-in, administration. Their functions are either

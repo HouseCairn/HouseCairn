@@ -1,0 +1,89 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "The budget answers \"how much, where, and are we within it\" for the year, from what you already enter: the budget lines and quotes of [projects](projects.md), and the estimate and real cost of [tasks](tasks-and-recurrence.md). Nothing new is typed for it, and nothing is stored: the figures are worked out each time you open a page. Open **Tasks**, then **Budget**. Typing an amount is explained in [Entering an amount](amounts.md)."
+msgstr "Le budget répond à « combien, où, et sommes-nous dans les clous » pour l'année, à partir de ce que vous saisissez déjà : les lignes de budget et les devis des [projets](projects.md), et l'estimation et le coût réel des [tâches](tasks-and-recurrence.md). Rien de nouveau à saisir, et rien n'est stocké : les chiffres sont calculés à chaque ouverture d'une page. Ouvrez **Tâches**, puis **Budget**. La saisie d'un montant est expliquée dans [Saisir un montant](amounts.md)."
+
+msgid "What you enter"
+msgstr "Ce que vous saisissez"
+
+msgid "On a **task**, a labour budget and a material budget: what it costs each time. They are in the form of the task, under **Time and budget**."
+msgstr "Sur une **tâche**, un budget de main-d'œuvre et un budget de matériel : ce qu'elle coûte à chaque fois. Ils sont dans le formulaire de la tâche, sous **Durée et budget**."
+
+msgid "When the task is **done**, its real cost, in **Details** of what was done. The page of the task shows its **Cost**: the estimate, what it comes to in a year and what was paid so far."
+msgstr "Quand la tâche est **faite**, son coût réel, dans **Détails** de ce qui a été fait. La page de la tâche montre son **Coût** : l'estimation, ce que cela fait par an et ce qui a été payé jusqu'ici."
+
+msgid "On a **project**, budget lines with a planned and a paid amount, and quotes accepted on them."
+msgstr "Sur un **projet**, des lignes de budget avec un montant prévu et un montant payé, et les devis acceptés dessus."
+
+msgid "The money of a task that is in a project is the project's: its lines hold it, and the task is left out of the upkeep so that nothing is counted twice."
+msgstr "L'argent d'une tâche qui est dans un projet est celui du projet : ses lignes le portent, et la tâche est laissée hors de l'entretien pour que rien ne soit compté deux fois."
+
+msgid "Planned, committed, paid, used, gap"
+msgstr "Prévu, engagé, payé, consommé, écart"
+
+msgid "*Planned* is what you plan to spend. *Committed* is what accepted quotes promise. *Paid* is what was spent. *Used* is the more of committed and paid, line by line, and the *gap* is planned less used: **... left**, **On budget** or **Over budget by ...**. Rows also show the *Used* amount, then a gauge with its percentage; colour is never the only signal."
+msgstr "Le *prévu* est ce que vous comptez dépenser. L'*engagé* est ce que promettent les devis acceptés. Le *payé* est ce qui a été dépensé. Le *consommé* est le plus grand de l'engagé et du payé, ligne par ligne, et l'*écart* est le prévu moins le consommé : **... restants**, **Budget respecté** ou **Budget dépassé de ...**. Les lignes montrent aussi le montant *consommé*, puis une jauge avec son pourcentage ; la couleur n'est jamais le seul signal."
+
+msgid "Example: painting the living room"
+msgstr "Exemple : peindre le salon"
+
+msgid "A project \"Paint the living room\" has two lines, paint 300 and labour 500, so 800 planned. You ask two painters; you accept the one at 620 on the labour line, and you pay 350 for the paint. Used is 350 + 620 = 970 and the gap is 800 - 970 = -170: **Over budget by 170.00 EUR**, on the budget of the room, on the project and in the totals of the year. A task of upkeep in the same room, \"Wash the walls\", estimated at 50 and done for 80, adds a gap of -30 to the room and shows in the upkeep, so the room reads 850 planned and 1050 used, -200."
+msgstr "Un projet « Peinture du salon » a deux lignes, peinture 300 et main-d'œuvre 500, soit 800 prévus. Vous consultez deux peintres ; vous acceptez celui à 620 sur la ligne de main-d'œuvre, et vous payez 350 de peinture. Le consommé est 350 + 620 = 970 et l'écart est 800 - 970 = -170 : **Budget dépassé de 170,00 EUR**, sur le budget de la pièce, sur le projet et dans les totaux de l'année. Une tâche d'entretien dans la même pièce, « Laver les murs », estimée à 50 et faite pour 80, ajoute un écart de -30 à la pièce et apparaît dans l'entretien : la pièce lit donc 850 prévus et 1050 consommés, soit -200."
+
+msgid "By room, by project, by task"
+msgstr "Par pièce, par projet, par tâche"
+
+msgid "**By room**: projects (shared evenly between the rooms they name, in whole cents) and the upkeep of the room's tasks."
+msgstr "**Par pièce** : les projets (répartis également entre les pièces qu'ils nomment, en centimes entiers) et l'entretien des tâches de la pièce."
+
+msgid "**By project**: each project once, in **the year it starts**, whole, even if the work runs into the next year. A year is chosen by the earliest date of its tasks and accepted quotes; with none, the year it was created. An abandoned project plans nothing any more; what was paid on it shows as spent without a plan."
+msgstr "**Par projet** : chaque projet une fois, **dans l'année où il commence**, en entier, même si le chantier se poursuit l'année suivante. L'année est celle de la première date de ses tâches et de ses devis acceptés ; sans date, l'année de sa création. Un projet abandonné ne prévoit plus rien ; ce qui a été payé dessus apparaît comme dépensé sans prévu."
+
+msgid "**By task**: the tasks that are in no project. The **cost a year** follows the repetition: a task every 3 years costs a third of its estimate a year, every 6 months twice, a weekly task 52 times, rounded once to the cent. A task that does not repeat has none, and a task that repeats by use, when there is one, will not be annualised either."
+msgstr "**Par tâche** : les tâches qui ne sont dans aucun projet. Le **coût par an** suit la répétition : une tâche tous les 3 ans coûte un tiers de son estimation par an, tous les 6 mois deux fois, une tâche hebdomadaire 52 fois, arrondi une seule fois au centime. Une tâche qui ne se répète pas n'en a pas, et une tâche qui se répète selon l'usage, quand il y en aura, ne sera pas annualisée non plus."
+
+msgid "For a year, **Planned** counts what the task did that year (each time done, at its estimate), the occurrence that is open, and the times its repetition will still bring before 31 December. A task every month at 25, read in February after a first time in January, plans 12 times 25 for the year, not only the two rows that exist. A year that is over counts only what happened: an occurrence still open that fell due in it counts in the current year, as the calendar shows it late. A year to come counts the whole repetition, however far it is, and a task that counts from the last time is followed from its open date, as the calendar does. The plan of a year can differ by one time from the cost a year, since a weekly task falls 52 or 53 times in a year and a daily one 365 or 366. Nothing is written: these times are worked out when you read the page."
+msgstr "Pour une année, le **prévu** compte ce que la tâche a fait cette année-là (chaque fois faite, à son estimation), l'occurrence ouverte, et les fois que sa répétition amènera encore avant le 31 décembre. Une tâche tous les mois à 25, lue en février après une première fois en janvier, prévoit 12 fois 25 pour l'année, et non les deux seules lignes qui existent. Une année révolue ne compte que ce qui s'est passé : une occurrence encore ouverte qui y était due compte dans l'année en cours, comme le calendrier la montre en retard. Une année à venir compte toute la répétition, si lointaine soit-elle, et une tâche qui compte à partir de la dernière fois est suivie depuis sa date ouverte, comme le fait le calendrier. Le prévu d'une année peut différer d'une fois du coût par an, car une tâche hebdomadaire tombe 52 ou 53 fois dans l'année et une tâche quotidienne 365 ou 366. Rien n'est écrit : ces fois sont calculées quand vous lisez la page."
+
+msgid "A task done with no cost typed counts at its estimate in the plan and as nothing paid, and is flagged, so that the gap does not look better than it is."
+msgstr "Une tâche faite sans coût saisi compte à son estimation dans le prévu et pour rien dans le payé, et elle est signalée, pour que l'écart ne paraisse pas meilleur qu'il n'est."
+
+msgid "The envelope, years and the last 12 months"
+msgstr "L'enveloppe, les années et les 12 derniers mois"
+
+msgid "The overview sets the envelope of a year against the projects counted in it and the upkeep of the year, and splits the year by nature (materials, labour, rental, other; the real cost of a task is shared between materials and labour as its estimate is, or counts under Other if it has no estimate). **By year** lists every year with a figure. **Last 12 months** is the upkeep done since the same day last year; payments on projects have no date and are not in it. The envelope is set from **Projects**."
+msgstr "La vue d'ensemble compare l'enveloppe d'une année aux projets comptés en cette année et à l'entretien de l'année, et découpe l'année par nature (matériel, main-d'œuvre, location, autre ; le coût réel d'une tâche est réparti entre matériel et main-d'œuvre comme son estimation, ou compte dans Autre s'il n'a pas d'estimation). **Par année** liste chaque année qui a un chiffre. **12 derniers mois** est l'entretien fait depuis le même jour l'an dernier ; les paiements des projets n'ont pas de date et n'y sont pas. L'enveloppe se fixe depuis **Projets**."
+
+msgid "Several homes and currencies"
+msgstr "Plusieurs logements et devises"
+
+msgid "**Budget** in the navigation adds your homes up by currency; amounts in different currencies are never converted. With one home it opens that home."
+msgstr "**Budget**, dans la navigation, additionne vos logements par devise ; les montants de devises différentes ne sont jamais convertis. Avec un seul logement, il ouvre celui-ci."
+
+msgid "Files and scripts"
+msgstr "Fichiers et scripts"
+
+msgid "Every page has **Download as CSV**: UTF-8, a comma, amounts with a dot. A text that would start a formula in a spreadsheet (`=`, `+`, `-`, `@`) is written with a leading quote so that it stays text. The same figures are in the [API](../api/index.md). Read-only members read everything; nothing here changes data."
+msgstr "Chaque page a **Télécharger en CSV** : UTF-8, une virgule, des montants avec un point. Un texte qui commencerait une formule dans un tableur (`=`, `+`, `-`, `@`) est écrit avec une apostrophe devant pour qu'il reste du texte. Les mêmes chiffres sont dans l'[API](../api/index.md). Les membres en lecture seule lisent tout ; rien ici ne modifie de données."
+

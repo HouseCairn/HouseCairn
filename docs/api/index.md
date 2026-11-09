@@ -100,8 +100,15 @@ web interface: every request only sees the homes of its user
   never changed or deleted. `compatible_items` takes item identifiers of the same home;
   `label` (multipart) sets the photo of the label and `GET .../articles/<id>/label/`
   returns it. Articles are filtered with `q` (name, manufacturer reference or supplier)
-  and `low=true`; suppliers and movements with `article`, movements also with `kind`. The
-  scopes are the same as for rooms.
+  and `low=true`, and `room` for those that concern a room; suppliers and movements with
+  `article`, movements also with `kind`. `unit` is a code of the list (`piece`, `litre`,
+  `metre`, `kilogram`, `roll`, `box`, `other`) with `unit_other` for `other`, and `rooms`
+  takes room identifiers of the same home. The materials of the tasks are
+  `.../task-materials/` (`task`, `article`, `quantity`; filtered by `task` and `article`),
+  also listed, read-only, in `materials` on a task
+  ([ADR 0046](../adr/0046-stock-linked-to-tasks-and-rooms.md)). Closing a task takes them
+  from the stock; a movement carries the `occurrence` that wrote it. The scopes are the
+  same as for rooms.
 - **Projects** of a home ([ADR 0050](../adr/0050-projects-quotes-and-budget-lines.md)):
   `/api/v1/homes/<home id>/projects/`, `.../budget-lines/`, `.../quotes/`,
   `.../project-files/`, `.../project-links/`, `.../project-tasks/` and `.../envelope/`. Only `title` is required
@@ -123,6 +130,17 @@ web interface: every request only sees the homes of its user
   `null`; a link is created, read or deleted, never changed. `GET` and `PUT .../envelope/` read and set the budget
   envelope of a `year`. Projects are filtered with `status`, `priority`, `season` and
   `room`, the other lists with `project`. The scopes are the same as for rooms.
+- **Budget** ([ADR 0051](../adr/0051-budget-views-and-annual-envelope.md)), figures only,
+  read-only (`GET`, the `read` scope): `/api/v1/homes/<home id>/budget/` (the envelope of a
+  year, then `by_nature`, `by_year` and the last 12 months as `rolling`),
+  `.../budget/rooms/`, `.../budget/projects/` and `.../budget/tasks/`, and `/api/v1/budget/`
+  for all your homes added up by currency, with no conversion. `?year=` picks the year (this
+  year by default; a year that is not one is a 400) and `?export=csv` answers with the same
+  figures as a file. Every amount is a string with two decimals; a row gives `planned`,
+  `committed`, `paid`, `engaged` (shown as *Used*: the more of committed and paid, line by
+  line), `gap` (negative when exceeded), `to_pay` and `budget_state`. `sure_budget` of the
+  envelope is always `null`. A home that is not yours, or that your token is not bound to, is
+  a 404.
 - **Notifications** of the caller
   ([ADR 0043](../adr/0043-notifications-through-apprise.md)):
   `/api/v1/me/notification-channels/` lists, adds (`name` and `url`, an Apprise address),
@@ -136,6 +154,17 @@ web interface: every request only sees the homes of its user
   scope reads them (any other token gets a 403); adding, renaming, deleting and testing a
   channel and changing the reminders are for the person signed in, and a token gets a 403
   there. Someone else's channel is a 404.
+- **Calendar** ([ADR 0052](../adr/0052-calendar-and-secret-ics-feeds.md)):
+  `GET /api/v1/calendar/?from=YYYY-MM-DD&to=YYYY-MM-DD` returns the occurrences of the
+  caller's homes (at most 400 days; `truncated` tells when the limit of 5 000 entries, or of 1 000 repeating
+  tasks, cut the answer, always on the farthest dates) with the filters `home`, `room`, `person` (an id, or `none`) and `priority`. Dates of a
+  task that repeats and has no occurrence yet are returned with `projected: true` and
+  `occurrence: null`. A token needs the `read` scope and only sees the homes it is bound to;
+  `can_complete` is false for a reader and for a token without the `write` scope. `/api/v1/me/calendar-feeds/` lists, creates (`home`, or
+  empty for all homes), regenerates (`POST .../<id>/regenerate/`) and deletes the caller's
+  [feeds](../guides/calendar.md); the secret `url` is in the answer that creates or regenerates a
+  feed and nowhere else. These endpoints are for a person signed in: **an API token of any
+  scope is refused**, since an address read with a token would outlive it.
 
 The [reference](reference.md) lists every operation. It is generated from the
 OpenAPI 3.1 schema of the code at each build of this site:
