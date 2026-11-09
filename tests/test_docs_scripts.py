@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts import check_docs_design, check_docs_site, check_docs_updated
+from scripts import build_docs, check_docs_design, check_docs_site, check_docs_updated
 
 # check_docs_updated: the documentation changes with the code
 
@@ -358,3 +358,15 @@ def test_pages_of_the_site(tmp_path: Path) -> None:
 
 def test_design_check_needs_a_site(tmp_path: Path) -> None:
     assert check_docs_design.main([str(tmp_path)]) == 2
+
+
+def test_catalogs_lose_their_creation_date(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The date changes at every run: two branches would conflict on it (docs/adr/0013)."""
+    catalog = tmp_path / "fr" / "LC_MESSAGES" / "guides" / "page.po"
+    catalog.parent.mkdir(parents=True)
+    header = 'msgid ""\nmsgstr ""\n"Language: fr\\n"\n'
+    dated = header.replace('"Language', '"POT-Creation-Date: 2026-11-07 19:43+0000\\n"\n"Language')
+    catalog.write_text(dated + '\nmsgid "A"\nmsgstr "B"\n', encoding="utf-8")
+    monkeypatch.setattr(build_docs, "LOCALE_DIR", tmp_path)
+    build_docs.drop_creation_dates("fr")
+    assert catalog.read_text(encoding="utf-8") == header + '\nmsgid "A"\nmsgstr "B"\n'
