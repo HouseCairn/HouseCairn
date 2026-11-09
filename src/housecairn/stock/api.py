@@ -27,7 +27,7 @@ from housecairn.rooms.api import (
 from housecairn.rooms.models import Item, Room
 from housecairn.stock import services
 from housecairn.stock.files import label_response
-from housecairn.stock.models import Article, Movement, MovementKind, Supplier
+from housecairn.stock.models import Article, Movement, MovementKind, Supplier, Unit
 
 QUERY = OpenApiParameter(
     "q", str, description="Only names, manufacturer references and suppliers containing this text."
@@ -69,6 +69,14 @@ class ArticleSerializer(serializers.ModelSerializer[Article]):
     low = serializers.SerializerMethodField(
         help_text="True when the quantity is at or below the threshold."
     )
+    unit = serializers.ChoiceField(
+        choices=[("", "none"), *Unit.choices],
+        required=False,
+        help_text="A unit of the list, or `other` with `unit_other` saying which.",
+    )
+    unit_label = serializers.CharField(
+        read_only=True, help_text="The unit as people read it, in the language of the request."
+    )
     compatible_items: serializers.PrimaryKeyRelatedField[Item] = serializers.PrimaryKeyRelatedField(
         many=True,
         required=False,
@@ -100,6 +108,8 @@ class ArticleSerializer(serializers.ModelSerializer[Article]):
             "dimensions",
             "storage_location",
             "unit",
+            "unit_other",
+            "unit_label",
             "threshold",
             "quantity",
             "low",

@@ -48,6 +48,7 @@ def _articles(home: Home) -> list[dict[str, Any]]:
             "dimensions": a.dimensions,
             "storage_location": a.storage_location,
             "unit": a.unit,
+            "unit_other": a.unit_other,
             "threshold": str(a.threshold) if a.threshold is not None else None,
             "quantity": str(a.quantity.quantize(CENT)),  # type: ignore[attr-defined]
             "compatible_items": [

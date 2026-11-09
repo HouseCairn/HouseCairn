@@ -496,7 +496,7 @@ class TestRealQuantity:
             "occurrence-edit", alice_home, task_id=needs_two.id, occurrence_id=owner_occurrence.id
         )
         page = signed_in.get(address)
-        assert "Used: Boiler filter (pieces)" in page.text
+        assert "Used: Boiler filter (piece)" in page.text
         response = signed_in.post(
             address,
             {

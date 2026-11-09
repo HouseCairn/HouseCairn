@@ -1,14 +1,30 @@
 """Stock on the pages of other apps: the room page shows the articles that concern it."""
 
+from decimal import Decimal
 from typing import Any
 
 from django import template
+from django.template.defaultfilters import floatformat
 
 from housecairn.rooms.models import Room
 from housecairn.stock import services
 from housecairn.stock.models import Article
 
 register = template.Library()
+
+
+@register.filter
+def amount(article: Article, quantity: Decimal) -> str:
+    """A quantity of the article with its unit: "2.5 litres", "1 box", "3"."""
+    number = floatformat(quantity, "-2")
+    unit = article.unit_for(quantity)
+    return f"{number} {unit}" if unit else number
+
+
+@register.filter
+def unit_after(article: Article, quantity: Decimal) -> str:
+    """The unit as it reads after the quantity, or nothing."""
+    return article.unit_for(quantity)
 
 
 @register.simple_tag

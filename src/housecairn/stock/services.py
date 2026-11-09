@@ -22,12 +22,13 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.core.text import without_control_characters
 from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms import conf, images
 from housecairn.rooms.models import Item, Room
-from housecairn.stock.models import Article, Movement, MovementKind, Supplier
+from housecairn.stock.models import Article, Movement, MovementKind, Supplier, Unit
 from housecairn.stock.storage import stock_storage
 
 if TYPE_CHECKING:
@@ -44,6 +45,7 @@ ARTICLE_FIELDS = frozenset(
         "dimensions",
         "storage_location",
         "unit",
+        "unit_other",
         "threshold",
         "notes",
     }
@@ -55,6 +57,15 @@ _ZERO = Decimal("0")
 def _require_write(actor: AnyUser, home: Home) -> None:
     if not home_services.can_write(actor, home):
         raise PermissionDenied
+
+
+def _tidy_unit(article: Article) -> None:
+    """The text of Other is one clean line, and only kept with the unit Other."""
+    article.unit_other = (
+        " ".join(without_control_characters(article.unit_other).split())
+        if article.unit == Unit.OTHER
+        else ""
+    )
 
 
 def _apply(instance: models.Model, allowed: frozenset[str], changes: dict[str, Any]) -> None:
@@ -269,6 +280,7 @@ def create_article(
     _require_write(actor, home)
     article = Article(home=home)
     _apply(article, ARTICLE_FIELDS, fields)
+    _tidy_unit(article)
     article.full_clean(exclude=["label"])
     items = _check_items(home, compatible_items)
     chosen_rooms = _check_rooms(home, rooms)
@@ -300,6 +312,7 @@ def update_article(
     """Change the article; `label` replaces the photo, `clear_label` removes it."""
     _require_write(actor, article.home)
     _apply(article, ARTICLE_FIELDS, changes)
+    _tidy_unit(article)
     article.full_clean(exclude=["label"])
     items = None if compatible_items is None else _check_items(article.home, compatible_items)
     chosen_rooms = None if rooms is None else _check_rooms(article.home, rooms)

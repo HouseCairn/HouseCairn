@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from housecairn.rooms.models import Item, Room
-from housecairn.stock.models import Article, MovementKind, Supplier
+from housecairn.stock.models import Article, MovementKind, Supplier, Unit
 
 
 class ItemChoiceField(forms.ModelMultipleChoiceField[Item]):
@@ -47,6 +47,7 @@ class ArticleForm(forms.ModelForm[Article]):
             "dimensions",
             "storage_location",
             "unit",
+            "unit_other",
             "threshold",
             "compatible_items",
             "rooms",
@@ -59,6 +60,9 @@ class ArticleForm(forms.ModelForm[Article]):
         field = self.fields["compatible_items"]
         assert isinstance(field, forms.ModelMultipleChoiceField)  # noqa: S101 - narrows the type
         field.queryset = items
+        unit = self.fields["unit"]
+        assert isinstance(unit, forms.ChoiceField)  # noqa: S101
+        unit.choices = [("", "—"), *Unit.choices]
         room_field = self.fields["rooms"]
         assert isinstance(room_field, forms.ModelMultipleChoiceField)  # noqa: S101
         room_field.queryset = rooms

@@ -25,7 +25,7 @@
         {% if room.paint_reference %}<div><dt>{% translate "Paint reference" %}</dt><dd>{{ room.paint_reference }}</dd></div>{% endif %}
         {% if room.paint_batch %}<div><dt>{% translate "Paint batch" %}</dt><dd>{{ room.paint_batch }}</dd></div>{% endif %}
         {% paint_article_of room as paint %}
-        {% if paint %}<div><dt>{% translate "Paint left in stock" %}</dt><dd><a href="{% url 'stock:detail' home_id=home.id article_id=paint.id %}">{{ paint.name }}</a> · {{ paint.quantity|floatformat:"-2" }}{% if paint.unit_label %} {{ paint.unit_label }}{% endif %}{% if paint.storage_location %} · {{ paint.storage_location }}{% endif %}</dd></div>{% endif %}
+        {% if paint %}<div><dt>{% translate "Paint left in stock" %}</dt><dd><a href="{% url 'stock:detail' home_id=home.id article_id=paint.id %}">{{ paint.name }}</a> · {{ paint|amount:paint.quantity }}{% if paint.storage_location %} · {{ paint.storage_location }}{% endif %}</dd></div>{% endif %}
         {% if room.floor_covering %}<div><dt>{% translate "Floor covering" %}</dt><dd>{{ room.floor_covering }}</dd></div>{% endif %}
         {% if room.wall_covering %}<div><dt>{% translate "Wall covering" %}</dt><dd>{{ room.wall_covering }}</dd></div>{% endif %}
         {% if room.memory_notes %}<div><dt>{% translate "Memory notes" %}</dt><dd class="prose">{{ room.memory_notes|linebreaksbr }}</dd></div>{% endif %}
@@ -49,7 +49,7 @@
           <a class="row" href="{% url 'stock:detail' home_id=home.id article_id=row.article.id %}">
             <span class="row-body">
               <span class="row-title">{{ row.article.name }}</span>
-              <span class="row-text">{{ row.article.quantity|floatformat:"-2" }}{% if row.article.unit_label %} {{ row.article.unit_label }}{% endif %}{% if row.article.storage_location %} · {{ row.article.storage_location }}{% endif %}{% if row.low %} <span class="pill pill-warning">{% translate "Low stock" %}</span>{% endif %}</span>
+              <span class="row-text">{{ row.article|amount:row.article.quantity }}{% if row.article.storage_location %} · {{ row.article.storage_location }}{% endif %}{% if row.low %} <span class="pill pill-warning">{% translate "Low stock" %}</span>{% endif %}</span>
             </span>
             {% include "components/icon.html" with name="chevron" class="chevron" %}
           </a>

@@ -1,4 +1,4 @@
-{% load i18n %}{# Stock items of a task. `materials`, `material_form`, `task`, `home`, `can_write`. #}
+{% load i18n stock_extras %}{# Stock items of a task. `materials`, `material_form`, `task`, `home`, `can_write`. #}
 {% if materials %}
   <ul class="card-list">
     {% for line in materials %}
@@ -6,7 +6,7 @@
         <span class="row-body">
           <a class="row-title" href="{% url 'stock:detail' home_id=home.id article_id=line.article_id %}">{{ line.article.name }}</a>
           <span class="row-text">
-            {% blocktranslate with needed=line.quantity|floatformat:"-2" unit=line.article.unit|default:"" count=line.stock_quantity|floatformat:"-2" %}needs {{ needed }} {{ unit }} · {{ count }} in stock{% endblocktranslate %}
+            {% blocktranslate with needed=line.article|amount:line.quantity stocked=line.article|amount:line.stock_quantity %}needs {{ needed }} · {{ stocked }} in stock{% endblocktranslate %}
             {% if line.stock_quantity < line.quantity %}<span class="pill pill-warning">{% translate "Not enough in stock" %}</span>{% endif %}
           </span>
         </span>
