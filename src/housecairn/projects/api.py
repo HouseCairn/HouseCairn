@@ -8,6 +8,7 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
+from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models, transaction
 from django.http.response import HttpResponseBase
@@ -27,6 +28,7 @@ from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
 from housecairn.core.pagination import DefaultCursorPagination
+from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.projects import services
 from housecairn.projects.files import file_response
@@ -531,6 +533,9 @@ class QuoteViewSet(
     def accept(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """Accept the quote: its amount is committed on the chosen budget line of its project."""
         quote = self.get_object()
+        # The role first, as in every other view: a reader gets a 403 whatever the body says.
+        if not home_services.can_write(request.user, quote.home):
+            raise PermissionDenied
         line_id = request.data.get("budget_line")
         wanted = _as_uuid(line_id)
         line = services.lines_of(self.get_home()).filter(pk=wanted).first() if wanted else None

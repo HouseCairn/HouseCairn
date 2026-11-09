@@ -661,6 +661,26 @@ class TestAccess:
             assert response.status_code == expected, (method, address, response.status_code)
         assert (Project.objects.count(), Quote.objects.count()) == (1, 1)
 
+    def test_a_reader_is_refused_before_the_body_is_looked_at(
+        self,
+        api_client: APIClient,
+        alice: User,
+        reader: User,
+        alice_home: Home,
+        quote: Quote,
+        labour_line: BudgetLine,
+    ) -> None:
+        api_client.force_authenticate(reader)
+        address = api("quote-accept", alice_home, quote_id=quote.id)
+        for body in ({}, {"budget_line": "not-an-id"}, {"budget_line": str(uuid.uuid4())}):
+            response = api_client.post(address, body, format="json")
+            assert response.status_code == 403, (body, response.status_code)
+        quote.refresh_from_db()
+        assert (quote.status, quote.budget_line_id) == ("received", None)
+        # A member who sends an empty body still learns what is missing.
+        api_client.force_authenticate(alice)
+        assert api_client.post(address, {}, format="json").status_code == 400
+
     @pytest.mark.parametrize("who", ["bob", "site_admin"])
     def test_another_home_and_the_instance_administrator_see_nothing(
         self,
