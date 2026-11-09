@@ -105,6 +105,9 @@ msgstr "Toutes"
 msgid "This file is too large."
 msgstr "Ce fichier est trop volumineux."
 
+msgid "Problem reported"
+msgstr "Problème signalé"
+
 msgid "Thank you: the problem is reported."
 msgstr "Merci : le problème est signalé."
 
