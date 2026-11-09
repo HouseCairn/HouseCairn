@@ -158,6 +158,13 @@
   transform: scaleX(-1);
 }
 
+/* A link back to More: on a computer the column shows More unfolded (design guide). */
+@media (min-width: 56rem) {
+  .back-link[data-phone-only] {
+    display: none;
+  }
+}
+
 /* ---------- badges ---------- */
 
 .pill {

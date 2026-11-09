@@ -1,0 +1,1 @@
+{# The back link of a page (core/templatetags/navigation.py). `link` has url, label and route; `phone_only` hides it from 56 rem, where the column already leads there. #}<a class="back-link" href="{{ link.url }}"{% if phone_only %} data-phone-only{% endif %}>{% include "components/icon.html" with name="chevron" %}{{ link.label }}</a>
