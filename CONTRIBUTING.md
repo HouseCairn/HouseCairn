@@ -171,10 +171,10 @@ translation ([ADR 0016](docs/adr/0016-documentation-site.md)).
 configure updates the documentation in the same pull request: a page of the
 screen reference for a new or changed screen, the environment variables page
 for a setting, and so on. The `Documentation updated` check fails a pull
-request that adds or changes a view, a template, a URL route, a setting or an
-API serializer without changing anything under `docs/`. If no page is
-concerned (a refactoring, an internal change), ask the maintainer to add the
-`no-docs-needed` label: the check then passes. Dependabot pull requests and
+request that adds or changes a view, a template, a form, a URL route, a static
+file, a setting or an API module without changing anything under `docs/`. If
+no page is concerned (a refactoring, an internal change), ask the maintainer to
+add the `no-docs-needed` label: the check then passes. Dependabot pull requests and
 pull requests that only change tests, workflows or documentation are never
 concerned.
 

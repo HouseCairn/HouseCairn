@@ -2,11 +2,12 @@
 
 The documentation changes with the code (docs/adr/0016, CONTRIBUTING.md). A pull
 request is concerned when it changes a view, a URL route, a template, a form, a
-serializer, an API module, the settings or the example deployment files
-(`USER_FACING`). It then must change at least one file under `docs/`, or carry
-the `no-docs-needed` label, which only the maintainer can add (triage
-permission or more). Pull requests opened by Dependabot (`PR_AUTHOR`) are exempt:
-they bump the image of `compose.yaml`, which changes no screen and no setting.
+serializer, an API module, a static file, the in-app help links, the settings or
+the example deployment files (`USER_FACING`). It then must change at least one
+file under `docs/`, or carry the `no-docs-needed` label, which only the
+maintainer can add (triage permission or more). Pull requests opened by
+Dependabot (`PR_AUTHOR`) are exempt: they bump the image of `compose.yaml`,
+which changes no screen and no setting.
 
 Pull requests that change nothing user-facing pass: tests, workflows, scripts,
 dependencies, documentation itself.
@@ -26,11 +27,17 @@ LABEL = "no-docs-needed"
 # only this one account: no other bot is exempted.
 EXEMPT_AUTHOR = "dependabot[bot]"
 DOCS_PREFIX = "docs/"
-# Files whose change is visible to users or administrators.
+# Files whose change is visible to users or administrators. A module may carry a
+# prefix (`api_urls.py`, `contractor_views.py`), and forms, views and API modules
+# may be split into packages (`tasks/forms/`). Static files are what the browser
+# loads, and `core/help.py` holds the in-app help links to the documentation.
 USER_FACING = re.compile(
     r"""^(
-        src/housecairn/(?:[^/]+/)?(?:views|urls|forms|api|serializers|schema)\.py
-      | src/housecairn/(?:api_urls|settings)\.py
+        src/housecairn/(?:[^/]+/)?(?:[^/]+_)?(?:views|urls|forms|api|serializers|schema)\.py
+      | src/housecairn/[^/]+/(?:forms|views|api)/[^/]+\.py
+      | src/housecairn/settings\.py
+      | src/housecairn/core/help\.py
+      | src/housecairn/static/.+
       | src/housecairn/templates/.+\.html
       | compose\.yaml
       | deploy/[^/]+\.example

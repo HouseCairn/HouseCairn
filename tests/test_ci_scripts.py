@@ -11,7 +11,13 @@ from typing import ClassVar
 
 import pytest
 
-from scripts import check_external_urls, check_pr_title, check_signoff, merge_queue
+from scripts import (
+    check_docs_updated,
+    check_external_urls,
+    check_pr_title,
+    check_signoff,
+    merge_queue,
+)
 
 # Pull request titles
 
@@ -556,3 +562,38 @@ def test_grype_is_downloaded_through_the_api_then_checked() -> None:
     assert "github.com/anchore/grype/releases/download" not in step
     assert "|| true" not in step
     assert "continue-on-error" not in step
+
+
+# Documentation updated (scripts/check_docs_updated.py): user-facing files that
+# the first pattern let through without documentation
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        # Prefixed route and view modules.
+        "src/housecairn/calendar/api_urls.py",
+        "src/housecairn/notifications/api_urls.py",
+        "src/housecairn/tasks/contractor_views.py",
+        # Forms, views and API split into packages.
+        "src/housecairn/tasks/forms/task.py",
+        "src/housecairn/tasks/forms/__init__.py",
+        "src/housecairn/homes/views/members.py",
+        "src/housecairn/tasks/api/occurrences.py",
+        # What the browser loads, and the in-app help links.
+        "src/housecairn/static/css/app.css",
+        "src/housecairn/static/js/calendar.js",
+        "src/housecairn/core/help.py",
+    ],
+)
+def test_more_user_facing_files_need_docs(path: str) -> None:
+    # Internal modules next to them still pass without documentation.
+    internal = [
+        "src/housecairn/tasks/services.py",
+        "src/housecairn/tasks/migrations/0006_task_notes.py",
+        "src/housecairn/core/translations.py",
+        "tests/test_tasks_api.py",
+    ]
+    assert check_docs_updated.user_facing([path, *internal]) == [path]
+    assert check_docs_updated.problems([path], []) != []
+    assert check_docs_updated.problems([path, "docs/screens/home.md"], []) == []

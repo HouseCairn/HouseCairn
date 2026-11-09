@@ -240,11 +240,13 @@ list (ADR 0014).
 `CONTRIBUTING.md` and the pull request template state the rule. The check is the
 job **`Documentation updated`** of `docs-updated.yml`, which runs
 `scripts/check_docs_updated.py`: a pull request that changes a view, a URL
-route, a form, a serializer, an API module, a template, the settings or the
-example deployment files (`compose.yaml`, `deploy/*.example`, `.env.example`)
-and changes nothing under `docs/` fails. The escape hatch is the label
-`no-docs-needed`, added by the maintainer (the workflow also runs when a label
-is added or removed). The rule only looks at file paths, which is the simplest
+route, a form, a serializer, an API module, a template, a static file, the
+in-app help links (`core/help.py`), the settings or the example deployment
+files (`compose.yaml`, `deploy/*.example`, `.env.example`) and changes nothing
+under `docs/` fails. A module counts with a prefix (`api_urls.py`,
+`contractor_views.py`) and inside a package (`tasks/forms/`, `tasks/api/`).
+The escape hatch is the label `no-docs-needed`, added by the maintainer (the
+workflow also runs when a label is added or removed). The rule only looks at file paths, which is the simplest
 mechanism that does not need to understand the change; Dependabot's
 own pull requests are exempt (author `dependabot[bot]`, read from the pull
 request author by the workflow, never from a label or a branch name): they bump
