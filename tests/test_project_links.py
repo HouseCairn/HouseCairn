@@ -211,6 +211,50 @@ class TestHostilePages:
         info = preview.parse(body, "utf-8", "http://example.com/")
         assert len(info.title) <= 200
 
+    @pytest.mark.parametrize("charset", ["idna", "undefined", "rot13", "no-such-charset", "zlib"])
+    def test_a_charset_that_cannot_decode_text_never_raises(self, charset: str) -> None:
+        # The charset is the remote server's word: `idna` and `undefined` raise a
+        # UnicodeError even with errors="replace", `rot13` and `zlib` are no text encoding.
+        body = b"<head><title>Plain</title>"
+        assert preview.parse(body, charset, "http://example.com/").title == "Plain"
+
+    @pytest.mark.parametrize("charset", ["idna", "undefined"])
+    def test_a_hostile_charset_keeps_the_link_on_the_web(
+        self,
+        signed_in: Client,
+        alice_home: Home,
+        living_room_project: Project,
+        site: Server,
+        enabled: None,
+        charset: str,
+    ) -> None:
+        site.serve("/page", 200, page(), f"text/html; charset={charset}")
+        site.serve("/cover.jpg", 200, image_bytes(), "image/jpeg")
+        add = link_url("link-add", alice_home, project_id=living_room_project.id)
+        response = signed_in.post(add, {"url": site.url("/page"), "title": ""})
+        assert response.status_code == 302
+        assert ProjectLink.objects.get().url == site.url("/page")
+
+    @pytest.mark.parametrize("charset", ["idna", "undefined"])
+    def test_a_hostile_charset_keeps_the_link_in_the_api(
+        self,
+        api_client: APIClient,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+        site: Server,
+        enabled: None,
+        charset: str,
+    ) -> None:
+        site.serve("/page", 200, page(), f"text/html; charset={charset}")
+        site.serve("/cover.jpg", 200, image_bytes(), "image/jpeg")
+        api_client.force_authenticate(alice)
+        base = reverse("api-v1:home-project-link-list", kwargs={"home_id": alice_home.id})
+        sent = {"project": str(living_room_project.id), "url": site.url("/page")}
+        created = api_client.post(base, sent, format="json")
+        assert created.status_code == 201, created.content
+        assert ProjectLink.objects.get().url == site.url("/page")
+
     def test_a_hostile_picture_address_is_ignored(self) -> None:
         for address in ("javascript:alert(1)", "data:image/png;base64,AAAA", "x" * 5000, "a b"):
             body = f'<head><meta property="og:image" content="{address}">'.encode()

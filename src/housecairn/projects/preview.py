@@ -90,7 +90,10 @@ def parse(body: bytes, charset: str | None, base_url: str) -> PageInfo:
     """The Open Graph title and picture of a page, else its `<title>`; never raises."""
     try:
         text = body.decode(charset or "utf-8", errors="replace")
-    except LookupError:
+    except Exception:
+        # The charset is the remote server's word: an unknown one (LookupError), one that is
+        # no text encoding or that cannot take `errors="replace"` (`idna`, `undefined`:
+        # UnicodeError) all fall back to UTF-8.
         text = body.decode("utf-8", errors="replace")
     reader = _HeadReader()
     try:
