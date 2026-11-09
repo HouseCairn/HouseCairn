@@ -49,6 +49,14 @@ def invite(owner: User, home: Home, email: str = "new@example.com", role: str = 
     return raw
 
 
+def verified(user: User, email: str | None = None) -> User:
+    """The account with its address verified, as after a confirmation link."""
+    EmailAddress.objects.update_or_create(
+        user=user, email=email or user.email, defaults={"verified": True, "primary": True}
+    )
+    return user
+
+
 def link(raw: str) -> str:
     return reverse("invitation", kwargs={"token": raw})
 
@@ -78,7 +86,7 @@ class TestRules:
         self, alice: User, alice_home: Home, make_user: Callable[..., User]
     ) -> None:
         raw = invite(alice, alice_home, role="read_only")
-        new = make_user("New@example.com")
+        new = verified(make_user("New@example.com"))
         membership = services.accept_invitation(new, raw)
         assert membership.role == Role.READ_ONLY
         assert services.find_invitation(raw) is None
@@ -211,7 +219,8 @@ class TestWebAcceptance:
     ) -> None:
         raw = invite(alice, alice_home, "carol@example.com")
         carol = make_user("carol@example.com")
-        services.accept_invitation(carol, raw)
+        with pytest.raises(PermissionDenied, match="Verify this address"):
+            services.accept_invitation(carol, raw)
         assert not EmailAddress.objects.filter(user=carol, verified=True).exists()
 
     def test_weak_password_is_refused(self, client: Client, alice: User, alice_home: Home) -> None:
@@ -260,7 +269,7 @@ class TestWebAcceptance:
         elif case == "unknown":
             raw = "hci_" + "x" * 43
         else:
-            services.accept_invitation(make_user("new@example.com"), raw)
+            services.accept_invitation(verified(make_user("new@example.com")), raw)
         response = client.get(link(raw))
         assert response.status_code == 404
         assert "does not work" in response.text
@@ -452,7 +461,7 @@ class TestApi:
         listed = api_client.get(url).json()["results"]
         assert [i["email"] for i in listed] == ["new@example.com"]
         assert listed[0]["link"] is None
-        api_client.force_authenticate(make_user("new@example.com"))
+        api_client.force_authenticate(verified(make_user("new@example.com")))
         accept = reverse("api-v1:invitation-accept")
         response = api_client.post(accept, {"token": raw})
         assert response.status_code == 200
@@ -651,3 +660,88 @@ class TestOnePendingInvitation:
         invite(alice, alice_home, "new@example.com")
         services.revoke_invitation(alice, Invitation.objects.get())
         assert services.find_invitation(invite(alice, alice_home, "new@example.com")) is not None
+
+
+class TestVerifiedAddress:
+    """A link handed over by hand needs an address the account verified (docs/adr/0020)."""
+
+    @override_settings(**EMAIL)
+    def test_email_change_then_accept(
+        self, client: Client, alice: User, bob: User, alice_home: Home
+    ) -> None:
+        # The audit's scenario: the link is handed over, someone else declares the address.
+        raw = invite(alice, alice_home, "ivy@example.com")
+        client.force_login(bob)
+        client.post(reverse("account_email"), {"action_add": "", "email": "ivy@example.com"})
+        assert EmailAddress.objects.filter(
+            user=bob, email="ivy@example.com", verified=False
+        ).exists()
+        refused = client.post(
+            reverse("account_email"),
+            {"action_primary": "", "email": "ivy@example.com"},
+            follow=True,
+        )
+        assert "must be verified" in refused.text
+        bob.refresh_from_db()
+        assert bob.email == "bob@example.com"
+        assert not EmailAddress.objects.get(user=bob, email="ivy@example.com").primary
+        client.post(link(raw))
+        assert services.role_of(bob, alice_home) is None
+        assert services.find_invitation(raw) is not None
+
+    @override_settings(**EMAIL)
+    def test_the_page_says_to_verify_the_address_then_the_link_works(
+        self, client: Client, alice: User, alice_home: Home, make_user: Callable[..., User]
+    ) -> None:
+        raw = invite(alice, alice_home, "Ivy@Example.com")
+        ivy = make_user("ivy@example.com")
+        client.force_login(ivy)
+        page = client.get(link(raw))
+        assert "Join the home" not in page.text
+        assert "Verify this address in your account first" in page.text
+        assert f'href="{reverse("account_email")}"' in page.text
+        post = client.post(link(raw))
+        assert "Verify this address in your account first" in post.text
+        assert services.role_of(ivy, alice_home) is None
+        assert not EmailAddress.objects.filter(user=ivy, verified=True).exists()
+        # Verified (case ignored), the same link works.
+        verified(ivy)
+        assert "Join the home" in client.get(link(raw)).text
+        client.post(link(raw))
+        assert services.role_of(ivy, alice_home) == Role.MEMBER
+
+    def test_without_email_the_page_says_the_address_cannot_be_verified_here(
+        self, client: Client, alice: User, alice_home: Home, make_user: Callable[..., User]
+    ) -> None:
+        raw = invite(alice, alice_home, "ivy@example.com")
+        ivy = make_user("ivy@example.com")
+        client.force_login(ivy)
+        page = client.post(link(raw))
+        assert "Join the home" not in page.text
+        assert "cannot send email to verify it" in page.text
+        assert reverse("account_email") not in page.text
+        assert services.role_of(ivy, alice_home) is None
+
+    def test_an_address_verified_by_another_account_does_not_count(
+        self, alice: User, alice_home: Home, make_user: Callable[..., User]
+    ) -> None:
+        raw = invite(alice, alice_home, "ivy@example.com")
+        ivy = make_user("ivy@example.com")
+        other = make_user("other@example.com")
+        EmailAddress.objects.create(user=other, email="ivy@example.com", verified=True)
+        with pytest.raises(PermissionDenied, match="Verify this address"):
+            services.accept_invitation(ivy, raw)
+        assert services.role_of(ivy, alice_home) is None
+        assert services.role_of(other, alice_home) is None
+
+    def test_the_api_says_to_verify_the_address(
+        self, api_client: APIClient, alice: User, alice_home: Home, make_user: Callable[..., User]
+    ) -> None:
+        raw = invite(alice, alice_home, "ivy@example.com")
+        ivy = make_user("ivy@example.com")
+        api_client.force_authenticate(ivy)
+        response = api_client.post(reverse("api-v1:invitation-accept"), {"token": raw})
+        assert response.status_code == 403
+        assert "Verify this address in your account first" in response.json()["detail"]
+        assert services.role_of(ivy, alice_home) is None
+        assert services.find_invitation(raw) is not None

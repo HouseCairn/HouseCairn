@@ -681,6 +681,9 @@ msgstr "Cette invitation a déjà été acceptée ou révoquée."
 msgid "This invitation is for another email address."
 msgstr "Cette invitation est destinée à une autre adresse e-mail."
 
+msgid "Verify this address in your account first, then open the link again."
+msgstr "Vérifiez d'abord cette adresse dans votre compte, puis rouvrez le lien."
+
 msgid "This link was not sent by email: it cannot create an account."
 msgstr "Ce lien n'a pas été envoyé par e-mail : il ne peut pas créer de compte."
 
@@ -3205,6 +3208,17 @@ msgstr "Rejoindre %(home)s"
 #, python-format
 msgid "You are invited as %(role)s, with the address %(email)s."
 msgstr "Vous êtes invité avec le rôle %(role)s, à l'adresse %(email)s."
+
+#, python-format
+msgid "This link was handed over, not sent by email, so it does not prove that %(email)s is yours. Verify this address in your account first, then open the link again."
+msgstr "Ce lien vous a été remis, et non envoyé par e-mail : il ne prouve donc pas que l'adresse %(email)s est la vôtre. Vérifiez d'abord cette adresse dans votre compte, puis rouvrez le lien."
+
+msgid "Verify the address"
+msgstr "Vérifier l'adresse"
+
+#, python-format
+msgid "This link was handed over, not sent by email, so it does not prove that %(email)s is yours, and this instance cannot send email to verify it. Ask the administrator of this instance."
+msgstr "Ce lien vous a été remis, et non envoyé par e-mail : il ne prouve donc pas que l'adresse %(email)s est la vôtre, et cette instance ne peut pas envoyer d'e-mail pour la vérifier. Demandez à l'administrateur de cette instance."
 
 msgid "Join the home"
 msgstr "Rejoindre le logement"
