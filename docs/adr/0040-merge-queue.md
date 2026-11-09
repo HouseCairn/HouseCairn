@@ -74,6 +74,13 @@ tests every entry on the latest `main`.
 - Every merge runs the required checks twice, once on the pull request and once
   on its entry: about three more minutes of waiting per entry (the longest
   jobs, the two image builds), on the free runners of a public repository.
+- The commit that lands on `main` is the commit of its queue entry (same SHA,
+  so same tree), already tested by `ci.yml` on `merge_group`. `ci.yml`
+  therefore no longer runs on `push` to `main` (amendment of 2026-11-09): that
+  third run tested the same commit again. The workflows that must run on
+  `main` keep their `push` trigger: `image.yml` (publication), `docs.yml`
+  (publication), `zizmor.yml` (code scanning upload) and `scorecard.yml`. The
+  CI badge of the README shows the merge queue runs.
 - Push nothing to a queued pull request: remove it from the queue first. The
   checks that read the pull request read its head when they run, and a push
   while it is queued is not a case this design relies on.

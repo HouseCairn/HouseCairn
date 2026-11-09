@@ -1,14 +1,17 @@
 # Lint, types, tests and Django checks (docs/adr/0014), on every pull request
 # and merge queue entry (docs/adr/0040). Job names are the status checks
 # required on `main`: rename them only together with the ruleset.
+#
+# No run on `push` to `main`: every commit of `main` is the commit of a merge
+# queue entry, already tested here on `merge_group` (same SHA, same tree), so a
+# third run would test it again (docs/adr/0040). What must run on `main`
+# (image and documentation publication, code scanning) has its own workflow.
 name: CI
 
 on:
   pull_request:
   merge_group:
     types: [checks_requested]
-  push:
-    branches: [main]
 
 permissions:
   contents: read

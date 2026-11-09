@@ -658,6 +658,14 @@ def test_a_wait_loop_ends_with_a_check_that_fails() -> None:
 # CI runs: tests in parallel, no third run on `main`
 
 
+def test_ci_does_not_run_again_on_main() -> None:
+    workflow = yaml.safe_load((WORKFLOWS / "ci.yml").read_text(encoding="utf-8"))
+    # PyYAML reads the `on:` key as the boolean True.
+    triggers = workflow[True]
+    assert set(triggers) == {"pull_request", "merge_group"}
+    assert triggers["merge_group"] == {"types": ["checks_requested"]}
+
+
 @pytest.mark.parametrize(
     ("job", "step"),
     [
@@ -671,3 +679,13 @@ def test_ci_tests_run_in_parallel_with_the_coverage_threshold(job: str, step: st
     assert " -n auto " in run
     assert "--cov=housecairn" in run
     assert "--cov-fail-under=85" in run
+
+
+def test_gettext_lists_are_refreshed_only_when_the_install_fails() -> None:
+    action = WORKFLOWS.parent / "actions" / "compile-messages" / "action.yml"
+    steps = yaml.safe_load(action.read_text(encoding="utf-8"))["runs"]["steps"]
+    script = next(s["run"] for s in steps if s["name"] == "Install GNU gettext")
+    assert "if ! command -v msgfmt" in script
+    first_install = script.index('"${apt[@]}" "${install[@]}"')
+    assert script.index("update -q") > first_install
+    assert "msgfmt --version" in script
