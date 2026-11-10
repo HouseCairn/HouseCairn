@@ -3,7 +3,9 @@
 - `{% back_link default %}` or `{% back_link default label %}`: the back link of a page.
   It leads to the safe `next` of the request, named after its route, else to `default`,
   named by `label` or by the route of `default`. A link back to More is shown on a phone
-  only: on a computer the column already holds More.
+  only: on a computer the column already holds More. On a computer the tag also draws the
+  breadcrumbs of the page, and the back link stays only on a form or when the origin is
+  not the parent.
 - `{% back_href default %}` (or `as name`): the same address, for Cancel.
 - `{% url_with_next 'tasks:create' home_id=home.id q_item=item.id %}`: the address of a
   route with `next=<this page>`; a keyword prefixed with `q_` goes to the query.
@@ -32,11 +34,18 @@ def _request(context: template.Context) -> HttpRequest:
 
 @register.simple_tag(takes_context=True)
 def back_link(context: template.Context, default: str, label: Any = None) -> SafeString:
-    link = navigation.back_link(_request(context), default, str(label) if label else None)
+    request = _request(context)
+    text = str(label) if label else None
+    link = navigation.back_link(request, default, text)
+    crumbs = navigation.breadcrumbs(request, default, text)
+    # On a computer the breadcrumbs already lead to the parent: the link stays for a form,
+    # or when the origin is not the parent (a room opened from the budget).
+    covered = bool(crumbs) and link.url == default and not navigation.is_form(request)
     return SafeString(
-        render_to_string(
+        (render_to_string("components/breadcrumbs.html", {"crumbs": crumbs}) if crumbs else "")
+        + render_to_string(
             "components/back_link.html",
-            {"link": link, "phone_only": link.route == "more"},
+            {"link": link, "phone_only": link.route == "more" or covered},
         )
     )
 

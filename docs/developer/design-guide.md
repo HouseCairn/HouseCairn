@@ -238,11 +238,13 @@ itself.
 | `safe_next(request)` | The same, or `None` without a safe `next`. |
 | `after_create(request, record_url, section_list, added=…, saved=…)` | Where a creation goes: `next`, with the message "*added* · Open" linking to `record_url`; the record itself when `next` is missing or is the route `section_list` (the list of its own section). |
 | `after_delete(request, parent, gone)` | Where a deletion goes: `next`, unless its route names one of the ids in `gone` (the object and its children), else `parent`. |
+| `stay(request, page)` | `page` again after an action in place, still knowing where it was opened from: `page` with the safe `next` of the request, or without one. |
+| `breadcrumbs(request, default, default_label)` | The tree from the section down to the page, as a list of `Crumb` (url, label; no url for the page itself). Built from `default`, the parent of the page, and the parents of that parent (`PARENTS`); the last crumb is the title of the page (a record of `LABELS`, or `FORM_TITLES` for a form). Empty when the page or an ancestor has no label, and when the parent is More. |
 | `label_for(url, request)` | The title of the screen a path leads to, from `LABELS`: a fixed label by route name, or a field of the record the route shows, read only in the homes the person may open. `None` for a route without a label. |
 
 | Tag | Use |
 | --- | --- |
-| `{% back_link default %}`, `{% back_link default label %}` | The back link of the page. It leads to the safe `next` when its route has a label, named after it, else to `default`, named `label` or after the route of `default`. A link to More is shown on a phone only. |
+| `{% back_link default %}`, `{% back_link default label %}` | The back link of the page. It leads to the safe `next` when its route has a label, named after it, else to `default`, named `label` or after the route of `default`. A link to More is shown on a phone only. On a computer it also draws the breadcrumbs of the page, and keeps the link only on a form or when the origin is not the parent. |
 | `{% back_href default %}`, `{% back_href default as cancel %}` | The same address without the link, for a Cancel button. |
 | `{% url_with_next 'rooms:item-create' home_id=home.id room_id=room.id %}` | The address of a route with `next=<this page>`. A keyword prefixed with `q_` goes to the query: `q_item=item.id` gives `?item=…`. |
 | `{% next_field %}` | The hidden `next` field of a form, with the safe `next` only. |
@@ -325,6 +327,12 @@ to it. The page of the room leads to its budget by its block "Budget of the room
 - On a computer, the back link **must** appear only on a form or when the origin is
   not the parent (a room opened from the budget). Otherwise the breadcrumbs already
   say it.
+- The `{% back_link %}` tag draws both, so a page does not write breadcrumbs itself.
+  A new record page **must** be in `PARENTS` (its parent in the tree) and have a
+  `Record` in `LABELS`; a new form **must** be in `FORM_TITLES`. A page without a
+  title gets no breadcrumbs rather than a wrong one.
+- Breadcrumbs are in the page at every width and hidden below 56 rem by the style
+  sheet (`components.css`), so a phone reads the back link alone.
 - The entry of the bar that stays marked is the section the person entered by: a room
   opened from the budget keeps Budget marked, and comes back to it. The bar must never
   change tab under the finger.

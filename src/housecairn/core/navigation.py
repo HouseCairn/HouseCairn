@@ -15,14 +15,14 @@ that opens a record or a form carries `next=<current path>`; the page reads it w
   a record is named only when it belongs to a home the person may open.
 """
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from django.contrib import messages
 from django.http import HttpRequest
-from django.urls import Resolver404, resolve
+from django.urls import Resolver404, resolve, reverse
 from django.utils.html import format_html
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.safestring import SafeString
@@ -192,6 +192,123 @@ def back_link(request: HttpRequest, default: str, default_label: str | None = No
             return BackLink(target, label, route_name(target))
     label = default_label or label_for(default, request) or ""
     return BackLink(default, str(label), route_name(default))
+
+
+# ---------- breadcrumbs ----------
+
+# Titles of the pages that are not a record but a form, by route name. A record page is
+# titled by its `Record` in LABELS; the budget of a room by the room it is about.
+FORM_TITLES: dict[str, Any] = {
+    "tasks:create": _("Add a task"),
+    "tasks:edit": _("Edit the task"),
+    "rooms:create": _("Add a room"),
+    "rooms:edit": _("Edit the room"),
+    "rooms:item-create": _("Add an item"),
+    "rooms:item-edit": _("Edit the item"),
+    "stock:create": _("Add a stock item"),
+    "stock:edit": _("Edit the stock item"),
+    "projects:create": _("Add a project"),
+    "projects:edit": _("Edit the project"),
+    "reports:create": _("Report a problem"),
+}
+
+RECORD_TITLES: dict[str, Record] = {
+    "budget:room": Record("rooms.Room", "room_id", "name"),
+}
+
+
+def _home(kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {"home_id": kwargs["home_id"]}
+
+
+def _room_of_item(kwargs: dict[str, Any]) -> tuple[str, dict[str, Any]] | None:
+    from housecairn.rooms.models import Item
+
+    room_id = (
+        Item.objects.filter(pk=kwargs["item_id"], home_id=kwargs["home_id"])
+        .values_list("room_id", flat=True)
+        .first()
+    )
+    if room_id is None:
+        return None
+    return "rooms:detail", {**_home(kwargs), "room_id": room_id}
+
+
+# Route -> where it hangs in the tree: the route of its parent and its keywords. A route
+# missing here is a root of its section, or hangs from the page that names it as default.
+PARENTS: dict[str, Callable[[dict[str, Any]], tuple[str, dict[str, Any]] | None]] = {
+    "rooms:detail": lambda kw: ("rooms:list", _home(kw)),
+    "rooms:item-detail": _room_of_item,
+    "stock:detail": lambda kw: ("stock:list", _home(kw)),
+    "stock:list": lambda kw: ("rooms:list", _home(kw)),
+    "tasks:detail": lambda kw: ("tasks:list", _home(kw)),
+    "tasks:list": lambda kw: ("tasks:today", _home(kw)),
+    "projects:detail": lambda kw: ("projects:list", _home(kw)),
+    "reports:detail": lambda kw: ("reports:list", _home(kw)),
+    "reports:list": lambda kw: ("homes:detail", _home(kw)),
+    "tasks:contractor-detail": lambda kw: ("tasks:contractors", _home(kw)),
+    "tasks:contractors": lambda kw: ("homes:detail", _home(kw)),
+    "labels:detail": lambda kw: ("labels:list", _home(kw)),
+    "labels:list": lambda kw: ("homes:detail", _home(kw)),
+    "homes:household": lambda kw: ("homes:detail", _home(kw)),
+    "budget:room": lambda kw: ("budget:rooms", _home(kw)),
+}
+
+
+@dataclass(frozen=True)
+class Crumb:
+    url: str | None  # None for the page itself
+    label: str
+
+
+def _title(request: HttpRequest) -> str | None:
+    """The title of the page being shown, for the last crumb; None when it has none."""
+    match = request.resolver_match
+    if match is None:
+        return None
+    name = match.view_name
+    if name in FORM_TITLES:
+        return str(FORM_TITLES[name])
+    entry = RECORD_TITLES.get(name) or LABELS.get(name)
+    if isinstance(entry, Record):
+        return _record_label(entry, match.kwargs, request)
+    return None
+
+
+def is_form(request: HttpRequest) -> bool:
+    match = request.resolver_match
+    return match is not None and match.view_name in FORM_TITLES
+
+
+def breadcrumbs(
+    request: HttpRequest, default: str, default_label: str | None = None
+) -> list[Crumb]:
+    """The tree from the section down to this page: `Section > ... > Record`.
+
+    It follows the tree, not the origin: it is built from `default`, the parent of the
+    page, and the parents of that parent (`PARENTS`). Every crumb is named after its
+    route, so the trail is empty when the page or one of its ancestors has no label, and
+    when the parent is More, which has no page on a computer.
+    """
+    current = _title(request)
+    if current is None or route_name(default) == "more":
+        return []
+    trail: list[Crumb] = []
+    url: str | None = default
+    label = default_label
+    while url is not None:
+        name = route_name(url)
+        text = label or label_for(url, request)
+        if name is None or not text:
+            return []
+        trail.insert(0, Crumb(url, str(text)))
+        label = None
+        parent = PARENTS.get(name)
+        if parent is None:
+            break
+        found = parent(resolve(urlsplit(url).path).kwargs)
+        url = reverse(found[0], kwargs=found[1]) if found else None
+    return [*trail, Crumb(None, current)]
 
 
 def with_next(url: str, next_url: str) -> str:
