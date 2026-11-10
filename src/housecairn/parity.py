@@ -211,6 +211,7 @@ EXEMPT: dict[str, str] = {
     "homes:current": "choice of the home a section opens on, kept in the web session only",
     "more-security": "navigation page that links to the account security screens",
     "about": "static information page",
+    "setup": "first-account screen opened by a code of the server log, before any API token exists",
     "calendar:feed": "iCalendar document read by a calendar application, at a secret address",
 }
 

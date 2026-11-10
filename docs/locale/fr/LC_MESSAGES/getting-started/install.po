@@ -63,5 +63,9 @@ msgstr "Pointez votre reverse proxy vers `http://127.0.0.1:8000`. Pour faire tou
 msgid "On every start, the container creates the secret key if it is missing, applies the database migrations, then starts the web server (gunicorn, two processes by default) and the task worker (django-q2). If either stops, the container stops, and Compose restarts it."
 msgstr "À chaque démarrage, le conteneur crée la clé secrète si elle manque, applique les migrations de la base, puis lance le serveur web (gunicorn, deux processus par défaut) et le worker de tâches (django-q2). Si l'un des deux s'arrête, le conteneur s'arrête, et Compose le redémarre."
 
-msgid "Next: [create the first administrator](first-start.md)."
-msgstr "Ensuite : [créer le premier administrateur](first-start.md)."
+msgid "HouseCairn also writes a one-time code in this log while it has no administrator: next, [create the first administrator](first-start.md)."
+msgstr "HouseCairn écrit aussi un code à usage unique dans ce journal tant qu'il n'a pas d'administrateur : ensuite, [créez le premier administrateur](first-start.md)."
+
+#~ msgid "Next: [create the first administrator](first-start.md)."
+#~ msgstr "Ensuite : [créer le premier administrateur](first-start.md)."
+

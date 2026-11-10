@@ -51,6 +51,7 @@ NOT_OF_A_HOME = {
     "accounts.User_user_permissions": "Django permissions of an account (unused)",
     "accounts.InstanceSetup": "the first setup of the instance",
     "accounts.KnownDevice": "the browsers an account signed in from",
+    "accounts.SetupCode": "the digest of the one-time code of the first-account screen",
     "apitokens.ApiToken": "the API tokens of a person",
     "instance.InstanceInvitation": "invitations to the instance",
     "instance.OidcProvider": "single sign-on providers of the instance",
@@ -214,6 +215,8 @@ def test_no_section_exports_a_secret() -> None:
     for label in (
         "apitokens.ApiToken",
         "accounts.InstanceSetup",
+        "accounts.SetupCode",
+        "accounts.KnownDevice",
         "instance.OidcProvider",
         "notifications.Channel",
         "instance.SettingValue",

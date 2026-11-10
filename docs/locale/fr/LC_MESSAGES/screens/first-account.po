@@ -1,0 +1,44 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "First account"
+msgstr "Premier compte"
+
+msgid "The page that creates the first administrator of a new instance, at `/setup/`. It exists only while the instance has no administrator and `HOUSECAIRN_SETUP_SCREEN` is not `false`; otherwise the address answers 404. The sign-in page links to it while it is open."
+msgstr "La page qui crée le premier administrateur d'une nouvelle instance, à l'adresse `/setup/`. Elle n'existe que tant que l'instance n'a pas d'administrateur et que `HOUSECAIRN_SETUP_SCREEN` n'est pas `false` ; sinon l'adresse répond 404. La page de connexion y renvoie tant qu'elle est ouverte."
+
+msgid "HouseCairn writes a **setup code** in its log at each start (see [First start](../getting-started/first-start.md)). The code is random, works once and expires after one hour."
+msgstr "HouseCairn écrit un **code d'installation** dans son journal à chaque démarrage (voir [Premier démarrage](../getting-started/first-start.md)). Le code est aléatoire, ne sert qu'une fois et expire au bout d'une heure."
+
+msgid "**Setup code**: as written in the log; case, spaces and hyphens do not matter. A code that is wrong, expired or already used gets the same answer, and the page never writes the code back."
+msgstr "**Code d'installation** : tel qu'écrit dans le journal ; la casse, les espaces et les tirets n'ont pas d'importance. Un code faux, expiré ou déjà utilisé reçoit la même réponse, et la page ne réécrit jamais le code."
+
+msgid "**Your name**: how the members of your homes will see you."
+msgstr "**Votre nom** : comment les membres de vos logements vous verront."
+
+msgid "**Email address** and **Password**, twice: the rules for passwords are those of every account."
+msgstr "**Adresse e-mail** et **Mot de passe**, deux fois : les règles de mot de passe sont celles de tous les comptes."
+
+msgid "**Create the administrator** creates the account, uses the code up, signs you in and opens the administration of the instance. The creation is in the audit log of the instance, without the code. A code that was refused because of the address or the password stays usable until it expires."
+msgstr "**Créer l'administrateur** crée le compte, épuise le code, vous connecte et ouvre l'administration de l'instance. La création figure dans le journal d'audit de l'instance, sans le code. Un code refusé à cause de l'adresse ou du mot de passe reste utilisable jusqu'à son expiration."
+
+msgid "The page is limited per client address: after a few tries in a minute it answers “Too many requests”."
+msgstr "La page est limitée par adresse de client : au bout de quelques essais en une minute, elle répond « Trop de requêtes »."
+

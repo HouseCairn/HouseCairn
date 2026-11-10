@@ -430,11 +430,11 @@ msgstr "`HOUSECAIRN_TASK_WORKERS`, `HOUSECAIRN_WEB_WORKERS`"
 msgid "Fixed when the processes start."
 msgstr "Fixé au démarrage des processus."
 
-msgid "`HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`"
-msgstr "`HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`"
+msgid "`HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, `HOUSECAIRN_SETUP_SCREEN`"
+msgstr "`HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, `HOUSECAIRN_SETUP_SCREEN`"
 
-msgid "Decides who may become the first administrator."
-msgstr "Décide qui peut devenir le premier administrateur."
+msgid "Decide who may become the first administrator, and whether the first-account screen exists."
+msgstr "Déterminent qui peut devenir le premier administrateur, et si l'écran du premier compte existe."
 
 msgid "The **Server** part shows all of them except `HOUSECAIRN_WEB_WORKERS`: only the container's start-up program reads it, to start that many web processes; the application itself does not."
 msgstr "La partie **Serveur** les affiche toutes sauf `HOUSECAIRN_WEB_WORKERS` : seul le programme de démarrage du conteneur la lit, pour lancer autant de processus web ; l'application elle-même ne la lit pas."

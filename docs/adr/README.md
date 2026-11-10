@@ -55,3 +55,4 @@ later record supersedes it.
 | [0053](0053-target-navigation-and-return-rule.md) | Target navigation and return rule | 2026-11-09 |
 | [0054](0054-amounts-with-babel.md) | Amounts written by Babel, with the symbol of the currency | 2026-11-10 |
 | [0055](0055-serving-under-a-path-prefix.md) | Serving the application under a path prefix | 2026-11-10 |
+| [0056](0056-first-administrator-on-a-web-screen.md) | First administrator on a web screen, with a one-time code of the log | 2026-11-10 |

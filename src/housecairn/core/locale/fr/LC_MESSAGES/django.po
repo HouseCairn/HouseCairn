@@ -318,6 +318,12 @@ msgstr "Nouvelle connexion à votre compte"
 msgid "Sign in"
 msgstr "Se connecter"
 
+msgid "This instance has no administrator yet."
+msgstr "Cette instance n'a pas encore d'administrateur."
+
+msgid "Create the administrator with the code written in the log of HouseCairn."
+msgstr "Créez l'administrateur avec le code écrit dans le journal de HouseCairn."
+
 msgid "Send me a sign-in code"
 msgstr "Envoyez-moi un code de connexion"
 

@@ -102,6 +102,7 @@ class User(AbstractUser):
 class SetupMethod(models.TextChoices):
     OIDC = "oidc", _("first sign-in through OIDC")
     OTHER = "other", _("created another way")
+    SETUP_SCREEN = "setup_screen", _("first-account screen")
 
 
 class InstanceSetup(models.Model):
@@ -161,3 +162,24 @@ class KnownDevice(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} ({self.created_at:%Y-%m-%d})"
+
+
+class SetupCode(models.Model):
+    """The one-time code that opens the first-account screen (docs/adr/0056).
+
+    The code itself is written in the process log at start-up and never stored: only
+    its SHA-256 digest is. A code that is used is kept (with the time) so that it cannot
+    be played again; the unused ones are replaced by each new code.
+    """
+
+    digest = models.CharField(max_length=64, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("setup code")
+        verbose_name_plural = _("setup codes")
+
+    def __str__(self) -> str:
+        return f"{self.created_at:%Y-%m-%d %H:%M}"

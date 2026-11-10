@@ -129,3 +129,45 @@ def test_from_the_web_only_the_person_restoring_is_matched(
     task = next(iter(snapshot(home.id)["tasks"].values()))
     assert task["assignee"] is None
     assert member.memberships.count() == 0
+
+
+def test_no_secret_of_a_person_or_of_the_instance_is_in_the_archive(
+    full_home: tuple[Home, User], alice: User
+) -> None:
+    """Tokens (and their digests), invitation and feed secrets, channel addresses, the
+    password digests and the setup code are nowhere in the archive, files included."""
+    from housecairn.accounts import setup
+    from housecairn.apitokens import services as token_services
+    from housecairn.apitokens.models import ApiToken
+    from housecairn.calendar.models import Feed
+    from housecairn.homes.models import Invitation
+    from housecairn.notifications.models import Channel
+
+    home, member = full_home
+    _token, raw = token_services.issue_token(alice, name="ha", scopes=["read"], homes=[home])
+    Channel.objects.create(
+        user=alice,
+        name="Phone",
+        url="ntfy://secret-topic-9f3a@example.com/x",
+        scheme="ntfy",
+        service="ntfy",
+    )
+    secrets = [raw, "secret-topic-9f3a", alice.password, member.password]
+    secrets += list(ApiToken.objects.values_list("digest", flat=True))
+    secrets += list(Invitation.objects.values_list("digest", flat=True))
+    secrets += list(Feed.objects.values_list("digest", flat=True))
+    from housecairn.accounts.models import SetupCode
+
+    issued = setup.issue_code()
+    if issued:
+        secrets.append(issued)
+    secrets += list(SetupCode.objects.values_list("digest", flat=True))
+    blob = archive_bytes(home)
+    import io
+    import zipfile
+
+    with zipfile.ZipFile(io.BytesIO(blob)) as archive:
+        everything = b"".join(archive.read(n) for n in archive.namelist())
+    for secret in secrets:
+        assert secret
+        assert secret.encode() not in everything, secret[:6]

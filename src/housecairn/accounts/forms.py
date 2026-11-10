@@ -8,6 +8,8 @@ from allauth.account.forms import ReauthenticateForm as AllauthReauthenticateFor
 from allauth.account.forms import SignupForm as AllauthSignupForm
 from django import forms
 from django.conf import settings
+from django.contrib.auth import password_validation
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from housecairn.accounts import antibot, names, services
@@ -143,4 +145,71 @@ class SignupForm(AllauthSignupForm):  # type: ignore[misc]
                         "Wait a few seconds for it on the page, with JavaScript on, then try again."
                     ),
                 )
+        return data
+
+
+class _CodeInput(forms.TextInput):
+    """The code field never writes its value back into the page, whatever happened."""
+
+    def format_value(self, value: Any) -> None:
+        return None
+
+
+class SetupForm(forms.Form):
+    """The first-account screen: the code of the server log, then the administrator (ADR 0056)."""
+
+    code = forms.CharField(
+        label=_("Setup code"),
+        max_length=64,
+        strip=True,
+        widget=_CodeInput(
+            attrs={
+                "autocomplete": "off",
+                "autocapitalize": "characters",
+                "spellcheck": "false",
+                "inputmode": "text",
+            }
+        ),
+        help_text=_("Written in the log of HouseCairn when it started."),
+    )
+    name = forms.CharField(
+        label=_("Your name"),
+        max_length=names.DISPLAY_NAME_MAX_LENGTH,
+        help_text=_("How the members of your homes will see you."),
+        widget=forms.TextInput(attrs={"autocomplete": "name"}),
+    )
+    email = forms.EmailField(
+        label=_("Email address"),
+        widget=forms.EmailInput(attrs={"autocomplete": "username"}),
+    )
+    password1 = forms.CharField(
+        label=_("Password"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
+    )
+    password2 = forms.CharField(
+        label=_("Password (again)"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
+    )
+
+    def clean_name(self) -> str:
+        name = services.clean_display_name(self.cleaned_data["name"])
+        if not name:
+            raise ValidationError(_("This field is required."), code="required")
+        return name
+
+    def clean(self) -> dict[str, Any]:
+        data: dict[str, Any] = super().clean() or {}
+        first, second = data.get("password1"), data.get("password2")
+        if first and second and first != second:
+            self.add_error("password2", _("The two passwords differ."))
+        elif first:
+            from housecairn.accounts.models import User
+
+            candidate = User(email=data.get("email") or "", display_name=data.get("name") or "")
+            try:
+                password_validation.validate_password(first, user=candidate)
+            except ValidationError as exc:
+                self.add_error("password1", exc)
         return data

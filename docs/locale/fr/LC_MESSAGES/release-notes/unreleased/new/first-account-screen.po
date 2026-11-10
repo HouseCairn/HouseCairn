@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**First administrator on a web screen.** While an instance has no administrator, HouseCairn writes a one-time code in its log at each start. The [first-account screen](../../../screens/first-account.md) (`/setup/`) takes that code, a name, an address and a password, creates the administrator and signs them in, without a command on the server. The code is random, works once and expires after one hour; the screen answers 404 as soon as an administrator exists, or when `HOUSECAIRN_SETUP_SCREEN=false`. Single sign-on and `createsuperuser` work as before; the first one to create an administrator closes the others. See [First start](../../../getting-started/first-start.md)."
+msgstr "**Premier administrateur sur un écran web.** Tant qu'une instance n'a pas d'administrateur, HouseCairn écrit un code à usage unique dans son journal à chaque démarrage. L'[écran du premier compte](../../../screens/first-account.md) (`/setup/`) prend ce code, un nom, une adresse et un mot de passe, crée l'administrateur et le connecte, sans commande sur le serveur. Le code est aléatoire, ne sert qu'une fois et expire au bout d'une heure ; l'écran répond 404 dès qu'un administrateur existe, ou avec `HOUSECAIRN_SETUP_SCREEN=false`. L'authentification unique et `createsuperuser` fonctionnent comme avant ; le premier qui crée un administrateur ferme les autres. Voir [Premier démarrage](../../../getting-started/first-start.md)."
+

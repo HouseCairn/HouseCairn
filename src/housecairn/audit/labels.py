@@ -78,6 +78,7 @@ LABELS: dict[str, Promise] = {
     "account.email_verified": _("Email address verified from the server"),
     "account.email_primary": _("Primary email address changed from the server"),
     "account.deleted": _("Account deleted"),
+    "instance.first_admin_created": _("First administrator created on the setup screen"),
     "home.deleted": _("A home was deleted"),
     "homes.unlocked": _("Sign-in requirement removed from %(count)s homes"),
     "settings.changed": _("Setting %(setting)s changed from %(old)s to %(new)s"),

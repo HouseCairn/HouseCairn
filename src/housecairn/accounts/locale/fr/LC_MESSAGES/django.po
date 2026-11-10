@@ -45,6 +45,33 @@ msgstr "L'inscription n'est pas ouverte aux adresses de ce domaine."
 msgid "The check that you are not a robot did not complete. Wait a few seconds for it on the page, with JavaScript on, then try again."
 msgstr "La vérification que vous n'êtes pas un robot n'a pas abouti. Attendez-la quelques secondes sur la page, avec JavaScript activé, puis réessayez."
 
+msgid "Setup code"
+msgstr "Code d'installation"
+
+msgid "Written in the log of HouseCairn when it started."
+msgstr "Écrit dans le journal de HouseCairn au démarrage."
+
+msgid "Your name"
+msgstr "Votre nom"
+
+msgid "How the members of your homes will see you."
+msgstr "Comment les membres de vos logements vous verront."
+
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Password (again)"
+msgstr "Mot de passe (confirmation)"
+
+msgid "This field is required."
+msgstr "Ce champ est obligatoire."
+
+msgid "The two passwords differ."
+msgstr "Les deux mots de passe diffèrent."
+
 msgid "sign-in provider"
 msgstr "fournisseur de connexion"
 
@@ -81,6 +108,9 @@ msgstr "première connexion par OIDC"
 msgid "created another way"
 msgstr "créé autrement"
 
+msgid "first-account screen"
+msgstr "écran du premier compte"
+
 msgid "created at"
 msgstr "créé le"
 
@@ -99,6 +129,12 @@ msgstr "appareil connu"
 msgid "known devices"
 msgstr "appareils connus"
 
+msgid "setup code"
+msgstr "code d'installation"
+
+msgid "setup codes"
+msgstr "codes d'installation"
+
 msgid "This is the only administrator of the instance."
 msgstr "C'est le seul administrateur de l'instance."
 
@@ -112,6 +148,9 @@ msgstr "Un nom d'affichage ne peut pas contenir « @ » : il passerait pour une 
 msgid "Give a name with at least one visible character."
 msgstr "Donnez un nom avec au moins un caractère visible."
 
+msgid "An account already uses this address."
+msgstr "Un compte utilise déjà cette adresse."
+
 msgid "Your account was deleted."
 msgstr "Votre compte a été supprimé."
 
@@ -123,6 +162,12 @@ msgstr "Votre nom d'affichage sera repris de votre fournisseur à votre prochain
 
 msgid "Profile saved."
 msgstr "Profil enregistré."
+
+msgid "This code is not valid: it is wrong, it has expired or it was used. Restart HouseCairn, or run “manage setup_code”, to get a new one."
+msgstr "Ce code n'est pas valable : il est faux, expiré ou déjà utilisé. Redémarrez HouseCairn, ou lancez « manage setup_code », pour en obtenir un nouveau."
+
+msgid "Welcome to HouseCairn. Your administrator account is ready."
+msgstr "Bienvenue dans HouseCairn. Votre compte administrateur est prêt."
 
 msgid "Delete my account"
 msgstr "Supprimer mon compte"
@@ -172,3 +217,12 @@ msgstr "Vous avez saisi votre nom d'affichage : les fournisseurs de connexion ne
 
 msgid "Use the provider's name"
 msgstr "Reprendre le nom du fournisseur"
+
+msgid "First account"
+msgstr "Premier compte"
+
+msgid "Create the administrator"
+msgstr "Créer l'administrateur"
+
+msgid "This instance has no administrator yet. Enter the code HouseCairn wrote in its log when it started, then create the account that will run the instance."
+msgstr "Cette instance n'a pas encore d'administrateur. Saisissez le code que HouseCairn a écrit dans son journal au démarrage, puis créez le compte qui gérera l'instance."

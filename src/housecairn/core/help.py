@@ -13,6 +13,7 @@ from django.utils import translation
 HELP_PAGES: dict[str, str] = {
     "index": "screens/start-page/",
     "account_login": "screens/sign-in/",
+    "setup": "screens/first-account/",
     "homes:list": "screens/homes/",
     "homes:create": "screens/new-home/",
     "homes:detail": "screens/home/",

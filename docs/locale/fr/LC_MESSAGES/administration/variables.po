@@ -58,7 +58,7 @@ msgid "`false`"
 msgstr "`false`"
 
 msgid "`true` behind a reverse proxy that sets `X-Forwarded-Proto`."
-msgstr "`true` derrière un reverse proxy qui pose `X-Forwarded-Proto`."
+msgstr "`true`"
 
 msgid "`HOUSECAIRN_FORWARDED_ALLOW_IPS`"
 msgstr "`HOUSECAIRN_FORWARDED_ALLOW_IPS`"
@@ -212,6 +212,15 @@ msgstr "`closed`, (aucun)"
 
 msgid "Who may get an account through single sign-on."
 msgstr "Qui peut obtenir un compte par l'authentification unique."
+
+msgid "`HOUSECAIRN_SETUP_SCREEN`"
+msgstr "`HOUSECAIRN_SETUP_SCREEN`"
+
+msgid "`true`"
+msgstr "`true`"
+
+msgid "The first-account screen (`/setup/`), opened by a one-time code written in the log, while there is no administrator. `false` if you create the administrator another way. See [First start](../getting-started/first-start.md)."
+msgstr "L'écran du premier compte (`/setup/`), ouvert par un code à usage unique écrit dans le journal, tant qu'il n'y a pas d'administrateur. `false` si vous créez l'administrateur autrement. Voir [Premier démarrage](../getting-started/first-start.md)."
 
 msgid "`EMAIL_HOST`"
 msgstr "`EMAIL_HOST`"

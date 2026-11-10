@@ -7,16 +7,20 @@ from typing import Any
 from allauth.account import views as allauth_views
 from allauth.account.adapter import get_adapter
 from django.contrib import messages
+from django.contrib.auth import login as django_login
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect
+from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.views.generic import FormView
+from django.views.generic import FormView, View
 
-from housecairn.accounts import forms, provider_names, services
+from housecairn.accounts import forms, provider_names, services, setup
 from housecairn.accounts.models import DisplayNameSource, User
+from housecairn.homes.scoping import allow
 
 
 def needs_email(view: Callable[..., HttpResponse]) -> Callable[..., HttpResponse]:
@@ -47,6 +51,11 @@ class LoginView(allauth_views.LoginView):  # type: ignore[misc]
             request.session.create()
         response: HttpResponse = super().get(request, *args, **kwargs)
         return response
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context: dict[str, Any] = super().get_context_data(**kwargs)
+        context["setup_available"] = setup.is_available()
+        return context
 
 
 class EmailView(allauth_views.EmailView):  # type: ignore[misc]
@@ -156,3 +165,68 @@ class SignupView(allauth_views.SignupView):  # type: ignore[misc]
 
     def get_form_kwargs(self) -> dict[str, Any]:
         return {**super().get_form_kwargs(), "request": self.request}
+
+
+class SetupView(View):
+    """Create the first administrator with the code of the process log (docs/adr/0056).
+
+    A page for whoever has no account yet: 404 once an administrator exists or when the
+    screen is switched off. Every request counts against a limit per client address, the
+    code is never written back into a page, and a wrong, expired or used code gets the
+    same answer.
+    """
+
+    http_method_names = ["get", "post"]
+
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if not setup.is_available():
+            raise Http404
+        if not allow(request, "housecairn_setup"):
+            response: HttpResponse = TemplateResponse(request, "429.html", status=429).render()
+            return response
+        result: HttpResponse = super().dispatch(request, *args, **kwargs)  # type: ignore[assignment]
+        return result
+
+    def render(self, form: forms.SetupForm, status: int = 200) -> HttpResponse:
+        response: HttpResponse = TemplateResponse(
+            self.request,
+            "accounts/setup.html",
+            {"form": form},
+            status=status,
+        ).render()
+        # Neither a cache nor the browser's history keeps this page.
+        response["Cache-Control"] = "no-store"
+        return response
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        return self.render(forms.SetupForm())
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        form = forms.SetupForm(request.POST)
+        if not form.is_valid():
+            return self.render(form, status=400)
+        data = form.cleaned_data
+        try:
+            user = setup.create_first_admin(
+                code=data["code"],
+                email=data["email"],
+                name=data["name"],
+                password=data["password1"],
+            )
+        except setup.SetupCodeInvalidError:
+            form.add_error(
+                "code",
+                _(
+                    "This code is not valid: it is wrong, it has expired or it was used. "
+                    "Restart HouseCairn, or run “manage setup_code”, to get a new one."
+                ),
+            )
+            return self.render(form, status=400)
+        except setup.SetupClosedError as exc:
+            raise Http404 from exc
+        except ValidationError as exc:
+            form.add_error("email", exc)
+            return self.render(form, status=400)
+        django_login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+        messages.success(request, _("Welcome to HouseCairn. Your administrator account is ready."))
+        return redirect(reverse("instance:overview"))

@@ -64,4 +64,5 @@ applies the database migrations, then starts the web server (gunicorn, two
 processes by default) and the task worker (django-q2). If either stops, the
 container stops, and Compose restarts it.
 
-Next: [create the first administrator](first-start.md).
+HouseCairn also writes a one-time code in this log while it has no administrator:
+next, [create the first administrator](first-start.md).
