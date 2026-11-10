@@ -555,6 +555,12 @@ msgstr "chacun de ses formulaires reçoit un `form_token` caché, à côté du c
 msgid "a post that brings back a token already used is refused before the view runs: the person goes to `next` (else Today) with \"This form was already sent\". The tokens used are kept in the session and in the cache, whose atomic `add` stops two sendings at the same instant (with a cache shared by the workers, across workers too). A post without a token is let through as before."
 msgstr "un envoi qui rapporte un jeton déjà utilisé est refusé avant la vue : la personne va à `next` (sinon Aujourd'hui) avec « Ce formulaire a déjà été envoyé ». Les jetons utilisés sont gardés dans la session et dans le cache, dont l'`add` atomique arrête deux envois au même instant (avec un cache partagé par les workers, entre workers aussi). Un envoi sans jeton passe comme avant."
 
+msgid "every form that posts on such a page gets `autocomplete=\"off\"`, so that Chromium does not put back what was typed when the person comes back to the page."
+msgstr "chaque formulaire d'une telle page qui envoie en post reçoit `autocomplete=\"off\"`, pour que Chromium ne remette pas ce qui avait été saisi quand la personne revient à la page."
+
+msgid "What the token guarantees: the same page, with the same token, sent twice (a double tap, or a replay of the post) creates one record. What it does not guarantee: a second sending from a page asked for again. The back button asks the server again (`no-store`), the page it gets carries a new token, and sending it creates a second record. Only the empty fields (`autocomplete=\"off\"`) and the person's attention stand in the way of that case; the token is not a promise against duplicates."
+msgstr "Ce que garantit le jeton : la même page, avec le même jeton, envoyée deux fois (un double tap ou un rejeu de l'envoi) crée un seul enregistrement. Ce qu'il ne garantit pas : un second envoi depuis une page redemandée. Le bouton retour interroge à nouveau le serveur (`no-store`), la page obtenue porte un nouveau jeton, et l'envoyer crée un second enregistrement. Seuls les champs vides (`autocomplete=\"off\"`) et l'attention de la personne s'y opposent dans ce cas ; le jeton n'est pas une promesse contre les doublons."
+
 msgid "A new creation form gets all this by its address alone: its route ends in `new/`."
 msgstr "Un nouveau formulaire de création reçoit tout cela par sa seule adresse : sa route finit par `new/`."
 

@@ -5,6 +5,7 @@ post with a redirect to `next#occ-<id>`; the banner never lives in the address. 
 forms are sent with `no-store` and a one-time token against a second sending.
 """
 
+import re
 import threading
 from decimal import Decimal
 from urllib.parse import urlencode
@@ -237,6 +238,20 @@ class TestCreationForms:
             assert response.status_code == 200
             assert response["Cache-Control"] == "no-store"
         assert "no-store" not in signed_in.get(url("today", alice_home)).get("Cache-Control", "")
+
+    def test_the_forms_of_a_creation_page_do_not_restore_their_input(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        forms = (
+            url("create", alice_home),
+            reverse("rooms:create", args=[alice_home.id]),
+            reverse("projects:create", args=[alice_home.id]),
+        )
+        for address in forms:
+            page = signed_in.get(address).content.decode()
+            posts = re.findall(r"<form\b[^>]*\bmethod=\"post\"[^>]*>", page, re.IGNORECASE)
+            assert posts, address
+            assert all('autocomplete="off"' in tag for tag in posts), address
 
     def test_a_second_sending_is_refused(
         self, signed_in: Client, alice_home: Home, owner_occurrence: Occurrence

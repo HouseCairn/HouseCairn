@@ -44,6 +44,9 @@ CACHE_SECONDS = 24 * 60 * 60
 
 # The hidden CSRF field Django renders in every form that posts.
 _CSRF_FIELD = re.compile(rb'(<input type="hidden" name="csrfmiddlewaretoken" value="[^"]*">)')
+# The opening tag of a form that posts, and what tells it already has a say on autofill.
+_POST_FORM = re.compile(rb"<form\b[^>]*\bmethod=\"post\"[^>]*>", re.IGNORECASE)
+_AUTOCOMPLETE = re.compile(rb"\sautocomplete=", re.IGNORECASE)
 
 
 def is_creation_form(request: HttpRequest) -> bool:
@@ -117,6 +120,13 @@ def _first_use(request: HttpRequest, token: str) -> bool:
     return True
 
 
+def _without_autofill(match: re.Match[bytes]) -> bytes:
+    tag = match.group(0)
+    if _AUTOCOMPLETE.search(tag):
+        return tag
+    return tag[:-1] + b' autocomplete="off">'
+
+
 def _add_token(response: HttpResponse) -> None:
     """Give each form of an HTML page a fresh one-time token, next to its CSRF field."""
     if response.streaming or not response.get("Content-Type", "").startswith("text/html"):
@@ -124,9 +134,14 @@ def _add_token(response: HttpResponse) -> None:
     if hasattr(response, "render") and not getattr(response, "is_rendered", True):
         response.render()
     token = secrets.token_urlsafe(24).encode()
+    # Chromium restores what was typed when the person comes back to the page; sent
+    # again, it would create a second record. The token does not stop that sending (the
+    # page asked again after the back button has a new token), so the fields start empty.
+    original = response.content
+    body = _POST_FORM.sub(_without_autofill, original)
     field = b'<input type="hidden" name="' + FORM_TOKEN_FIELD.encode() + b'" value="'
-    content = _CSRF_FIELD.sub(lambda m: m.group(1) + field + token + b'">', response.content)
-    if content != response.content:
+    content = _CSRF_FIELD.sub(lambda m: m.group(1) + field + token + b'">', body)
+    if content != original:
         response.content = content
         if response.has_header("Content-Length"):
             response.headers["Content-Length"] = str(len(content))

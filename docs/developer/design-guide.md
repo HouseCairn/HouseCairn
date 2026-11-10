@@ -452,6 +452,16 @@ through `core.middleware.CreationFormMiddleware`:
   sendings at the same instant (with a cache shared by the workers, across workers
   too). A post without a token is let through as before.
 
+- every form that posts on such a page gets `autocomplete="off"`, so that Chromium does
+  not put back what was typed when the person comes back to the page.
+
+What the token guarantees: the same page, with the same token, sent twice (a double
+tap, or a replay of the post) creates one record. What it does not guarantee: a second
+sending from a page asked for again. The back button asks the server again
+(`no-store`), the page it gets carries a new token, and sending it creates a second
+record. Only the empty fields (`autocomplete="off"`) and the person's attention stand in
+the way of that case; the token is not a promise against duplicates.
+
 A new creation form gets all this by its address alone: its route ends in `new/`.
 
 ## Current home
