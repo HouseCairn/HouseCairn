@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
+from housecairn.core import navigation
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
@@ -146,8 +147,15 @@ class ArticleCreateView(ArticleFormMixin):
             )
         except ValidationError as exc:
             return self.fail(form, exc)
-        messages.success(self.request, _("Stock item added."))
-        return redirect("stock:detail", home_id=self.home.id, article_id=article.id)
+        return redirect(
+            navigation.after_create(
+                self.request,
+                _url("detail", home_id=self.home.id, article_id=article.id),
+                "stock:list",
+                added=_("Stock item added"),
+                saved=_("Stock item added."),
+            )
+        )
 
 
 class ArticleEditView(ArticleFormMixin):
@@ -175,7 +183,11 @@ class ArticleEditView(ArticleFormMixin):
         except ValidationError as exc:
             return self.fail(form, exc)
         messages.success(self.request, _("Stock item saved."))
-        return redirect("stock:detail", home_id=self.home.id, article_id=article.id)
+        return redirect(
+            navigation.back_url(
+                self.request, _url("detail", home_id=self.home.id, article_id=article.id)
+            )
+        )
 
 
 class ArticleDetailView(HomeStockMixin, TemplateView):
@@ -220,8 +232,9 @@ class ConfirmDeleteView(HomeStockMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         target = self.target()
+        cancel_url = navigation.back_url(self.request, self.cancel_url(target))
         return super().get_context_data(
-            **self.page(target=target, cancel_url=self.cancel_url(target), message=self.message),
+            **self.page(target=target, cancel_url=cancel_url, message=self.message),
             **kwargs,
         )
 
@@ -241,9 +254,11 @@ class ArticleDeleteView(ConfirmDeleteView):
         return _url("detail", home_id=self.home.id, article_id=target.id)
 
     def remove(self, target: Article) -> HttpResponse:
+        gone = [target.id, *target.suppliers.values_list("id", flat=True)]
         services.delete_article(self.request.user, target)
         messages.success(self.request, _("Stock item deleted."))
-        return redirect("stock:list", home_id=self.home.id)
+        parent = _url("list", home_id=self.home.id)
+        return redirect(navigation.after_delete(self.request, parent, gone))
 
 
 # ---------- label photo ----------
@@ -270,7 +285,11 @@ class MovementAddView(HomeStockMixin, View):
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         article = self.get_article()
         form = forms.MovementForm(request.POST)
-        back = redirect("stock:detail", home_id=self.home.id, article_id=article.id)
+        # An action in place: back to the article, which keeps where it was opened from.
+        page = _url("detail", home_id=self.home.id, article_id=article.id)
+        back = redirect(
+            navigation.with_next(page, navigation.safe_next(request) or "") + "#movement"
+        )
         if not form.is_valid():
             messages.error(request, " ".join(str(m) for e in form.errors.values() for m in e))
             return back
@@ -303,7 +322,8 @@ class SupplierFormMixin(HomeStockMixin, FormView[Any]):
         return super().get_context_data(**self.page(), **kwargs)
 
     def done(self, article: Article) -> HttpResponse:
-        return redirect("stock:detail", home_id=self.home.id, article_id=article.id)
+        page = _url("detail", home_id=self.home.id, article_id=article.id)
+        return redirect(navigation.back_url(self.request, page))
 
 
 class SupplierCreateView(SupplierFormMixin):
@@ -352,6 +372,8 @@ class SupplierDeleteView(ConfirmDeleteView):
         return _url("detail", home_id=self.home.id, article_id=target.article_id)
 
     def remove(self, target: Supplier) -> HttpResponse:
+        gone = [target.id]
         services.delete_supplier(self.request.user, target)
         messages.success(self.request, _("Supplier deleted."))
-        return redirect("stock:detail", home_id=self.home.id, article_id=target.article_id)
+        parent = _url("detail", home_id=self.home.id, article_id=target.article_id)
+        return redirect(navigation.after_delete(self.request, parent, gone))

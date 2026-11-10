@@ -14,6 +14,7 @@ from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
+from housecairn.core import navigation
 from housecairn.reports import forms, services
 from housecairn.reports.files import photo_response
 from housecairn.reports.models import CLOSED_STATUSES, Report, ReportStatus
@@ -119,8 +120,15 @@ class ReportCreateView(HomeReportsMixin, FormView[Any]):
             else:
                 form.add_error(None, exc)
             return self.form_invalid(form)
-        messages.success(self.request, _("Thank you: the problem is reported."))
-        return redirect("reports:detail", home_id=self.home.id, report_id=report.id)
+        return redirect(
+            navigation.after_create(
+                self.request,
+                reverse("reports:detail", kwargs={"home_id": self.home.id, "report_id": report.id}),
+                "reports:list",
+                added=_("Problem reported"),
+                saved=_("Thank you: the problem is reported."),
+            )
+        )
 
 
 class ReportDetailView(HomeReportsMixin, TemplateView):
@@ -182,7 +190,9 @@ class ReportActionView(HomeReportsMixin, View):
             task = getattr(self, "task", None)
             if task is not None:
                 return redirect("tasks:detail", home_id=self.home.id, task_id=task.id)
-        return redirect("reports:detail", home_id=self.home.id, report_id=report.id)
+        # An action in place: the report again, still knowing where it was opened from.
+        page = reverse("reports:detail", kwargs={"home_id": self.home.id, "report_id": report.id})
+        return redirect(navigation.with_next(page, navigation.safe_next(request) or ""))
 
 
 class ReportToTaskView(ReportActionView):

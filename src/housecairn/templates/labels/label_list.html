@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "QR labels" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  {% url 'homes:detail' home_id=home.id as parent %}{% back_link parent home.name %}
   <h1>{% translate "QR labels" %}</h1>
   <p class="small">{% translate "Tick what to label, choose a layout and print the sheet. Scanning a sticker opens the page of the object, for the members of this home." %}</p>
   {% if sections %}
     <form method="post" action="{% url 'labels:print' home_id=home.id %}" class="card">
       {% csrf_token %}
+      {% next_field %}
       <p>
         <label for="layout">{% translate "Layout" %}</label>
         <select id="layout" name="layout">
@@ -22,7 +23,7 @@
               <input type="checkbox" name="target" value="{{ entry.key }}">
               <span class="row-body">
                 <span class="row-title">{{ entry.name }}</span>
-                <span class="row-text">{% if entry.place %}{{ entry.place }} · {% endif %}{% if entry.label %}<a href="{% url 'labels:detail' home_id=home.id label_id=entry.label.id %}">{% translate "QR label" %}</a>{% elif can_write %}{% translate "No label yet" %}{% else %}{% translate "No label" %}{% endif %}</span>
+                <span class="row-text">{% if entry.place %}{{ entry.place }} · {% endif %}{% if entry.label %}<a href="{% url_with_next 'labels:detail' home_id=home.id label_id=entry.label.id %}">{% translate "QR label" %}</a>{% elif can_write %}{% translate "No label yet" %}{% else %}{% translate "No label" %}{% endif %}</span>
               </span>
             </label>
           {% endfor %}

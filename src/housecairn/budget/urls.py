@@ -9,6 +9,7 @@ app_name = "budget"
 urlpatterns = [
     path("budget/", views.OverviewView.as_view(), name="overview"),
     path("budget/rooms/", views.RoomsView.as_view(), name="rooms"),
+    path("budget/rooms/<uuid:room_id>/", views.RoomView.as_view(), name="room"),
     path("budget/projects/", views.ProjectsView.as_view(), name="projects"),
     path("budget/tasks/", views.TasksView.as_view(), name="tasks"),
 ]

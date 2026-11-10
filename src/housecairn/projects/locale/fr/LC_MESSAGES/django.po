@@ -347,6 +347,9 @@ msgstr "Ce fichier est trop volumineux."
 msgid "Envelope saved."
 msgstr "Enveloppe enregistrée."
 
+msgid "Project added"
+msgstr "Projet ajouté"
+
 msgid "Project added."
 msgstr "Projet ajouté."
 

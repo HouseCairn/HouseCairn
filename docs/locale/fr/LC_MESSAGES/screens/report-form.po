@@ -36,3 +36,6 @@ msgstr "**Photo** est facultative : une image JPEG, PNG ou WebP, dans la limite 
 msgid "**Send the report** shows the report and thanks you. A person may have 20 reports waiting at the same time; close or wait for some before sending more. The members who may write and have a notification channel are told (see the [guide](../guides/qr-labels.md))."
 msgstr "**Envoyer le signalement** affiche le signalement et vous remercie. Une personne peut avoir 20 signalements en attente en même temps ; attendez que certains soient traités avant d'en envoyer d'autres. Les membres qui peuvent écrire et ont un canal de notification sont prévenus (voir le [guide](../guides/qr-labels.md))."
 
+msgid "Opened with **Report a problem** from a room, an item or a stock item, the form comes back to that page once sent, with **Problem reported · Open** to open the report. Opened from the reports, it opens the new report."
+msgstr "Ouvert par **Signaler un problème** depuis une pièce, un élément ou un article, le formulaire revient à cette page une fois envoyé, avec **Problème signalé · Ouvrir** pour ouvrir le signalement. Ouvert depuis les signalements, il ouvre le nouveau signalement."
+

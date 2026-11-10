@@ -45,6 +45,9 @@ msgstr "**Document dans Paperless-ngx** garde un numéro de document et un lien 
 msgid "**Delete the quote** asks for confirmation and releases what it committed."
 msgstr "**Supprimer le devis** demande confirmation et libère ce qu'il engageait."
 
+msgid "The link at the top and **Cancel** lead back to the screen the form was opened from, usually the project, and so does the form once sent."
+msgstr "Le lien du haut et **Annuler** ramènent à l'écran d'où le formulaire a été ouvert, en général le projet, tout comme le formulaire une fois envoyé."
+
 #~ msgid "**Amount** is in the currency of the home, from 0 to 9,999,999,999.99."
 #~ msgstr "**Montant** est dans la devise du logement, de 0 à 9 999 999 999,99."
 

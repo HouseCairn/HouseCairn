@@ -34,6 +34,11 @@ members included.
 The link at the top leads back to the screen the room was opened from, and to the
 list of rooms otherwise. A task or an item added from this page comes back to it.
 
+**Budget of the room**, at the bottom of the page, shows what is planned for the room this
+year and what is used of it: its share of the projects counted this year, and the upkeep
+of its tasks. **See the budget detail** opens the [budget of the room](budget-rooms.md#budget-of-one-room),
+whose link at the top comes back here.
+
 Members and owners change the room; read-only members see it all and change
 nothing. An address that does not exist, or that belongs to a home you are not
 a member of, answers the same "Page not found".

@@ -166,6 +166,9 @@ PARITY: dict[str, tuple[str, ...]] = {
     "budget": ("api-v1:budget-combined",),
     "budget:overview": ("api-v1:home-budget",),
     "budget:rooms": ("api-v1:home-budget-rooms",),
+    # The budget of one room: its row of the budget by room, line by line from the
+    # projects and tasks of the room.
+    "budget:room": ("api-v1:home-budget-rooms",),
     "budget:projects": ("api-v1:home-budget-projects",),
     "budget:tasks": ("api-v1:home-budget-tasks",),
     "notifications:index": ("api-v1:notification-channel-list", "api-v1:notification-preferences"),

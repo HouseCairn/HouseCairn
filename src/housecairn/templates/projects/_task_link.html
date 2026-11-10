@@ -1,1 +1,1 @@
-{% load i18n %}{% if project %}<p class="small">{% translate "Part of the project" %} <a href="{% url 'projects:detail' home_id=home.id project_id=project.id %}">{{ project.title }}</a></p>{% endif %}
+{% load i18n navigation %}{% if project %}<p class="small">{% translate "Part of the project" %} <a href="{% url_with_next 'projects:detail' home_id=home.id project_id=project.id %}">{{ project.title }}</a></p>{% endif %}

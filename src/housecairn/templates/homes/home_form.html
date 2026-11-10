@@ -1,17 +1,18 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% if editing %}{% translate "Edit the home" %}{% else %}{% translate "Add a home" %}{% endif %}{% endblock head_title %}
 {% block content %}
   {% if editing %}
-  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  {% url 'homes:detail' home_id=home.id as parent %}{% back_link parent home.name %}
   <h1>{% translate "Edit the home" %}</h1>
   {% else %}
-  <a class="back-link" href="{% url 'homes:list' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Homes" %}</a>
+  {% url 'homes:list' as parent %}{% back_link parent %}
   <h1>{% translate "Add a home" %}</h1>
   <p class="small">{% translate "Each home has its own rooms, tasks, budget and currency. You will be its owner, and can invite the rest of the household." %}</p>
   {% endif %}
   <form method="post" class="card">
     {% csrf_token %}
+    {% next_field %}
     {{ form.as_p }}
     <button type="submit" class="button-block">{% if editing %}{% translate "Save" %}{% else %}{% translate "Create the home" %}{% endif %}</button>
   </form>

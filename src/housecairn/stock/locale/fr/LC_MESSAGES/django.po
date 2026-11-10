@@ -215,6 +215,9 @@ msgstr "Il n'y en a que %(available)s en stock."
 msgid "This file is too large."
 msgstr "Ce fichier est trop volumineux."
 
+msgid "Stock item added"
+msgstr "Article ajouté"
+
 msgid "Stock item added."
 msgstr "Article ajouté."
 

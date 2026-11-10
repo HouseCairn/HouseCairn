@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% load i18n tabs people %}
+{% load i18n tabs people navigation %}
 {% block head_title %}{% translate "Household and roles" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  {% url 'homes:detail' home_id=home.id as parent %}{% back_link parent home.name %}
   <h1>{% translate "Household and roles" %}</h1>
   {% tab_bar "home" %}
   <ul class="card-list">
     {% for membership in members %}
       <li>
-        <a class="row" href="{% url 'homes:member' home_id=home.id member_id=membership.id %}">
+        <a class="row" href="{% url_with_next 'homes:member' home_id=home.id member_id=membership.id %}">
           <span class="row-body">
             <span class="row-title">{{ membership.user|person }}{% if membership.user_id == me.pk %} ({% translate "you" %}){% endif %}</span>
             <span class="row-text">{% include "homes/_role_text.html" with role=membership.role %}</span>
@@ -30,6 +30,7 @@
     <h2>{% translate "Invite someone" %}</h2>
     <form method="post" action="{% url 'homes:invite' home_id=home.id %}" class="card">
       {% csrf_token %}
+      {% next_field %}
       {{ invite_form.as_p }}
       <button type="submit" class="button-block">{% translate "Invite" %}</button>
       <p class="small">{% if email_configured %}{% translate "The invitation is sent by email, with a link that works once." %}{% else %}{% translate "This instance does not send email: you will get a link to pass on, which works once." %}{% endif %} {% blocktranslate count days=invitation_days %}It expires after {{ days }} day.{% plural %}It expires after {{ days }} days.{% endblocktranslate %}</p>
@@ -43,10 +44,12 @@
           <div class="button-row">
             <form method="post" action="{% url 'homes:invitation-resend' home_id=home.id invitation_id=invitation.id %}">
               {% csrf_token %}
+              {% next_field %}
               <button type="submit" class="button-secondary button-small">{% translate "Send again" %}</button>
             </form>
             <form method="post" action="{% url 'homes:invitation-revoke' home_id=home.id invitation_id=invitation.id %}">
               {% csrf_token %}
+              {% next_field %}
               <button type="submit" class="button-danger button-small">{% translate "Revoke" %}</button>
             </form>
           </div>
@@ -57,6 +60,7 @@
       <h2>{% translate "Sign-in" %}</h2>
       <form method="post" action="{% url 'homes:required-provider' home_id=home.id %}" class="card">
         {% csrf_token %}
+        {% next_field %}
         {{ provider_form.as_p }}
         <p class="small">{% translate "When a provider is required, members open this home only after signing in through it, not with a password or a passkey alone. Set it from a session signed in through that provider." %}</p>
         <button type="submit" class="button-secondary button-block">{% translate "Save" %}</button>

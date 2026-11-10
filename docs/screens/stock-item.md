@@ -30,3 +30,9 @@ One item of the [stock](stock.md), at `/h/<home id>/stock/<item id>/`.
   item as the place; every member sees it, read-only members included.
 
 Read-only members see everything and none of the buttons that change it.
+
+The link at the top leads back to the screen the stock item was opened from (a room, an
+item, a task, the stock), and to the stock otherwise. Recording a movement brings you back
+to the same place on the page, and the link at the top still leads to that screen.
+Deleting the stock item leads back to that screen too, or to the stock when it was the
+stock item itself.

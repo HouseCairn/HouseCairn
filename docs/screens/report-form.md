@@ -14,3 +14,7 @@ one included; it is the only thing a read-only member writes. It is one tap from
 **Send the report** shows the report and thanks you. A person may have 20 reports waiting
 at the same time; close or wait for some before sending more. The members who may write
 and have a notification channel are told (see the [guide](../guides/qr-labels.md)).
+
+Opened with **Report a problem** from a room, an item or a stock item, the form comes back
+to that page once sent, with **Problem reported · Open** to open the report. Opened from
+the reports, it opens the new report.

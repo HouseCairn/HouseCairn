@@ -102,6 +102,19 @@ msgstr "Où en est le budget"
 msgid "Estimated at %(amount)s each time."
 msgstr "Estimé à %(amount)s à chaque fois."
 
+msgid "Budget of the room"
+msgstr "Budget de la pièce"
+
+#, python-format
+msgid "Planned in %(year)s"
+msgstr "Prévu en %(year)s"
+
+msgid "No budget yet for this room this year."
+msgstr "Pas encore de budget pour cette pièce cette année."
+
+msgid "See the budget detail"
+msgstr "Voir le détail du budget"
+
 msgid "Cost"
 msgstr "Coût"
 
@@ -235,12 +248,28 @@ msgstr "Total"
 msgid "No project yet."
 msgstr "Aucun projet pour l'instant."
 
-msgid "Budget by room"
-msgstr "Budget par pièce"
+#, python-format
+msgid "Budget of %(room)s"
+msgstr "Budget de %(room)s"
+
+msgid "Open the room"
+msgstr "Ouvrir la pièce"
 
 #, python-format
 msgid "Projects counted in %(year)s, shared evenly between their rooms, and the upkeep of %(year)s."
 msgstr "Projets comptés en %(year)s, répartis également entre leurs pièces, et entretien de %(year)s."
+
+msgid "Planned, committed and paid, project by project and task by task"
+msgstr "Prévu, engagé et payé, projet par projet et tâche par tâche"
+
+msgid "Project or task"
+msgstr "Projet ou tâche"
+
+msgid "No budget yet for this room this year. Give a project of the room a budget line, or one of its tasks an estimate."
+msgstr "Pas encore de budget pour cette pièce cette année. Donnez une ligne de budget à un projet de la pièce, ou une estimation à l'une de ses tâches."
+
+msgid "Budget by room"
+msgstr "Budget par pièce"
 
 msgid "Planned, committed and paid, room by room"
 msgstr "Prévu, engagé et payé, pièce par pièce"

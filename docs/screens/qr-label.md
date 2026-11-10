@@ -15,3 +15,7 @@ One label, at `/h/<home id>/labels/<label id>/`, opened from the list of
   object and never the code. Use them when a sticker is lost, photographed or shared.
 
 Read-only members see the code and print it; they do not see the buttons that change it.
+
+Made from a room, an item or a stock item, the label opens with a link at the top back to
+that page. Revoking the label leads back to the screen it was opened from, or to the list
+of labels.

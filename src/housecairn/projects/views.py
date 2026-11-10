@@ -17,6 +17,7 @@ from django.utils.translation import gettext_lazy
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
+from housecairn.core import navigation
 from housecairn.core.templatetags.tabs import PROJECT_VIEWS
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
@@ -115,8 +116,23 @@ class HomeProjectsMixin(WebHomeScopedMixin):
     def page(self, **extra: Any) -> dict[str, Any]:
         return {"home": self.home, "can_write": self.can_write, **extra}
 
+    def project_url(self, project: Project) -> str:
+        return reverse(
+            "projects:detail", kwargs={"home_id": self.home.id, "project_id": project.id}
+        )
+
     def back(self, project: Project) -> HttpResponse:
-        return redirect("projects:detail", home_id=self.home.id, project_id=project.id)
+        """After a form about the project: back to `next`, else to the project."""
+        return redirect(navigation.back_url(self.request, self.project_url(project)))
+
+    def stay(self, project: Project) -> HttpResponse:
+        """After an action in place: the project again, still knowing where it was opened from."""
+        target = navigation.safe_next(self.request) or ""
+        return redirect(navigation.with_next(self.project_url(project), target))
+
+    def gone(self, parent: str, *ids: Any) -> HttpResponse:
+        """After a deletion: `next` unless it is about what is gone, else `parent`."""
+        return redirect(navigation.after_delete(self.request, parent, ids))
 
 
 def _form_errors(form: Any, exc: ValidationError) -> None:
@@ -227,7 +243,11 @@ class EnvelopeView(HomeProjectsMixin, FormView[forms.EnvelopeForm]):
             _form_errors(form, exc)
             return self.form_invalid(form)
         messages.success(self.request, _("Envelope saved."))
-        return redirect("projects:list", home_id=self.home.id)
+        return redirect(
+            navigation.back_url(
+                self.request, reverse("projects:list", kwargs={"home_id": self.home.id})
+            )
+        )
 
 
 # ---------- projects ----------
@@ -268,8 +288,15 @@ class ProjectCreateView(ProjectFormMixin):
         except ValidationError as exc:
             _form_errors(form, exc)
             return self.form_invalid(form)
-        messages.success(self.request, _("Project added."))
-        return self.back(project)
+        return redirect(
+            navigation.after_create(
+                self.request,
+                self.project_url(project),
+                "projects:list",
+                added=_("Project added"),
+                saved=_("Project added."),
+            )
+        )
 
 
 class ProjectEditView(ProjectFormMixin):
@@ -358,7 +385,7 @@ class ConfirmDeleteView(HomeProjectsMixin, TemplateView):
         return super().get_context_data(
             **self.page(
                 name=self.name_of(target),
-                cancel_url=self.cancel_url(target),
+                cancel_url=navigation.back_url(self.request, self.cancel_url(target)),
                 message=self.message,
             ),
             **kwargs,
@@ -381,9 +408,15 @@ class ProjectDeleteView(ConfirmDeleteView):
         return reverse("projects:detail", kwargs={"home_id": self.home.id, "project_id": target.id})
 
     def remove(self, target: Project) -> HttpResponse:
+        ids = [target.id, *target.lines.values_list("id", flat=True)]
+        ids += [*target.quotes.values_list("id", flat=True)]
+        ids += [
+            *target.files.values_list("id", flat=True),
+            *target.links.values_list("id", flat=True),
+        ]
         services.delete_project(self.request.user, target)
         messages.success(self.request, _("Project deleted."))
-        return redirect("projects:list", home_id=self.home.id)
+        return self.gone(reverse("projects:list", kwargs={"home_id": self.home.id}), *ids)
 
 
 # ---------- tasks of a project ----------
@@ -400,7 +433,7 @@ class TaskAddView(PostView):
         form = forms.TaskAddForm(request.POST, home=self.home)
         if not form.is_valid():
             messages.error(request, " ".join(str(m) for e in form.errors.values() for m in e))
-            return self.back(project)
+            return self.stay(project)
         data = form.cleaned_data
         try:
             services.add_task(
@@ -414,7 +447,7 @@ class TaskAddView(PostView):
             messages.error(request, " ".join(exc.messages))
         else:
             messages.success(request, _("Task added to the project."))
-        return self.back(project)
+        return self.stay(project)
 
 
 class TaskAttachView(PostView):
@@ -423,14 +456,14 @@ class TaskAttachView(PostView):
         form = forms.TaskAttachForm(request.POST, tasks=services.attachable_tasks(self.home))
         if not form.is_valid():
             messages.error(request, _("Choose a task that is in no project yet."))
-            return self.back(project)
+            return self.stay(project)
         try:
             services.attach_task(request.user, project, form.cleaned_data["task"])
         except ValidationError as exc:
             messages.error(request, " ".join(exc.messages))
         else:
             messages.success(request, _("Task put in the project."))
-        return self.back(project)
+        return self.stay(project)
 
 
 class TaskDetachView(PostView):
@@ -439,7 +472,7 @@ class TaskDetachView(PostView):
         link = get_object_or_404(ProjectTask, project=project, task_id=self.kwargs["task_id"])
         services.detach_task(request.user, link)
         messages.success(request, _("Task taken out of the project."))
-        return self.back(project)
+        return self.stay(project)
 
 
 # ---------- budget lines ----------
@@ -502,9 +535,10 @@ class LineDeleteView(ConfirmDeleteView):
         )
 
     def remove(self, target: BudgetLine) -> HttpResponse:
+        ids = [target.id]
         services.delete_line(self.request.user, target)
         messages.success(self.request, _("Budget line deleted."))
-        return self.back(target.project)
+        return self.gone(self.project_url(target.project), *ids)
 
 
 # ---------- quotes ----------
@@ -605,14 +639,14 @@ class QuoteAcceptView(PostView):
         form = forms.AcceptForm(request.POST, project=quote.project)
         if not form.is_valid():
             messages.error(request, _("Choose the budget line the quote is committed on."))
-            return self.back(quote.project)
+            return self.stay(quote.project)
         try:
             services.accept_quote(request.user, quote, form.cleaned_data["budget_line"])
         except ValidationError as exc:
             messages.error(request, " ".join(exc.messages))
         else:
             messages.success(request, _("Quote accepted and committed on the budget line."))
-        return self.back(quote.project)
+        return self.stay(quote.project)
 
 
 class QuoteStatusView(PostView):
@@ -623,10 +657,10 @@ class QuoteStatusView(PostView):
         form = forms.StatusForm(request.POST)
         if not form.is_valid():
             messages.error(request, _("Choose a status."))
-            return self.back(quote.project)
+            return self.stay(quote.project)
         services.update_quote(request.user, quote, status=form.cleaned_data["status"])
         messages.success(request, _("Quote saved."))
-        return self.back(quote.project)
+        return self.stay(quote.project)
 
 
 class QuoteDeleteView(ConfirmDeleteView):
@@ -644,9 +678,11 @@ class QuoteDeleteView(ConfirmDeleteView):
         )
 
     def remove(self, target: Quote) -> HttpResponse:
+        ids = [target.id]
+        ids += [*target.files.values_list("id", flat=True)]
         services.delete_quote(self.request.user, target)
         messages.success(self.request, _("Quote deleted."))
-        return self.back(target.project)
+        return self.gone(self.project_url(target.project), *ids)
 
 
 # ---------- photos and files ----------
@@ -663,14 +699,14 @@ class FileAddView(PostView):
         form = forms.PhotoForm(request.POST, request.FILES)
         if not form.is_valid():
             messages.error(request, _("Choose a photo."))
-            return self.back(project)
+            return self.stay(project)
         try:
             services.add_file(request.user, project, upload=form.cleaned_data["photo"])
         except ValidationError as exc:
             messages.error(request, " ".join(exc.messages))
         else:
             messages.success(request, _("Photo added."))
-        return self.back(project)
+        return self.stay(project)
 
 
 class FileView(HomeProjectsMixin, View):
@@ -702,9 +738,10 @@ class FileDeleteView(ConfirmDeleteView):
         )
 
     def remove(self, target: ProjectFile) -> HttpResponse:
+        ids = [target.id]
         services.delete_file(self.request.user, target)
         messages.success(self.request, _("File deleted."))
-        return self.back(target.project)
+        return self.gone(self.project_url(target.project), *ids)
 
 
 # ---------- links of inspiration ----------
@@ -720,12 +757,12 @@ class LinkAddView(PostView):
             messages.error(
                 request, _("Give the address of a web page, such as https://example.com.")
             )
-            return self.back(project)
+            return self.stay(project)
         if not link_services.preview_allowed(request, project):
             messages.error(
                 request, _("Too many links added in a short time. Try again in a minute.")
             )
-            return self.back(project)
+            return self.stay(project)
         try:
             link_services.add_link(
                 request.user,
@@ -737,7 +774,7 @@ class LinkAddView(PostView):
             messages.error(request, " ".join(exc.messages))
         else:
             messages.success(request, _("Link added."))
-        return self.back(project)
+        return self.stay(project)
 
 
 class LinkDeleteView(ConfirmDeleteView):
@@ -755,6 +792,7 @@ class LinkDeleteView(ConfirmDeleteView):
         )
 
     def remove(self, target: ProjectLink) -> HttpResponse:
+        ids = [target.id]
         link_services.delete_link(self.request.user, target)
         messages.success(self.request, _("Link deleted."))
-        return self.back(target.project)
+        return self.gone(self.project_url(target.project), *ids)

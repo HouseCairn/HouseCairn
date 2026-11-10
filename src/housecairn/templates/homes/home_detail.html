@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n tabs %}
+{% load i18n tabs navigation %}
 {% block head_title %}{{ home.name }}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'homes:list' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Homes" %}</a>
+  {% url 'homes:list' as parent %}{% back_link parent %}
   <h1>{{ home.name }}</h1>
   {% tab_bar "home" %}
   <section class="card">
@@ -15,7 +15,7 @@
   <h2>{% translate "Settings" %}</h2>
   <div class="list">
     {% if can_write %}
-    <a class="row" href="{% url 'homes:edit' home_id=home.id %}">
+    <a class="row" href="{% url_with_next 'homes:edit' home_id=home.id %}">
       <span class="row-body">
         <span class="row-title">{% translate "Name, currency and hemisphere" %}</span>
         <span class="row-text">{% translate "The hemisphere decides what spring, summer and the other seasons mean for the tasks" %}</span>
@@ -23,7 +23,7 @@
       {% include "components/icon.html" with name="chevron" class="chevron" %}
     </a>
     {% endif %}
-    <a class="row" href="{% url 'homes:household' home_id=home.id %}">
+    <a class="row" href="{% url_with_next 'homes:household' home_id=home.id %}">
       <span class="row-body">
         <span class="row-title">{% translate "Household and roles" %}</span>
         <span class="row-text">{% blocktranslate count counter=member_count %}{{ counter }} person{% plural %}{{ counter }} people{% endblocktranslate %}</span>
@@ -37,10 +37,11 @@
     <div class="card">
       <form method="post" action="{% url 'homes:export' home_id=home.id %}">
         {% csrf_token %}
+        {% next_field %}
         <button type="submit" class="button-secondary button-block">{% translate "Export all data" %}</button>
         <p class="small">{% translate "One archive with everything of this home, in an open format." %}</p>
       </form>
     </div>
-    <a class="button button-danger button-block" href="{% url 'homes:delete' home_id=home.id %}">{% translate "Delete this home" %}</a>
+    <a class="button button-danger button-block" href="{% url_with_next 'homes:delete' home_id=home.id %}">{% translate "Delete this home" %}</a>
   {% endif %}
 {% endblock content %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tabs projects_extras %}
+{% load i18n tabs projects_extras navigation %}
 {% block head_title %}{% translate "Projects" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Projects" %}</h1>
@@ -16,7 +16,7 @@
         <div><dt>{% translate "Left in the envelope" %}</dt><dd>{% if envelope.left < 0 %}{% blocktranslate with amount=envelope.left|money:home.currency %}{{ amount }} (over the envelope){% endblocktranslate %}{% else %}{{ envelope.left|money:home.currency }}{% endif %}</dd></div>
       </dl>
     {% endif %}
-    {% if can_write %}<a class="button button-secondary button-small" href="{% url 'projects:envelope' home_id=home.id %}">{% translate "Set the envelope" %}</a>{% endif %}
+    {% if can_write %}<a class="button button-secondary button-small" href="{% url_with_next 'projects:envelope' home_id=home.id %}">{% translate "Set the envelope" %}</a>{% endif %}
   </section>
   <form method="get" class="filter-row" role="search">
     <label class="visually-hidden" for="filter-q">{% translate "Search by title or goal" %}</label>
@@ -52,7 +52,7 @@
             <li class="row">
               <label class="visually-hidden" for="compare-{{ project.id }}">{% blocktranslate with title=project.title %}Compare {{ title }}{% endblocktranslate %}</label>
               <input id="compare-{{ project.id }}" type="checkbox" name="p" value="{{ project.id }}">
-              <a class="row-body" href="{% url 'projects:detail' home_id=home.id project_id=project.id %}">
+              <a class="row-body" href="{% url_with_next 'projects:detail' home_id=home.id project_id=project.id %}">
                 <span class="row-title">{{ project.title }}</span>
                 <span class="row-text">
                   {% if amounts.planned or amounts.committed or amounts.paid %}{% blocktranslate with planned=amounts.planned|money:home.currency %}Planned {{ planned }}{% endblocktranslate %}{% else %}{% translate "No budget yet" %}{% endif %}
@@ -74,6 +74,6 @@
     <p class="empty">{% translate "No project matches." %}</p>
   {% endif %}
   {% if can_write %}
-    <a class="button button-secondary button-block" href="{% url 'projects:create' home_id=home.id %}">{% translate "Add a project" %}</a>
+    <a class="button button-secondary button-block" href="{% url_with_next 'projects:create' home_id=home.id %}">{% translate "Add a project" %}</a>
   {% endif %}
 {% endblock content %}
