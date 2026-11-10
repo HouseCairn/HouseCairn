@@ -203,6 +203,11 @@ def with_next(url: str, next_url: str) -> str:
     return urlunsplit(parts._replace(query=urlencode(query)))
 
 
+def stay(request: HttpRequest, page: str) -> str:
+    """`page` again after an action in place, still knowing where it was opened from."""
+    return with_next(page, safe_next(request) or "")
+
+
 def is_section_list(url: str | None, name: str) -> bool:
     """True when `url` is the list `name` itself (any filter): a creation there opens the record."""
     return url is not None and route_name(url) == name

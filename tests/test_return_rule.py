@@ -110,6 +110,17 @@ class TestBackUrl:
     def test_with_next_replaces_any_next(self) -> None:
         assert navigation.with_next("/a/?next=/x/&b=1", "/c/") == "/a/?b=1&next=%2Fc%2F"
 
+    def test_stay_keeps_a_safe_next(self) -> None:
+        request = self.request("/h/1/rooms/")
+        assert navigation.stay(request, "/h/1/tasks/3/") == "/h/1/tasks/3/?next=%2Fh%2F1%2Frooms%2F"
+
+    def test_stay_drops_a_hostile_next(self) -> None:
+        request = self.request("https://evil.example.com/")
+        assert navigation.stay(request, "/h/1/tasks/3/") == "/h/1/tasks/3/"
+
+    def test_stay_without_next_leaves_the_page_alone(self) -> None:
+        assert navigation.stay(self.request(""), "/h/1/tasks/3/") == "/h/1/tasks/3/"
+
 
 # ---------- a task created from an item ----------
 

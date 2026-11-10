@@ -192,7 +192,7 @@ class ReportActionView(HomeReportsMixin, View):
                 return redirect("tasks:detail", home_id=self.home.id, task_id=task.id)
         # An action in place: the report again, still knowing where it was opened from.
         page = reverse("reports:detail", kwargs={"home_id": self.home.id, "report_id": report.id})
-        return redirect(navigation.with_next(page, navigation.safe_next(request) or ""))
+        return redirect(navigation.stay(request, page))
 
 
 class ReportToTaskView(ReportActionView):

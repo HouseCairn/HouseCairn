@@ -147,7 +147,7 @@ class LabelCreateView(LabelsMixin, View):
             messages.success(request, _("QR label made."))
         # The label opens, and its back link leads to the page it was made from.
         page = reverse("labels:detail", kwargs={"home_id": self.home.id, "label_id": label.id})
-        return redirect(navigation.with_next(page, navigation.safe_next(request) or ""))
+        return redirect(navigation.stay(request, page))
 
 
 class LabelRegenerateView(LabelsMixin, View):
@@ -157,7 +157,7 @@ class LabelRegenerateView(LabelsMixin, View):
             request, _("The old sticker no longer opens anything. Print the new label.")
         )
         page = reverse("labels:detail", kwargs={"home_id": self.home.id, "label_id": label.id})
-        return redirect(navigation.with_next(page, navigation.safe_next(request) or ""))
+        return redirect(navigation.stay(request, page))
 
 
 class LabelRevokeView(LabelsMixin, View):

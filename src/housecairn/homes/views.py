@@ -244,7 +244,7 @@ class HomeActionView(WebHomeScopedMixin, View):
     def household(self, home: Home) -> HttpResponse:
         """The household again, still knowing where it was opened from (an action in place)."""
         page = reverse("homes:household", kwargs={"home_id": home.id})
-        return redirect(navigation.with_next(page, navigation.safe_next(self.request) or ""))
+        return redirect(navigation.stay(self.request, page))
 
     def act(self, home: Home) -> HttpResponse | None:  # pragma: no cover - abstract
         raise NotImplementedError

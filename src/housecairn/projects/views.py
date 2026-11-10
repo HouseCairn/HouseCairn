@@ -127,8 +127,7 @@ class HomeProjectsMixin(WebHomeScopedMixin):
 
     def stay(self, project: Project) -> HttpResponse:
         """After an action in place: the project again, still knowing where it was opened from."""
-        target = navigation.safe_next(self.request) or ""
-        return redirect(navigation.with_next(self.project_url(project), target))
+        return redirect(navigation.stay(self.request, self.project_url(project)))
 
     def gone(self, parent: str, *ids: Any) -> HttpResponse:
         """After a deletion: `next` unless it is about what is gone, else `parent`."""
