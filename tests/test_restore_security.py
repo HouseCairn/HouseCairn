@@ -204,6 +204,25 @@ def test_a_file_that_is_not_a_zip_is_refused(alice: User) -> None:
     refused(alice, b"", "not a valid zip")
 
 
+TRAPPED_JSON = {
+    # Deeper than the stack: json.loads raises RecursionError, not JSONDecodeError.
+    "deep": b"[" * 200_000,
+    # Longer than Python converts to an int (4300 digits): json.loads raises ValueError.
+    "huge integer": b'{"app": "rooms", "n": ' + b"9" * 5000 + b"}",
+}
+
+
+@pytest.mark.parametrize("name", ["manifest.json", "data/rooms.json"])
+@pytest.mark.parametrize("trap", sorted(TRAPPED_JSON))
+def test_a_trapped_json_document_is_refused(
+    exported: bytes, alice: User, name: str, trap: str
+) -> None:
+    files = entries(exported)
+    files[name] = TRAPPED_JSON[trap]
+    # The data file keeps a manifest that agrees with it: only the JSON check stops it.
+    refused(alice, rebuild(files, rehash=name != "manifest.json"), "not valid JSON")
+
+
 def test_an_unknown_part_is_refused(exported: bytes, alice: User) -> None:
     files = entries(exported)
     manifest = json.loads(files["manifest.json"])
@@ -327,6 +346,22 @@ class TestRoutes:
         assert response.status_code == 200
         assert "not a valid zip" in response.content.decode()
         assert not Home.objects.exists() or Home.objects.count() == 1
+
+    @pytest.mark.parametrize("trap", sorted(TRAPPED_JSON))
+    def test_a_trapped_json_document_is_refused_on_the_form_and_not_an_error(
+        self, client: Client, exported: bytes, alice: User, trap: str
+    ) -> None:
+        files = entries(exported)
+        files["data/rooms.json"] = TRAPPED_JSON[trap]
+        homes = Home.all_objects.count()
+        client.force_login(alice)
+        response = client.post(
+            reverse("homes:restore"),
+            {"archive": upload(rebuild(files), "home.zip", "application/zip")},
+        )
+        assert response.status_code == 200
+        assert "not valid JSON" in response.content.decode()
+        assert Home.all_objects.count() == homes
 
     def test_the_api_restores_for_a_signed_in_person_and_never_for_a_token(
         self,

@@ -142,12 +142,18 @@ def _check_entries(zipped: zipfile.ZipFile) -> list[zipfile.ZipInfo]:
     return infos
 
 
+# What `json.loads` raises on a hostile document: bytes that are not UTF-8, text that is
+# not JSON, nesting deeper than the stack allows (RecursionError), an integer longer than
+# Python converts (ValueError, more than 4300 digits by default).
+_NOT_JSON = (UnicodeDecodeError, json.JSONDecodeError, ValueError, RecursionError)
+
+
 def _json(zipped: zipfile.ZipFile, info: zipfile.ZipInfo) -> Any:
     if info.file_size > DOCUMENT_MAX_BYTES:
         raise _refuse(_("A data file of the archive is too large: %(name)s."), name=info.filename)
     try:
         return json.loads(_read_entry(zipped, info).decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError):
+    except _NOT_JSON:
         raise _refuse(
             _("A data file of the archive is not valid JSON: %(name)s."), name=info.filename
         ) from None
@@ -220,7 +226,7 @@ def read_archive(source: IO[bytes]) -> Archive:
             raise _refuse(_("The archive was changed after it was made: %(name)s."), name=name)
         try:
             document = json.loads(raw.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError):
+        except _NOT_JSON:
             raise _refuse(
                 _("A data file of the archive is not valid JSON: %(name)s."), name=name
             ) from None
