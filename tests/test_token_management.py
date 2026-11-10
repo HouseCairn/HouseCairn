@@ -6,6 +6,7 @@ itself is never allowed to do.
 """
 
 import json
+import re
 from datetime import timedelta
 from typing import Any
 from urllib.parse import urlencode
@@ -371,11 +372,44 @@ class TestScreen:
         )
         ApiToken.objects.filter(pk=token.pk).update(last_used_at=timezone.now())
         page = web.get(reverse("api-tokens:list")).content.decode()
-        for shown in ("Dashboard", token.prefix, "Main house", "events, read"):
+        for shown in ("Dashboard", token.prefix, "Main house", "Post events, Read"):
             assert shown in page
         for hidden in (raw, token.digest):
             assert hidden not in page
         assert 'data-label="Last used"' in page
+
+    def test_the_action_cell_has_a_label_so_that_a_phone_draws_it(
+        self, web: Client, alice: User, alice_home: Home
+    ) -> None:
+        # Under 56 rem `.table-stack td:not([data-label])` is not drawn: no label, no Revoke.
+        services.issue_token(alice, name="Dashboard", scopes=["read"], homes=[alice_home])
+        page = web.get(reverse("api-tokens:list")).content.decode()
+        cells = re.findall(r"<td([^>]*)>(?=<a[^>]*/revoke/)", page)
+        assert len(cells) == 1
+        assert 'data-label="Actions"' in cells[0]
+
+    def test_the_list_speaks_french_to_a_french_reader(self, alice: User, alice_home: Home) -> None:
+        services.issue_token(alice, name="Dashboard", scopes=["read", "write"], homes=[alice_home])
+        client = Client(headers={"accept-language": "fr"})
+        client.force_login(alice)
+        page = client.get(reverse("api-tokens:list")).content.decode()
+        assert "Lecture, Écriture" in page or "Écriture, Lecture" in page
+        for raw in (">read<", "read, ", ", write", ">write<"):
+            assert raw not in page
+
+    def test_the_form_words_the_expiry_in_the_language_of_the_reader(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        client = Client(headers={"accept-language": "fr"})
+        client.force_login(alice)
+        page = client.get(reverse("api-tokens:new")).content.decode()
+        for shown in ("30 jours", "90 jours", "1 an"):
+            assert shown in page
+        assert "90 days" not in page
+        # Another request in English is not stuck with the language of the first one.
+        english = Client(headers={"accept-language": "en"})
+        english.force_login(alice)
+        assert "90 days" in english.get(reverse("api-tokens:new")).content.decode()
 
     def test_an_expired_token_says_so(self, web: Client, alice: User, alice_home: Home) -> None:
         token = services.issue_token(alice, name="Old", scopes=["read"], homes=[alice_home])[0]
