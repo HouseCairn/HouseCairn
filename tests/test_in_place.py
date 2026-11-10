@@ -7,6 +7,7 @@ forms are sent with `no-store` and a one-time token against a second sending.
 
 import threading
 from decimal import Decimal
+from urllib.parse import urlencode
 
 import pytest
 from django.db import connection, connections
@@ -252,9 +253,13 @@ class TestCreationForms:
             "next": today,
             FORM_TOKEN_FIELD: token_of(page),
         }
-        first = signed_in.post(url("create", alice_home), data)
+        # A browser's post is read by the CSRF check first; the test client skips that
+        # check, so the form goes urlencoded, which the middleware reads itself.
+        body = urlencode(data)
+        form = "application/x-www-form-urlencoded"
+        first = signed_in.post(url("create", alice_home), body, content_type=form)
         assert first.status_code == 302
-        second = signed_in.post(url("create", alice_home), data, follow=True)
+        second = signed_in.post(url("create", alice_home), body, content_type=form, follow=True)
         assert Task.objects.filter(home=alice_home, title="Bleed the radiators").count() == 1
         assert second.redirect_chain[0][0] == today
         assert "already sent" in second.content.decode()

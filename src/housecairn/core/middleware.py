@@ -94,11 +94,14 @@ class CreationFormMiddleware:
 def _body_read(request: HttpRequest) -> bool:
     """The form may be read here without reading a body a view would refuse unread.
 
-    The CSRF check has already read it (`_post`), or it is small: an upload view checks
-    the declared size first and answers 413 without reading (rooms, tasks, stock).
+    The CSRF check has already read it (`_post`, the case of every browser post), or it
+    is a small form without files: an upload view checks the declared size first and
+    answers 413 without reading (rooms, tasks, stock), so a multipart body is left to it.
     """
     if hasattr(request, "_post"):
         return True
+    if request.content_type == "multipart/form-data":
+        return False
     declared = int(request.META.get("CONTENT_LENGTH") or 0)
     return declared <= settings.DATA_UPLOAD_MAX_MEMORY_SIZE
 
