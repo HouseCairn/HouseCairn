@@ -27,6 +27,6 @@ msgstr "**Tableaux pour un tableur.** Chaque membre télécharge les pièces, é
 msgid "**Large homes are exported in the background**, then downloaded from the page of the export, at most three times within a day."
 msgstr "**Les grands logements sont exportés en tâche de fond**, puis téléchargés depuis la page de l'export, trois fois au plus dans la journée."
 
-msgid "**Back up the whole instance in one command**, `backup_instance`, and restore it with `restore_instance`, which checks every part first ([Data and backups](../../../administration/backup.md))."
-msgstr "**Sauvegarder toute l'instance en une commande**, `backup_instance`, et la restaurer avec `restore_instance`, qui vérifie d'abord chaque partie ([Données et sauvegardes](../../../administration/backup.md))."
+msgid "**Back up the whole instance in one command**, `backup_instance`, and restore it with `restore_instance`, which checks every part first. With PostgreSQL, whose `pg_dump` the image does not contain, the guide gives the commands of the `postgres` service instead ([Data and backups](../../../administration/backup.md))."
+msgstr "**Sauvegarder toute l'instance en une commande**, `backup_instance`, et la restaurer avec `restore_instance`, qui vérifie d'abord chaque partie. Avec PostgreSQL, dont l'image ne contient pas `pg_dump`, le guide donne à la place les commandes du service `postgres` ([Données et sauvegardes](../../../administration/backup.md))."
 

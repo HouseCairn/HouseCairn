@@ -60,11 +60,23 @@ msgstr "Les fichiers appartiennent à `10001:10001` et ne sont lisibles que par 
 msgid "Back up"
 msgstr "Sauvegarder"
 
-msgid "The simplest complete backup, while HouseCairn runs, is one command ([ADR 0048](../adr/0048-export-format-and-restore.md)):"
-msgstr "La sauvegarde complète la plus simple, pendant que HouseCairn tourne, tient en une commande ([ADR 0048](../adr/0048-export-format-and-restore.md)) :"
+msgid "With SQLite, the default, the simplest complete backup, while HouseCairn runs, is one command ([ADR 0048](../adr/0048-export-format-and-restore.md)):"
+msgstr "Avec SQLite, la base par défaut, la sauvegarde complète la plus simple, pendant que HouseCairn tourne, tient en une commande ([ADR 0048](../adr/0048-export-format-and-restore.md)) :"
 
-msgid "The archive holds a consistent copy of the database (SQLite's online backup API, the same as `sqlite3 db.sqlite3 \".backup ...\"`; with PostgreSQL, `pg_dump --format=custom`, which must be installed where the command runs), the uploaded files of `/data/media/`, the secret key, and `manifest.json` with the SHA-256 digest of each. It is written with mode 600: it holds every home and the secret key, keep it as safe as the server. Copy it off the machine, and remove old copies from `/data/backups/` yourself. `--output <directory>` writes it elsewhere."
-msgstr "L'archive contient une copie cohérente de la base de données (l'API de sauvegarde à chaud de SQLite, la même que `sqlite3 db.sqlite3 \".backup ...\"` ; avec PostgreSQL, `pg_dump --format=custom`, qui doit être installé là où la commande s'exécute), les fichiers envoyés de `/data/media/`, la clé secrète, et `manifest.json` avec l'empreinte SHA-256 de chacun. Elle est écrite en mode 600 : elle contient tous les logements et la clé secrète, gardez-la aussi bien que le serveur. Copiez-la hors de la machine, et supprimez vous-même les anciennes copies de `/data/backups/`. `--output <dossier>` l'écrit ailleurs."
+msgid "The archive holds a consistent copy of the database (SQLite's online backup API, the same as `sqlite3 db.sqlite3 \".backup ...\"`), the uploaded files of `/data/media/`, the secret key, and `manifest.json` with the SHA-256 digest of each. It is written with mode 600: it holds every home and the secret key, keep it as safe as the server. Copy it off the machine, and remove old copies from `/data/backups/` yourself. `--output <directory>` writes it elsewhere."
+msgstr "L'archive contient une copie cohérente de la base de données (l'API de sauvegarde à chaud de SQLite, la même que `sqlite3 db.sqlite3 \".backup ...\"`), les fichiers envoyés de `/data/media/`, la clé secrète, et `manifest.json` avec l'empreinte SHA-256 de chacun. Elle est écrite en mode 600 : elle contient tous les logements et la clé secrète, gardez-la aussi bien que le serveur. Copiez-la hors de la machine, et supprimez vous-même les anciennes copies de `/data/backups/`. `--output <dossier>` l'écrit ailleurs."
+
+msgid "With PostgreSQL"
+msgstr "Avec PostgreSQL"
+
+msgid "With PostgreSQL, `backup_instance` calls `pg_dump`, and `restore_instance` calls `pg_restore`. **The official image contains neither**: in it, both commands stop with `pg_dump is not installed in this container` (or `pg_restore`). Back up the two parts separately instead, with the `postgres` service of `compose.yaml`, whose image has both programs and is of the same version as the server:"
+msgstr "Avec PostgreSQL, `backup_instance` appelle `pg_dump`, et `restore_instance` appelle `pg_restore`. **L'image officielle ne contient ni l'un ni l'autre** : les deux commandes s'y arrêtent sur `pg_dump is not installed in this container` (ou `pg_restore`). Sauvegardez plutôt les deux parties séparément, avec le service `postgres` de `compose.yaml`, dont l'image contient les deux programmes, dans la même version que le serveur :"
+
+msgid "If `SECRET_KEY` is set in `deploy/production.env` rather than generated in `/data/secret_key`, leave `secret_key` out of the second command and keep a copy of `production.env` instead. Both files hold every home; keep them as safe as the server."
+msgstr "Si `SECRET_KEY` est défini dans `deploy/production.env` au lieu d'être généré dans `/data/secret_key`, retirez `secret_key` de la seconde commande et gardez plutôt une copie de `production.env`. Les deux fichiers contiennent tous les logements ; gardez-les aussi bien que le serveur."
+
+msgid "These commands follow the `compose.yaml` of the repository (service, user, database and volume names), but have not yet been tried on a real server: try a restore on another machine before you rely on them."
+msgstr "Ces commandes suivent le `compose.yaml` du dépôt (noms du service, de l'utilisateur, de la base et du volume), mais n'ont pas encore été essayées sur un vrai serveur : essayez une restauration sur une autre machine avant de vous y fier."
 
 msgid "Two other ways remain:"
 msgstr "Deux autres façons restent possibles :"
@@ -84,8 +96,8 @@ msgstr "Les propriétaires d'un logement peuvent aussi en garder leur propre cop
 msgid "Restore"
 msgstr "Restaurer"
 
-msgid "Stop the application (and keep the database service running if it is PostgreSQL), then restore the archive of `backup_instance`, and start the application again:"
-msgstr "Arrêtez l'application (en laissant tourner le service de base de données s'il s'agit de PostgreSQL), restaurez l'archive de `backup_instance`, puis redémarrez l'application :"
+msgid "With SQLite, stop the application, then restore the archive of `backup_instance`, and start the application again:"
+msgstr "Avec SQLite, arrêtez l'application, restaurez l'archive de `backup_instance`, puis redémarrez l'application :"
 
 msgid "Every part is checked against the manifest first; a changed backup, a name that leaves its directory or a link is refused and nothing is replaced. The database, `/data/media/` and the secret key that were there are not deleted: they are kept next to it, renamed `<name>.before-restore-<date>`, until you remove them. Without `--yes`, the command refuses to replace anything."
 msgstr "Chaque partie est d'abord vérifiée d'après le manifeste ; une sauvegarde modifiée, un nom qui sort de son dossier ou un lien sont refusés, et rien n'est remplacé. La base de données, `/data/media/` et la clé secrète qui étaient en place ne sont pas supprimées : elles sont gardées à côté, renommées `<nom>.before-restore-<date>`, jusqu'à ce que vous les supprimiez. Sans `--yes`, la commande refuse de remplacer quoi que ce soit."
@@ -95,6 +107,12 @@ msgstr "Pour vérifier une sauvegarde sans toucher à l'instance, restaurez-la a
 
 msgid "For a cold copy, stop the container, put the files back in the volume (owned by `10001:10001`), and start it."
 msgstr "Pour une copie à froid, arrêtez le conteneur, remettez les fichiers dans le volume (propriété de `10001:10001`), puis démarrez-le."
+
+msgid "With PostgreSQL, restore the two parts of [With PostgreSQL](#with-postgresql), the application stopped and the `postgres` service running:"
+msgstr "Avec PostgreSQL, restaurez les deux parties de [Avec PostgreSQL](#with-postgresql), l'application arrêtée et le service `postgres` en marche :"
+
+msgid "`--clean --if-exists` drops each table of the dump before it is recreated, so the database is the one of the dump; `--single-transaction` leaves it as it was if anything fails. Unlike `restore_instance`, the files are not checked against a manifest and those already in `/data/media/` are overwritten, not kept aside. Like the backup, this has not yet been tried on a real server."
+msgstr "`--clean --if-exists` supprime chaque table du dump avant de la recréer, de sorte que la base est celle du dump ; `--single-transaction` la laisse telle quelle si quoi que ce soit échoue. Contrairement à `restore_instance`, les fichiers ne sont pas vérifiés contre un manifeste, et ceux déjà présents dans `/data/media/` sont écrasés, pas mis de côté. Comme la sauvegarde, cela n'a pas encore été essayé sur un vrai serveur."
 
 #~ msgid "Back up `/data` in one of two ways:"
 #~ msgstr "Sauvegardez `/data` de l'une de ces deux façons :"

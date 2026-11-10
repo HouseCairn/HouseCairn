@@ -14,5 +14,6 @@ nosearch: true
 - **Large homes are exported in the background**, then downloaded from the page of the
   export, at most three times within a day.
 - **Back up the whole instance in one command**, `backup_instance`, and restore it with
-  `restore_instance`, which checks every part first
+  `restore_instance`, which checks every part first. With PostgreSQL, whose `pg_dump` the
+  image does not contain, the guide gives the commands of the `postgres` service instead
   ([Data and backups](../../../administration/backup.md)).
