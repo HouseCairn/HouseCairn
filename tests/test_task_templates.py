@@ -10,6 +10,7 @@ from typing import Any
 import jsonschema
 import pytest
 import yaml
+from django.conf import settings
 from django.test import Client
 from django.urls import reverse
 from django.utils import translation
@@ -154,7 +155,8 @@ def test_the_smoke_alarm_battery_is_added_in_two_steps(alice: User, alice_home: 
     assert b'value="smoke-alarm-battery"' in shown.content
     done = client.post(page, {"templates": ["smoke-alarm-battery"], "next": tasks})
     assert done.status_code == 302
-    assert done["Location"] == tasks
+    # Back to the list of tasks; under a path prefix, the prefix comes first.
+    assert done["Location"].endswith(tasks.removeprefix(settings.FORCE_SCRIPT_NAME or ""))
     assert Task.objects.filter(home=alice_home, title__icontains="battery").count() == 1
 
 
