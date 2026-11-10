@@ -635,10 +635,16 @@ application then starts with the prefix.
   `action="/…"`, `hx-post="/…"`), and a script of `static/js` **must not** hold one
   either. Under a prefix, `/…` leaves the application. `tests/test_url_prefix.py` fails
   on any such address, and the CI runs the navigation tests under a prefix.
-- An address sent away (an invitation email, a QR label, a calendar feed) is
-  `homes.scoping.site_url(request)` followed by `reverse(…)`: the scheme and the host
-  come from `HOUSECAIRN_SITE_URL` when it is set, else from the request, and the path,
-  prefix included, from `reverse`.
+- An address sent away (the links of emails and invitations, a QR label, a calendar
+  feed and the links of its events, the first-account address in the log) **must** be
+  built by `core.links.external_url(reverse(…), site)`, on the public address: the
+  scheme and the host of `HOUSECAIRN_SITE_URL` (during a request,
+  `homes.scoping.site_url(request)`, which falls back on those of the request), then
+  the fixed `HOUSECAIRN_URL_PREFIX`, never the prefix of the request. Without a public
+  address, the task worker leaves its links out. Addresses used inside a page keep the
+  prefix of the request; the callback addresses of the sign-in providers stay those of
+  the request ([ADR 0055](../adr/0055-serving-under-a-path-prefix.md), change of
+  2026-11-10; [Serving under a path prefix](../administration/url-prefix.md)).
 - A link to an address that a person typed (a purchase link, a contract, the links of an
   item or of a project, a document in Paperless-ngx) **must** carry
   `rel="noopener noreferrer nofollow"`. Its field is a `WebUrlField`
