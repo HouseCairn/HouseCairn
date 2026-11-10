@@ -21,6 +21,7 @@ from housecairn.accounts.models import User
 from housecairn.apitokens import services
 from housecairn.apitokens.models import ApiToken, Scope
 from housecairn.apitokens.permissions import SessionOnly
+from housecairn.homes import sso
 from housecairn.homes.models import Home
 
 # These routes take the cookie of a signed-in person only, never a token (see SessionOnly).
@@ -110,17 +111,20 @@ class TokenListView(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         wanted: set[UUID] = set(data["homes"])
-        homes: list[Home] = list(services.issuable_homes(user).filter(pk__in=wanted))
+        homes: list[Home] = list(services.token_homes(user).filter(pk__in=wanted))
         # The same answer for a home that does not exist and for one that is not theirs.
         if {home.id for home in homes} != wanted:
             raise exceptions.ValidationError({"homes": ["Choose one of your homes."]})
         try:
+            # A home of theirs that requires a provider this session did not sign in
+            # through raises SsoRequiredError: 403 with `code: sso_required`.
             token, raw = services.create_token(
                 user,
                 name=data["name"],
                 scopes=data.get("scopes") or [Scope.READ],
                 homes=homes,
                 lifetime_days=data.get("expires_in_days", services.default_lifetime_days()),
+                signed_in_with=sso.signed_in_providers(request),
             )
         except DjangoValidationError as exc:
             raise exceptions.ValidationError({"detail": exc.messages}) from None

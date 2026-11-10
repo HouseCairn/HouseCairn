@@ -8,7 +8,44 @@
   <form method="post" class="card" novalidate>
     {% csrf_token %}
     {% next_field %}
-    {{ form.as_p }}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      {{ field.errors }}
+      {% if field.name == "homes" %}
+        {# A home that requires a provider this session did not sign in through is listed, disabled, with the way to unlock it (docs/adr/0057). #}
+        <fieldset class="check-list" aria-describedby="{{ field.auto_id }}_helptext">
+          <legend>{{ field.label }}</legend>
+          {% for box in field %}
+            <div class="check-row">
+              {{ box.tag }}
+              <span class="row-body">
+                <label class="row-title" for="{{ box.id_for_label }}">{{ box.choice_label }}</label>
+                {% if box.data.provider %}
+                  <span class="row-text" id="{{ box.id_for_label }}_locked">
+                    {% if box.data.provider_declared %}
+                      {% blocktranslate with provider=box.data.provider.name %}A token opens this home only if you create it after signing in through {{ provider }}.{% endblocktranslate %}
+                      <button type="submit" form="sso-continue-{{ box.data.provider.id }}" class="link-button">{% blocktranslate with provider=box.data.provider.name %}Continue with {{ provider }}{% endblocktranslate %}</button>
+                    {% else %}
+                      {% translate "This home requires a sign-in provider this instance no longer offers: no token can open it until an owner removes the requirement." %}
+                    {% endif %}
+                  </span>
+                {% endif %}
+              </span>
+            </div>
+          {% endfor %}
+          <span class="helptext" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</span>
+        </fieldset>
+      {% else %}
+        <p>
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.help_text %}<span class="helptext" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</span>{% endif %}
+        </p>
+      {% endif %}
+    {% endfor %}
     <button type="submit" class="button-block">{% translate "Create the token" %}</button>
   </form>
+  {% for provider in form.sign_in_providers %}
+    <form id="sso-continue-{{ provider.id }}" method="post" action="{% url 'openid_connect_login' provider_id=provider.id %}?process=login&amp;next={{ request.get_full_path|urlencode }}">{% csrf_token %}</form>
+  {% endfor %}
 {% endblock content %}

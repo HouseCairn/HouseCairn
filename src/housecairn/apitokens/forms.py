@@ -10,11 +10,35 @@ from housecairn.accounts.models import User
 from housecairn.apitokens import services
 from housecairn.apitokens.models import Scope
 from housecairn.homes.models import Home
+from housecairn.homes.sso import Provider
 
 
 class HomeChoiceField(forms.ModelMultipleChoiceField[Home]):
     def label_from_instance(self, obj: Home) -> str:
         return obj.name
+
+
+class HomesWidget(forms.CheckboxSelectMultiple):
+    """Boxes of homes; one this session cannot bind is disabled and names its provider."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        # Home id: the provider it requires; `declared`: the providers this instance offers.
+        self.locked: dict[str, Provider] = {}
+        self.declared: set[str] = set()
+
+    def create_option(self, name: str, value: Any, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        option: dict[str, Any] = super().create_option(name, value, *args, **kwargs)
+        provider = self.locked.get(str(value))
+        option["provider"] = provider
+        option["provider_declared"] = provider is not None and provider.id in self.declared
+        if provider is not None:
+            attrs = {key: v for key, v in option["attrs"].items() if key != "checked"}
+            attrs["disabled"] = True
+            attrs["aria-describedby"] = f"{attrs.get('id', name)}_locked"
+            option["attrs"] = attrs
+            option["selected"] = False
+        return option
 
 
 def _lifetime_label(days: int) -> str:
@@ -44,7 +68,7 @@ class TokenForm(forms.Form):
     homes = HomeChoiceField(
         label=_("Homes"),
         queryset=Home.objects.none(),
-        widget=forms.CheckboxSelectMultiple,
+        widget=HomesWidget,
         help_text=_("The token opens these homes and no other."),
     )
     lifetime_days = forms.TypedChoiceField(
@@ -55,12 +79,39 @@ class TokenForm(forms.Form):
         help_text=_("There is no token without an expiry: you create a new one before it ends."),
     )
 
-    def __init__(self, *args: Any, user: User, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *args: Any,
+        user: User,
+        signed_in_with: frozenset[str],
+        providers: list[Provider],
+        **kwargs: Any,
+    ) -> None:
         super().__init__(*args, **kwargs)
-        homes = services.issuable_homes(user)
-        self.fields["homes"].queryset = homes  # type: ignore[attr-defined]
-        if not self.is_bound and homes.count() == 1:
-            self.fields["homes"].initial = list(homes)
+        # Every home of the person is listed. One that requires a provider this session did
+        # not sign in through is shown disabled, with the provider that unlocks it; the
+        # service refuses it if a forged request sends it anyway (docs/adr/0057).
+        homes = list(services.token_homes(user))
+        issuable = {home.id for home in services.issuable_homes(user, signed_in_with)}
+        declared = {provider.id: provider for provider in providers}
+        locked = {
+            str(home.id): declared.get(home.required_provider)
+            or Provider(id=home.required_provider, name=home.required_provider)
+            for home in homes
+            if home.id not in issuable
+        }
+        self.fields["homes"].queryset = services.token_homes(user)  # type: ignore[attr-defined]
+        widget = self.fields["homes"].widget
+        assert isinstance(widget, HomesWidget)  # noqa: S101 - declared above
+        widget.locked = locked
+        widget.declared = set(declared)
+        if not self.is_bound and len(issuable) == 1:
+            self.fields["homes"].initial = [home for home in homes if home.id in issuable]
+        # The declared providers that would unlock a disabled home, once each: the page
+        # offers to continue with each of them.
+        self.sign_in_providers = list(
+            {p.id: p for p in locked.values() if p.id in declared}.values()
+        )
         lifetime = self.fields["lifetime_days"]
         lifetime.choices = [  # type: ignore[attr-defined]
             (days, _lifetime_label(days)) for days in services.LIFETIME_CHOICES

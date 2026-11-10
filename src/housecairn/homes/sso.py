@@ -39,11 +39,14 @@ def provider_named(provider_id: str, request: HttpRequest | Request | None = Non
 def signed_in_providers(request: HttpRequest | Request) -> frozenset[str]:
     """Providers through which this session signed in.
 
-    A request authenticated by an API token has none: a token is not a sign-in
-    through a provider, so it never opens a home that requires one.
+    A request authenticated by an API token has at most the provider recorded on
+    the token: the one the session that created it had signed in through, when a
+    home of the token required it (docs/adr/0057). A token made without one has
+    none, and opens no home that requires a provider.
     """
-    if isinstance(getattr(request, "auth", None), ApiToken):
-        return frozenset()
+    token = getattr(request, "auth", None)
+    if isinstance(token, ApiToken):
+        return frozenset({token.signed_in_provider}) if token.signed_in_provider else frozenset()
     user = getattr(request, "user", None)
     if user is None or not user.is_authenticated:
         return frozenset()

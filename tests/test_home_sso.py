@@ -112,7 +112,7 @@ class TestRequirement:
         assert client.get(url).status_code == 200
         assert client.get(members).status_code == 200
 
-    def test_api_token_never_opens_it(
+    def test_a_token_made_without_the_provider_never_opens_it(
         self, api_client: APIClient, alice: User, locked_home: Home
     ) -> None:
         _token, raw = token_services.issue_token(

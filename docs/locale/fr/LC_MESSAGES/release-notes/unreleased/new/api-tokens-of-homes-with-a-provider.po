@@ -1,0 +1,22 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**API tokens for a home that requires a sign-in provider.** Such a home can now be given to a token, for example for Home Assistant, from a session signed in through its provider: on the [API tokens](../../../screens/api-tokens.md) form, it is listed and **Continue with** the provider unlocks it. The token remembers the provider, and stops opening the home if an owner requires another one. **Create a token** is shown as soon as you belong to a home."
+msgstr "**Jetons d'API pour un logement qui exige un fournisseur de connexion.** Un tel logement peut désormais être confié à un jeton, par exemple pour Home Assistant, depuis une session connectée par son fournisseur : sur le formulaire des [jetons d'API](../../../screens/api-tokens.md), il est listé et **Continuer avec** le fournisseur le débloque. Le jeton retient le fournisseur et cesse d'ouvrir le logement si un propriétaire en exige un autre. **Créer un jeton** s'affiche dès que vous êtes membre d'un logement."

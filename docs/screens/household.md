@@ -50,7 +50,9 @@ home](audit.md).
 When the instance offers single sign-on, an owner can require that members
 open this home only after signing in through one of its providers, such as
 Company SSO. A password, a passkey or an API token alone then no longer opens
-the home. Set the rule from a session signed in through that provider; the
+the home, except a token created from a session signed in through that
+provider ([API tokens](api-tokens.md)). Set the rule from a session signed in
+through that provider; the
 homes list marks the homes it locks. If the instance stops offering that
 provider, the page that asks for it offers owners **Remove the sign-in
 requirement**.
