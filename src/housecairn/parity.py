@@ -201,6 +201,7 @@ EXEMPT: dict[str, str] = {
     "api-docs": "API documentation page",
     "manifest": "web app manifest read by browsers",
     "more": "navigation page that links to other screens",
+    "homes:current": "choice of the home a section opens on, kept in the web session only",
     "more-security": "navigation page that links to the account security screens",
     "about": "static information page",
     "calendar:feed": "iCalendar document read by a calendar application, at a secret address",

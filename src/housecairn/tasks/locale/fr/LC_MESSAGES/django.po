@@ -834,15 +834,6 @@ msgstr "Intervenants"
 msgid "No contractor yet. People and companies who work in this home, with their trade and how to reach them, are kept here."
 msgstr "Aucun intervenant pour l'instant. Les personnes et les entreprises qui travaillent dans ce logement, avec leur métier et le moyen de les joindre, sont gardées ici."
 
-msgid "Home"
-msgstr "Logement"
-
-msgid "All my homes"
-msgstr "Tous mes logements"
-
-msgid "Show"
-msgstr "Afficher"
-
 msgid "Report a problem"
 msgstr "Signaler un problème"
 
@@ -955,6 +946,9 @@ msgstr "Supprimer la tâche"
 
 msgid "Filter the tasks"
 msgstr "Filtrer les tâches"
+
+msgid "Show"
+msgstr "Afficher"
 
 msgid "To do"
 msgstr "À faire"

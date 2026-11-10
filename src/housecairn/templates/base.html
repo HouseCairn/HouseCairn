@@ -25,6 +25,7 @@
   <div class="shell">
     <header class="appbar">
       {% include "shell/brand.html" %}
+      {% if user.is_authenticated %}{% include "shell/home_switcher.html" %}{% endif %}
       <div class="appbar-actions">
         {% include "shell/help_link.html" %}
         {% block header_actions %}{% endblock header_actions %}

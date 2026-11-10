@@ -561,3 +561,79 @@ class InvitationView(View):
             raise Http404 from exc
         messages.success(self.request, _("You joined %(home)s.") % {"home": membership.home.name})
         return redirect("homes:detail", home_id=membership.home_id)
+
+
+# ---------- current home ----------
+
+
+# The root a section opens on in a home, for a page whose route needs more than a home.
+_SECTION_ROOTS = {
+    "today": "tasks:today",
+    "rooms": "rooms:list",
+    "projects": "projects:list",
+    "budget": "budget:overview",
+}
+
+
+def _switched(request: HttpRequest, target: Home | None) -> str:
+    """Where the selector leads: the same screen in the home chosen, else its section root.
+
+    A page whose route needs only a home (a section root, a tab) opens again in the
+    home chosen. A record of the previous home (a room, a task) does not exist in the
+    next one: its section root opens there. A page without a home in its address (More,
+    the calendar) opens again, without a `?home=` that would override the choice.
+    "All homes" (`target` None) is the page of all homes, Today.
+    """
+    from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
+    from django.urls import Resolver404, resolve
+
+    from housecairn.core.context_processors import section_of
+
+    if target is None:
+        return reverse("index")
+    origin = navigation.safe_next(request)
+    if origin is None:
+        return reverse("tasks:today", kwargs={"home_id": target.pk})
+    parts = urlsplit(origin)
+    try:
+        match = resolve(parts.path)
+    except Resolver404:
+        return reverse("tasks:today", kwargs={"home_id": target.pk})
+    if "home_id" not in match.kwargs:
+        if match.view_name == "index":
+            return reverse("tasks:today", kwargs={"home_id": target.pk})
+        query = [(k, v) for k, v in parse_qsl(parts.query) if k not in ("home", "room", "person")]
+        return urlunsplit(parts._replace(query=urlencode(query)))
+    if set(match.kwargs) == {"home_id"}:
+        return reverse(match.view_name, kwargs={"home_id": target.pk})
+    if match.view_name.startswith("stock:"):
+        return reverse("stock:list", kwargs={"home_id": target.pk})
+    root = _SECTION_ROOTS.get(section_of(match))
+    if root is None:
+        return reverse("more")
+    return reverse(root, kwargs={"home_id": target.pk})
+
+
+class CurrentHomeView(LoginRequiredMixin, View):
+    """The selector of the app bar: a post that makes a home, or all of them, current.
+
+    Only a home the person may open now is accepted; any other value answers 404, so the
+    existence of a home is never revealed. "All homes" needs two homes at least.
+    """
+
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        from housecairn.homes import current
+
+        found = current.for_request(request)
+        raw = request.POST.get("home", "")
+        if raw == "all" and found.has_selector:
+            current.choose(request, None)
+            return redirect(_switched(request, None))
+        target = found.find(raw) if raw else None
+        if target is None:
+            raise Http404
+        current.choose(request, target)
+        return redirect(_switched(request, target))

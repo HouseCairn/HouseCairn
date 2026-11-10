@@ -1188,13 +1188,14 @@ class TestWeb:
         assert response.status_code == 302
         assert response["Location"] == url("list", alice_home)
 
-    def test_the_entry_asks_when_there_are_several_homes(
+    def test_the_entry_opens_the_current_home_when_there_are_several(
         self, signed_in: Client, alice: User, alice_home: Home
     ) -> None:
         from housecairn.homes import services as home_services
 
+        signed_in.get(url("list", alice_home))
         home_services.create_home(alice, name="Holiday flat")
-        assert "Choose the home" in signed_in.get(reverse("projects")).content.decode()
+        assert signed_in.get(reverse("projects"))["Location"] == url("list", alice_home)
 
     def test_create_edit_and_delete_from_the_screens(
         self, signed_in: Client, alice_home: Home, owner_room: Room

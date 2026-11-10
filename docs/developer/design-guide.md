@@ -63,15 +63,18 @@ holds the rest.
 
 A signed-in person has one start screen, Today, and every way in leads to it.
 
-- The root address `/` **must** lead a signed-in person to Today: the one home they can
-  open, else all their homes together on one Today page. The logo, the Today entry of
+- The root address `/` **must** lead a signed-in person to Today: Today of the
+  [current home](#current-home), or all their homes together on one Today page when
+  they chose "All homes" (and before they chose a home). The logo, the Today entry of
   the navigation outside a home, the `start_url` of the web app manifest and
   `LOGIN_REDIRECT_URL` **must** all be this address, never a second home screen.
 - The welcome page **must** be shown only to a visitor who is signed out and to an
   account with no home to open, with **Add a home**.
 - With several homes, the page of all homes **must** name each home by a heading that
-  opens its Today. It **must not** repeat a row of tabs per home: rows with the same
-  name are the same landmark to a screen reader.
+  opens its Today, and each of its rows **must** name its home. It has one row of tabs,
+  Today and Calendar (no list of all tasks across homes), and **must not** repeat a
+  row of tabs per home: rows with the same name are the same landmark to a screen
+  reader.
 - **Report a problem** **must** be on Today for every role, a read-only one included:
   signing a problem is often the only thing that person does, and it takes one tap to
   open the form instead of six. The count of the reports that wait **must** follow the
@@ -484,20 +487,52 @@ Most households have one home; some have two or more (a second home, a rented
 flat).
 
 - The current home **must** be remembered for the session. Every section then opens
-  on it, without a page that asks which home at each change of section.
+  on it, without a page that asks which home at each change of section. It is the home
+  last chosen in the selector, or the home of the last page of a home opened; before
+  either, the first home of the person by name.
 - The selector of the current home **must** appear in the app bar only from two homes
-  on. A selector with one choice is noise.
+  on. A selector with one choice is noise. It names the home of the page when the
+  address has one, else the current home.
+- Changing the home **must** be a post with its CSRF token, never a link: it changes
+  the state of the session. The selector is a disclosure (`details`) whose choices are
+  the buttons of one form, so it works without script. It opens the same screen in the
+  home chosen when the route needs only a home (a section root, a tab), else the root
+  of the section: a room of one home does not exist in the other.
 - Today **must** offer "All homes" in the selector; the other sections show one home
-  at a time.
+  at a time. "All homes" is the page of all homes at `/`, and the calendar of all homes;
+  it leaves the current home of the other sections as it was.
 - A page of a home **must** keep the home in its address
   ([ADR 0010](../adr/0010-stable-urls.md)). The current home only chooses where a
-  section root opens; a link to a page always opens the same page.
+  section root opens (the entries `/rooms/`, `/tasks/`, `/stock/`, `/projects/`,
+  `/budget/`, `/` and the calendar without `?home=`); a link to a page always opens
+  the same page.
 
 **Isolation.** Every query **must** be scoped to the homes of the person
 ([ADR 0006](../adr/0006-home-scoping.md)), and the current home **must not** replace
 that check. A value kept in a session is a preference, not a permission. The
 selector and "All homes" list only the homes the person belongs to, and a home they
-left is dropped from the session.
+left, deleted or that is locked behind a sign-in provider is dropped from the session:
+the next home takes its place, or, with none left, the page that offers to add one.
+An API token never reads nor writes it: its homes are those of the token.
+
+### In code
+
+`housecairn.homes.current` is the one implementation.
+
+| Helper | What it does |
+| --- | --- |
+| `for_request(request)` | A `Current`, read once per request: `homes` (the homes the person may open now, by name), `home` (the current one, or `None` without a home), `all_homes` ("All homes" chosen for Today), `roles` (the role of the person in each), `find(id)` (a home of `homes`, else `None`). The stored id is checked against `homes` at every request. |
+| `section_root(request, route)` | The address of a route of one home in the current home, or `None`: what an entry view redirects to. |
+| `remember(request, home)` | Makes `home` current. `WebHomeScopedMixin.get_home()` calls it after its own check, so a page of a home needs nothing more. |
+| `choose(request, home)` | The choice of the selector (`None` for "All homes"), posted to `homes:current`. |
+
+A new view that needs a home **must** take it from its address through
+`WebHomeScopedMixin.get_home()`, which answers 404 for a home that is not the
+person's. A new section entry without a home in its address redirects to
+`current.section_root(request, "<app>:<root>")`, and renders the page that offers to
+add a home when it is `None`. A view **must not** read the session key itself, nor
+use `current.for_request(request).home` to read or change data: that home is only
+where to go, and the page it leads to checks it again.
 
 ## Dates, reminders and alerts
 
@@ -512,8 +547,8 @@ them and does not add a third.
   postponing, Done and Skip that every task has. A reminder written again for one
   screen would ignore the quiet hours and the follow-ups of the person.
 - A date that only informs (the end of a warranty) **must** be a list of the agenda
-  digest, `housecairn.tasks.agenda.my_home`, shown on Today for all homes (`/`, when the person
-  has several homes), as the warranties ending soon are today.
+  digest, `housecairn.tasks.agenda.my_home`, shown on Today for all homes (`/`, with
+  "All homes" chosen), as the warranties ending soon are today.
   It is read, not acted on, and sends no notification. This digest is not the daily
   summary message of the notifications.
 - An event with no due date (a problem was reported) **must** be an alert of
@@ -739,7 +774,7 @@ phone), and the rules on amounts, deletions and lists.
 | NAV-13 | minor | No breadcrumbs on a computer. | [Back link and breadcrumbs](#back-link-and-breadcrumbs) |
 | NAV-14 | minor | Ambiguous or duplicate labels ("Home" opening "My home", one object with two names). | One term per concept; bar labels equal the titles of their roots |
 | NAV-15 | minor | Repetition folded away when adding a task from an item, whose tasks all repeat. | Repetition open by default for a task of an item |
-| NAV-16 | minor | The calendar outside the home, with no back link. | The calendar is a tab of Today |
+| NAV-16 | minor | The calendar outside the home, with no back link. | The calendar is a tab of Today, on the [current home](#current-home) |
 
 The audit compared the interface with Material 3, Apple's guidelines, the Nielsen
 heuristics and WCAG 2.2 (see [References](#references)), and with other home

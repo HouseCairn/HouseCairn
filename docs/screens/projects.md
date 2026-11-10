@@ -1,7 +1,8 @@
 # Projects
 
 The projects of a home, at `/h/<home id>/projects/`. **Projects** in the navigation opens
-it; `/projects/` first asks which home when you belong to several.
+it; `/projects/` opens the [current home](my-home.md#the-current-home) when you belong to
+several.
 
 A project is a piece of work with an end, such as redoing the bathroom. Three tabs split the
 projects by status: **In progress** (in progress and planned, the root of the section, at

@@ -4,14 +4,16 @@ The tasks of your homes by week, month or year, at `/calendar/` (the **Calendar*
 It shows what is planned, done, postponed and skipped, with the status written in words, and
 what is still to come for a task that repeats.
 
-- **Today, All, Calendar**: the tabs of the Today section, when the calendar shows one
-  home (your only home, or the one chosen in the filter).
+- **Home**: the calendar shows the [current home](my-home.md#the-current-home), or all
+  your homes together when you chose **All homes** in the selector of the app bar.
+- **Today, All, Calendar**: the tabs of the Today section, which lead back to the Today
+  and the task list of the home shown. With all homes: **Today** (the page of all
+  homes) and **Calendar**.
 - **Week, Month, Year**: the three views switch from the segmented control under the
   tabs. The week lists
   each day with its tasks; the month adds a grid in which every day links to its week and says
   how many tasks it holds; the year counts the tasks of each month by status and links to it.
-- **Filters**: home (when you belong to several, the default is all of them together), room,
-  person, priority. A person is shown by their name, never by their email address.
+- **Filters**: room, person, priority. A person is shown by their name, never by their email address.
 - **Previous, Next, Today** move by one period. With the focus inside the calendar, the left and
   right arrows do the same and `T` goes to today; the shortcuts work nowhere else on the page.
 - **Done** marks a task done in one tap; the calendar comes back to the same task, with the

@@ -1,8 +1,8 @@
 # Tasks
 
 The tasks of a home, at `/h/<home id>/tasks/`: the **All** tab of **Today** in the
-navigation. `/tasks/` opens it directly when you belong to a single home; with several
-homes, it first asks which one.
+navigation. `/tasks/` opens it directly, on the
+[current home](my-home.md#the-current-home) when you belong to several.
 
 Each row is one time a task has to be done (an occurrence): its title, the room
 and the item it concerns, and when. The oldest dates come first, so the arrears

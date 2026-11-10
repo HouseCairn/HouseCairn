@@ -12,17 +12,11 @@
   </nav>
   <form method="get" class="filter-row" role="search" aria-label="{% translate 'Filter the calendar' %}">
     <input type="hidden" name="date" value="{{ anchor|date:'Y-m-d' }}">
-    {% if homes|length > 1 %}
-      <label class="visually-hidden" for="filter-home">{% translate "Home" context "calendar" %}</label>
-      <select id="filter-home" name="home">
-        <option value="">{% translate "All my homes" %}</option>
-        {% for candidate in homes %}<option value="{{ candidate.id }}"{% if filters.home == candidate.id|stringformat:"s" %} selected{% endif %}>{{ candidate.name }}</option>{% endfor %}
-      </select>
-    {% endif %}
+    {% if filters.home %}<input type="hidden" name="home" value="{{ filters.home }}">{% endif %}
     <label class="visually-hidden" for="filter-room">{% translate "Room" %}</label>
     <select id="filter-room" name="room">
       <option value="">{% translate "All rooms" %}</option>
-      {% for candidate in rooms %}<option value="{{ candidate.id }}"{% if filters.room == candidate.id|stringformat:"s" %} selected{% endif %}>{{ candidate.name }}{% if homes|length > 1 %} ({{ candidate.home.name }}){% endif %}</option>{% endfor %}
+      {% for candidate in rooms %}<option value="{{ candidate.id }}"{% if filters.room == candidate.id|stringformat:"s" %} selected{% endif %}>{{ candidate.name }}{% if chosen_homes|length > 1 %} ({{ candidate.home.name }}){% endif %}</option>{% endfor %}
     </select>
     <label class="visually-hidden" for="filter-person">{% translate "Person" %}</label>
     <select id="filter-person" name="person">

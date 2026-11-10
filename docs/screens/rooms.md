@@ -1,8 +1,8 @@
 # Rooms
 
 The rooms of a home, at `/h/<home id>/rooms/`. **Rooms** in the navigation
-opens it directly when you belong to a single home; with several homes, it first
-asks which one (`/rooms/`). Each row shows the name of the room, its type and
+opens it directly (`/rooms/`); with several homes, on the
+[current home](my-home.md#the-current-home). Each row shows the name of the room, its type and
 how many items it holds; a row opens the [room](room.md).
 
 - **Add a room** opens the [room form](room-form.md). Only the name is

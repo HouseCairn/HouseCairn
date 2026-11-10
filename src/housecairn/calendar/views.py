@@ -29,9 +29,10 @@ from django.views.generic import TemplateView
 from housecairn.accounts.models import User
 from housecairn.calendar import feeds, ics, services
 from housecairn.calendar.models import Feed
+from housecairn.homes import current
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
-from housecairn.homes.scoping import allow, open_homes_for_request, site_url
+from housecairn.homes.scoping import allow, site_url
 from housecairn.rooms.models import Room
 from housecairn.tasks.models import CLOSED_STATUSES, Occurrence, Priority
 
@@ -78,22 +79,31 @@ class PeriodView(LoginRequiredMixin, TemplateView):
         raise NotImplementedError  # pragma: no cover
 
     def chosen_homes(self, homes: list[Home]) -> list[Home]:
+        """The home of `?home=`, else the current home, else all homes ("All homes").
+
+        A home in the address that is not one of the person's answers 404; one that is
+        becomes the current home, as a page of a home does (`homes.current`).
+        """
         raw = self.request.GET.get("home", "")
-        if not raw:
-            return homes
         try:
-            wanted = UUID(raw)
+            wanted = UUID(raw) if raw else None
         except ValueError:
+            wanted = None
+        if wanted is not None:
+            chosen = [h for h in homes if h.id == wanted]
+            if not chosen:
+                raise Http404
+            current.remember(self.request, chosen[0])
+            return chosen
+        found = current.for_request(self.request)
+        if found.all_homes or found.home is None:
             return homes
-        chosen = [h for h in homes if h.id == wanted]
-        if not chosen:
-            raise Http404
-        return chosen
+        return [found.home]
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         user: User = self.request.user  # type: ignore[assignment]
         get = self.request.GET
-        homes = list(open_homes_for_request(self.request).order_by("name"))
+        homes = current.for_request(self.request).homes
         chosen = self.chosen_homes(homes)
         today = services.today_of(user)
         reach = relativedelta(years=SPAN_YEARS)
@@ -107,6 +117,7 @@ class PeriodView(LoginRequiredMixin, TemplateView):
             "anchor": anchor,
             "today": today,
             "homes": homes,
+            "chosen_homes": chosen,
             "rooms": Room.objects.filter(home__in=chosen).select_related("home").order_by("name"),
             "people": services.people_of(chosen),
             "priorities": Priority.choices,

@@ -43,11 +43,13 @@ def _home_id(context: template.Context, request: HttpRequest) -> Any:
 
 
 def _calendar_home(context: template.Context, request: HttpRequest) -> Any:
-    """The home of the calendar: the one chosen in its filter, else the person's only home.
+    """The home of the calendar: the one in its address, else the current home.
 
-    The calendar has no home in its address; with several homes shown together, there is
-    no Today nor All to switch to, and no tab is shown.
+    The calendar has no home in its path. With "All homes" chosen in the selector it
+    shows every home together, and its tabs lead to the page of all homes.
     """
+    from housecairn.homes import current
+
     homes = list(context.get("homes") or ())
     raw = request.GET.get("home", "")
     try:
@@ -56,14 +58,29 @@ def _calendar_home(context: template.Context, request: HttpRequest) -> Any:
         wanted = None
     if wanted is not None:
         return next((h.pk for h in homes if h.pk == wanted), None)
-    return homes[0].pk if len(homes) == 1 else None
+    chosen = current.for_request(request)
+    if chosen.all_homes or chosen.home is None:
+        return None
+    return chosen.home.pk
+
+
+def _all_homes(request: HttpRequest, view: str, on_calendar: bool) -> list[Tab]:
+    """Today and the calendar of all homes together: no list of all tasks across homes."""
+    from housecairn.homes import current
+
+    if not current.for_request(request).all_homes:
+        return []
+    return [
+        Tab(_("Today"), reverse("index"), view == "index"),
+        Tab(_("Calendar"), reverse("calendar:week"), on_calendar),
+    ]
 
 
 def _today(context: template.Context, request: HttpRequest, view: str) -> list[Tab]:
     on_calendar = view.startswith("calendar:")
     home_id = _calendar_home(context, request) if on_calendar else _home_id(context, request)
     if home_id is None:
-        return []
+        return _all_homes(request, view, on_calendar) if on_calendar or view == "index" else []
     kwargs = {"home_id": home_id}
     return [
         Tab(_("Today"), reverse("tasks:today", kwargs=kwargs), view == "tasks:today"),

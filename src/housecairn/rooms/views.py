@@ -17,24 +17,29 @@ from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from housecairn.core import navigation
+from housecairn.homes import current
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
-from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
+from housecairn.homes.scoping import WebHomeScopedMixin
 from housecairn.rooms import conf, forms, services
 from housecairn.rooms.files import photo_response
 from housecairn.rooms.models import BEHIND_WALLS_HELP, Item, Photo, PhotoCategory, Room
 
 
 class EntryView(LoginRequiredMixin, TemplateView):
-    """The Rooms entry of the navigation: the rooms of the user's only home, else a choice."""
+    """The Rooms entry of the navigation: the rooms of the current home.
+
+    No home to open: the page that offers to add one (docs/developer/design-guide.md,
+    "Current home").
+    """
 
     template_name = "rooms/choose_home.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        homes = list(open_homes_for_request(request).order_by("name"))
-        if len(homes) == 1:
-            return redirect("rooms:list", home_id=homes[0].id)
-        return self.render_to_response({"homes": homes})
+        target = current.section_root(request, "rooms:list")
+        if target:
+            return redirect(target)
+        return self.render_to_response({"homes": []})
 
 
 class HomeRoomsMixin(WebHomeScopedMixin):

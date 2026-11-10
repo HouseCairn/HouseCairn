@@ -35,13 +35,13 @@ def nav_section(request: HttpRequest) -> str:
     origin = navigation.safe_next(request)
     if origin is not None:
         try:
-            return _section_of(resolve(urlsplit(origin).path))
+            return section_of(resolve(urlsplit(origin).path))
         except Resolver404:
             pass
-    return _section_of(match)
+    return section_of(match)
 
 
-def _section_of(match: ResolverMatch) -> str:
+def section_of(match: ResolverMatch) -> str:
     """The section a route belongs to, in the tree of the application."""
     view = match.view_name
     if view.startswith(_IN_MORE):
@@ -104,20 +104,56 @@ def more_groups(request: HttpRequest) -> list[dict[str, Any]]:
     user = getattr(request, "user", None)
     if user is None or not user.is_authenticated:
         return []
+    from housecairn.homes import current
     from housecairn.reports.services import waiting_for
 
     match = getattr(request, "resolver_match", None)
-    home_id = _home_id(request)
+    home = current.for_request(request).home
+    home_id = _home_id(request) or (home.pk if home else None)
     return more.for_page(
         user, home_id, match.view_name if match else "", waiting_for(request, home_id)
     )
 
 
+def home_switcher(request: HttpRequest, section: str) -> dict[str, Any] | None:
+    """The selector of the current home in the app bar: from two homes on, else None.
+
+    It names the home of the page when its address has one, else "All homes" on Today
+    when chosen, else the current home. "All homes" is offered on Today only: the other
+    sections show one home at a time.
+    """
+    user = getattr(request, "user", None)
+    if user is None or not user.is_authenticated:
+        return None
+    from housecairn.homes import current
+
+    found = current.for_request(request)
+    if not found.has_selector:
+        return None
+    match = getattr(request, "resolver_match", None)
+    shown = found.find(_home_id(request)) if _home_id(request) else None
+    if shown is None and match is not None and match.view_name == "calendar:week":
+        shown = found.find(request.GET.get("home", "")) if request.GET.get("home") else None
+    on_today = section == TODAY
+    all_shown = shown is None and on_today and found.all_homes
+    if shown is None and not all_shown:
+        shown = found.home
+    return {
+        "homes": found.homes,
+        "shown": shown,
+        "all_offered": on_today,
+        "all_shown": all_shown,
+        "next": navigation.current_path(request),
+    }
+
+
 def shell(request: HttpRequest) -> dict[str, Any]:
     """Context of the application shell: the current section and the entry addresses."""
+    section = nav_section(request)
     return {
+        "home_switcher": home_switcher(request, section),
         "nav_more": more_groups(request),
-        "nav_section": nav_section(request),
+        "nav_section": section,
         "today_url": today_url(request),
         "rooms_url": rooms_url(request),
         "projects_url": projects_url(request),

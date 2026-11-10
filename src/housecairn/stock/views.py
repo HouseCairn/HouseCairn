@@ -16,9 +16,10 @@ from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from housecairn.core import navigation
+from housecairn.homes import current
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
-from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
+from housecairn.homes.scoping import WebHomeScopedMixin
 from housecairn.rooms import conf
 from housecairn.rooms.services import items_of, rooms_of
 from housecairn.stock import forms, services
@@ -28,15 +29,19 @@ from housecairn.tasks import materials as task_materials
 
 
 class EntryView(LoginRequiredMixin, TemplateView):
-    """The Stock entry of the navigation: the stock of the user's only home, else a choice."""
+    """The Stock entry of the navigation: the stock of the current home.
+
+    No home to open: the page that offers to add one (docs/developer/design-guide.md,
+    "Current home").
+    """
 
     template_name = "stock/choose_home.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        homes = list(open_homes_for_request(request).order_by("name"))
-        if len(homes) == 1:
-            return redirect("stock:list", home_id=homes[0].id)
-        return self.render_to_response({"homes": homes})
+        target = current.section_root(request, "stock:list")
+        if target:
+            return redirect(target)
+        return self.render_to_response({"homes": []})
 
 
 class HomeStockMixin(WebHomeScopedMixin):

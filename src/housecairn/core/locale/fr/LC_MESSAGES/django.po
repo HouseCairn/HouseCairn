@@ -195,12 +195,12 @@ msgctxt "added message"
 msgid "Open"
 msgstr "Ouvrir"
 
+msgid "Calendar"
+msgstr "Calendrier"
+
 msgctxt "tasks"
 msgid "All"
 msgstr "Toutes"
-
-msgid "Calendar"
-msgstr "Calendrier"
 
 msgid "In progress"
 msgstr "En cours"
@@ -394,6 +394,15 @@ msgstr "Effacer votre compte et vos données. Vous confirmez à la page suivante
 
 msgid "Help for this page"
 msgstr "Aide sur cette page"
+
+msgid "Current home:"
+msgstr "Logement courant :"
+
+msgid "All homes"
+msgstr "Tous les logements"
+
+msgid "Change of home"
+msgstr "Changer de logement"
 
 msgid "Main navigation"
 msgstr "Navigation principale"

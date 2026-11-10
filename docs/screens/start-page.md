@@ -7,6 +7,8 @@ The root address of the instance, `/`. What it shows depends on who opens it:
   logo, **Today** in the navigation, the address an installed application starts
   on and the page you reach after signing in all lead here, so the day always
   starts on Today.
-- **Signed in with several homes**: [Today in several homes](my-home.md).
+- **Signed in with several homes**: the [Today](today.md) of the
+  [current home](my-home.md#the-current-home), or [Today in several homes](my-home.md)
+  when you chose **All homes** (and before you chose a home).
 - **Signed in with no home to open**: the welcome page, with **Add a home** and **My
   homes**.

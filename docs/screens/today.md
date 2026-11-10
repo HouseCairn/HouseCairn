@@ -2,7 +2,8 @@
 
 What to do in a home, at `/h/<home id>/today/`. It is the screen to open every
 day, and the one the application opens on: the [start page](start-page.md) leads to
-it, with several homes through [Today in several homes](my-home.md). **Today** is
+it, with several homes on the [current home](my-home.md#the-current-home) or on all your
+homes together. **Today** is
 also linked from the [task list](tasks.md).
 
 The page is made of sections, in this order:

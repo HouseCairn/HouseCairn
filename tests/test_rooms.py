@@ -345,15 +345,15 @@ class TestScreens:
         response = signed_in.get(reverse("rooms"))
         assert response["Location"] == url("list", alice_home)
 
-    def test_entry_asks_among_several_homes(
+    def test_entry_opens_the_current_home_among_several(
         self, signed_in: Client, alice: User, alice_home: Home
     ) -> None:
         from housecairn.homes import services as home_services
 
-        home_services.create_home(alice, name="Holiday flat")
+        flat = home_services.create_home(alice, name="Holiday flat")
+        # No choice yet: the first home by name, never a page that asks.
         page = signed_in.get(reverse("rooms"))
-        assert page.status_code == 200
-        assert "Holiday flat" in page.text
+        assert page["Location"] == reverse("rooms:list", kwargs={"home_id": flat.id})
 
     def test_entry_without_a_home(self, signed_in: Client) -> None:
         assert "no home to open" in signed_in.get(reverse("rooms")).text

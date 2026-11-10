@@ -5,7 +5,7 @@ entry of the navigation bar on a phone. On a computer, More has no page of its
 own: the same entries are unfolded in the column on the left, under the four
 sections. The entries come in four groups:
 
-- **Home**, about the home you are viewing (your only home, on the More page):
+- **Home**, about the home you are viewing (the [current home](my-home.md#the-current-home), on the More page):
   its [settings](home.md) (name, currency, hemisphere, export),
   [Household and roles](household.md), [Reports](reports.md) (with the number of
   reports waiting, for the members who may write),

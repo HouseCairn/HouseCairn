@@ -324,16 +324,16 @@ class TestScreens:
         ):
             assert client.get(address).status_code == 302, address
 
-    def test_the_entry_opens_the_only_home_or_asks(
+    def test_the_entry_opens_the_only_home_or_the_current_one(
         self, signed_in: Client, alice: User, alice_home: Home
     ) -> None:
         assert signed_in.get(reverse("stock")).headers["Location"] == url("list", alice_home)
         from housecairn.homes import services as home_services
 
+        signed_in.get(url("list", alice_home))
         home_services.create_home(alice, name="Holiday flat")
-        page = signed_in.get(reverse("stock"))
-        assert page.status_code == 200
-        assert "Holiday flat" in page.content.decode()
+        # The current home, the one last opened: no page that asks.
+        assert signed_in.get(reverse("stock")).headers["Location"] == url("list", alice_home)
 
     def test_the_list_shows_quantity_and_flags_low_stock(
         self, signed_in: Client, alice: User, alice_home: Home, article: Article
