@@ -111,6 +111,9 @@ MIDDLEWARE = [
     # After authentication: a person's saved language wins over the browser's (docs/adr/0042).
     "housecairn.tasks.middleware.PersonLanguageMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    # After CSRF, the session and the messages: `no-store` and a one-time token on the
+    # creation forms, so that the browser's back button creates no duplicate (NAV-12).
+    "housecairn.core.middleware.CreationFormMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     # Last: reads the database, so after the checks that need no query (docs/adr/0035).

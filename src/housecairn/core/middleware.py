@@ -1,8 +1,18 @@
 """Response headers set for every response, whichever view (or none) produced it."""
 
+import re
+import secrets
 from collections.abc import Callable
+from typing import Any
 
-from django.http import HttpRequest, HttpResponse
+from django.conf import settings
+from django.contrib import messages
+from django.core.cache import cache
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.urls import reverse
+from django.utils.translation import gettext as _
+
+from housecairn.core import navigation
 
 # Browser features the application never uses. Photos are sent through a file field,
 # which needs no camera permission; nothing reads a position, takes payments or talks to USB.
@@ -19,3 +29,101 @@ class PermissionsPolicyMiddleware:
         response = self.get_response(request)
         response.headers.setdefault("Permissions-Policy", PERMISSIONS_POLICY)
         return response
+
+
+# The hidden field of the one-time token of a creation form.
+FORM_TOKEN_FIELD = "form_token"  # noqa: S105 - a field name, not a secret
+# The tokens already used, in the session: the last ones are enough to stop a second
+# sending, which comes seconds or minutes after the first.
+USED_KEY = "housecairn.used_form_tokens"
+USED_KEPT = 50
+# The same in the cache, whose `add` is atomic: two sendings at the same instant, a
+# double tap, cannot both pass. Shared by every worker when the cache is.
+CACHE_PREFIX = "housecairn:form-token:"
+CACHE_SECONDS = 24 * 60 * 60
+
+# The hidden CSRF field Django renders in every form that posts.
+_CSRF_FIELD = re.compile(rb'(<input type="hidden" name="csrfmiddlewaretoken" value="[^"]*">)')
+
+
+def is_creation_form(request: HttpRequest) -> bool:
+    """A creation form: by the convention of the routes, an address that ends in `new/`."""
+    match = request.resolver_match
+    return match is not None and match.route.endswith("new/")
+
+
+class CreationFormMiddleware:
+    """`no-store` and a one-time token on every creation form (NAV-12).
+
+    The browser's back button must give what the back link gives
+    (docs/developer/design-guide.md, "The bar, and the browser's back button"): it must
+    not show a form already sent from its cache, and a form sent again must not create
+    a duplicate. So every page of a creation form is sent with `Cache-Control: no-store`
+    and each of its forms gets a hidden token; a post that brings back a token already
+    used is refused, and the person goes back where the form leads, with a message.
+    A post without a token (an old page, a test client) is let through as before.
+    """
+
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponse:
+        response = self.get_response(request)
+        if is_creation_form(request):
+            response.headers["Cache-Control"] = "no-store"
+            _add_token(response)
+        return response
+
+    def process_view(
+        self,
+        request: HttpRequest,
+        view: Callable[..., Any],
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+    ) -> HttpResponse | None:
+        # After CsrfViewMiddleware: a forged post is refused before this reads it.
+        if request.method != "POST" or not is_creation_form(request) or not _body_read(request):
+            return None
+        token = request.POST.get(FORM_TOKEN_FIELD, "")
+        if not token or _first_use(request, token[:64]):
+            return None
+        messages.info(request, _("This form was already sent. Nothing was added again."))
+        return HttpResponseRedirect(navigation.back_url(request, reverse("index")))
+
+
+def _body_read(request: HttpRequest) -> bool:
+    """The form may be read here without reading a body a view would refuse unread.
+
+    The CSRF check has already read it (`_post`), or it is small: an upload view checks
+    the declared size first and answers 413 without reading (rooms, tasks, stock).
+    """
+    if hasattr(request, "_post"):
+        return True
+    declared = int(request.META.get("CONTENT_LENGTH") or 0)
+    return declared <= settings.DATA_UPLOAD_MAX_MEMORY_SIZE
+
+
+def _first_use(request: HttpRequest, token: str) -> bool:
+    """Record `token` as used; False when it already was."""
+    used: list[str] = list(request.session.get(USED_KEY, []))
+    if token in used:
+        return False
+    if not cache.add(CACHE_PREFIX + token, 1, timeout=CACHE_SECONDS):
+        return False
+    request.session[USED_KEY] = [*used, token][-USED_KEPT:]
+    return True
+
+
+def _add_token(response: HttpResponse) -> None:
+    """Give each form of an HTML page a fresh one-time token, next to its CSRF field."""
+    if response.streaming or not response.get("Content-Type", "").startswith("text/html"):
+        return
+    if hasattr(response, "render") and not getattr(response, "is_rendered", True):
+        response.render()
+    token = secrets.token_urlsafe(24).encode()
+    field = b'<input type="hidden" name="' + FORM_TOKEN_FIELD.encode() + b'" value="'
+    content = _CSRF_FIELD.sub(lambda m: m.group(1) + field + token + b'">', response.content)
+    if content != response.content:
+        response.content = content
+        if response.has_header("Content-Length"):
+            response.headers["Content-Length"] = str(len(content))

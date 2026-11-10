@@ -74,6 +74,46 @@
   margin: 0;
 }
 
+/* The undo banner of the actions in place (design guide, "Actions in place"): at the
+   bottom, above the tab bar on a phone, near the finger. The region is always in the
+   page, empty, so that screen readers hear what is put in it. */
+.undo-region {
+  position: fixed;
+  left: var(--hc-space-4);
+  right: var(--hc-space-4);
+  bottom: calc(var(--hc-layout-tabbar-height) + var(--hc-space-2) + env(safe-area-inset-bottom));
+  z-index: 25;
+  max-width: var(--hc-layout-content-max);
+  margin: 0 auto;
+  pointer-events: none;
+}
+
+.undo-region .undo-banner {
+  margin-bottom: 0;
+  box-shadow: var(--hc-shadow-lg);
+  pointer-events: auto;
+}
+
+/* The banner must not hide the element that has the focus (WCAG 2.2, 2.4.11). */
+html:has(.undo-region .undo-banner) {
+  scroll-padding-bottom: calc(var(--hc-layout-tabbar-height) + 6rem);
+}
+
+.task-row-closed .row-title {
+  text-decoration: line-through;
+}
+
+@media (min-width: 56rem) {
+  .undo-region {
+    left: calc(var(--hc-layout-nav-width) + var(--hc-space-4));
+    bottom: var(--hc-space-4);
+  }
+
+  html:has(.undo-region .undo-banner) {
+    scroll-padding-bottom: 6rem;
+  }
+}
+
 .filter-row {
   display: flex;
   flex-wrap: wrap;

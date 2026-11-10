@@ -3,7 +3,6 @@
 {% block head_title %}{{ task.title }}{% endblock head_title %}
 {% block content %}
   {% url 'tasks:list' home_id=home.id as parent %}{% back_link parent %}
-  {% include "tasks/_undo.html" %}
   <section class="card">
     <div class="task-pills">
       {% if current %}

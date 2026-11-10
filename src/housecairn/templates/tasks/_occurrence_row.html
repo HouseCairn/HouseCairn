@@ -1,19 +1,22 @@
-{% load i18n tasks_extras people %}{# One open occurrence as a row, with Done in one tap when the person may write. `occurrence`, `home`, `today`, `can_write`; `request` is the page, which Done returns to. #}
-<li class="task-row{% if occurrence|late_days:today %} task-row-overdue{% endif %}">
-  <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
+{% load i18n tasks_extras people %}{# One occurrence as a row, with Done in one tap when the person may write (docs/developer/design-guide.md, "Actions in place"). `occurrence`, `home`, `today`, `can_write`, `row_next` (the page the row is on); `focus` names what takes the focus after a swap. With HTMX the form posts in place and gets this row back; without script it posts, then comes back to `#occ-<id>`. #}
+{% url 'tasks:detail' home_id=home.id task_id=occurrence.task_id as detail %}
+<li id="occ-{{ occurrence.id }}"{% if oob %} hx-swap-oob="true"{% endif %} class="task-row{% if occurrence|late_days:today %} task-row-overdue{% endif %}{% if not occurrence.is_open %} task-row-closed{% endif %}">
+  <a class="row" href="{{ detail|with_next:row_next }}"{% if focus == "row" %} autofocus{% endif %}>
     <span class="row-body">
       <span class="row-title">{{ occurrence.task.title }}</span>
       <span class="row-text">
         {% if occurrence.task.room %}{{ occurrence.task.room.name }}{% if occurrence.task.item %} · {{ occurrence.task.item.name }}{% endif %}{% elif occurrence.task.item %}{{ occurrence.task.item.name }}{% endif %}{% if show_person and occurrence.task.assignee %}{% if occurrence.task.room or occurrence.task.item %} · {% endif %}{{ occurrence.task.assignee|person }}{% endif %}
       </span>
-      {% include "tasks/_due.html" %}
+      {% if occurrence.is_open %}{% include "tasks/_due.html" %}{% else %}<span class="pill {% if occurrence.status == 'done' %}pill-success{% else %}pill-ghost{% endif %}">{{ occurrence.get_status_display }}</span>{% endif %}
     </span>
   </a>
-  {% if can_write %}
-    <form method="post" action="{% url 'tasks:complete' home_id=home.id task_id=occurrence.task_id occurrence_id=occurrence.id %}">
+  {% if can_write and occurrence.is_open %}
+    {% url 'tasks:complete' home_id=home.id task_id=occurrence.task_id occurrence_id=occurrence.id as complete %}
+    <form method="post" action="{{ complete }}" hx-post="{{ complete }}" hx-target="closest li" hx-swap="outerHTML" hx-disabled-elt="find button">
       {% csrf_token %}
-      <input type="hidden" name="next" value="{{ request.get_full_path }}">
-      <button type="submit" class="button-small button-done">{% translate "Done" context "task" %}<span class="visually-hidden"> {{ occurrence.task.title }}</span></button>
+      <input type="hidden" name="next" value="{{ row_next }}">
+      <input type="hidden" name="in_place" value="row">
+      <button type="submit" class="button-small button-done"{% if focus == "done" %} autofocus{% endif %}>{% translate "Done" context "task" %}<span class="visually-hidden"> {{ occurrence.task.title }}</span></button>
     </form>
   {% endif %}
 </li>

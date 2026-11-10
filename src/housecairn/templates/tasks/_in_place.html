@@ -1,0 +1,4 @@
+{# The answer to an action in place (HTMX), never a whole page. `origin` is the form that posted: from a row, the row first, then the banner out of band; from the banner, the content of the region first, then the row out of band. #}
+{% if origin == "banner" %}{% include "tasks/_undo.html" %}
+{% include "tasks/_occurrence_row.html" with oob=True %}{% else %}{% include "tasks/_occurrence_row.html" %}
+<div id="undo-region" hx-swap-oob="innerHTML">{% include "tasks/_undo.html" %}</div>{% endif %}
