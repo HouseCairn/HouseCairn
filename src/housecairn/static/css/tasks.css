@@ -104,7 +104,8 @@ html:has(.undo-region .undo-banner) {
 /* ...and it must not hide the end of the page either: while the banner is there, the
    page keeps its real height above what the tab bar already takes. --hc-undo-height is
    set from the banner by static/js/undo-region.js and follows it (a long message wraps
-   on four lines at 320 px); 5rem, one line, is what stays without script. */
+   on four lines at 320 px); 5rem, one line, stands in until the script has measured
+   it. Without script, static/css/no-script.css replaces this rule and the one above. */
 .has-nav:has(.undo-region .undo-banner) .content {
   padding-bottom: calc(
     var(--hc-layout-tabbar-height) + var(--hc-space-8) + var(--hc-undo-height, 5rem) +
