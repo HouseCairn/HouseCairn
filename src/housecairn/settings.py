@@ -221,7 +221,7 @@ STORAGES = {
 HOUSECAIRN_SOURCE_URL = "https://github.com/HouseCairn/housecairn"
 
 LOGIN_URL = "account_login"
-# After sign-in: "My home", the page of what is to do (an explicit `next` still wins).
+# After sign-in: Today, at the root address (an explicit `next` still wins).
 LOGIN_REDIRECT_URL = "index"
 
 # Security headers and cookies (docs/adr/0012). Safe values unless DEBUG is on.
