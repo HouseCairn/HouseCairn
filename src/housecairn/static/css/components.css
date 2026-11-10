@@ -799,4 +799,9 @@ input.setting-locked {
     background: var(--hc-color-surface-muted);
     font-weight: var(--hc-font-weight-bold);
   }
+
+  /* A pill is one line on a wide screen; in a card it wraps rather than widen the page. */
+  .table-stack .pill {
+    white-space: normal;
+  }
 }
