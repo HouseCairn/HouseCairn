@@ -150,7 +150,7 @@ msgid "Abandoned"
 msgstr "Abandonné"
 
 msgid "Materials"
-msgstr "Matériel"
+msgstr "Fournitures"
 
 msgid "Labour"
 msgstr "Main-d'œuvre"

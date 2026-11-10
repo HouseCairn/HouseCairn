@@ -599,8 +599,8 @@ msgstr "Fournisseur enregistré."
 msgid "(none)"
 msgstr "(aucun)"
 
-msgid "Audit log"
-msgstr "Journal d'audit"
+msgid "Instance audit log"
+msgstr "Journal d'audit de l'instance"
 
 msgid "Operations on the instance. Homes' own operations are in each home's log, for its owners; no home content appears here."
 msgstr "Opérations sur l'instance. Les opérations propres aux logements figurent dans le journal de chaque logement, pour ses propriétaires ; aucun contenu de logement n'apparaît ici."
@@ -684,6 +684,9 @@ msgstr "Fournisseurs de connexion"
 
 msgid "none"
 msgstr "aucun"
+
+msgid "Files of the homes"
+msgstr "Fichiers des logements"
 
 msgid "Invite someone to the instance"
 msgstr "Inviter quelqu'un sur l'instance"
@@ -835,9 +838,6 @@ msgstr "Tester la connexion au serveur de messagerie"
 
 msgid "Opens a connection with the settings in force and closes it; nothing is sent. You can save without testing."
 msgstr "Ouvre une connexion avec les réglages en vigueur puis la ferme ; rien n'est envoyé. Vous pouvez enregistrer sans tester."
-
-msgid "Files of the homes"
-msgstr "Fichiers des logements"
 
 #, python-format
 msgid "Each home may hold %(files)s files taking %(space)s, deleted files included until they are purged. A home is shown by its identifier and its numbers only: you see no name, no member and no file."

@@ -1,7 +1,7 @@
 # Audit log of a home
 
 Who did what in a home, at `/h/<home id>/audit/`. Only owners see it, from the
-**Audit log** tab of the home. Each line gives the operation, who did it and
+**Home audit log** tab of the home. Each line gives the operation, who did it and
 when:
 
 - rooms, items and tasks added, changed or deleted;

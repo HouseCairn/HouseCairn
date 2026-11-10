@@ -287,9 +287,7 @@ class MovementAddView(HomeStockMixin, View):
         form = forms.MovementForm(request.POST)
         # An action in place: back to the article, which keeps where it was opened from.
         page = _url("detail", home_id=self.home.id, article_id=article.id)
-        back = redirect(
-            navigation.with_next(page, navigation.safe_next(request) or "") + "#movement"
-        )
+        back = redirect(navigation.stay(request, page) + "#movement")
         if not form.is_valid():
             messages.error(request, " ".join(str(m) for e in form.errors.values() for m in e))
             return back

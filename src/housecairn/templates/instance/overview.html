@@ -13,6 +13,7 @@
       <div><dt>{% translate "Outgoing email" %}</dt><dd>{% if email_configured %}{% translate "configured" %}{% else %}{% translate "not configured" %}{% endif %}</dd></div>
       <div><dt>{% translate "Sign-in providers" %}</dt><dd>{% for provider in providers %}{{ provider.name }}{% if not forloop.last %}, {% endif %}{% empty %}{% translate "none" %}{% endfor %}</dd></div>
     </dl>
+    <p class="small"><a href="{% url 'instance:usage' %}">{% translate "Files of the homes" %}</a></p>
   </section>
 
   <h2>{% translate "Invite someone to the instance" %}</h2>

@@ -75,8 +75,8 @@ msgstr "La personne invitée ouvre le lien, puis rejoint le logement avec son co
 msgid "Audit log"
 msgstr "Journal d'audit"
 
-msgid "The **Audit log** tab, for owners, lists who did what in this home. See [Audit log of a home](audit.md)."
-msgstr "L'onglet **Journal d'audit**, pour les propriétaires, liste qui a fait quoi dans ce logement. Voir [Journal d'audit d'un logement](audit.md)."
+msgid "The **Home audit log** tab, for owners, lists who did what in this home. See [Audit log of a home](audit.md)."
+msgstr "L'onglet **Journal d'audit du logement**, pour les propriétaires, liste qui a fait quoi dans ce logement. Voir [Journal d'audit d'un logement](audit.md)."
 
 msgid "Sign-in rule"
 msgstr "Exigence de connexion"

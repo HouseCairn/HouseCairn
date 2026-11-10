@@ -1,0 +1,5 @@
+{# Breadcrumbs of a page (core/templatetags/navigation.py): the tree from the section down to the page. Shown from 56 rem only (static/css/components.css); on a phone the back link is enough. `crumbs` holds url (None for the page itself) and label. #}{% load i18n %}<nav class="breadcrumbs" aria-label="{% translate 'Breadcrumbs' %}">
+  <ol>
+    {% for crumb in crumbs %}<li>{% if crumb.url %}<a href="{{ crumb.url }}">{{ crumb.label }}</a>{% else %}<span aria-current="page">{{ crumb.label }}</span>{% endif %}</li>{% endfor %}
+  </ol>
+</nav>

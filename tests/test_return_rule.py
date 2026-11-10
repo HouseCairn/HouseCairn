@@ -110,6 +110,17 @@ class TestBackUrl:
     def test_with_next_replaces_any_next(self) -> None:
         assert navigation.with_next("/a/?next=/x/&b=1", "/c/") == "/a/?b=1&next=%2Fc%2F"
 
+    def test_stay_keeps_a_safe_next(self) -> None:
+        request = self.request("/h/1/rooms/")
+        assert navigation.stay(request, "/h/1/tasks/3/") == "/h/1/tasks/3/?next=%2Fh%2F1%2Frooms%2F"
+
+    def test_stay_drops_a_hostile_next(self) -> None:
+        request = self.request("https://evil.example.com/")
+        assert navigation.stay(request, "/h/1/tasks/3/") == "/h/1/tasks/3/"
+
+    def test_stay_without_next_leaves_the_page_alone(self) -> None:
+        assert navigation.stay(self.request(""), "/h/1/tasks/3/") == "/h/1/tasks/3/"
+
 
 # ---------- a task created from an item ----------
 
@@ -150,7 +161,10 @@ class TestTaskFromItem:
         task = Task.objects.get(title="Bleed the radiators")
         html = signed_in.get(item_url).content.decode()
         task_url = tasks("detail", home_id=alice_home.id, task_id=task.id)
-        assert f'Task added · <a href="{task_url}">Open</a>' in html
+        opened = navigation.with_next(task_url, item_url)
+        assert f'Task added · <a href="{opened}">Open</a>' in html
+        # The task opened from the banner comes back to the item, not to Tasks.
+        assert back_links(signed_in.get(opened).content.decode()) == [(item_url, "Boiler")]
 
     def test_an_error_keeps_next_in_the_form(
         self, signed_in: Client, alice_home: Home, owner_item: Item
@@ -388,3 +402,36 @@ class TestMoreAndLandmarks:
         names = re.findall(r'role="search" aria-label="([^"]+)"', html)
         assert len(names) == 2
         assert len(set(names)) == 2
+
+
+# ---------- Repeat is open when the task comes from an item (NAV-15) ----------
+
+
+def repeat_is_open(html: str) -> bool:
+    section = re.search(r"<details([^>]*)>\s*<summary>Repeat</summary>", html)
+    assert section
+    return " open" in section.group(1)
+
+
+class TestRepeatOpenFromAnItem:
+    def test_the_section_is_open_when_the_task_is_added_from_an_item(
+        self, signed_in: Client, alice_home: Home, owner_item: Item
+    ) -> None:
+        form_url = tasks("create", home_id=alice_home.id) + f"?item={owner_item.id}"
+        assert repeat_is_open(signed_in.get(form_url).content.decode())
+
+    def test_the_section_stays_closed_for_a_task_added_from_the_list(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        html = signed_in.get(tasks("create", home_id=alice_home.id)).content.decode()
+        assert not repeat_is_open(html)
+
+    def test_the_section_stays_closed_when_a_once_task_is_edited(
+        self, signed_in: Client, alice_home: Home, owner_item: Item
+    ) -> None:
+        # Editing is not creating: an item does not open the section by itself.
+        task = Task.objects.create(
+            home=alice_home, title="Check", item=owner_item, room=owner_item.room
+        )
+        html = signed_in.get(tasks("edit", home_id=alice_home.id, task_id=task.id)).content.decode()
+        assert not repeat_is_open(html)

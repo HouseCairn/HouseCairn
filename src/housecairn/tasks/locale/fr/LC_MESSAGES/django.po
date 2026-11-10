@@ -674,6 +674,10 @@ msgstr "Résultat"
 msgid "Done or skipped"
 msgstr "Faites ou ignorées"
 
+msgctxt "task filter"
+msgid "Done"
+msgstr "Faites"
+
 msgid "From"
 msgstr "Du"
 
@@ -831,7 +835,7 @@ msgid "No contractor yet. People and companies who work in this home, with their
 msgstr "Aucun intervenant pour l'instant. Les personnes et les entreprises qui travaillent dans ce logement, avec leur métier et le moyen de les joindre, sont gardées ici."
 
 msgid "Home"
-msgstr "Accueil"
+msgstr "Logement"
 
 msgid "All my homes"
 msgstr "Tous mes logements"
@@ -923,7 +927,7 @@ msgid "Notes"
 msgstr "Notes"
 
 msgid "Materials"
-msgstr "Matériel"
+msgstr "Fournitures"
 
 msgid "Add photos or files"
 msgstr "Ajouter des photos ou des fichiers"

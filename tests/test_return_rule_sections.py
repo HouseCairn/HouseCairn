@@ -16,6 +16,7 @@ from django.test import Client
 from django.urls import reverse
 
 from housecairn.accounts.models import User
+from housecairn.core import navigation
 from housecairn.homes.models import Home
 from housecairn.labels import services as label_services
 from housecairn.projects import services as project_services
@@ -404,7 +405,12 @@ POST_HOSTILE = [
     "//evil.example.com/",
     "/\\evil.example.com/",
     "javascript:alert(1)",
+    "/\t/evil.example.com/",
+    "/" + "a" * 700,
 ]
+
+# Kept as a path, its inner `next` removed: so not a redirect to the plain parent.
+POST_NESTED = "/h/1/rooms/?next=/h/1/today/"
 
 
 def home_form(**extra: str) -> dict[str, str]:
@@ -438,7 +444,7 @@ class TestHomePostRedirects:
         cabin = Home.objects.get(name="Cabin")
         page = signed_in.get(context)
         texts = [str(m) for m in page.context["messages"]]
-        record = url("homes:detail", home_id=cabin.id)
+        record = navigation.with_next(url("homes:detail", home_id=cabin.id), context)
         assert texts == [f'Home added · <a href="{record}">Open</a>']
 
     def test_create_without_next_opens_the_new_home(
@@ -529,7 +535,7 @@ def posts(
 
 class TestHostileNextOnPost:
     @pytest.mark.parametrize("app", ["stock", "projects", "reports", "labels"])
-    @pytest.mark.parametrize("hostile", POST_HOSTILE)
+    @pytest.mark.parametrize("hostile", [*POST_HOSTILE, POST_NESTED])
     def test_a_post_never_leaves_the_site(
         self,
         signed_in: Client,
@@ -545,4 +551,13 @@ class TestHostileNextOnPost:
         assert not location.startswith("//")
         assert "\\" not in location
         assert "evil.example.com" not in location
-        assert "javascript:" not in location
+        # What the redirect carries as `next` is read decoded: encoded, it would hide.
+        carried = parse_qs(urlsplit(location).query).get("next", [])
+        for value in carried:
+            assert value.startswith("/")
+            assert not value.startswith("//")
+            assert "javascript:" not in value
+            assert "evil.example.com" not in value
+            assert "\t" not in value
+            assert "next=" not in value
+            assert len(value) <= navigation.MAX_LENGTH

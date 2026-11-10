@@ -165,6 +165,38 @@
   }
 }
 
+/* Breadcrumbs: the tree down to the page, on a computer only (design guide). */
+.breadcrumbs {
+  display: none;
+}
+
+@media (min-width: 56rem) {
+  .breadcrumbs {
+    display: block;
+    margin-bottom: var(--hc-space-2);
+    color: var(--hc-color-text-muted);
+    font-size: var(--hc-font-size-sm);
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--hc-space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li + li::before {
+    content: "\203A" / "";
+    margin-right: var(--hc-space-1);
+  }
+
+  .breadcrumbs [aria-current="page"] {
+    color: var(--hc-color-text);
+  }
+}
+
 /* ---------- badges ---------- */
 
 .pill {

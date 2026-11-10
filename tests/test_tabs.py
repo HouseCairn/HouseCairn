@@ -137,12 +137,16 @@ class TestHomeTabs:
         self, signed_in: Client, alice_home: Home
     ) -> None:
         for view, label in [
-            ("homes:detail", "Overview"),
+            ("homes:detail", "Home settings"),
             ("homes:household", "Household and roles"),
-            ("homes:audit", "Audit log"),
+            ("homes:audit", "Home audit log"),
         ]:
             html = signed_in.get(reverse(view, kwargs={"home_id": alice_home.id})).content.decode()
-            assert [t for t, _ in tabs_of(html)] == ["Overview", "Household and roles", "Audit log"]
+            assert [t for t, _ in tabs_of(html)] == [
+                "Home settings",
+                "Household and roles",
+                "Home audit log",
+            ]
             assert current(html) == [label]
 
     def test_a_member_has_no_audit_tab(
@@ -152,7 +156,7 @@ class TestHomeTabs:
         html = client.get(
             reverse("homes:household", kwargs={"home_id": alice_home.id})
         ).content.decode()
-        assert [t for t, _ in tabs_of(html)] == ["Overview", "Household and roles"]
+        assert [t for t, _ in tabs_of(html)] == ["Home settings", "Household and roles"]
 
     def test_a_member_page_keeps_the_household_tab_current(
         self, signed_in: Client, alice_home: Home, member: User
@@ -175,15 +179,15 @@ class TestInstanceTabs:
             ("instance:overview", "Overview"),
             ("instance:settings", "Settings"),
             ("instance:providers", "Sign-in providers"),
-            ("instance:usage", "Files of the homes"),
-            ("instance:audit", "Audit log"),
+            # The files of the homes are a page of the overview: four tabs, not five.
+            ("instance:usage", "Overview"),
+            ("instance:audit", "Instance audit log"),
         ]:
             html = admin.get(reverse(view)).content.decode()
             assert [t for t, _ in tabs_of(html)] == [
                 "Overview",
                 "Settings",
                 "Sign-in providers",
-                "Files of the homes",
-                "Audit log",
+                "Instance audit log",
             ]
             assert current(html) == [label]

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load i18n tabs navigation %}
-{% block head_title %}{% translate "Audit log" %}{% endblock head_title %}
+{% block head_title %}{% translate "Instance audit log" %}{% endblock head_title %}
 {% block content %}
   {% url 'more' as parent %}{% back_link parent %}
-  <h1>{% translate "Audit log" %}</h1>
+  <h1>{% translate "Instance audit log" %}</h1>
   {% tab_bar "instance" %}
   <p class="small">{% translate "Operations on the instance. Homes' own operations are in each home's log, for its owners; no home content appears here." %}</p>
   {% include "audit/_entries.html" with entries=page %}

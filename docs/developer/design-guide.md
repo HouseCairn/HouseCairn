@@ -238,11 +238,13 @@ itself.
 | `safe_next(request)` | The same, or `None` without a safe `next`. |
 | `after_create(request, record_url, section_list, added=…, saved=…)` | Where a creation goes: `next`, with the message "*added* · Open" linking to `record_url`; the record itself when `next` is missing or is the route `section_list` (the list of its own section). |
 | `after_delete(request, parent, gone)` | Where a deletion goes: `next`, unless its route names one of the ids in `gone` (the object and its children), else `parent`. |
+| `stay(request, page)` | `page` again after an action in place, still knowing where it was opened from: `page` with the safe `next` of the request, or without one. |
+| `breadcrumbs(request, default, default_label)` | The tree from the section down to the page, as a list of `Crumb` (url, label; no url for the page itself). Built from `default`, the parent of the page, and the parents of that parent (`PARENTS`); the last crumb is the title of the page (a record of `LABELS`, or `FORM_TITLES` for a form). Empty when the page or an ancestor has no label, and when the parent is More. |
 | `label_for(url, request)` | The title of the screen a path leads to, from `LABELS`: a fixed label by route name, or a field of the record the route shows, read only in the homes the person may open. `None` for a route without a label. |
 
 | Tag | Use |
 | --- | --- |
-| `{% back_link default %}`, `{% back_link default label %}` | The back link of the page. It leads to the safe `next` when its route has a label, named after it, else to `default`, named `label` or after the route of `default`. A link to More is shown on a phone only. |
+| `{% back_link default %}`, `{% back_link default label %}` | The back link of the page. It leads to the safe `next` when its route has a label, named after it, else to `default`, named `label` or after the route of `default`. A link to More is shown on a phone only. On a computer it also draws the breadcrumbs of the page, and keeps the link only on a form or when the origin is not the parent. |
 | `{% back_href default %}`, `{% back_href default as cancel %}` | The same address without the link, for a Cancel button. |
 | `{% url_with_next 'rooms:item-create' home_id=home.id room_id=room.id %}` | The address of a route with `next=<this page>`. A keyword prefixed with `q_` goes to the query: `q_item=item.id` gives `?item=…`. |
 | `{% next_field %}` | The hidden `next` field of a form, with the safe `next` only. |
@@ -325,6 +327,12 @@ to it. The page of the room leads to its budget by its block "Budget of the room
 - On a computer, the back link **must** appear only on a form or when the origin is
   not the parent (a room opened from the budget). Otherwise the breadcrumbs already
   say it.
+- The `{% back_link %}` tag draws both, so a page does not write breadcrumbs itself.
+  A new record page **must** be in `PARENTS` (its parent in the tree) and have a
+  `Record` in `LABELS`; a new form **must** be in `FORM_TITLES`. A page without a
+  title gets no breadcrumbs rather than a wrong one.
+- Breadcrumbs are in the page at every width and hidden below 56 rem by the style
+  sheet (`components.css`), so a phone reads the back link alone.
 - The entry of the bar that stays marked is the section the person entered by: a room
   opened from the budget keeps Budget marked, and comes back to it. The bar must never
   change tab under the finger.
@@ -479,6 +487,33 @@ is checked against all of them at once.
 - **Resources**: a screen **must not** load anything from another host, nor use an
   inline style or script ([ADR 0011](../adr/0011-no-external-resources-and-csp.md)).
   The strict content security policy refuses them.
+
+## Labels
+
+One word for one thing, on every screen and in both languages. These rules come from
+the review of the labels (NAV-14); a new screen **must** follow them.
+
+- **A term names one concept.** The same word never names two things, and one thing
+  never has two names. In French: the *logement* (never "accueil", which is Today
+  on a phone), an *élément* of a room (its type is *Équipement* or *Surface*), an
+  *article* of the stock, *Matériel* for the stock view of Rooms, *Fournitures* for
+  what a task or a project needs.
+- **A name shared by two pages is qualified.** Two audit logs are "Home audit log" and
+  "Instance audit log", never "Audit log" twice. The tab of the home page that holds
+  its settings is "Home settings", like the entry of More; "Overview" is the first
+  tab of the instance only (the budget one is "Summary").
+- **A bar entry equals the title of its section.** The entry of the bar (or of the
+  column) and the `h1` of the root it opens say the same word. A tab names its view and
+  may be shorter than the `h1` (All → Tasks, Summary → Budget).
+- **A filter reads like the noun it filters.** The filter of finished tasks says
+  "Done" in English and *Faites* in French, which agrees with *tâches*; the button on
+  one task stays *Fait*. When one English word needs two French words, use a
+  `pgettext` context ("task" and "task filter" for Done).
+- **A section holds four tabs at most**, so that they fit a phone without scrolling. A
+  fifth page is a link from the first tab (the files of the homes, from the instance
+  overview).
+- A new label goes into the catalog of its app, in both languages, in the same pull
+  request, and `check_translations --sources` **must** pass.
 
 ## Tables on a phone
 

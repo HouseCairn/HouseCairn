@@ -155,6 +155,39 @@ msgstr "Étiquette QR"
 msgid "More"
 msgstr "Plus"
 
+msgid "Add a task"
+msgstr "Ajouter une tâche"
+
+msgid "Edit the task"
+msgstr "Modifier la tâche"
+
+msgid "Add a room"
+msgstr "Ajouter une pièce"
+
+msgid "Edit the room"
+msgstr "Modifier la pièce"
+
+msgid "Add an item"
+msgstr "Ajouter un élément"
+
+msgid "Edit the item"
+msgstr "Modifier l'élément"
+
+msgid "Add a stock item"
+msgstr "Ajouter un article"
+
+msgid "Edit the stock item"
+msgstr "Modifier l'article"
+
+msgid "Add a project"
+msgstr "Ajouter un projet"
+
+msgid "Edit the project"
+msgstr "Modifier le projet"
+
+msgid "Report a problem"
+msgstr "Signaler un problème"
+
 msgctxt "added message"
 msgid "Open"
 msgstr "Ouvrir"
@@ -190,11 +223,11 @@ msgstr "Projets"
 msgid "Upkeep"
 msgstr "Entretien"
 
+msgid "Home audit log"
+msgstr "Journal d'audit du logement"
+
 msgid "Overview"
 msgstr "Vue d'ensemble"
-
-msgid "Audit log"
-msgstr "Journal d'audit"
 
 msgid "Settings"
 msgstr "Réglages"
@@ -202,11 +235,11 @@ msgstr "Réglages"
 msgid "Sign-in providers"
 msgstr "Fournisseurs de connexion"
 
-msgid "Files of the homes"
-msgstr "Fichiers des logements"
+msgid "Instance audit log"
+msgstr "Journal d'audit de l'instance"
 
 msgid "Home"
-msgstr "Accueil"
+msgstr "Logement"
 
 msgid "What needs doing in the house, where, when, with what and for how much."
 msgstr "Ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."
@@ -306,6 +339,9 @@ msgstr "Continuer avec %(provider)s"
 
 msgid "Skip to content"
 msgstr "Aller au contenu"
+
+msgid "Breadcrumbs"
+msgstr "Fil d'Ariane"
 
 #, python-format
 msgid "version %(version)s"

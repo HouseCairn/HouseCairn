@@ -9,7 +9,7 @@
     <label class="visually-hidden" for="filter-status">{% translate "Show" %}</label>
     <select id="filter-status" name="status">
       <option value="open"{% if status == "open" %} selected{% endif %}>{% translate "To do" %}</option>
-      <option value="done"{% if status == "done" %} selected{% endif %}>{% translate "Done" context "task" %}</option>
+      <option value="done"{% if status == "done" %} selected{% endif %}>{% translate "Done" context "task filter" %}</option>
     </select>
     {% if status == "open" %}
     <label class="visually-hidden" for="filter-room">{% translate "Room" %}</label>
