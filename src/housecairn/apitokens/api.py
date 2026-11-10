@@ -23,6 +23,9 @@ from housecairn.apitokens.models import ApiToken, Scope
 from housecairn.apitokens.permissions import SessionOnly
 from housecairn.homes.models import Home
 
+# These routes take the cookie of a signed-in person only, never a token (see SessionOnly).
+SESSION_AUTH = [{"cookieAuth": []}]
+
 
 class TokenSerializer(serializers.ModelSerializer[ApiToken]):
     homes = serializers.SerializerMethodField(help_text="The ids of the homes the token opens.")
@@ -89,13 +92,15 @@ def _own_token(request: Request, token_id: Any) -> ApiToken:
 class TokenListView(APIView):
     permission_classes = [permissions.IsAuthenticated, SessionOnly]
 
-    @extend_schema(responses=TokenSerializer(many=True))
+    @extend_schema(auth=SESSION_AUTH, responses=TokenSerializer(many=True))
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         user = request.user
         assert isinstance(user, User)  # noqa: S101 - authentication ran
         return Response(TokenSerializer(services.tokens_of(user), many=True).data)
 
-    @extend_schema(request=TokenCreateSerializer, responses={201: TokenSerializer})
+    @extend_schema(
+        auth=SESSION_AUTH, request=TokenCreateSerializer, responses={201: TokenSerializer}
+    )
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         user = request.user
         assert isinstance(user, User)  # noqa: S101 - authentication ran
@@ -128,6 +133,7 @@ class TokenDetailView(APIView):
     permission_classes = [permissions.IsAuthenticated, SessionOnly]
 
     @extend_schema(
+        auth=SESSION_AUTH,
         responses={204: None},
         description="Revoke a token: it stops working with the next request that uses it.",
     )
