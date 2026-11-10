@@ -395,3 +395,154 @@ class TestFromAnObject:
         response = signed_in.post(create, {"target": f"room:{owner_room.id}"})
         page = signed_in.get(response["Location"]).content.decode()
         assert back_links(page) == [(room_url, "Living room")]
+
+
+# ---------- homes: what a POST does with `next` ----------
+
+POST_HOSTILE = [
+    "https://evil.example.com/",
+    "//evil.example.com/",
+    "/\\evil.example.com/",
+    "javascript:alert(1)",
+]
+
+
+def home_form(**extra: str) -> dict[str, str]:
+    return {"name": "Main house", "currency": "EUR", "hemisphere": "north", **extra}
+
+
+class TestHomePostRedirects:
+    def test_edit_follows_a_safe_next(self, signed_in: Client, alice_home: Home) -> None:
+        safe = url("tasks:today", home_id=alice_home.id)
+        response = signed_in.post(url("homes:edit", home_id=alice_home.id), home_form(next=safe))
+        assert response.status_code == 302
+        assert response["Location"] == safe
+
+    def test_edit_without_next_lands_on_the_home(self, signed_in: Client, alice_home: Home) -> None:
+        response = signed_in.post(url("homes:edit", home_id=alice_home.id), home_form())
+        assert response["Location"] == url("homes:detail", home_id=alice_home.id)
+
+    @pytest.mark.parametrize("hostile", POST_HOSTILE)
+    def test_edit_refuses_a_hostile_next(
+        self, signed_in: Client, alice_home: Home, hostile: str
+    ) -> None:
+        response = signed_in.post(url("homes:edit", home_id=alice_home.id), home_form(next=hostile))
+        assert response["Location"] == url("homes:detail", home_id=alice_home.id)
+
+    def test_create_goes_back_to_its_context_with_added_and_open(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        context = url("tasks:today", home_id=alice_home.id)
+        response = signed_in.post(url("homes:create"), home_form(name="Cabin", next=context))
+        assert response["Location"] == context
+        cabin = Home.objects.get(name="Cabin")
+        page = signed_in.get(context)
+        texts = [str(m) for m in page.context["messages"]]
+        record = url("homes:detail", home_id=cabin.id)
+        assert texts == [f'Home added · <a href="{record}">Open</a>']
+
+    def test_create_without_next_opens_the_new_home(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        response = signed_in.post(url("homes:create"), home_form(name="Cabin"))
+        cabin = Home.objects.get(name="Cabin")
+        assert response["Location"] == url("homes:detail", home_id=cabin.id)
+
+    @pytest.mark.parametrize("hostile", POST_HOSTILE)
+    def test_create_refuses_a_hostile_next(
+        self, signed_in: Client, alice_home: Home, hostile: str
+    ) -> None:
+        response = signed_in.post(url("homes:create"), home_form(name="Cabin", next=hostile))
+        cabin = Home.objects.get(name="Cabin")
+        assert response["Location"] == url("homes:detail", home_id=cabin.id)
+
+    def test_a_household_action_keeps_the_next(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        from housecairn.homes import services as home_services
+
+        home_services.invite(
+            alice,
+            alice_home,
+            email="guest@example.com",
+            role="member",
+            delivery=home_services.Delivery(),
+        )
+        invitation = alice_home.invitations.get()
+        origin = url("homes:detail", home_id=alice_home.id)
+        household = url("homes:household", home_id=alice_home.id)
+        response = signed_in.post(
+            url("homes:invitation-resend", home_id=alice_home.id, invitation_id=invitation.id),
+            {"next": origin},
+        )
+        assert response["Location"] == household + "?next=" + quote_path(origin)
+
+    @pytest.mark.parametrize("hostile", POST_HOSTILE)
+    def test_a_household_action_drops_a_hostile_next(
+        self, signed_in: Client, alice: User, alice_home: Home, hostile: str
+    ) -> None:
+        from housecairn.homes import services as home_services
+
+        home_services.invite(
+            alice,
+            alice_home,
+            email="guest@example.com",
+            role="member",
+            delivery=home_services.Delivery(),
+        )
+        invitation = alice_home.invitations.get()
+        response = signed_in.post(
+            url("homes:invitation-resend", home_id=alice_home.id, invitation_id=invitation.id),
+            {"next": hostile},
+        )
+        assert response["Location"] == url("homes:household", home_id=alice_home.id)
+
+
+# ---------- a hostile next on a POST, one route of each app ----------
+
+
+@pytest.fixture
+def posts(
+    alice_home: Home,
+    owner_room: Room,
+    article: Article,
+    living_room_project: Project,
+) -> dict[str, tuple[str, dict[str, str]]]:
+    """App -> (the address posted to, the form without `next`)."""
+    home = alice_home.id
+    return {
+        "stock": (
+            url("stock:movement-add", home_id=home, article_id=article.id),
+            {"kind": "entry", "quantity": "3"},
+        ),
+        "projects": (
+            url("projects:quote-create", home_id=home, project_id=living_room_project.id),
+            {"amount": "450", "status": "received"},
+        ),
+        "reports": (url("reports:create", home_id=home), {"title": "It leaks"}),
+        "labels": (
+            url("labels:create", home_id=home),
+            {"target": f"room:{owner_room.id}"},
+        ),
+    }
+
+
+class TestHostileNextOnPost:
+    @pytest.mark.parametrize("app", ["stock", "projects", "reports", "labels"])
+    @pytest.mark.parametrize("hostile", POST_HOSTILE)
+    def test_a_post_never_leaves_the_site(
+        self,
+        signed_in: Client,
+        posts: dict[str, tuple[str, dict[str, str]]],
+        app: str,
+        hostile: str,
+    ) -> None:
+        address, data = posts[app]
+        response = signed_in.post(address, {**data, "next": hostile})
+        assert response.status_code == 302
+        location = response["Location"]
+        assert location.startswith("/")
+        assert not location.startswith("//")
+        assert "\\" not in location
+        assert "evil.example.com" not in location
+        assert "javascript:" not in location
