@@ -2,6 +2,7 @@
 
 import datetime
 import io
+import os
 import zipfile
 from collections.abc import Callable
 from pathlib import Path
@@ -16,7 +17,7 @@ from rest_framework.test import APIClient
 from housecairn.accounts.models import User
 from housecairn.apitokens import services as token_services
 from housecairn.audit.models import AuditEvent
-from housecairn.homes import quotas, restore, services
+from housecairn.homes import jobs, quotas, restore, services
 from housecairn.homes.models import ExportJob, ExportStatus, Home, Role
 from housecairn.rooms import services as room_services
 from tests.data_support import export_data
@@ -101,6 +102,48 @@ def test_an_expired_archive_is_not_handed_and_is_removed(
     )
     assert download(client, job).status_code == 404
     assert not (Path(settings.MEDIA_ROOT) / "exports" / str(large.id) / f"{job.id}.zip").exists()
+
+
+def test_the_worker_removes_an_expired_archive_without_any_other_request(
+    client: Client, alice: User, large: Home, settings: Any
+) -> None:
+    """Every hour, by its schedule: not only at the next export or download."""
+    from django.utils.module_loading import import_string
+    from django_q.models import Schedule
+
+    client.force_login(alice)
+    job = start(client, large)
+    archive = Path(settings.MEDIA_ROOT) / "exports" / str(large.id) / f"{job.id}.zip"
+    assert archive.exists()
+    ExportJob.objects.filter(pk=job.pk).update(
+        expires_at=timezone.now() - datetime.timedelta(seconds=1)
+    )
+    jobs.schedule_purge()
+    jobs.schedule_purge()  # once, whatever the number of migrations
+    schedule = Schedule.objects.get(name=jobs.PURGE_SCHEDULE)
+    assert Schedule.objects.filter(name=jobs.PURGE_SCHEDULE).count() == 1
+    assert schedule.schedule_type == Schedule.HOURLY
+    assert schedule.repeats == -1
+    import_string(schedule.func)()  # what the worker runs
+    assert not archive.exists()
+    assert not ExportJob.all_objects.filter(pk=job.pk).exists()
+
+
+def test_a_partial_archive_left_by_a_stopped_worker_is_removed(
+    settings: Any, media_root: Path, alice_home: Home
+) -> None:
+    folder = Path(settings.MEDIA_ROOT) / "exports" / str(alice_home.id)
+    folder.mkdir(parents=True)
+    old, recent = folder / "old.part", folder / "recent.part"
+    old.write_bytes(b"PK")
+    recent.write_bytes(b"PK")
+    past = (
+        timezone.now() - datetime.timedelta(hours=settings.HOUSECAIRN_EXPORT_KEEP_HOURS, minutes=1)
+    ).timestamp()
+    os.utime(old, (past, past))
+    jobs.purge_expired()
+    assert not old.exists()
+    assert recent.exists()  # perhaps being written right now
 
 
 def test_the_archive_does_not_count_in_the_quota_and_goes_with_the_home(

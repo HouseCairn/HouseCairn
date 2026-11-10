@@ -4,7 +4,9 @@ Under `HOUSECAIRN_EXPORT_INLINE_MAX_BYTES` of files the archive is made during t
 request, as before. Above, the request only records an `ExportJob` and queues
 `make_archive`; the owner downloads the archive from the page of the job, signed in,
 at most `HOUSECAIRN_EXPORT_DOWNLOADS` times and for `HOUSECAIRN_EXPORT_KEEP_HOURS` hours.
-Expired archives are removed whenever an export starts or a download is asked for.
+Expired archives are removed every hour by the worker (`PURGE_SCHEDULE`), and also
+whenever an export starts or a download is asked for; so is a partial archive (`.part`)
+older than that, left by a worker stopped while it wrote it.
 """
 
 import datetime
@@ -15,6 +17,7 @@ from uuid import UUID
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
+from django.db import DatabaseError
 from django.db.models import F, Q
 from django.utils import timezone
 
@@ -24,6 +27,7 @@ from housecairn.homes.models import ExportJob, ExportStatus, Home
 logger = logging.getLogger("housecairn.files")
 
 FOLDER = "exports"
+PURGE_SCHEDULE = "housecairn.homes.purge_exports"
 
 
 class ExportUnavailableError(Exception):
@@ -39,13 +43,42 @@ def is_large(home: Home) -> bool:
 
 
 def purge_expired() -> None:
-    """Remove the archives past their time or their downloads, and their rows."""
+    """Remove the archives past their time or their downloads, and their rows.
+
+    Also removes the partial archives older than the time an archive is kept: a worker
+    stopped while it wrote one (a restart, the timeout of a task) leaves it behind.
+    """
     now = timezone.now()
     for job in ExportJob.all_objects.filter(
         Q(expires_at__lte=now) | Q(downloads_left=0) | Q(status=ExportStatus.FAILED)
     ):
         _path(job).unlink(missing_ok=True)
+        _path(job).with_suffix(".part").unlink(missing_ok=True)
         job.delete()
+    oldest = (now - datetime.timedelta(hours=settings.HOUSECAIRN_EXPORT_KEEP_HOURS)).timestamp()
+    for partial in (Path(settings.MEDIA_ROOT) / FOLDER).glob("*/*.part"):
+        try:
+            if partial.stat().st_mtime < oldest:
+                partial.unlink()
+        except OSError:
+            logger.warning("A partial archive could not be removed: %s", partial)
+
+
+def schedule_purge(**_kwargs: object) -> None:
+    """Create the hourly schedule of `purge_expired` once; called after `migrate`."""
+    from django_q.models import Schedule
+
+    try:
+        Schedule.objects.get_or_create(
+            name=PURGE_SCHEDULE,
+            defaults={
+                "func": "housecairn.homes.jobs.purge_expired",
+                "schedule_type": Schedule.HOURLY,
+                "repeats": -1,
+            },
+        )
+    except DatabaseError:  # before django_q's tables exist
+        return
 
 
 def start_export(actor: Any, home: Home) -> ExportJob:

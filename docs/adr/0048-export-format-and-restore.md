@@ -70,7 +70,8 @@ with their role. The restored home does not become the current home.
 **Large homes in the background.** Above 50 MB of files, the export is an `ExportJob`: the
 worker writes the archive under `MEDIA_ROOT/exports/<home id>/` (erased with the home, not
 counted in its quota), and an owner, signed in, downloads it by a POST at most 3 times
-within 24 hours; then it is removed. No link opens without signing in.
+within 24 hours; then an hourly schedule of the worker removes it, with any partial
+archive older than that. No link opens without signing in.
 
 **Tables as CSV, for a spreadsheet.** The rooms, items, tasks, history, stock,
 contractors and reports, one table per file, from the same sections: UTF-8 with a byte

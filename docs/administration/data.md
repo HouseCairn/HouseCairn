@@ -17,7 +17,8 @@ background by the worker: the page of the export says when it is ready, and the
 API answers `202` with the job (`GET /api/v1/homes/<id>/export/<job id>/`).
 The archive is then downloaded by an owner, signed in, at most 3 times and
 within 24 hours (`POST .../download/`, never a link that opens without
-signing in); after that it is removed.
+signing in). After that, the worker removes it within the hour, with any
+partial archive left by an export the worker could not finish.
 
 The archive is a zip:
 
