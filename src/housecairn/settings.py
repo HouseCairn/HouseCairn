@@ -109,6 +109,9 @@ MIDDLEWARE = [
     "housecairn.instance.middleware.InstanceLocaleMiddleware",
     "housecairn.instance.middleware.InstanceTimeZoneMiddleware",
     "django.middleware.common.CommonMiddleware",
+    # Before the CSRF check, which reads a form first: a post too large for an upload
+    # screen gets that screen and its reason, not a bare 400 page.
+    "housecairn.core.middleware.RequestTooLargeMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "housecairn.accounts.middleware.DeviceCookieMiddleware",

@@ -1,0 +1,26 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Import tables from CSV files.** Owners and members add rooms, items, tasks, stock and contractors to a home from the CSV files of **Tables for a spreadsheet**, edited in a spreadsheet: the preview shows each row accepted or refused with the reason and writes nothing, then **Import** adds every row in one go, all or nothing: while a single row is refused, nothing is imported. At most 1,000 rows and 2 MB per import. A row already in the home is refused, never merged, and a reference to another home is refused. The API does the same with `POST /api/v1/homes/<id>/import/` and a token with the `write` scope ([Import tables](../../../screens/home-import.md))."
+msgstr "**Importer des tableaux depuis des fichiers CSV.** Les propriétaires et les membres ajoutent à un logement des pièces, des éléments, des tâches, du matériel et des intervenants depuis les fichiers CSV de **Tableaux pour un tableur**, modifiés dans un tableur : l'aperçu montre chaque ligne acceptée ou refusée avec la raison et n'écrit rien, puis **Importer** ajoute toutes les lignes en une fois, tout ou rien : tant qu'une seule ligne est refusée, rien n'est importé. Au plus 1 000 lignes et 2 Mo par import. Une ligne déjà dans le logement est refusée, jamais fusionnée, et une référence à un autre logement est refusée. L'API fait de même avec `POST /api/v1/homes/<id>/import/` et un jeton de portée `write` ([Importer des tableaux](../../../screens/home-import.md))."
+
+msgid "**Opening a table in Excel or LibreOffice** is explained step by step, French menus included: every CSV of HouseCairn stays separated by commas ([Export and deletion](../../../administration/data.md#opening-a-table-in-a-spreadsheet))."
+msgstr "**Ouvrir un tableau dans Excel ou LibreOffice** est expliqué pas à pas, menus en français compris : tout CSV de HouseCairn reste séparé par des virgules ([Export et suppression](../../../administration/data.md#opening-a-table-in-a-spreadsheet))."
+

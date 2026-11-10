@@ -20,6 +20,7 @@ LABELS: dict[str, Promise] = {
     "sso.lifted": _("Sign-in requirement removed"),
     "home.exported": _("Home exported"),
     "home.restored": _("Home restored from an archive"),
+    "home.imported": _("Tables imported from CSV files"),
     "room.created": _("Room added: %(title)s"),
     "room.updated": _("Room changed: %(title)s"),
     "room.deleted": _("Room deleted: %(title)s"),

@@ -39,8 +39,8 @@ msgstr "Sous **Réglages**, deux lignes mènent aux [étiquettes QR](qr-labels.m
 msgid "Tables for a spreadsheet"
 msgstr "Tableaux pour un tableur"
 
-msgid "Every member sees the list **Tables for a spreadsheet**: the rooms, items, tasks, history of the tasks, stock, contractors and reports, each as a CSV file to open in a spreadsheet (see [Export and deletion](../administration/data.md))."
-msgstr "Chaque membre voit la liste **Tableaux pour un tableur** : les pièces, éléments, tâches, historique des tâches, matériel, intervenants et signalements, chacun en fichier CSV à ouvrir dans un tableur (voir [Export et suppression](../administration/data.md))."
+msgid "Every member sees the list **Tables for a spreadsheet**: the rooms, items, tasks, history of the tasks, stock, contractors and reports, each as a CSV file to open in a spreadsheet (see [Export and deletion](../administration/data.md)). Owners and members also find **Import tables** at the end of the list, which adds rooms, items, tasks, stock and contractors from CSV files ([Import tables](home-import.md))."
+msgstr "Chaque membre voit la liste **Tableaux pour un tableur** : les pièces, les éléments, les tâches, l'historique des tâches, le matériel, les intervenants et les signalements, chacun en fichier CSV à ouvrir dans un tableur (voir [Export et suppression](../administration/data.md)). Les propriétaires et les membres trouvent aussi **Importer des tableaux** à la fin de la liste, qui ajoute des pièces, des éléments, des tâches, du matériel et des intervenants depuis des fichiers CSV ([Importer des tableaux](home-import.md))."
 
 msgid "Your data"
 msgstr "Vos données"

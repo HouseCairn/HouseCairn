@@ -46,8 +46,12 @@ def purge_expired() -> None:
     """Remove the archives past their time or their downloads, and their rows.
 
     Also removes the partial archives older than the time an archive is kept: a worker
-    stopped while it wrote one (a restart, the timeout of a task) leaves it behind.
+    stopped while it wrote one (a restart, the timeout of a task) leaves it behind; and
+    the previews of imports past their time (`csv_import.purge_previews`).
     """
+    from housecairn.homes import csv_import
+
+    csv_import.purge_previews()
     now = timezone.now()
     for job in ExportJob.all_objects.filter(
         Q(expires_at__lte=now) | Q(downloads_left=0) | Q(status=ExportStatus.FAILED)
