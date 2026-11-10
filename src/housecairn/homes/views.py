@@ -261,19 +261,32 @@ class HomeCsvView(WebHomeScopedMixin, View):
 class HomeImportView(WebHomeScopedMixin, FormView[forms.ImportForm]):
     """Import CSV tables into the home of the address: upload, preview, then confirm.
 
-    The preview runs the import and rolls it back; the confirmation runs it again on the
-    same text and writes it, in one transaction. Owners and members only.
+    The preview runs the import and rolls it back, and keeps the text it checked on the
+    server (`csv_import.keep_preview`); the confirmation sends back only its signed token,
+    runs the import again on that text and writes it in one transaction, all or nothing.
+    Owners and members only.
     """
 
     template_name = "homes/import.html"
     form_class = forms.ImportForm
+    # The upload of the files, as declared, beyond which nothing reads it
+    # (`core.middleware.RequestTooLargeMiddleware`): the files and their multipart framing.
+    max_request_bytes = csv_import.MAX_BYTES * 2
 
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
-        if request.method == "POST" and int(request.META.get("CONTENT_LENGTH") or 0) > (
-            csv_import.MAX_BYTES * 2
-        ):
-            return HttpResponse(_("This file is too large."), status=413, content_type="text/plain")
-        return super().dispatch(request, *args, **kwargs)
+    @classmethod
+    def request_too_large(cls, request: HttpRequest, **kwargs: Any) -> HttpResponse:
+        """The screen and its reason, for a post too large to be read."""
+        view = cls()
+        view.setup(request, **kwargs)
+        view.home = view.get_home()
+        if not services.can_write(request.user, view.home):
+            raise PermissionDenied
+        form = forms.ImportForm(data={})
+        form.is_valid()
+        form.add_error(None, csv_import.too_large_message())
+        response = view.render_to_response(view.get_context_data(form=form))
+        response.status_code = 413
+        return response
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -293,16 +306,39 @@ class HomeImportView(WebHomeScopedMixin, FormView[forms.ImportForm]):
 
     def form_valid(self, form: forms.ImportForm) -> HttpResponse:
         self.home = self.get_home()
-        confirm = self.request.POST.get("confirm") == "1"
+        if self.request.POST.get("confirm") == "1":
+            return self.confirm(form)
         try:
             texts = form.texts()
             if not texts:
                 form.add_error(None, _("Choose at least one file."))
                 return self.form_invalid(form)
-            report = csv_import.run(self.request.user, self.home, texts, confirm=confirm)
+            report = csv_import.run(self.request.user, self.home, texts, confirm=False)
         except csv_import.ImportRefusedError as exc:
             form.add_error(None, exc.messages)
             return self.form_invalid(form)
+        preview = ""
+        if report.can_confirm:
+            preview = csv_import.keep_preview(self.request.user, self.home, texts)
+        return self.render_to_response(
+            self.get_context_data(form=form, report=report, preview=preview)
+        )
+
+    def confirm(self, form: forms.ImportForm) -> HttpResponse:
+        """Write the text a preview of this person kept, in this home, then forget it."""
+        try:
+            preview, texts = csv_import.take_preview(
+                self.request.user, self.home, form.cleaned_data["preview"]
+            )
+        except csv_import.PreviewInvalidError:
+            form.add_error(None, csv_import.preview_invalid_message())
+            return self.form_invalid(form)
+        # Taken once: a second confirmation of the same preview finds nothing.
+        deleted, _rows = type(preview).all_objects.filter(pk=preview.pk).delete()
+        if not deleted:  # pragma: no cover - two confirmations at the same instant
+            form.add_error(None, csv_import.preview_invalid_message())
+            return self.form_invalid(form)
+        report = csv_import.run(self.request.user, self.home, texts, confirm=True)
         if report.written:
             messages.success(
                 self.request,
@@ -314,6 +350,7 @@ class HomeImportView(WebHomeScopedMixin, FormView[forms.ImportForm]):
                     self.request, reverse("homes:detail", kwargs={"home_id": self.home.id})
                 )
             )
+        # The home changed since the preview: what is refused now is shown, nothing written.
         return self.render_to_response(self.get_context_data(form=form, report=report))
 
 

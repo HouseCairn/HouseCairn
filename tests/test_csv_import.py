@@ -1,25 +1,29 @@
 """Import of CSV tables into a home: preview, then one transaction (docs/adr/0048)."""
 
 import csv
+import datetime
 import io
 import uuid
 from collections.abc import Callable
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlencode
 
 import pytest
 from django.core.exceptions import PermissionDenied
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client
+from django.test import Client, override_settings
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from housecairn.accounts.models import User
 from housecairn.apitokens import services as token_services
 from housecairn.audit.models import AuditEvent
-from housecairn.homes import csv_export, csv_import
+from housecairn.homes import csv_export, csv_import, jobs, views
 from housecairn.homes import services as home_services
-from housecairn.homes.models import Home, Role
+from housecairn.homes.models import Home, ImportPreview, Role
 from housecairn.rooms import services as room_services
 from housecairn.rooms.models import Item, Room
 from housecairn.stock.models import Article
@@ -453,6 +457,35 @@ def test_the_api_previews_by_default_and_reports_each_row(
 # --- The screen --------------------------------------------------------------------------------
 
 
+class _Forms(HTMLParser):
+    """The fields of each form of a page that posts, as a browser would send them."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.forms: list[dict[str, str]] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = dict(attrs)
+        if tag == "form":
+            self.forms.append({})
+        elif tag == "input" and self.forms and values.get("name"):
+            self.forms[-1][str(values["name"])] = values.get("value") or ""
+
+
+def confirmation_fields(page: Any) -> dict[str, str]:
+    """The fields of the form of a preview that confirms it, as the page gives them."""
+    parser = _Forms()
+    parser.feed(page.content.decode())
+    found = [f for f in parser.forms if f.get("confirm") == "1"]
+    assert len(found) == 1, "no single form confirms this preview"
+    return found[0]
+
+
+def send_back(client: Client, url: str, fields: dict[str, str]) -> Any:
+    """Post a form without files as a browser does: URL-encoded, so 3 bytes for each one."""
+    return client.post(url, urlencode(fields), content_type="application/x-www-form-urlencoded")
+
+
 def test_the_screen_previews_then_writes_on_confirmation(alice: User, alice_home: Home) -> None:
     client = Client()
     client.force_login(alice)
@@ -461,18 +494,126 @@ def test_the_screen_previews_then_writes_on_confirmation(alice: User, alice_home
     page = client.get(f"{url}?next={home_page}")
     assert page.status_code == 200
     upload = SimpleUploadedFile(
-        "rooms.csv", "\ufeffname,kind\r\nKitchen,kitchen\r\nAttic,x\r\n".encode(), "text/csv"
+        "rooms.csv", "\ufeffname,kind\r\nKitchen,kitchen\r\nAttic,attic\r\n".encode(), "text/csv"
     )
     preview = client.post(url, {"rooms": upload, "next": home_page})
     assert preview.status_code == 200
     assert not Room.objects.filter(home=alice_home).exists()
-    text = preview.context["report"].files[0].text
-    assert b'name="confirm"' in preview.content
-    assert b"Attic" in preview.content
-    done = client.post(url, {"text_rooms": text, "confirm": "1", "next": home_page})
+    done = send_back(client, url, confirmation_fields(preview))
     assert done.status_code == 302
     assert done["Location"] == home_page
-    assert list(Room.objects.filter(home=alice_home).values_list("name", flat=True)) == ["Kitchen"]
+    assert sorted(Room.objects.filter(home=alice_home).values_list("name", flat=True)) == [
+        "Attic",
+        "Kitchen",
+    ]
+
+
+def test_a_large_accented_file_is_confirmed_within_the_caps(alice: User, alice_home: Home) -> None:
+    # 1,000 rows of French notes, close to the 2 MB cap: each "é" is 2 bytes in the file
+    # and 6 once URL-encoded, so the text sent back by the browser would be about 5.8 MB,
+    # past the 2.5 MB of a form Django reads. Only the preview's token goes back.
+    notes = "Éé à refaire après l'hiver côté façade " + "é" * 950
+    text = "name,notes\n" + "".join(f"Pièce {n},{notes}\n" for n in range(1, 1001))
+    size = len(text.encode())
+    assert 1_900_000 < size <= csv_import.MAX_BYTES
+    client = Client()
+    client.force_login(alice)
+    url = reverse("homes:import", kwargs={"home_id": alice_home.id})
+    upload = SimpleUploadedFile("rooms.csv", text.encode(), "text/csv")
+    preview = client.post(url, {"rooms": upload})
+    assert preview.status_code == 200
+    assert preview.context["report"].accepted == 1000
+    assert ("é" * 950).encode() not in preview.content  # the text stays on the server
+    fields = confirmation_fields(preview)
+    assert len(urlencode(fields)) < 2_000
+    done = send_back(client, url, fields)
+    assert done.status_code == 302, done.content[:300]
+    assert Room.objects.filter(home=alice_home, notes=notes).count() == 1000
+    assert not ImportPreview.objects.exists()
+
+
+def test_a_confirmation_needs_a_preview_of_this_person_in_this_home(
+    alice: User,
+    alice_home: Home,
+    make_user: Callable[..., User],
+    add_member: Callable[..., Any],
+) -> None:
+    member = make_user("member@example.com")
+    add_member(alice_home, member, Role.MEMBER)
+    other = home_services.create_home(alice, name="Other")
+    url = reverse("homes:import", kwargs={"home_id": alice_home.id})
+    client = Client()
+    client.force_login(alice)
+    upload = SimpleUploadedFile("rooms.csv", b"name\nKitchen\n", "text/csv")
+    fields = confirmation_fields(client.post(url, {"rooms": upload}))
+    token = fields["preview"]
+
+    def refused(page: Any) -> bool:
+        return page.status_code == 200 and b"cannot be confirmed any more" in page.content
+
+    # No preview, a token made up, a token signed for something else.
+    assert refused(send_back(client, url, {"confirm": "1"}))
+    assert refused(send_back(client, url, {"confirm": "1", "preview": "made-up"}))
+    assert refused(send_back(client, url, {"confirm": "1", "preview": token[:-2] + "xx"}))
+    # Another person of the home, the same person in another home.
+    member_client = Client()
+    member_client.force_login(member)
+    assert refused(send_back(member_client, url, fields))
+    other_url = reverse("homes:import", kwargs={"home_id": other.id})
+    assert refused(send_back(client, other_url, fields))
+    # A text changed on the server since the preview.
+    preview = ImportPreview.objects.get()
+    ImportPreview.objects.filter(pk=preview.pk).update(texts={"rooms": "name\nCellar\n"})
+    assert refused(send_back(client, url, fields))
+    ImportPreview.objects.filter(pk=preview.pk).update(texts=preview.texts)
+    # Expired.
+    ImportPreview.objects.filter(pk=preview.pk).update(expires_at=timezone.now())
+    assert refused(send_back(client, url, fields))
+    ImportPreview.objects.filter(pk=preview.pk).update(expires_at=preview.expires_at)
+    assert not Room.objects.exists()
+    # The right one, once.
+    assert send_back(client, url, fields).status_code == 302
+    assert refused(send_back(client, url, fields))
+    assert Room.objects.filter(home=alice_home).count() == 1
+
+
+def test_a_preview_is_kept_once_a_person_and_home_and_purged_when_expired(
+    alice: User, alice_home: Home
+) -> None:
+    csv_import.keep_preview(alice, alice_home, {"rooms": "name\nA\n"})
+    token = csv_import.keep_preview(alice, alice_home, {"rooms": "name\nB\n"})
+    kept = ImportPreview.objects.get()
+    assert kept.texts == {"rooms": "name\nB\n"}
+    assert kept.expires_at - timezone.now() <= datetime.timedelta(
+        minutes=csv_import.PREVIEW_MINUTES
+    )
+    assert csv_import.take_preview(alice, alice_home, token)[1] == kept.texts
+    ImportPreview.objects.update(expires_at=timezone.now())
+    jobs.purge_expired()
+    assert not ImportPreview.all_objects.exists()
+    with pytest.raises(csv_import.PreviewInvalidError):
+        csv_import.take_preview(alice, alice_home, token)
+
+
+def test_a_post_too_large_gets_the_screen_and_its_reason(
+    alice: User, alice_home: Home, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    client = Client()
+    client.force_login(alice)
+    url = reverse("homes:import", kwargs={"home_id": alice_home.id})
+    # Form fields past what Django reads: the screen, not the bare 400 page.
+    with override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=1_000):
+        page = send_back(client, url, {"confirm": "1", "preview": "x" * 5_000})
+    assert page.status_code == 413
+    assert b"too large" in page.content
+    assert b'name="rooms"' in page.content
+    # A body declared larger than the screen reads.
+    monkeypatch.setattr(views.HomeImportView, "max_request_bytes", 100)
+    upload = SimpleUploadedFile("rooms.csv", b"name\n" + b"Kitchen\n" * 50, "text/csv")
+    page = client.post(url, {"rooms": upload})
+    assert page.status_code == 413
+    assert b'name="rooms"' in page.content
+    assert not Room.objects.exists()
 
 
 def test_the_home_page_offers_the_import_to_who_may_write(

@@ -101,6 +101,9 @@ msgstr "Une ligne de ce nom est déjà dans ce logement : celle-ci est ajoutée 
 msgid "These files are too large: %(size)s MB at most in all."
 msgstr "Ces fichiers sont trop volumineux : %(size)s Mo au plus en tout."
 
+msgid "This preview cannot be confirmed any more: it has expired, was already used, or was made for another person or another home. Choose the files again."
+msgstr "Cet aperçu ne peut plus être confirmé : il a expiré, a déjà servi, ou a été fait pour une autre personne ou un autre logement. Choisissez de nouveau les fichiers."
+
 msgid "Every item is in a room."
 msgstr "Chaque élément est dans une pièce."
 
@@ -238,6 +241,12 @@ msgstr "export d'un logement"
 
 msgid "exports of homes"
 msgstr "exports de logements"
+
+msgid "preview of an import"
+msgstr "aperçu d'un import"
+
+msgid "previews of imports"
+msgstr "aperçus d'imports"
 
 #, python-format
 msgid "This home already holds %(count)d files, its limit: delete some, or ask the administrator of the instance for more."
@@ -407,9 +416,6 @@ msgstr "Logement ajouté."
 msgid "Home saved."
 msgstr "Logement enregistré."
 
-msgid "This file is too large."
-msgstr "Ce fichier est trop volumineux."
-
 msgid "Choose at least one file."
 msgstr "Choisissez au moins un fichier."
 
@@ -418,6 +424,9 @@ msgid "Imported: %(count)s row."
 msgid_plural "Imported: %(count)s rows."
 msgstr[0] "Importé : %(count)s ligne."
 msgstr[1] "Importé : %(count)s lignes."
+
+msgid "This file is too large."
+msgstr "Ce fichier est trop volumineux."
 
 #, python-format
 msgid "Home restored: %(name)s."

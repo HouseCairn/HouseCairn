@@ -199,3 +199,28 @@ class ExportJob(BaseModel):
     class Meta:
         verbose_name = _("export of a home")
         verbose_name_plural = _("exports of homes")
+
+
+class ImportPreview(BaseModel):
+    """The text of CSV files checked by a preview, kept until it is confirmed (docs/adr/0048).
+
+    The confirmation reads the text from here rather than from the browser: a form of the
+    files' text would be up to three times their size once encoded, past what Django reads
+    (`DATA_UPLOAD_MAX_MEMORY_SIZE`). It belongs to one person and one home, is named by a
+    signed token, expires after `csv_import.PREVIEW_MINUTES` minutes, and is removed once
+    confirmed, when the same person previews again in the same home, and every hour.
+    """
+
+    home = models.ForeignKey(Home, on_delete=models.CASCADE, related_name="import_previews")
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+"
+    )
+    # Table -> text of its file, as the preview read it.
+    texts = models.JSONField(default=dict)
+    # SHA-256 of `texts`, also in the signed token: the text confirmed is the text previewed.
+    digest = models.CharField(max_length=64)
+    expires_at = models.DateTimeField(_("expires at"))
+
+    class Meta:
+        verbose_name = _("preview of an import")
+        verbose_name_plural = _("previews of imports")

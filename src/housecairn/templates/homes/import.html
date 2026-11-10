@@ -53,10 +53,8 @@
     <form method="post" class="card">
       {% csrf_token %}
       {% next_field %}
-      {% for file in report.files %}
-        <input type="hidden" name="text_{{ file.entity }}" value="{{ file.text }}">
-      {% endfor %}
-      {% if report.can_confirm %}
+      {% if report.can_confirm and preview %}
+        <input type="hidden" name="preview" value="{{ preview }}">
         <input type="hidden" name="confirm" value="1">
         <button type="submit" class="button-block">{% blocktranslate trimmed count count=report.accepted %}Import {{ count }} row{% plural %}Import {{ count }} rows{% endblocktranslate %}</button>
       {% endif %}

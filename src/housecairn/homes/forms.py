@@ -91,7 +91,8 @@ class DeleteHomeForm(forms.Form):
 class ImportForm(forms.Form):
     """CSV tables to import into a home, one optional file per table (docs/adr/0048).
 
-    The confirmation posts the text of the files back, as checked by the preview.
+    The confirmation sends back only `preview`, the signed token of the text the preview
+    checked and kept on the server (`csv_import.keep_preview`), never the text itself.
     """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -104,12 +105,12 @@ class ImportForm(forms.Form):
                 required=False,
                 widget=forms.ClearableFileInput(attrs={"accept": ".csv,text/csv"}),
             )
-            self.fields[f"text_{name}"] = forms.CharField(
-                required=False, strip=False, widget=forms.HiddenInput
-            )
+        self.fields["preview"] = forms.CharField(
+            required=False, max_length=500, widget=forms.HiddenInput
+        )
 
     def texts(self) -> dict[str, str]:
-        """The text of each table given: an upload, or the text sent back by the preview."""
+        """The text of each table uploaded."""
         from housecairn.homes import csv_import
 
         uploads = {
@@ -117,16 +118,7 @@ class ImportForm(forms.Form):
             for name in csv_import.entities()
             if self.cleaned_data.get(name)
         }
-        if uploads:
-            return csv_import.texts_from_uploads(uploads)
-        texts = {
-            name: self.cleaned_data[f"text_{name}"]
-            for name in csv_import.entities()
-            if self.cleaned_data.get(f"text_{name}")
-        }
-        if sum(len(t.encode()) for t in texts.values()) > csv_import.MAX_BYTES:
-            raise csv_import.ImportRefusedError(csv_import.too_large_message())
-        return texts
+        return csv_import.texts_from_uploads(uploads) if uploads else {}
 
 
 class RestoreForm(forms.Form):

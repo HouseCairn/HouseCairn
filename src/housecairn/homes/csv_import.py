@@ -14,6 +14,10 @@ written before the person confirms:
    transaction. The preview runs the same transaction and rolls it back: what it shows is
    exactly what the confirmation writes, and it writes nothing.
 
+Between the preview and the confirmation of the screen, the text checked is kept on the
+server (`ImportPreview`), named by a signed token, for one person and one home and
+`PREVIEW_MINUTES` minutes.
+
 A row whose `id` is a row already in this home is a duplicate: refused, never merged. The
 identifier of a new row is always new; the `id` column only lets the other files refer to
 it. A reference is the identifier of a row, or its exact name.
@@ -21,6 +25,8 @@ it. A reference is the identifier of a row, or its exact name.
 
 import csv
 import datetime
+import hashlib
+import hmac
 import io
 import json
 import uuid
@@ -30,31 +36,39 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from django.contrib.auth import get_user_model
+from django.core import signing
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models, transaction
-from django.utils import translation
+from django.utils import timezone, translation
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
 
 from housecairn.accounts.names import person_name
 from housecairn.homes import csv_export, exports, services
 from housecairn.homes.csv_export import BOM, FORMULA_STARTS
-from housecairn.homes.models import Home
+from housecairn.homes.models import Home, ImportPreview
 
-# 2 MB in all: about ten thousand rows of a home, far more than a household keeps. The
-# preview sends the files back as form fields, and Django refuses a form of more than
-# 2.5 MB (DATA_UPLOAD_MAX_MEMORY_SIZE).
+# 2 MB in all: room for 1,000 rows with long notes. The files are uploaded once, as files
+# (which DATA_UPLOAD_MAX_MEMORY_SIZE does not count); the confirmation sends back only the
+# token of the preview, so the cap holds up to it, whatever the text is written in.
 MAX_BYTES = 2 * 1024 * 1024
 # 1,000 rows for the files of one import: each row goes through the checks of its service
 # in a savepoint, about 7 ms a row, and the confirmation runs them all again; 1,000 rows
 # keep each request within seconds, far from the 30 s after which gunicorn stops a worker.
 MAX_ROWS = 1_000
+# How long the text of a preview waits for its confirmation, on the server.
+PREVIEW_MINUTES = 30
+PREVIEW_SALT = "housecairn.homes.csv_import.preview"
 # Columns of the export that the import reads but does not write: made again here.
 IGNORED = frozenset({"created_at", "updated_at", "position", "label_content_type", "currency"})
 
 
 class ImportRefusedError(ValidationError):
     """A file cannot be imported at all; the message says why."""
+
+
+class PreviewInvalidError(Exception):
+    """No preview to confirm: expired, already confirmed, or of another person or home."""
 
 
 Create = Callable[[Any, Home, dict[str, Any]], models.Model]
@@ -121,7 +135,6 @@ class RowReport:
 class FileReport:
     entity: str
     label: str
-    text: str = ""
     columns: list[tuple[str, str | None]] = field(default_factory=list)  # header, field
     error: str = ""
     rows: list[RowReport] = field(default_factory=list)
@@ -482,7 +495,7 @@ def run(actor: Any, home: Home, texts: dict[str, str], *, confirm: bool) -> Repo
     for name, entity in entities().items():
         if name not in texts:
             continue
-        file_report = FileReport(entity=name, label=str(entity.label), text=texts[name])
+        file_report = FileReport(entity=name, label=str(entity.label))
         report.files.append(file_report)
         try:
             before = sum(len(found) for found in parsed.values())
@@ -539,6 +552,69 @@ def too_large_message() -> str:
     return _("These files are too large: %(size)s MB at most in all.") % {
         "size": MAX_BYTES // (1024 * 1024)
     }
+
+
+# --- Between the preview and the confirmation of the screen -------------------------------
+
+
+def _digest(texts: dict[str, str]) -> str:
+    canonical = json.dumps(texts, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode()).hexdigest()
+
+
+def purge_previews() -> None:
+    """Remove the previews past their time; run every hour and on every new preview."""
+    ImportPreview.all_objects.filter(expires_at__lte=timezone.now()).delete()
+
+
+def keep_preview(actor: Any, home: Home, texts: dict[str, str]) -> str:
+    """Keep `texts`, checked by a preview, for its confirmation; the signed token naming it.
+
+    One preview a person and home: a new one replaces the one before.
+    """
+    purge_previews()
+    ImportPreview.all_objects.filter(home=home, requested_by=actor).delete()
+    digest = _digest(texts)
+    preview = ImportPreview.objects.create(
+        home=home,
+        requested_by=actor,
+        texts=texts,
+        digest=digest,
+        expires_at=timezone.now() + datetime.timedelta(minutes=PREVIEW_MINUTES),
+    )
+    return signing.dumps({"id": str(preview.id), "digest": digest}, salt=PREVIEW_SALT)
+
+
+def take_preview(actor: Any, home: Home, token: str) -> tuple[ImportPreview, dict[str, str]]:
+    """The preview a token names and its text, if it is this person's, in this home.
+
+    PreviewInvalidError for a token that is not signed, too old, already used, of another
+    person or another home, or whose text is not the one previewed.
+    """
+    try:
+        signed = signing.loads(token, salt=PREVIEW_SALT, max_age=PREVIEW_MINUTES * 60)
+        key = uuid.UUID(str(signed["id"]))
+        digest = str(signed["digest"])
+    except (signing.BadSignature, KeyError, TypeError, ValueError):
+        raise PreviewInvalidError from None
+    preview: ImportPreview | None = ImportPreview.objects.filter(
+        pk=key, home=home, requested_by=actor, expires_at__gt=timezone.now()
+    ).first()
+    if preview is None or not isinstance(preview.texts, dict):
+        raise PreviewInvalidError
+    texts = {str(name): str(text) for name, text in preview.texts.items()}
+    if not (
+        hmac.compare_digest(digest, preview.digest) and hmac.compare_digest(digest, _digest(texts))
+    ):
+        raise PreviewInvalidError
+    return preview, texts
+
+
+def preview_invalid_message() -> str:
+    return _(
+        "This preview cannot be confirmed any more: it has expired, was already used, or "
+        "was made for another person or another home. Choose the files again."
+    )
 
 
 # --- The entities ------------------------------------------------------------------------
