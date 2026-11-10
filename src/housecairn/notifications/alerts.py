@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.utils import timezone, translation
 from django.utils.translation import gettext as _
 
+from housecairn.core.links import external_url
 from housecairn.homes.models import WRITE_ROLES, Membership
 from housecairn.instance.config import get_setting
 from housecairn.notifications import outbound, reminders, services
@@ -24,10 +25,9 @@ logger = logging.getLogger("housecairn.notifications")
 
 
 def _link(home_id: object, report_id: object) -> str:
-    site = str(get_setting("site_url") or "").rstrip("/")
-    if not site:
-        return ""
-    return site + reverse("reports:detail", kwargs={"home_id": home_id, "report_id": report_id})
+    site = str(get_setting("site_url") or "")
+    path = reverse("reports:detail", kwargs={"home_id": home_id, "report_id": report_id})
+    return external_url(path, site)
 
 
 def report_created(report_id: str) -> int:

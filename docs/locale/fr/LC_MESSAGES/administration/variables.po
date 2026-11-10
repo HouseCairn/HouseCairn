@@ -87,6 +87,12 @@ msgstr "(aucun : désactivé)"
 msgid "Header in which a trusted proxy gives the path prefix of each request, such as `X-Ingress-Path`."
 msgstr "En-tête dans lequel un proxy de confiance donne le préfixe d'adresse de chaque requête, comme `X-Ingress-Path`."
 
+msgid "`HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING`"
+msgstr "`HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING`"
+
+msgid "`true` lets a page of the same origin show HouseCairn in a frame, as Home Assistant's Ingress panel does (see [Serving under a path prefix](url-prefix.md))."
+msgstr "`true` permet à une page de la même origine d'afficher HouseCairn dans un cadre, comme le fait le panneau Ingress de Home Assistant (voir [Servir sous un préfixe d'adresse](url-prefix.md))."
+
 msgid "`SECRET_KEY`"
 msgstr "`SECRET_KEY`"
 
@@ -243,8 +249,8 @@ msgstr "`HOUSECAIRN_SITE_URL`"
 msgid "(none: set it in production)"
 msgstr "(aucun : à renseigner en production)"
 
-msgid "Public address of the instance, such as `https://home.example.com`, used for links in emails and for the address a printed QR label holds. Empty: the address of the request, checked against `ALLOWED_HOSTS`; `check --deploy` warns when `EMAIL_HOST` is set without it."
-msgstr "Adresse publique de l'instance, comme `https://home.example.com`, utilisée pour les liens des e-mails et pour l'adresse que porte une étiquette QR imprimée. Vide : l'adresse de la requête, vérifiée par rapport à `ALLOWED_HOSTS` ; `check --deploy` avertit quand `EMAIL_HOST` est défini sans elle."
+msgid "Public address of the instance, such as `https://home.example.com`, used for links in emails and for the address a printed QR label holds, followed by `HOUSECAIRN_URL_PREFIX`. Empty: the address of the request, checked against `ALLOWED_HOSTS`; `check --deploy` warns when `EMAIL_HOST` is set without it."
+msgstr "Adresse publique de l'instance, comme `https://home.example.com`, utilisée pour les liens des e-mails et pour l'adresse que porte une étiquette QR imprimée, suivie de `HOUSECAIRN_URL_PREFIX`. Vide : l'adresse de la requête, vérifiée par rapport à `ALLOWED_HOSTS` ; `check --deploy` avertit quand `EMAIL_HOST` est défini sans elle."
 
 msgid "`HOUSECAIRN_INVITATION_LIFETIME_DAYS`"
 msgstr "`HOUSECAIRN_INVITATION_LIFETIME_DAYS`"
