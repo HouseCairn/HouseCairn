@@ -135,7 +135,7 @@ LABELS: dict[str, Any] = {
     "reports:detail": Record("reports.Report", "report_id", "title"),
     "labels:list": _("QR labels"),
     "labels:detail": _("QR label"),
-    "my-home": _("My home"),
+    "index": _("Today"),
     "more": _("More"),
 }
 

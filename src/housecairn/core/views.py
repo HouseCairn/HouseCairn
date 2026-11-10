@@ -1,10 +1,11 @@
 import json
 from importlib import metadata
-from typing import Any
+from typing import Any, cast
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import redirect
 from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -17,7 +18,25 @@ from housecairn.instance.config import instance_name
 
 
 class IndexView(TemplateView):
+    """The one home of the application (docs/developer/design-guide.md, Today).
+
+    Signed in, it is Today: the one home of the person, else their homes together. The
+    welcome page is for a signed-out visitor and for an account with no home to open.
+    """
+
     template_name = "core/index.html"
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if request.user.is_authenticated:
+            from housecairn.homes.scoping import open_homes_for_request
+            from housecairn.tasks.views import MyHomeView
+
+            homes = list(open_homes_for_request(request).values_list("id", flat=True)[:2])
+            if len(homes) == 1:
+                return redirect("tasks:today", home_id=homes[0])
+            if homes:
+                return cast(HttpResponse, MyHomeView.as_view()(request))
+        return super().get(request, *args, **kwargs)
 
 
 class MoreView(LoginRequiredMixin, TemplateView):
@@ -32,8 +51,13 @@ class MoreView(LoginRequiredMixin, TemplateView):
         # so it is the person's only home, if they have exactly one.
         homes = list(open_homes_for_request(self.request).values_list("id", flat=True)[:2])
         home_id = homes[0] if len(homes) == 1 else None
+        from housecairn.reports.services import waiting_for
+
         return super().get_context_data(
-            groups=more.for_page(self.request.user, home_id, "more"), **kwargs
+            groups=more.for_page(
+                self.request.user, home_id, "more", waiting_for(self.request, home_id)
+            ),
+            **kwargs,
         )
 
 

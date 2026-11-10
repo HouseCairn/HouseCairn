@@ -2,7 +2,8 @@
 
 import re
 from collections.abc import Callable, Iterator
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
+from unittest import mock
 from urllib.parse import quote
 
 import pytest
@@ -24,6 +25,8 @@ from housecairn.homes.models import Home, Invitation, Membership, Role
 from housecairn.homes.services import INVITATION_PREFIX
 
 pytestmark = pytest.mark.django_db
+
+SENT_AT = datetime(2026, 11, 9, 22, 22, 59, 900000, tzinfo=UTC)
 
 # Fixtures are created once per test and shared by its examples, on purpose.
 shared_fixtures = settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
@@ -383,8 +386,13 @@ class TestWebOwner:
         make_user("known@example.com")
         client.force_login(alice)
         url = reverse("homes:invite", kwargs={"home_id": alice_home.id})
-        known = client.post(url, {"email": "known@example.com", "role": "member"}, follow=True)
-        unknown = client.post(url, {"email": "nobody@example.com", "role": "member"}, follow=True)
+        # The message states when the link expires, to the minute. Freeze the clock so a
+        # minute change between the two sends cannot make the bodies differ.
+        with mock.patch("django.utils.timezone.now", return_value=SENT_AT):
+            known = client.post(url, {"email": "known@example.com", "role": "member"}, follow=True)
+            unknown = client.post(
+                url, {"email": "nobody@example.com", "role": "member"}, follow=True
+            )
 
         def visible(text: str) -> str:
             return text.replace("known@example.com", "X").replace("nobody@example.com", "X")

@@ -18,23 +18,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-msgid "Today, My home and history"
-msgstr "Aujourd'hui, Mon accueil et historique"
+msgid "Today and history"
+msgstr "Aujourd'hui et historique"
 
 msgid "Three screens to look at your tasks without setting anything up, and one setting to make them yours."
 msgstr "Trois écrans pour regarder vos tâches sans rien configurer, et un réglage pour les rendre vôtres."
 
-msgid "Start the day on My home"
-msgstr "Commencer la journée sur Mon accueil"
+msgid "Start the day on Today"
+msgstr "Commencer la journée sur Aujourd'hui"
 
-msgid "**Today** in the navigation opens [My home](../screens/my-home.md): what is assigned to you, what is late in the home, what nobody has taken yet, and the warranties that end soon. With several homes, pick one or look at them all together."
-msgstr "**Aujourd'hui** dans la navigation ouvre [Mon accueil](../screens/my-home.md) : ce qui vous est confié, ce qui est en retard dans le logement, ce que personne n'a encore pris, et les garanties qui se terminent bientôt. Avec plusieurs logements, choisissez-en un ou regardez-les tous ensemble."
+msgid "The application opens on [Today](../screens/today.md), whichever way you come in: the logo, **Today** in the navigation, the installed application and signing in lead to it. With several homes, [one page](../screens/my-home.md) shows what is assigned to you, what is late in each home, what nobody has taken yet and the warranties that end soon; pick a home there to open its Today."
+msgstr "L'application s'ouvre sur [Aujourd'hui](../screens/today.md), quelle que soit l'entrée : le logo, **Aujourd'hui** dans la navigation, l'application installée et la connexion y mènent. Avec plusieurs logements, [une page](../screens/my-home.md) montre ce qui vous est confié, ce qui est en retard dans chaque logement, ce que personne n'a encore pris et les garanties qui se terminent bientôt ; choisissez-y un logement pour ouvrir son Aujourd'hui."
 
 msgid "Do the day on Today"
 msgstr "Faire la journée sur Aujourd'hui"
 
-msgid "From there, **Today** opens the [Today](../screens/today.md) screen of a home. The arrears are on top; then what comes up in the next days; then what is in season. **Done** is on every row: one tap, and a banner offers **Undo** if it was a mistake."
-msgstr "De là, **Aujourd'hui** ouvre l'écran [Aujourd'hui](../screens/today.md) d'un logement. L'arriéré est en tête ; puis ce qui arrive dans les prochains jours ; puis ce qui est de saison. **Fait** est sur chaque ligne : un geste, et un bandeau propose **Annuler** en cas d'erreur."
+msgid "The arrears are on top; then what comes up in the next days; then what is in season. **Done** is on every row: one tap, and a banner offers **Undo** if it was a mistake."
+msgstr "L'arriéré est en tête ; puis ce qui arrive dans les prochains jours ; puis ce qui est de saison. **Fait** est sur chaque ligne : un geste, et un bandeau propose **Annuler** en cas d'erreur."
 
 msgid "By default the screen is ordered by urgency over one week. If you think by room (the bathroom first), by person (what is mine, what is hers) or by day, change it in the [display preferences](../screens/display-preferences.md): **Group by**, how far to look ahead, and which sections to show. Your choice is yours alone, in every home."
 msgstr "Par défaut, l'écran est ordonné par urgence sur une semaine. Si vous pensez par pièce (la salle de bain d'abord), par personne (ce qui est à moi, ce qui est à elle) ou par jour, changez-le dans les [préférences d'affichage](../screens/display-preferences.md) : **Regrouper par**, jusqu'où regarder, et quelles sections montrer. Votre choix n'est qu'à vous, dans tous les logements."
@@ -50,4 +50,7 @@ msgstr "Pour les scripts"
 
 msgid "The [API](../api/index.md) has the same three views: `GET /api/v1/me/home/`, `GET /api/v1/homes/<home id>/today/` and the occurrences with `ordering=recent`. `GET`/`PATCH /api/v1/me/display-preferences/` reads and changes the layout."
 msgstr "L'[API](../api/index.md) a les mêmes trois vues : `GET /api/v1/me/home/`, `GET /api/v1/homes/<home id>/today/` et les occurrences avec `ordering=recent`. `GET`/`PATCH /api/v1/me/display-preferences/` lit et change la disposition."
+
+#~ msgid "Start the day on My home"
+#~ msgstr "Commencer la journée sur Mon accueil"
 

@@ -21,8 +21,8 @@ msgstr ""
 msgid "Today"
 msgstr "Aujourd'hui"
 
-msgid "What to do in a home, at `/h/<home id>/today/`. It is the screen to open every day; **Today** is also linked from [My home](my-home.md) and from the [task list](tasks.md)."
-msgstr "Ce qu'il y a à faire dans un logement, sur `/h/<home id>/today/`. C'est l'écran à ouvrir chaque jour ; **Aujourd'hui** est aussi relié depuis [Mon accueil](my-home.md) et depuis la [liste des tâches](tasks.md)."
+msgid "What to do in a home, at `/h/<home id>/today/`. It is the screen to open every day, and the one the application opens on: the [start page](start-page.md) leads to it, with several homes through [Today in several homes](my-home.md). **Today** is also linked from the [task list](tasks.md)."
+msgstr "Ce qu'il y a à faire dans un logement, sur `/h/<home id>/today/`. C'est l'écran à ouvrir chaque jour, et celui sur lequel l'application s'ouvre : la [page de départ](start-page.md) y mène, avec plusieurs logements par [Aujourd'hui avec plusieurs logements](my-home.md). **Aujourd'hui** est aussi relié depuis la [liste des tâches](tasks.md)."
 
 msgid "The page is made of sections, in this order:"
 msgstr "La page est faite de sections, dans cet ordre :"
@@ -42,8 +42,8 @@ msgstr "Chaque ligne montre la tâche, sa pièce et son élément, et son état.
 msgid "The **tabs** above the list switch between the three views of the Today section: **Today**, **All** (the [task list](tasks.md)) and **Calendar** (the [calendar](calendar.md) of the home). The current tab is marked; all three stay visible on a phone. Today is the root of its section: it has no back link."
 msgstr "Les **onglets** au-dessus de la liste passent d'une des trois vues de la section Aujourd'hui à l'autre : **Aujourd'hui**, **Toutes** (la [liste des tâches](tasks.md)) et **Calendrier** (le [calendrier](calendar.md) du logement). L'onglet courant est marqué ; les trois restent visibles sur un téléphone. Aujourd'hui est la racine de sa section : elle n'a pas de lien retour."
 
-msgid "When reports are open, one line under the title says how many, with **See the reports**. It is shown to the members who may write, never to read-only members (see [Reports](reports.md))."
-msgstr "Quand des signalements sont ouverts, une ligne sous le titre dit combien, avec **Voir les signalements**. Elle est montrée aux membres qui peuvent écrire, jamais aux membres en lecture seule (voir [Signalements](reports.md))."
+msgid "**Report a problem**, under the title, opens the [form](report-form.md) for this home. Every member has it, a read-only one included: it is often the only thing they do here. When reports are open, a line next to it says how many, with **See the reports**; the line is shown to the members who may write, never to read-only members (see [Reports](reports.md))."
+msgstr "**Signaler un problème**, sous le titre, ouvre le [formulaire](report-form.md) de ce logement. Tout membre l'a, la lecture seule comprise : c'est souvent la seule chose qu'il fait ici. Quand des signalements sont ouverts, une ligne à côté dit combien, avec **Voir les signalements** ; elle est montrée aux membres qui peuvent écrire, jamais aux membres en lecture seule (voir [Signalements](reports.md))."
 
 msgid "A task hidden until a few days before its date does not appear until then."
 msgstr "Une tâche masquée jusqu'à quelques jours avant sa date n'apparaît pas avant."

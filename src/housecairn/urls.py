@@ -3,6 +3,7 @@
 from allauth.account.decorators import secure_admin_login
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import RedirectView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerSplitView
 
 from housecairn.accounts import views as account_views
@@ -38,7 +39,11 @@ urlpatterns = [
     path("tasks/", task_views.EntryView.as_view(), name="tasks"),
     # My home (what concerns the person, in every home) and their display preferences
     # (docs/adr/0037).
-    path("me/", task_views.MyHomeView.as_view(), name="my-home"),
+    path(
+        "me/",
+        RedirectView.as_view(pattern_name="index", query_string=True),
+        name="my-home",
+    ),
     path(
         "me/preferences/",
         task_views.PreferencesView.as_view(),

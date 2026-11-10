@@ -27,6 +27,8 @@ class Entry:
     # Route names whose pages are this entry, to mark it as current in the column; a
     # name ending in "*" is a prefix.
     routes: tuple[str, ...] = ()
+    # A count shown next to the label, "Reports (2)"; 0 shows nothing.
+    badge: int = 0
 
 
 @dataclass(frozen=True)
@@ -41,8 +43,11 @@ def is_administrator(user: Any) -> bool:
     return bool(getattr(user, "is_staff", False) and getattr(user, "is_superuser", False))
 
 
-def groups(user: Any, home_id: Any = None) -> list[Group]:
-    """The groups of More for this person; the Home group is about `home_id`, if any."""
+def groups(user: Any, home_id: Any = None, reports_waiting: int = 0) -> list[Group]:
+    """The groups of More for this person; the Home group is about `home_id`, if any.
+
+    `reports_waiting` is the number of reports waiting for them in that home.
+    """
     home: list[Entry] = []
     if home_id:
         kwargs = {"home_id": home_id}
@@ -64,6 +69,7 @@ def groups(user: Any, home_id: Any = None) -> list[Group]:
                 reverse("reports:list", kwargs=kwargs),
                 _("Problems reported in this home"),
                 ("reports:*",),
+                reports_waiting,
             ),
             Entry(
                 _("Contractors"),
@@ -159,16 +165,24 @@ def current(entry: Entry, view_name: str) -> bool:
     )
 
 
-def for_page(user: Any, home_id: Any, view_name: str) -> list[dict[str, Any]]:
+def for_page(
+    user: Any, home_id: Any, view_name: str, reports_waiting: int = 0
+) -> list[dict[str, Any]]:
     """The groups as templates show them, each entry with whether it is the current page."""
     return [
         {
             "key": group.key,
             "label": group.label,
             "entries": [
-                {"label": e.label, "url": e.url, "text": e.text, "current": current(e, view_name)}
+                {
+                    "label": e.label,
+                    "url": e.url,
+                    "text": e.text,
+                    "badge": e.badge,
+                    "current": current(e, view_name),
+                }
                 for e in group.entries
             ],
         }
-        for group in groups(user, home_id)
+        for group in groups(user, home_id, reports_waiting)
     ]

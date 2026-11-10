@@ -1,7 +1,8 @@
 # Report a problem
 
 The form at `/h/<home id>/reports/new/`. Every member of the home may use it, a read-only
-one included; it is the only thing a read-only member writes.
+one included; it is the only thing a read-only member writes. It is one tap from
+[Today](today.md), where **Report a problem** is under the title.
 
 - **What is wrong?** is the only required field: one line, 200 characters at most.
 - **Where?** is optional: a room, an item or a stock item of the home. Coming from the

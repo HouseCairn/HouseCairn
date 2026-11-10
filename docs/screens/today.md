@@ -1,8 +1,9 @@
 # Today
 
 What to do in a home, at `/h/<home id>/today/`. It is the screen to open every
-day; **Today** is also linked from [My home](my-home.md) and from the
-[task list](tasks.md).
+day, and the one the application opens on: the [start page](start-page.md) leads to
+it, with several homes through [Today in several homes](my-home.md). **Today** is
+also linked from the [task list](tasks.md).
 
 The page is made of sections, in this order:
 
@@ -23,9 +24,11 @@ that offers **Undo**. A row opens the [task](task.md).
   **Today**, **All** (the [task list](tasks.md)) and **Calendar** (the
   [calendar](calendar.md) of the home). The current tab is marked; all three stay
   visible on a phone. Today is the root of its section: it has no back link.
-- When reports are open, one line under the title says how many, with **See the
-  reports**. It is shown to the members who may write, never to read-only members
-  (see [Reports](reports.md)).
+- **Report a problem**, under the title, opens the [form](report-form.md) for this
+  home. Every member has it, a read-only one included: it is often the only thing
+  they do here. When reports are open, a line next to it says how many, with **See
+  the reports**; the line is shown to the members who may write, never to read-only
+  members (see [Reports](reports.md)).
 - A task hidden until a few days before its date does not appear until then.
 - Each section shows at most 200 rows; the task list holds the rest.
 

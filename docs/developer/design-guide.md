@@ -59,6 +59,27 @@ holds the rest.
 - The calendar is a tab of Today, and the stock a tab of Rooms. The calendar is another
   view of the same occurrences; the stock is what is in the home, like the items.
 
+### One home page: Today
+
+A signed-in person has one start screen, Today, and every way in leads to it.
+
+- The root address `/` **must** lead a signed-in person to Today: the one home they can
+  open, else all their homes together on one Today page. The logo, the Today entry of
+  the navigation outside a home, the `start_url` of the web app manifest and
+  `LOGIN_REDIRECT_URL` **must** all be this address, never a second home screen.
+- The welcome page **must** be shown only to a visitor who is signed out and to an
+  account with no home to open, with **Add a home**.
+- With several homes, the page of all homes **must** name each home by a heading that
+  opens its Today. It **must not** repeat a row of tabs per home: rows with the same
+  name are the same landmark to a screen reader.
+- **Report a problem** **must** be on Today for every role, a read-only one included:
+  signing a problem is often the only thing that person does, and it takes one tap to
+  open the form instead of six. The count of the reports that wait **must** follow the
+  entry Reports of More, for the members who may write, read once per request.
+- A screen of an earlier version that was folded into Today (`/me/`) **must** redirect to
+  its successor, keeping the query, so that a saved link or a home-screen icon
+  still works.
+
 ### Phone: the bar at the bottom
 
 Below 56 rem the sections are a bar fixed at the bottom of the screen. The app bar at
@@ -403,8 +424,8 @@ them and does not add a third.
   postponing, Done and Skip that every task has. A reminder written again for one
   screen would ignore the quiet hours and the follow-ups of the person.
 - A date that only informs (the end of a warranty) **must** be a list of the agenda
-  digest, `housecairn.tasks.agenda.my_home`, shown on My home (`/me/`, the view of Today
-  when the person is not in a home), as the warranties ending soon are today.
+  digest, `housecairn.tasks.agenda.my_home`, shown on Today for all homes (`/`, when the person
+  has several homes), as the warranties ending soon are today.
   It is read, not acted on, and sends no notification. This digest is not the daily
   summary message of the notifications.
 - An event with no due date (a problem was reported) **must** be an alert of
@@ -572,10 +593,10 @@ phone), and the rules on amounts, deletions and lists.
 | NAV-01 | blocking | Six entries in the bar; Projects and Budget were tabs of Tasks, off screen at 375 px. | [Five sections](#five-sections) |
 | NAV-02 | blocking | Every back link pointed to a fixed parent, every form to the new record: a task added from an item left the person three taps from the item. | [Return rule](#return-rule) |
 | NAV-03 | important | Three contradictory signs of position on one screen: the back link, the marked entry, the title. | [Back link and breadcrumbs](#back-link-and-breadcrumbs) |
-| NAV-04 | important | Three home screens; the installed application opened on the least useful. | Today is the start screen ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md)) |
+| NAV-04 | important | Three home screens; the installed application opened on the least useful. | [One home page](#one-home-page-today) ([ADR 0053](../adr/0053-target-navigation-and-return-rule.md)) |
 | NAV-05 | important | Done reloaded the page and sent it back to the top; the undo banner was far from the finger. | [Actions in place](#actions-in-place) |
 | NAV-06 | important | Eight tabs of Tasks mixing views, other sections and a setting. | [Five sections](#five-sections) |
-| NAV-07 | important | Six taps for a read-only person to report a problem. | Report a problem on Today, reports in More |
+| NAV-07 | important | Six taps for a read-only person to report a problem. | [One home page](#one-home-page-today): Report a problem on Today, the count in More |
 | NAV-08 | important | With two homes, every section asked again which home. | [Current home](#current-home) |
 | NAV-09 | important | More was a flat list of eleven entries, deleting the account among them. | [What goes in More](#what-goes-in-more) |
 | NAV-10 | important | Instance settings on one page of almost ten screens, with nine identical Save buttons. | One index, one page per section |

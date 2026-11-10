@@ -51,8 +51,8 @@ msgstr "Le lien *Mot de passe oublié ?* sous le champ du mot de passe n'appara�
 msgid "After signing in"
 msgstr "Après la connexion"
 
-msgid "You arrive on [My home](my-home.md), unless you came from a page that asked you to sign in first: then you go back to that page. The welcome message names you by your display name, never by your email address."
-msgstr "Vous arrivez sur [Mon accueil](my-home.md), sauf si vous veniez d'une page qui demandait de se connecter : vous revenez alors à cette page. Le message d'accueil vous nomme par votre nom affiché, jamais par votre adresse e-mail."
+msgid "You arrive on [Today](today.md) (see the [start page](start-page.md)), unless you came from a page that asked you to sign in first: then you go back to that page. The welcome message names you by your display name, never by your email address."
+msgstr "Vous arrivez sur [Aujourd'hui](today.md) (voir la [page de départ](start-page.md)), sauf si vous veniez d'une page qui demandait de se connecter : vous revenez alors à cette page. Le message d'accueil vous nomme par votre nom affiché, jamais par votre adresse e-mail."
 
 msgid "Creating an account"
 msgstr "Créer un compte"
