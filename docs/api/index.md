@@ -73,7 +73,9 @@ web interface: every request only sees the homes of its user
   `.../postpone/` (body `{"due_on": "YYYY-MM-DD"}`) the other outcomes, and `PATCH`
   fills in the date, real cost and note of what was done. Tasks are filtered with
   `status` (`open`, `closed`), `room`, `item`, `assignee`, `due_before`, `due_after`
-  `contractor` and `q`; occurrences with the same, plus `task`, `overdue=true` and `status`
+  `contractor` and `q`, and with `due=none` only the active tasks without a due date
+  (an open occurrence with no date; closed tasks are left out, and the filter combines with
+  the others and with the cursor); occurrences with the same, plus `task`, `overdue=true` and `status`
   (`planned`, `postponed`, `done`, `skipped`, `open`, `closed`). Occurrences come
   oldest date first, the arrears on top, and the open ones hidden by their task
   (masked until N days before) only appear with `include_hidden=1`. The scopes are

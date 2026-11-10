@@ -7,6 +7,7 @@ it with the variable set. The proxy may pass the path with the prefix (`reverse`
 or without it: both are covered.
 """
 
+import datetime
 import json
 import os
 import re
@@ -34,6 +35,7 @@ from housecairn.homes import emails as home_emails
 from housecairn.homes.models import Home
 from housecairn.labels import services as label_services
 from housecairn.rooms.models import Item, Room
+from housecairn.tasks import services
 from housecairn.tasks.models import Task
 from tests.conftest import PASSWORD
 
@@ -344,6 +346,17 @@ class TestApi:
         homes = signed_in.get(PREFIX + "/api/v1/homes/")
         assert homes.status_code == 200
         assert str(alice_home.id) in homes.content.decode()
+
+    def test_the_undated_tasks_filter_answers_under_the_prefix(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        services.create_task(alice, alice_home, title="Undated")
+        services.create_task(alice, alice_home, title="Dated", due_on=datetime.date(2030, 1, 1))
+        found = signed_in.get(f"{PREFIX}/api/v1/homes/{alice_home.id}/tasks/?due=none")
+        assert found.status_code == 200
+        assert [t["title"] for t in json.loads(found.content)["results"]] == ["Undated"]
+        refused = signed_in.get(f"{PREFIX}/api/v1/homes/{alice_home.id}/tasks/?due=soon")
+        assert refused.status_code == 400
 
     def test_the_tokens_screen_and_api_answer_under_the_prefix(self, signed_in: Client) -> None:
         screen = signed_in.get(reverse("api-tokens:list"))
