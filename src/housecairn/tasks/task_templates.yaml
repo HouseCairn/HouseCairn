@@ -133,12 +133,14 @@ templates:
     note:
       en: >-
         In France, sweeping by a qualified sweep is required at least once a year, and
-        twice in most départements, once during the heating season: ask the town hall.
-        Elsewhere, follow the rules of your country.
+        twice in many départements, once during the heating season: see the sanitary
+        rules of your département (règlement sanitaire départemental), at the town hall
+        or the prefecture. Elsewhere, follow the rules of your country.
       fr: >-
         En France, le ramonage par un ramoneur qualifié est obligatoire au moins une fois
-        par an, et deux fois dans la plupart des départements, dont une en période de
-        chauffe : renseignez-vous à la mairie. Ailleurs, suivez les règles de votre pays.
+        par an, et deux fois dans de nombreux départements, dont une en période de
+        chauffe : voyez le règlement sanitaire départemental, à la mairie ou à la
+        préfecture. Ailleurs, suivez les règles de votre pays.
     source:
       title: Service-Public.fr, Faire un feu dans une cheminée ou un poêle
       url: https://www.service-public.gouv.fr/particuliers/vosdroits/F32437
