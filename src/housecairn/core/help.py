@@ -117,6 +117,7 @@ HELP_PAGES: dict[str, str] = {
     "budget": "screens/budget/",
     "budget:overview": "screens/budget/",
     "budget:rooms": "screens/budget-rooms/",
+    "budget:room": "screens/budget-rooms/",
     "budget:projects": "screens/budget-projects/",
     "budget:tasks": "screens/budget-tasks/",
     "tasks:contractors": "screens/contractors/",

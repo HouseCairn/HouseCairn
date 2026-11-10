@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% blocktranslate with name=label.name %}QR label of {{ name }}{% endblocktranslate %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'labels:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "QR labels" %}</a>
+  {% url 'labels:list' home_id=home.id as parent %}{% back_link parent %}
   <h1>{{ label.name }}</h1>
   <section class="card">
     <p class="small">{{ label.get_kind_display }}{% if label.place %} · {{ label.place }}{% endif %}</p>
@@ -13,6 +13,7 @@
   <h2>{% translate "Print" %}</h2>
   <form method="post" action="{% url 'labels:print' home_id=home.id %}" class="card">
     {% csrf_token %}
+    {% next_field %}
     <input type="hidden" name="target" value="{{ label.kind }}:{{ label.target_id }}">
     <p>
       <label for="layout">{% translate "Layout" %}</label>
@@ -27,8 +28,8 @@
     <div class="card">
       <p class="small">{% translate "A new label has a new code; the old sticker stops opening anything." %}</p>
       <div class="button-row">
-        <form method="post" action="{% url 'labels:regenerate' home_id=home.id label_id=label.id %}">{% csrf_token %}<button type="submit" class="button-secondary">{% translate "Make a new label" %}</button></form>
-        <form method="post" action="{% url 'labels:revoke' home_id=home.id label_id=label.id %}">{% csrf_token %}<button type="submit" class="button-danger">{% translate "Revoke the label" %}</button></form>
+        <form method="post" action="{% url 'labels:regenerate' home_id=home.id label_id=label.id %}">{% csrf_token %}{% next_field %}<button type="submit" class="button-secondary">{% translate "Make a new label" %}</button></form>
+        <form method="post" action="{% url 'labels:revoke' home_id=home.id label_id=label.id %}">{% csrf_token %}{% next_field %}<button type="submit" class="button-danger">{% translate "Revoke the label" %}</button></form>
       </div>
     </div>
   {% endif %}

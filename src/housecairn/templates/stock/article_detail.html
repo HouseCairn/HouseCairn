@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n stock_extras %}
+{% load i18n stock_extras navigation %}
 {% block head_title %}{{ article.name }}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'stock:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Stock" %}</a>
+  {% url 'stock:list' home_id=home.id as parent %}{% back_link parent %}
   <h1>{{ article.name }}</h1>
   <section class="card">
     <p class="stock-quantity">
@@ -21,16 +21,17 @@
     {% endif %}
     {% if can_write %}
       <div class="button-row">
-        <a class="button button-secondary button-small" href="{% url 'stock:edit' home_id=home.id article_id=article.id %}">{% translate "Edit the stock item" %}</a>
+        <a class="button button-secondary button-small" href="{% url_with_next 'stock:edit' home_id=home.id article_id=article.id %}">{% translate "Edit the stock item" %}</a>
       </div>
     {% endif %}
     <div class="button-row">{% load labels_extras %}{% object_tools "article" article %}</div>
   </section>
 
   {% if can_write %}
-    <h2>{% translate "Record a movement" %}</h2>
+    <h2 id="movement">{% translate "Record a movement" %}</h2>
     <form method="post" action="{% url 'stock:movement-add' home_id=home.id article_id=article.id %}" class="card">
       {% csrf_token %}
+      {% next_field %}
       <p>{{ movement_form.quantity.label_tag }} {{ movement_form.quantity }}</p>
       <p>{{ movement_form.occurred_on.label_tag }} {{ movement_form.occurred_on }}</p>
       <p>{{ movement_form.note.label_tag }} {{ movement_form.note }}</p>
@@ -48,7 +49,7 @@
     <ul class="card-list">
       {% for item in compatible_items %}
         <li>
-          <a class="row" href="{% url 'rooms:item-detail' home_id=home.id item_id=item.id %}">
+          <a class="row" href="{% url_with_next 'rooms:item-detail' home_id=home.id item_id=item.id %}">
             <span class="row-body">
               <span class="row-title">{{ item.name }}</span>
               <span class="row-text">{{ item.room.name }}</span>
@@ -67,7 +68,7 @@
     <ul class="card-list">
       {% for room in rooms %}
         <li>
-          <a class="row" href="{% url 'rooms:detail' home_id=home.id room_id=room.id %}">
+          <a class="row" href="{% url_with_next 'rooms:detail' home_id=home.id room_id=room.id %}">
             <span class="row-body"><span class="row-title">{{ room.name }}</span></span>
             {% include "components/icon.html" with name="chevron" class="chevron" %}
           </a>
@@ -81,7 +82,7 @@
     <ul class="card-list">
       {% for task in tasks %}
         <li>
-          <a class="row" href="{% url 'tasks:detail' home_id=home.id task_id=task.id %}">
+          <a class="row" href="{% url_with_next 'tasks:detail' home_id=home.id task_id=task.id %}">
             <span class="row-body"><span class="row-title">{{ task.title }}</span></span>
             {% include "components/icon.html" with name="chevron" class="chevron" %}
           </a>
@@ -102,7 +103,7 @@
             {% if supplier.url %}<div><dt>{% translate "Purchase link" %}</dt><dd><a href="{{ supplier.url }}" rel="noopener noreferrer nofollow">{{ supplier.url }}</a></dd></div>{% endif %}
           </dl>
           {% if can_write %}
-            <a class="button button-secondary button-small" href="{% url 'stock:supplier-edit' home_id=home.id supplier_id=supplier.id %}">{% translate "Edit the supplier" %}<span class="visually-hidden"> {{ supplier.name }}</span></a>
+            <a class="button button-secondary button-small" href="{% url_with_next 'stock:supplier-edit' home_id=home.id supplier_id=supplier.id %}">{% translate "Edit the supplier" %}<span class="visually-hidden"> {{ supplier.name }}</span></a>
           {% endif %}
         </li>
       {% endfor %}
@@ -111,7 +112,7 @@
     <p class="empty">{% translate "No supplier yet." %}</p>
   {% endif %}
   {% if can_write %}
-    <a class="button button-secondary button-block" href="{% url 'stock:supplier-create' home_id=home.id article_id=article.id %}">{% translate "Add a supplier" %}</a>
+    <a class="button button-secondary button-block" href="{% url_with_next 'stock:supplier-create' home_id=home.id article_id=article.id %}">{% translate "Add a supplier" %}</a>
   {% endif %}
 
   <h2>{% translate "Movements" %}</h2>
@@ -121,7 +122,7 @@
         <li class="row">
           <span class="row-body">
             <span class="row-title">{{ movement.get_kind_display }} · {% if movement.delta > 0 %}+{% endif %}{{ article|amount:movement.delta }}</span>
-            <span class="row-text">{{ movement.occurred_on|date:"SHORT_DATE_FORMAT" }}{% if movement.kind == "inventory" %} · {% blocktranslate with count=movement.quantity|floatformat:"-2" %}counted {{ count }}{% endblocktranslate %}{% endif %}{% if movement.note %} · {{ movement.note }}{% endif %}{% if movement.occurrence %} · <a href="{% url 'tasks:detail' home_id=home.id task_id=movement.occurrence.task_id %}">{{ movement.occurrence.task.title }}</a>{% endif %}</span>
+            <span class="row-text">{{ movement.occurred_on|date:"SHORT_DATE_FORMAT" }}{% if movement.kind == "inventory" %} · {% blocktranslate with count=movement.quantity|floatformat:"-2" %}counted {{ count }}{% endblocktranslate %}{% endif %}{% if movement.note %} · {{ movement.note }}{% endif %}{% if movement.occurrence %} · <a href="{% url_with_next 'tasks:detail' home_id=home.id task_id=movement.occurrence.task_id %}">{{ movement.occurrence.task.title }}</a>{% endif %}</span>
           </span>
         </li>
       {% endfor %}

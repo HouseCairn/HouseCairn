@@ -27,3 +27,18 @@ msgstr "`/h/<id du logement>/budget/rooms/`, avec `?year=` pour l'année et `?ex
 msgid "One row per room that has a figure, and **No room** for what belongs to none. A room adds up the projects counted in the year that name it and the upkeep of its tasks in that year. A project in several rooms is shared evenly between them, in whole cents, the odd cents going to the first rooms, so the rooms always add up to the project. A row shows **Planned**, **Committed**, **Paid**, the gauge of **Used** against planned and, in words, where it stands. The total is at the foot of the table. Read-only members see the same page."
 msgstr "Une ligne par pièce qui a un chiffre, et **Aucune pièce** pour ce qui n'en a pas. Une pièce additionne les projets comptés dans l'année qui la nomment et l'entretien de ses tâches cette année-là. Un projet dans plusieurs pièces est réparti également entre elles, en centimes entiers, les centimes restants allant aux premières pièces, pour que les pièces fassent toujours le total du projet. Une ligne montre **Prévu**, **Engagé**, **Payé**, la jauge du **Consommé** par rapport au prévu et, en toutes lettres, où en est le budget. Le total est au pied du tableau. Les membres en lecture seule voient la même page."
 
+msgid "A room of the table opens the budget of that room, in Budget."
+msgstr "Une pièce du tableau ouvre le budget de cette pièce, dans Budget."
+
+msgid "Budget of one room"
+msgstr "Budget d'une pièce"
+
+msgid "`/h/<home id>/budget/rooms/<room id>/`, with `?year=` for the year and `?export=csv` for the row of the room as a file."
+msgstr "`/h/<id du logement>/budget/rooms/<id de la pièce>/`, avec `?year=` pour l'année et `?export=csv` pour la ligne de la pièce dans un fichier."
+
+msgid "The same figures as the row of the room, line by line: each project counted in the year that names the room, with the share of the room, and each task of the room with a cost in the year. A project or a task opens its page, whose link at the top comes back here."
+msgstr "Les mêmes montants que la ligne de la pièce, ligne par ligne : chaque projet compté dans l'année qui nomme la pièce, avec la part de la pièce, et chaque tâche de la pièce qui a un coût dans l'année. Un projet ou une tâche ouvre sa fiche, dont le lien du haut ramène ici."
+
+msgid "**Open the room** opens the [page of the room](room.md); Budget stays marked in the bar, and the link at the top of the room says **Budget** and comes back here. The link at the top of this page leads back to where it was opened from (the room, or the table), and to the budget by room otherwise."
+msgstr "**Ouvrir la pièce** ouvre la [fiche de la pièce](room.md) ; Budget reste marqué dans la barre, et le lien du haut de la pièce affiche **Budget** et ramène ici. Le lien du haut de cette page ramène à l'écran d'où elle a été ouverte (la pièce, ou le tableau), et au budget par pièce sinon."
+

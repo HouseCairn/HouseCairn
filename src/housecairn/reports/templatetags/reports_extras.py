@@ -13,7 +13,11 @@ def reports_row(context: dict[str, Any], home: Any) -> dict[str, Any]:
     """The row of the home page that leads to the reports, with the number waiting."""
     request = context["request"]
     can_write = home_services.can_write(request.user, home)
-    return {"home": home, "waiting": services.open_count(home) if can_write else 0}
+    return {
+        "home": home,
+        "waiting": services.open_count(home) if can_write else 0,
+        "request": request,
+    }
 
 
 @register.inclusion_tag("reports/_today.html", takes_context=True)

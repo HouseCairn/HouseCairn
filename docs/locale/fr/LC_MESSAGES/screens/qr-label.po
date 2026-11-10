@@ -39,3 +39,6 @@ msgstr "**Créer une nouvelle étiquette** et **Révoquer l'étiquette**, pour l
 msgid "Read-only members see the code and print it; they do not see the buttons that change it."
 msgstr "Les membres en lecture seule voient le code et l'impriment ; ils ne voient pas les boutons qui le modifient."
 
+msgid "Made from a room, an item or a stock item, the label opens with a link at the top back to that page. Revoking the label leads back to the screen it was opened from, or to the list of labels."
+msgstr "Créée depuis une pièce, un élément ou un article, l'étiquette s'ouvre avec un lien du haut qui ramène à cette page. Révoquer l'étiquette ramène à l'écran d'où elle a été ouverte, ou à la liste des étiquettes."
+

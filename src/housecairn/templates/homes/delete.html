@@ -1,19 +1,21 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "Delete this home" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  {% url 'homes:detail' home_id=home.id as parent %}{% back_link parent home.name %}
   <h1>{% translate "Delete this home" %}</h1>
   <section class="card">
     <div class="alert alert-warning" role="status">{% blocktranslate count counter=member_count %}Deleting {{ home }} removes it for good, with everything in it, for the {{ counter }} person who belongs to it. There is no way back.{% plural %}Deleting {{ home }} removes it for good, with everything in it, for the {{ counter }} people who belong to it. There is no way back.{% endblocktranslate %}</div>
     <p>{% translate "Export the home first if you want to keep its data." %}</p>
     <form method="post" action="{% url 'homes:export' home_id=home.id %}">
       {% csrf_token %}
+      {% next_field %}
       <button type="submit" class="button-secondary">{% translate "Export all data" %}</button>
     </form>
   </section>
   <form method="post" class="card">
     {% csrf_token %}
+    {% next_field %}
     {{ form.as_p }}
     <button type="submit" class="button-danger button-block">{% translate "Delete the home for good" %}</button>
   </form>

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n l10n projects_extras budget_extras %}
+{% load i18n navigation l10n projects_extras budget_extras %}
 {% block head_title %}{% translate "Budget" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Budget" %}</h1>
@@ -23,7 +23,7 @@
       <div><dt>{% translate "Upkeep" %}</dt><dd>{% blocktranslate with planned=envelope.upkeep.planned|money:home.currency paid=envelope.upkeep.paid|money:home.currency %}planned {{ planned }}, paid {{ paid }}{% endblocktranslate %}</dd></div>
       <div><dt>{% translate "Budget in Sure" %}</dt><dd>{% translate "Not connected" %}</dd></div>
     </dl>
-    {% if can_write %}<a class="button button-secondary button-small" href="{% url 'projects:envelope' home_id=home.id %}">{% translate "Set the envelope" %}</a>{% endif %}
+    {% if can_write %}<a class="button button-secondary button-small" href="{% url_with_next 'projects:envelope' home_id=home.id %}">{% translate "Set the envelope" %}</a>{% endif %}
   </section>
 
   <p><a href="{% url 'budget:rooms' home_id=home.id %}?year={{ year|unlocalize }}">{% translate "By room" %}</a> · <a href="{% url 'budget:projects' home_id=home.id %}">{% translate "By project" %}</a> · <a href="{% url 'budget:tasks' home_id=home.id %}?year={{ year|unlocalize }}">{% translate "By task of the upkeep" %}</a></p>

@@ -9,10 +9,12 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404, HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import TemplateView
 
+from housecairn.core import navigation
 from housecairn.homes import services as home_services
 from housecairn.homes import sso
 from housecairn.homes.scoping import homes_for_request, site_url, sso_required_response
@@ -143,7 +145,9 @@ class LabelCreateView(LabelsMixin, View):
             return redirect("labels:list", home_id=self.home.id)
         if created:
             messages.success(request, _("QR label made."))
-        return redirect("labels:detail", home_id=self.home.id, label_id=label.id)
+        # The label opens, and its back link leads to the page it was made from.
+        page = reverse("labels:detail", kwargs={"home_id": self.home.id, "label_id": label.id})
+        return redirect(navigation.with_next(page, navigation.safe_next(request) or ""))
 
 
 class LabelRegenerateView(LabelsMixin, View):
@@ -152,11 +156,14 @@ class LabelRegenerateView(LabelsMixin, View):
         messages.success(
             request, _("The old sticker no longer opens anything. Print the new label.")
         )
-        return redirect("labels:detail", home_id=self.home.id, label_id=label.id)
+        page = reverse("labels:detail", kwargs={"home_id": self.home.id, "label_id": label.id})
+        return redirect(navigation.with_next(page, navigation.safe_next(request) or ""))
 
 
 class LabelRevokeView(LabelsMixin, View):
     def post(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
-        services.revoke_label(request.user, self.get_label())
+        label = self.get_label()
+        services.revoke_label(request.user, label)
         messages.success(request, _("QR label revoked: the sticker no longer opens anything."))
-        return redirect("labels:list", home_id=self.home.id)
+        parent = reverse("labels:list", kwargs={"home_id": self.home.id})
+        return redirect(navigation.after_delete(request, parent, [label.id]))

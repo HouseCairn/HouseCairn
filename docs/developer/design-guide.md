@@ -271,7 +271,18 @@ return redirect(
 
 A route that should name a back link is added to `LABELS`. Without it, a `next`
 to that route is not lost for the redirect after a form, but the back link falls back
-to its default: a link must never show an address nor a nameless "Back".
+to its default: a link must never show an address nor a nameless "Back". Every page of
+Budget is named "Budget", so a record opened from any of them says "‹ Budget".
+
+The bar follows the origin too: with a safe `next`, `nav_section` in
+`core/context_processors.py` marks the section of the `next` route, not that of the
+page. A room opened from the budget of the room keeps Budget marked.
+
+An action in place without JavaScript (a stock movement, the status of a quote, a button
+of a report or of the household) posts the `next` of its page with `{% next_field %}`,
+and the view sends the person back to the same page with that `next`
+(`navigation.with_next(page, navigation.safe_next(request))`), so the back link of the
+page still leads to its origin.
 
 ### Default parent
 
@@ -287,9 +298,11 @@ it, and the other place is only an origin.
   of the record names it.
 - With `next`, the origin wins and the label comes from its route.
 
-Example: a room is listed under Rooms and also opened from the budget by room. Its
-parent is Rooms, so opened without `next` it says "‹ Rooms". Opened from the budget
-with `next`, it says "‹ Budget", keeps Budget marked in the bar and comes back to it.
+Example: a room is listed under Rooms and also opened from Budget. Its parent is Rooms,
+so opened without `next` it says "‹ Rooms". In Budget, a row of the budget by room opens
+the budget of that room, a page of Budget; its **Open the room** link opens the room
+with `next`, so the room says "‹ Budget", keeps Budget marked in the bar and comes back
+to it. The page of the room leads to its budget by its block "Budget of the room" only.
 
 ### Back link and breadcrumbs
 

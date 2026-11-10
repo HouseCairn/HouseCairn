@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n projects_extras tasks_extras %}
+{% load i18n projects_extras tasks_extras navigation %}
 {% block head_title %}{% translate "Compare projects" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'projects:list' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{% translate "Projects" %}</a>
+  {% url 'projects:list' home_id=home.id as parent %}{% back_link parent %}
   <h1>{% translate "Compare projects" %}</h1>
   {% if rows|length < 2 %}
     <p class="empty">{% translate "Tick at least two projects in the list to compare them." %}</p>
@@ -23,7 +23,7 @@
       <tbody>
         {% for row in rows %}
           <tr>
-            <th scope="row"><a href="{% url 'projects:detail' home_id=home.id project_id=row.project.id %}">{{ row.project.title }}</a></th>
+            <th scope="row"><a href="{% url_with_next 'projects:detail' home_id=home.id project_id=row.project.id %}">{{ row.project.title }}</a></th>
             <td>{{ row.project.get_status_display }}</td>
             <td>{{ row.amounts.planned|money:home.currency }}</td>
             <td>{{ row.amounts.committed|money:home.currency }}</td>

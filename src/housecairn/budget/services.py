@@ -425,6 +425,36 @@ def by_room(ledger: Ledger, year: int) -> Report:
     )
 
 
+@dataclass(frozen=True)
+class RoomBudget:
+    """The budget of one room in a year: its total, and the projects and tasks behind it."""
+
+    room: Room
+    total: Amounts
+    projects: list[Line]
+    tasks: list[Line]
+
+
+def room_budget(ledger: Ledger, year: int, room: Room) -> RoomBudget:
+    """The figures of `room` in `by_room`, line by line: its share of each project, its tasks."""
+    projects = []
+    for row in projects_in(ledger, year):
+        ids = [r.id for r in row.rooms]
+        if room.id in ids:
+            part = share(row.amounts, len(ids))[ids.index(room.id)]
+            projects.append(Line(row.project.id, row.project.title, part))
+    window = in_year(year)
+    tasks = []
+    for task in ledger.tasks:
+        if task.room is None or task.room.id != room.id:
+            continue
+        amounts = task.figures(window, year=year).amounts
+        if amounts.planned or amounts.paid or amounts.committed:
+            tasks.append(Line(task.task.id, task.task.title, amounts))
+    total = _sum(line.amounts for line in [*projects, *tasks])
+    return RoomBudget(room, total, projects, tasks)
+
+
 def by_project(ledger: Ledger) -> Report:
     lines = [
         Line(

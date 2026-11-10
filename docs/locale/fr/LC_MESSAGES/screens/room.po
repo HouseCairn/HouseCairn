@@ -51,6 +51,9 @@ msgstr "**Étiquette QR** ouvre l'[étiquette](qr-label.md) de cette pièce ; **
 msgid "The link at the top leads back to the screen the room was opened from, and to the list of rooms otherwise. A task or an item added from this page comes back to it."
 msgstr "Le lien du haut ramène à l'écran d'où la pièce a été ouverte, et à la liste des pièces sinon. Une tâche ou un élément ajouté depuis cette page y revient."
 
+msgid "**Budget of the room**, at the bottom of the page, shows what is planned for the room this year and what is used of it: its share of the projects counted this year, and the upkeep of its tasks. **See the budget detail** opens the [budget of the room](budget-rooms.md#budget-of-one-room), whose link at the top comes back here."
+msgstr "**Budget de la pièce**, en bas de la page, montre ce qui est prévu pour la pièce cette année et ce qui en est utilisé : sa part des projets comptés cette année, et l'entretien de ses tâches. **Voir le détail du budget** ouvre le [budget de la pièce](budget-rooms.md#budget-of-one-room), dont le lien du haut ramène ici."
+
 msgid "Members and owners change the room; read-only members see it all and change nothing. An address that does not exist, or that belongs to a home you are not a member of, answers the same \"Page not found\"."
 msgstr "Les membres et les propriétaires modifient la pièce ; les membres en lecture seule voient tout et ne modifient rien. Une adresse qui n'existe pas, ou qui appartient à un logement dont vous n'êtes pas membre, donne la même réponse « Page introuvable »."
 

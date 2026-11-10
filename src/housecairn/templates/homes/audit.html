@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n tabs %}
+{% load i18n tabs navigation %}
 {% block head_title %}{% translate "Audit log" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'homes:detail' home_id=home.id %}">{% include "components/icon.html" with name="chevron" %}{{ home.name }}</a>
+  {% url 'homes:detail' home_id=home.id as parent %}{% back_link parent home.name %}
   <h1>{% translate "Audit log" %}</h1>
   {% tab_bar "home" %}
   <p class="small">{% translate "Who did what in this home and when: rooms, items, tasks, photos and files added, changed or deleted, roles, invitations, the sign-in rule, exports. Each entry names what it concerns by its title only. Only owners see it, and it holds no note, cost, file or procedure." %}</p>

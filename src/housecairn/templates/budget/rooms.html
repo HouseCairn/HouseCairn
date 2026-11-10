@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n l10n projects_extras %}
+{% load i18n navigation l10n projects_extras %}
 {% block head_title %}{% translate "Budget by room" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Budget by room" %}</h1>
@@ -15,7 +15,7 @@
       <tbody>
         {% for line in report.lines %}
           <tr>
-            <th scope="row">{% if line.id %}<a href="{% url 'rooms:detail' home_id=home.id room_id=line.id %}">{{ line.label }}</a>{% else %}{% translate "No room" %}{% endif %}</th>
+            <th scope="row">{% if line.id %}<a href="{% url_with_next 'budget:room' home_id=home.id room_id=line.id q_year=year %}">{{ line.label }}</a>{% else %}{% translate "No room" %}{% endif %}</th>
             {% include "budget/_row_amounts.html" with amounts=line.amounts %}
           </tr>
         {% endfor %}

@@ -9,7 +9,7 @@ from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import TemplateView
 
 from housecairn.budget import csvfile, services
@@ -17,6 +17,7 @@ from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
 from housecairn.projects.models import ENVELOPE_YEARS, BudgetNature
+from housecairn.rooms.models import Room
 from housecairn.tasks import services as task_services
 
 
@@ -115,6 +116,29 @@ class RoomsView(BudgetPage):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         return super().get_context_data(report=services.by_room(self.ledger, self.year), **kwargs)
+
+
+class RoomView(BudgetPage):
+    """The budget of one room, in Budget: its projects and its upkeep, a link to the room."""
+
+    template_name = "budget/room.html"
+    kind = "room"
+
+    @cached_property
+    def room(self) -> Room:
+        return get_object_or_404(Room, home=self.home, pk=self.kwargs["room_id"])
+
+    @cached_property
+    def detail(self) -> services.RoomBudget:
+        return services.room_budget(self.ledger, self.year, self.room)
+
+    def table(self) -> tuple[list[str], list[list[Any]]]:
+        report = services.by_room(self.ledger, self.year)
+        report.lines[:] = [line for line in report.lines if line.id == self.room.id]
+        return csvfile.rooms(report)
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        return super().get_context_data(room=self.room, detail=self.detail, **kwargs)
 
 
 class ProjectsView(BudgetPage):
