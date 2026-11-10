@@ -402,3 +402,36 @@ class TestMoreAndLandmarks:
         names = re.findall(r'role="search" aria-label="([^"]+)"', html)
         assert len(names) == 2
         assert len(set(names)) == 2
+
+
+# ---------- Repeat is open when the task comes from an item (NAV-15) ----------
+
+
+def repeat_is_open(html: str) -> bool:
+    section = re.search(r"<details([^>]*)>\s*<summary>Repeat</summary>", html)
+    assert section
+    return " open" in section.group(1)
+
+
+class TestRepeatOpenFromAnItem:
+    def test_the_section_is_open_when_the_task_is_added_from_an_item(
+        self, signed_in: Client, alice_home: Home, owner_item: Item
+    ) -> None:
+        form_url = tasks("create", home_id=alice_home.id) + f"?item={owner_item.id}"
+        assert repeat_is_open(signed_in.get(form_url).content.decode())
+
+    def test_the_section_stays_closed_for_a_task_added_from_the_list(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        html = signed_in.get(tasks("create", home_id=alice_home.id)).content.decode()
+        assert not repeat_is_open(html)
+
+    def test_the_section_stays_closed_when_a_once_task_is_edited(
+        self, signed_in: Client, alice_home: Home, owner_item: Item
+    ) -> None:
+        # Editing is not creating: an item does not open the section by itself.
+        task = Task.objects.create(
+            home=alice_home, title="Check", item=owner_item, room=owner_item.room
+        )
+        html = signed_in.get(tasks("edit", home_id=alice_home.id, task_id=task.id)).content.decode()
+        assert not repeat_is_open(html)

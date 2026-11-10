@@ -488,6 +488,32 @@ is checked against all of them at once.
   inline style or script ([ADR 0011](../adr/0011-no-external-resources-and-csp.md)).
   The strict content security policy refuses them.
 
+## Labels
+
+One word for one thing, on every screen and in both languages. These rules come from
+the review of the labels (NAV-14); a new screen **must** follow them.
+
+- **A term names one concept.** The same word never names two things, and one thing
+  never has two names. In French: the *logement* (never \"accueil\", which is Today
+  on a phone), an *élément* of a room (its type is *Équipement* or *Surface*), an
+  *article* of the stock, *Matériel* for the stock view of Rooms, *Fournitures* for
+  what a task or a project needs.
+- **A name shared by two pages is qualified.** Two audit logs are \"Home audit log\" and
+  \"Instance audit log\", never \"Audit log\" twice. The tab of the home page that holds
+  its settings is \"Home settings\", like the entry of More; \"Overview\" is the first
+  tab of the instance only (the budget one is \"Summary\").
+- **A bar or tab label equals the title of its page.** The entry of the bar, the tab and
+  the `h1` of its root say the same word.
+- **A filter reads like the noun it filters.** The filter of finished tasks says
+  \"Done\" in English and *Faites* in French, which agrees with *tâches*; the button on
+  one task stays *Fait*. When one English word needs two French words, use a
+  `pgettext` context (\"task\" and \"task filter\" for Done).
+- **A section holds four tabs at most**, so that they fit a phone without scrolling. A
+  fifth page is a link from the first tab (the files of the homes, from the instance
+  overview).
+- A new label goes into the catalog of its app, in both languages, in the same pull
+  request, and `check_translations --sources` **must** pass.
+
 ## Visual system
 
 The visual system was laid down with the application shell in J1-F
