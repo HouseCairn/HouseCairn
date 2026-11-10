@@ -4,9 +4,12 @@ Two decisions of 2026-11-10. `HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING` (off by defa
 page of the same origin show HouseCairn in a frame, and nothing else changes in the security
 headers. A link made to leave the application (calendar feed, QR label, invitation, email) is
 always on `HOUSECAIRN_SITE_URL` plus the fixed `HOUSECAIRN_URL_PREFIX`, never on the prefix a
-proxy gives in a header, which only works through that proxy.
+proxy gives in a header, which only works through that proxy. So are the link of a report alert
+and the first-account address in the log; without a public address, the alert has no link and
+the log a path only.
 """
 
+import io
 import os
 import re
 import runpy
@@ -19,6 +22,7 @@ import pytest
 from django.core import mail
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management import call_command
 from django.test import Client
 from django.urls import reverse, set_script_prefix
 from icalendar import Calendar
@@ -28,6 +32,9 @@ from housecairn.accounts.models import User
 from housecairn.calendar import feeds
 from housecairn.core.links import external_url
 from housecairn.homes.models import Home
+from housecairn.notifications import alerts, outbound
+from housecairn.notifications import services as notification_services
+from housecairn.reports import services as report_services
 from housecairn.rooms.models import Room
 from housecairn.tasks.models import Task
 
@@ -192,6 +199,67 @@ class TestLinksSentAwayThroughIngress:
         assert urls
         assert all(u.startswith(PUBLIC + "/accounts/password/reset/key/") for u in urls), urls
         assert INGRESS not in message.body
+
+
+@pytest.fixture
+def ingress_thread() -> Iterator[None]:
+    """The prefix a request through Ingress leaves on its thread (tasks run there when sync)."""
+    set_script_prefix(INGRESS + "/")
+    yield
+    set_script_prefix("/")
+
+
+class TestLinksOfTheWorkerAndTheLog:
+    """Built outside a request: on the public address, or no address at all without one."""
+
+    @pytest.fixture
+    def outbox(self, settings: SettingsWrapper, monkeypatch: pytest.MonkeyPatch) -> list[str]:
+        settings.HOUSECAIRN_NOTIFICATIONS_ENABLED = True
+        settings.TIME_ZONE = "UTC"
+        bodies: list[str] = []
+
+        def record(sealed: str, *, title: str, body: str) -> bool:
+            bodies.append(body)
+            return True
+
+        monkeypatch.setattr(outbound, "send", record)
+        return bodies
+
+    def test_a_report_alert_links_to_the_public_address_or_has_no_link(
+        self,
+        settings: SettingsWrapper,
+        alice: User,
+        alice_home: Home,
+        reader: User,
+        outbox: list[str],
+        ingress: None,
+        ingress_thread: None,
+    ) -> None:
+        notification_services.add_channel(
+            alice, name="Phone", url="tgram://123456:N0t-A-Real-B0t-Token-Anywhere/1"
+        )
+        report = report_services.create_report(reader, alice_home, title="The tap drips")
+        assert alerts.report_created(str(report.id)) == 1
+        link = outbox[-1].split("\n")[1]
+        assert link == f"{PUBLIC}/h/{alice_home.id}/reports/{report.id}/"
+        settings.HOUSECAIRN_SITE_URL = ""
+        assert alerts.report_created(str(report.id)) == 1
+        assert "\n" not in outbox[-1]
+        assert "/reports/" not in outbox[-1]
+
+    def test_the_first_account_address_in_the_log_is_public_or_a_path_only(
+        self, settings: SettingsWrapper, ingress: None, ingress_thread: None
+    ) -> None:
+        err = io.StringIO()
+        call_command("setup_code", stderr=err)
+        assert f"Open {PUBLIC}/setup/\n" in err.getvalue()
+        assert INGRESS not in err.getvalue()
+        settings.HOUSECAIRN_SITE_URL = ""
+        err = io.StringIO()
+        call_command("setup_code", stderr=err)
+        [line] = [line for line in err.getvalue().splitlines() if "Open " in line]
+        assert "://" not in line
+        assert "/setup/ on the address of your instance" in line
 
 
 class TestExternalUrl:
