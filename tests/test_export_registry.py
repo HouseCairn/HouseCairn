@@ -38,6 +38,8 @@ LEFT_OUT = {
     # That a reminder about an occurrence went to a person, so that it goes once: a record
     # of sending, with no content of the home.
     "notifications.Delivery": "the reminders already sent",
+    # An archive made in the background for a download, removed after a day (homes.jobs).
+    "homes.ExportJob": "the archives made for a download",
 }
 
 # Not data of a home: of the instance, or of a person (erased with the account,
@@ -163,9 +165,60 @@ def test_what_is_not_of_a_home_hangs_off_no_home() -> None:
 
 def test_the_check_sees_a_table_with_no_exporter(alice_home: Home) -> None:
     """The first test would fail on an app whose exporter is gone."""
-    removed = exports.EXPORTERS.pop("stock_suppliers")
+    sections = exports.SECTIONS["stock"]
+    removed = next(s for s in sections if s.name == "stock_suppliers")
+    sections.remove(removed)
     try:
         read = tables_read_by_the_export(alice_home)
     finally:
-        exports.EXPORTERS["stock_suppliers"] = removed
+        sections.insert(1, removed)
     assert "stock_supplier" not in read
+
+
+def test_every_reference_of_a_section_can_be_restored() -> None:
+    """A key leads to the home, to a person, or to the table of another section; a file
+    field has its FileSpec. Otherwise the restore could not rebuild the row (docs/adr/0048)."""
+    exported = {section.model for _app, section in exports.all_sections()}
+    unresolved = []
+    for _app, section in exports.all_sections():
+        spec_fields = section.file_fields()
+        for f in section.fields():
+            if isinstance(f, models.FileField) and f.name not in spec_fields:
+                unresolved.append(f"{section.name}.{f.name}")
+            if (
+                f.is_relation
+                and f.related_model is not Home
+                and not exports.person_reference(f)
+                and f.related_model not in exported
+            ):
+                unresolved.append(f"{section.name}.{f.name}")
+        for relation in section.many_to_many():
+            if relation.related_model not in exported:
+                unresolved.append(f"{section.name}.{relation.name}")
+    assert unresolved == []
+
+
+def test_no_section_exports_a_secret() -> None:
+    """The digests of invitations, feeds and tokens, and the tokens themselves, stay out."""
+    written = {
+        (section.model._meta.label, f.name)
+        for _a, section in exports.all_sections()
+        for f in section.fields()
+    }
+    for secret in (
+        ("homes.Invitation", "digest"),
+        ("calendar.Feed", "digest"),
+        ("events.Event", "token"),
+    ):
+        assert secret not in written
+    labels = {section.model._meta.label for _a, section in exports.all_sections()}
+    for label in (
+        "apitokens.ApiToken",
+        "accounts.InstanceSetup",
+        "accounts.SetupCode",
+        "accounts.KnownDevice",
+        "instance.OidcProvider",
+        "notifications.Channel",
+        "instance.SettingValue",
+    ):
+        assert label not in labels

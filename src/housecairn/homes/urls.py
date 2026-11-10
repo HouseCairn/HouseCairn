@@ -14,7 +14,23 @@ urlpatterns = [
     path("<uuid:home_id>/", views.HomeDetailView.as_view(), name="detail"),
     path("<uuid:home_id>/edit/", views.HomeEditView.as_view(), name="edit"),
     path("<uuid:home_id>/household/", views.HouseholdView.as_view(), name="household"),
+    path("restore/", views.HomeRestoreView.as_view(), name="restore"),
     path("<uuid:home_id>/export/", views.HomeExportView.as_view(), name="export"),
+    path(
+        "<uuid:home_id>/export/<uuid:job_id>/",
+        views.HomeExportJobView.as_view(),
+        name="export-job",
+    ),
+    path(
+        "<uuid:home_id>/export/<uuid:job_id>/download/",
+        views.HomeExportDownloadView.as_view(),
+        name="export-download",
+    ),
+    path(
+        "<uuid:home_id>/export/<slug:entity>.csv",
+        views.HomeCsvView.as_view(),
+        name="export-csv",
+    ),
     path("<uuid:home_id>/delete/", views.HomeDeleteView.as_view(), name="delete"),
     path("<uuid:home_id>/audit/", views.HomeAuditView.as_view(), name="audit"),
     path("<uuid:home_id>/household/invite/", views.InviteView.as_view(), name="invite"),

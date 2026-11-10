@@ -68,6 +68,8 @@ def usage(home_id: UUID) -> Usage:
     """Bytes and files the home holds on disk, across every declared folder."""
     size = count = 0
     for directory in files.home_directories(home_id):
+        if directory.parent.name == "exports":
+            continue  # archives made for a download (homes.jobs) are not data of the home
         for entry in _walk(directory):
             try:
                 size += entry.stat(follow_symlinks=False).st_size

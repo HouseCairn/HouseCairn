@@ -362,16 +362,15 @@ class TestExportAndErasure:
         tin: Article,
     ) -> None:
         import io
-        import json
         import zipfile
 
         services.update_article(alice, tin, rooms=[owner_room])
         room_services.update_room(alice, owner_room, paint_article=tin)
         client.force_login(alice)
         response = client.post(reverse("homes:export", kwargs={"home_id": alice_home.id}))
-        data = json.loads(
-            zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content))).read("export.json")
-        )
+        from tests.data_support import export_data
+
+        data = export_data(zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content))))
         assert data["stock_items"][0]["rooms"] == [str(owner_room.id)]
-        assert data["rooms"][0]["memory"]["paint_article"] == str(tin.id)
-        assert "paint_stock" not in data["rooms"][0]["memory"]
+        assert data["rooms"][0]["paint_article"] == str(tin.id)
+        assert "paint_stock" not in data["rooms"][0]

@@ -1,7 +1,6 @@
 """Stock follows the tasks: Done takes the planned materials, Undo gives them back (ADR 0046)."""
 
 import io
-import json
 import zipfile
 from decimal import Decimal
 from typing import Any
@@ -663,9 +662,9 @@ class TestIsolationAndData:
         services.complete(alice, owner_occurrence)
         client.force_login(alice)
         response = client.post(reverse("homes:export", kwargs={"home_id": alice_home.id}))
-        data = json.loads(
-            zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content))).read("export.json")
-        )
+        from tests.data_support import export_data
+
+        data = export_data(zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content))))
         assert [(d["occurrence"], d["wanted"], d["drawn"]) for d in data["stock_draws"]] == [
             (str(owner_occurrence.id), "2.00", "2.00")
         ]

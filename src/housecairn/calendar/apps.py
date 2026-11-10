@@ -11,6 +11,7 @@ class CalendarConfig(AppConfig):
     def ready(self) -> None:
         from housecairn.audit.models import AuditEvent
         from housecairn.calendar import feeds
+        from housecairn.calendar.models import Feed
         from housecairn.homes import exports
         from housecairn.homes.models import Membership
 
@@ -18,4 +19,15 @@ class CalendarConfig(AppConfig):
         post_save.connect(
             feeds.departure_recorded, sender=AuditEvent, dispatch_uid="calendar-departure"
         )
-        exports.register("calendar_feeds", feeds.export_of)
+        # That a feed exists and when, never its address or the digest of its secret
+        # (docs/adr/0052); a restore does not bring a feed back, its owner makes a new one.
+        exports.register(
+            "calendar",
+            exports.Section(
+                "calendar_feeds",
+                Feed,
+                exclude=("digest",),
+                restore=False,
+                why_not_restored="the address of a feed is a secret that is not kept",
+            ),
+        )

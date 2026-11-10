@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**The archive of a home changes format.** **Export all data** now gives format 2: a `manifest.json` with the digest of every file, one `data/<app>.json` per part of the application with every field of each table, and the files; its JSON Schema is published with the documentation. A script that read `export.json` must read the new documents. Archives of format 1 cannot be restored: export the homes again after the update ([Export and deletion](../../../administration/data.md))."
+msgstr "**L'archive d'un logement change de format.** **Exporter toutes les données** donne désormais le format 2 : un `manifest.json` avec l'empreinte de chaque fichier, un `data/<app>.json` par partie de l'application avec tous les champs de chaque table, et les fichiers ; son schéma JSON est publié avec la documentation. Un script qui lisait `export.json` doit lire les nouveaux documents. Les archives de format 1 ne peuvent pas être restaurées : exportez de nouveau les logements après la mise à jour ([Export et suppression](../../../administration/data.md))."
+

@@ -1,7 +1,6 @@
 """Materials of a task: the stock items it needs, in services, screens and API (ADR 0046)."""
 
 import io
-import json
 import zipfile
 from decimal import Decimal
 
@@ -18,6 +17,7 @@ from housecairn.stock import services as stock_services
 from housecairn.stock.models import Article
 from housecairn.tasks import materials, services
 from housecairn.tasks.models import Task, TaskMaterial
+from tests.data_support import export_data
 
 pytest_plugins = ("tests.tasks_fixtures", "tests.stock_fixtures")
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("media_root", "frozen_today")]
@@ -468,7 +468,7 @@ class TestExportAndErasure:
         client.force_login(alice)
         response = client.post(reverse("homes:export", kwargs={"home_id": alice_home.id}))
         archive = zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content)))
-        body = json.loads(archive.read("export.json"))["task_materials"]
+        body = export_data(archive)["task_materials"]
         assert [(row["task"], row["article"], row["quantity"]) for row in body] == [
             (str(owner_task.id), str(article.id), "2.00")
         ]

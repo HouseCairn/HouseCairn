@@ -14,7 +14,8 @@ from django.conf import settings
 
 logger = logging.getLogger("housecairn.files")
 
-MEDIA_FOLDERS: list[str] = ["homes"]
+# `exports` holds the archives made in the background (homes.jobs).
+MEDIA_FOLDERS: list[str] = ["homes", "exports"]
 
 
 def register_media_folder(name: str) -> None:

@@ -1,7 +1,6 @@
 """Export of rooms and photos, erasure of their files with the home (docs/adr/0036)."""
 
 import io
-import json
 import logging
 import zipfile
 from pathlib import Path
@@ -17,6 +16,7 @@ from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms import services
 from housecairn.rooms.models import Photo, Room
+from tests.data_support import archive_text, export_data
 from tests.rooms_support import image_bytes, upload
 
 pytest_plugins = ("tests.rooms_fixtures",)
@@ -171,11 +171,11 @@ class TestExportRooms:
         add_photo(bob, room=other_room, caption="Secret photo")
 
         archive = self.export(client, alice, alice_home)
-        data = json.loads(archive.read("export.json"))
+        data = export_data(archive)
         assert [r["name"] for r in data["rooms"]] == ["Living room"]
         assert data["rooms"][0]["id"] == str(room.id)
-        assert data["rooms"][0]["memory"]["paint_colour"] == "Sage"
-        assert data["rooms"][0]["memory"]["memory_notes"] == "Two coats"
+        assert data["rooms"][0]["paint_colour"] == "Sage"
+        assert data["rooms"][0]["memory_notes"] == "Two coats"
         assert [i["name"] for i in data["items"]] == ["Boiler"]
         assert data["items"][0]["room"] == str(room.id)
         assert data["items"][0]["warranty_ends_on"] == "2031-09-14"
@@ -187,11 +187,13 @@ class TestExportRooms:
         assert by_id[str(item_photo.id)]["item"] == str(item.id)
         names = set(archive.namelist())
         for photo in (room_photo, item_photo):
-            path = by_id[str(photo.id)]["file"]
+            path = by_id[str(photo.id)]["image"]
             assert path in names
             assert archive.read(path) == photo.image.read()
-        assert {f["path"] for f in data["files"]} == {by_id[k]["file"] for k in by_id}
-        raw = archive.read("export.json").decode()
+        assert {n for n in data["manifest"]["entries"] if n.startswith("files/")} == {
+            by_id[k]["image"] for k in by_id
+        }
+        raw = archive_text(archive)
         for secret in ("Secret room", "Secret item", "Secret photo", str(bob_home.id)):
             assert secret not in raw
         assert not any(str(bob_home.id) in n for n in names)
@@ -201,7 +203,7 @@ class TestExportRooms:
     ) -> None:
         photo = add_photo(alice, room=owner_room)
         archive = self.export(client, alice, alice_home)
-        path = json.loads(archive.read("export.json"))["photos"][0]["file"]
+        path = export_data(archive)["photos"][0]["image"]
         assert b"Exif" not in archive.read(path)
         assert photo.id
 
@@ -210,9 +212,9 @@ class TestExportRooms:
     ) -> None:
         photo = add_photo(alice, room=owner_room)
         Path(photo.image.path).unlink()
-        data = json.loads(self.export(client, alice, alice_home).read("export.json"))
-        assert data["photos"][0]["file"] is None
-        assert data["files"] == []
+        data = export_data(self.export(client, alice, alice_home))
+        assert data["photos"][0]["image"] is None
+        assert not [n for n in data["manifest"]["entries"] if n.startswith("files/")]
 
     def test_a_stored_name_outside_the_home_folder_is_never_read(
         self,
@@ -234,6 +236,6 @@ class TestExportRooms:
         ):
             Photo.objects.filter(pk=mine.pk).update(image=name)
             archive = self.export(client, alice, alice_home)
-            data = json.loads(archive.read("export.json"))
-            assert data["photos"][0]["file"] is None
+            data = export_data(archive)
+            assert data["photos"][0]["image"] is None
             assert not any(n.startswith("files/photos/") for n in archive.namelist())

@@ -22,7 +22,6 @@ from housecairn.apitokens import services as token_services
 from housecairn.audit.models import AuditEvent
 from housecairn.calendar import feeds, ics, services
 from housecairn.calendar.models import Feed
-from housecairn.homes import exports
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership, Role
 from housecairn.notifications.models import Preference
@@ -1350,12 +1349,20 @@ class TestDataLifecycle:
         self, alice: User, alice_home: Home, feed: Any
     ) -> None:
         feeds.create_feed(alice)  # combined: belongs to the person, not to the home
-        document = exports.document(alice_home, [])
+        from tests.data_support import archive_bytes, export_data
+
+        document = export_data(archive_bytes(alice_home))
         assert [f["id"] for f in document["calendar_feeds"]] == [str(feed[0].id)]
         dump = str(document)
         assert feed[1] not in dump
         assert feed[0].digest not in dump
-        assert set(document["calendar_feeds"][0]) == {"id", "created_at", "regenerated_at"}
+        assert set(document["calendar_feeds"][0]) == {
+            "id",
+            "created_at",
+            "updated_at",
+            "user",
+            "regenerated_at",
+        }
 
     def test_erasing_a_home_or_an_account_removes_the_feeds(
         self, anonymous: Client, alice: User, alice_home: Home, feed: Any, bob: User

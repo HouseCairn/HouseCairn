@@ -18,6 +18,7 @@ from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.tasks import services
 from housecairn.tasks.models import Contractor, Task
+from tests.data_support import export_data
 
 pytest_plugins = ("tests.tasks_fixtures", "tests.rooms_fixtures")
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("media_root", "frozen_today")]
@@ -454,7 +455,7 @@ class TestExportAndErasure:
     ) -> None:
         services.create_contractor(bob, bob_home, name="Theirs", phone="0123456789")
         archive, _name = exports.export_home(alice, alice_home)
-        data = json.loads(zipfile.ZipFile(archive).read("export.json"))
+        data = export_data(zipfile.ZipFile(archive))
         [row] = data["contractors"]
         assert row["name"] == "Pipes Ltd"
         assert (row["trade"], row["phone"], row["email"]) == (

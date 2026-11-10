@@ -21,6 +21,7 @@ from housecairn.reports import services as report_services
 from housecairn.reports.models import Report
 from housecairn.rooms.models import Item
 from housecairn.stock.models import Article
+from tests.data_support import archive_text, export_data, stored_file
 from tests.rooms_support import image_bytes, upload
 
 pytest_plugins = ("tests.rooms_fixtures", "tests.stock_fixtures")
@@ -55,10 +56,10 @@ class TestExport:
             0
         ]
         label_services.revoke_label(alice, gone)
-        data = json.loads(export(client, alice, alice_home).read("export.json"))
+        data = export_data(export(client, alice, alice_home))
         rows = {row["id"]: row for row in data["labels"]}
         assert rows[str(active.id)]["code"] == active.code
-        assert rows[str(active.id)]["target"] == str(owner_item.id)
+        assert rows[str(active.id)]["item"] == str(owner_item.id)
         assert rows[str(active.id)]["kind"] == "item"
         assert rows[str(gone.id)]["code"] is None
         assert rows[str(gone.id)]["revoked_at"] is not None
@@ -80,19 +81,20 @@ class TestExport:
         task = report_services.make_task(alice, plain)
         report_services.close_report(alice, report, resolution="no_action")
         archive = export(client, alice, alice_home)
-        data = json.loads(archive.read("export.json"))
+        data = export_data(archive)
         rows = {row["id"]: row for row in data["reports"]}
         assert rows[str(report.id)]["title"] == "Crack"
         assert rows[str(report.id)]["status"] == "no_action"
         assert rows[str(report.id)]["item"] == str(owner_item.id)
-        assert rows[str(report.id)]["reporter"] == "reader@example.com"
+        people = {p["id"]: p["email"] for p in data["people"]}
+        assert people[rows[str(report.id)]["reporter"]] == "reader@example.com"
         assert rows[str(report.id)]["closed_at"] is not None
         assert rows[str(plain.id)]["task"] == str(task.id)
-        assert rows[str(plain.id)]["file"] is None
-        name = rows[str(report.id)]["file"]
+        assert rows[str(plain.id)]["photo"] is None
+        name = rows[str(report.id)]["photo"]
         assert name == f"files/reports/{report.id}.jpg"
         assert archive.read(name) == Path(report.photo.path).read_bytes()
-        assert name in {f["path"] for f in data["files"]}
+        assert name in {n for n in data["manifest"]["entries"] if n.startswith("files/")}
 
     def test_nothing_of_another_home_is_in_the_archive(
         self,
@@ -113,7 +115,7 @@ class TestExport:
             bob, bob_home, title="Bob's secret", photo=upload(image_bytes())
         )
         archive = export(client, alice, alice_home)
-        raw = archive.read("export.json").decode()
+        raw = archive_text(archive)
         for foreign in (theirs.code, str(theirs.id), "Bob's secret", str(secret.id)):
             assert foreign not in raw
         assert not [n for n in archive.namelist() if str(secret.id) in n]
@@ -125,13 +127,12 @@ class TestExport:
             alice, alice_home, title="Gone", photo=upload(image_bytes())
         )
         Path(report.photo.path).unlink()
-        data = json.loads(export(client, alice, alice_home).read("export.json"))
-        assert [(r["title"], r["file"]) for r in data["reports"]] == [("Gone", None)]
+        data = export_data(export(client, alice, alice_home))
+        assert [(r["title"], r["photo"]) for r in data["reports"]] == [("Gone", None)]
 
     def test_a_stored_name_that_leaves_the_home_folder_is_never_read(
         self, alice: User, alice_home: Home, bob: User, bob_home: Home, media_root: Path
     ) -> None:
-        from housecairn.reports import exports
 
         theirs = report_services.create_report(
             bob, bob_home, title="t", photo=upload(image_bytes())
@@ -143,10 +144,10 @@ class TestExport:
             photo=f"{bob_home.id}/{Path(theirs.photo.name).name}"
         )
         mine.refresh_from_db()
-        assert exports._stored_file(mine) is None
+        assert stored_file(mine) is None
         Report.objects.filter(id=mine.id).update(photo="../../etc/passwd")
         mine.refresh_from_db()
-        assert exports._stored_file(mine) is None
+        assert stored_file(mine) is None
 
 
 class TestErasure:
