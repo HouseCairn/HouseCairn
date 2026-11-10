@@ -117,7 +117,8 @@ Budget                      tabs: Summary | Rooms | Projects | Upkeep
 └─ Upkeep ── Task
 
 More (root)
-├─ Home: Home settings (export and deletion at the bottom) · Household and roles
+├─ Home: Home settings (Your data: export, owner only; then the CSV tables;
+│        deletion at the bottom, owner only) · Household and roles
 │        · Reports (count) · Contractors · QR labels · My homes
 ├─ Me: Profile · Notifications · Display preferences
 │      · Calendar in another application · API tokens
