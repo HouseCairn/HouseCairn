@@ -437,7 +437,9 @@ same pattern.
 - **Focus**: the element that had it is replaced, so the answer gives it back with
   `autofocus`, which HTMX applies after a swap: the row's link after Done or Skip, the
   row's Done button after Undo. `scroll-padding-bottom` keeps a focused element clear
-  of the banner (WCAG 2.2, 2.4.11).
+  of the banner (WCAG 2.2, 2.4.11): with script, by the real height of the banner;
+  without script, by that of the longest message, four lines at 320 px
+  (`no-script.css`).
 - **Without script** the same form posts and the view redirects to `next#occ-<id>`.
   The banner is kept in the session for that one page (`tasks.in_place.remember`),
   read once by `{% undo_banner %}` in `base.html`, never in the address: the browser's

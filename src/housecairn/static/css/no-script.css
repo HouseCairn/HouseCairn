@@ -22,7 +22,18 @@
   padding-bottom: calc(var(--hc-layout-tabbar-height) + var(--hc-space-8));
 }
 
+/* Nothing measures the banner, and it stays sticky above the bar: the room kept for the
+   focused element is that of the longest message, four lines at 320 px, so that a
+   focused element is never even partly under it (WCAG 2.2, 2.4.11). */
+html:has(.undo-region .undo-banner) {
+  scroll-padding-bottom: calc(var(--hc-layout-tabbar-height) + 9rem + var(--hc-space-4));
+}
+
 @media (min-width: 56rem) {
+  html:has(.undo-region .undo-banner) {
+    scroll-padding-bottom: calc(9rem + var(--hc-space-8));
+  }
+
   .undo-region {
     left: auto;
     margin: 0 var(--hc-space-4) 0 calc(var(--hc-layout-nav-width) + var(--hc-space-4));
