@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Using the API"
+msgstr "Utiliser l'API"
+
+msgid "A first tour of the API with `curl`: a token, a few reads, a few writes, the pages of a list and the errors. Every command of this page is run against a real instance by the tests of HouseCairn, at the root of a host and under a path prefix (`tests/test_api_guide.py`): they work as written."
+msgstr "Un premier tour de l'API avec `curl` : un jeton, quelques lectures, quelques écritures, les pages d'une liste et les erreurs. Chaque commande de cette page est exécutée contre une vraie instance par les tests de HouseCairn, à la racine d'un hôte et sous un préfixe d'adresse (`tests/test_api_guide.py`) : elles fonctionnent telles qu'écrites."
+
+msgid "Before you start"
+msgstr "Avant de commencer"
+
+msgid "**Create a token** on the [API tokens](../screens/api-tokens.md) screen: a name, the homes it may use, its scopes (`read` to read, `write` to change), its lifetime. The page shows the token **once**, right after you create it: copy it then; it is not kept and cannot be shown again."
+msgstr "**Créez un jeton** sur l'écran [Jetons d'API](../screens/api-tokens.md) : un nom, les logements qu'il peut utiliser, ses portées (`read` pour lire, `write` pour modifier), sa durée de vie. La page montre le jeton **une seule fois**, juste après sa création : copiez-le à ce moment ; il n'est pas conservé et ne peut plus être affiché."
+
+msgid "**Note the address of your instance**, with its path prefix if it has one ([Serving under a path prefix](../administration/url-prefix.md)), and the identifier of a home, the UUID in the address of its page, `/h/<home id>/`."
+msgstr "**Notez l'adresse de votre instance**, avec son préfixe d'adresse s'il y en a un ([Servir sous un préfixe d'adresse](../administration/url-prefix.md)), et l'identifiant d'un logement, l'UUID dans l'adresse de sa page, `/h/<home id>/`."
+
+msgid "The examples read them from three variables of the shell:"
+msgstr "Les exemples les lisent dans trois variables du shell :"
+
+msgid "Keep the token out of your shell history and of shared scripts: it acts with your rights on its homes until it expires or you revoke it."
+msgstr "Gardez le jeton hors de l'historique de votre shell et des scripts partagés : il agit avec vos droits sur ses logements jusqu'à ce qu'il expire ou que vous le révoquiez."
+
+msgid "Authentication"
+msgstr "Authentification"
+
+msgid "Send the token in the `Authorization` header, as a bearer token, on every request:"
+msgstr "Envoyez le jeton dans l'en-tête `Authorization`, en jeton porteur (bearer), à chaque requête :"
+
+msgid "The answer lists the homes the token may use, with your role in each. A request without a token, or with a token that is wrong, expired or revoked, gets `401`:"
+msgstr "La réponse liste les logements que le jeton peut utiliser, avec votre rôle dans chacun. Une requête sans jeton, ou avec un jeton faux, expiré ou révoqué, reçoit `401` :"
+
+msgid "A token is bound to its homes: another home is a `404`, as if it did not exist. Its scopes decide what it may do: `read` for `GET`, `write` for every other method. A token never manages tokens, the household or the account: those are for a person signed in ([API](index.md))."
+msgstr "Un jeton est lié à ses logements : un autre logement donne un `404`, comme s'il n'existait pas. Ses portées décident de ce qu'il peut faire : `read` pour `GET`, `write` pour toute autre méthode. Un jeton ne gère jamais les jetons, le foyer ni le compte : c'est réservé à une personne connectée ([API](index.md))."
+
+msgid "Reading"
+msgstr "Lire"
+
+msgid "The rooms of a home, then its tasks that are still open:"
+msgstr "Les pièces d'un logement, puis ses tâches encore ouvertes :"
+
+msgid "A table of the home as CSV, for a spreadsheet. The address ends with a `/` like every other: without it the answer is a redirect, and `curl` writes an empty file. The first line of the file names the columns:"
+msgstr "Une table du logement en CSV, pour un tableur. L'adresse se termine par une `/` comme toutes les autres : sans elle, la réponse est une redirection, et `curl` écrit un fichier vide. La première ligne du fichier nomme les colonnes :"
+
+msgid "Writing"
+msgstr "Écrire"
+
+msgid "Requests that change something send JSON, with the `write` scope. A task needs only its title:"
+msgstr "Les requêtes qui modifient quelque chose envoient du JSON, avec la portée `write`. Une tâche n'a besoin que de son titre :"
+
+msgid "The answer, `201`, is the task, with its `id`. A change is a `PATCH` of the fields that change, at the address of the task, `.../tasks/<id>/`; `PUT` is not offered."
+msgstr "La réponse, `201`, est la tâche, avec son `id`. Une modification est un `PATCH` des champs qui changent, à l'adresse de la tâche, `.../tasks/<id>/` ; `PUT` n'est pas proposé."
+
+msgid "Common tasks come ready from the [library of task templates](../screens/task-templates.md): list it, then add some of its templates to a home, in the language of the request:"
+msgstr "Des tâches courantes sont prêtes dans la [bibliothèque de modèles de tâches](../screens/task-templates.md) : listez-la, puis ajoutez certains de ses modèles à un logement, dans la langue de la requête :"
+
+msgid "Pages of a list"
+msgstr "Pages d'une liste"
+
+msgid "A list comes in pages, from the most recent: `results` holds the rows, `next` and `previous` the addresses of the next and the previous pages, or `null`. `page_size` asks for up to 200 rows a page (50 by default). The addresses are cursors: follow them as they are, rather than build them; they stay right while rows are added. To read every page:"
+msgstr "Une liste arrive par pages, de la plus récente : `results` contient les lignes, `next` et `previous` les adresses des pages suivante et précédente, ou `null`. `page_size` demande jusqu'à 200 lignes par page (50 par défaut). Les adresses sont des curseurs : suivez-les telles quelles plutôt que de les construire ; elles restent justes pendant que des lignes s'ajoutent. Pour lire toutes les pages :"
+
+msgid "Errors"
+msgstr "Erreurs"
+
+#, python-brace-format
+msgid "An error answers with a code and a JSON body that says why: `{\"detail\": \"...\"}`, or, for a value refused, the name of each field with its messages, `{\"title\": [\"...\"]}`."
+msgstr "Une erreur répond par un code et un corps JSON qui dit pourquoi : `{\"detail\": \"...\"}`, ou, pour une valeur refusée, le nom de chaque champ avec ses messages, `{\"title\": [\"...\"]}`."
+
+msgid "Code"
+msgstr "Code"
+
+msgid "When"
+msgstr "Quand"
+
+msgid "`400`"
+msgstr "`400`"
+
+msgid "A value is missing or refused; the body names the field."
+msgstr "Une valeur manque ou est refusée ; le corps nomme le champ."
+
+msgid "`401`"
+msgstr "`401`"
+
+msgid "No token, or a token that is wrong, expired or revoked."
+msgstr "Pas de jeton, ou un jeton faux, expiré ou révoqué."
+
+msgid "`403`"
+msgstr "`403`"
+
+msgid "The token lacks the scope, your role does not allow it (a read-only member that writes), or the route is for a person signed in. A home that requires a sign-in provider answers `403` with `\"code\": \"sso_required\"` and the provider, until the session signs in through it."
+msgstr "Il manque la portée au jeton, votre rôle ne le permet pas (un membre en lecture seule qui écrit), ou la route est réservée à une personne connectée. Un logement qui impose un fournisseur de connexion répond `403` avec `\"code\": \"sso_required\"` et le fournisseur, tant que la session ne s'est pas connectée par lui."
+
+msgid "`404`"
+msgstr "`404`"
+
+msgid "Nothing at this address for you: an object of another home, or a home the token is not bound to, is a `404` and never a `403`, so that its existence does not show."
+msgstr "Rien à cette adresse pour vous : un objet d'un autre logement, ou un logement auquel le jeton n'est pas lié, donne un `404` et jamais un `403`, pour que son existence ne se voie pas."
+
+msgid "`405`"
+msgstr "`405`"
+
+msgid "A method the route does not offer (`PUT`, say)."
+msgstr "Une méthode que la route ne propose pas (`PUT`, par exemple)."
+
+msgid "`429`"
+msgstr "`429`"
+
+msgid "Too many attempts of a limited action, such as sending invitations; try again later."
+msgstr "Trop de tentatives d'une action limitée, comme l'envoi d'invitations ; réessayez plus tard."
+
+msgid "Trying it in the browser"
+msgstr "Essayer dans le navigateur"
+
+msgid "A running instance serves its OpenAPI schema at `/api/schema/` and an interactive explorer at `/api/docs/`, under its path prefix, to a person signed in: every operation, its parameters and its answers, which you can try with your session. The [reference](reference.md) gives the same operations, generated from the code of this version."
+msgstr "Une instance en marche sert son schéma OpenAPI à `/api/schema/` et un explorateur interactif à `/api/docs/`, sous son préfixe d'adresse, à une personne connectée : chaque opération, ses paramètres et ses réponses, que vous pouvez essayer avec votre session. La [référence](reference.md) donne les mêmes opérations, générées à partir du code de cette version."
+

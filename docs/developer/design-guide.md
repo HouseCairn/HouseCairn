@@ -597,6 +597,14 @@ is checked against all of them at once.
   never by their email address, except on a page whose subject is the address (the
   card of a household member, a contractor). An address on every screen is personal
   data shown to the whole household.
+- **A secret** that the person must keep (an API token) **must** be shown once, on the
+  page that answers the `POST` that made it, and never again: that answer is sent with
+  `Cache-Control: no-store`, the secret is in a read-only field with a **Copy** button
+  (`static/js/copy-secret.js`; without JavaScript the button stays hidden and the field
+  can still be selected), and the page says it will not be shown again. The screen of
+  the API tokens does it (`apitokens/views.py`, `apitokens/token_created.html`). A secret
+  on a page that a link or the back button opens again is readable by whoever uses the
+  browser next, and stays in its cache.
 - **Sign-in** **must** offer one button per configured identity provider, and passkeys
   through the browser's autofill of the address field, without a passkey button
   ([ADR 0018](../adr/0018-sign-in-page-and-passkeys.md)). The page stays a form and at
@@ -766,6 +774,8 @@ holds. The review checks the same list.
 - [ ] The screen shows the current home and only data of the person's homes.
 - [ ] Amounts through the `money` filter; people by their display name; generic lists
   with "Other".
+- [ ] A secret is shown once, in the answer to its `POST`, with `Cache-Control: no-store`
+  and a Copy button.
 - [ ] Touch targets of 44 px at least, visible focus, never hidden by the bar or the
   banner; WCAG 2.2 AA.
 - [ ] Tried at 375 px and 1280 px, with no horizontal scroll of the page.

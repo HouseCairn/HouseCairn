@@ -78,7 +78,7 @@ restored: export the home again.
 
 Every member downloads a table of the home as CSV from the page of the home
 (**Tables for a spreadsheet**), or from the API
-(`GET /api/v1/homes/<id>/export/<table>.csv`, a token with the `read` scope
+(`GET /api/v1/homes/<id>/export/<table>.csv/`, a token with the `read` scope
 on the home included): `rooms`, `items`, `tasks`, `history`, `stock`,
 `contractors`, `reports`. The file is UTF-8 with a byte order mark, which
 Excel needs to read accents; the columns are the fields of the archive, people

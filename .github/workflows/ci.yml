@@ -89,6 +89,7 @@ jobs:
           tests/test_redirects.py tests/test_security.py tests/test_export_jobs.py
           tests/test_restore_security.py tests/test_csv_export.py tests/test_ingress_app.py
           tests/test_csv_import.py
+          tests/test_task_templates.py tests/test_api_guide.py
 
   tests-postgresql:
     name: Tests (PostgreSQL)
