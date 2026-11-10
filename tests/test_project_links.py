@@ -31,6 +31,7 @@ from housecairn.instance import registry
 from housecairn.instance.ratelimits import rates
 from housecairn.projects import links, preview, services
 from housecairn.projects.models import MAX_LINKS_PER_PROJECT, Project, ProjectFile, ProjectLink
+from tests.data_support import export_data
 from tests.netservers import AnyPort, Server, can_bind, serving
 from tests.rooms_support import image_bytes, upload
 
@@ -1027,7 +1028,6 @@ class TestDataOfTheHome:
         enabled: None,
     ) -> None:
         import io
-        import json
         import zipfile
 
         link = links.add_link(alice, living_room_project, url=serve_page(site))
@@ -1035,7 +1035,7 @@ class TestDataOfTheHome:
         client.force_login(alice)
         response = client.post(reverse("homes:export", kwargs={"home_id": alice_home.id}))
         archive = zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content)))
-        data = json.loads(archive.read("export.json"))
+        data = export_data(archive)
         rows = {row["id"]: row for row in data["project_links"]}
         assert len(rows) == 2
         assert rows[str(link.id)]["title"] == "Tiles"

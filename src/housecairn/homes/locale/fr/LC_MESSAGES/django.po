@@ -39,6 +39,12 @@ msgstr "Les deux mots de passe diffèrent."
 msgid "Type the name of the home to confirm"
 msgstr "Saisissez le nom du logement pour confirmer"
 
+msgid "Archive of a home"
+msgstr "Archive d'un logement"
+
+msgid "The zip file that Export all data gave, as it is."
+msgstr "Le fichier zip donné par Exporter toutes les données, tel quel."
+
 msgid "Owner"
 msgstr "Propriétaire"
 
@@ -111,6 +117,24 @@ msgstr "invitation"
 msgid "invitations"
 msgstr "invitations"
 
+msgid "Being made"
+msgstr "En préparation"
+
+msgid "Ready"
+msgstr "Prête"
+
+msgid "Failed"
+msgstr "Échec"
+
+msgid "status"
+msgstr "statut"
+
+msgid "export of a home"
+msgstr "export d'un logement"
+
+msgid "exports of homes"
+msgstr "exports de logements"
+
 #, python-format
 msgid "This home already holds %(count)d files, its limit: delete some, or ask the administrator of the instance for more."
 msgstr "Ce logement contient déjà %(count)d fichiers, sa limite : supprimez-en, ou demandez-en davantage à l'administrateur de l'instance."
@@ -118,6 +142,105 @@ msgstr "Ce logement contient déjà %(count)d fichiers, sa limite : supprimez-en
 #, python-format
 msgid "There is no room left for this file: the files of this home take %(used)s of %(limit)s. Delete some, or ask the administrator of the instance for more."
 msgstr "Il ne reste pas de place pour ce fichier : les fichiers de ce logement occupent %(used)s sur %(limit)s. Supprimez-en, ou demandez-en davantage à l'administrateur de l'instance."
+
+#, python-format
+msgid "The archive was changed after it was made: %(name)s."
+msgstr "L'archive a été modifiée après sa création : %(name)s."
+
+#, python-format
+msgid "An entry of the archive is larger than it says: %(name)s."
+msgstr "Un fichier de l'archive est plus grand qu'il ne l'annonce : %(name)s."
+
+msgid "The archive holds too many files."
+msgstr "L'archive contient trop de fichiers."
+
+#, python-format
+msgid "The archive holds a symbolic link: %(name)s."
+msgstr "L'archive contient un lien symbolique : %(name)s."
+
+#, python-format
+msgid "The archive holds an encrypted file: %(name)s."
+msgstr "L'archive contient un fichier chiffré : %(name)s."
+
+#, python-format
+msgid "The archive holds a file outside of what the format allows: %(name)s."
+msgstr "L'archive contient un fichier que le format n'autorise pas : %(name)s."
+
+#, python-format
+msgid "A file of the archive is larger than this instance accepts: %(name)s."
+msgstr "Un fichier de l'archive dépasse la taille acceptée par cette instance : %(name)s."
+
+#, python-format
+msgid "The archive holds the same file twice: %(name)s."
+msgstr "L'archive contient deux fois le même fichier : %(name)s."
+
+msgid "The archive is too large once unpacked for this instance."
+msgstr "Une fois décompressée, l'archive est trop volumineuse pour cette instance."
+
+#, python-format
+msgid "A data file of the archive is too large: %(name)s."
+msgstr "Un fichier de données de l'archive est trop volumineux : %(name)s."
+
+#, python-format
+msgid "A data file of the archive is not valid JSON: %(name)s."
+msgstr "Un fichier de données de l'archive n'est pas du JSON valide : %(name)s."
+
+msgid "This file is not a HouseCairn archive (not a valid zip)."
+msgstr "Ce fichier n'est pas une archive HouseCairn (ce n'est pas un zip valide)."
+
+msgid "This file is not a HouseCairn archive: it has no manifest."
+msgstr "Ce fichier n'est pas une archive HouseCairn : il n'a pas de manifeste."
+
+msgid "This file is not a HouseCairn archive: its manifest is not one."
+msgstr "Ce fichier n'est pas une archive HouseCairn : son manifeste n'en est pas un."
+
+#, python-format
+msgid "This archive is in version %(version)s of the format, which this instance cannot restore (it restores version %(supported)s)."
+msgstr "Cette archive est en version %(version)s du format, que cette instance ne sait pas restaurer (elle restaure la version %(supported)s)."
+
+msgid "The manifest of the archive is incomplete."
+msgstr "Le manifeste de l'archive est incomplet."
+
+msgid "The archive was changed after it was made: its files are not those of its manifest."
+msgstr "L'archive a été modifiée après sa création : ses fichiers ne sont pas ceux de son manifeste."
+
+#, python-format
+msgid "The archive holds data this instance does not know (%(app)s): update HouseCairn first."
+msgstr "L'archive contient des données que cette instance ne connaît pas (%(app)s) : mettez d'abord HouseCairn à jour."
+
+#, python-format
+msgid "A data file of the archive is not valid: %(name)s."
+msgstr "Un fichier de données de l'archive n'est pas valide : %(name)s."
+
+#, python-format
+msgid "The archive holds a value that is not valid: %(section)s, object %(index)s, %(field)s."
+msgstr "L'archive contient une valeur non valide : %(section)s, objet %(index)s, %(field)s."
+
+#, python-format
+msgid "The archive holds the same object twice (%(section)s)."
+msgstr "L'archive contient deux fois le même objet (%(section)s)."
+
+#, python-format
+msgid "The archive refers to an object it does not hold (%(section)s, object %(index)s, %(field)s)."
+msgstr "L'archive renvoie à un objet qu'elle ne contient pas (%(section)s, objet %(index)s, %(field)s)."
+
+msgid "This instance already holds the objects of this archive: the home it was made from is still here, or the archive was restored already. Delete that home first, or restore on another instance."
+msgstr "Cette instance contient déjà les objets de cette archive : le logement d'origine est encore là, ou l'archive a déjà été restaurée. Supprimez d'abord ce logement, ou restaurez sur une autre instance."
+
+#, python-format
+msgid "A file of the archive is not a valid image: %(name)s."
+msgstr "Un fichier de l'archive n'est pas une image valide : %(name)s."
+
+#, python-format
+msgid "A file of the archive is not of an accepted type: %(name)s."
+msgstr "Un fichier de l'archive n'est pas d'un type accepté : %(name)s."
+
+#, python-format
+msgid "A file of the archive is not of the type its object says: %(name)s."
+msgstr "Un fichier de l'archive n'est pas du type qu'indique son objet : %(name)s."
+
+msgid "This archive conflicts with data already on this instance; nothing was restored."
+msgstr "Cette archive entre en conflit avec des données déjà présentes sur cette instance ; rien n'a été restauré."
 
 #, python-format
 msgid "This home requires signing in through %(provider)s."
@@ -165,6 +288,27 @@ msgstr "Ce lien n'a pas été envoyé par e-mail : il ne peut pas créer de comp
 msgid "An account already uses this address: sign in to accept."
 msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter."
 
+msgid "Rooms"
+msgstr "Pièces"
+
+msgid "Items"
+msgstr "Éléments"
+
+msgid "Tasks"
+msgstr "Tâches"
+
+msgid "History of the tasks"
+msgstr "Historique des tâches"
+
+msgid "Stock"
+msgstr "Matériel"
+
+msgid "Contractors"
+msgstr "Intervenants"
+
+msgid "Reports"
+msgstr "Signalements"
+
 msgid "Home added"
 msgstr "Logement ajouté"
 
@@ -173,6 +317,17 @@ msgstr "Logement ajouté."
 
 msgid "Home saved."
 msgstr "Logement enregistré."
+
+msgid "This file is too large."
+msgstr "Ce fichier est trop volumineux."
+
+#, python-format
+msgid "Home restored: %(name)s."
+msgstr "Logement restauré : %(name)s."
+
+#, python-format
+msgid "Left unattributed, with no account here: %(names)s. Invite them again."
+msgstr "Laissés non attribués, sans compte ici : %(names)s. Invitez-les de nouveau."
 
 msgid "The home was deleted."
 msgstr "Le logement a été supprimé."
@@ -308,6 +463,25 @@ msgstr "Ouvrez ce lien pour accepter, et pour créer votre compte si vous n'en a
 msgid "%(name)s: you are invited to %(home)s"
 msgstr "%(name)s : vous êtes invité à %(home)s"
 
+#, python-format
+msgid "The archive is ready (%(size)s)."
+msgstr "L'archive est prête (%(size)s)."
+
+#, python-format
+msgid "It can be downloaded %(counter)s more time, until %(until)s."
+msgid_plural "It can be downloaded %(counter)s more times, until %(until)s."
+msgstr[0] "Elle peut encore être téléchargée %(counter)s fois, jusqu'au %(until)s."
+msgstr[1] "Elle peut encore être téléchargée %(counter)s fois, jusqu'au %(until)s."
+
+msgid "Download the archive"
+msgstr "Télécharger l'archive"
+
+msgid "The archive could not be made. Try again later; the administrator of the instance finds the error in the log."
+msgstr "L'archive n'a pas pu être créée. Réessayez plus tard ; l'administrateur de l'instance trouve l'erreur dans le journal."
+
+msgid "The archive is being made. Reload this page in a moment."
+msgstr "L'archive est en préparation. Rechargez cette page dans un moment."
+
 msgid "Your role"
 msgstr "Votre rôle"
 
@@ -341,6 +515,9 @@ msgstr "Vos données"
 msgid "One archive with everything of this home, in an open format."
 msgstr "Une archive avec tout le contenu de ce logement, dans un format ouvert."
 
+msgid "Tables for a spreadsheet"
+msgstr "Tableaux pour un tableur"
+
 msgid "Edit the home"
 msgstr "Modifier le logement"
 
@@ -362,6 +539,9 @@ msgstr "%(provider)s exigé"
 
 msgid "You are not a member of any home yet."
 msgstr "Vous n'êtes membre d'aucun logement pour l'instant."
+
+msgid "Restore a home"
+msgstr "Restaurer un logement"
 
 msgid "you"
 msgstr "vous"
@@ -490,6 +670,12 @@ msgstr "Retirer du logement"
 
 msgid "Leave this home"
 msgstr "Quitter ce logement"
+
+msgid "The archive becomes a new home, with its rooms, tasks, history, stock, projects and files. You will be its owner. The people of the archive are not added: invite them again."
+msgstr "L'archive devient un nouveau logement, avec ses pièces, tâches, historique, stock, projets et fichiers. Vous en serez propriétaire. Les personnes de l'archive ne sont pas ajoutées : invitez-les de nouveau."
+
+msgid "Restore"
+msgstr "Restaurer"
 
 #, python-format
 msgid "This home opens only after signing in through %(provider)s."

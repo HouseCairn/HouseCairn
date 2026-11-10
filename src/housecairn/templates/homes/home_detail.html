@@ -42,6 +42,16 @@
         <p class="small">{% translate "One archive with everything of this home, in an open format." %}</p>
       </form>
     </div>
+  {% endif %}
+  {% if role %}
+    <h2>{% translate "Tables for a spreadsheet" %}</h2>
+    <ul class="card-list">
+      {% for entity, label in csv_tables %}
+        <li><a class="row" href="{% url 'homes:export-csv' home_id=home.id entity=entity %}" download><span class="row-body"><span class="row-title">{{ label }}</span><span class="row-text">CSV</span></span></a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% if role == "owner" %}
     <a class="button button-danger button-block" href="{% url_with_next 'homes:delete' home_id=home.id %}">{% translate "Delete this home" %}</a>
   {% endif %}
 {% endblock content %}

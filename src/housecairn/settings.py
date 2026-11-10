@@ -479,6 +479,11 @@ Q_CLUSTER = {
     "catch_up": False,
     "sync": env.bool("HOUSECAIRN_TASKS_SYNC", default=False),
 }
+# Export of a home (docs/adr/0048): above this many bytes of files, the archive is made by
+# the worker and downloaded later, at most a few times and for a day.
+HOUSECAIRN_EXPORT_INLINE_MAX_BYTES = 50 * 1024 * 1024
+HOUSECAIRN_EXPORT_DOWNLOADS = 3
+HOUSECAIRN_EXPORT_KEEP_HOURS = 24
 # Notifications (docs/adr/0043): on or off, and how often the worker looks for reminders.
 HOUSECAIRN_NOTIFICATIONS_ENABLED: bool = _ENV.values["notifications_enabled"]
 HOUSECAIRN_NOTIFICATIONS_INTERVAL: int = _ENV.values["notifications_interval"]

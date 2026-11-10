@@ -1,0 +1,123 @@
+"""One table of a home as a CSV file, for a spreadsheet (docs/adr/0048).
+
+UTF-8 with a byte order mark, so that Excel reads the accents; the columns are the fields
+of the section of the archive, a person is named by their display name and never by
+their address, an amount is a number with a point and the currency of the home is a
+column of its own. A cell of text that a spreadsheet would run as a formula (it starts
+with `=`, `+`, `-`, `@`, a tab or a carriage return) is written with a leading `'`, the
+neutralisation OWASP recommends; numbers are left as they are.
+
+Each app adds its tables to `ENTITIES` (`register`); the routes take any name listed there.
+"""
+
+import csv
+import io
+import json
+from collections.abc import Iterator
+from dataclasses import dataclass
+from typing import Any
+
+from django.contrib.auth import get_user_model
+from django.db import models
+from django.utils import timezone
+from django.utils.text import slugify
+
+from housecairn.accounts.names import person_name
+from housecairn.homes import exports
+from housecairn.homes.models import Home
+
+FORMULA_STARTS = ("=", "+", "-", "@", "\t", "\r")
+BOM = "\ufeff"
+
+
+@dataclass(frozen=True)
+class CsvEntity:
+    """A CSV file: the rows of one section of the archive, `money` its amounts."""
+
+    name: str
+    section: str
+    money: tuple[str, ...] = ()
+
+
+ENTITIES: dict[str, CsvEntity] = {}
+
+
+def register(entity: CsvEntity) -> None:
+    ENTITIES[entity.name] = entity
+
+
+def neutralise(value: str) -> str:
+    """The text of a cell, made inert for a spreadsheet if it would start a formula."""
+    if value.startswith(FORMULA_STARTS):
+        return "'" + value
+    return value
+
+
+def _section(name: str) -> exports.Section:
+    for _app, section in exports.all_sections():
+        if section.name == name:
+            return section
+    raise KeyError(name)  # pragma: no cover - checked by tests/test_csv_export.py
+
+
+def _columns(section: exports.Section) -> list[models.Field[Any, Any]]:
+    return [f for f in section.fields() if not isinstance(f, models.FileField)]
+
+
+def _cell(f: models.Field[Any, Any], row: models.Model, people: dict[Any, Any]) -> str:
+    value = getattr(row, f.attname)
+    if exports.person_reference(f):
+        person = people.get(value)
+        return neutralise(person_name(person)) if person is not None else ""
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(f, models.CharField | models.TextField):
+        return neutralise(str(value))
+    if isinstance(f, models.JSONField):
+        return neutralise(json.dumps(value, ensure_ascii=False))
+    return str(exports._scalar(value))
+
+
+def rows(home: Home, entity: CsvEntity) -> Iterator[list[str]]:
+    section = _section(entity.section)
+    columns = _columns(section)
+    header = [f.name for f in columns]
+    if entity.money:
+        header.append("currency")
+    yield header
+    # The rows the archive holds: none whose task, say, is deleted.
+    found = exports.collect(home).rows[section.name]
+    references = [f.attname for f in columns if exports.person_reference(f)]
+    people = get_user_model().objects.in_bulk(
+        {getattr(row, name) for row in found for name in references} - {None}
+    )
+    for row in found:
+        cells = [_cell(f, row, people) for f in columns]
+        if entity.money:
+            cells.append(home.currency)
+        yield cells
+
+
+def build_csv(home: Home, entity: CsvEntity) -> tuple[bytes, str]:
+    """The CSV of one table of the home, and its file name."""
+    out = io.StringIO()
+    out.write(BOM)
+    writer = csv.writer(out, lineterminator="\r\n")
+    writer.writerows(rows(home, entity))
+    stamp = timezone.now().strftime("%Y%m%d")
+    name = f"housecairn-{slugify(home.name) or 'home'}-{entity.name}-{stamp}.csv"
+    return out.getvalue().encode("utf-8"), name
+
+
+for _entity in (
+    CsvEntity("rooms", "rooms"),
+    CsvEntity("items", "items"),
+    CsvEntity("tasks", "tasks", money=("labour_budget", "material_budget")),
+    CsvEntity("history", "occurrences", money=("actual_cost",)),
+    CsvEntity("stock", "stock_items"),
+    CsvEntity("contractors", "contractors"),
+    CsvEntity("reports", "reports"),
+):
+    register(_entity)

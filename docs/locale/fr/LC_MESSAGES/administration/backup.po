@@ -51,8 +51,8 @@ msgstr "Fichiers téléversés."
 msgid "`/data/backups/`"
 msgstr "`/data/backups/`"
 
-msgid "Copies made by the `backup` command below."
-msgstr "Copies faites par la commande `backup` ci-dessous."
+msgid "Copies made by the `backup_instance` and `backup` commands below."
+msgstr "Copies faites par les commandes `backup_instance` et `backup` ci-dessous."
 
 msgid "Files are owned by `10001:10001` and readable by that user only. If you mount a host directory instead of a named volume, give it to that user first: `sudo chown -R 10001:10001 /srv/housecairn`."
 msgstr "Les fichiers appartiennent à `10001:10001` et ne sont lisibles que par cet utilisateur. Si vous montez un répertoire de l'hôte plutôt qu'un volume nommé, donnez-le d'abord à cet utilisateur : `sudo chown -R 10001:10001 /srv/housecairn`."
@@ -60,27 +60,69 @@ msgstr "Les fichiers appartiennent à `10001:10001` et ne sont lisibles que par 
 msgid "Back up"
 msgstr "Sauvegarder"
 
-msgid "Back up `/data` in one of two ways:"
-msgstr "Sauvegardez `/data` de l'une de ces deux façons :"
+msgid "With SQLite, the default, the simplest complete backup, while HouseCairn runs, is one command ([ADR 0048](../adr/0048-export-format-and-restore.md)):"
+msgstr "Avec SQLite, la base par défaut, la sauvegarde complète la plus simple, pendant que HouseCairn tourne, tient en une commande ([ADR 0048](../adr/0048-export-format-and-restore.md)) :"
 
-msgid "**Cold copy**, the simplest: stop the container, copy the volume, start it again."
-msgstr "**Copie à froid**, la plus simple : arrêtez le conteneur, copiez le volume, redémarrez-le."
+msgid "The archive holds a consistent copy of the database (SQLite's online backup API, the same as `sqlite3 db.sqlite3 \".backup ...\"`), the uploaded files of `/data/media/`, the secret key, and `manifest.json` with the SHA-256 digest of each. It is written with mode 600: it holds every home and the secret key, keep it as safe as the server. Copy it off the machine, and remove old copies from `/data/backups/` yourself. `--output <directory>` writes it elsewhere."
+msgstr "L'archive contient une copie cohérente de la base de données (l'API de sauvegarde à chaud de SQLite, la même que `sqlite3 db.sqlite3 \".backup ...\"`), les fichiers envoyés de `/data/media/`, la clé secrète, et `manifest.json` avec l'empreinte SHA-256 de chacun. Elle est écrite en mode 600 : elle contient tous les logements et la clé secrète, gardez-la aussi bien que le serveur. Copiez-la hors de la machine, et supprimez vous-même les anciennes copies de `/data/backups/`. `--output <dossier>` l'écrit ailleurs."
+
+msgid "With PostgreSQL"
+msgstr "Avec PostgreSQL"
+
+msgid "With PostgreSQL, `backup_instance` calls `pg_dump`, and `restore_instance` calls `pg_restore`. **The official image contains neither**: in it, both commands stop with `pg_dump is not installed in this container` (or `pg_restore`). Back up the two parts separately instead, with the `postgres` service of `compose.yaml`, whose image has both programs and is of the same version as the server:"
+msgstr "Avec PostgreSQL, `backup_instance` appelle `pg_dump`, et `restore_instance` appelle `pg_restore`. **L'image officielle ne contient ni l'un ni l'autre** : les deux commandes s'y arrêtent sur `pg_dump is not installed in this container` (ou `pg_restore`). Sauvegardez plutôt les deux parties séparément, avec le service `postgres` de `compose.yaml`, dont l'image contient les deux programmes, dans la même version que le serveur :"
+
+msgid "If `SECRET_KEY` is set in `deploy/production.env` rather than generated in `/data/secret_key`, leave `secret_key` out of the second command and keep a copy of `production.env` instead. Both files hold every home; keep them as safe as the server."
+msgstr "Si `SECRET_KEY` est défini dans `deploy/production.env` au lieu d'être généré dans `/data/secret_key`, retirez `secret_key` de la seconde commande et gardez plutôt une copie de `production.env`. Les deux fichiers contiennent tous les logements ; gardez-les aussi bien que le serveur."
+
+msgid "These commands follow the `compose.yaml` of the repository (service, user, database and volume names), but have not yet been tried on a real server: try a restore on another machine before you rely on them."
+msgstr "Ces commandes suivent le `compose.yaml` du dépôt (noms du service, de l'utilisateur, de la base et du volume), mais n'ont pas encore été essayées sur un vrai serveur : essayez une restauration sur une autre machine avant de vous y fier."
+
+msgid "Two other ways remain:"
+msgstr "Deux autres façons restent possibles :"
+
+msgid "**Cold copy**: stop the container, copy the volume, start it again."
+msgstr "**Copie à froid** : arrêtez le conteneur, copiez le volume, redémarrez-le."
 
 msgid "(The volume name is `<project>_housecairn-data`; `docker volume ls` shows it.)"
 msgstr "(Le nom du volume est `<project>_housecairn-data` ; `docker volume ls` l'affiche.)"
 
-msgid "**Online copy of the database**, while HouseCairn runs, with SQLite's backup API (the same as `sqlite3 db.sqlite3 \".backup ...\"`):"
-msgstr "**Copie à chaud de la base**, pendant que HouseCairn tourne, avec l'API de sauvegarde de SQLite (la même que `sqlite3 db.sqlite3 \".backup ...\"`) :"
+msgid "**The database only**, with `python -m housecairn.entrypoint backup` (prints `/data/backups/db-<UTC date and time>.sqlite3`); then copy `/data/secret_key` and `/data/media/` as well."
+msgstr "**La base de données seule**, avec `python -m housecairn.entrypoint backup` (affiche `/data/backups/db-<date et heure UTC>.sqlite3`) ; copiez alors aussi `/data/secret_key` et `/data/media/`."
 
-msgid "Then copy `/data/backups/`, `/data/secret_key` and `/data/media/` off the machine. Remove old copies from `/data/backups/` yourself."
-msgstr "Copiez ensuite `/data/backups/`, `/data/secret_key` et `/data/media/` hors de la machine. Supprimez vous-même les anciennes copies de `/data/backups/`."
-
-msgid "With PostgreSQL, back up the database with `pg_dump`, and `/data` for the key and the uploaded files."
-msgstr "Avec PostgreSQL, sauvegardez la base avec `pg_dump`, et `/data` pour la clé et les fichiers téléversés."
+msgid "The owners of a home can also keep their own copy of it: **Export all data**, which a restore makes a new home again ([Export and deletion](data.md))."
+msgstr "Les propriétaires d'un logement peuvent aussi en garder leur propre copie : **Exporter toutes les données**, qu'une restauration transforme de nouveau en logement ([Export et suppression](data.md))."
 
 msgid "Restore"
 msgstr "Restaurer"
 
-msgid "To restore, stop the container, put the files back in the volume (owned by `10001:10001`), and start it."
-msgstr "Pour restaurer, arrêtez le conteneur, remettez les fichiers dans le volume (propriété de `10001:10001`), puis démarrez-le."
+msgid "With SQLite, stop the application, then restore the archive of `backup_instance`, and start the application again:"
+msgstr "Avec SQLite, arrêtez l'application, restaurez l'archive de `backup_instance`, puis redémarrez l'application :"
+
+msgid "Every part is checked against the manifest first; a changed backup, a name that leaves its directory or a link is refused and nothing is replaced. The database, `/data/media/` and the secret key that were there are not deleted: they are kept next to it, renamed `<name>.before-restore-<date>`, until you remove them. Without `--yes`, the command refuses to replace anything."
+msgstr "Chaque partie est d'abord vérifiée d'après le manifeste ; une sauvegarde modifiée, un nom qui sort de son dossier ou un lien sont refusés, et rien n'est remplacé. La base de données, `/data/media/` et la clé secrète qui étaient en place ne sont pas supprimées : elles sont gardées à côté, renommées `<nom>.before-restore-<date>`, jusqu'à ce que vous les supprimiez. Sans `--yes`, la commande refuse de remplacer quoi que ce soit."
+
+msgid "To check a backup without touching the instance, restore it elsewhere:"
+msgstr "Pour vérifier une sauvegarde sans toucher à l'instance, restaurez-la ailleurs :"
+
+msgid "For a cold copy, stop the container, put the files back in the volume (owned by `10001:10001`), and start it."
+msgstr "Pour une copie à froid, arrêtez le conteneur, remettez les fichiers dans le volume (propriété de `10001:10001`), puis démarrez-le."
+
+msgid "With PostgreSQL, restore the two parts of [With PostgreSQL](#with-postgresql), the application stopped and the `postgres` service running:"
+msgstr "Avec PostgreSQL, restaurez les deux parties de [Avec PostgreSQL](#with-postgresql), l'application arrêtée et le service `postgres` en marche :"
+
+msgid "`--clean --if-exists` drops each table of the dump before it is recreated, so the database is the one of the dump; `--single-transaction` leaves it as it was if anything fails. Unlike `restore_instance`, the files are not checked against a manifest and those already in `/data/media/` are overwritten, not kept aside. Like the backup, this has not yet been tried on a real server."
+msgstr "`--clean --if-exists` supprime chaque table du dump avant de la recréer, de sorte que la base est celle du dump ; `--single-transaction` la laisse telle quelle si quoi que ce soit échoue. Contrairement à `restore_instance`, les fichiers ne sont pas vérifiés contre un manifeste, et ceux déjà présents dans `/data/media/` sont écrasés, pas mis de côté. Comme la sauvegarde, cela n'a pas encore été essayé sur un vrai serveur."
+
+#~ msgid "Back up `/data` in one of two ways:"
+#~ msgstr "Sauvegardez `/data` de l'une de ces deux façons :"
+
+#~ msgid "**Online copy of the database**, while HouseCairn runs, with SQLite's backup API (the same as `sqlite3 db.sqlite3 \".backup ...\"`):"
+#~ msgstr "**Copie à chaud de la base**, pendant que HouseCairn tourne, avec l'API de sauvegarde de SQLite (la même que `sqlite3 db.sqlite3 \".backup ...\"`) :"
+
+#~ msgid "Then copy `/data/backups/`, `/data/secret_key` and `/data/media/` off the machine. Remove old copies from `/data/backups/` yourself."
+#~ msgstr "Copiez ensuite `/data/backups/`, `/data/secret_key` et `/data/media/` hors de la machine. Supprimez vous-même les anciennes copies de `/data/backups/`."
+
+#~ msgid "With PostgreSQL, back up the database with `pg_dump`, and `/data` for the key and the uploaded files."
+#~ msgstr "Avec PostgreSQL, sauvegardez la base avec `pg_dump`, et `/data` pour la clé et les fichiers téléversés."
 

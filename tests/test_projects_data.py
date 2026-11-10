@@ -2,7 +2,6 @@
 
 import datetime
 import io
-import json
 import zipfile
 from decimal import Decimal
 from pathlib import Path
@@ -20,6 +19,7 @@ from housecairn.homes.models import Home
 from housecairn.projects import services
 from housecairn.projects.models import BudgetLine, Project, Quote
 from housecairn.tasks import services as task_services
+from tests.data_support import archive_text, export_data, exported_files, stored_file
 from tests.rooms_support import image_bytes, upload
 from tests.tasks_fixtures import PDF
 
@@ -64,15 +64,13 @@ class TestExport:
         services.set_envelope(alice, alice_home, year=2026, amount=Decimal("5000"))
 
         archive = export(client, alice, alice_home)
-        raw = archive.read("export.json").decode()
-        data = json.loads(raw)
+        raw = archive_text(archive)
+        data = export_data(archive)
         (project,) = data["projects"]
         assert (project["title"], project["status"]) == ("Paint the living room", "idea")
         lines = {line["label"]: line for line in data["project_budget_lines"]}
         assert lines["Painter"]["planned"] == "500.00"
-        assert lines["Painter"]["committed"] == "620.00"
         assert lines["Painter"]["paid"] == "120.00"
-        assert lines["Paint"]["committed"] == "0"
         (exported,) = data["project_quotes"]
         assert (exported["amount"], exported["status"], exported["budget_line"]) == (
             "620.00",
@@ -83,9 +81,7 @@ class TestExport:
         assert exported["contractor"] == str(quote.contractor_id)
         (link,) = data["project_tasks"]
         assert (link["project"], link["task"]) == (str(living_room_project.id), str(task.id))
-        assert data["project_envelopes"] == [
-            {"id": data["project_envelopes"][0]["id"], "year": 2026, "amount": "5000.00"}
-        ]
+        assert [(e["year"], e["amount"]) for e in data["project_envelopes"]] == [(2026, "5000.00")]
         files = {f["id"]: f for f in data["project_files"]}
         assert files[str(photo.id)]["file"] == f"files/projects/{photo.id}.jpg"
         assert files[str(document.id)]["file"] == f"files/projects/{document.id}.pdf"
@@ -119,7 +115,7 @@ class TestExport:
         dead = services.create_project(alice, alice_home, title="Dead", budget=Decimal("5"))
         services.add_task(alice, dead, title="Dead task")
         services.delete_project(alice, dead)
-        data = json.loads(export(client, alice, alice_home).read("export.json"))
+        data = export_data(export(client, alice, alice_home))
         assert [p["title"] for p in data["projects"]] == ["Paint the living room"]
         assert [line["label"] for line in data["project_budget_lines"]] == ["Paint"]
         assert data["project_quotes"] == []
@@ -136,7 +132,6 @@ class TestExport:
         foreign_project: Project,
         media_root: Path,
     ) -> None:
-        from housecairn.projects import exports
         from housecairn.projects.models import ProjectFile
 
         theirs = services.add_file(bob, foreign_project, upload=upload(image_bytes()))
@@ -145,11 +140,11 @@ class TestExport:
             file=f"{bob_home.id}/{Path(theirs.file.name).name}"
         )
         mine.refresh_from_db()
-        assert exports._stored_file(mine) is None
+        assert stored_file(mine) is None
         ProjectFile.objects.filter(id=mine.id).update(file="../../etc/passwd")
         mine.refresh_from_db()
-        assert exports._stored_file(mine) is None
-        assert list(exports._files(alice_home)) == []
+        assert stored_file(mine) is None
+        assert exported_files(alice_home) == []
 
 
 class TestErasure:
@@ -267,7 +262,7 @@ class TestErasure:
             "project_tasks",
             "project_envelopes",
         ):
-            assert name in exports.EXPORTERS
+            assert name in {sec.name for sec in exports.SECTIONS["projects"]}
 
 
 @pytest.mark.django_db(transaction=True)

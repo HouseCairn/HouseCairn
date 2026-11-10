@@ -152,15 +152,3 @@ def departure_recorded(sender: Any, instance: AuditEvent, created: bool, **kwarg
             target=instance.target_user,
             kind="left",
         )
-
-
-def export_of(home: Home) -> list[dict[str, Any]]:
-    """The feeds of a home: that they exist and when, never the address or its secret."""
-    return [
-        {
-            "id": str(f.id),
-            "created_at": f.created_at.isoformat(),
-            "regenerated_at": f.regenerated_at.isoformat() if f.regenerated_at else None,
-        }
-        for f in Feed.objects.filter(home=home)
-    ]

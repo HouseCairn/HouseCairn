@@ -36,14 +36,20 @@ msgstr "Les propriétaires et les membres ouvrent **Nom, devise et hémisphère*
 msgid "Under **Settings**, two rows lead to the [QR labels](qr-labels.md) and to the [reports](reports.md) of the home; the second shows how many reports wait when you may write."
 msgstr "Sous **Réglages**, deux lignes mènent aux [étiquettes QR](qr-labels.md) et aux [signalements](reports.md) du logement ; la seconde indique combien de signalements attendent quand vous pouvez écrire."
 
+msgid "Tables for a spreadsheet"
+msgstr "Tableaux pour un tableur"
+
+msgid "Every member sees the list **Tables for a spreadsheet**: the rooms, items, tasks, history of the tasks, stock, contractors and reports, each as a CSV file to open in a spreadsheet (see [Export and deletion](../administration/data.md))."
+msgstr "Chaque membre voit la liste **Tableaux pour un tableur** : les pièces, éléments, tâches, historique des tâches, matériel, intervenants et signalements, chacun en fichier CSV à ouvrir dans un tableur (voir [Export et suppression](../administration/data.md))."
+
 msgid "Your data"
 msgstr "Vos données"
 
 msgid "Owners see two more actions at the bottom of the page."
 msgstr "Les propriétaires voient deux actions de plus en bas de la page."
 
-msgid "**Export all data** downloads one archive with everything of the home, in an open format (see [Export and deletion](../administration/data.md)). The export is recorded in the [audit log](audit.md)."
-msgstr "**Exporter toutes les données** télécharge une archive unique avec tout le contenu du logement, dans un format ouvert (voir [Export et suppression](../administration/data.md)). L'export est enregistré dans le [journal d'audit](audit.md)."
+msgid "**Export all data** downloads one archive with everything of the home, in an open format (see [Export and deletion](../administration/data.md)). The export is recorded in the [audit log](audit.md). For a home with many files, the archive is made in the background: a page says when it is ready and offers **Download the archive**, at most three times within a day."
+msgstr "**Exporter toutes les données** télécharge une archive unique avec tout le contenu du logement, dans un format ouvert (voir [Export et suppression](../administration/data.md)). L'export est enregistré dans le [journal d'audit](audit.md). Pour un logement qui a beaucoup de fichiers, l'archive est préparée en tâche de fond : une page indique quand elle est prête et propose **Télécharger l'archive**, trois fois au plus dans la journée."
 
 msgid "**Delete this home** removes the home and everything in it, for good, for every member. The page asks you to type the exact name of the home, and offers the export first. There is no way back."
 msgstr "**Supprimer ce logement** supprime le logement et tout ce qu'il contient, définitivement, pour chaque membre. La page vous demande de saisir le nom exact du logement, et propose d'abord l'export. Il n'y a pas de retour en arrière."

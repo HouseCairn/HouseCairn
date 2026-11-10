@@ -1,30 +1,38 @@
-"""QR labels are part of the export of their home (docs/adr/0023, 0047).
+"""QR labels in the export of their home (docs/adr/0047, 0048).
 
 The code of an active label is exported, so that the stickers already stuck on the walls
-still open the right page if the home is ever restored; the code of a revoked label is
-not, it opens nothing.
+still open the right page once the home is restored; the code of a revoked label is not,
+it opens nothing, and a restore gives the revoked label a new random code.
 """
 
 from typing import Any
 
+from django.db import models
+
 from housecairn.homes import exports
-from housecairn.homes.models import Home
-from housecairn.labels.models import Label
+from housecairn.labels.models import Label, new_code
 
 
-def _labels(home: Home) -> list[dict[str, Any]]:
-    return [
-        {
-            "id": str(label.id),
-            "kind": label.kind,
-            "target": str(label.target_id),
-            "code": label.code if label.revoked_at is None else None,
-            "revoked_at": label.revoked_at.isoformat() if label.revoked_at else None,
-            "created_at": label.created_at.isoformat(),
-        }
-        for label in Label.objects.filter(home=home).order_by("created_at", "id")
-    ]
+def _hide_revoked_code(label: models.Model, data: dict[str, Any]) -> dict[str, Any]:
+    if data.get("revoked_at") is not None:
+        data["code"] = None
+    return data
+
+
+def _code_for_revoked(data: dict[str, Any]) -> dict[str, Any]:
+    if data.get("code") is None and data.get("revoked_at") is not None:
+        data["code"] = new_code()
+    return data
 
 
 def register() -> None:
-    exports.register("labels", _labels)
+    exports.register(
+        "labels",
+        exports.Section(
+            "labels",
+            Label,
+            on_export=_hide_revoked_code,
+            on_restore=_code_for_revoked,
+            nulls=("code",),
+        ),
+    )

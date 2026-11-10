@@ -1,0 +1,32 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Restore a home.** **Homes > Restore a home** makes the archive of **Export all data** a new home, on this instance or another, with every room, task, history, stock item, project and file, under the same identifiers. A changed, foreign or unsafe archive is refused with the reason, and nothing is written ([Export and deletion](../../../administration/data.md))."
+msgstr "**Restaurer un logement.** **Logements > Restaurer un logement** fait de l'archive de **Exporter toutes les données** un nouveau logement, sur cette instance ou une autre, avec chaque pièce, tâche, historique, article en stock, projet et fichier, sous les mêmes identifiants. Une archive modifiée, étrangère ou dangereuse est refusée avec la raison, et rien n'est écrit ([Export et suppression](../../../administration/data.md))."
+
+msgid "**Tables for a spreadsheet.** Every member downloads the rooms, items, tasks, history, stock, contractors and reports of a home as CSV files that Excel opens with their accents, and that cannot run a formula."
+msgstr "**Tableaux pour un tableur.** Chaque membre télécharge les pièces, éléments, tâches, historique, matériel, intervenants et signalements d'un logement en fichiers CSV qu'Excel ouvre avec leurs accents, et qui ne peuvent exécuter aucune formule."
+
+msgid "**Large homes are exported in the background**, then downloaded from the page of the export, at most three times within a day."
+msgstr "**Les grands logements sont exportés en tâche de fond**, puis téléchargés depuis la page de l'export, trois fois au plus dans la journée."
+
+msgid "**Back up the whole instance in one command**, `backup_instance`, and restore it with `restore_instance`, which checks every part first. With PostgreSQL, whose `pg_dump` the image does not contain, the guide gives the commands of the `postgres` service instead ([Data and backups](../../../administration/backup.md))."
+msgstr "**Sauvegarder toute l'instance en une commande**, `backup_instance`, et la restaurer avec `restore_instance`, qui vérifie d'abord chaque partie. Avec PostgreSQL, dont l'image ne contient pas `pg_dump`, le guide donne à la place les commandes du service `postgres` ([Données et sauvegardes](../../../administration/backup.md))."
+

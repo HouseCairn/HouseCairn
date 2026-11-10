@@ -22,4 +22,5 @@
     <p class="empty">{% translate "You are not a member of any home yet." %}</p>
   {% endif %}
   <a class="button button-secondary button-block" href="{% url_with_next 'homes:create' %}">{% translate "Add a home" %}</a>
+  <a class="button button-secondary button-block" href="{% url_with_next 'homes:restore' %}">{% translate "Restore a home" %}</a>
 {% endblock content %}

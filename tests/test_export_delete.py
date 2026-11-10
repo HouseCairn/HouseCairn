@@ -1,7 +1,6 @@
 """Export of a home, deletion of a home, erasure of an account (docs/adr/0023)."""
 
 import io
-import json
 import zipfile
 from collections.abc import Callable
 from typing import Any
@@ -20,6 +19,7 @@ from housecairn.audit.models import AuditEvent
 from housecairn.events.models import Event
 from housecairn.homes import exports, services
 from housecairn.homes.models import Home, Invitation, Membership, Role
+from tests.data_support import archive_text, export_data
 
 pytestmark = pytest.mark.django_db
 
@@ -51,18 +51,20 @@ class TestExport:
         assert response["Content-Type"] == "application/zip"
         assert "attachment" in response["Content-Disposition"]
         archive = read_zip(response)
-        assert set(archive.namelist()) == {"export.json", "README.txt"}
-        raw = archive.read("export.json").decode()
-        data = json.loads(raw)
-        assert data["format"] == "housecairn-export"
-        assert data["version"] == exports.FORMAT_VERSION
+        names = set(archive.namelist())
+        assert {"manifest.json", "README.txt", "data/homes.json", "data/events.json"} <= names
+        assert all(n in {"manifest.json", "README.txt"} or n.startswith("data/") for n in names)
+        raw = archive_text(archive)
+        data = export_data(archive)
+        assert data["manifest"]["format"] == "housecairn-export"
+        assert data["manifest"]["version"] == exports.FORMAT_VERSION
         assert data["home"]["id"] == str(alice_home.id)
         assert data["home"]["name"] == "Main house"
-        assert [m["email"] for m in data["members"]] == ["alice@example.com"]
+        assert [p["email"] for p in data["people"]] == ["alice@example.com"]
+        assert [m["user"] for m in data["members"]] == [str(alice.id)]
         assert [m["role"] for m in data["members"]] == ["owner"]
         assert [i["email"] for i in data["pending_invitations"]] == ["guest-a@example.com"]
         assert [e["kind"] for e in data["events"]] == ["battery_low"]
-        assert data["files"] == []
         # Nothing of the other home, in any form.
         for foreign in (str(bob_home.id), "Flat", "bob@example.com", "guest-b@example.com", "leak"):
             assert foreign not in raw
@@ -102,9 +104,7 @@ class TestExport:
         client.force_login(alice)
         response = client.post(url)
         assert response.status_code == 200
-        assert json.loads(read_zip(response).read("export.json"))["home"]["id"] == str(
-            alice_home.id
-        )
+        assert export_data(read_zip(response))["home"]["id"] == str(alice_home.id)
         assert (
             client.post(reverse("api-v1:home-export", kwargs={"home_id": bob_home.id})).status_code
             == 404
@@ -115,35 +115,31 @@ class TestExport:
         api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
         assert api_client.post(url).status_code == 403
 
-    def test_an_app_that_registers_data_and_files_is_exported(
-        self, alice: User, alice_home: Home, tmp_path: Any
+    def test_a_section_registered_by_an_app_is_exported_with_its_files(
+        self, alice: User, alice_home: Home
     ) -> None:
-        file = tmp_path / "photo.jpg"
-        file.write_bytes(b"\xff\xd8photo")
-        exports.register("widgets", lambda home: [{"name": "Kitchen", "home": str(home.id)}])
-        exports.register_files(
-            lambda home: iter([exports.ExportedFile("rooms/kitchen/photo.jpg", file)])
-        )
+        exports.register("widgets", exports.Section("widgets", Event))
         try:
+            Event.objects.create(home=alice_home, kind="widget", payload={})
             archive, _name = exports.export_home(alice, alice_home)
-            zipped = zipfile.ZipFile(archive)
-            data = json.loads(zipped.read("export.json"))
-            assert data["widgets"] == [{"name": "Kitchen", "home": str(alice_home.id)}]
-            assert data["files"] == [{"path": "files/rooms/kitchen/photo.jpg", "size": 7}]
-            assert zipped.read("files/rooms/kitchen/photo.jpg") == b"\xff\xd8photo"
+            data = export_data(zipfile.ZipFile(archive))
+            assert [e["kind"] for e in data["widgets"]] == ["widget"]
         finally:
-            exports.EXPORTERS.pop("widgets")
-            exports.FILE_SOURCES.pop()
+            exports.SECTIONS.pop("widgets")
 
-    def test_a_file_cannot_leave_the_archive(self, alice_home: Home, tmp_path: Any) -> None:
+    def test_two_sections_cannot_share_a_name(self) -> None:
+        with pytest.raises(ValueError, match="named 'events'"):
+            exports.register("other", exports.Section("events", Event))
+        assert "other" not in exports.SECTIONS
+
+    def test_a_file_cannot_leave_the_archive(self, tmp_path: Any) -> None:
         file = tmp_path / "x"
         file.write_bytes(b"x")
-        exports.register_files(lambda home: iter([exports.ExportedFile("../../etc/passwd", file)]))
-        try:
-            with pytest.raises(ValueError, match="leave the archive"):
-                exports.build_archive(alice_home)
-        finally:
-            exports.FILE_SOURCES.pop()
+        with (
+            zipfile.ZipFile(io.BytesIO(), "w") as archive,
+            pytest.raises(ValueError, match="leave the archive"),
+        ):
+            exports._write_file(archive, "../../etc/passwd", file, {})
 
 
 class TestDeleteHome:

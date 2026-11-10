@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n navigation %}
+{% block head_title %}{% translate "Restore a home" %}{% endblock head_title %}
+{% block content %}
+  {% url 'homes:list' as parent %}{% back_link parent %}
+  <h1>{% translate "Restore a home" %}</h1>
+  <p class="small">{% translate "The archive becomes a new home, with its rooms, tasks, history, stock, projects and files. You will be its owner. The people of the archive are not added: invite them again." %}</p>
+  <form method="post" enctype="multipart/form-data" class="card">
+    {% csrf_token %}
+    {% next_field %}
+    {{ form.as_p }}
+    <button type="submit" class="button-block">{% translate "Restore" %}</button>
+  </form>
+{% endblock content %}

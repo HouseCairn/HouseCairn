@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n navigation %}
+{% block head_title %}{% translate "Export all data" %}{% endblock head_title %}
+{% block content %}
+  {% url 'homes:detail' home_id=home.id as parent %}{% back_link parent home.name %}
+  <h1>{% translate "Export all data" %}</h1>
+  <div class="card">
+    {% if ready %}
+      <p>{% blocktranslate trimmed with size=job.size_bytes|filesizeformat %}The archive is ready ({{ size }}).{% endblocktranslate %}</p>
+      <p class="small">{% blocktranslate trimmed count counter=job.downloads_left with until=job.expires_at|date:"DATETIME_FORMAT" %}It can be downloaded {{ counter }} more time, until {{ until }}.{% plural %}It can be downloaded {{ counter }} more times, until {{ until }}.{% endblocktranslate %}</p>
+      <form method="post" action="{% url 'homes:export-download' home_id=home.id job_id=job.id %}">
+        {% csrf_token %}
+        <button type="submit" class="button-block">{% translate "Download the archive" %}</button>
+      </form>
+    {% elif job.status == "failed" %}
+      <p>{% translate "The archive could not be made. Try again later; the administrator of the instance finds the error in the log." %}</p>
+    {% else %}
+      <p>{% translate "The archive is being made. Reload this page in a moment." %}</p>
+    {% endif %}
+  </div>
+{% endblock content %}

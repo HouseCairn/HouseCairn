@@ -167,3 +167,35 @@ class HomeOwnedModel(BaseModel):
 
     class Meta:
         abstract = True
+
+
+class ExportStatus(models.TextChoices):
+    PENDING = "pending", _("Being made")
+    READY = "ready", _("Ready")
+    FAILED = "failed", _("Failed")
+
+
+class ExportJob(BaseModel):
+    """An archive of a home made in the background, kept a short time (docs/adr/0048).
+
+    Its file is in `MEDIA_ROOT/exports/<home id>/`, which goes with the home. It is
+    downloaded by an owner of the home, signed in, at most `downloads_left` times and
+    until `expires_at`; then the file is removed.
+    """
+
+    home = models.ForeignKey(Home, on_delete=models.CASCADE, related_name="export_jobs")
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+"
+    )
+    status = models.CharField(
+        _("status"), max_length=10, choices=ExportStatus.choices, default=ExportStatus.PENDING
+    )
+    file_name = models.CharField(max_length=200, blank=True, editable=False)
+    size_bytes = models.PositiveBigIntegerField(default=0)
+    downloads_left = models.PositiveSmallIntegerField(default=3)
+    expires_at = models.DateTimeField(_("expires at"))
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("export of a home")
+        verbose_name_plural = _("exports of homes")

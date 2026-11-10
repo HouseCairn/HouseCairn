@@ -1,7 +1,6 @@
 """Attachments of tasks: content, size, metadata, names, serving, isolation (docs/adr/0034)."""
 
 import io
-import json
 import logging
 import zipfile
 from collections.abc import Callable
@@ -23,6 +22,7 @@ from housecairn.rooms import conf
 from housecairn.tasks import files, services
 from housecairn.tasks.models import MAX_ATTACHMENTS_PER_TASK, Attachment, Occurrence, Task
 from housecairn.tasks.storage import attachment_storage
+from tests.data_support import archive_text, export_data
 from tests.rooms_support import GPS, image_bytes, noise_image, upload
 from tests.tasks_fixtures import PDF
 
@@ -600,7 +600,7 @@ class TestExport:
         services.add_attachment(bob, theirs_task, upload=upload(PDF, "secret.pdf"))
 
         archive = self.export(client, alice, alice_home)
-        data = json.loads(archive.read("export.json"))
+        data = export_data(archive)
         by_id = {a["id"]: a for a in data["attachments"]}
         assert set(by_id) == {str(document.id), str(picture.id)}
         assert by_id[str(document.id)]["name"] == "manual.pdf"
@@ -613,7 +613,7 @@ class TestExport:
             assert archive.read(path) == stored(attachment)
         assert by_id[str(document.id)]["file"].endswith(".pdf")
         assert b"Exif" not in archive.read(by_id[str(picture.id)]["file"])
-        raw = archive.read("export.json").decode()
+        raw = archive_text(archive)
         for secret in ("secret.pdf", "Secret task", "gone.pdf", str(bob_home.id)):
             assert secret not in raw
         assert not any(str(bob_home.id) in n for n in archive.namelist())
@@ -623,9 +623,9 @@ class TestExport:
     ) -> None:
         document = services.add_attachment(alice, owner_task, upload=upload(PDF))
         path_of(document).unlink()
-        data = json.loads(self.export(client, alice, alice_home).read("export.json"))
+        data = export_data(self.export(client, alice, alice_home))
         assert data["attachments"][0]["file"] is None
-        assert data["files"] == []
+        assert not [n for n in data["manifest"]["entries"] if n.startswith("files/")]
 
     def test_a_stored_name_outside_the_home_folder_is_never_read(
         self,
@@ -647,6 +647,6 @@ class TestExport:
         ):
             Attachment.objects.filter(pk=mine.pk).update(file=name)
             archive = self.export(client, alice, alice_home)
-            data = json.loads(archive.read("export.json"))
+            data = export_data(archive)
             assert data["attachments"][0]["file"] is None, name
-            assert data["files"] == [], name
+            assert not [n for n in data["manifest"]["entries"] if n.startswith("files/")], name
