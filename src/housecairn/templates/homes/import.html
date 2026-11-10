@@ -5,7 +5,7 @@
   {% url 'homes:detail' home_id=home.id as parent %}{% back_link parent home.name %}
   <h1>{% translate "Import tables" %}</h1>
   {% if not report %}
-    <p class="small">{% blocktranslate trimmed %}CSV files with the columns of the tables this home exports, separated by commas, in UTF-8. Nothing is written before you confirm: the next page shows each row, accepted or refused, with the reason.{% endblocktranslate %}</p>
+    <p class="small">{% blocktranslate trimmed %}CSV files with the columns of the tables this home exports, separated by commas, in UTF-8. Nothing is written before you confirm: the next page shows each row, accepted or refused, with the reason. A single row refused, and nothing is imported.{% endblocktranslate %}</p>
     <p class="small">{% blocktranslate trimmed with rows=max_rows megabytes=max_megabytes %}At most {{ rows }} rows and {{ megabytes }} MB for the files of one import.{% endblocktranslate %}</p>
     <form method="post" enctype="multipart/form-data" class="card">
       {% csrf_token %}
@@ -19,8 +19,10 @@
   {% else %}
     {% if report.error %}
       <p class="small">{% translate "A file cannot be imported. Correct it, then try again." %}</p>
+    {% elif report.refused %}
+      <p class="small">{% blocktranslate trimmed count count=report.refused %}{{ count }} row is refused: nothing is imported while one is. Correct it in the file, then choose the file again.{% plural %}{{ count }} rows are refused: nothing is imported while one is. Correct them in the file, then choose the files again.{% endblocktranslate %}</p>
     {% elif report.can_confirm %}
-      <p class="small">{% blocktranslate trimmed count count=report.accepted %}{{ count }} row will be added.{% plural %}{{ count }} rows will be added.{% endblocktranslate %} {% if report.refused %}{% blocktranslate trimmed count count=report.refused %}{{ count }} row is refused and will not be.{% plural %}{{ count }} rows are refused and will not be.{% endblocktranslate %}{% endif %}</p>
+      <p class="small">{% blocktranslate trimmed count count=report.accepted %}{{ count }} row will be added.{% plural %}{{ count }} rows will be added.{% endblocktranslate %}</p>
     {% else %}
       <p class="small">{% translate "No row can be added." %}</p>
     {% endif %}

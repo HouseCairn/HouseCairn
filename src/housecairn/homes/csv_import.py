@@ -14,9 +14,10 @@ written before the person confirms:
    transaction. The preview runs the same transaction and rolls it back: what it shows is
    exactly what the confirmation writes, and it writes nothing.
 
-Between the preview and the confirmation of the screen, the text checked is kept on the
-server (`ImportPreview`), named by a signed token, for one person and one home and
-`PREVIEW_MINUTES` minutes.
+All or nothing: a single row refused, and the confirmation writes nothing; the warnings
+(a name already used, a person left unassigned) do not stop it. Between the preview and
+the confirmation of the screen, the text checked is kept on the server (`ImportPreview`),
+named by a signed token, for one person and one home and `PREVIEW_MINUTES` minutes.
 
 A row whose `id` is a row already in this home is a duplicate: refused, never merged. The
 identifier of a new row is always new; the `id` column only lets the other files refer to
@@ -171,11 +172,13 @@ class Report:
 
     @property
     def can_confirm(self) -> bool:
-        return not self.error and self.accepted > 0
+        """All or nothing: rows to add, and not one refused."""
+        return not self.error and self.accepted > 0 and self.refused == 0
 
     def as_data(self) -> dict[str, Any]:
         return {
             "written": self.written,
+            "confirmable": self.can_confirm,
             "accepted": self.accepted,
             "refused": self.refused,
             "files": [
@@ -483,8 +486,8 @@ def run(actor: Any, home: Home, texts: dict[str, str], *, confirm: bool) -> Repo
     """Import the CSV `texts` (entity -> text) into `home`.
 
     Without `confirm`, the same import is run and rolled back: the report is the preview.
-    With it, the rows accepted are written in one transaction. PermissionDenied for a
-    person who cannot change the home.
+    With it, the rows are written in one transaction, all or nothing: if a single row is
+    refused, nothing is. PermissionDenied for a person who cannot change the home.
     """
     from housecairn.audit import services as audit
 
@@ -520,7 +523,7 @@ def run(actor: Any, home: Home, texts: dict[str, str], *, confirm: bool) -> Repo
                     elif row.refused:
                         refused_here.add(key)
                 file_report.rows.append(row)
-        if confirm and report.accepted:
+        if confirm and report.can_confirm:
             audit.record(
                 "home.imported",
                 actor=actor,

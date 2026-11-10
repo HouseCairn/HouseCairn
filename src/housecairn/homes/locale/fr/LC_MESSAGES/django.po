@@ -709,8 +709,8 @@ msgstr "Les membres ouvrent ce logement en se connectant par %(provider)s."
 msgid "Only owners invite people and change roles."
 msgstr "Seuls les propriétaires invitent et changent les rôles."
 
-msgid "CSV files with the columns of the tables this home exports, separated by commas, in UTF-8. Nothing is written before you confirm: the next page shows each row, accepted or refused, with the reason."
-msgstr "Des fichiers CSV avec les colonnes des tableaux que ce logement exporte, séparés par des virgules, en UTF-8. Rien n'est écrit avant votre confirmation : la page suivante montre chaque ligne, acceptée ou refusée, avec la raison."
+msgid "CSV files with the columns of the tables this home exports, separated by commas, in UTF-8. Nothing is written before you confirm: the next page shows each row, accepted or refused, with the reason. A single row refused, and nothing is imported."
+msgstr "Des fichiers CSV avec les colonnes des tableaux que ce logement exporte, séparés par des virgules, en UTF-8. Rien n'est écrit avant votre confirmation : la page suivante montre chaque ligne, acceptée ou refusée, avec la raison. Une seule ligne refusée, et rien n'est importé."
 
 #, python-format
 msgid "At most %(rows)s rows and %(megabytes)s MB for the files of one import."
@@ -723,16 +723,16 @@ msgid "A file cannot be imported. Correct it, then try again."
 msgstr "Un fichier ne peut pas être importé. Corrigez-le, puis réessayez."
 
 #, python-format
+msgid "%(count)s row is refused: nothing is imported while one is. Correct it in the file, then choose the file again."
+msgid_plural "%(count)s rows are refused: nothing is imported while one is. Correct them in the file, then choose the files again."
+msgstr[0] "%(count)s ligne est refusée : rien n'est importé tant qu'une ligne l'est. Corrigez-la dans le fichier, puis choisissez de nouveau le fichier."
+msgstr[1] "%(count)s lignes sont refusées : rien n'est importé tant qu'une ligne l'est. Corrigez-les dans le fichier, puis choisissez de nouveau les fichiers."
+
+#, python-format
 msgid "%(count)s row will be added."
 msgid_plural "%(count)s rows will be added."
 msgstr[0] "%(count)s ligne sera ajoutée."
 msgstr[1] "%(count)s lignes seront ajoutées."
-
-#, python-format
-msgid "%(count)s row is refused and will not be."
-msgid_plural "%(count)s rows are refused and will not be."
-msgstr[0] "%(count)s ligne est refusée et ne le sera pas."
-msgstr[1] "%(count)s lignes sont refusées et ne le seront pas."
 
 msgid "No row can be added."
 msgstr "Aucune ligne ne peut être ajoutée."

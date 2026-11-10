@@ -317,6 +317,31 @@ def test_a_person_is_matched_by_display_name_among_the_members(
     assert report.files[0].rows[1].warnings
 
 
+def test_a_single_row_refused_writes_nothing_and_warnings_do_not_stop_it(
+    alice: User, alice_home: Home
+) -> None:
+    room_services.create_room(alice, alice_home, name="Kitchen")
+    before = counts(alice_home), AuditEvent.objects.count()
+    report = run(
+        alice,
+        alice_home,
+        confirm=True,
+        rooms="name,kind\nHall,kitchen\nAttic,nowhere\n",
+        stock="name\nWhite paint\n",
+    )
+    assert (report.accepted, report.refused) == (2, 1)
+    assert not report.can_confirm
+    assert not report.written
+    assert (counts(alice_home), AuditEvent.objects.count()) == before
+    assert report.as_data()["confirmable"] is False
+    # A name already used and a person unknown are flagged, and written all the same.
+    report = run(
+        alice, alice_home, confirm=True, rooms="name\nkitchen\n", tasks="title,assignee\nA,Nobody\n"
+    )
+    assert all(f.rows[0].warnings for f in report.files)
+    assert report.written
+
+
 # --- Files refused -----------------------------------------------------------------------------
 
 
@@ -448,8 +473,19 @@ def test_the_api_previews_by_default_and_reports_each_row(
     assert response.status_code == 200
     body = response.json()
     assert (body["written"], body["accepted"], body["refused"]) == (False, 1, 1)
+    assert body["confirmable"] is False
     assert body["files"][0]["rows"][1]["status"] == "refused"
     assert not Room.objects.filter(home=alice_home).exists()
+    # All or nothing: confirmed, the same files are refused whole, with the reasons.
+    confirmed = _api_import(
+        api_client, alice_home, files={"rooms": "name,kind\nA,kitchen\nB,x\n"}, confirm="true"
+    )
+    assert confirmed.status_code == 400
+    body = confirmed.json()
+    assert (body["written"], body["accepted"], body["refused"]) == (False, 1, 1)
+    assert body["files"][0]["rows"][1]["errors"]
+    assert not Room.objects.filter(home=alice_home).exists()
+    assert not AuditEvent.objects.filter(action="home.imported").exists()
     refused = _api_import(api_client, alice_home, files={"rooms": "kind\nkitchen\n"})
     assert refused.status_code == 400
 
@@ -506,6 +542,22 @@ def test_the_screen_previews_then_writes_on_confirmation(alice: User, alice_home
         "Attic",
         "Kitchen",
     ]
+
+
+def test_the_screen_offers_no_confirmation_while_a_row_is_refused(
+    alice: User, alice_home: Home
+) -> None:
+    client = Client()
+    client.force_login(alice)
+    url = reverse("homes:import", kwargs={"home_id": alice_home.id})
+    upload = SimpleUploadedFile("rooms.csv", b"name,kind\nKitchen,kitchen\nAttic,x\n", "text/csv")
+    preview = client.post(url, {"rooms": upload})
+    assert preview.status_code == 200
+    assert b'name="confirm"' not in preview.content
+    assert b"nothing is imported while one is" in preview.content
+    assert b"Attic" in preview.content
+    assert not ImportPreview.objects.exists()
+    assert not Room.objects.filter(home=alice_home).exists()
 
 
 def test_a_large_accented_file_is_confirmed_within_the_caps(alice: User, alice_home: Home) -> None:

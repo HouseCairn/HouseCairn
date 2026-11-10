@@ -302,8 +302,10 @@ class HomeViewSet(
         description=(
             "Import CSV tables (the columns of `export/<table>.csv`, separated by commas, "
             "UTF-8 with or without a byte order mark) into the home. Without `confirm`, a "
-            "preview: every row accepted or refused with its reasons, nothing written (200). "
-            "With `confirm=true`, the rows accepted are written in one transaction (201). "
+            "preview: every row accepted or refused with its reasons, nothing written (200; "
+            "`confirmable` says whether it can be written). With `confirm=true`, the rows are "
+            "written in one transaction (201), all or nothing: a single row refused, and "
+            "nothing is written (400, with the reasons). "
             "Owners and members, and a token with the `write` scope on this home."
         ),
     )
@@ -337,7 +339,8 @@ class HomeViewSet(
             raise serializers.ValidationError({"detail": exc.messages}) from exc
         except PermissionDenied as exc:  # pragma: no cover - checked above
             raise exceptions.PermissionDenied() from exc
-        if report.error:
+        if report.error or (confirm and report.refused):
+            # All or nothing: a row refused, and the confirmation wrote none of them.
             return Response(report.as_data(), status=status.HTTP_400_BAD_REQUEST)
         code = status.HTTP_201_CREATED if report.written else status.HTTP_200_OK
         return Response(report.as_data(), status=code)
