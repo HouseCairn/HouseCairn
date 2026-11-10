@@ -14,7 +14,9 @@ What no script can do, the real autofill pop-up of each browser, is listed in
 docs/adr/0018. `sso` clicks the provider button of the sign-in page once and checks that
 the browser lands on the provider, with no confirmation page of the application in between.
 `in-place` (local only, not in the workflow) checks that Done and Undo on Today leave the
-page where it was, keep the focus on the row and show the banner above the bar.
+page where it was, keep the focus on the row and show the banner above the bar. The
+banner of a stock shortage (a long message, French, 360 and 320 px) must still leave the
+last button of the page reachable.
 
     python tests/e2e/browser_checks.py in-place --base http://localhost:8001
 """
@@ -151,11 +153,19 @@ def sso(browser: Browser, base: str, provider: str) -> None:
 def reach_the_end_of_the_list(page: Page, row_id: str) -> None:
     """The banner of Undo must not cover the last button of the page (NAV-05).
 
-    Mark a row done, go to the bottom, and ask the browser what is at the middle of the
-    last button of `main`: it must be the button itself, not the banner.
+    Mark a row done, go to the bottom, and compare the last button of `main` with the
+    banner: not one pixel of the button may be under it (a click on its edge would miss).
     """
     page.locator(f"#{row_id} button.button-done").click()
     page.wait_for_selector("#undo-region .undo-banner button")
+    last_button_is_reachable(page)
+    page.locator("#undo-region .undo-banner button").click()
+    page.wait_for_selector(f"#{row_id}:not(.task-row-closed) button.button-done")
+    page.evaluate("window.scrollTo(0, 0)")
+
+
+def last_button_is_reachable(page: Page) -> None:
+    """With the banner shown, go to the bottom: nothing covers the last button of `main`."""
     page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
     page.wait_for_timeout(200)
     covered = page.evaluate(
@@ -165,14 +175,14 @@ def reach_the_end_of_the_list(page: Page, row_id: str) -> None:
             const last = buttons[buttons.length - 1];
             if (!last) return 'no button in main';
             const box = last.getBoundingClientRect();
-            const at = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
-            return at && last.contains(at) ? '' : 'covered by ' + (at && (at.id || at.className));
+            const banner = document.querySelector('#undo-region .undo-banner');
+            if (!banner) return '';
+            const over = banner.getBoundingClientRect();
+            const hidden = Math.round(box.bottom - over.top);
+            return hidden > 0 ? hidden + ' px of the button under the banner' : '';
         }"""
     )
     check(covered == "", f"the last button of the page is not covered by the banner ({covered})")
-    page.locator("#undo-region .undo-banner button").click()
-    page.wait_for_selector(f"#{row_id}:not(.task-row-closed) button.button-done")
-    page.evaluate("window.scrollTo(0, 0)")
 
 
 def in_place(browser: Browser, base: str) -> None:
@@ -188,7 +198,13 @@ def in_place(browser: Browser, base: str) -> None:
         home = homes.create_home(user, name='Main house')
         for n in range(20):
             tasks.create_task(user, home, title=f'Task {n + 1}', due_on=tasks.today())
+        article = stock.create_article(user, home, name='Rien en stock', unit='piece')
+        task = tasks.create_task(user, home, title='Stock task', due_on=tasks.today())
+        materials.add_material(user, task, article, Decimal('2'))
         "
+
+    (with `from decimal import Decimal`, `from housecairn.stock import services as stock` and
+    `from housecairn.tasks import materials` in the imports above.)
     """
     context = browser.new_context(viewport={"width": 390, "height": 844})
     page = context.new_page()
@@ -240,6 +256,32 @@ def in_place(browser: Browser, base: str) -> None:
     check(page.url == address, "Undo leaves the address as it was")
     reach_the_end_of_the_list(page, row_id)
     check(not errors, f"no error in the console (CSP included): {errors}")
+    context.close()
+    for width in (360, 320):
+        stock_shortage_banner(browser, base, width)
+
+
+def stock_shortage_banner(browser: Browser, base: str, width: int) -> None:
+    """The banner of a stock shortage, in French, must not hide the end of Today (NAV-05).
+
+    The message is long: on a narrow screen the banner is three or four lines high, and
+    the room kept for it at the end of the page must follow its real height.
+    """
+    context = browser.new_context(viewport={"width": width, "height": 812}, locale="fr-FR")
+    page = context.new_page()
+    sign_in(page, base)
+    row = page.locator("li.task-row:has-text('Stock task')")
+    check(row.count() == 1, f"{width} px: Today lists the task that needs an empty stock item")
+    row_id = row.get_attribute("id") or ""
+    page.locator(f"#{row_id} button.button-done").click()
+    page.wait_for_selector("#undo-region .undo-banner button")
+    text = page.locator("#undo-region").text_content() or ""
+    check("Stock insuffisant" in text, f"{width} px: the banner says the stock is short")
+    box = page.locator("#undo-region .undo-banner").bounding_box()
+    say(f"{width} px: the banner is {box['height'] if box else 0:.0f} px high")
+    last_button_is_reachable(page)
+    page.locator("#undo-region .undo-banner button").click()
+    page.wait_for_selector(f"#{row_id}:not(.task-row-closed) button.button-done")
     context.close()
 
 
