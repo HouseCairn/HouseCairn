@@ -416,9 +416,12 @@ same pattern.
   its content changes for a screen reader to hear it. It is fixed at the bottom,
   above the bar, and stays until the next action or page. The room the page keeps
   for it at its end follows its real height (`--hc-undo-height`, set by
-  `static/js/undo-region.js`; 5rem, one line, without script): a long message wraps on
-  four lines at 320 px. Its Undo posts in place with
-  `in_place=banner`: the answer is the content of the region ("Undone."), and the row
+  `static/js/undo-region.js`): a long message wraps on four lines at 320 px. Without
+  script nothing can measure it, so `<noscript>` loads `static/css/no-script.css`: the
+  region becomes a sticky box at the end of the page, in the flow, which takes its own
+  room and sticks above the bar (at the corner on a wide screen) while the end of the
+  page is out of sight; no height is reserved, whatever the length of the message. Its
+  Undo posts in place with `in_place=banner`: the answer is the content of the region ("Undone."), and the row
   back as an out-of-band swap.
 - **Focus**: the element that had it is replaced, so the answer gives it back with
   `autofocus`, which HTMX applies after a swap: the row's link after Done or Skip, the
