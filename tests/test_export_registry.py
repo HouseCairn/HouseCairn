@@ -40,6 +40,9 @@ LEFT_OUT = {
     "notifications.Delivery": "the reminders already sent",
     # An archive made in the background for a download, removed after a day (homes.jobs).
     "homes.ExportJob": "the archives made for a download",
+    # The text of CSV files between the preview of an import and its confirmation,
+    # removed once confirmed and within the hour after it expires (homes.csv_import).
+    "homes.ImportPreview": "the files of an import waiting for its confirmation",
 }
 
 # Not data of a home: of the instance, or of a person (erased with the account,

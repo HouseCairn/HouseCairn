@@ -31,6 +31,7 @@ HELP_PAGES: dict[str, str] = {
     "homes:export-download": "administration/data/",
     "homes:export-csv": "administration/data/",
     "homes:restore": "administration/data/",
+    "homes:import": "screens/home-import/",
     "homes:delete": "screens/home/",
     "account_delete": "screens/account/",
     "profile": "screens/profile/",

@@ -15,6 +15,113 @@ msgstr ""
 msgid "Homes"
 msgstr "Logements"
 
+msgid "This file is not in UTF-8. Save it again as “CSV UTF-8 (comma delimited)”."
+msgstr "Ce fichier n'est pas en UTF-8. Enregistrez-le de nouveau au format « CSV UTF-8 (délimité par des virgules) »."
+
+msgid "This file is not a CSV table."
+msgstr "Ce fichier n'est pas un tableau CSV."
+
+msgid "This file is empty."
+msgstr "Ce fichier est vide."
+
+msgid "This file is separated by semicolons. Save it again with commas: see “Opening a table in a spreadsheet” in the help."
+msgstr "Ce fichier est séparé par des points-virgules. Enregistrez-le de nouveau avec des virgules : voyez « Ouvrir un tableau dans un tableur » dans l'aide."
+
+#, python-format
+msgid "The column “%(column)s” appears twice."
+msgstr "La colonne « %(column)s » apparaît deux fois."
+
+#, python-format
+msgid "The column “%(column)s” is missing: every row needs it."
+msgstr "La colonne « %(column)s » manque : chaque ligne en a besoin."
+
+#, python-format
+msgid "These files have more than %(count)s rows in all. Import them in several times."
+msgstr "Ces fichiers comptent plus de %(count)s lignes en tout. Importez-les en plusieurs fois."
+
+#, python-format
+msgid "This file is not a valid CSV table (line %(line)s)."
+msgstr "Ce fichier n'est pas un tableau CSV valide (ligne %(line)s)."
+
+#, python-format
+msgid "“%(value)s” is not one of the choices."
+msgstr "« %(value)s » ne fait pas partie des choix."
+
+msgid "This value is required."
+msgstr "Cette valeur est obligatoire."
+
+msgid "Give the date as YYYY-MM-DD."
+msgstr "Indiquez la date au format AAAA-MM-JJ."
+
+msgid "Give a number, with a point for decimals."
+msgstr "Indiquez un nombre, avec un point pour les décimales."
+
+msgid "Give true or false."
+msgstr "Indiquez true ou false."
+
+msgid "Give a whole number."
+msgstr "Indiquez un nombre entier."
+
+msgid "This value is not valid."
+msgstr "Cette valeur n'est pas valide."
+
+#, python-format
+msgid "It refers to a row of %(table)s that is refused."
+msgstr "Elle désigne une ligne de %(table)s qui est refusée."
+
+#, python-format
+msgid "It refers to a row of %(table)s that is not in this home."
+msgstr "Elle désigne une ligne de %(table)s qui n'est pas dans ce logement."
+
+#, python-format
+msgid "Two rows of %(table)s are named “%(name)s”: give its identifier."
+msgstr "Deux lignes de %(table)s s'appellent « %(name)s » : indiquez son identifiant."
+
+#, python-format
+msgid "No row of %(table)s in this home is named “%(name)s”."
+msgstr "Aucune ligne de %(table)s de ce logement ne s'appelle « %(name)s »."
+
+#, python-format
+msgid "No single member of this home is named “%(name)s”: left unassigned."
+msgstr "Aucun membre unique de ce logement ne s'appelle « %(name)s » : laissée sans responsable."
+
+msgid "id: this is not an identifier."
+msgstr "id : ce n'est pas un identifiant."
+
+msgid "This identifier is given twice in the file."
+msgstr "Cet identifiant figure deux fois dans le fichier."
+
+msgid "This row is already in this home: it is not imported again."
+msgstr "Cette ligne est déjà dans ce logement : elle n'est pas importée de nouveau."
+
+msgid "A row of this name is already in this home: this one is added as well."
+msgstr "Une ligne de ce nom est déjà dans ce logement : celle-ci est ajoutée aussi."
+
+#, python-format
+msgid "These files are too large: %(size)s MB at most in all."
+msgstr "Ces fichiers sont trop volumineux : %(size)s Mo au plus en tout."
+
+msgid "This preview cannot be confirmed any more: it has expired, was already used, or was made for another person or another home. Choose the files again."
+msgstr "Cet aperçu ne peut plus être confirmé : il a expiré, a déjà servi, ou a été fait pour une autre personne ou un autre logement. Choisissez de nouveau les fichiers."
+
+msgid "Every item is in a room."
+msgstr "Chaque élément est dans une pièce."
+
+msgid "Stock"
+msgstr "Matériel"
+
+msgid "Rooms"
+msgstr "Pièces"
+
+msgid "Items"
+msgstr "Éléments"
+
+msgid "Contractors"
+msgstr "Intervenants"
+
+msgid "Tasks"
+msgstr "Tâches"
+
 msgid "Email address"
 msgstr "Adresse e-mail"
 
@@ -134,6 +241,12 @@ msgstr "export d'un logement"
 
 msgid "exports of homes"
 msgstr "exports de logements"
+
+msgid "preview of an import"
+msgstr "aperçu d'un import"
+
+msgid "previews of imports"
+msgstr "aperçus d'imports"
 
 #, python-format
 msgid "This home already holds %(count)d files, its limit: delete some, or ask the administrator of the instance for more."
@@ -288,23 +401,8 @@ msgstr "Ce lien n'a pas été envoyé par e-mail : il ne peut pas créer de comp
 msgid "An account already uses this address: sign in to accept."
 msgstr "Un compte utilise déjà cette adresse : connectez-vous pour accepter."
 
-msgid "Rooms"
-msgstr "Pièces"
-
-msgid "Items"
-msgstr "Éléments"
-
-msgid "Tasks"
-msgstr "Tâches"
-
 msgid "History of the tasks"
 msgstr "Historique des tâches"
-
-msgid "Stock"
-msgstr "Matériel"
-
-msgid "Contractors"
-msgstr "Intervenants"
 
 msgid "Reports"
 msgstr "Signalements"
@@ -317,6 +415,15 @@ msgstr "Logement ajouté."
 
 msgid "Home saved."
 msgstr "Logement enregistré."
+
+msgid "Choose at least one file."
+msgstr "Choisissez au moins un fichier."
+
+#, python-format
+msgid "Imported: %(count)s row."
+msgid_plural "Imported: %(count)s rows."
+msgstr[0] "Importé : %(count)s ligne."
+msgstr[1] "Importé : %(count)s lignes."
 
 msgid "This file is too large."
 msgstr "Ce fichier est trop volumineux."
@@ -518,6 +625,12 @@ msgstr "Une archive avec tout le contenu de ce logement, dans un format ouvert."
 msgid "Tables for a spreadsheet"
 msgstr "Tableaux pour un tableur"
 
+msgid "Import tables"
+msgstr "Importer des tableaux"
+
+msgid "Rooms, items, tasks, stock and contractors, from CSV files"
+msgstr "Pièces, éléments, tâches, stock et intervenants, depuis des fichiers CSV"
+
 msgid "Edit the home"
 msgstr "Modifier le logement"
 
@@ -595,6 +708,57 @@ msgstr "Les membres ouvrent ce logement en se connectant par %(provider)s."
 
 msgid "Only owners invite people and change roles."
 msgstr "Seuls les propriétaires invitent et changent les rôles."
+
+msgid "CSV files with the columns of the tables this home exports, separated by commas, in UTF-8. Nothing is written before you confirm: the next page shows each row, accepted or refused, with the reason. A single row refused, and nothing is imported."
+msgstr "Des fichiers CSV avec les colonnes des tableaux que ce logement exporte, séparés par des virgules, en UTF-8. Rien n'est écrit avant votre confirmation : la page suivante montre chaque ligne, acceptée ou refusée, avec la raison. Une seule ligne refusée, et rien n'est importé."
+
+#, python-format
+msgid "At most %(rows)s rows and %(megabytes)s MB for the files of one import."
+msgstr "Au plus %(rows)s lignes et %(megabytes)s Mo pour les fichiers d'un import."
+
+msgid "Preview"
+msgstr "Aperçu"
+
+msgid "A file cannot be imported. Correct it, then try again."
+msgstr "Un fichier ne peut pas être importé. Corrigez-le, puis réessayez."
+
+#, python-format
+msgid "%(count)s row is refused: nothing is imported while one is. Correct it in the file, then choose the file again."
+msgid_plural "%(count)s rows are refused: nothing is imported while one is. Correct them in the file, then choose the files again."
+msgstr[0] "%(count)s ligne est refusée : rien n'est importé tant qu'une ligne l'est. Corrigez-la dans le fichier, puis choisissez de nouveau le fichier."
+msgstr[1] "%(count)s lignes sont refusées : rien n'est importé tant qu'une ligne l'est. Corrigez-les dans le fichier, puis choisissez de nouveau les fichiers."
+
+#, python-format
+msgid "%(count)s row will be added."
+msgid_plural "%(count)s rows will be added."
+msgstr[0] "%(count)s ligne sera ajoutée."
+msgstr[1] "%(count)s lignes seront ajoutées."
+
+msgid "No row can be added."
+msgstr "Aucune ligne ne peut être ajoutée."
+
+#, python-format
+msgid "Accepted: %(accepted)s. Refused: %(refused)s."
+msgstr "Acceptées : %(accepted)s. Refusées : %(refused)s."
+
+msgid "Columns ignored:"
+msgstr "Colonnes ignorées :"
+
+#, python-format
+msgid "Line %(line)s"
+msgstr "Ligne %(line)s"
+
+msgid "refused"
+msgstr "refusée"
+
+msgid "accepted"
+msgstr "acceptée"
+
+#, python-format
+msgid "Import %(count)s row"
+msgid_plural "Import %(count)s rows"
+msgstr[0] "Importer %(count)s ligne"
+msgstr[1] "Importer %(count)s lignes"
 
 msgid "Invitation"
 msgstr "Invitation"

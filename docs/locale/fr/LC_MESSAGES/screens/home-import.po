@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Import tables"
+msgstr "Importer des tableaux"
+
+msgid "The page **Import tables** of a home, at `/h/<home id>/import/`, adds rows to the home from CSV files: rooms, items, tasks, stock and contractors. Owners and members open it from the page of the home, at the end of **Tables for a spreadsheet**; read-only members do not see it. Its back link leads to the page of the home."
+msgstr "La page **Importer des tableaux** d'un logement, à `/h/<home id>/import/`, ajoute au logement des lignes depuis des fichiers CSV : pièces, éléments, tâches, matériel et intervenants. Les propriétaires et les membres l'ouvrent depuis la page du logement, à la fin de **Tableaux pour un tableur** ; les membres en lecture seule ne la voient pas. Son lien de retour mène à la page du logement."
+
+msgid "The files"
+msgstr "Les fichiers"
+
+msgid "Give one file per table, as many tables as you like, in one go. A file has the columns of the table the home exports under the same name (see [Tables for a spreadsheet](../administration/data.md#tables-for-a-spreadsheet)): export the table first, fill it in a spreadsheet, and import it. Only the column that names a row is required, `name` (or `title` for tasks); a column the page does not know is ignored, and listed."
+msgstr "Donnez un fichier par tableau, autant de tableaux que vous voulez, en une fois. Un fichier a les colonnes du tableau que le logement exporte sous le même nom (voir [Tableaux pour un tableur](../administration/data.md#tables-for-a-spreadsheet)) : exportez d'abord le tableau, remplissez-le dans un tableur, puis importez-le. Seule la colonne qui nomme une ligne est obligatoire, `name` (ou `title` pour les tâches) ; une colonne que la page ne connaît pas est ignorée, et listée."
+
+msgid "**Separated by commas**, always, like the exports."
+msgstr "**Séparé par des virgules**, toujours, comme les exports."
+
+msgid "**UTF-8**, with or without a byte order mark."
+msgstr "**UTF-8**, avec ou sans marque d'ordre des octets."
+
+msgid "At most **1,000 rows** and **2 MB** for the files of one import, accents included; files past a limit are refused whole, with the reason."
+msgstr "Au plus **1 000 lignes** et **2 Mo** pour les fichiers d'un import, accents compris ; des fichiers au-delà d'une limite sont refusés en entier, avec la raison."
+
+msgid "A spreadsheet must keep the commas, the dates and the accents when it saves the file again. In short, the steps of [Opening a table in a spreadsheet](../administration/data.md#opening-a-table-in-a-spreadsheet):"
+msgstr "Un tableur doit garder les virgules, les dates et les accents quand il enregistre de nouveau le fichier. En bref, les étapes de [Ouvrir un tableau dans un tableur](../administration/data.md#opening-a-table-in-a-spreadsheet) :"
+
+msgid "**Excel in French**: open the file by **Données › À partir d'un fichier texte/CSV**, with **Origine du fichier** *65001 : Unicode (UTF-8)*, **Délimiteur** *Virgule* and **Détection du type de données** *Ne pas détecter les types de données*. Save it as **CSV UTF-8 (délimité par des virgules)**, after setting the **list separator** of Windows to a comma: on a French Windows, Excel otherwise writes semicolons, which the import refuses."
+msgstr "**Excel en français** : ouvrez le fichier par **Données › À partir d'un fichier texte/CSV**, avec **Origine du fichier** *65001 : Unicode (UTF-8)*, **Délimiteur** *Virgule* et **Détection du type de données** *Ne pas détecter les types de données*. Enregistrez-le au format **CSV UTF-8 (délimité par des virgules)**, après avoir réglé le **séparateur de liste** de Windows sur une virgule : sur un Windows en français, Excel écrit sinon des points-virgules, que l'import refuse."
+
+msgid "**LibreOffice Calc**: open the file with the character set *Unicode (UTF-8)* and the separator *Virgule* (comma); save it as **Texte CSV**, ticking **Éditer les paramètres du filtre**, with the field separator `,`."
+msgstr "**LibreOffice Calc** : ouvrez le fichier avec le jeu de caractères *Unicode (UTF-8)* et le séparateur *Virgule* ; enregistrez-le au format **Texte CSV**, en cochant **Éditer les paramètres du filtre**, avec le séparateur de champ `,`."
+
+msgid "Preview, then confirm"
+msgstr "Aperçu, puis confirmation"
+
+msgid "**Preview** reads the files and checks every row, but writes nothing. The page then shows, for each table, how many rows are accepted and refused, and each refused row with its line and the reason: a value that is not valid, a room that is not in this home, a row already in this home. A file that cannot be read at all (not UTF-8, separated by semicolons, without the column that names a row, past the limits) is refused whole, and nothing can be confirmed."
+msgstr "**Aperçu** lit les fichiers et contrôle chaque ligne, mais n'écrit rien. La page montre alors, pour chaque tableau, combien de lignes sont acceptées et refusées, et chaque ligne refusée avec son numéro et la raison : une valeur non valide, une pièce qui n'est pas dans ce logement, une ligne déjà dans ce logement. Un fichier illisible (pas en UTF-8, séparé par des points-virgules, sans la colonne qui nomme une ligne, au-delà des limites) est refusé en entier, et rien ne peut être confirmé."
+
+msgid "**All or nothing.** While a single row is refused, the page offers no **Import** button and says so: correct the file, then choose it again. A warning (a name already used, a person left unassigned) does not stop the import."
+msgstr "**Tout ou rien.** Tant qu'une seule ligne est refusée, la page ne propose pas le bouton **Importer** et le dit : corrigez le fichier, puis choisissez-le de nouveau. Un avertissement (un nom déjà utilisé, une personne laissée sans attribution) n'arrête pas l'import."
+
+msgid "**Import** adds every row, all at once: if anything fails while writing, nothing is added. The page then leads back to the page of the home, and the import is recorded in the [audit log](audit.md). **Cancel** leaves without adding anything."
+msgstr "**Importer** ajoute toutes les lignes, à la fois : si quoi que ce soit échoue pendant l'écriture, rien n'est ajouté. La page ramène ensuite à la page du logement, et l'import est inscrit au [journal d'audit](audit.md). **Annuler** quitte sans rien ajouter."
+
+msgid "Between the two steps the files stay on the server, for you and this home only, for **30 minutes**; the confirmation sends back only a signed token. After that, or once used, the preview cannot be confirmed any more: the page says so and asks for the files again."
+msgstr "Entre les deux étapes, les fichiers restent sur le serveur, pour vous et ce logement seulement, pendant **30 minutes** ; la confirmation ne renvoie qu'un jeton signé. Passé ce délai, ou une fois utilisé, l'aperçu ne peut plus être confirmé : la page le dit et redemande les fichiers."
+
+msgid "What a row becomes"
+msgstr "Ce que devient une ligne"
+
+msgid "A row is always a **new** row, with a new identifier. A row whose `id` is a row already in this home is refused, never merged: importing the same file twice adds nothing the second time."
+msgstr "Une ligne est toujours une **nouvelle** ligne, avec un nouvel identifiant. Une ligne dont l'`id` est une ligne déjà dans ce logement est refusée, jamais fusionnée : importer deux fois le même fichier n'ajoute rien la seconde fois."
+
+msgid "A **reference** (the room of an item, the item of a task, its contractor) is the `id` of a row of this home or of the files imported with it, or the exact name of a row of this home. A reference to a row of another home is refused."
+msgstr "Une **référence** (la pièce d'un élément, l'élément d'une tâche, son intervenant) est l'`id` d'une ligne de ce logement ou des fichiers importés avec elle, ou le nom exact d'une ligne de ce logement. Une référence à une ligne d'un autre logement est refusée."
+
+msgid "A **person** (the assignee of a task) is the display name of a member of this home; when no single member has it, the task is left unassigned, and the page says so."
+msgstr "Une **personne** (le responsable d'une tâche) est le nom d'affichage d'un membre de ce logement ; quand aucun membre unique ne le porte, la tâche reste sans responsable, et la page le dit."
+
+msgid "A name already used in this home is accepted and flagged: two rooms may share a name."
+msgstr "Un nom déjà utilisé dans ce logement est accepté et signalé : deux pièces peuvent porter le même nom."
+
+msgid "The `'` that the export puts before a text a spreadsheet would compute (`'=…`, `'+33 …`) is taken off again."
+msgstr "L'`'` que l'export place devant un texte qu'un tableur calculerait (`'=…`, `'+33 …`) est retirée."
+
+msgid "The date of a task, `series_start`, is the date of its first occurrence. Dates are written `YYYY-MM-DD`."
+msgstr "La date d'une tâche, `series_start`, est la date de sa première occurrence. Les dates s'écrivent `AAAA-MM-JJ`."
+
+msgid "`created_at`, `updated_at`, the position of a room and the type of a stock label are made again; files (photos, labels) are not in the tables."
+msgstr "`created_at`, `updated_at`, la position d'une pièce et le type de l'étiquette d'un article sont refaits ; les fichiers (photos, étiquettes) ne sont pas dans les tableaux."
+
+msgid "The API does the same: `POST /api/v1/homes/<id>/import/` with the files as `rooms`, `items`, `tasks`, `stock` and `contractors`, answers the preview (`confirmable` says whether it can be written), and writes only with `confirm=true`, sending the files again; with a single row refused it answers 400 with the reasons and writes nothing. A token needs the `write` scope on this home."
+msgstr "L'API fait de même : `POST /api/v1/homes/<id>/import/` avec les fichiers en `rooms`, `items`, `tasks`, `stock` et `contractors` répond par l'aperçu (`confirmable` dit s'il peut être écrit), et n'écrit qu'avec `confirm=true`, en renvoyant les fichiers ; avec une seule ligne refusée, elle répond 400 avec les raisons et n'écrit rien. Un jeton a besoin de la portée `write` sur ce logement."
+

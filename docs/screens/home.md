@@ -25,6 +25,8 @@ may write.
 Every member sees the list **Tables for a spreadsheet**: the rooms, items,
 tasks, history of the tasks, stock, contractors and reports, each as a CSV file
 to open in a spreadsheet (see [Export and deletion](../administration/data.md)).
+Owners and members also find **Import tables** at the end of the list, which adds
+rooms, items, tasks, stock and contractors from CSV files ([Import tables](home-import.md)).
 
 ## Your data
 
