@@ -4,6 +4,7 @@ docs/developer/design-guide.md, "Current home".
 """
 
 import re
+from decimal import Decimal
 
 import pytest
 from django.test import Client
@@ -16,6 +17,8 @@ from housecairn.apitokens.models import Scope
 from housecairn.homes import current
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership, Role
+from housecairn.projects import services as project_services
+from housecairn.rooms.models import Room
 from housecairn.tasks import services as task_services
 
 pytest_plugins = ("tests.rooms_fixtures",)
@@ -203,6 +206,33 @@ class TestIsolation:
         html = signed_in.get(reverse("calendar:week")).content.decode()
         assert "Bob's house" not in html
         assert signed_in.session.get(current.HOME_KEY) != str(strangers.id)
+
+    @pytest.mark.parametrize("entry", ["rooms", "budget", "calendar:week"])
+    def test_a_forged_session_shows_nothing_of_another_home_in_a_section(
+        self, signed_in: Client, alice_home: Home, bob: User, strangers: Home, entry: str
+    ) -> None:
+        Room.objects.create(home=strangers, name="Bob's secret room", position=0)
+        project_services.create_project(
+            bob, strangers, title="Bob's secret project", budget=Decimal("900")
+        )
+        task_services.create_task(
+            bob, strangers, title="Bob's secret task", due_on=task_services.today()
+        )
+        session = signed_in.session
+        session[current.HOME_KEY] = str(strangers.id)
+        session.save()
+        response = signed_in.get(reverse(entry), follow=True)
+        assert response.status_code == 200
+        html = response.content.decode()
+        assert "Bob" not in html
+        assert str(strangers.id) not in html
+        assert str(strangers.id) not in " ".join(url for url, _ in response.redirect_chain)
+        # The forged value is dropped; the first open home by name stands in for it.
+        assert signed_in.session.get(current.HOME_KEY) != str(strangers.id)
+        if entry != "calendar:week":
+            assert response.redirect_chain[-1][0].startswith(
+                reverse(ENTRIES[entry], kwargs={"home_id": alice_home.id})
+            )
 
     def test_a_forged_choice_answers_404(
         self, signed_in: Client, alice_home: Home, flat: Home, strangers: Home
