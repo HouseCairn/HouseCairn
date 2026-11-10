@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Served under a path prefix.** An instance can live under a path, such as `https://example.com/housecairn/`, with `HOUSECAIRN_URL_PREFIX`: pages, static files, cookies, the installed application, the API and the links of emails, QR labels and calendar feeds follow it. A trusted proxy can also give the prefix of each request in a header named by `HOUSECAIRN_URL_PREFIX_HEADER`, as Home Assistant's Ingress does. See [Serving under a path prefix](../../../administration/url-prefix.md)."
+msgstr "**Servi sous un préfixe d'adresse.** Une instance peut vivre sous un chemin, comme `https://example.com/housecairn/`, avec `HOUSECAIRN_URL_PREFIX` : les pages, les fichiers statiques, les cookies, l'application installée, l'API et les liens des courriels, des étiquettes QR et des flux de calendrier le suivent. Un proxy de confiance peut aussi donner le préfixe de chaque requête dans un en-tête nommé par `HOUSECAIRN_URL_PREFIX_HEADER`, comme le fait l'Ingress de Home Assistant. Voir [Servir sous un préfixe d'adresse](../../../administration/url-prefix.md)."
+

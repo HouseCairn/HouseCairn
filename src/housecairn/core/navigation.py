@@ -8,7 +8,8 @@ that opens a record or a form carries `next=<current path>`; the page reads it w
 `next` is a parameter anyone can forge in a link. So it is:
 
 - checked by `core.redirects.is_safe_redirect` (a safe shape, then the host);
-- a path relative to the application, starting with one `/`;
+- a path of the application, starting with one `/` and, under a path prefix, with the
+  prefix (`core.prefix.in_application`, docs/adr/0055);
 - never nested: a `next` inside `next` is removed;
 - cut to `MAX_LENGTH`: past it the query goes, and past it again the address is refused;
 - never shown: the label of a back link comes from the route the path resolves to, and
@@ -22,13 +23,15 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from django.contrib import messages
 from django.http import HttpRequest
-from django.urls import Resolver404, resolve, reverse
+from django.urls import Resolver404, reverse
 from django.utils.html import format_html
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy
 
+from housecairn.core import prefix
+from housecairn.core.prefix import resolve_url
 from housecairn.core.redirects import is_safe_redirect
 
 # Longer than any path HouseCairn builds with its filters, short enough for a log line.
@@ -69,12 +72,20 @@ def _raw_next(request: HttpRequest) -> str:
 def safe_next(request: HttpRequest) -> str | None:
     """The `next` of the request when it is a safe path of this site, else None."""
     raw = _raw_next(request)
-    if not raw.startswith("/") or not is_safe_redirect(raw, request):
+    if (
+        not raw.startswith("/")
+        or not is_safe_redirect(raw, request)
+        or not prefix.in_application(raw)
+    ):
         return None
     target = clean_next(raw)
     # The check runs again on the value returned, written out so that it is on that value.
-    if not target.startswith("/") or not url_has_allowed_host_and_scheme(
-        target, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    if (
+        not target.startswith("/")
+        or not url_has_allowed_host_and_scheme(
+            target, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+        )
+        or not prefix.in_application(target)
     ):
         return None
     return target
@@ -88,7 +99,7 @@ def back_url(request: HttpRequest, default: str) -> str:
 def route_name(url: str) -> str | None:
     """The namespaced name of the route `url` resolves to, or None."""
     try:
-        return resolve(urlsplit(url).path).view_name
+        return resolve_url(url).view_name
     except Resolver404:
         return None
 
@@ -169,7 +180,7 @@ def _index_label(request: HttpRequest) -> Any:
 def label_for(url: str, request: HttpRequest) -> str | None:
     """The title of the screen `url` leads to, from its route; never from the address."""
     try:
-        match = resolve(urlsplit(url).path)
+        match = resolve_url(url)
     except Resolver404:
         return None
     if match.view_name == "index":
@@ -320,7 +331,7 @@ def breadcrumbs(
         parent = PARENTS.get(name)
         if parent is None:
             break
-        found = parent(resolve(urlsplit(url).path).kwargs)
+        found = parent(resolve_url(url).kwargs)
         url = reverse(found[0], kwargs=found[1]) if found else None
     return [*trail, Crumb(None, current)]
 
@@ -383,7 +394,7 @@ def after_delete(request: HttpRequest, parent: str, gone: Iterable[Any]) -> str:
     if target is None:
         return parent
     try:
-        match = resolve(urlsplit(target).path)
+        match = resolve_url(target)
     except Resolver404:
         return parent
     ids = {str(pk) for pk in gone}

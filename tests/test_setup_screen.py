@@ -1,6 +1,6 @@
 """The first administrator on a web screen, with a one-time code of the process log.
 
-docs/adr/0055. Each test names, in its docstring, what an implementation without the
+docs/adr/0056. Each test names, in its docstring, what an implementation without the
 rule would do wrong; the rule is what makes it fail.
 """
 

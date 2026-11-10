@@ -22,7 +22,7 @@ Connect through the `openid_connect` provider, enabled only when
 is named in the code. Local sign-up is closed unless
 `HOUSECAIRN_SIGNUP_OPEN=true`; the sign-in page only links to it when it is
 open. A local administrator bootstrap with a one-time code written in the log is
-described in [ADR 0055](0055-first-administrator-on-a-web-screen.md).
+described in [ADR 0056](0056-first-administrator-on-a-web-screen.md).
 
 **Sign-up through OIDC is closed by default** (`HOUSECAIRN_OIDC_SIGNUP=closed`).
 An identity the provider accepts but that has no account here is refused, with

@@ -69,6 +69,24 @@ msgstr "`127.0.0.1,::1`"
 msgid "Addresses or networks of that proxy, comma-separated: only their forwarding headers count (see [Reverse proxy](reverse-proxy.md))."
 msgstr "Adresses ou réseaux de ce proxy, séparés par des virgules : seuls leurs en-têtes de transfert comptent (voir [Reverse proxy](reverse-proxy.md))."
 
+msgid "`HOUSECAIRN_URL_PREFIX`"
+msgstr "`HOUSECAIRN_URL_PREFIX`"
+
+msgid "(none: the root)"
+msgstr "(aucun : la racine)"
+
+msgid "Path the instance is served under, such as `/housecairn` (see [Serving under a path prefix](url-prefix.md))."
+msgstr "Chemin sous lequel l'instance est servie, comme `/housecairn` (voir [Servir sous un préfixe d'adresse](url-prefix.md))."
+
+msgid "`HOUSECAIRN_URL_PREFIX_HEADER`"
+msgstr "`HOUSECAIRN_URL_PREFIX_HEADER`"
+
+msgid "(none: off)"
+msgstr "(aucun : désactivé)"
+
+msgid "Header in which a trusted proxy gives the path prefix of each request, such as `X-Ingress-Path`."
+msgstr "En-tête dans lequel un proxy de confiance donne le préfixe d'adresse de chaque requête, comme `X-Ingress-Path`."
+
 msgid "`SECRET_KEY`"
 msgstr "`SECRET_KEY`"
 

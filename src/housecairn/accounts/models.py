@@ -165,7 +165,7 @@ class KnownDevice(models.Model):
 
 
 class SetupCode(models.Model):
-    """The one-time code that opens the first-account screen (docs/adr/0055).
+    """The one-time code that opens the first-account screen (docs/adr/0056).
 
     The code itself is written in the process log at start-up and never stored: only
     its SHA-256 digest is. A code that is used is kept (with the time) so that it cannot

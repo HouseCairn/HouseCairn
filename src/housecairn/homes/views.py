@@ -586,9 +586,10 @@ def _switched(request: HttpRequest, target: Home | None) -> str:
     """
     from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-    from django.urls import Resolver404, resolve
+    from django.urls import Resolver404
 
     from housecairn.core.context_processors import section_of
+    from housecairn.core.prefix import resolve_url
 
     if target is None:
         return reverse("index")
@@ -597,7 +598,7 @@ def _switched(request: HttpRequest, target: Home | None) -> str:
         return reverse("tasks:today", kwargs={"home_id": target.pk})
     parts = urlsplit(origin)
     try:
-        match = resolve(parts.path)
+        match = resolve_url(origin)
     except Resolver404:
         return reverse("tasks:today", kwargs={"home_id": target.pk})
     if "home_id" not in match.kwargs:

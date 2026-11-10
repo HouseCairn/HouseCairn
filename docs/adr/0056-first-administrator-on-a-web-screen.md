@@ -1,4 +1,4 @@
-# 0055. First administrator on a web screen, with a one-time code of the log
+# 0056. First administrator on a web screen, with a one-time code of the log
 
 - Status: accepted
 - Date: 2026-11-10

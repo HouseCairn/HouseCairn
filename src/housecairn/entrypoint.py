@@ -14,7 +14,7 @@ Usage (the image's ENTRYPOINT is `python -m housecairn.entrypoint`):
 
 No account is created here: while there is no administrator, a one-time code is
 written to the log and the first one is created on the web screen /setup/
-(docs/adr/0055, docs/getting-started/first-start.md). See docs/adr/0015.
+(docs/adr/0056, docs/getting-started/first-start.md). See docs/adr/0015.
 """
 
 from __future__ import annotations
@@ -266,7 +266,7 @@ def migrate() -> None:
 def write_setup_code() -> None:
     """Write the one-time code of the first-account screen in the log, if one is needed.
 
-    Without an administrator only; a failure never stops the start (docs/adr/0055).
+    Without an administrator only; a failure never stops the start (docs/adr/0056).
     """
     result = subprocess.run(django_command("setup_code"), check=False)  # noqa: S603
     if result.returncode != 0:

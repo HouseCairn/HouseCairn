@@ -156,7 +156,7 @@ class _CodeInput(forms.TextInput):
 
 
 class SetupForm(forms.Form):
-    """The first-account screen: the code of the server log, then the administrator (ADR 0055)."""
+    """The first-account screen: the code of the server log, then the administrator (ADR 0056)."""
 
     code = forms.CharField(
         label=_("Setup code"),

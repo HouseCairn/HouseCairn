@@ -6,12 +6,12 @@ the tree of the application: a page belongs to the section whose root leads to i
 """
 
 from typing import Any
-from urllib.parse import urlsplit
 
 from django.http import HttpRequest
-from django.urls import Resolver404, ResolverMatch, resolve, reverse
+from django.urls import Resolver404, ResolverMatch, reverse
 
 from housecairn.core import more, navigation
+from housecairn.core.prefix import resolve_url
 
 # Sections of the signed-in navigation, in display order.
 TODAY, ROOMS, PROJECTS, BUDGET, MORE = "today", "rooms", "projects", "budget", "more"
@@ -35,7 +35,7 @@ def nav_section(request: HttpRequest) -> str:
     origin = navigation.safe_next(request)
     if origin is not None:
         try:
-            return section_of(resolve(urlsplit(origin).path))
+            return section_of(resolve_url(origin))
         except Resolver404:
             pass
     return section_of(match)

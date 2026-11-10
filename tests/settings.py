@@ -17,5 +17,5 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 # manifest of hashed names (the container image test covers the real one).
 STORAGES = {
     **STORAGES,  # noqa: F405
-    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    "staticfiles": {"BACKEND": "housecairn.core.storage.PlainStorage"},
 }

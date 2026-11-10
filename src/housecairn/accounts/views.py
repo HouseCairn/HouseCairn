@@ -168,7 +168,7 @@ class SignupView(allauth_views.SignupView):  # type: ignore[misc]
 
 
 class SetupView(View):
-    """Create the first administrator with the code of the process log (docs/adr/0055).
+    """Create the first administrator with the code of the process log (docs/adr/0056).
 
     A page for whoever has no account yet: 404 once an administrator exists or when the
     screen is switched off. Every request counts against a limit per client address, the

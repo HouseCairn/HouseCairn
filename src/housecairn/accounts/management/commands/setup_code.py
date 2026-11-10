@@ -1,7 +1,7 @@
 """Issue the one-time code of the first-account screen and write it on standard error.
 
 The container's entry point runs it at each start, after the migrations; it can also be
-run by hand to get a fresh code (docs/adr/0055). It prints nothing and issues nothing
+run by hand to get a fresh code (docs/adr/0056). It prints nothing and issues nothing
 once an administrator exists or when `HOUSECAIRN_SETUP_SCREEN` is false.
 """
 

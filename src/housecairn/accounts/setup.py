@@ -1,4 +1,4 @@
-"""The first administrator, created on a web screen with a one-time code (docs/adr/0055).
+"""The first administrator, created on a web screen with a one-time code (docs/adr/0056).
 
 While the instance has no active administrator, a code is written in the process log
 at start-up (`manage.py setup_code`, run by the container's entry point). Whoever reads
