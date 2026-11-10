@@ -12,7 +12,7 @@ from typing import Any
 
 from django.core.cache import cache
 from django.db.models import Count, Max
-from django.urls import reverse
+from django.urls import get_script_prefix, reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
 from django.utils.translation import pgettext
@@ -149,6 +149,8 @@ def _fingerprint(feed: Feed, base_url: str, now: datetime.datetime | None) -> st
     parts = [
         str(feed.pk),
         base_url,
+        # The links of the document carry the path prefix of the request (docs/adr/0055).
+        get_script_prefix(),
         ",".join(ids),
         str(services.zone_of(user)),
         notification_services.preferences_of(user).language,

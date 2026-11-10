@@ -74,6 +74,19 @@ jobs:
         # One worker per vCPU (pytest-xdist); the coverage of the workers is
         # combined before the threshold is checked.
         run: uv run pytest -n auto --dist worksteal --cov=housecairn --cov-fail-under=85 --hypothesis-show-statistics
+      - name: Tests under a path prefix (docs/adr/0055)
+        # The navigation, the pages, the API and its tokens again, with the instance served
+        # under the prefix of Home Assistant's Ingress; tests/test_url_prefix.py covers the rest.
+        env:
+          HOUSECAIRN_URL_PREFIX: /api/hassio_ingress/0123abcdEF
+        run: >-
+          uv run pytest -n auto --dist worksteal
+          tests/test_return_rule_sections.py tests/test_breadcrumbs.py tests/test_navigation.py
+          tests/test_in_place.py tests/test_tabs.py tests/test_token_management.py
+          tests/test_apitokens.py tests/test_api_schema.py tests/test_projects.py
+          tests/test_budget.py tests/test_rooms_api.py tests/test_tasks_api.py
+          tests/test_account_screens.py tests/test_accounts.py tests/test_proxy.py
+          tests/test_redirects.py tests/test_security.py
 
   tests-postgresql:
     name: Tests (PostgreSQL)

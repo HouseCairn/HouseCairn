@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.templatetags.static import static
-from django.urls import reverse
+from django.urls import get_script_prefix, reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_control, never_cache
 from django.views.decorators.http import require_safe
@@ -109,7 +109,8 @@ def manifest(request: HttpRequest) -> HttpResponse:
         "description": _("What needs doing in the house, where, when, with what and for how much."),
         "lang": request.LANGUAGE_CODE,
         "start_url": reverse("index"),
-        "scope": "/",
+        # Under a path prefix, the installed application stays in it (docs/adr/0055).
+        "scope": get_script_prefix(),
         "display": "standalone",
         "background_color": "#F7F5F1",
         "theme_color": "#F7F5F1",

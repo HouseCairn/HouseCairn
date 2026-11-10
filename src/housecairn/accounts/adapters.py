@@ -17,6 +17,7 @@ from django.template.response import TemplateResponse
 from housecairn.accounts import services
 from housecairn.accounts.models import User
 from housecairn.accounts.services import Decision
+from housecairn.core.prefix import in_application
 from housecairn.core.redirects import has_safe_shape
 from housecairn.instance.config import get_setting, instance_name
 
@@ -91,11 +92,12 @@ class AccountAdapter(DefaultAccountAdapter):  # type: ignore[misc]
 
     def is_safe_url(self, url: str | None) -> bool:
         # Every `next` allauth reads (sign-in, sign-up, re-authentication, identity
-        # providers) passes the rule shared with HouseCairn's own pages first, then
+        # providers) passes the rule shared with HouseCairn's own pages first (a safe shape,
+        # under the path prefix of docs/adr/0055), then
         # allauth's host check. allauth 65.21 parses `next` with urlparse before
         # Django checks it, and urlparse raises ValueError on an address such as
         # "//[" (a server error on the sign-in page). Such an address is not safe.
-        if not has_safe_shape(url):
+        if not has_safe_shape(url) or not in_application(url or ""):
             return False
         try:
             return bool(super().is_safe_url(url))
