@@ -526,6 +526,7 @@ dependencies = [
     { name = "markdown-it-py" },
     { name = "pillow" },
     { name = "python-dateutil" },
+    { name = "pyyaml" },
     { name = "reportlab" },
     { name = "whitenoise" },
 ]
@@ -578,6 +579,7 @@ requires-dist = [
     { name = "pillow", specifier = ">=12" },
     { name = "psycopg", extras = ["binary"], marker = "extra == 'postgres'", specifier = ">=3.2" },
     { name = "python-dateutil", specifier = ">=2.9" },
+    { name = "pyyaml", specifier = ">=6" },
     { name = "reportlab", specifier = ">=5.1" },
     { name = "whitenoise", specifier = ">=6.9" },
 ]

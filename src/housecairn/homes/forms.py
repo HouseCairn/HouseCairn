@@ -26,6 +26,16 @@ class HomeForm(forms.ModelForm[Home]):
         )
 
 
+class NewHomeForm(HomeForm):
+    """A new home, and the equipment it has: each checked adds its usual tasks (docs/adr/0049)."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        from housecairn.tasks.forms.templates import equipment_field
+
+        super().__init__(*args, **kwargs)
+        self.fields["equipment"] = equipment_field()
+
+
 class InviteForm(forms.Form):
     email = forms.EmailField(label=_("Email address"), max_length=254)
     role = forms.ChoiceField(label=_("Role"), choices=Role.choices, initial=Role.MEMBER)
