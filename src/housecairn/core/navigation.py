@@ -158,12 +158,21 @@ def _record_label(record: Record, kwargs: dict[str, Any], request: HttpRequest) 
     return str(value) if value else None
 
 
+def _index_label(request: HttpRequest) -> Any:
+    """`/` is Today for a person with a home to open, and the welcome page otherwise."""
+    from housecairn.homes import current
+
+    return LABELS["index"] if current.for_request(request).homes else _("Welcome")
+
+
 def label_for(url: str, request: HttpRequest) -> str | None:
     """The title of the screen `url` leads to, from its route; never from the address."""
     try:
         match = resolve(urlsplit(url).path)
     except Resolver404:
         return None
+    if match.view_name == "index":
+        return str(_index_label(request))
     entry = LABELS.get(match.view_name)
     if entry is None:
         return None
