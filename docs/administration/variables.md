@@ -26,6 +26,7 @@ changed in the interface; a variable that is set locks its field there. The full
 | `HOUSECAIRN_CACHE_URL` | `locmemcache://housecairn` | Cache of the rate-limit counters; `dbcache://housecairn_cache` shares them between web processes. See [Rate limits](rate-limits.md). |
 | `OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` | (none) | Single sign-on through any OpenID Connect provider. |
 | `HOUSECAIRN_OIDC_SIGNUP`, `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL` | `closed`, (none) | Who may get an account through single sign-on. |
+| `HOUSECAIRN_SETUP_SCREEN` | `true` | The first-account screen (`/setup/`), opened by a one-time code written in the log, while there is no administrator. `false` if you create the administrator another way. See [First start](../getting-started/first-start.md). |
 | `EMAIL_HOST` | (none) | Outgoing mail server (SMTP); email is off while it is empty. See [Email](email.md). |
 | `EMAIL_USE_SSL`, `EMAIL_TIMEOUT` | `false`, `15` | TLS from the first byte; seconds to wait for the server. See [Email](email.md). |
 | `HOUSECAIRN_SITE_URL` | (none: set it in production) | Public address of the instance, such as `https://home.example.com`, used for links in emails and for the address a printed QR label holds. Empty: the address of the request, checked against `ALLOWED_HOSTS`; `check --deploy` warns when `EMAIL_HOST` is set without it. |

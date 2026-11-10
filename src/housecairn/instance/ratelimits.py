@@ -29,6 +29,8 @@ def rates() -> dict[str, str]:
         "housecairn_invitation": f"{n('invitation_links')}/m/ip",
         "housecairn_settings_test": f"{n('tests')}/m/user",
         "housecairn_delete_account": "5/m/user",
+        # The first-account screen, signed out: every look and every try counts (ADR 0055).
+        "housecairn_setup": "10/m/ip,60/h/ip",
         # Adding a link while previews are on reads a web page (ADR 0050): per person, and
         # for all the members of a home together (the key is the home).
         "housecairn_link_preview": f"{n('link_previews')}/m/user,{n('link_previews_home')}/m/key",

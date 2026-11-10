@@ -12,8 +12,9 @@ Usage (the image's ENTRYPOINT is `python -m housecairn.entrypoint`):
   `<data>/backups/`, while the application runs.
 - `manage <command> [args]`: run a Django management command.
 
-No account is created here: the first administrator signs up through the web
-interface (docs/adr/0007, docs/getting-started/install.md). See docs/adr/0015.
+No account is created here: while there is no administrator, a one-time code is
+written to the log and the first one is created on the web screen /setup/
+(docs/adr/0055, docs/getting-started/first-start.md). See docs/adr/0015.
 """
 
 from __future__ import annotations
@@ -262,9 +263,20 @@ def migrate() -> None:
         raise SystemExit(f"housecairn: cache table failed (exit code {result.returncode}).")
 
 
+def write_setup_code() -> None:
+    """Write the one-time code of the first-account screen in the log, if one is needed.
+
+    Without an administrator only; a failure never stops the start (docs/adr/0055).
+    """
+    result = subprocess.run(django_command("setup_code"), check=False)  # noqa: S603
+    if result.returncode != 0:
+        log(f"could not issue the first-account code (exit code {result.returncode})")
+
+
 def command_run() -> int:
     prepare_environment()
     migrate()
+    write_setup_code()
     stop_timeout = float(env_int("HOUSECAIRN_STOP_TIMEOUT", int(DEFAULT_STOP_TIMEOUT)))
     supervisor = Supervisor(
         [("web server", web_command()), ("task worker", worker_command())],

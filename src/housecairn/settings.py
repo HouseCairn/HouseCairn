@@ -327,6 +327,11 @@ HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL: str = env.str(
     "HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL", default=""
 ).strip()
 
+# The first-account screen (/setup/), opened by a one-time code written in the process
+# log, while the instance has no administrator (docs/adr/0055). `false` for an instance
+# whose administrator is created another way.
+HOUSECAIRN_SETUP_SCREEN: bool = env.bool("HOUSECAIRN_SETUP_SCREEN", default=True)
+
 # Outgoing email, off until EMAIL_HOST is set. Without a server the console
 # backend only prints messages, so features that need a real mailbox, such as
 # password reset by email, stay hidden (accounts.services.email_is_configured).

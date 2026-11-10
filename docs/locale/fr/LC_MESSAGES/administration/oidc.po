@@ -84,8 +84,8 @@ msgstr "Chaque modification figure au journal d'audit de l'instance ; le secret 
 msgid "Who gets an account"
 msgstr "Qui obtient un compte"
 
-msgid "**First sign-in of a new instance**: while the instance has never had an account, the first identity to sign in becomes its administrator; with `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, only that verified address can."
-msgstr "**Première connexion d'une nouvelle instance** : tant que l'instance n'a jamais eu de compte, la première identité qui se connecte en devient l'administratrice ; avec `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, seule cette adresse vérifiée le peut."
+msgid "**First sign-in of a new instance**: while the instance has never had an account, the first identity to sign in becomes its administrator; with `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, only that verified address can. The [first-account screen](../screens/first-account.md) does the same with a code of the log: whichever creates the first administrator closes the other; set `HOUSECAIRN_SETUP_SCREEN=false` to keep only single sign-on."
+msgstr "**Première connexion d'une nouvelle instance** : tant que l'instance n'a jamais eu de compte, la première identité qui se connecte en devient l'administrateur ; avec `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, seule cette adresse vérifiée le peut. L'[écran du premier compte](../screens/first-account.md) fait de même avec un code du journal : le premier des deux qui crée l'administrateur ferme l'autre ; définissez `HOUSECAIRN_SETUP_SCREEN=false` pour ne garder que l'authentification unique."
 
 msgid "**Afterwards**, with `HOUSECAIRN_OIDC_SIGNUP=closed` (the default), an identity without an account is refused, with a page that asks to contact the administrator. With `open`, anyone the provider accepts gets an account, without administration rights."
 msgstr "**Ensuite**, avec `HOUSECAIRN_OIDC_SIGNUP=closed` (le défaut), une identité sans compte est refusée, avec une page qui invite à contacter l'administrateur. Avec `open`, toute personne que le fournisseur accepte obtient un compte, sans droits d'administration."

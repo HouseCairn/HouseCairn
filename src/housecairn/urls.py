@@ -80,6 +80,8 @@ urlpatterns = [
         name="instance-invitation",
     ),
     path("instance/", include("housecairn.instance.urls")),
+    # The first administrator, with the code of the process log (docs/adr/0055).
+    path("setup/", account_views.SetupView.as_view(), name="setup"),
     # Password reset sends an email: no page without an outgoing mail server.
     # These patterns come first and carry no name, so allauth's own names still
     # reverse to the same addresses.

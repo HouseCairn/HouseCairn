@@ -122,7 +122,7 @@ screen shows them read-only, without secrets.
 | `HOUSECAIRN_BEHIND_TLS_PROXY`, `HOUSECAIRN_FORWARDED_ALLOW_IPS` | Decide which proxy headers to trust. |
 | `DEBUG` | Changes the security posture of the whole instance. |
 | `HOUSECAIRN_TASK_WORKERS`, `HOUSECAIRN_WEB_WORKERS` | Fixed when the processes start. |
-| `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL` | Decides who may become the first administrator. |
+| `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, `HOUSECAIRN_SETUP_SCREEN` | Decide who may become the first administrator, and whether the first-account screen exists. |
 
 The **Server** part shows all of them except `HOUSECAIRN_WEB_WORKERS`: only the container's
 start-up program reads it, to start that many web processes; the application itself does not.

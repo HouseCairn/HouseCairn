@@ -9,6 +9,7 @@ with each feature.
 
 start-page
 sign-in
+first-account
 account
 homes
 new-home

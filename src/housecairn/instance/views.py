@@ -267,6 +267,7 @@ def _server_rows() -> list[dict[str, Any]]:
         "HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL": (
             _("set") if settings.HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL else _("not set")
         ),
+        "HOUSECAIRN_SETUP_SCREEN": _("on") if settings.HOUSECAIRN_SETUP_SCREEN else _("off"),
     }
     return [
         {"env": env, "label": label, "value": values[env]}

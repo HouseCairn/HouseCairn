@@ -483,6 +483,9 @@ msgstr "Processus de tâches"
 msgid "First administrator"
 msgstr "Premier administrateur"
 
+msgid "First-account screen"
+msgstr "Écran du premier compte"
+
 msgid "An invitation to this address is already pending; send it again instead."
 msgstr "Une invitation à cette adresse est déjà en attente : renvoyez-la plutôt."
 
@@ -565,6 +568,12 @@ msgstr "oui"
 
 msgid "no"
 msgstr "non"
+
+msgid "on"
+msgstr "activée"
+
+msgid "off"
+msgstr "désactivée"
 
 msgid "Server"
 msgstr "Serveur"
@@ -666,12 +675,6 @@ msgstr "Vous gérez cette instance : comptes, invitations, fournisseurs de conne
 
 msgid "Accounts"
 msgstr "Comptes"
-
-msgid "on"
-msgstr "activée"
-
-msgid "off"
-msgstr "désactivée"
 
 msgid "configured"
 msgstr "configuré"
