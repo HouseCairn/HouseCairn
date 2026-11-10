@@ -34,3 +34,12 @@ class TokenScopePermission(permissions.BasePermission):
         if not isinstance(token, ApiToken):
             return True
         return token.has_scope(required_scope(request, view))
+
+
+class SessionOnly(permissions.BasePermission):
+    """Managing tokens is for a person signed in: a token never lists, mints or revokes one."""
+
+    message = _("API tokens are managed by a person signed in, not by an API token.")
+
+    def has_permission(self, request: Request, view: Any) -> bool:
+        return not isinstance(request.auth, ApiToken)

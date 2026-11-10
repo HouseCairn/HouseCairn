@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n navigation %}
+{% block head_title %}{% translate "Revoke the token" %}{% endblock head_title %}
+{% block content %}
+  {% url 'api-tokens:list' as parent %}{% back_link parent %}
+  <h1>{% blocktranslate with name=token.name %}Revoke {{ name }}?{% endblocktranslate %}</h1>
+  <form method="post" class="card">
+    {% csrf_token %}
+    {% next_field %}
+    <p>{% translate "The tool that uses this token loses its access with its next request. This cannot be undone: you would create a new token." %}</p>
+    <div class="button-row">
+      <button type="submit" class="button-danger">{% translate "Revoke" %}</button>
+      <a class="button button-secondary" href="{{ cancel_url }}">{% translate "Cancel" %}</a>
+    </div>
+  </form>
+{% endblock content %}

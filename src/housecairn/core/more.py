@@ -113,6 +113,12 @@ def groups(user: Any, home_id: Any = None, reports_waiting: int = 0) -> list[Gro
             ("calendar:feeds", "calendar:regenerate", "calendar:revoke"),
         ),
         Entry(
+            _("API tokens"),
+            reverse("api-tokens:list"),
+            _("Let Home Assistant or another tool read your homes"),
+            ("api-tokens:*",),
+        ),
+        Entry(
             _("Security and sign-in"),
             reverse("more-security"),
             _("Passkeys, password, email addresses, deleting your account"),

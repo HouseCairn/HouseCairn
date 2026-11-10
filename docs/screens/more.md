@@ -14,7 +14,8 @@ sections. The entries come in four groups:
 - **Me**: your [profile](profile.md) (the name other people see), your
   [notifications](notifications.md), your
   [display preferences](display-preferences.md), the
-  [calendar in another application](calendar.md) (secret feeds) and
+  [calendar in another application](calendar.md) (secret feeds),
+  [API tokens](api-tokens.md) (for Home Assistant or another tool) and
   [Security and sign-in](security-and-sign-in.md).
 - **Instance**, for an administrator only:
   [instance administration](instance.md).

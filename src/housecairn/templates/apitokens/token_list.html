@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n navigation %}
+{% block head_title %}{% translate "API tokens" %}{% endblock head_title %}
+{% block content %}
+  {% url 'more' as parent %}{% back_link parent %}
+  <h1>{% translate "API tokens" %}</h1>
+  <p class="small">{% translate "A token lets another tool, such as Home Assistant, use HouseCairn for you, in the homes you choose and with the rights you give it. It acts as you: keep it secret, give each tool its own, and revoke one you no longer use. A token cannot create or revoke tokens." %}</p>
+  {% if has_homes %}
+    <a class="button button-block" href="{% url_with_next 'api-tokens:new' %}">{% translate "Create a token" %}</a>
+  {% else %}
+    <p class="empty">{% translate "You have no home that a token can open yet. A token cannot open a home that requires a sign-in provider." %}</p>
+  {% endif %}
+  {% if rows %}
+    <table class="table-stack">
+      <caption class="visually-hidden">{% translate "Your API tokens" %}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{% translate "Name" %}</th>
+          <th scope="col">{% translate "Rights" %}</th>
+          <th scope="col">{% translate "Homes" %}</th>
+          <th scope="col">{% translate "Created" %}</th>
+          <th scope="col">{% translate "Last used" %}</th>
+          <th scope="col">{% translate "Expires" %}</th>
+          <th scope="col"><span class="visually-hidden">{% translate "Actions" %}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <th scope="row">{{ row.token.name }} <span class="small">{{ row.token.prefix }}…</span></th>
+            <td data-label="{% translate 'Rights' %}">{% for scope in row.token.scopes %}{{ scope }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+            <td data-label="{% translate 'Homes' %}">{{ row.homes|join:", " }}</td>
+            <td data-label="{% translate 'Created' %}">{{ row.token.created_at|date:"SHORT_DATE_FORMAT" }}</td>
+            <td data-label="{% translate 'Last used' %}">{% if row.token.last_used_at %}{{ row.token.last_used_at|date:"SHORT_DATE_FORMAT" }}{% else %}{% translate "Never" %}{% endif %}</td>
+            <td data-label="{% translate 'Expires' %}">{% if row.expired %}{% blocktranslate with day=row.token.expires_at|date:"SHORT_DATE_FORMAT" %}Expired on {{ day }}{% endblocktranslate %}{% else %}{{ row.token.expires_at|date:"SHORT_DATE_FORMAT" }}{% endif %}</td>
+            <td><a class="button button-secondary button-small" href="{% url_with_next 'api-tokens:revoke' token_id=row.token.id %}">{% translate "Revoke" %}<span class="visually-hidden"> ({{ row.token.name }})</span></a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">{% translate "No API token yet." %}</p>
+  {% endif %}
+{% endblock content %}

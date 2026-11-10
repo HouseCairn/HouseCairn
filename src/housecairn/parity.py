@@ -180,6 +180,9 @@ PARITY: dict[str, tuple[str, ...]] = {
     "notifications:export": ("api-v1:notification-export",),
     # Calendar and its feeds (docs/adr/0052). The feed itself is a document for a calendar
     # application, at a secret address (see EXEMPT).
+    "api-tokens:list": ("api-v1:token-list",),
+    "api-tokens:new": ("api-v1:token-list",),
+    "api-tokens:revoke": ("api-v1:token-detail",),
     "calendar:index": ("api-v1:calendar",),
     "calendar:week": ("api-v1:calendar",),
     "calendar:month": ("api-v1:calendar",),

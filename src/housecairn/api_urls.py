@@ -4,6 +4,7 @@ from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
 from housecairn.accounts.api import AccountDeleteView, MeView
+from housecairn.apitokens.api import TokenDetailView, TokenListView
 from housecairn.budget import api as budget_api
 from housecairn.events.api import EventCreateView
 from housecairn.homes.api import AcceptInvitationView, HomeViewSet, InvitationViewSet, MemberViewSet
@@ -91,6 +92,8 @@ urlpatterns = [
     path("instance/usage/", InstanceUsageView.as_view(), name="instance-usage"),
     path("account/delete/", AccountDeleteView.as_view(), name="account-delete"),
     path("me/", MeView.as_view(), name="me"),
+    path("me/tokens/", TokenListView.as_view(), name="token-list"),
+    path("me/tokens/<uuid:token_id>/", TokenDetailView.as_view(), name="token-detail"),
     path("me/home/", tasks_api.MyHomeView.as_view(), name="my-home"),
     path(
         "me/display-preferences/", tasks_api.PreferencesView.as_view(), name="display-preferences"
