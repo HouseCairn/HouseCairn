@@ -21,8 +21,29 @@ msgstr ""
 msgid "First start"
 msgstr "Premier démarrage"
 
-msgid "The image creates no account and has no default password. The first administrator comes from one of these, right after the first start."
-msgstr "L'image ne crée aucun compte et n'a aucun mot de passe par défaut. Le premier administrateur vient de l'une de ces voies, juste après le premier démarrage."
+msgid "The image creates no account and has no default password. At each start, while the instance has no administrator, HouseCairn writes a one-time code in its log. The first administrator comes from one of these, right after the first start."
+msgstr "L'image ne crée aucun compte et n'a aucun mot de passe par défaut. À chaque démarrage, tant que l'instance n'a pas d'administrateur, HouseCairn écrit un code à usage unique dans son journal. Le premier administrateur vient de l'une de ces voies, juste après le premier démarrage."
+
+msgid "The first-account screen"
+msgstr "L'écran du premier compte"
+
+msgid "Read the code in the log of the container:"
+msgstr "Lisez le code dans le journal du conteneur :"
+
+msgid "It looks like this:"
+msgstr "Il ressemble à ceci :"
+
+msgid "Open the address, give the code, your name, your email address and a password. HouseCairn creates the administrator account and signs you in. See [First account](../screens/first-account.md)."
+msgstr "Ouvrez l'adresse, donnez le code, votre nom, votre adresse e-mail et un mot de passe. HouseCairn crée le compte administrateur et vous connecte. Voir [Premier compte](../screens/first-account.md)."
+
+msgid "**In Home Assistant**, when HouseCairn runs as an add-on, the log is the **Log** tab of the add-on, which has no command line: this screen is the way to create the first account."
+msgstr "**Dans Home Assistant**, quand HouseCairn tourne comme module complémentaire, le journal est l'onglet **Journal** du module, qui n'a pas de ligne de commande : cet écran est le moyen de créer le premier compte."
+
+msgid "**A new code** is written at each start. Without restarting, run `docker compose exec housecairn python -m housecairn.entrypoint manage setup_code`."
+msgstr "**Un nouveau code** est écrit à chaque démarrage. Sans redémarrer, lancez `docker compose exec housecairn python -m housecairn.entrypoint manage setup_code`."
+
+msgid "**Switch the screen off** with `HOUSECAIRN_SETUP_SCREEN=false` if you create the administrator another way (below). It is never available once an administrator exists."
+msgstr "**Désactivez l'écran** avec `HOUSECAIRN_SETUP_SCREEN=false` si vous créez l'administrateur autrement (ci-dessous). Il n'est jamais disponible dès qu'un administrateur existe."
 
 msgid "Single sign-on (OpenID Connect)"
 msgstr "Authentification unique (OpenID Connect)"
@@ -30,11 +51,14 @@ msgstr "Authentification unique (OpenID Connect)"
 msgid "Set `OIDC_SERVER_URL`, `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET`, and preferably `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`. The first person to sign in through the provider becomes the instance administrator; if the address is set, only an identity with that verified address can. See [Single sign-on](../administration/oidc.md)."
 msgstr "Définissez `OIDC_SERVER_URL`, `OIDC_CLIENT_ID` et `OIDC_CLIENT_SECRET`, et de préférence `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`. La première personne qui se connecte par le fournisseur devient l'administratrice de l'instance ; si l'adresse est définie, seule une identité ayant cette adresse vérifiée le peut. Voir [Authentification unique](../administration/oidc.md)."
 
-msgid "A local account"
-msgstr "Un compte local"
+msgid "The first-account screen and single sign-on both create the first administrator: the first to do it closes the other. If you rely on single sign-on, set `HOUSECAIRN_SETUP_SCREEN=false`, so that nobody who can read the log can create an administrator before you sign in."
+msgstr "L'écran du premier compte et l'authentification unique créent tous deux le premier administrateur : le premier des deux qui le fait ferme l'autre. Si vous comptez sur l'authentification unique, définissez `HOUSECAIRN_SETUP_SCREEN=false`, pour que personne ne pouvant lire le journal ne puisse créer un administrateur avant votre connexion."
 
-msgid "Create it from the command line:"
-msgstr "Créez-le en ligne de commande :"
+msgid "A local account from the command line"
+msgstr "Un compte local en ligne de commande"
+
+msgid "This also closes the first-account screen."
+msgstr "Cela ferme aussi l'écran du premier compte."
 
 msgid "Local sign-up from the web page stays closed unless `HOUSECAIRN_SIGNUP_OPEN=true`."
 msgstr "L'inscription locale depuis la page web reste fermée tant que `HOUSECAIRN_SIGNUP_OPEN=true` n'est pas défini."
@@ -53,4 +77,7 @@ msgstr "Après la connexion, HouseCairn affiche la liste de vos logements. Une n
 
 #~ msgid "The list of homes, on a phone."
 #~ msgstr "La liste des logements, sur téléphone."
+
+#~ msgid "A local account"
+#~ msgstr "Un compte local"
 

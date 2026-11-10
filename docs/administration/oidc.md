@@ -76,7 +76,10 @@ Each change is in the instance audit log; the client secret never is.
 
 - **First sign-in of a new instance**: while the instance has never had an
   account, the first identity to sign in becomes its administrator; with
-  `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, only that verified address can.
+  `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`, only that verified address can. The
+  [first-account screen](../screens/first-account.md) does the same with a code of the
+  log: whichever creates the first administrator closes the other; set
+  `HOUSECAIRN_SETUP_SCREEN=false` to keep only single sign-on.
 - **Afterwards**, with `HOUSECAIRN_OIDC_SIGNUP=closed` (the default), an
   identity without an account is refused, with a page that asks to contact the
   administrator. With `open`, anyone the provider accepts gets an account,

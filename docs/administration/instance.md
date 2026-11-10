@@ -7,8 +7,8 @@ and settings. The administrator **does not read the homes**
 ## Who is an administrator
 
 An active account that is both *staff* and *superuser*. The first account of a
-new instance created through single sign-on is one (see
-[Single sign-on](oidc.md)); `manage.py createsuperuser` makes another; the
+new instance is one, created on the [first-account screen](../screens/first-account.md)
+with the code of the log, or through single sign-on (see [Single sign-on](oidc.md)); `manage.py createsuperuser` makes another; the
 administration site (`/admin/`) grants or withdraws the role on an existing
 account (both boxes, audited). Being an administrator adds no home to the
 account: it sees the homes it belongs to, like anyone.

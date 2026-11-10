@@ -272,6 +272,9 @@ msgstr "Adresse e-mail principale changée depuis le serveur"
 msgid "Account deleted"
 msgstr "Compte supprimé"
 
+msgid "First administrator created on the setup screen"
+msgstr "Premier administrateur créé sur l'écran du premier compte"
+
 msgid "A home was deleted"
 msgstr "Un logement a été supprimé"
 

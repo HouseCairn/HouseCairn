@@ -164,9 +164,23 @@ class TestCommands:
         assert calls == [
             ["-m", "django", "migrate", "--noinput"],
             ["-m", "django", "createcachetable"],
+            ["-m", "django", "setup_code"],
             ["web server", "task worker"],
         ]
         assert (data / "secret_key").is_file()
+
+    def test_a_failing_first_account_code_does_not_stop_the_start(
+        self, data: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """The code is a convenience: createsuperuser still works, so the start goes on."""
+
+        def fake_run(command: list[str], check: bool) -> subprocess.CompletedProcess[bytes]:
+            return subprocess.CompletedProcess(command, 1 if command[-1] == "setup_code" else 0)
+
+        monkeypatch.setattr(entrypoint.subprocess, "run", fake_run)
+        monkeypatch.setattr(entrypoint.Supervisor, "run", lambda self: 0)
+        assert entrypoint.main(["run"]) == 0
+        assert "could not issue the first-account code" in capsys.readouterr().err
 
     def test_failed_migrations_stop_the_start(
         self, data: Path, monkeypatch: pytest.MonkeyPatch

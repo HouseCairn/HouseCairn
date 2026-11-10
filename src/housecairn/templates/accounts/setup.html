@@ -1,0 +1,12 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "First account" %}{% endblock head_title %}
+{% block content %}
+  <h1>{% translate "Create the administrator" %}</h1>
+  <p class="lead">{% translate "This instance has no administrator yet. Enter the code HouseCairn wrote in its log when it started, then create the account that will run the instance." %}</p>
+  <form method="post" action="{% url 'setup' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{% translate "Create the administrator" %}</button>
+  </form>
+{% endblock content %}
