@@ -7,7 +7,7 @@
   {% include "budget/_year.html" %}
   <p class="small">{% blocktranslate with year=year|unlocalize %}The tasks that are in no project, with the occurrences of {{ year }}: those done, the one open, and those the repetition will still bring before the end of the year. The money of a task of a project is in the budget lines of the project.{% endblocktranslate %}</p>
   {% if report.lines %}
-    <table>
+    <table class="table-stack">
       <caption class="visually-hidden">{% translate "Estimate, cost a year and what was paid, task by task" %}</caption>
       <thead>
         <tr>
@@ -22,10 +22,10 @@
         {% for line in report.lines %}
           <tr>
             <th scope="row"><a href="{% url_with_next 'tasks:detail' home_id=home.id task_id=line.id %}">{{ line.label }}</a>{% if line.extra.room %}<br><span class="small">{{ line.extra.room }}</span>{% endif %}</th>
-            <td>{% if line.extra.estimate is None %}—{% else %}{{ line.extra.estimate|money:home.currency }}{% endif %}</td>
-            <td>{% if line.extra.annual_cost is None %}—{% else %}{{ line.extra.annual_cost|money:home.currency }}{% endif %}</td>
+            <td data-label="{% translate 'Estimate each time' %}">{% if line.extra.estimate is None %}—{% else %}{{ line.extra.estimate|money:home.currency }}{% endif %}</td>
+            <td data-label="{% translate 'Cost a year' %}">{% if line.extra.annual_cost is None %}—{% else %}{{ line.extra.annual_cost|money:home.currency }}{% endif %}</td>
             {% include "budget/_row_amounts.html" with amounts=line.amounts %}
-            <td>{{ line.extra.total_paid|money:home.currency }}{% if line.extra.missing_costs %}<br><span class="small">{% blocktranslate count counter=line.extra.missing_costs %}{{ counter }} done without a cost{% plural %}{{ counter }} done without a cost{% endblocktranslate %}</span>{% endif %}</td>
+            <td data-label="{% translate 'Paid in all' %}">{{ line.extra.total_paid|money:home.currency }}{% if line.extra.missing_costs %}<br><span class="small">{% blocktranslate count counter=line.extra.missing_costs %}{{ counter }} done without a cost{% plural %}{{ counter }} done without a cost{% endblocktranslate %}</span>{% endif %}</td>
           </tr>
         {% endfor %}
       </tbody>

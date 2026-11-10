@@ -29,7 +29,7 @@
   <p><a href="{% url 'budget:rooms' home_id=home.id %}?year={{ year|unlocalize }}">{% translate "By room" %}</a> · <a href="{% url 'budget:projects' home_id=home.id %}">{% translate "By project" %}</a> · <a href="{% url 'budget:tasks' home_id=home.id %}?year={{ year|unlocalize }}">{% translate "By task of the upkeep" %}</a></p>
 
   <h2>{% blocktranslate with year=year|unlocalize %}By nature, {{ year }}{% endblocktranslate %}</h2>
-  <table>
+  <table class="table-stack">
     <caption class="visually-hidden">{% translate "Planned, committed and paid, by nature" %}</caption>
     <thead><tr><th scope="col">{% translate "Nature" %}</th>{% include "budget/_head_amounts.html" %}</tr></thead>
     <tbody>
@@ -41,14 +41,14 @@
   <p class="small">{% translate "The cost typed on a done task is shared between Materials and Labour as its estimate is; a task with no estimate has no such share, and its cost is counted under Other." %}</p>
 
   <h2>{% translate "By year" %}</h2>
-  <table>
+  <table class="table-stack">
     <caption class="visually-hidden">{% translate "Planned, committed and paid, year by year" %}</caption>
     <thead><tr><th scope="col">{% translate "Year" %}</th><th scope="col">{% translate "Envelope" %}</th>{% include "budget/_head_amounts.html" %}</tr></thead>
     <tbody>
       {% for line in yearly %}
         <tr>
           <th scope="row">{{ line.year|unlocalize }}</th>
-          <td>{% if line.envelope is None %}—{% else %}{{ line.envelope|money:home.currency }}{% endif %}</td>
+          <td data-label="{% translate 'Envelope' %}">{% if line.envelope is None %}—{% else %}{{ line.envelope|money:home.currency }}{% endif %}</td>
           {% include "budget/_row_amounts.html" with amounts=line.total %}
         </tr>
       {% endfor %}
