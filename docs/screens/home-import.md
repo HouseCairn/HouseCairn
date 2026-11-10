@@ -16,7 +16,8 @@ does not know is ignored, and listed.
 
 - **Separated by commas**, always, like the exports.
 - **UTF-8**, with or without a byte order mark.
-- At most **1,000 rows** and **2 MB** for the files of one import.
+- At most **1,000 rows** and **2 MB** for the files of one import, accents
+  included; files past a limit are refused whole, with the reason.
 
 A spreadsheet must keep the commas, the dates and the accents when it saves the file
 again. In short, the steps of
@@ -41,10 +42,18 @@ home, a row already in this home. A file that cannot be read at all (not UTF-8,
 separated by semicolons, without the column that names a row, past the limits)
 is refused whole, and nothing can be confirmed.
 
-**Import** adds the rows accepted, all at once: if anything fails while writing,
-nothing is added. Refused rows are not; correct them and import them again. The page
-then leads back to the page of the home, and the import is recorded in the
-[audit log](audit.md). **Cancel** leaves without adding anything.
+**All or nothing.** While a single row is refused, the page offers no **Import**
+button and says so: correct the file, then choose it again. A warning (a name
+already used, a person left unassigned) does not stop the import.
+
+**Import** adds every row, all at once: if anything fails while writing, nothing is
+added. The page then leads back to the page of the home, and the import is recorded
+in the [audit log](audit.md). **Cancel** leaves without adding anything.
+
+Between the two steps the files stay on the server, for you and this home only, for
+**30 minutes**; the confirmation sends back only a signed token. After that, or once
+used, the preview cannot be confirmed any more: the page says so and asks for the
+files again.
 
 ## What a row becomes
 
@@ -66,5 +75,7 @@ then leads back to the page of the home, and the import is recorded in the
 
 The API does the same:
 `POST /api/v1/homes/<id>/import/` with the files as `rooms`, `items`, `tasks`,
-`stock` and `contractors`, answers the preview, and writes only with `confirm=true`. A
-token needs the `write` scope on this home.
+`stock` and `contractors`, answers the preview (`confirmable` says whether it can be
+written), and writes only with `confirm=true`, sending the files again; with a single
+row refused it answers 400 with the reasons and writes nothing. A token needs the
+`write` scope on this home.

@@ -36,8 +36,8 @@ msgstr "**Séparé par des virgules**, toujours, comme les exports."
 msgid "**UTF-8**, with or without a byte order mark."
 msgstr "**UTF-8**, avec ou sans marque d'ordre des octets."
 
-msgid "At most **1,000 rows** and **2 MB** for the files of one import."
-msgstr "Au plus **1 000 lignes** et **2 Mo** pour les fichiers d'un import."
+msgid "At most **1,000 rows** and **2 MB** for the files of one import, accents included; files past a limit are refused whole, with the reason."
+msgstr "Au plus **1 000 lignes** et **2 Mo** pour les fichiers d'un import, accents compris ; des fichiers au-delà d'une limite sont refusés en entier, avec la raison."
 
 msgid "A spreadsheet must keep the commas, the dates and the accents when it saves the file again. In short, the steps of [Opening a table in a spreadsheet](../administration/data.md#opening-a-table-in-a-spreadsheet):"
 msgstr "Un tableur doit garder les virgules, les dates et les accents quand il enregistre de nouveau le fichier. En bref, les étapes de [Ouvrir un tableau dans un tableur](../administration/data.md#opening-a-table-in-a-spreadsheet) :"
@@ -54,8 +54,14 @@ msgstr "Aperçu, puis confirmation"
 msgid "**Preview** reads the files and checks every row, but writes nothing. The page then shows, for each table, how many rows are accepted and refused, and each refused row with its line and the reason: a value that is not valid, a room that is not in this home, a row already in this home. A file that cannot be read at all (not UTF-8, separated by semicolons, without the column that names a row, past the limits) is refused whole, and nothing can be confirmed."
 msgstr "**Aperçu** lit les fichiers et contrôle chaque ligne, mais n'écrit rien. La page montre alors, pour chaque tableau, combien de lignes sont acceptées et refusées, et chaque ligne refusée avec son numéro et la raison : une valeur non valide, une pièce qui n'est pas dans ce logement, une ligne déjà dans ce logement. Un fichier illisible (pas en UTF-8, séparé par des points-virgules, sans la colonne qui nomme une ligne, au-delà des limites) est refusé en entier, et rien ne peut être confirmé."
 
-msgid "**Import** adds the rows accepted, all at once: if anything fails while writing, nothing is added. Refused rows are not; correct them and import them again. The page then leads back to the page of the home, and the import is recorded in the [audit log](audit.md). **Cancel** leaves without adding anything."
-msgstr "**Importer** ajoute les lignes acceptées, toutes à la fois : si quoi que ce soit échoue pendant l'écriture, rien n'est ajouté. Les lignes refusées ne le sont pas ; corrigez-les et importez-les de nouveau. La page ramène ensuite à la page du logement, et l'import est inscrit au [journal d'audit](audit.md). **Annuler** quitte sans rien ajouter."
+msgid "**All or nothing.** While a single row is refused, the page offers no **Import** button and says so: correct the file, then choose it again. A warning (a name already used, a person left unassigned) does not stop the import."
+msgstr "**Tout ou rien.** Tant qu'une seule ligne est refusée, la page ne propose pas le bouton **Importer** et le dit : corrigez le fichier, puis choisissez-le de nouveau. Un avertissement (un nom déjà utilisé, une personne laissée sans attribution) n'arrête pas l'import."
+
+msgid "**Import** adds every row, all at once: if anything fails while writing, nothing is added. The page then leads back to the page of the home, and the import is recorded in the [audit log](audit.md). **Cancel** leaves without adding anything."
+msgstr "**Importer** ajoute toutes les lignes, à la fois : si quoi que ce soit échoue pendant l'écriture, rien n'est ajouté. La page ramène ensuite à la page du logement, et l'import est inscrit au [journal d'audit](audit.md). **Annuler** quitte sans rien ajouter."
+
+msgid "Between the two steps the files stay on the server, for you and this home only, for **30 minutes**; the confirmation sends back only a signed token. After that, or once used, the preview cannot be confirmed any more: the page says so and asks for the files again."
+msgstr "Entre les deux étapes, les fichiers restent sur le serveur, pour vous et ce logement seulement, pendant **30 minutes** ; la confirmation ne renvoie qu'un jeton signé. Passé ce délai, ou une fois utilisé, l'aperçu ne peut plus être confirmé : la page le dit et redemande les fichiers."
 
 msgid "What a row becomes"
 msgstr "Ce que devient une ligne"
@@ -81,6 +87,6 @@ msgstr "La date d'une tâche, `series_start`, est la date de sa première occurr
 msgid "`created_at`, `updated_at`, the position of a room and the type of a stock label are made again; files (photos, labels) are not in the tables."
 msgstr "`created_at`, `updated_at`, la position d'une pièce et le type de l'étiquette d'un article sont refaits ; les fichiers (photos, étiquettes) ne sont pas dans les tableaux."
 
-msgid "The API does the same: `POST /api/v1/homes/<id>/import/` with the files as `rooms`, `items`, `tasks`, `stock` and `contractors`, answers the preview, and writes only with `confirm=true`. A token needs the `write` scope on this home."
-msgstr "L'API fait de même : `POST /api/v1/homes/<id>/import/` avec les fichiers en `rooms`, `items`, `tasks`, `stock` et `contractors` répond par l'aperçu, et n'écrit qu'avec `confirm=true`. Un jeton a besoin de la portée `write` sur ce logement."
+msgid "The API does the same: `POST /api/v1/homes/<id>/import/` with the files as `rooms`, `items`, `tasks`, `stock` and `contractors`, answers the preview (`confirmable` says whether it can be written), and writes only with `confirm=true`, sending the files again; with a single row refused it answers 400 with the reasons and writes nothing. A token needs the `write` scope on this home."
+msgstr "L'API fait de même : `POST /api/v1/homes/<id>/import/` avec les fichiers en `rooms`, `items`, `tasks`, `stock` et `contractors` répond par l'aperçu (`confirmable` dit s'il peut être écrit), et n'écrit qu'avec `confirm=true`, en renvoyant les fichiers ; avec une seule ligne refusée, elle répond 400 avec les raisons et n'écrit rien. Un jeton a besoin de la portée `write` sur ce logement."
 

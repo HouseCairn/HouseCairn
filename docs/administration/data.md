@@ -143,16 +143,26 @@ in one import.
   and is what the confirmation then writes, in **one transaction**, through
   the same checks as the forms. The API previews unless it is sent
   `confirm=true`.
+- **All or nothing.** A single row refused, and nothing is imported: the page
+  offers no confirmation, and the API answers `confirm=true` with 400 and the
+  reason of each row. Correct the file and import it again, whole. A warning (a
+  name already used, a person left unassigned) does not stop the import.
 - **Every file is checked whole first**: UTF-8 with or without a byte order
   mark, separated by commas, a header naming each known column once (by its
   name in the export, or its label in English or in French), and the column
   that names a row (`name`, or `title` for tasks).
-- **Limits**: 1,000 rows and 2 MB for the files of one import; import a larger
-  set in several times. Each row goes through the checks of the forms, twice
-  (preview and confirmation): 1,000 rows keep each request within seconds, far
-  from the 30 seconds after which the web server stops it. The preview sends
-  the text of the files back with the confirmation, and Django refuses a form
-  larger than 2.5 MB.
+- **Limits**: 1,000 rows and 2 MB for the files of one import, whatever their
+  language; import a larger set in several times. Each row goes through the
+  checks of the forms, twice (preview and confirmation): 1,000 rows keep each
+  request within seconds, far from the 30 seconds after which the web server
+  stops it. Files past a limit are refused whole, with the reason.
+- **Between the preview and the confirmation**, the page keeps the text of the
+  files on the server, in the database, for the person who previewed it and
+  this home only, for **30 minutes**: the confirmation sends back only a signed
+  token, so the limits hold up to it. The text is removed once confirmed, when
+  the same person previews again in the same home, and within the hour after
+  it expires; a confirmation after that asks for the files again. The API
+  keeps nothing: each call sends the files, `confirm=true` included.
 - **A row is always new.** It gets a new identifier; its `id` only lets the
   other files of the import refer to it. A row whose `id` is a row already in
   this home is refused as a duplicate, never merged; a name already used is
