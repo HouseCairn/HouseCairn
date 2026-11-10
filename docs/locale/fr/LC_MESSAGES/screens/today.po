@@ -21,8 +21,8 @@ msgstr ""
 msgid "Today"
 msgstr "Aujourd'hui"
 
-msgid "What to do in a home, at `/h/<home id>/today/`. It is the screen to open every day, and the one the application opens on: the [start page](start-page.md) leads to it, with several homes through [Today in several homes](my-home.md). **Today** is also linked from the [task list](tasks.md)."
-msgstr "Ce qu'il y a à faire dans un logement, sur `/h/<home id>/today/`. C'est l'écran à ouvrir chaque jour, et celui sur lequel l'application s'ouvre : la [page de départ](start-page.md) y mène, avec plusieurs logements par [Aujourd'hui avec plusieurs logements](my-home.md). **Aujourd'hui** est aussi relié depuis la [liste des tâches](tasks.md)."
+msgid "What to do in a home, at `/h/<home id>/today/`. It is the screen to open every day, and the one the application opens on: the [start page](start-page.md) leads to it, with several homes on the [current home](my-home.md#the-current-home) or on all your homes together. **Today** is also linked from the [task list](tasks.md)."
+msgstr "Ce qu'il y a à faire dans un logement, sur `/h/<home id>/today/`. C'est l'écran à ouvrir chaque jour, et celui sur lequel l'application s'ouvre : la [page de départ](start-page.md) y mène, avec plusieurs logements sur le [logement courant](my-home.md#the-current-home) ou sur tous vos logements ensemble. **Aujourd'hui** est aussi relié depuis la [liste des tâches](tasks.md)."
 
 msgid "The page is made of sections, in this order:"
 msgstr "La page est faite de sections, dans cet ordre :"

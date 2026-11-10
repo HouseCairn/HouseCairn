@@ -24,14 +24,17 @@ msgstr "Calendrier"
 msgid "The tasks of your homes by week, month or year, at `/calendar/` (the **Calendar** tab of **Today**). It shows what is planned, done, postponed and skipped, with the status written in words, and what is still to come for a task that repeats."
 msgstr "Les tâches de vos logements par semaine, par mois ou par année, sur `/calendar/` (l'onglet **Calendrier** d'**Aujourd'hui**). Il montre ce qui est prévu, fait, reporté et ignoré, avec le statut écrit en toutes lettres, et ce qui reste à venir pour une tâche récurrente."
 
-msgid "**Today, All, Calendar**: the tabs of the Today section, when the calendar shows one home (your only home, or the one chosen in the filter)."
-msgstr "**Aujourd'hui, Toutes, Calendrier** : les onglets de la section Aujourd'hui, quand le calendrier montre un seul logement (votre seul logement, ou celui choisi dans le filtre)."
+msgid "**Home**: the calendar shows the [current home](my-home.md#the-current-home), or all your homes together when you chose **All homes** in the selector of the app bar."
+msgstr "**Logement** : le calendrier montre le [logement courant](my-home.md#the-current-home), ou tous vos logements ensemble quand vous avez choisi **Tous les logements** dans le sélecteur de la barre d'application."
+
+msgid "**Today, All, Calendar**: the tabs of the Today section, which lead back to the Today and the task list of the home shown. With all homes: **Today** (the page of all homes) and **Calendar**."
+msgstr "**Aujourd'hui, Toutes, Calendrier** : les onglets de la section Aujourd'hui, qui ramènent à l'Aujourd'hui et à la liste des tâches du logement affiché. Avec tous les logements : **Aujourd'hui** (la page de tous les logements) et **Calendrier**."
 
 msgid "**Week, Month, Year**: the three views switch from the segmented control under the tabs. The week lists each day with its tasks; the month adds a grid in which every day links to its week and says how many tasks it holds; the year counts the tasks of each month by status and links to it."
 msgstr "**Semaine, Mois, Année** : les trois vues se changent depuis le sélecteur segmenté sous les onglets. La semaine liste chaque jour avec ses tâches ; le mois ajoute une grille où chaque jour renvoie vers sa semaine et dit combien de tâches il contient ; l'année compte les tâches de chaque mois par statut et renvoie vers lui."
 
-msgid "**Filters**: home (when you belong to several, the default is all of them together), room, person, priority. A person is shown by their name, never by their email address."
-msgstr "**Filtres** : logement (si vous en avez plusieurs, tous ensemble par défaut), pièce, personne, priorité. Une personne est affichée par son nom, jamais par son adresse e-mail."
+msgid "**Filters**: room, person, priority. A person is shown by their name, never by their email address."
+msgstr "**Filtres** : pièce, personne, priorité. Une personne est affichée par son nom, jamais par son adresse e-mail."
 
 msgid "**Previous, Next, Today** move by one period. With the focus inside the calendar, the left and right arrows do the same and `T` goes to today; the shortcuts work nowhere else on the page."
 msgstr "**Précédent, Suivant, Aujourd'hui** avancent d'une période. Quand le focus est dans le calendrier, les flèches gauche et droite font de même et `T` va à aujourd'hui ; les raccourcis ne fonctionnent nulle part ailleurs sur la page."
@@ -62,4 +65,7 @@ msgstr "**Révoquer** supprime le flux. Quitter un logement révoque votre flux 
 
 msgid "A feed shows the title, home, room, date, status and a link to each task, and nothing more. It is a secret address: anyone who has it reads the feed, so share it with nobody."
 msgstr "Un flux montre le titre, le logement, la pièce, la date, le statut et un lien vers chaque tâche, et rien de plus. C'est une adresse secrète : quiconque la possède lit le flux, ne la partagez donc avec personne."
+
+#~ msgid "**Today, All, Calendar**: the tabs of the Today section, when the calendar shows one home (your only home, or the one chosen in the filter)."
+#~ msgstr "**Aujourd'hui, Toutes, Calendrier** : les onglets de la section Aujourd'hui, quand le calendrier montre un seul logement (votre seul logement, ou celui choisi dans le filtre)."
 
