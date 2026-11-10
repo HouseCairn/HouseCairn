@@ -20,7 +20,7 @@ from django.views.generic import FormView, TemplateView
 from housecairn.accounts.models import User
 from housecairn.apitokens import services
 from housecairn.apitokens.forms import TokenForm
-from housecairn.apitokens.models import ApiToken
+from housecairn.apitokens.models import ApiToken, Scope
 from housecairn.core import navigation
 
 
@@ -36,6 +36,7 @@ class TokenListView(LoginRequiredMixin, TemplateView):
         rows = [
             {
                 "token": token,
+                "rights": [Scope(scope).label for scope in token.scopes],
                 "homes": sorted(home.name for home in token.homes.all()),
                 "expired": token.expires_at is not None and token.expires_at <= now,
             }
