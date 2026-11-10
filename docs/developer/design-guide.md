@@ -502,8 +502,9 @@ the review of the labels (NAV-14); a new screen **must** follow them.
   "Instance audit log", never "Audit log" twice. The tab of the home page that holds
   its settings is "Home settings", like the entry of More; "Overview" is the first
   tab of the instance only (the budget one is "Summary").
-- **A bar or tab label equals the title of its page.** The entry of the bar, the tab and
-  the `h1` of its root say the same word.
+- **A bar entry equals the title of its section.** The entry of the bar (or of the
+  column) and the `h1` of the root it opens say the same word. A tab names its view and
+  may be shorter than the `h1` (All → Tasks, Summary → Budget).
 - **A filter reads like the noun it filters.** The filter of finished tasks says
   "Done" in English and *Faites* in French, which agrees with *tâches*; the button on
   one task stays *Fait*. When one English word needs two French words, use a
