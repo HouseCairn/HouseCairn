@@ -27,8 +27,10 @@ On a phone, each token is a card.
 **The value is shown once.** After **Create the token**, the page shows the value (it starts
 with `hc_`) and a **Copy** button (when the browser can copy; otherwise select the field).
 HouseCairn keeps only a digest of it: nobody, administrators included, can read it again.
-If you lose it, revoke the token and create another. Sending the form a second time (back
-button, double tap) creates nothing more.
+If you lose it, revoke the token and create another. Reloading the page or tapping twice
+creates nothing more, and the value is never shown again. Going back with the browser's back
+button gives a new form, though, and sending it creates another token: check the list and
+revoke the one you do not need.
 
 **Revoke** opens a confirmation page. The tool that uses the token loses its access with its
 next request. Revoking cannot be undone.
