@@ -9,6 +9,8 @@ app_name = "homes"
 urlpatterns = [
     path("", views.HomeListView.as_view(), name="list"),
     path("new/", views.HomeCreateView.as_view(), name="create"),
+    # The selector of the current home, in the app bar (design guide, "Current home").
+    path("current/", views.CurrentHomeView.as_view(), name="current"),
     path("<uuid:home_id>/", views.HomeDetailView.as_view(), name="detail"),
     path("<uuid:home_id>/edit/", views.HomeEditView.as_view(), name="edit"),
     path("<uuid:home_id>/household/", views.HouseholdView.as_view(), name="household"),

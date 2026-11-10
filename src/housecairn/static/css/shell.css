@@ -68,6 +68,104 @@
   display: block;
 }
 
+/* Selector of the current home (templates/shell/home_switcher.html), from two homes on:
+   a disclosure that works without script, whose choices are buttons of one post form. */
+.home-switcher {
+  position: relative;
+  min-width: 0;
+}
+
+.home-switcher-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hc-space-1);
+  max-width: 100%;
+  min-height: var(--hc-layout-touch-target);
+  padding: 0 var(--hc-space-2);
+  border-radius: var(--hc-radius-pill);
+  color: var(--hc-color-text);
+  font-weight: var(--hc-font-weight-bold);
+  cursor: pointer;
+  list-style: none;
+}
+
+.home-switcher-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.home-switcher-toggle:hover {
+  background: var(--hc-color-sand-soft);
+}
+
+.home-switcher-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-switcher-chevron {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  transform: rotate(90deg);
+}
+
+.home-switcher[open] .home-switcher-chevron {
+  transform: rotate(-90deg);
+}
+
+.home-switcher-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 30;
+  min-width: 14rem;
+  max-width: calc(100vw - 2 * var(--hc-space-4));
+  margin-top: var(--hc-space-1);
+  padding: var(--hc-space-2);
+  background: var(--hc-color-surface);
+  border: 1px solid var(--hc-color-border);
+  border-radius: var(--hc-radius-md);
+  box-shadow: var(--hc-shadow-lg);
+}
+
+.home-switcher-title {
+  margin: 0 0 var(--hc-space-1);
+  padding: 0 var(--hc-space-2);
+  color: var(--hc-color-text-muted);
+  font-size: var(--hc-font-size-sm);
+}
+
+.home-switcher-menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-switcher-choice {
+  display: block;
+  width: 100%;
+  min-height: var(--hc-layout-touch-target);
+  padding: var(--hc-space-2);
+  border: 0;
+  border-radius: var(--hc-radius-sm);
+  background: transparent;
+  color: var(--hc-color-text);
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.home-switcher-choice:hover {
+  background: var(--hc-color-sand-soft);
+}
+
+.home-switcher-choice[aria-current="true"] {
+  color: var(--hc-color-primary);
+  font-weight: var(--hc-font-weight-bold);
+}
+
 .appbar-actions {
   display: flex;
   align-items: center;
@@ -282,6 +380,22 @@
   .has-nav .brand-instance {
     display: block;
     max-width: 100%;
+  }
+
+  /* The selector of the current home sits under the logo, above the column. */
+  .has-nav .appbar:has(.home-switcher) {
+    flex-wrap: wrap;
+    align-content: flex-start;
+    height: 8.5rem;
+  }
+
+  .has-nav .appbar .home-switcher {
+    order: 1;
+    flex: 1 0 100%;
+  }
+
+  .has-nav:has(.home-switcher) .nav {
+    top: 8.5rem;
   }
 
   .has-nav .nav {

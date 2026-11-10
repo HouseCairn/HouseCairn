@@ -21,8 +21,8 @@ msgstr ""
 msgid "Budget"
 msgstr "Budget"
 
-msgid "The budget of a home, at `/h/<home id>/budget/`. **Budget** in the navigation opens it, with its tabs **Summary**, **Rooms**, **Projects** and **Upkeep**. `/budget/` goes straight to the budget of your only home, and adds your homes up by currency when you belong to several (never converting one currency into another)."
-msgstr "Le budget d'un logement, à `/h/<id du logement>/budget/`. **Budget** dans la navigation l'ouvre, avec ses onglets **Synthèse**, **Pièces**, **Projets** et **Entretien**. `/budget/` va droit au budget de votre seul logement, et additionne vos logements par devise quand vous en avez plusieurs (sans jamais convertir une devise en une autre)."
+msgid "The budget of a home, at `/h/<home id>/budget/`. **Budget** in the navigation opens it, with its tabs **Summary**, **Rooms**, **Projects** and **Upkeep**. `/budget/` goes straight to the budget of the [current home](my-home.md#the-current-home), without asking which home."
+msgstr "Le budget d'un logement, à `/h/<id du logement>/budget/`. **Budget** dans la navigation l'ouvre, avec ses onglets **Synthèse**, **Pièces**, **Projets** et **Entretien**. `/budget/` va droit au budget du [logement courant](my-home.md#the-current-home), sans demander quel logement."
 
 msgid "The page is figures only: nothing on it changes your data, so everyone who can open the home reads it, read-only members included. How the figures are worked out is in the [budget guide](../guides/budget.md)."
 msgstr "La page ne contient que des chiffres : rien ne modifie vos données, donc tous ceux qui peuvent ouvrir le logement la lisent, membres en lecture seule compris. La façon de calculer les chiffres est dans le [guide du budget](../guides/budget.md)."

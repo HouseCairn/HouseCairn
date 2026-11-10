@@ -25,6 +25,7 @@ from django.views.generic import FormView, TemplateView
 from housecairn.accounts import names
 from housecairn.core import navigation
 from housecairn.core.redirects import has_safe_shape
+from housecairn.homes import current
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import open_homes_for_request
 from housecairn.rooms import conf
@@ -41,15 +42,19 @@ PAGE_SIZE = 30
 
 
 class EntryView(LoginRequiredMixin, TemplateView):
-    """The Tasks entry of the navigation: the tasks of the user's only home, else a choice."""
+    """The Tasks entry of the navigation: the tasks of the current home.
+
+    No home to open: the page that offers to add one (docs/developer/design-guide.md,
+    "Current home").
+    """
 
     template_name = "tasks/choose_home.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        homes = list(open_homes_for_request(request).order_by("name"))
-        if len(homes) == 1:
-            return redirect("tasks:list", home_id=homes[0].id)
-        return self.render_to_response({"homes": homes})
+        target = current.section_root(request, "tasks:list")
+        if target:
+            return redirect(target)
+        return self.render_to_response({"homes": []})
 
 
 class HomeTasksMixin(HomeRoomsMixin):
@@ -570,19 +575,15 @@ class TodayView(HomeTasksMixin, TemplateView):
 
 
 class MyHomeView(LoginRequiredMixin, TemplateView):
-    """What concerns the person signed in, in one home or in all of them."""
+    """Today of all the homes of the person together: the choice "All homes" of the selector."""
 
     template_name = "tasks/my_home.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        homes = list(open_homes_for_request(self.request).order_by("name"))
-        raw = self.request.GET.get("home", "")
-        chosen = next((h for h in homes if str(h.id) == raw), None)
-        shown = [chosen] if chosen else homes
+        homes = current.for_request(self.request).homes
         return super().get_context_data(
             homes=homes,
-            chosen=chosen,
-            digests=agenda.my_home(self.request.user, shown, day=services.today()),  # type: ignore[arg-type]
+            digests=agenda.my_home(self.request.user, homes, day=services.today()),  # type: ignore[arg-type]
             today=services.today(),
             **kwargs,
         )

@@ -13,12 +13,12 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import TemplateView
 
 from housecairn.budget import csvfile, services
+from housecairn.homes import current
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
-from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
+from housecairn.homes.scoping import WebHomeScopedMixin
 from housecairn.projects.models import ENVELOPE_YEARS, BudgetNature
 from housecairn.rooms.models import Room
-from housecairn.tasks import services as task_services
 
 
 def chosen_year(raw: str | None, default: int) -> int:
@@ -31,18 +31,15 @@ def chosen_year(raw: str | None, default: int) -> int:
 
 
 class EntryView(LoginRequiredMixin, TemplateView):
-    """The Budget entry: the budget of the only home, else every home, added by currency."""
+    """The Budget entry: the budget of the current home, else the page to add a home."""
 
     template_name = "budget/entry.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        homes = list(open_homes_for_request(request).order_by("name"))
-        if len(homes) == 1:
-            return redirect("budget:overview", home_id=homes[0].id)
-        year = chosen_year(request.GET.get("year"), task_services.today().year)
-        return self.render_to_response(
-            {"combined": services.combined(homes, year), "year": year, "homes": homes}
-        )
+        target = current.section_root(request, "budget:overview")
+        if target:
+            return redirect(target)
+        return self.render_to_response({"combined": {}, "homes": []})
 
 
 class BudgetPage(WebHomeScopedMixin, TemplateView):

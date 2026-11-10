@@ -162,8 +162,9 @@ HELP_PREFIXES: dict[str, str] = {
     "calendar:": "screens/calendar/",
 }
 # Routes that are not screens of the interface: the API, its schema and
-# explorer, the health check, the web app manifest, and Django's administration site.
-NOT_SCREENS: tuple[str, ...] = ("api-", "healthz", "manifest", "admin:")
+# explorer, the health check, the web app manifest, Django's administration site, and
+# the POST-only route that sets the current home (it redirects, it has no page).
+NOT_SCREENS: tuple[str, ...] = ("api-", "healthz", "manifest", "admin:", "homes:current")
 
 # Languages published by the documentation site, and their path.
 DOCS_LANGUAGES: dict[str, str] = {"en": "", "fr": "fr/"}

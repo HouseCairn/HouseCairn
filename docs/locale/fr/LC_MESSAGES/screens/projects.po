@@ -21,8 +21,8 @@ msgstr ""
 msgid "Projects"
 msgstr "Projets"
 
-msgid "The projects of a home, at `/h/<home id>/projects/`. **Projects** in the navigation opens it; `/projects/` first asks which home when you belong to several."
-msgstr "Les projets d'un logement, à `/h/<id du logement>/projects/`. **Projets** dans la navigation l'ouvre ; `/projects/` demande d'abord quel logement quand vous appartenez à plusieurs."
+msgid "The projects of a home, at `/h/<home id>/projects/`. **Projects** in the navigation opens it; `/projects/` opens the [current home](my-home.md#the-current-home) when you belong to several."
+msgstr "Les projets d'un logement, à `/h/<id du logement>/projects/`. **Projets** dans la navigation l'ouvre ; `/projects/` ouvre le [logement courant](my-home.md#the-current-home) quand vous appartenez à plusieurs."
 
 msgid "A project is a piece of work with an end, such as redoing the bathroom. Three tabs split the projects by status: **In progress** (in progress and planned, the root of the section, at `/h/<home id>/projects/`), **Ideas** (`?view=ideas`) and **Finished** (finished and abandoned, `?view=finished`). Within a tab the list groups the projects by status. It is a plain list, not a board. A row shows the title, the planned budget and, in words, where the budget stands: **... left**, **Over budget by ...** or **On budget**. A row opens the [project](project.md)."
 msgstr "Un projet est un chantier qui a une fin, comme refaire la salle de bain. Trois onglets répartissent les projets par statut : **En cours** (en cours et planifiés, la racine de la section, sur `/h/<id du logement>/projects/`), **Idées** (`?view=ideas`) et **Terminés** (terminés et abandonnés, `?view=finished`). Dans un onglet, la liste groupe les projets par statut. C'est une simple liste, pas un tableau. Une ligne montre le titre, le budget prévu et, en toutes lettres, où en est le budget : **... restants**, **Budget dépassé de ...** ou **Budget respecté**. Une ligne ouvre le [projet](project.md)."

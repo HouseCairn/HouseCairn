@@ -48,13 +48,16 @@ class TestSectionTabs:
         assert current(html) == ["Calendar"]
         assert f"{reverse('calendar:week')}?home={alice_home.id}" in html
 
-    def test_a_calendar_of_several_homes_has_no_tabs(
+    def test_a_calendar_of_all_homes_leads_back_to_all_homes(
         self, signed_in: Client, alice: User, alice_home: Home
     ) -> None:
         from housecairn.homes import services as home_services
 
         home_services.create_home(alice, name="Cottage")
-        assert 'class="tabs' not in signed_in.get(reverse("calendar:week")).text
+        # Before a home is chosen, the calendar shows all homes, with its way back.
+        every = signed_in.get(reverse("calendar:week")).text
+        assert [t for t, _ in tabs_of(every)] == ["Today", "Calendar"]
+        assert current(every) == ["Calendar"]
         one = signed_in.get(reverse("calendar:week"), {"home": str(alice_home.id)}).text
         assert current(one) == ["Calendar"]
 

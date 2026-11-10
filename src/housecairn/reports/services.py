@@ -99,6 +99,13 @@ def open_count(home: Home) -> int:
     return Report.objects.filter(home=home, status__in=ATTENTION_STATUSES).count()
 
 
+def _as_uuid(raw: Any) -> Any:
+    try:
+        return raw if isinstance(raw, UUID) else UUID(str(raw))
+    except ValueError:
+        return None
+
+
 def waiting_for(request: Any, home_id: Any) -> int:
     """How many reports wait for the person, in one home: 0 unless they may write there.
 
@@ -109,6 +116,15 @@ def waiting_for(request: Any, home_id: Any) -> int:
     if not home_id or not user.is_authenticated:
         return 0
     kept: dict[Any, int] = request.__dict__.setdefault("_reports_waiting", {})
+    if home_id not in kept:
+        from housecairn.homes import current
+
+        # The role is already known when the request read the person's homes: a
+        # read-only member waits for nothing, without a query.
+        known = current.known(request)
+        role = known.roles.get(_as_uuid(home_id)) if known is not None else None
+        if role is not None and role not in WRITE_ROLES:
+            kept[home_id] = 0
     if home_id not in kept:
         kept[home_id] = Report.objects.filter(
             home_id=home_id,

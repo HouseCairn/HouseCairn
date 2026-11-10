@@ -1,0 +1,23 @@
+{% load i18n %}{# The selector of the current home (docs/developer/design-guide.md, "Current home"): from two homes on, a disclosure without script. Each choice is a post with its CSRF token; the view checks that the home is one of the person's. "All homes" is offered on Today only. #}
+{% if home_switcher %}
+  <details class="home-switcher">
+    <summary class="home-switcher-toggle">
+      <span class="visually-hidden">{% translate "Current home:" %} </span>
+      <span class="home-switcher-name">{% if home_switcher.all_shown %}{% translate "All homes" %}{% else %}{{ home_switcher.shown.name }}{% endif %}</span>
+      {% include "components/icon.html" with name="chevron" class="home-switcher-chevron" %}
+    </summary>
+    <form class="home-switcher-menu" method="post" action="{% url 'homes:current' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ home_switcher.next }}">
+      <p class="home-switcher-title">{% translate "Change of home" %}</p>
+      <ul>
+        {% if home_switcher.all_offered %}
+          <li><button type="submit" name="home" value="all" class="home-switcher-choice"{% if home_switcher.all_shown %} aria-current="true"{% endif %}>{% translate "All homes" %}</button></li>
+        {% endif %}
+        {% for candidate in home_switcher.homes %}
+          <li><button type="submit" name="home" value="{{ candidate.pk }}" class="home-switcher-choice"{% if not home_switcher.all_shown and home_switcher.shown.pk == candidate.pk %} aria-current="true"{% endif %}>{{ candidate.name }}</button></li>
+        {% endfor %}
+      </ul>
+    </form>
+  </details>
+{% endif %}

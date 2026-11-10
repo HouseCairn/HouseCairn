@@ -4,7 +4,7 @@
     <span class="row-body">
       <span class="row-title">{{ entry.title }}</span>
       <span class="row-text">
-        {% if homes|length > 1 %}{{ entry.home.name }}{% if entry.room or entry.person %} · {% endif %}{% endif %}{% if entry.room %}{{ entry.room }}{% if entry.person %} · {% endif %}{% endif %}{{ entry.person }}
+        {% if chosen_homes|length > 1 %}{{ entry.home.name }}{% if entry.room or entry.person %} · {% endif %}{% endif %}{% if entry.room %}{{ entry.room }}{% if entry.person %} · {% endif %}{% endif %}{{ entry.person }}
       </span>
       <span class="pill {% if entry.status == 'done' %}pill-success{% elif entry.status == 'postponed' %}pill-warning{% elif entry.status == 'skipped' %}pill-ghost{% else %}pill-sand{% endif %}">{{ entry.status_label }}{% if entry.projected %} · {% translate "forecast" %}{% endif %}</span>
       {% if entry.priority == "high" %}<span class="pill pill-danger">{% translate "High" %}</span>{% endif %}

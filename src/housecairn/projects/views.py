@@ -19,9 +19,10 @@ from django.views.generic import FormView, TemplateView
 
 from housecairn.core import navigation
 from housecairn.core.templatetags.tabs import PROJECT_VIEWS
+from housecairn.homes import current
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
-from housecairn.homes.scoping import WebHomeScopedMixin, open_homes_for_request
+from housecairn.homes.scoping import WebHomeScopedMixin
 from housecairn.projects import forms, services
 from housecairn.projects import links as link_services
 from housecairn.projects.files import file_response
@@ -44,15 +45,19 @@ MAX_COMPARED = 6
 
 
 class EntryView(LoginRequiredMixin, TemplateView):
-    """The Projects entry: the projects of the user's only home, else a choice."""
+    """The Projects entry of the navigation: the projects of the current home.
+
+    No home to open: the page that offers to add one (docs/developer/design-guide.md,
+    "Current home").
+    """
 
     template_name = "projects/choose_home.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        homes = list(open_homes_for_request(request).order_by("name"))
-        if len(homes) == 1:
-            return redirect("projects:list", home_id=homes[0].id)
-        return self.render_to_response({"homes": homes})
+        target = current.section_root(request, "projects:list")
+        if target:
+            return redirect(target)
+        return self.render_to_response({"homes": []})
 
 
 class HomeProjectsMixin(WebHomeScopedMixin):

@@ -1,0 +1,25 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Current home.** With two homes or more, the app bar shows the current home with a selector, and **Rooms**, **Projects**, **Budget** and **Today** open on it instead of asking which home at each change of section. Today and the calendar also offer **All homes**, where each row names its home. The current home is a preference of the session, never a permission: only your own homes are listed, and a home you leave is replaced by another ([the current home](../../../screens/my-home.md#the-current-home))."
+msgstr "**Logement courant.** À partir de deux logements, la barre d'application montre le logement courant avec un sélecteur, et **Pièces**, **Projets**, **Budget** et **Aujourd'hui** s'ouvrent sur lui au lieu de demander quel logement à chaque changement de section. Aujourd'hui et le calendrier proposent aussi **Tous les logements**, où chaque ligne nomme son logement. Le logement courant est une préférence de la session, jamais une permission : seuls vos propres logements sont listés, et un logement que vous quittez est remplacé par un autre ([le logement courant](../../../screens/my-home.md#the-current-home))."
+
+msgid "The **Budget** entry no longer adds several homes up by currency: it opens the budget of the current home."
+msgstr "L'entrée **Budget** n'additionne plus plusieurs logements par devise : elle ouvre le budget du logement courant."

@@ -1,18 +1,9 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras navigation %}
+{% load i18n tasks_extras navigation tabs %}
 {% block head_title %}{% translate "Today" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Today" %}</h1>
-  {% if homes|length > 1 %}
-    <form method="get" class="filter-row" role="search">
-      <label class="visually-hidden" for="filter-home">{% translate "Home" %}</label>
-      <select id="filter-home" name="home">
-        <option value="">{% translate "All my homes" %}</option>
-        {% for candidate in homes %}<option value="{{ candidate.id }}"{% if chosen and chosen.id == candidate.id %} selected{% endif %}>{{ candidate.name }}</option>{% endfor %}
-      </select>
-      <button type="submit" class="button-secondary button-small">{% translate "Show" %}</button>
-    </form>
-  {% endif %}
+  {% tab_bar "today" %}
   {% for digest in digests %}
     <section class="digest" aria-labelledby="digest-{{ forloop.counter }}">
       <h2 id="digest-{{ forloop.counter }}"><a href="{% url 'tasks:today' home_id=digest.home.id %}">{{ digest.home.name }}</a></h2>
@@ -40,7 +31,7 @@
               <a class="row" href="{% url_with_next 'rooms:item-detail' home_id=digest.home.id item_id=item.id %}">
                 <span class="row-body">
                   <span class="row-title">{{ item.name }}</span>
-                  <span class="row-text">{{ item.room.name }}</span>
+                  <span class="row-text">{{ digest.home.name }} · {{ item.room.name }}</span>
                   <span class="pill pill-warning">{% blocktranslate with date=item.warranty_ends_on|date:"SHORT_DATE_FORMAT" %}ends {{ date }}{% endblocktranslate %}</span>
                 </span>
               </a>

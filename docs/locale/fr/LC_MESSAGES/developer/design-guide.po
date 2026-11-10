@@ -134,14 +134,14 @@ msgstr "Une seule page d'accueil : Aujourd'hui"
 msgid "A signed-in person has one start screen, Today, and every way in leads to it."
 msgstr "Une personne connectée a un seul écran de départ, Aujourd'hui, et toutes les entrées y mènent."
 
-msgid "The root address `/` **must** lead a signed-in person to Today: the one home they can open, else all their homes together on one Today page. The logo, the Today entry of the navigation outside a home, the `start_url` of the web app manifest and `LOGIN_REDIRECT_URL` **must** all be this address, never a second home screen."
-msgstr "L'adresse racine `/` **doit** mener une personne connectée à Aujourd'hui : son seul logement ouvrable, sinon tous ses logements ensemble sur une page Aujourd'hui. Le logo, l'entrée Aujourd'hui de la navigation hors d'un logement, le `start_url` du manifeste de l'application web et `LOGIN_REDIRECT_URL` **doivent** tous être cette adresse, jamais un second écran d'accueil."
+msgid "The root address `/` **must** lead a signed-in person to Today: Today of the [current home](#current-home), or all their homes together on one Today page when they chose \"All homes\" (and before they chose a home). The logo, the Today entry of the navigation outside a home, the `start_url` of the web app manifest and `LOGIN_REDIRECT_URL` **must** all be this address, never a second home screen."
+msgstr "L'adresse racine `/` **doit** mener une personne connectée à Aujourd'hui : l'Aujourd'hui du [logement courant](#current-home), ou tous ses logements ensemble sur une page Aujourd'hui quand elle a choisi « Tous les logements » (et avant qu'elle ait choisi un logement). Le logo, l'entrée Aujourd'hui de la navigation hors d'un logement, le `start_url` du manifeste de l'application web et `LOGIN_REDIRECT_URL` **doivent** tous être cette adresse, jamais un second écran d'accueil."
 
 msgid "The welcome page **must** be shown only to a visitor who is signed out and to an account with no home to open, with **Add a home**."
 msgstr "La page de bienvenue **doit** n'être montrée qu'à un visiteur déconnecté et à un compte sans logement à ouvrir, avec **Ajouter un logement**."
 
-msgid "With several homes, the page of all homes **must** name each home by a heading that opens its Today. It **must not** repeat a row of tabs per home: rows with the same name are the same landmark to a screen reader."
-msgstr "Avec plusieurs logements, la page de tous les logements **doit** nommer chaque logement par un titre qui ouvre son Aujourd'hui. Elle **ne doit pas** répéter une rangée d'onglets par logement : des rangées de même nom sont le même repère pour un lecteur d'écran."
+msgid "With several homes, the page of all homes **must** name each home by a heading that opens its Today, and each of its rows **must** name its home. It has one row of tabs, Today and Calendar (no list of all tasks across homes), and **must not** repeat a row of tabs per home: rows with the same name are the same landmark to a screen reader."
+msgstr "Avec plusieurs logements, la page de tous les logements **doit** nommer chaque logement par un titre qui ouvre son Aujourd'hui, et chacune de ses lignes **doit** nommer son logement. Elle a une seule rangée d'onglets, Aujourd'hui et Calendrier (pas de liste de toutes les tâches de tous les logements), et **ne doit pas** répéter une rangée d'onglets par logement : des rangées de même nom sont le même repère pour un lecteur d'écran."
 
 msgid "**Report a problem** **must** be on Today for every role, a read-only one included: signing a problem is often the only thing that person does, and it takes one tap to open the form instead of six. The count of the reports that wait **must** follow the entry Reports of More, for the members who may write, read once per request."
 msgstr "**Signaler un problème** **doit** être sur Aujourd'hui pour tous les rôles, la lecture seule comprise : signaler est souvent la seule chose que fait cette personne, et il faut un geste pour ouvrir le formulaire au lieu de six. Le nombre de signalements en attente **doit** suivre l'entrée Signalements de Plus, pour les membres qui peuvent écrire, lu une seule fois par requête."
@@ -546,8 +546,8 @@ msgstr "**La vue** (`OccurrenceActionView`) ne lit `in_place` qu'avec l'en-tête
 msgid "**The banner** lives in `#undo-region`, at the end of `base.html` on every signed-in page, empty, with `aria-live=\"polite\"`: a live region must be in the page before its content changes for a screen reader to hear it. It is fixed at the bottom, above the bar, and stays until the next action or page. The room the page keeps for it at its end follows its real height (`--hc-undo-height`, set by `static/js/undo-region.js`): a long message wraps on four lines at 320 px. Without script nothing can measure it, so `<noscript>` loads `static/css/no-script.css`: the region becomes a sticky box at the end of the page, in the flow, which takes its own room and sticks above the bar (at the corner on a wide screen) while the end of the page is out of sight; no height is reserved, whatever the length of the message. Its Undo posts in place with `in_place=banner`: the answer is the content of the region (\"Undone.\"), and the row back as an out-of-band swap."
 msgstr "**Le bandeau** vit dans `#undo-region`, à la fin de `base.html` sur toute page connectée, vide, avec `aria-live=\"polite\"` : une région active doit être dans la page avant que son contenu change pour qu'un lecteur d'écran l'entende. Il est fixé en bas, au-dessus de la barre, et reste jusqu'à l'action ou la page suivante. La place que la page lui garde à sa fin suit sa hauteur réelle (`--hc-undo-height`, posée par `static/js/undo-region.js`) : un message long passe sur quatre lignes à 320 px. Sans script, rien ne peut la mesurer : `<noscript>` charge donc `static/css/no-script.css`, et la région devient une boîte collante (`sticky`) à la fin de la page, dans le flux, qui prend sa propre place et reste collée au-dessus de la barre (au coin sur un grand écran) tant que la fin de la page n'est pas à l'écran ; aucune hauteur n'est réservée, quelle que soit la longueur du message. Son Annuler envoie sur place avec `in_place=banner` : la réponse est le contenu de la région (« Annulé. »), et la ligne revenue en remplacement hors bande."
 
-msgid "**Focus**: the element that had it is replaced, so the answer gives it back with `autofocus`, which HTMX applies after a swap: the row's link after Done or Skip, the row's Done button after Undo. `scroll-padding-bottom` keeps a focused element clear of the banner (WCAG 2.2, 2.4.11)."
-msgstr "**Focus** : l'élément qui l'avait est remplacé, donc la réponse le rend avec `autofocus`, que HTMX applique après un remplacement : le lien de la ligne après Fait ou Ignorer, le bouton Fait de la ligne après Annuler. `scroll-padding-bottom` garde l'élément qui a le focus hors du bandeau (WCAG 2.2, 2.4.11)."
+msgid "**Focus**: the element that had it is replaced, so the answer gives it back with `autofocus`, which HTMX applies after a swap: the row's link after Done or Skip, the row's Done button after Undo. `scroll-padding-bottom` keeps a focused element clear of the banner (WCAG 2.2, 2.4.11): with script, by the real height of the banner; without script, by that of the longest message, four lines at 320 px (`no-script.css`)."
+msgstr "**Focus** : l'élément qui l'avait est remplacé, donc la réponse le rend avec `autofocus`, que HTMX applique après un remplacement : le lien de la ligne après Fait ou Ignorer, le bouton Fait de la ligne après Annuler. `scroll-padding-bottom` garde l'élément qui a le focus hors du bandeau (WCAG 2.2, 2.4.11) : avec script, de la hauteur réelle du bandeau ; sans script, de celle du message le plus long, quatre lignes à 320 px (`no-script.css`)."
 
 #, python-brace-format, python-format
 msgid "**Without script** the same form posts and the view redirects to `next#occ-<id>`. The banner is kept in the session for that one page (`tasks.in_place.remember`), read once by `{% undo_banner %}` in `base.html`, never in the address: the browser's back button cannot show it again. A row that left the list after Done (an open list no longer shows it) has no anchor to come back to: the page then opens at its top."
@@ -589,20 +589,53 @@ msgstr "Logement courant"
 msgid "Most households have one home; some have two or more (a second home, a rented flat)."
 msgstr "La plupart des foyers ont un seul logement ; certains en ont deux ou plus (une résidence secondaire, un appartement loué)."
 
-msgid "The current home **must** be remembered for the session. Every section then opens on it, without a page that asks which home at each change of section."
-msgstr "Le logement courant **doit** être mémorisé pour la session. Chaque section s'ouvre alors sur lui, sans page qui redemande le logement à chaque changement de section."
+msgid "The current home **must** be remembered for the session. Every section then opens on it, without a page that asks which home at each change of section. It is the home last chosen in the selector, or the home of the last page of a home opened; before either, the first home of the person by name."
+msgstr "Le logement courant **doit** être mémorisé pour la session. Chaque section s'ouvre alors sur lui, sans page qui redemande le logement à chaque changement de section. C'est le dernier logement choisi dans le sélecteur, ou celui de la dernière page d'un logement ouverte ; avant l'un et l'autre, le premier logement de la personne par ordre alphabétique."
 
-msgid "The selector of the current home **must** appear in the app bar only from two homes on. A selector with one choice is noise."
-msgstr "Le sélecteur du logement courant **doit** n'apparaître dans la barre d'application qu'à partir de deux logements. Un sélecteur à un seul choix est du bruit."
+msgid "The selector of the current home **must** appear in the app bar only from two homes on. A selector with one choice is noise. It names the home of the page when the address has one, else the current home."
+msgstr "Le sélecteur du logement courant **doit** n'apparaître dans la barre d'application qu'à partir de deux logements. Un sélecteur à un seul choix est du bruit. Il nomme le logement de la page quand l'adresse en porte un, sinon le logement courant."
 
-msgid "Today **must** offer \"All homes\" in the selector; the other sections show one home at a time."
-msgstr "Aujourd'hui **doit** proposer « Tous les logements » dans le sélecteur ; les autres sections montrent un logement à la fois."
+msgid "Changing the home **must** be a post with its CSRF token, never a link: it changes the state of the session. The selector is a disclosure (`details`) whose choices are the buttons of one form, so it works without script. It opens the same screen in the home chosen when the route needs only a home (a section root, a tab), else the root of the section: a room of one home does not exist in the other."
+msgstr "Changer de logement **doit** être un envoi de formulaire avec son jeton CSRF, jamais un lien : cela change l'état de la session. Le sélecteur est un volet dépliant (`details`) dont les choix sont les boutons d'un même formulaire : il fonctionne sans script. Il ouvre le même écran dans le logement choisi quand la route ne demande qu'un logement (une racine de section, un onglet), sinon la racine de la section : une pièce d'un logement n'existe pas dans l'autre."
 
-msgid "A page of a home **must** keep the home in its address ([ADR 0010](../adr/0010-stable-urls.md)). The current home only chooses where a section root opens; a link to a page always opens the same page."
-msgstr "Une page d'un logement **doit** garder le logement dans son adresse ([ADR 0010](../adr/0010-stable-urls.md)). Le logement courant choisit seulement où s'ouvre une racine de section ; un lien vers une page ouvre toujours la même page."
+msgid "Today **must** offer \"All homes\" in the selector; the other sections show one home at a time. \"All homes\" is the page of all homes at `/`, and the calendar of all homes; it leaves the current home of the other sections as it was."
+msgstr "Aujourd'hui **doit** proposer « Tous les logements » dans le sélecteur ; les autres sections montrent un logement à la fois. « Tous les logements » est la page de tous les logements sur `/`, et le calendrier de tous les logements ; il laisse le logement courant des autres sections tel qu'il était."
 
-msgid "**Isolation.** Every query **must** be scoped to the homes of the person ([ADR 0006](../adr/0006-home-scoping.md)), and the current home **must not** replace that check. A value kept in a session is a preference, not a permission. The selector and \"All homes\" list only the homes the person belongs to, and a home they left is dropped from the session."
-msgstr "**Isolation.** Chaque requête **doit** être limitée aux logements de la personne ([ADR 0006](../adr/0006-home-scoping.md)), et le logement courant **ne doit pas** remplacer cette vérification. Une valeur gardée en session est une préférence, pas une permission. Le sélecteur et « Tous les logements » ne listent que les logements dont la personne est membre, et un logement qu'elle a quitté est retiré de la session."
+msgid "A page of a home **must** keep the home in its address ([ADR 0010](../adr/0010-stable-urls.md)). The current home only chooses where a section root opens (the entries `/rooms/`, `/tasks/`, `/stock/`, `/projects/`, `/budget/`, `/` and the calendar without `?home=`); a link to a page always opens the same page."
+msgstr "Une page d'un logement **doit** garder le logement dans son adresse ([ADR 0010](../adr/0010-stable-urls.md)). Le logement courant choisit seulement où s'ouvre une racine de section (les entrées `/rooms/`, `/tasks/`, `/stock/`, `/projects/`, `/budget/`, `/` et le calendrier sans `?home=`) ; un lien vers une page ouvre toujours la même page."
+
+msgid "**Isolation.** Every query **must** be scoped to the homes of the person ([ADR 0006](../adr/0006-home-scoping.md)), and the current home **must not** replace that check. A value kept in a session is a preference, not a permission. The selector and \"All homes\" list only the homes the person belongs to, and a home they left, deleted or that is locked behind a sign-in provider is dropped from the session: the next home takes its place, or, with none left, the page that offers to add one. An API token never reads nor writes it: its homes are those of the token."
+msgstr "**Isolation.** Chaque requête **doit** être limitée aux logements de la personne ([ADR 0006](../adr/0006-home-scoping.md)), et le logement courant **ne doit pas** remplacer cette vérification. Une valeur gardée en session est une préférence, pas une permission. Le sélecteur et « Tous les logements » ne listent que les logements dont la personne est membre, et un logement qu'elle a quitté, supprimé ou qui est verrouillé derrière un fournisseur de connexion est retiré de la session : le logement suivant prend sa place, ou, s'il n'en reste aucun, la page qui propose d'en ajouter un. Un jeton d'API ne le lit ni ne l'écrit jamais : ses logements sont ceux du jeton."
+
+msgid "`housecairn.homes.current` is the one implementation."
+msgstr "`housecairn.homes.current` en est l'unique mise en œuvre."
+
+msgid "`for_request(request)`"
+msgstr "`for_request(request)`"
+
+msgid "A `Current`, read once per request: `homes` (the homes the person may open now, by name), `home` (the current one, or `None` without a home), `all_homes` (\"All homes\" chosen for Today), `roles` (the role of the person in each), `find(id)` (a home of `homes`, else `None`). The stored id is checked against `homes` at every request."
+msgstr "Un `Current`, lu une fois par requête : `homes` (les logements que la personne peut ouvrir maintenant, par nom), `home` (le logement courant, ou `None` sans logement), `all_homes` (« Tous les logements » choisi pour Aujourd'hui), `roles` (le rôle de la personne dans chacun), `find(id)` (un logement de `homes`, sinon `None`). L'identifiant gardé est vérifié contre `homes` à chaque requête."
+
+msgid "`section_root(request, route)`"
+msgstr "`section_root(request, route)`"
+
+msgid "The address of a route of one home in the current home, or `None`: what an entry view redirects to."
+msgstr "L'adresse d'une route d'un logement dans le logement courant, ou `None` : là où redirige une vue d'entrée."
+
+msgid "`remember(request, home)`"
+msgstr "`remember(request, home)`"
+
+msgid "Makes `home` current. `WebHomeScopedMixin.get_home()` calls it after its own check, so a page of a home needs nothing more."
+msgstr "Fait de `home` le logement courant. `WebHomeScopedMixin.get_home()` l'appelle après sa propre vérification : une page d'un logement n'a rien d'autre à faire."
+
+msgid "`choose(request, home)`"
+msgstr "`choose(request, home)`"
+
+msgid "The choice of the selector (`None` for \"All homes\"), posted to `homes:current`."
+msgstr "Le choix du sélecteur (`None` pour « Tous les logements »), envoyé à `homes:current`."
+
+msgid "A new view that needs a home **must** take it from its address through `WebHomeScopedMixin.get_home()`, which answers 404 for a home that is not the person's. A new section entry without a home in its address redirects to `current.section_root(request, \"<app>:<root>\")`, and renders the page that offers to add a home when it is `None`. A view **must not** read the session key itself, nor use `current.for_request(request).home` to read or change data: that home is only where to go, and the page it leads to checks it again."
+msgstr "Une nouvelle vue qui a besoin d'un logement **doit** le prendre dans son adresse par `WebHomeScopedMixin.get_home()`, qui répond 404 pour un logement qui n'est pas celui de la personne. Une nouvelle entrée de section sans logement dans son adresse redirige vers `current.section_root(request, \"<app>:<root>\")`, et affiche la page qui propose d'ajouter un logement quand elle vaut `None`. Une vue **ne doit pas** lire elle-même la clé de session, ni se servir de `current.for_request(request).home` pour lire ou modifier des données : ce logement dit seulement où aller, et la page où il mène le vérifie de nouveau."
 
 msgid "Dates, reminders and alerts"
 msgstr "Échéances, rappels et alertes"
@@ -613,8 +646,8 @@ msgstr "L'application a déjà une façon de rappeler et une façon d'alerter ; 
 msgid "A date that someone must act on **must** be a task with a due date. The task is then shown on Today: overdue, today, and up to the person's horizon, 7 days by default (the `horizon_days` preference, `Horizon.WEEK`). It is also shown on the Calendar and in the calendar feeds, and its reminders go out through the channels of the person ([ADR 0043](../adr/0043-notifications-through-apprise.md)), with the rules of postponing, Done and Skip that every task has. A reminder written again for one screen would ignore the quiet hours and the follow-ups of the person."
 msgstr "Une date à laquelle quelqu'un doit agir **doit** être une tâche avec une échéance. La tâche apparaît alors dans Aujourd'hui : en retard, aujourd'hui, et jusqu'à l'horizon de la personne, 7 jours par défaut (la préférence `horizon_days`, `Horizon.WEEK`). Elle apparaît aussi dans le Calendrier et dans les flux de calendrier, et ses rappels partent par les canaux de la personne ([ADR 0043](../adr/0043-notifications-through-apprise.md)), avec les règles de report, de Fait et d'Ignorer que toute tâche a. Un rappel réécrit pour un écran ignorerait les heures de silence et les relances de la personne."
 
-msgid "A date that only informs (the end of a warranty) **must** be a list of the agenda digest, `housecairn.tasks.agenda.my_home`, shown on Today for all homes (`/`, when the person has several homes), as the warranties ending soon are today. It is read, not acted on, and sends no notification. This digest is not the daily summary message of the notifications."
-msgstr "Une date qui ne fait qu'informer (la fin d'une garantie) **doit** être une liste du récapitulatif de l'agenda, `housecairn.tasks.agenda.my_home`, affichée dans Aujourd'hui pour tous les logements (`/`, quand la personne a plusieurs logements), comme le sont aujourd'hui les garanties qui se terminent bientôt. Elle se lit, on n'agit pas dessus, et elle n'envoie aucune notification. Ce récapitulatif n'est pas le message de résumé quotidien des notifications."
+msgid "A date that only informs (the end of a warranty) **must** be a list of the agenda digest, `housecairn.tasks.agenda.my_home`, shown on Today for all homes (`/`, with \"All homes\" chosen), as the warranties ending soon are today. It is read, not acted on, and sends no notification. This digest is not the daily summary message of the notifications."
+msgstr "Une date qui ne fait qu'informer (la fin d'une garantie) **doit** être une liste du récapitulatif de l'agenda, `housecairn.tasks.agenda.my_home`, affichée dans Aujourd'hui pour tous les logements (`/`, avec « Tous les logements » choisi), comme le sont aujourd'hui les garanties qui se terminent bientôt. Elle se lit, ne demande aucune action et n'envoie aucune notification. Ce récapitulatif n'est pas le message de synthèse quotidien des notifications."
 
 msgid "An event with no due date (a problem was reported) **must** be an alert of `housecairn.notifications.alerts`, sent in the background to the members who may write, except the person who caused it, with the quiet hours applied. The open reports are also a line on Today with a link, for the members who may write."
 msgstr "Un événement sans échéance (un problème a été signalé) **doit** être une alerte de `housecairn.notifications.alerts`, envoyée en arrière-plan aux membres qui peuvent écrire, sauf à la personne qui l'a provoqué, en respectant les heures de silence. Les signalements ouverts sont aussi une ligne dans Aujourd'hui, avec un lien, pour les membres qui peuvent écrire."
@@ -981,12 +1014,15 @@ msgstr "NAV-16"
 msgid "The calendar outside the home, with no back link."
 msgstr "Le calendrier hors du logement, sans lien retour."
 
-msgid "The calendar is a tab of Today"
-msgstr "Le calendrier est un onglet d'Aujourd'hui"
+msgid "The calendar is a tab of Today, on the [current home](#current-home)"
+msgstr "Le calendrier est un onglet d'Aujourd'hui, sur le [logement courant](#current-home)"
 
 msgid "The audit compared the interface with Material 3, Apple's guidelines, the Nielsen heuristics and WCAG 2.2 (see [References](#references)), and with other home management applications. The full report stays outside the repository; this table and [ADR 0053](../adr/0053-target-navigation-and-return-rule.md) keep what was decided from it."
 msgstr "L'audit a comparé l'interface à Material 3, aux recommandations d'Apple, aux heuristiques de Nielsen et aux WCAG 2.2 (voir [Références](#references)), ainsi qu'à d'autres applications de gestion de la maison. Le rapport complet reste hors du dépôt ; ce tableau et l'[ADR 0053](../adr/0053-target-navigation-and-return-rule.md) gardent ce qui en a été décidé."
 
 #~ msgid "[ ] Every link to a record or a form carries `next`, checked by the shared helper, and the form keeps it in a hidden field."
 #~ msgstr "[ ] Chaque lien vers une fiche ou un formulaire porte `next`, vérifié par l'utilitaire partagé, et le formulaire le garde dans un champ caché."
+
+#~ msgid "Today **must** offer \"All homes\" in the selector; the other sections show one home at a time."
+#~ msgstr "Aujourd'hui **doit** proposer « Tous les logements » dans le sélecteur ; les autres sections montrent un logement à la fois."
 

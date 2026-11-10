@@ -30,8 +30,8 @@ msgstr "**Déconnecté** : le nom de l'application et **Se connecter**."
 msgid "**Signed in with one home**: it opens the [Today](today.md) of that home. The logo, **Today** in the navigation, the address an installed application starts on and the page you reach after signing in all lead here, so the day always starts on Today."
 msgstr "**Connecté avec un logement** : elle ouvre l'[Aujourd'hui](today.md) de ce logement. Le logo, **Aujourd'hui** dans la navigation, l'adresse sur laquelle démarre une application installée et la page où l'on arrive après la connexion mènent toutes ici : la journée commence toujours sur Aujourd'hui."
 
-msgid "**Signed in with several homes**: [Today in several homes](my-home.md)."
-msgstr "**Connecté avec plusieurs logements** : [Aujourd'hui avec plusieurs logements](my-home.md)."
+msgid "**Signed in with several homes**: the [Today](today.md) of the [current home](my-home.md#the-current-home), or [Today in several homes](my-home.md) when you chose **All homes** (and before you chose a home)."
+msgstr "**Connecté avec plusieurs logements** : l'[Aujourd'hui](today.md) du [logement courant](my-home.md#the-current-home), ou [Aujourd'hui avec plusieurs logements](my-home.md) quand vous avez choisi **Tous les logements** (et avant que vous ayez choisi un logement)."
 
 msgid "**Signed in with no home to open**: the welcome page, with **Add a home** and **My homes**."
 msgstr "**Connecté sans logement à ouvrir** : la page de bienvenue, avec **Ajouter un logement** et **Mes logements**."
@@ -41,4 +41,7 @@ msgstr "**Connecté sans logement à ouvrir** : la page de bienvenue, avec **Ajo
 
 #~ msgid "The first page of the instance, at its root address. It names the application and offers to sign in or, once signed in, to go to your homes. Once signed in, **Today** in the navigation opens [My home](my-home.md)."
 #~ msgstr "La première page de l'instance, à sa racine. Elle nomme l'application et propose de se connecter ou, une fois connecté, d'aller à vos logements. Une fois connecté, **Aujourd'hui** dans la navigation ouvre [Mon accueil](my-home.md)."
+
+#~ msgid "**Signed in with several homes**: [Today in several homes](my-home.md)."
+#~ msgstr "**Connecté avec plusieurs logements** : [Aujourd'hui avec plusieurs logements](my-home.md)."
 

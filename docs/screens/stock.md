@@ -1,8 +1,8 @@
 # Stock
 
 The stock of a home, at `/h/<home id>/stock/`. It is the **Stock** tab of
-**Rooms** in the navigation; `/stock/` opens it directly when you belong to a single home
-and, with several homes, first asks which one. Each row shows the name of the item, its current quantity with
+**Rooms** in the navigation; `/stock/` opens it directly, on the
+[current home](my-home.md#the-current-home) when you belong to several. Each row shows the name of the item, its current quantity with
 its unit and where it is stored; a **Low** label appears when the quantity has
 fallen to the threshold or below. A row opens the [stock item](stock-item.md).
 

@@ -86,12 +86,13 @@ class TestTheStartPage:
         assert response.status_code == 302
         assert response["Location"] == reverse("index")
 
-    def test_the_selector_stays_on_the_home_page(
+    def test_the_selector_of_the_app_bar_comes_back_to_the_home_page(
         self, signed_in: Client, alice_home: Home, second_home: Home
     ) -> None:
         html = signed_in.get(reverse("index")).content.decode()
-        assert 'name="home"' in html
-        assert "action=" not in html.split('name="home"')[0].rsplit("<form", 1)[1]
+        form = html.split('name="home"')[0].rsplit("<form", 1)[1]
+        assert f'action="{reverse("homes:current")}"' in form
+        assert 'name="next" value="/"' in form
 
 
 class TestEveryDoorLeadsToToday:

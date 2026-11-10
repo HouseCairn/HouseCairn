@@ -1,10 +1,10 @@
-{% load i18n tasks_extras navigation %}{# One open occurrence as a link, without buttons. `occurrence`, `home`, `today`. #}
+{% load i18n tasks_extras navigation %}{# One open occurrence as a link, without buttons. `occurrence`, `home`, `today`. The page of all homes shows several homes together: each row names its home. #}
 <li class="task-row{% if occurrence|late_days:today %} task-row-overdue{% endif %}">
   <a class="row" href="{% url_with_next 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
     <span class="row-body">
       <span class="row-title">{{ occurrence.task.title }}</span>
       <span class="row-text">
-        {% if occurrence.task.room %}{{ occurrence.task.room.name }}{% if occurrence.task.item %} · {{ occurrence.task.item.name }}{% endif %}{% elif occurrence.task.item %}{{ occurrence.task.item.name }}{% endif %}
+        {{ home.name }}{% if occurrence.task.room or occurrence.task.item %} · {% endif %}{% if occurrence.task.room %}{{ occurrence.task.room.name }}{% if occurrence.task.item %} · {{ occurrence.task.item.name }}{% endif %}{% elif occurrence.task.item %}{{ occurrence.task.item.name }}{% endif %}
       </span>
       {% include "tasks/_due.html" %}
     </span>

@@ -1,9 +1,8 @@
 # Budget
 
 The budget of a home, at `/h/<home id>/budget/`. **Budget** in the navigation opens it,
-with its tabs **Summary**, **Rooms**, **Projects** and **Upkeep**. `/budget/` goes straight to the budget of your only home, and
-adds your homes up by currency when you belong to several (never converting one currency
-into another).
+with its tabs **Summary**, **Rooms**, **Projects** and **Upkeep**. `/budget/` goes straight to the budget of the
+[current home](my-home.md#the-current-home), without asking which home.
 
 The page is figures only: nothing on it changes your data, so everyone who can open the home
 reads it, read-only members included. How the figures are worked out is in the

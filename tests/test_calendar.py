@@ -1004,7 +1004,7 @@ class TestScreens:
             == 200
         )
 
-    def test_several_homes_are_combined_and_can_be_chosen(
+    def test_several_homes_are_combined_before_a_choice_and_one_can_be_chosen(
         self, signed_in: Client, alice: User, alice_home: Home
     ) -> None:
         flat = home_services.create_home(alice, name="Holiday flat")
@@ -1013,7 +1013,9 @@ class TestScreens:
         combined = signed_in.get(reverse("calendar:week")).content.decode()
         assert "In the house" in combined
         assert "In the flat" in combined
-        assert 'id="filter-home"' in combined
+        # The home is chosen in the selector of the app bar, not in a filter.
+        assert 'id="filter-home"' not in combined
+        assert 'name="home" value="all"' in combined
         only = signed_in.get(reverse("calendar:week"), {"home": str(flat.id)}).content.decode()
         assert "In the flat" in only
         assert "In the house" not in only

@@ -21,11 +21,11 @@ msgstr ""
 msgid "Today in several homes"
 msgstr "Aujourd'hui avec plusieurs logements"
 
-msgid "What concerns you across your homes, at the root address `/`, when you can open more than one home. With one home, `/` opens the [Today](today.md) of that home; with none, it shows the [start page](start-page.md). **Today** in the navigation leads here from a page that is not about one home. The address `/me/` of earlier versions redirects to `/`."
-msgstr "Ce qui vous concerne dans vos logements, sur l'adresse racine `/`, quand vous pouvez en ouvrir plusieurs. Avec un seul logement, `/` ouvre l'[Aujourd'hui](today.md) de ce logement ; sans logement, elle montre la [page de départ](start-page.md). **Aujourd'hui** dans la navigation mène ici depuis une page qui ne concerne pas un logement. L'adresse `/me/` des versions précédentes redirige vers `/`."
+msgid "What concerns you across your homes, at the root address `/`, when you can open more than one home and chose **All homes** in the selector of the app bar (it is also what `/` shows before you choose a home). With one home, `/` opens the [Today](today.md) of that home; with none, it shows the [start page](start-page.md). The address `/me/` of earlier versions redirects to `/`."
+msgstr "Ce qui vous concerne dans vos logements, sur l'adresse racine `/`, quand vous pouvez en ouvrir plusieurs et avez choisi **Tous les logements** dans le sélecteur de la barre d'application (c'est aussi ce que montre `/` avant que vous ayez choisi un logement). Avec un seul logement, `/` ouvre l'[Aujourd'hui](today.md) de ce logement ; sans logement, elle montre la [page de départ](start-page.md). L'adresse `/me/` des versions précédentes redirige vers `/`."
 
-msgid "With several homes, the selector at the top chooses one, or **All my homes** to see them together. Each home has its name as a heading, which opens its [Today](today.md), and **Report a problem** under it, which opens the [form](report-form.md) for that home. Under them:"
-msgstr "Avec plusieurs logements, le sélecteur du haut en choisit un, ou **Tous mes logements** pour les voir ensemble. Chaque logement a son nom en titre, qui ouvre son [Aujourd'hui](today.md), et **Signaler un problème** dessous, qui ouvre le [formulaire](report-form.md) de ce logement. Ensuite :"
+msgid "The tabs are **Today** and **Calendar** (the [calendar](calendar.md) of all your homes). Each home has its name as a heading, which opens its [Today](today.md), and **Report a problem** under it, which opens the [form](report-form.md) for that home. Under them:"
+msgstr "Les onglets sont **Aujourd'hui** et **Calendrier** (le [calendrier](calendar.md) de tous vos logements). Chaque logement a son nom en titre, qui ouvre son [Aujourd'hui](today.md), et **Signaler un problème** dessous, qui ouvre le [formulaire](report-form.md) de ce logement. Ensuite :"
 
 msgid "**Assigned to me**: the open tasks that are yours, the late ones first."
 msgstr "**Qui me sont confiées** : les tâches ouvertes qui sont les vôtres, les plus en retard d'abord."
@@ -39,11 +39,26 @@ msgstr "**Personne ne s'en est chargé** : les tâches ouvertes sans responsable
 msgid "**Warranties ending soon**: items whose warranty ends within 60 days; a row opens the item."
 msgstr "**Garanties qui se terminent bientôt** : les éléments dont la garantie se termine dans les 60 jours ; une ligne ouvre l'élément."
 
-msgid "The lists share no row, so a late task of yours is only in the first one. Each list shows at most 20 rows. A row opens the [task](task.md); close it from [Today](today.md). A home with nothing for you says so."
-msgstr "Les listes ne partagent aucune ligne : une tâche en retard qui est la vôtre n'est que dans la première. Chaque liste montre 20 lignes au plus. Une ligne ouvre la [tâche](task.md) ; fermez-la depuis [Aujourd'hui](today.md). Un logement où rien ne vous attend le dit."
+msgid "The lists share no row, so a late task of yours is only in the first one. Each row names its home. Each list shows at most 20 rows. A row opens the [task](task.md); close it from [Today](today.md). A home with nothing for you says so."
+msgstr "Les listes ne partagent aucune ligne : une tâche en retard qui est la vôtre n'est que dans la première. Chaque ligne nomme son logement. Chaque liste montre 20 lignes au plus. Une ligne ouvre la [tâche](task.md) ; fermez-la depuis [Aujourd'hui](today.md). Un logement où rien ne vous attend le dit."
 
 msgid "**Display preferences** at the bottom opens the [display preferences](display-preferences.md)."
 msgstr "**Préférences d'affichage**, en bas, ouvre les [préférences d'affichage](display-preferences.md)."
+
+msgid "The current home"
+msgstr "Le logement courant"
+
+msgid "From two homes on, the app bar shows the name of the current home with a selector (on a computer, above the column of sections). The sections open on that home: **Rooms**, **Projects**, **Budget**, and **Today** unless you chose **All homes**. The current home is the one you last chose in the selector, or the home of the last page of a home you opened; before either, the first of your homes by name."
+msgstr "À partir de deux logements, la barre d'application montre le nom du logement courant avec un sélecteur (sur ordinateur, au-dessus de la colonne des sections). Les sections s'ouvrent sur ce logement : **Pièces**, **Projets**, **Budget**, et **Aujourd'hui** sauf si vous avez choisi **Tous les logements**. Le logement courant est le dernier que vous avez choisi dans le sélecteur, ou celui de la dernière page d'un logement que vous avez ouverte ; avant l'un et l'autre, le premier de vos logements par ordre alphabétique."
+
+msgid "Choosing a home opens the same screen in that home (the room list, the budget), or the first screen of the section when the page was a record of the other home (a room, a task)."
+msgstr "Choisir un logement ouvre le même écran dans ce logement (la liste des pièces, le budget), ou le premier écran de la section quand la page était une fiche de l'autre logement (une pièce, une tâche)."
+
+msgid "**All homes** is offered on Today only: Today and the calendar then show all your homes together, and the other sections stay on the current home."
+msgstr "**Tous les logements** n'est proposé que dans Aujourd'hui : Aujourd'hui et le calendrier montrent alors tous vos logements ensemble, et les autres sections restent sur le logement courant."
+
+msgid "The selector only lists the homes you belong to. A home you leave, or that is deleted, is replaced by another of your homes, or, with none left, by the page that offers to add one. With one home, there is no selector."
+msgstr "Le sélecteur ne liste que les logements dont vous êtes membre. Un logement que vous quittez, ou qui est supprimé, est remplacé par un autre de vos logements, ou, s'il n'en reste aucun, par la page qui propose d'en ajouter un. Avec un seul logement, il n'y a pas de sélecteur."
 
 #~ msgid "My home"
 #~ msgstr "Mon accueil"

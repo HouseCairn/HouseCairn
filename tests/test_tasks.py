@@ -1035,9 +1035,10 @@ class TestScreens:
     ) -> None:
         response = signed_in.get(reverse("tasks"))
         assert response["Location"] == url("list", alice_home)
+        signed_in.get(url("list", alice_home))
         home_services.create_home(alice, name="Holiday flat")
-        chooser = signed_in.get(reverse("tasks")).content.decode()
-        assert "Choose the home" in chooser
+        # With two homes, the current one (the one last opened), without asking.
+        assert signed_in.get(reverse("tasks"))["Location"] == url("list", alice_home)
         # The navigation entry and the "All tasks" tab.
         assert (
             signed_in.get(url("list", alice_home)).content.decode().count('aria-current="page"')

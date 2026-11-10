@@ -73,7 +73,19 @@ class HomeScopedMixin:
 
 
 class WebHomeScopedMixin(LoginRequiredMixin, HomeScopedMixin):
-    """Web views: sign-in required, then the same scoping as the API."""
+    """Web views: sign-in required, then the same scoping as the API.
+
+    A home the person may open, read from the address, becomes the current home
+    (`homes.current`): the sections then open on the home being looked at.
+    """
+
+    def get_home(self, *, allow_locked: bool = False) -> Home:
+        home = super().get_home(allow_locked=allow_locked)
+        if not allow_locked:
+            from housecairn.homes import current
+
+            current.remember(self.request, home)
+        return home
 
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
         try:

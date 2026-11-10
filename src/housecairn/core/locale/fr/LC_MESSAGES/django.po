@@ -158,6 +158,9 @@ msgstr "Étiquette QR"
 msgid "More"
 msgstr "Plus"
 
+msgid "Welcome"
+msgstr "Bienvenue"
+
 msgid "Add a task"
 msgstr "Ajouter une tâche"
 
@@ -195,12 +198,12 @@ msgctxt "added message"
 msgid "Open"
 msgstr "Ouvrir"
 
+msgid "Calendar"
+msgstr "Calendrier"
+
 msgctxt "tasks"
 msgid "All"
 msgstr "Toutes"
-
-msgid "Calendar"
-msgstr "Calendrier"
 
 msgid "In progress"
 msgstr "En cours"
@@ -359,9 +362,6 @@ msgstr "Code source et signalement de sécurité sur GitHub."
 msgid "Developed with an AI agent, under human review."
 msgstr "Développé avec un agent IA, sous revue humaine."
 
-msgid "Welcome"
-msgstr "Bienvenue"
-
 msgid "Add a home"
 msgstr "Ajouter un logement"
 
@@ -394,6 +394,15 @@ msgstr "Effacer votre compte et vos données. Vous confirmez à la page suivante
 
 msgid "Help for this page"
 msgstr "Aide sur cette page"
+
+msgid "Current home:"
+msgstr "Logement courant :"
+
+msgid "All homes"
+msgstr "Tous les logements"
+
+msgid "Change of home"
+msgstr "Changer de logement"
 
 msgid "Main navigation"
 msgstr "Navigation principale"

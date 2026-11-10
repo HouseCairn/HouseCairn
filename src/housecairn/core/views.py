@@ -20,22 +20,23 @@ from housecairn.instance.config import instance_name
 class IndexView(TemplateView):
     """The one home of the application (docs/developer/design-guide.md, Today).
 
-    Signed in, it is Today: the one home of the person, else their homes together. The
-    welcome page is for a signed-out visitor and for an account with no home to open.
+    Signed in, it is Today: Today of the current home, or all the homes of the person
+    together when they chose "All homes" in the selector (and before they chose a home).
+    The welcome page is for a signed-out visitor and for an account with no home to open.
     """
 
     template_name = "core/index.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         if request.user.is_authenticated:
-            from housecairn.homes.scoping import open_homes_for_request
+            from housecairn.homes import current
             from housecairn.tasks.views import MyHomeView
 
-            homes = list(open_homes_for_request(request).values_list("id", flat=True)[:2])
-            if len(homes) == 1:
-                return redirect("tasks:today", home_id=homes[0])
-            if homes:
+            chosen = current.for_request(request)
+            if chosen.all_homes:
                 return cast(HttpResponse, MyHomeView.as_view()(request))
+            if chosen.home is not None:
+                return redirect("tasks:today", home_id=chosen.home.pk)
         return super().get(request, *args, **kwargs)
 
 
@@ -45,12 +46,12 @@ class MoreView(LoginRequiredMixin, TemplateView):
     template_name = "core/more.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        from housecairn.homes.scoping import open_homes_for_request
+        from housecairn.homes import current
 
         # The Home group is about the home being viewed; More has none in its address,
-        # so it is the person's only home, if they have exactly one.
-        homes = list(open_homes_for_request(self.request).values_list("id", flat=True)[:2])
-        home_id = homes[0] if len(homes) == 1 else None
+        # so it is the current home (docs/developer/design-guide.md, "Current home").
+        home = current.for_request(self.request).home
+        home_id = home.pk if home else None
         from housecairn.reports.services import waiting_for
 
         return super().get_context_data(
