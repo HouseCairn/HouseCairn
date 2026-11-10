@@ -233,6 +233,15 @@ class TaskViewSet(
                 pass
             case _:
                 raise exceptions.ValidationError({"status": ["Use open or closed."]})
+        match params.get("due"):
+            case "none":
+                # Active (not deleted, with an open occurrence) and nothing planned: an open
+                # occurrence without a date. A closed task has no open occurrence at all.
+                tasks = tasks.filter(open_occurrence_id__isnull=False, open_due_on__isnull=True)
+            case None | "":
+                pass
+            case _:
+                raise exceptions.ValidationError({"due": ["Use none."]})
         if (before := _date_param(self.request, "due_before")) is not None:
             tasks = tasks.filter(open_due_on__lte=before)
         if (after := _date_param(self.request, "due_after")) is not None:
@@ -248,6 +257,13 @@ class TaskViewSet(
             OpenApiParameter("item", OpenApiTypes.UUID),
             OpenApiParameter("assignee", OpenApiTypes.UUID),
             OpenApiParameter("contractor", OpenApiTypes.UUID),
+            OpenApiParameter(
+                "due",
+                str,
+                enum=["none"],
+                description="`none`: only the active tasks with no due date, whose open "
+                "occurrence has no date; closed tasks are left out.",
+            ),
             *DATE_PARAMS,
         ]
     )

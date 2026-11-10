@@ -1,0 +1,22 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Tasks without a date in the API.** `GET /api/v1/homes/<id>/tasks/?due=none` returns only the active tasks that have no due date, so an integration no longer has to read the whole list to find them. It combines with the other filters and with the cursor; any other value of `due` is a 400. See the [API guide](../../../api/index.md)."
+msgstr "**Tâches sans date dans l'API.** `GET /api/v1/homes/<id>/tasks/?due=none` ne renvoie que les tâches actives sans date d'échéance : une intégration n'a plus à relire toute la liste pour les trouver. Le filtre se combine avec les autres et avec le curseur ; toute autre valeur de `due` est une erreur 400. Voir le [guide de l'API](../../../api/index.md)."
