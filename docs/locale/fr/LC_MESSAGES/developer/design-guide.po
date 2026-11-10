@@ -291,6 +291,18 @@ msgstr "`after_delete(request, parent, gone)`"
 msgid "Where a deletion goes: `next`, unless its route names one of the ids in `gone` (the object and its children), else `parent`."
 msgstr "Où mène une suppression : `next`, sauf si sa route nomme l'un des identifiants de `gone` (l'objet et ses enfants), sinon `parent`."
 
+msgid "`stay(request, page)`"
+msgstr "`stay(request, page)`"
+
+msgid "`page` again after an action in place, still knowing where it was opened from: `page` with the safe `next` of the request, or without one."
+msgstr "`page` de nouveau après une action sur place, en sachant toujours d'où elle a été ouverte : `page` avec le `next` sûr de la requête, ou sans lui."
+
+msgid "`breadcrumbs(request, default, default_label)`"
+msgstr "`breadcrumbs(request, default, default_label)`"
+
+msgid "The tree from the section down to the page, as a list of `Crumb` (url, label; no url for the page itself). Built from `default`, the parent of the page, and the parents of that parent (`PARENTS`); the last crumb is the title of the page (a record of `LABELS`, or `FORM_TITLES` for a form). Empty when the page or an ancestor has no label, and when the parent is More."
+msgstr "L'arbre de la section jusqu'à la page, sous forme de liste de `Crumb` (adresse, libellé ; pas d'adresse pour la page elle-même). Construit depuis `default`, le parent de la page, et les parents de ce parent (`PARENTS`) ; le dernier élément est le titre de la page (un enregistrement de `LABELS`, ou `FORM_TITLES` pour un formulaire). Vide quand la page ou un ancêtre n'a pas de libellé, et quand le parent est Plus."
+
 msgid "`label_for(url, request)`"
 msgstr "`label_for(url, request)`"
 
@@ -307,8 +319,8 @@ msgstr "Usage"
 msgid "`{% back_link default %}`, `{% back_link default label %}`"
 msgstr "`{% back_link default %}`, `{% back_link default label %}`"
 
-msgid "The back link of the page. It leads to the safe `next` when its route has a label, named after it, else to `default`, named `label` or after the route of `default`. A link to More is shown on a phone only."
-msgstr "Le lien retour de la page. Il mène au `next` sûr quand sa route a un libellé, et porte ce libellé ; sinon à `default`, nommé par `label` ou d'après la route de `default`. Un lien vers Plus ne s'affiche que sur téléphone."
+msgid "The back link of the page. It leads to the safe `next` when its route has a label, named after it, else to `default`, named `label` or after the route of `default`. A link to More is shown on a phone only. On a computer it also draws the breadcrumbs of the page, and keeps the link only on a form or when the origin is not the parent."
+msgstr "Le lien retour de la page. Il mène au `next` sûr quand sa route a un libellé, et porte ce libellé ; sinon à `default`, nommé par `label` ou d'après la route de `default`. Un lien vers Plus ne s'affiche que sur téléphone. Sur ordinateur, la balise dessine aussi le fil d'Ariane de la page, et ne garde le lien que sur un formulaire ou quand l'origine n'est pas le parent."
 
 #, python-brace-format
 msgid "`{% back_href default %}`, `{% back_href default as cancel %}`"
@@ -433,6 +445,13 @@ msgstr "Le fil d'Ariane **doit** n'apparaître que sur ordinateur, sous la forme
 
 msgid "On a computer, the back link **must** appear only on a form or when the origin is not the parent (a room opened from the budget). Otherwise the breadcrumbs already say it."
 msgstr "Sur ordinateur, le lien retour **doit** n'apparaître que sur un formulaire ou quand l'origine n'est pas le parent (une pièce ouverte depuis le budget). Sinon, le fil d'Ariane le dit déjà."
+
+#, python-brace-format
+msgid "The `{% back_link %}` tag draws both, so a page does not write breadcrumbs itself. A new record page **must** be in `PARENTS` (its parent in the tree) and have a `Record` in `LABELS`; a new form **must** be in `FORM_TITLES`. A page without a title gets no breadcrumbs rather than a wrong one."
+msgstr "La balise `{% back_link %}` dessine les deux : une page n'écrit pas son fil d'Ariane elle-même. Une nouvelle page d'enregistrement **doit** figurer dans `PARENTS` (son parent dans l'arbre) et avoir un `Record` dans `LABELS` ; un nouveau formulaire **doit** figurer dans `FORM_TITLES`. Une page sans titre n'a pas de fil d'Ariane plutôt qu'un fil faux."
+
+msgid "Breadcrumbs are in the page at every width and hidden below 56 rem by the style sheet (`components.css`), so a phone reads the back link alone."
+msgstr "Le fil d'Ariane est dans la page à toutes les largeurs et masqué sous 56 rem par la feuille de style (`components.css`) : un téléphone ne lit que le lien retour."
 
 msgid "The entry of the bar that stays marked is the section the person entered by: a room opened from the budget keeps Budget marked, and comes back to it. The bar must never change tab under the finger."
 msgstr "L'entrée de la barre qui reste allumée est la section par laquelle la personne est entrée : une pièce ouverte depuis le budget garde Budget allumé, et y revient. La barre ne doit jamais changer d'onglet sous le doigt."
@@ -589,6 +608,30 @@ msgstr "**Langue** : chaque chaîne **doit** passer par les fonctions de traduct
 
 msgid "**Resources**: a screen **must not** load anything from another host, nor use an inline style or script ([ADR 0011](../adr/0011-no-external-resources-and-csp.md)). The strict content security policy refuses them."
 msgstr "**Ressources** : un écran **ne doit** rien charger depuis un autre hôte, ni utiliser de style ou de script en ligne ([ADR 0011](../adr/0011-no-external-resources-and-csp.md)). La politique de sécurité du contenu, stricte, les refuse."
+
+msgid "Labels"
+msgstr "Libellés"
+
+msgid "One word for one thing, on every screen and in both languages. These rules come from the review of the labels (NAV-14); a new screen **must** follow them."
+msgstr "Un mot pour une chose, sur tous les écrans et dans les deux langues. Ces règles viennent de la revue des libellés (NAV-14) ; un nouvel écran **doit** les suivre."
+
+msgid "**A term names one concept.** The same word never names two things, and one thing never has two names. In French: the *logement* (never \"accueil\", which is Today on a phone), an *élément* of a room (its type is *Équipement* or *Surface*), an *article* of the stock, *Matériel* for the stock view of Rooms, *Fournitures* for what a task or a project needs."
+msgstr "**Un terme nomme un seul concept.** Un même mot ne nomme jamais deux choses, et une chose n'a jamais deux noms. En français : le *logement* (jamais « accueil », qui est Aujourd'hui sur téléphone), un *élément* d'une pièce (son type est *Équipement* ou *Surface*), un *article* du matériel, *Matériel* pour la vue du stock de Pièces, *Fournitures* pour ce dont une tâche ou un projet a besoin."
+
+msgid "**A name shared by two pages is qualified.** Two audit logs are \"Home audit log\" and \"Instance audit log\", never \"Audit log\" twice. The tab of the home page that holds its settings is \"Home settings\", like the entry of More; \"Overview\" is the first tab of the instance only (the budget one is \"Summary\")."
+msgstr "**Un nom partagé par deux pages se qualifie.** Les deux journaux d'audit sont « Journal d'audit du logement » et « Journal d'audit de l'instance », jamais « Journal d'audit » deux fois. L'onglet de la page du logement qui porte ses réglages est « Réglages du logement », comme l'entrée de Plus ; « Vue d'ensemble » est le premier onglet de l'instance seulement (celui du budget est « Synthèse »)."
+
+msgid "**A bar or tab label equals the title of its page.** The entry of the bar, the tab and the `h1` of its root say the same word."
+msgstr "**Le libellé d'une barre ou d'un onglet égale le titre de sa page.** L'entrée de la barre, l'onglet et le `h1` de sa racine disent le même mot."
+
+msgid "**A filter reads like the noun it filters.** The filter of finished tasks says \"Done\" in English and *Faites* in French, which agrees with *tâches*; the button on one task stays *Fait*. When one English word needs two French words, use a `pgettext` context (\"task\" and \"task filter\" for Done)."
+msgstr "**Un filtre se lit comme le nom qu'il filtre.** Le filtre des tâches terminées dit « Done » en anglais et *Faites* en français, qui s'accorde avec *tâches* ; le bouton sur une tâche reste *Fait*. Quand un mot anglais demande deux mots français, on utilise un contexte `pgettext` (« task » et « task filter » pour Done)."
+
+msgid "**A section holds four tabs at most**, so that they fit a phone without scrolling. A fifth page is a link from the first tab (the files of the homes, from the instance overview)."
+msgstr "**Une section compte quatre onglets au plus**, pour qu'ils tiennent sur un téléphone sans défiler. Une cinquième page est un lien depuis le premier onglet (les fichiers des logements, depuis la vue d'ensemble de l'instance)."
+
+msgid "A new label goes into the catalog of its app, in both languages, in the same pull request, and `check_translations --sources` **must** pass."
+msgstr "Un nouveau libellé va dans le catalogue de son application, dans les deux langues, dans la même pull request, et `check_translations --sources` **doit** passer."
 
 msgid "Visual system"
 msgstr "Système visuel"

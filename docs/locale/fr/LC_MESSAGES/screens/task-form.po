@@ -33,8 +33,8 @@ msgstr "Section"
 msgid "Content"
 msgstr "Contenu"
 
-msgid "Repeat"
-msgstr "Répétition"
+msgid "Repeat (open when the task is added from an item)"
+msgstr "Répéter (ouvert quand la tâche est ajoutée depuis un élément)"
 
 msgid "**Once**, **Fixed date** (every N days, weeks, months or years from the first date) or **After the last time** (N units after the day it was done). A **season** outside of which nothing falls (see below), and the number of days before the date from which the task shows."
 msgstr "**Une fois**, **Date fixe** (tous les N jours, semaines, mois ou années à partir de la première date) ou **Après la dernière fois** (N unités après le jour où elle a été faite). Une **saison** hors de laquelle rien ne tombe (voir plus bas), et le nombre de jours avant la date à partir duquel la tâche s'affiche."
@@ -92,4 +92,7 @@ msgstr "Revenir"
 
 msgid "The link at the top and the form once sent lead back to the screen the form was opened from: a task added from an item goes back to the item, with the message **Task added · Open**, whose link opens the new task. Opened from the task list, the form opens the new task instead. A form sent with an error stays open and still goes back to the same screen. After **Delete the task**, the page of the deleted task no longer exists: you land on the task list, or on the screen you came from if it was another one."
 msgstr "Le lien du haut et le formulaire une fois envoyé ramènent à l'écran d'où le formulaire a été ouvert : une tâche ajoutée depuis un élément revient à l'élément, avec le message **Tâche ajoutée · Ouvrir**, dont le lien ouvre la nouvelle tâche. Ouvert depuis la liste des tâches, le formulaire ouvre plutôt la nouvelle tâche. Un formulaire envoyé avec une erreur reste ouvert et ramène toujours au même écran. Après **Supprimer la tâche**, la page de la tâche supprimée n'existe plus : vous arrivez sur la liste des tâches, ou sur l'écran d'où vous veniez s'il s'agit d'un autre."
+
+#~ msgid "Repeat"
+#~ msgstr "Répétition"
 

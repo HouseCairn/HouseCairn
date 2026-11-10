@@ -21,8 +21,8 @@ msgstr ""
 msgid "Home"
 msgstr "Logement"
 
-msgid "The page of one home, at `/h/<home id>/`: its name, your role in it, its currency and its hemisphere. Its address stays the same as long as the home exists. The tabs above the page switch between the **Overview**, **Household and roles** (its members) and, for owners, the **Audit log**; they are the same on those three pages."
-msgstr "La page d'un logement, sur `/h/<home id>/` : son nom, votre rôle, sa devise et son hémisphère. Son adresse ne change pas tant que le logement existe. Les onglets au-dessus de la page passent de la **Vue d'ensemble** à **Foyer et rôles** (ses membres) et, pour les propriétaires, au **Journal d'audit** ; ils sont les mêmes sur ces trois pages."
+msgid "The page of one home, at `/h/<home id>/`: its name, your role in it, its currency and its hemisphere. Its address stays the same as long as the home exists. The tabs above the page switch between **Home settings**, **Household and roles** (its members) and, for owners, the **Home audit log**; they are the same on those three pages."
+msgstr "La page d'un logement, sur `/h/<home id>/` : son nom, votre rôle, sa devise et son hémisphère. Son adresse ne change pas tant que le logement existe. Les onglets au-dessus de la page passent des **Réglages du logement** à **Foyer et rôles** (ses membres) et, pour les propriétaires, au **Journal d'audit du logement** ; ils sont les mêmes sur ces trois pages."
 
 msgid "When the home requires signing in through a provider and your session did not, the page asks you to continue with that provider instead."
 msgstr "Quand le logement exige une connexion par un fournisseur que votre session n'a pas utilisé, la page vous propose de continuer avec ce fournisseur."
