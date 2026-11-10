@@ -158,6 +158,9 @@ msgstr "Étiquette QR"
 msgid "More"
 msgstr "Plus"
 
+msgid "Welcome"
+msgstr "Bienvenue"
+
 msgid "Add a task"
 msgstr "Ajouter une tâche"
 
@@ -358,9 +361,6 @@ msgstr "Code source et signalement de sécurité sur GitHub."
 
 msgid "Developed with an AI agent, under human review."
 msgstr "Développé avec un agent IA, sous revue humaine."
-
-msgid "Welcome"
-msgstr "Bienvenue"
 
 msgid "Add a home"
 msgstr "Ajouter un logement"
