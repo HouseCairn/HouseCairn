@@ -55,8 +55,16 @@ uv run python manage.py qcluster # background task worker, in another terminal
 ```
 
 The application is at <http://localhost:8000/>, the API documentation at
-`/api/docs/` once signed in. Architecture decisions are in
-[docs/adr/](docs/adr/README.md); read them before changing the structure.
+`/api/docs/` once signed in.
+
+To try the screens with something in them, add a fictional home to your account:
+`uv run python manage.py load_demo_data --owner <your e-mail> --language fr` (or
+`en`). It creates rooms, recurring tasks (one overdue, two due today, three coming)
+and two projects with budget lines, all with generic names, in that language. Use it
+for demonstrations and for the screenshots of the website, never on a real instance.
+
+Architecture decisions are in [docs/adr/](docs/adr/README.md); read them before
+changing the structure.
 
 Checks to run before opening a pull request:
 
