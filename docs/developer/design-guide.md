@@ -432,8 +432,8 @@ same pattern.
   region becomes a sticky box at the end of the page, in the flow, which takes its own
   room and sticks above the bar (at the corner on a wide screen) while the end of the
   page is out of sight; no height is reserved, whatever the length of the message. Its
-  Undo posts in place with `in_place=banner`: the answer is the content of the region ("Undone."), and the row
-  back as an out-of-band swap.
+  Undo posts in place with `in_place=banner`: the answer is the content of the region
+  ("Undone."), and the row back as an out-of-band swap.
 - **Focus**: the element that had it is replaced, so the answer gives it back with
   `autofocus`, which HTMX applies after a swap: the row's link after Done or Skip, the
   row's Done button after Undo. `scroll-padding-bottom` keeps a focused element clear
