@@ -1,0 +1,34 @@
+/* Loaded by templates/base.html inside <noscript> only, after app.css: nothing here
+   applies when script runs (docs/developer/design-guide.md, "Actions in place").
+
+   Without script, static/js/undo-region.js cannot tell the page how high the undo
+   banner is, and the banner (the one the session keeps after a redirect) may wrap on
+   four lines at 320 px: no constant fits. So the region takes its own room. It leaves
+   the fixed layer and becomes a sticky box at the end of the page, in the flow: it
+   sticks above the tab bar while the end of the page is out of sight, and when the
+   page is scrolled to the end it sits in the room it takes itself. Without script,
+   Undo is a form post followed by a redirect, so nothing swaps the region in place
+   and the sticky box is never scrolled back by a click on it. */
+.undo-region {
+  position: sticky;
+  left: auto;
+  right: auto;
+  margin: 0 var(--hc-space-4);
+}
+
+/* The page keeps what the shell gives it (the tab bar); the banner is no longer a
+   floating layer that needs the room reserved at the end of the content. */
+.has-nav:has(.undo-region .undo-banner) .content {
+  padding-bottom: calc(var(--hc-layout-tabbar-height) + var(--hc-space-8));
+}
+
+@media (min-width: 56rem) {
+  .undo-region {
+    left: auto;
+    margin: 0 var(--hc-space-4) 0 calc(var(--hc-layout-nav-width) + var(--hc-space-4));
+  }
+
+  .has-nav:has(.undo-region .undo-banner) .content {
+    padding-bottom: var(--hc-space-12);
+  }
+}
