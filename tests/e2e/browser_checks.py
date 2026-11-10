@@ -16,7 +16,8 @@ the browser lands on the provider, with no confirmation page of the application 
 `in-place` (local only, not in the workflow) checks that Done and Undo on Today leave the
 page where it was, keep the focus on the row and show the banner above the bar. The
 banner of a stock shortage (a long message, French, 360 and 320 px) must still leave the
-last button of the page reachable.
+last button of the page reachable, with script and without: with script the page keeps the
+banner's real height, without it the banner is a sticky box that takes its own room.
 
     python tests/e2e/browser_checks.py in-place --base http://localhost:8001
 """
@@ -183,6 +184,28 @@ def last_button_is_reachable(page: Page) -> None:
         }"""
     )
     check(covered == "", f"the last button of the page is not covered by the banner ({covered})")
+    outside = page.evaluate(
+        """() => {
+            const banner = document.querySelector('#undo-region .undo-banner');
+            if (!banner) return '';
+            const box = banner.getBoundingClientRect();
+            const out = Math.max(-box.top, box.bottom - window.innerHeight);
+            return out > 0 ? Math.round(out) + ' px of the banner out of the view' : '';
+        }"""
+    )
+    check(outside == "", f"the banner stays in the view ({outside})")
+    last = page.evaluate_handle(
+        """() => {
+            const buttons = [...document.querySelectorAll('main a.button, main button')]
+                .filter((el) => el.offsetParent !== null && !el.closest('#undo-region'));
+            return buttons[buttons.length - 1];
+        }"""
+    ).as_element()
+    if last is not None:
+        # A trial click runs every check of a real click (visible, stable, receives the
+        # events at its centre) without pressing: a banner over the button refuses it.
+        last.click(trial=True, timeout=2000)
+        check(True, "the last button of the page takes the click")
 
 
 def in_place(browser: Browser, base: str) -> None:
@@ -259,28 +282,39 @@ def in_place(browser: Browser, base: str) -> None:
     context.close()
     for width in (360, 320):
         stock_shortage_banner(browser, base, width)
+    for width in (360, 320):
+        stock_shortage_banner(browser, base, width, script=False)
 
 
-def stock_shortage_banner(browser: Browser, base: str, width: int) -> None:
+def stock_shortage_banner(browser: Browser, base: str, width: int, script: bool = True) -> None:
     """The banner of a stock shortage, in French, must not hide the end of Today (NAV-05).
 
-    The message is long: on a narrow screen the banner is three or four lines high, and
-    the room kept for it at the end of the page must follow its real height.
+    The message is long: on a narrow screen the banner is three or four lines high. With
+    script the room kept for it follows its real height; without script Done is a form
+    post and a redirect, the session gives the banner back on the next page, and the banner
+    takes its own room (a sticky box at the end of the page).
     """
-    context = browser.new_context(viewport={"width": width, "height": 812}, locale="fr-FR")
+    label = f"{width} px{'' if script else ', no script'}"
+    context = browser.new_context(
+        viewport={"width": width, "height": 812}, locale="fr-FR", java_script_enabled=script
+    )
     page = context.new_page()
     sign_in(page, base)
     row = page.locator("li.task-row:has-text('Stock task')")
-    check(row.count() == 1, f"{width} px: Today lists the task that needs an empty stock item")
+    check(row.count() == 1, f"{label}: Today lists the task that needs an empty stock item")
     row_id = row.get_attribute("id") or ""
     page.locator(f"#{row_id} button.button-done").click()
+    if not script:
+        page.wait_for_url("**/today/**")
     page.wait_for_selector("#undo-region .undo-banner button")
     text = page.locator("#undo-region").text_content() or ""
-    check("Stock insuffisant" in text, f"{width} px: the banner says the stock is short")
+    check("Stock insuffisant" in text, f"{label}: the banner says the stock is short")
     box = page.locator("#undo-region .undo-banner").bounding_box()
-    say(f"{width} px: the banner is {box['height'] if box else 0:.0f} px high")
+    say(f"{label}: the banner is {box['height'] if box else 0:.0f} px high")
     last_button_is_reachable(page)
     page.locator("#undo-region .undo-banner button").click()
+    if not script:
+        page.wait_for_url("**/today/**")
     page.wait_for_selector(f"#{row_id}:not(.task-row-closed) button.button-done")
     context.close()
 
