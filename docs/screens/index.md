@@ -37,6 +37,7 @@ today
 tasks
 task
 task-form
+task-templates
 history
 display-preferences
 contractors

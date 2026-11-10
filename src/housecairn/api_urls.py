@@ -26,6 +26,7 @@ from housecairn.reports import api as reports_api
 from housecairn.rooms import api as rooms_api
 from housecairn.stock import api as stock_api
 from housecairn.tasks import api as tasks_api
+from housecairn.tasks.api.templates import TemplateLibraryView
 
 app_name = "api-v1"
 
@@ -95,6 +96,7 @@ urlpatterns = [
     path("me/tokens/", TokenListView.as_view(), name="token-list"),
     path("me/tokens/<uuid:token_id>/", TokenDetailView.as_view(), name="token-detail"),
     path("me/home/", tasks_api.MyHomeView.as_view(), name="my-home"),
+    path("task-templates/", TemplateLibraryView.as_view(), name="task-template-list"),
     path(
         "me/display-preferences/", tasks_api.PreferencesView.as_view(), name="display-preferences"
     ),

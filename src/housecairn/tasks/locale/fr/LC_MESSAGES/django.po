@@ -173,6 +173,24 @@ msgstr "Indiquez une durée comprise entre une minute et trente jours."
 msgid "Give the first and the last month."
 msgstr "Indiquez le premier et le dernier mois."
 
+msgid "Templates"
+msgstr "Modèles"
+
+msgid "Choose at least one template."
+msgstr "Choisissez au moins un modèle."
+
+msgid "First date"
+msgstr "Première date"
+
+msgid "Left empty, the tasks have no date until you give them one."
+msgstr "Laissées vides, les tâches n'ont pas de date tant que vous ne leur en donnez pas."
+
+msgid "What the home has"
+msgstr "Ce que le logement possède"
+
+msgid "Each one checked adds its usual maintenance tasks. You can change them later."
+msgstr "Chaque élément coché ajoute ses tâches d'entretien habituelles. Vous pourrez les modifier ensuite."
+
 msgid "This stock item is not in this home."
 msgstr "Cet article n'est pas dans ce logement."
 
@@ -526,6 +544,14 @@ msgid "At most %(max)d attachments for a task."
 msgstr "%(max)d pièces jointes au plus pour une tâche."
 
 #, python-format
+msgid "Material: %(list)s."
+msgstr "Matériel : %(list)s."
+
+#, python-format
+msgid "Interval from: %(title)s, %(url)s"
+msgstr "Intervalle d'après : %(title)s, %(url)s"
+
+#, python-format
 msgid "Every day"
 msgid_plural "Every %(n)d days"
 msgstr[0] "Tous les jours"
@@ -630,6 +656,10 @@ msgstr "Fichiers ajoutés."
 
 msgid "File deleted."
 msgstr "Fichier supprimé."
+
+#, python-format
+msgid "Tasks added: %(titles)s."
+msgstr "Tâches ajoutées : %(titles)s."
 
 #, python-format
 msgid "Photo: %(name)s"
@@ -756,6 +786,30 @@ msgstr "Article %(number)s"
 
 msgid "No stock item in the stock of this home yet."
 msgstr "Aucun article dans le matériel de ce logement pour l'instant."
+
+#, python-format
+msgid "every day"
+msgid_plural "every %(count)s days"
+msgstr[0] "tous les jours"
+msgstr[1] "tous les %(count)s jours"
+
+#, python-format
+msgid "every week"
+msgid_plural "every %(count)s weeks"
+msgstr[0] "toutes les semaines"
+msgstr[1] "toutes les %(count)s semaines"
+
+#, python-format
+msgid "every month"
+msgid_plural "every %(count)s months"
+msgstr[0] "tous les mois"
+msgstr[1] "tous les %(count)s mois"
+
+#, python-format
+msgid "every year"
+msgid_plural "every %(count)s years"
+msgstr[0] "tous les ans"
+msgstr[1] "tous les %(count)s ans"
 
 msgid "Marked done."
 msgstr "Marquée comme faite."
@@ -964,6 +1018,22 @@ msgstr[1] "%(counter)s tâches sont masquées jusqu'à ce que leur date approche
 
 msgid "Show them"
 msgstr "Les afficher"
+
+msgid "Add from a template"
+msgstr "Ajouter depuis un modèle"
+
+msgid "Common tasks of a home, with an indicative interval and its source. Tick those you need: each becomes a task of this home, which you can change like any other."
+msgstr "Des tâches courantes d'un logement, avec un intervalle indicatif et sa source. Cochez celles qu'il vous faut : chacune devient une tâche de ce logement, que vous modifiez comme les autres."
+
+#, python-format
+msgid "rule of %(region)s"
+msgstr "règle de %(region)s"
+
+msgid "source"
+msgstr "source"
+
+msgid "Add the tasks"
+msgstr "Ajouter les tâches"
 
 msgid "Nothing to do for now."
 msgstr "Rien à faire pour l'instant."

@@ -773,3 +773,51 @@ class AttachmentDeleteView(HomeTasksMixin, View):
         services.delete_attachment(request.user, attachment)
         messages.success(request, _("File deleted."))
         return redirect("tasks:detail", home_id=self.home.id, task_id=attachment.task_id)
+
+
+class TemplateAddView(HomeTasksMixin, FormView[Any]):
+    """Add from a template: tick common tasks of the library, they become tasks of the home.
+
+    The library is `tasks/task_templates.yaml` (docs/adr/0049). Opened from the list of
+    tasks with `next`, it goes back there after adding, with the tasks added.
+    """
+
+    require_write = True
+    template_name = "tasks/task_templates.html"
+
+    def get_form_class(self) -> type[Any]:
+        from housecairn.tasks.forms.templates import TemplateForm
+
+        return TemplateForm
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs["home"] = self.home
+        return kwargs
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        from housecairn.tasks import task_templates
+
+        found = task_templates.library()
+        groups = [(equipment, found.of_equipment(equipment.id)) for equipment in found.equipment]
+        return super().get_context_data(**self.page(groups=groups), **kwargs)
+
+    def form_valid(self, form: Any) -> HttpResponse:
+        from housecairn.tasks import task_templates
+
+        try:
+            tasks = task_templates.add_templates(
+                self.request.user,
+                self.home,
+                form.cleaned_data["templates"],
+                room=form.cleaned_data["room"],
+                due_on=form.cleaned_data["due_on"],
+            )
+        except ValidationError as exc:
+            _errors(form, exc)
+            return self.form_invalid(form)
+        messages.success(
+            self.request,
+            _("Tasks added: %(titles)s.") % {"titles": ", ".join(t.title for t in tasks)},
+        )
+        return redirect(navigation.back_url(self.request, _url("list", home_id=self.home.id)))

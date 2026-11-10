@@ -11,6 +11,7 @@ from drf_spectacular.utils import (
     extend_schema_field,
 )
 from rest_framework import exceptions, mixins, serializers, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -143,6 +144,36 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
         return durations.label(task.estimated_minutes) if task.estimated_minutes else ""
 
 
+class FromTemplatesSerializer(serializers.Serializer[Any]):
+    templates = serializers.ListField(
+        child=serializers.CharField(max_length=40),
+        min_length=1,
+        max_length=100,
+        help_text="Identifiers of templates of the library.",
+    )
+    room = serializers.UUIDField(required=False, allow_null=True, help_text="A room of the home.")
+    due_on = serializers.DateField(required=False, allow_null=True, help_text="The first date.")
+
+    def validate_templates(self, value: list[str]) -> list[str]:
+        from housecairn.tasks import task_templates
+
+        found = task_templates.library()
+        unknown = [t for t in dict.fromkeys(value) if found.get(t) is None]
+        if unknown:
+            raise serializers.ValidationError(
+                "Unknown templates: " + ", ".join(unknown) + ". See GET /api/v1/task-templates/."
+            )
+        return value
+
+    def validate_room(self, value: Any) -> Room | None:
+        if value is None:
+            return None
+        room: Room | None = Room.objects.filter(home=self.context["home"], id=value).first()
+        if room is None:
+            raise serializers.ValidationError("This room is not in this home.")
+        return room
+
+
 class TaskViewSet(
     HomeResourceMixin,
     mixins.ListModelMixin,
@@ -252,3 +283,37 @@ class TaskViewSet(
     def destroy(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         services.delete_task(request.user, self.get_object())
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @extend_schema(
+        request=FromTemplatesSerializer,
+        responses={201: TaskSerializer(many=True)},
+        description=(
+            "One task per template of the library (`GET /api/v1/task-templates/`), in the "
+            "language of the request, repeating after the last time it is done, with the "
+            "optional `room` and first date `due_on`. All or none: an unknown template is a "
+            "400 and creates nothing. A role that writes, and a token with the `write` scope."
+        ),
+    )
+    @action(detail=False, methods=["post"], url_path="from-templates")
+    def from_templates(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        from housecairn.tasks import task_templates
+
+        home = self.get_home()
+        serializer = FromTemplatesSerializer(data=request.data, context={"home": home})
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        try:
+            tasks = task_templates.add_templates(
+                request.user,
+                home,
+                data["templates"],
+                room=data.get("room"),
+                due_on=data.get("due_on"),
+            )
+        except ValueError:
+            # Checked by FromTemplatesSerializer; never send the text of an exception.
+            raise exceptions.ValidationError({"templates": ["Unknown template."]}) from None
+        except DjangoValidationError as exc:
+            raise _validation(exc) from exc
+        rows = self.get_queryset().filter(id__in=[t.id for t in tasks]).order_by("created_at")
+        return Response(self.get_serializer(rows, many=True).data, status=status.HTTP_201_CREATED)

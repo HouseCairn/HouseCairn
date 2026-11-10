@@ -1,0 +1,371 @@
+# Library of task templates shipped with HouseCairn (docs/adr/0049).
+#
+# Each template is a common task of a home, in English and in French, with an indicative
+# interval and the public source that gives it. A rule of one country (France, say) is
+# marked with its `region` and explained in `note`; it is never written as a rule for
+# everyone. The file is checked against docs/_static/schemas/task-templates.schema.json
+# by tests/test_task_templates.py, and at start-up.
+#
+# No secret and no personal data here: only generic tasks and public sources.
+
+version: 1
+
+equipment:
+  - id: smoke-alarm
+    name: {en: Smoke alarms, fr: Détecteurs de fumée}
+  - id: co-alarm
+    name: {en: Carbon monoxide alarms, fr: Détecteurs de monoxyde de carbone}
+  - id: boiler
+    name: {en: "Boiler (gas, oil or wood)", fr: "Chaudière (gaz, fioul ou bois)"}
+  - id: fireplace
+    name: {en: Fireplace or stove, fr: Cheminée ou poêle}
+  - id: heat-pump
+    name: {en: Heat pump or air conditioner, fr: Pompe à chaleur ou climatiseur}
+  - id: forced-air
+    name: {en: Forced-air heating or cooling, fr: Chauffage ou climatisation à air pulsé}
+  - id: ventilation
+    name: {en: Mechanical ventilation, fr: VMC}
+  - id: water-heater
+    name: {en: Hot water tank, fr: Chauffe-eau à accumulation}
+  - id: water-softener
+    name: {en: Water softener, fr: Adoucisseur d'eau}
+  - id: gutters
+    name: {en: Gutters, fr: Gouttières}
+  - id: bathroom
+    name: {en: Bathroom, fr: Salle de bain}
+  - id: dryer
+    name: {en: Tumble dryer, fr: Sèche-linge}
+  - id: electrical
+    name: {en: Electrical installation, fr: Installation électrique}
+  - id: septic-tank
+    name: {en: Septic tank, fr: Fosse septique}
+
+templates:
+  - id: smoke-alarm-test
+    equipment: smoke-alarm
+    title: {en: Test the smoke alarms, fr: Tester les détecteurs de fumée}
+    applies_to: {item_kind: equipment, room_kinds: [hallway, bedroom]}
+    every: {interval: 1, unit: month}
+    minutes: 5
+    materials: []
+    procedure:
+      en: Press the test button of each alarm until it sounds.
+      fr: Appuyez sur le bouton de test de chaque détecteur jusqu'à ce qu'il sonne.
+    source:
+      title: NFPA, Installing and maintaining smoke alarms
+      url: https://www.nfpa.org/education-and-research/home-fire-safety/smoke-alarms/installing-and-maintaining-smoke-alarms
+
+  - id: smoke-alarm-battery
+    equipment: smoke-alarm
+    title: {en: Replace the battery of the smoke alarms, fr: Changer la pile des détecteurs de fumée}
+    applies_to: {item_kind: equipment, room_kinds: [hallway, bedroom]}
+    every: {interval: 1, unit: year}
+    minutes: 10
+    materials:
+      - {en: Battery of the type written on the alarm, fr: Pile du type indiqué sur le détecteur}
+    note:
+      en: Not for an alarm with a sealed 10-year battery, which is replaced whole.
+      fr: Sauf pour un détecteur à pile scellée de 10 ans, qui se remplace en entier.
+    source:
+      title: NFPA, Installing and maintaining smoke alarms
+      url: https://www.nfpa.org/education-and-research/home-fire-safety/smoke-alarms/installing-and-maintaining-smoke-alarms
+
+  - id: smoke-alarm-replace
+    equipment: smoke-alarm
+    title: {en: Replace the smoke alarms, fr: Remplacer les détecteurs de fumée}
+    applies_to: {item_kind: equipment, room_kinds: [hallway, bedroom]}
+    every: {interval: 10, unit: year}
+    minutes: 30
+    materials:
+      - {en: New smoke alarms, fr: Détecteurs de fumée neufs}
+    note:
+      en: Ten years after the date of manufacture written on the alarm.
+      fr: Dix ans après la date de fabrication inscrite sur le détecteur.
+    source:
+      title: NFPA, Learn more about smoke alarms
+      url: https://www.nfpa.org/education-and-research/home-fire-safety/smoke-alarms
+
+  - id: co-alarm-test
+    equipment: co-alarm
+    title: {en: Test the carbon monoxide alarms, fr: Tester les détecteurs de monoxyde de carbone}
+    applies_to: {item_kind: equipment, room_kinds: [hallway, bedroom, utility]}
+    every: {interval: 1, unit: month}
+    minutes: 5
+    materials: []
+    note:
+      en: Replace them when their manufacturer says.
+      fr: Remplacez-les à la date que donne leur fabricant.
+    source:
+      title: NFPA, Carbon monoxide safety
+      url: https://www.nfpa.org/education-and-research/home-fire-safety/carbon-monoxide
+
+  - id: boiler-service
+    equipment: boiler
+    title: {en: Have the boiler serviced, fr: Faire entretenir la chaudière}
+    applies_to: {item_kind: equipment, room_kinds: [utility, cellar, kitchen]}
+    every: {interval: 1, unit: year}
+    season: autumn
+    minutes: 60
+    materials: []
+    region: FR
+    note:
+      en: >-
+        In France, a yearly service by a qualified heating engineer is required by law for
+        boilers of 4 to 400 kW, each calendar year. Elsewhere, follow the manufacturer and
+        the rules of your country.
+      fr: >-
+        En France, l'entretien annuel par un chauffagiste qualifié est obligatoire pour les
+        chaudières de 4 à 400 kW, chaque année civile. Ailleurs, suivez le fabricant et les
+        règles de votre pays.
+    source:
+      title: Service-Public.fr, Entretien annuel de la chaudière
+      url: https://www.service-public.gouv.fr/particuliers/vosdroits/F20760
+
+  - id: chimney-sweep
+    equipment: fireplace
+    title: {en: Have the chimney swept, fr: Faire ramoner le conduit de cheminée}
+    applies_to: {item_kind: equipment, room_kinds: [living]}
+    every: {interval: 1, unit: year}
+    season: autumn
+    minutes: 60
+    materials: []
+    region: FR
+    note:
+      en: >-
+        In France, sweeping by a qualified sweep is required at least once a year, and
+        twice in many départements, once during the heating season: see the sanitary
+        rules of your département (règlement sanitaire départemental), at the town hall
+        or the prefecture. Elsewhere, follow the rules of your country.
+      fr: >-
+        En France, le ramonage par un ramoneur qualifié est obligatoire au moins une fois
+        par an, et deux fois dans de nombreux départements, dont une en période de
+        chauffe : voyez le règlement sanitaire départemental, à la mairie ou à la
+        préfecture. Ailleurs, suivez les règles de votre pays.
+    source:
+      title: Service-Public.fr, Faire un feu dans une cheminée ou un poêle
+      url: https://www.service-public.gouv.fr/particuliers/vosdroits/F32437
+
+  - id: heat-pump-service
+    equipment: heat-pump
+    title: {en: Have the heat pump serviced, fr: Faire entretenir la pompe à chaleur}
+    applies_to: {item_kind: equipment, room_kinds: [outdoor, utility]}
+    every: {interval: 2, unit: year}
+    season: spring
+    minutes: 60
+    materials: []
+    region: FR
+    note:
+      en: >-
+        In France, heat pumps and air conditioners of 4 to 70 kW must be serviced at least
+        every two years. Elsewhere, follow the manufacturer.
+      fr: >-
+        En France, les pompes à chaleur et climatiseurs de 4 à 70 kW doivent être entretenus
+        au moins tous les deux ans. Ailleurs, suivez le fabricant.
+    source:
+      title: Ministère de la Transition écologique, Entretien et inspection des systèmes de chauffage et de climatisation
+      url: https://www.ecologie.gouv.fr/politiques-publiques/entretien-inspection-systemes-chauffage-climatisation
+
+  - id: air-filter
+    equipment: forced-air
+    title: {en: Change the air filter of the heating, fr: Changer le filtre à air du chauffage}
+    applies_to: {item_kind: equipment, room_kinds: [utility]}
+    every: {interval: 3, unit: month}
+    minutes: 10
+    materials:
+      - {en: Air filter of the size of the unit, fr: Filtre à air aux dimensions de l'appareil}
+    note:
+      en: Check it every month in winter and summer; change it sooner when it looks dirty.
+      fr: Vérifiez-le chaque mois en hiver et en été ; changez-le plus tôt s'il paraît sale.
+    source:
+      title: ENERGY STAR, Heat and cool efficiently
+      url: https://www.energystar.gov/saveathome/heating-cooling
+
+  - id: hvac-tune-up
+    equipment: forced-air
+    title: {en: Have the heating and cooling checked, fr: Faire vérifier le chauffage et la climatisation}
+    applies_to: {item_kind: equipment, room_kinds: [utility]}
+    every: {interval: 1, unit: year}
+    season: autumn
+    minutes: 60
+    materials: []
+    source:
+      title: ENERGY STAR, Maintenance checklist
+      url: https://www.energystar.gov/saveathome/heating-cooling/maintenance-checklist
+
+  - id: ventilation-vents
+    equipment: ventilation
+    title: {en: Clean the vents of the ventilation, fr: Nettoyer les bouches de la VMC}
+    applies_to: {item_kind: equipment, room_kinds: [kitchen, bathroom]}
+    every: {interval: 6, unit: month}
+    minutes: 20
+    materials:
+      - {en: Washing-up liquid, fr: Liquide vaisselle}
+    note:
+      en: Twice a year, in spring and in autumn; a professional checks the whole system every three years.
+      fr: Deux fois par an, au printemps et à l'automne ; un professionnel vérifie l'ensemble tous les trois ans.
+    source:
+      title: Qualitel, Comment nettoyer votre VMC
+      url: https://www.qualitel.org/particuliers/conseils/entretien-vmc/
+
+  - id: ventilation-service
+    equipment: ventilation
+    title: {en: Have the ventilation checked, fr: Faire vérifier la VMC}
+    applies_to: {item_kind: equipment, room_kinds: [attic, utility]}
+    every: {interval: 3, unit: year}
+    minutes: 60
+    materials: []
+    source:
+      title: Qualitel, Comment nettoyer votre VMC
+      url: https://www.qualitel.org/particuliers/conseils/entretien-vmc/
+
+  - id: water-heater-flush
+    equipment: water-heater
+    title: {en: Drain some water from the hot water tank, fr: Purger un peu d'eau du chauffe-eau}
+    applies_to: {item_kind: equipment, room_kinds: [utility, cellar, bathroom]}
+    every: {interval: 3, unit: month}
+    minutes: 15
+    materials:
+      - {en: Bucket, fr: Seau}
+    procedure:
+      en: Drain about a litre (a quart) from the drain valve at the bottom of the tank, to take the sediment out.
+      fr: Videz environ un litre par le robinet de vidange au bas du ballon, pour évacuer les dépôts.
+    source:
+      title: U.S. Department of Energy, Water heating (technology fact sheet)
+      url: https://www1.eere.energy.gov/buildings/publications/pdfs/building_america/26465.pdf
+
+  - id: water-heater-valve
+    equipment: water-heater
+    title: {en: Check the safety valve of the hot water tank, fr: Vérifier le groupe de sécurité du chauffe-eau}
+    applies_to: {item_kind: equipment, room_kinds: [utility, cellar, bathroom]}
+    every: {interval: 6, unit: month}
+    minutes: 5
+    materials: []
+    source:
+      title: U.S. Department of Energy, Water heating (technology fact sheet)
+      url: https://www1.eere.energy.gov/buildings/publications/pdfs/building_america/26465.pdf
+
+  - id: water-heater-anode
+    equipment: water-heater
+    title: {en: Have the anode of the hot water tank inspected, fr: Faire contrôler l'anode du chauffe-eau}
+    applies_to: {item_kind: equipment, room_kinds: [utility, cellar, bathroom]}
+    every: {interval: 3, unit: year}
+    minutes: 60
+    materials: []
+    note:
+      en: Every three to four years.
+      fr: Tous les trois à quatre ans.
+    source:
+      title: U.S. Department of Energy, Water heating (technology fact sheet)
+      url: https://www1.eere.energy.gov/buildings/publications/pdfs/building_america/26465.pdf
+
+  - id: softener-salt
+    equipment: water-softener
+    title: {en: Check the salt of the water softener, fr: Vérifier le sel de l'adoucisseur}
+    applies_to: {item_kind: equipment, room_kinds: [utility, cellar, garage]}
+    every: {interval: 1, unit: month}
+    minutes: 5
+    materials:
+      - {en: Salt tablets for water softeners, fr: Sel en pastilles pour adoucisseur}
+    note:
+      en: The salt should fill about a third of the tank.
+      fr: Le sel doit occuper environ un tiers de la hauteur du bac.
+    source:
+      title: Culligan, Comment entretenir un adoucisseur d'eau
+      url: https://www.culligan.ch/fr/blog/comment-entretenir-un-adoucisseur-d-eau
+
+  - id: softener-service
+    equipment: water-softener
+    title: {en: Service and disinfect the water softener, fr: Entretenir et désinfecter l'adoucisseur}
+    applies_to: {item_kind: equipment, room_kinds: [utility, cellar, garage]}
+    every: {interval: 1, unit: year}
+    minutes: 60
+    materials: []
+    source:
+      title: Culligan, Comment entretenir un adoucisseur d'eau
+      url: https://www.culligan.ch/fr/blog/comment-entretenir-un-adoucisseur-d-eau
+
+  - id: gutters-clean
+    equipment: gutters
+    title: {en: Clean the gutters, fr: Nettoyer les gouttières}
+    applies_to: {item_kind: surface, room_kinds: [outdoor]}
+    every: {interval: 6, unit: month}
+    season: autumn
+    minutes: 90
+    materials:
+      - {en: Gloves, fr: Gants}
+      - {en: Ladder, fr: Échelle}
+    note:
+      en: At least twice a year, and after the leaves fall.
+      fr: Au moins deux fois par an, et après la chute des feuilles.
+    source:
+      title: Qualitel, Entretien de toiture, façades et gouttières
+      url: https://www.qualitel.org/particuliers/conseils/bien-entretenir-les-facades-gouttieres-et-toiture-de-votre-maison
+
+  - id: bathroom-sealant
+    equipment: bathroom
+    title: {en: Renew the silicone joints of the bath and shower, fr: Refaire les joints silicone de la baignoire et de la douche}
+    applies_to: {item_kind: surface, room_kinds: [bathroom, kitchen]}
+    every: {interval: 5, unit: year}
+    minutes: 120
+    materials:
+      - {en: Sanitary silicone sealant, fr: Mastic silicone sanitaire}
+      - {en: Sealant gun, fr: Pistolet à mastic}
+    note:
+      en: Every five to eight years at the latest; sooner as soon as a joint is cracked or mouldy. Look at them when you clean.
+      fr: Tous les cinq à huit ans au plus tard ; plus tôt dès qu'un joint est fendu ou moisi. Regardez-les en faisant le ménage.
+    source:
+      title: Einhell, Renewing silicone joints
+      url: https://www.einhell.de/en/a/renewing-silicone-joints
+
+  - id: dryer-vent
+    equipment: dryer
+    title: {en: Clean the vent pipe of the dryer, fr: Nettoyer le tuyau d'évacuation du sèche-linge}
+    applies_to: {item_kind: equipment, room_kinds: [utility, bathroom]}
+    every: {interval: 1, unit: year}
+    minutes: 20
+    materials: []
+    note:
+      en: Clean the lint filter after each load as well.
+      fr: Nettoyez aussi le filtre à peluches après chaque séchage.
+    source:
+      title: NFPA, Clothes dryer safety tips
+      url: https://www.nfpa.org/-/media/project/storefront/catalog/files/safety-tip-sheets/dryersafetytips.pdf
+
+  - id: rcd-test
+    equipment: electrical
+    title: {en: Test the residual current devices, fr: Tester les interrupteurs différentiels}
+    applies_to: {item_kind: equipment, room_kinds: [hallway, garage, utility]}
+    every: {interval: 3, unit: month}
+    minutes: 5
+    materials: []
+    procedure:
+      en: Press the button marked T or Test of each device in the fuse box; it must switch off at once. Switch it back on.
+      fr: Appuyez sur le bouton marqué T ou Test de chaque interrupteur du tableau ; il doit couper aussitôt. Réarmez-le.
+    source:
+      title: Electrical Safety First, Electricity made easy
+      url: https://www.electricalsafetyfirst.org.uk/news-and-insights/electricity-made-easy
+
+  - id: wiring-check
+    equipment: electrical
+    title: {en: Have the wiring checked, fr: Faire vérifier l'installation électrique}
+    applies_to: {item_kind: equipment, room_kinds: [hallway, garage, utility]}
+    every: {interval: 10, unit: year}
+    minutes: 120
+    materials: []
+    source:
+      title: Electrical Safety First, Electricity made easy
+      url: https://www.electricalsafetyfirst.org.uk/news-and-insights/electricity-made-easy
+
+  - id: septic-inspection
+    equipment: septic-tank
+    title: {en: Have the septic tank inspected, fr: Faire contrôler la fosse septique}
+    applies_to: {item_kind: equipment, room_kinds: [outdoor]}
+    every: {interval: 3, unit: year}
+    minutes: 60
+    materials: []
+    note:
+      en: The tank itself is usually emptied every three to five years.
+      fr: La fosse elle-même est en général vidangée tous les trois à cinq ans.
+    source:
+      title: U.S. EPA, How to care for your septic system
+      url: https://www.epa.gov/septic/how-care-your-septic-system
