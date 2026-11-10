@@ -20,6 +20,7 @@ from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
 from housecairn.audit import services as audit
+from housecairn.core.links import external_url
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.labels import printing
@@ -203,7 +204,7 @@ def target_url(label: Label) -> str:
 
 def address(base_url: str, label: Label) -> str:
     """What the QR code holds: the public address of the instance and the code, nothing else."""
-    return f"{base_url.rstrip('/')}{reverse('label-open', kwargs={'code': label.code})}"
+    return external_url(reverse("label-open", kwargs={"code": label.code}), base_url)
 
 
 # ---------- printing ----------

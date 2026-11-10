@@ -35,6 +35,7 @@ from django.utils import formats, timezone, translation
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.core.links import external_url
 from housecairn.homes.models import WRITE_ROLES, Membership
 from housecairn.instance.config import get_setting, instance_zone
 from housecairn.notifications import outbound, services
@@ -98,12 +99,11 @@ def skip_pending_digest(
 
 
 def _link(occurrence: Occurrence) -> str:
-    site = str(get_setting("site_url") or "").rstrip("/")
-    if not site:
-        return ""
-    return site + reverse(
+    site = str(get_setting("site_url") or "")
+    path = reverse(
         "tasks:detail", kwargs={"home_id": occurrence.home_id, "task_id": occurrence.task_id}
     )
+    return external_url(path, site)
 
 
 # Control characters (Unicode category Cc), and the line and paragraph separators.

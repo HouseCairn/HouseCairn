@@ -13,6 +13,7 @@ changed in the interface; a variable that is set locks its field there. The full
 | `HOUSECAIRN_FORWARDED_ALLOW_IPS` | `127.0.0.1,::1` | Addresses or networks of that proxy, comma-separated: only their forwarding headers count (see [Reverse proxy](reverse-proxy.md)). |
 | `HOUSECAIRN_URL_PREFIX` | (none: the root) | Path the instance is served under, such as `/housecairn` (see [Serving under a path prefix](url-prefix.md)). |
 | `HOUSECAIRN_URL_PREFIX_HEADER` | (none: off) | Header in which a trusted proxy gives the path prefix of each request, such as `X-Ingress-Path`. |
+| `HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING` | `false` | `true` lets a page of the same origin show HouseCairn in a frame, as Home Assistant's Ingress panel does (see [Serving under a path prefix](url-prefix.md)). |
 | `SECRET_KEY` | generated in `/data/secret_key` | Set it only to manage the key yourself. |
 | `DATABASE_URL` | SQLite in `/data` | For example `postgres://housecairn:<password>@postgres:5432/housecairn`. |
 | `TIME_ZONE` | `UTC` | Time zone of the households, such as `Europe/Paris`: it decides what today is. Also in the interface. |
@@ -31,7 +32,7 @@ changed in the interface; a variable that is set locks its field there. The full
 | `HOUSECAIRN_SETUP_SCREEN` | `true` | The first-account screen (`/setup/`), opened by a one-time code written in the log, while there is no administrator. `false` if you create the administrator another way. See [First start](../getting-started/first-start.md). |
 | `EMAIL_HOST` | (none) | Outgoing mail server (SMTP); email is off while it is empty. See [Email](email.md). |
 | `EMAIL_USE_SSL`, `EMAIL_TIMEOUT` | `false`, `15` | TLS from the first byte; seconds to wait for the server. See [Email](email.md). |
-| `HOUSECAIRN_SITE_URL` | (none: set it in production) | Public address of the instance, such as `https://home.example.com`, used for links in emails and for the address a printed QR label holds. Empty: the address of the request, checked against `ALLOWED_HOSTS`; `check --deploy` warns when `EMAIL_HOST` is set without it. |
+| `HOUSECAIRN_SITE_URL` | (none: set it in production) | Public address of the instance, such as `https://home.example.com`, used for links in emails and for the address a printed QR label holds, followed by `HOUSECAIRN_URL_PREFIX`. Empty: the address of the request, checked against `ALLOWED_HOSTS`; `check --deploy` warns when `EMAIL_HOST` is set without it. |
 | `HOUSECAIRN_INVITATION_LIFETIME_DAYS` | `7` | Days an invitation link stays valid, from 1 to 90. |
 | `HOUSECAIRN_NOTIFICATIONS_ENABLED` | `false` | Reminders through Apprise channels; off, nothing is sent. See [Notifications](../guides/notifications.md). |
 | `HOUSECAIRN_NOTIFICATIONS_INTERVAL` | `5` | Minutes between two looks for reminders to send, from 1 to 60. |

@@ -11,6 +11,7 @@ from django.core.management.base import BaseCommand
 from django.urls import reverse
 
 from housecairn.accounts import setup
+from housecairn.core.links import external_url
 
 
 class Command(BaseCommand):
@@ -22,8 +23,8 @@ class Command(BaseCommand):
             return
         from django.conf import settings
 
-        base = settings.HOUSECAIRN_SITE_URL.rstrip("/")
-        address = f"{base}{reverse('setup')}" if base else reverse("setup")
+        base = settings.HOUSECAIRN_SITE_URL
+        address = external_url(reverse("setup"), base) or reverse("setup")
         minutes = int(setup.CODE_LIFETIME.total_seconds() // 60)
         lines = [
             "",

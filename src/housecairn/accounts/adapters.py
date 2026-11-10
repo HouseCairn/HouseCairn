@@ -17,6 +17,7 @@ from django.template.response import TemplateResponse
 from housecairn.accounts import services
 from housecairn.accounts.models import User
 from housecairn.accounts.services import Decision
+from housecairn.core.links import external_url
 from housecairn.core.prefix import in_application
 from housecairn.core.redirects import has_safe_shape
 from housecairn.instance.config import get_setting, instance_name
@@ -29,17 +30,16 @@ _EMAIL_LINKS = ("activate_url", "password_reset_url", "signup_url")
 
 
 def on_site(url: str) -> str:
-    """The URL on `HOUSECAIRN_SITE_URL` when it is set, instead of the request's host.
+    """The URL on the public address of the instance (core.links).
 
-    allauth builds the links of its emails from the Host header of the request
-    that triggered them; the configured public address replaces it, so that a
-    request cannot choose where a reset or verification link points.
+    allauth builds the links of its emails from the Host header and the path prefix of
+    the request that triggered them. `HOUSECAIRN_SITE_URL`, when set, replaces the host,
+    so that a request cannot choose where a reset or verification link points, and the
+    path is put under `HOUSECAIRN_URL_PREFIX` instead of the prefix of the request.
     """
-    base: str = get_setting("site_url")
-    if not base:
-        return url
     parts = urlsplit(url)
-    return base + urlunsplit(("", "", parts.path, parts.query, parts.fragment))
+    base: str = get_setting("site_url") or urlunsplit((parts.scheme, parts.netloc, "", "", ""))
+    return external_url(urlunsplit(("", "", parts.path, parts.query, parts.fragment)), base)
 
 
 class AccountAdapter(DefaultAccountAdapter):  # type: ignore[misc]
