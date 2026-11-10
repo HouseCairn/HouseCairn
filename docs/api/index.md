@@ -55,6 +55,13 @@ web interface: every request only sees the homes of its user
   `room`; photos with `room`, `item` and `category` (`general`, `behind_walls`, `before`,
   `after` or `other`, [ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)).
   An item carries `contract_provider` and `contract_number`.
+- **Task templates** ([ADR 0049](../adr/0049-task-templates.md)):
+  `GET /api/v1/task-templates/` returns the library shipped with the instance, every text
+  in English and in French, to any person signed in and any token with the `read` scope;
+  `POST /api/v1/homes/<home id>/tasks/from-templates/` with `templates` (identifiers),
+  and optionally `room` and `due_on`, makes one task per template in the language of the
+  request and answers `201` with them; an unknown template is a `400` and makes none. It
+  needs a role that writes, and the `write` scope.
 - **Tasks** of a home: `/api/v1/homes/<home id>/tasks/`, `.../occurrences/`,
   `.../contractors/` (name, `trade` from a list or `other` with `trade_other`, `phone`,
   `email`, `address`, `note`; `GET .../contractors/<id>/vcard/` gives the contact file) and
@@ -192,8 +199,12 @@ OpenAPI 3.1 schema of the code at each build of this site:
 A running instance serves the same schema at `/api/schema/` and an
 interactive explorer at `/api/docs/`, both to signed-in users only.
 
+The [guide](guide.md) shows the API at work with `curl`: a token, reads, writes, the
+pages of a list and the errors.
+
 ```{toctree}
 :maxdepth: 1
 
+guide
 reference
 ```

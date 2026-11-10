@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.housecairn.app/_static/schemas/task-templates.schema.json",
+  "title": "HouseCairn library of task templates, version 1",
+  "description": "The file src/housecairn/tasks/task_templates.yaml (docs/adr/0049).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "equipment", "templates"],
+  "properties": {
+    "version": {"const": 1},
+    "equipment": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name"],
+        "properties": {
+          "id": {"$ref": "#/$defs/id"},
+          "name": {"$ref": "#/$defs/text"}
+        }
+      }
+    },
+    "templates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/template"}
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "maxLength": 40},
+    "text": {
+      "description": "A text in English and in French.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en", "fr"],
+      "properties": {
+        "en": {"type": "string", "minLength": 1, "maxLength": 500},
+        "fr": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "title": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en", "fr"],
+      "properties": {
+        "en": {"type": "string", "minLength": 1, "maxLength": 200},
+        "fr": {"type": "string", "minLength": 1, "maxLength": 200}
+      }
+    },
+    "template": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "equipment", "title", "applies_to", "every", "minutes", "materials", "source"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "equipment": {"$ref": "#/$defs/id"},
+        "title": {"$ref": "#/$defs/title"},
+        "applies_to": {
+          "description": "The type of item and the types of room where the task is usually found.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["item_kind", "room_kinds"],
+          "properties": {
+            "item_kind": {"enum": ["equipment", "surface"]},
+            "room_kinds": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "living", "kitchen", "bathroom", "bedroom", "hallway", "office",
+                  "utility", "garage", "cellar", "attic", "outdoor", "other"
+                ]
+              }
+            }
+          }
+        },
+        "every": {
+          "description": "The indicative interval, counted from the last time the task was done.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["interval", "unit"],
+          "properties": {
+            "interval": {"type": "integer", "minimum": 1, "maximum": 100},
+            "unit": {"enum": ["day", "week", "month", "year"]}
+          }
+        },
+        "season": {"enum": ["spring", "summer", "autumn", "winter", "heating"]},
+        "minutes": {"type": "integer", "minimum": 1, "maximum": 43200},
+        "materials": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+        "procedure": {"$ref": "#/$defs/text"},
+        "region": {
+          "description": "The country whose rule the interval is (ISO 3166-1 alpha-2); `note` then says so.",
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "note": {"$ref": "#/$defs/text"},
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "url"],
+          "properties": {
+            "title": {"type": "string", "minLength": 1, "maxLength": 200},
+            "url": {"type": "string", "pattern": "^https://[^\\s]+$", "maxLength": 300}
+          }
+        }
+      },
+      "if": {"required": ["region"]},
+      "then": {"required": ["note"]}
+    }
+  }
+}

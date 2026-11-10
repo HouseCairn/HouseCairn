@@ -8,7 +8,7 @@ from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
-from django.db import models
+from django.db import models, transaction
 from django.http import FileResponse, Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
@@ -75,17 +75,24 @@ class HomeListView(WebHomeScopedMixin, ListView[Home]):
         return context
 
 
-class HomeCreateView(LoginRequiredMixin, FormView[forms.HomeForm]):
+class HomeCreateView(LoginRequiredMixin, FormView[forms.NewHomeForm]):
     template_name = "homes/home_form.html"
-    form_class = forms.HomeForm
+    form_class = forms.NewHomeForm
 
-    def form_valid(self, form: forms.HomeForm) -> HttpResponse:
-        home = services.create_home(
-            self.request.user,  # type: ignore[arg-type]
-            name=form.cleaned_data["name"],
-            currency=form.cleaned_data["currency"],
-            hemisphere=form.cleaned_data["hemisphere"],
-        )
+    def form_valid(self, form: forms.NewHomeForm) -> HttpResponse:
+        from housecairn.tasks import task_templates
+
+        # The home and the tasks of the equipment checked, together or not at all.
+        with transaction.atomic():
+            home = services.create_home(
+                self.request.user,  # type: ignore[arg-type]
+                name=form.cleaned_data["name"],
+                currency=form.cleaned_data["currency"],
+                hemisphere=form.cleaned_data["hemisphere"],
+            )
+            task_templates.add_equipment(
+                self.request.user, home, form.cleaned_data.get("equipment") or []
+            )
         return redirect(
             navigation.after_create(
                 self.request,

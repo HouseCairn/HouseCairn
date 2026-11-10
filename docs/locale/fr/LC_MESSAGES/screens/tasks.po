@@ -42,6 +42,9 @@ msgstr "Les **onglets** au-dessus des sélecteurs sont ceux d'[Aujourd'hui](toda
 msgid "**Add a task** opens the [task form](task-form.md)."
 msgstr "**Ajouter une tâche** ouvre le [formulaire de tâche](task-form.md)."
 
+msgid "**Add from a template** opens the [library of task templates](task-templates.md)."
+msgstr "**Ajouter depuis un modèle** ouvre la [bibliothèque de modèles de tâches](task-templates.md)."
+
 msgid "Read-only members see the same list and none of the buttons that change it."
 msgstr "Les membres en lecture seule voient la même liste et aucun des boutons qui la modifient."
 

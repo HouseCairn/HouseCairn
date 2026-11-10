@@ -680,6 +680,9 @@ msgstr "**Listes** : partout où une liste générique existe (type de pièce, c
 msgid "**People** **must** be shown by their display name (`accounts.names.person_name`), never by their email address, except on a page whose subject is the address (the card of a household member, a contractor). An address on every screen is personal data shown to the whole household."
 msgstr "Les **personnes** **doivent** être affichées par leur nom d'affichage (`accounts.names.person_name`), jamais par leur adresse e-mail, sauf sur une page dont l'adresse est le sujet (la fiche d'un membre du foyer, un intervenant). Une adresse sur chaque écran est une donnée personnelle montrée à tout le foyer."
 
+msgid "**A secret** that the person must keep (an API token) **must** be shown once, on the page that answers the `POST` that made it, and never again: that answer is sent with `Cache-Control: no-store`, the secret is in a read-only field with a **Copy** button (`static/js/copy-secret.js`; without JavaScript the button stays hidden and the field can still be selected), and the page says it will not be shown again. The screen of the API tokens does it (`apitokens/views.py`, `apitokens/token_created.html`). A secret on a page that a link or the back button opens again is readable by whoever uses the browser next, and stays in its cache."
+msgstr "**Un secret** que la personne doit conserver (un jeton d'API) **doit** être montré une seule fois, sur la page qui répond au `POST` qui l'a créé, et plus jamais : cette réponse part avec `Cache-Control: no-store`, le secret est dans un champ en lecture seule avec un bouton **Copier** (`static/js/copy-secret.js` ; sans JavaScript le bouton reste masqué et le champ reste sélectionnable), et la page dit qu'il ne sera plus affiché. L'écran des jetons d'API le fait (`apitokens/views.py`, `apitokens/token_created.html`). Un secret sur une page qu'un lien ou le bouton retour rouvre est lisible par la personne suivante sur le navigateur, et reste dans son cache."
+
 msgid "**Sign-in** **must** offer one button per configured identity provider, and passkeys through the browser's autofill of the address field, without a passkey button ([ADR 0018](../adr/0018-sign-in-page-and-passkeys.md)). The page stays a form and at most one button per provider. While the instance has no administrator, it also shows a notice with a link to `/setup/`, and never redirects there: people who already have an account still sign in ([ADR 0056](../adr/0056-first-administrator-on-a-web-screen.md))."
 msgstr "La **connexion** **doit** proposer un bouton par fournisseur d'identité configuré, et les passkeys par l'autoremplissage du champ d'adresse du navigateur, sans bouton de passkey ([ADR 0018](../adr/0018-sign-in-page-and-passkeys.md)). La page reste un formulaire et au plus un bouton par fournisseur. Tant que l'instance n'a pas d'administrateur, elle affiche aussi un avis avec un lien vers `/setup/`, sans jamais y rediriger : les personnes qui ont déjà un compte se connectent toujours ([ADR 0056](../adr/0056-first-administrator-on-a-web-screen.md))."
 
@@ -839,6 +842,9 @@ msgstr "[ ] L'écran montre le logement courant et seulement des données des lo
 
 msgid "[ ] Amounts through the `money` filter; people by their display name; generic lists with \"Other\"."
 msgstr "[ ] Montants par le filtre `money` ; personnes par leur nom d'affichage ; listes génériques avec « Autre »."
+
+msgid "[ ] A secret is shown once, in the answer to its `POST`, with `Cache-Control: no-store` and a Copy button."
+msgstr "[ ] Un secret est montré une seule fois, dans la réponse à son `POST`, avec `Cache-Control: no-store` et un bouton Copier."
 
 msgid "[ ] Touch targets of 44 px at least, visible focus, never hidden by the bar or the banner; WCAG 2.2 AA."
 msgstr "[ ] Cibles tactiles de 44 px au moins, focus visible, jamais masqué par la barre ou le bandeau ; WCAG 2.2 AA."
