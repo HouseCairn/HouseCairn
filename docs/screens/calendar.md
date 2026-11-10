@@ -14,8 +14,8 @@ what is still to come for a task that repeats.
   person, priority. A person is shown by their name, never by their email address.
 - **Previous, Next, Today** move by one period. With the focus inside the calendar, the left and
   right arrows do the same and `T` goes to today; the shortcuts work nowhere else on the page.
-- **Done** marks a task done in one tap, with **Undo** on the page you come back to, exactly as
-  on [Today](today.md). A reader of a home sees its tasks but has no **Done** button.
+- **Done** marks a task done in one tap; the calendar comes back to the same task, with the
+  **Undo** banner at the bottom, as on [Today](today.md). A reader of a home sees its tasks but has no **Done** button.
 - **Forecast**: the dates after the open occurrence of a task that repeats are computed from its
   rule and marked as forecast. They are not created until the task is done; they have no button.
 

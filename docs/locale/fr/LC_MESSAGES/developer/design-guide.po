@@ -484,8 +484,8 @@ msgstr "La confirmation **doit** être un bandeau d'annulation en bas de l'écra
 msgid "The banner and the bar **must not** hide the focused element (WCAG 2.2, 2.4.11)."
 msgstr "Le bandeau et la barre **ne doivent pas** masquer l'élément qui a le focus (WCAG 2.2, 2.4.11)."
 
-msgid "Without JavaScript, the same form **must** still work: a post, then a redirect to `next#<anchor>` (for an occurrence, `#occ-<id>`), which brings the person back to the row. After an undo, the redirect drops the undo state from the address."
-msgstr "Sans JavaScript, le même formulaire **doit** fonctionner : un envoi, puis une redirection vers `next#<ancre>` (pour une occurrence, `#occ-<id>`), qui ramène la personne à la ligne. Après une annulation, la redirection retire l'état d'annulation de l'adresse."
+msgid "Without JavaScript, the same form **must** still work: a post, then a redirect to `next#<anchor>` (for an occurrence, `#occ-<id>`), which brings the person back to the row. The undo banner never lives in the address, with or without script."
+msgstr "Sans JavaScript, le même formulaire **doit** fonctionner : un envoi, puis une redirection vers `next#<ancre>` (pour une occurrence, `#occ-<id>`), qui ramène la personne à la ligne. Le bandeau d'annulation ne vit jamais dans l'adresse, avec ou sans script."
 
 msgid "Done **must not** ask for a confirmation: Undo is the safety net ([ADR 0033](../adr/0033-done-with-undo.md)). A question on every task is the friction that makes people stop using the application."
 msgstr "« Fait » **ne doit pas** demander de confirmation : Annuler est le filet de sécurité ([ADR 0033](../adr/0033-done-with-undo.md)). Une question à chaque tâche est la friction qui fait abandonner l'application."
@@ -501,6 +501,55 @@ msgstr "elle ne se rattrape pas : une suppression passe par sa page de confirmat
 
 msgid "it changes who may do what: roles, transfer of a home, an invitation sent by email."
 msgstr "elle change qui peut faire quoi : les rôles, le transfert d'un logement, une invitation envoyée par e-mail."
+
+msgid "How it is built"
+msgstr "Comment c'est fait"
+
+msgid "Done, Skip and Undo of an occurrence work this way; a new action in place follows the same pattern."
+msgstr "Fait, Ignorer et Annuler d'une occurrence fonctionnent ainsi ; une nouvelle action sur place suit le même modèle."
+
+msgid "**HTMX** is vendored (`static/vendor/htmx/`, version and checksums in its `README.md`), loaded by `base.html` with its subresource integrity, under the strict CSP: no `hx-on`, no inline script, `allowEval` and `allowScriptTags` off. Nothing else is needed on the page."
+msgstr "**HTMX** est livré avec l'application (`static/vendor/htmx/`, version et sommes de contrôle dans son `README.md`), chargé par `base.html` avec son intégrité de sous-ressource, sous la CSP stricte : pas de `hx-on`, pas de script en ligne, `allowEval` et `allowScriptTags` désactivés. La page n'a besoin de rien d'autre."
+
+msgid "**The row** (`templates/tasks/_occurrence_row.html`) is an `li` with the id `occ-<id>`. Its form posts to the same view with or without script: `action` and `hx-post` give the same address, `hx-target=\"closest li\"` and `hx-swap=\"outerHTML\"` replace the row only, `hx-disabled-elt=\"find button\"` stops a double tap, and two hidden fields say where it is: `next` (the page, from the view's `row_next`) and `in_place=row`."
+msgstr "**La ligne** (`templates/tasks/_occurrence_row.html`) est un `li` d'identifiant `occ-<id>`. Son formulaire envoie à la même vue avec ou sans script : `action` et `hx-post` donnent la même adresse, `hx-target=\"closest li\"` et `hx-swap=\"outerHTML\"` ne remplacent que la ligne, `hx-disabled-elt=\"find button\"` arrête un double appui, et deux champs cachés disent où elle est : `next` (la page, d'après `row_next` de la vue) et `in_place=row`."
+
+msgid "**The view** (`OccurrenceActionView`) reads `in_place` only with the `HX-Request` header (`tasks.in_place.origin`). Then it answers `templates/tasks/_in_place.html`, never a page: the row as it now is, and the banner as an out-of-band swap (`hx-swap-oob=\"innerHTML\"`) into `#undo-region`. Errors (a task already closed by a second tap) come back in the banner, with the row as it is, in a 200 answer: HTMX does not swap an error status."
+msgstr "**La vue** (`OccurrenceActionView`) ne lit `in_place` qu'avec l'en-tête `HX-Request` (`tasks.in_place.origin`). Elle répond alors `templates/tasks/_in_place.html`, jamais une page : la ligne telle qu'elle est maintenant, et le bandeau en remplacement hors bande (`hx-swap-oob=\"innerHTML\"`) dans `#undo-region`. Les erreurs (une tâche déjà fermée par un second appui) reviennent dans le bandeau, avec la ligne telle qu'elle est, dans une réponse 200 : HTMX ne remplace rien sur un statut d'erreur."
+
+msgid "**The banner** lives in `#undo-region`, at the end of `base.html` on every signed-in page, empty, with `aria-live=\"polite\"`: a live region must be in the page before its content changes for a screen reader to hear it. It is fixed at the bottom, above the bar, and stays until the next action or page. Its Undo posts in place with `in_place=banner`: the answer is the content of the region (\"Undone.\"), and the row back as an out-of-band swap."
+msgstr "**Le bandeau** vit dans `#undo-region`, à la fin de `base.html` sur toute page connectée, vide, avec `aria-live=\"polite\"` : une région active doit être dans la page avant que son contenu change pour qu'un lecteur d'écran l'entende. Il est fixé en bas, au-dessus de la barre, et reste jusqu'à l'action ou la page suivante. Son Annuler envoie sur place avec `in_place=banner` : la réponse est le contenu de la région (« Annulé. »), et la ligne revenue en remplacement hors bande."
+
+msgid "**Focus**: the element that had it is replaced, so the answer gives it back with `autofocus`, which HTMX applies after a swap: the row's link after Done or Skip, the row's Done button after Undo. `scroll-padding-bottom` keeps a focused element clear of the banner (WCAG 2.2, 2.4.11)."
+msgstr "**Focus** : l'élément qui l'avait est remplacé, donc la réponse le rend avec `autofocus`, que HTMX applique après un remplacement : le lien de la ligne après Fait ou Ignorer, le bouton Fait de la ligne après Annuler. `scroll-padding-bottom` garde l'élément qui a le focus hors du bandeau (WCAG 2.2, 2.4.11)."
+
+#, python-brace-format, python-format
+msgid "**Without script** the same form posts and the view redirects to `next#occ-<id>`. The banner is kept in the session for that one page (`tasks.in_place.remember`), read once by `{% undo_banner %}` in `base.html`, never in the address: the browser's back button cannot show it again. A row that left the list after Done (an open list no longer shows it) has no anchor to come back to: the page then opens at its top."
+msgstr "**Sans script**, le même formulaire envoie et la vue redirige vers `next#occ-<id>`. Le bandeau est gardé dans la session pour cette seule page (`tasks.in_place.remember`), lu une fois par `{% undo_banner %}` dans `base.html`, jamais dans l'adresse : le retour du navigateur ne peut pas le montrer de nouveau. Une ligne sortie de la liste après Fait (une liste ouverte ne la montre plus) n'a pas d'ancre où revenir : la page s'ouvre alors en haut."
+
+msgid "**The task page and the calendar** keep the post and its redirect, with or without script: an action there changes the whole card (state, history, materials), or an entry that is not an occurrence row. The banner comes from the session, as above, and the calendar's entries carry the `occ-<id>` anchor."
+msgstr "**La fiche de la tâche et le calendrier** gardent l'envoi et sa redirection, avec ou sans script : une action y change toute la carte (état, historique, matériel), ou une entrée qui n'est pas une ligne d'occurrence. Le bandeau vient de la session, comme ci-dessus, et les entrées du calendrier portent l'ancre `occ-<id>`."
+
+msgid "To make another one-tap action work in place: give its fragment an id, post with `hx-post` to the same address as `action`, send `next` and `in_place`, and have the view answer the fragment and, if the action can be undone, the banner out of band; keep the redirect to `next#<id>` for the post without script."
+msgstr "Pour qu'une autre action d'un geste fonctionne sur place : donner un identifiant à son fragment, envoyer par `hx-post` à la même adresse que `action`, envoyer `next` et `in_place`, et faire répondre la vue par le fragment et, si l'action s'annule, par le bandeau hors bande ; garder la redirection vers `next#<id>` pour l'envoi sans script."
+
+msgid "Creation forms and the back button"
+msgstr "Les formulaires de création et le retour"
+
+msgid "Every page whose route ends in `new/` (the convention of the creation forms) goes through `core.middleware.CreationFormMiddleware`:"
+msgstr "Toute page dont la route finit par `new/` (la convention des formulaires de création) passe par `core.middleware.CreationFormMiddleware` :"
+
+msgid "it is sent with `Cache-Control: no-store`, so that the back button asks the server again instead of showing the form already sent;"
+msgstr "elle est envoyée avec `Cache-Control: no-store`, pour que le retour redemande la page au serveur au lieu de montrer le formulaire déjà envoyé ;"
+
+msgid "each of its forms gets a hidden `form_token`, next to the CSRF field, new at each display (a form sent with an error gets a new one);"
+msgstr "chacun de ses formulaires reçoit un `form_token` caché, à côté du champ CSRF, nouveau à chaque affichage (un formulaire envoyé avec une erreur en reçoit un nouveau) ;"
+
+msgid "a post that brings back a token already used is refused before the view runs: the person goes to `next` (else Today) with \"This form was already sent\". The tokens used are kept in the session and in the cache, whose atomic `add` stops two sendings at the same instant (with a cache shared by the workers, across workers too). A post without a token is let through as before."
+msgstr "un envoi qui rapporte un jeton déjà utilisé est refusé avant la vue : la personne va à `next` (sinon Aujourd'hui) avec « Ce formulaire a déjà été envoyé ». Les jetons utilisés sont gardés dans la session et dans le cache, dont l'`add` atomique arrête deux envois au même instant (avec un cache partagé par les workers, entre workers aussi). Un envoi sans jeton passe comme avant."
+
+msgid "A new creation form gets all this by its address alone: its route ends in `new/`."
+msgstr "Un nouveau formulaire de création reçoit tout cela par sa seule adresse : sa route finit par `new/`."
 
 msgid "Current home"
 msgstr "Logement courant"

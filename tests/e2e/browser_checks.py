@@ -13,6 +13,10 @@ emulation): it registers a passkey, then signs in through the conditional
 What no script can do, the real autofill pop-up of each browser, is listed in
 docs/adr/0018. `sso` clicks the provider button of the sign-in page once and checks that
 the browser lands on the provider, with no confirmation page of the application in between.
+`in-place` (local only, not in the workflow) checks that Done and Undo on Today leave the
+page where it was, keep the focus on the row and show the banner above the bar.
+
+    python tests/e2e/browser_checks.py in-place --base http://localhost:8001
 """
 
 import argparse
@@ -144,9 +148,76 @@ def sso(browser: Browser, base: str, provider: str) -> None:
     page.close()
 
 
+def in_place(browser: Browser, base: str) -> None:
+    """Done and Undo keep the person where they are (NAV-05). Local only, not in CI.
+
+    Needs the demo account with a home holding at least 15 open tasks due today:
+
+        uv run python manage.py shell -c "
+        from housecairn.accounts.models import User
+        from housecairn.homes import services as homes
+        from housecairn.tasks import services as tasks
+        user = User.objects.create_user(email='demo@example.com', password='...')
+        home = homes.create_home(user, name='Main house')
+        for n in range(20):
+            tasks.create_task(user, home, title=f'Task {n + 1}', due_on=tasks.today())
+        "
+    """
+    context = browser.new_context(viewport={"width": 390, "height": 844})
+    page = context.new_page()
+    errors: list[str] = []
+    page.on(
+        "console", lambda message: errors.append(message.text) if message.type == "error" else None
+    )
+    sign_in(page, base)
+    rows = page.locator("li.task-row:has(button.button-done)")
+    check(rows.count() >= 15, "Today lists at least 15 open tasks")
+    row = rows.nth(12)
+    row_id = row.get_attribute("id") or ""
+    check(row_id.startswith("occ-"), "a row is named after its occurrence")
+    row.scroll_into_view_if_needed()
+    page.mouse.wheel(0, 120)
+    page.wait_for_timeout(200)
+    before = page.evaluate("window.scrollY")
+    check(before > 300, f"the page is scrolled down ({before} px)")
+    address = page.url
+    row.locator("button.button-done").click()
+    page.wait_for_selector(f"#{row_id}.task-row-closed")
+    page.wait_for_selector("#undo-region .undo-banner button")
+    after = page.evaluate("window.scrollY")
+    check(abs(after - before) <= 1, f"Done does not move the page ({before} -> {after} px)")
+    check(page.url == address, "Done leaves the address as it was")
+    focused = page.evaluate(
+        "document.activeElement.closest('li') && document.activeElement.closest('li').id"
+    )
+    check(focused == row_id, "the focus stays on the row")
+    banner = page.locator("#undo-region .undo-banner").bounding_box()
+    bar = page.locator("nav.nav").bounding_box()
+    check(
+        banner is not None and bar is not None and banner["y"] + banner["height"] <= bar["y"],
+        "the banner sits above the bar at the bottom",
+    )
+    check(
+        "Marked done." in (page.locator("#undo-region").text_content() or ""),
+        "the live region says what happened",
+    )
+    page.locator("#undo-region .undo-banner button").click()
+    page.wait_for_selector(f"#{row_id}:not(.task-row-closed) button.button-done")
+    check(abs(page.evaluate("window.scrollY") - before) <= 1, "Undo does not move the page")
+    check(
+        page.evaluate("document.activeElement.classList.contains('button-done')")
+        and page.evaluate("document.activeElement.closest('li').id") == row_id,
+        "after Undo the focus is on the Done button of the row",
+    )
+    check("Undone." in (page.locator("#undo-region").text_content() or ""), "Undo is announced")
+    check(page.url == address, "Undo leaves the address as it was")
+    check(not errors, f"no error in the console (CSP included): {errors}")
+    context.close()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("mode", choices=["passkey", "sso"])
+    parser.add_argument("mode", choices=["passkey", "sso", "in-place"])
     parser.add_argument("--base", required=True, help="address of the running instance")
     parser.add_argument("--provider", help="address of the stub identity provider (sso mode)")
     args = parser.parse_args()
@@ -155,6 +226,8 @@ def main() -> None:
         browser = playwright.chromium.launch()
         if args.mode == "sso":
             sso(browser, base, args.provider.rstrip("/"))
+        elif args.mode == "in-place":
+            in_place(browser, base)
         else:
             passkey(browser, base)
         browser.close()

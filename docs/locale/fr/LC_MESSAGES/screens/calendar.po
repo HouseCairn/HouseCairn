@@ -36,8 +36,8 @@ msgstr "**Filtres** : logement (si vous en avez plusieurs, tous ensemble par dé
 msgid "**Previous, Next, Today** move by one period. With the focus inside the calendar, the left and right arrows do the same and `T` goes to today; the shortcuts work nowhere else on the page."
 msgstr "**Précédent, Suivant, Aujourd'hui** avancent d'une période. Quand le focus est dans le calendrier, les flèches gauche et droite font de même et `T` va à aujourd'hui ; les raccourcis ne fonctionnent nulle part ailleurs sur la page."
 
-msgid "**Done** marks a task done in one tap, with **Undo** on the page you come back to, exactly as on [Today](today.md). A reader of a home sees its tasks but has no **Done** button."
-msgstr "**Fait** marque une tâche faite en un geste, avec **Annuler** sur la page où vous revenez, comme sur [Aujourd'hui](today.md). Un lecteur d'un logement voit ses tâches mais n'a pas de bouton **Fait**."
+msgid "**Done** marks a task done in one tap; the calendar comes back to the same task, with the **Undo** banner at the bottom, as on [Today](today.md). A reader of a home sees its tasks but has no **Done** button."
+msgstr "**Fait** marque une tâche faite en un geste ; le calendrier revient à la même tâche, avec le bandeau **Annuler** en bas, comme sur [Aujourd'hui](today.md). Un lecteur d'un logement voit ses tâches mais n'a pas de bouton **Fait**."
 
 msgid "**Forecast**: the dates after the open occurrence of a task that repeats are computed from its rule and marked as forecast. They are not created until the task is done; they have no button."
 msgstr "**Prévision** : les dates qui suivent l'occurrence ouverte d'une tâche récurrente sont calculées d'après sa règle et marquées comme prévisions. Elles ne sont créées qu'une fois la tâche faite ; elles n'ont pas de bouton."
