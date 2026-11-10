@@ -172,8 +172,8 @@ msgstr "L'archive est vérifiée avant toute écriture, et refusée avec la rais
 msgid "only the names the format allows, no symbolic link, no encrypted file, no name that leaves the archive;"
 msgstr "seulement les noms que le format autorise, aucun lien symbolique, aucun fichier chiffré, aucun nom qui sort de l'archive ;"
 
-msgid "a size, once unpacked, read from the zip before unpacking, no larger than the file quota of a home; no file larger than the largest upload;"
-msgstr "une taille décompressée, lue dans le zip avant toute décompression, qui ne dépasse pas le quota de fichiers d'un logement ; aucun fichier plus grand que le plus grand envoi accepté ;"
+msgid "a size, once unpacked, read from the zip before unpacking, no larger in all than the file quota of a home plus 64 MB (room for the data files); no file larger than the largest upload;"
+msgstr "une taille décompressée, lue dans le zip avant toute décompression, qui ne dépasse pas au total le quota de fichiers d'un logement plus 64 Mo (la place des fichiers de données) ; aucun fichier plus grand que le plus grand envoi accepté ;"
 
 msgid "a format and a version this instance knows, and every file present with the digest and the size its manifest gives;"
 msgstr "un format et une version que cette instance connaît, et chaque fichier présent avec l'empreinte et la taille que donne son manifeste ;"
@@ -192,6 +192,9 @@ msgstr "Personne ne reçoit de compte. Depuis le web, la personne qui restaure e
 
 msgid "which attaches again every person of the archive who has an account here with the same address, with their role."
 msgstr "qui rattache chaque personne de l'archive ayant ici un compte à la même adresse, avec son rôle."
+
+msgid "A home that required a sign-in provider still requires it once restored. On an instance that does not declare that provider, it stays locked, for its owner too, until the rule is lifted: the owner opens the locked page and chooses **Remove the sign-in requirement**, or the administrator uses **Remove these requirements** on the instance page ([Requiring single sign-on for a home](oidc.md#requiring-single-sign-on-for-a-home))."
+msgstr "Un logement qui exigeait un fournisseur de connexion l'exige encore une fois restauré. Sur une instance qui ne déclare pas ce fournisseur, il reste verrouillé, pour son propriétaire aussi, jusqu'à la levée de la règle : le propriétaire ouvre la page verrouillée et choisit **Retirer l'exigence de connexion**, ou l'administrateur utilise **Retirer ces exigences** sur la page de l'instance ([Exiger l'authentification unique pour un logement](oidc.md#requiring-single-sign-on-for-a-home))."
 
 msgid "Deletion of a home"
 msgstr "Suppression d'un logement"

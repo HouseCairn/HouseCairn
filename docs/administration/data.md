@@ -99,8 +99,9 @@ reason when it is not one HouseCairn made, or was changed since:
 
 - only the names the format allows, no symbolic link, no encrypted file, no
   name that leaves the archive;
-- a size, once unpacked, read from the zip before unpacking, no larger than the
-  file quota of a home; no file larger than the largest upload;
+- a size, once unpacked, read from the zip before unpacking, no larger in all
+  than the file quota of a home plus 64 MB (room for the data files); no file
+  larger than the largest upload;
 - a format and a version this instance knows, and every file present with the
   digest and the size its manifest gives;
 - every value accepted by its field (a choice of the list, a valid date, a text
@@ -121,6 +122,13 @@ docker compose exec housecairn python -m housecairn.entrypoint manage \
 
 which attaches again every person of the archive who has an account here with
 the same address, with their role.
+
+A home that required a sign-in provider still requires it once restored. On an
+instance that does not declare that provider, it stays locked, for its owner
+too, until the rule is lifted: the owner opens the locked page and chooses
+**Remove the sign-in requirement**, or the administrator uses **Remove these
+requirements** on the instance page
+([Requiring single sign-on for a home](oidc.md#requiring-single-sign-on-for-a-home)).
 
 ## Deletion of a home
 
