@@ -236,7 +236,8 @@ def after_create(
     if target is None or is_section_list(target, section_list) or target == record_url:
         messages.success(request, saved)
         return record_url
-    messages.success(request, added_message(added, record_url))
+    # Open leads to the record, which then comes back to where the person was working.
+    messages.success(request, added_message(added, with_next(record_url, target)))
     return target
 
 

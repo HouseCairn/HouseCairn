@@ -161,7 +161,10 @@ class TestTaskFromItem:
         task = Task.objects.get(title="Bleed the radiators")
         html = signed_in.get(item_url).content.decode()
         task_url = tasks("detail", home_id=alice_home.id, task_id=task.id)
-        assert f'Task added · <a href="{task_url}">Open</a>' in html
+        opened = navigation.with_next(task_url, item_url)
+        assert f'Task added · <a href="{opened}">Open</a>' in html
+        # The task opened from the banner comes back to the item, not to Tasks.
+        assert back_links(signed_in.get(opened).content.decode()) == [(item_url, "Boiler")]
 
     def test_an_error_keeps_next_in_the_form(
         self, signed_in: Client, alice_home: Home, owner_item: Item

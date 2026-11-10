@@ -16,6 +16,7 @@ from django.test import Client
 from django.urls import reverse
 
 from housecairn.accounts.models import User
+from housecairn.core import navigation
 from housecairn.homes.models import Home
 from housecairn.labels import services as label_services
 from housecairn.projects import services as project_services
@@ -438,7 +439,7 @@ class TestHomePostRedirects:
         cabin = Home.objects.get(name="Cabin")
         page = signed_in.get(context)
         texts = [str(m) for m in page.context["messages"]]
-        record = url("homes:detail", home_id=cabin.id)
+        record = navigation.with_next(url("homes:detail", home_id=cabin.id), context)
         assert texts == [f'Home added · <a href="{record}">Open</a>']
 
     def test_create_without_next_opens_the_new_home(
