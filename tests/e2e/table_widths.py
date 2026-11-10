@@ -79,7 +79,7 @@ def main() -> None:
                     ok = (
                         ok
                         and bool(tables)
-                        and page.locator("a[href$='/revoke/']").first.is_visible()
+                        and page.locator("a[href*='/revoke/']").first.is_visible()
                     )
                 failures += not ok
                 status = response.status if response else "?"
