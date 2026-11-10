@@ -414,7 +414,10 @@ same pattern.
 - **The banner** lives in `#undo-region`, at the end of `base.html` on every signed-in
   page, empty, with `aria-live="polite"`: a live region must be in the page before
   its content changes for a screen reader to hear it. It is fixed at the bottom,
-  above the bar, and stays until the next action or page. Its Undo posts in place with
+  above the bar, and stays until the next action or page. The room the page keeps
+  for it at its end follows its real height (`--hc-undo-height`, set by
+  `static/js/undo-region.js`; 5rem, one line, without script): a long message wraps on
+  four lines at 320 px. Its Undo posts in place with
   `in_place=banner`: the answer is the content of the region ("Undone."), and the row
   back as an out-of-band swap.
 - **Focus**: the element that had it is replaced, so the answer gives it back with
@@ -452,7 +455,7 @@ through `core.middleware.CreationFormMiddleware`:
   sendings at the same instant (with a cache shared by the workers, across workers
   too). A post without a token is let through as before.
 
-- every form that posts on such a page gets `autocomplete="off"`, so that Chromium does
+- every form that posts on such a page gets `autocomplete="off"`, so that the browser does
   not put back what was typed when the person comes back to the page.
 
 What the token guarantees: the same page, with the same token, sent twice (a double
