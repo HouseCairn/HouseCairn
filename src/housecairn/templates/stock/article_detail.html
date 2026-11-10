@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n stock_extras navigation %}
+{% load i18n stock_extras money navigation %}
 {% block head_title %}{{ article.name }}{% endblock head_title %}
 {% block content %}
   {% url 'stock:list' home_id=home.id as parent %}{% back_link parent %}
@@ -99,7 +99,7 @@
           <p><strong>{{ supplier.name }}</strong></p>
           <dl class="facts">
             {% if supplier.reference %}<div><dt>{% translate "Supplier reference" %}</dt><dd class="mono">{{ supplier.reference }}</dd></div>{% endif %}
-            {% if supplier.last_price is not None %}<div><dt>{% translate "Last price paid" %}</dt><dd>{{ supplier.last_price|floatformat:2 }} {{ home.currency }}</dd></div>{% endif %}
+            {% if supplier.last_price is not None %}<div><dt>{% translate "Last price paid" %}</dt><dd>{{ supplier.last_price|money:home.currency }}</dd></div>{% endif %}
             {% if supplier.url %}<div><dt>{% translate "Purchase link" %}</dt><dd><a href="{{ supplier.url }}" rel="noopener noreferrer nofollow">{{ supplier.url }}</a></dd></div>{% endif %}
           </dl>
           {% if can_write %}

@@ -971,7 +971,7 @@ class TestScreens:
         ).occurrence
         page = signed_in.get(url("detail", alice_home, task_id=owner_task.id)).content.decode()
         assert "Done in five minutes" in page
-        assert "3.20 EUR" in page
+        assert "€3.20" in page
         details = url("occurrence-edit", alice_home, task_id=owner_task.id, occurrence_id=done.id)
         assert details in page
         form = signed_in.get(details)

@@ -1,4 +1,4 @@
-{% load i18n projects_extras %}{# The cost of a task: its estimate, a year, what was paid. `row` is empty in a project. #}
+{% load i18n money %}{# The cost of a task: its estimate, a year, what was paid. `row` is empty in a project. #}
 {% if row and row.has_estimate or row and paid %}
   <h2>{% translate "Cost" %}</h2>
   <section class="card">

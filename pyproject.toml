@@ -28,6 +28,9 @@ dependencies = [
   "django-environ>=0.12",
   "django-csp>=4.0",
   "python-dateutil>=2.9",
+  # Amounts as each language writes them, with the symbol of the currency (CLDR data;
+  # docs/adr/0054). Already locked for the documentation group.
+  "babel>=2.18",
   # Lets classes such as ModelAdmin[Home] be written at runtime for the type
   # checker; companion of django-stubs (see docs/adr/0001).
   "django-stubs-ext>=5.2,<5.3",

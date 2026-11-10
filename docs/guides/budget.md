@@ -29,8 +29,7 @@ planned less used: **... left**, **On budget** or **Over budget by ...**. Rows a
 
 A project "Paint the living room" has two lines, paint 300 and labour 500, so 800 planned.
 You ask two painters; you accept the one at 620 on the labour line, and you pay 350 for the
-paint. Used is 350 + 620 = 970 and the gap is 800 - 970 = -170: **Over budget by 170.00
-EUR**, on the budget of the room, on the project and in the totals of the year. A task of
+paint. Used is 350 + 620 = 970 and the gap is 800 - 970 = -170: **Over budget by €170.00**, on the budget of the room, on the project and in the totals of the year. A task of
 upkeep in the same room, "Wash the walls", estimated at 50 and done for 80, adds a gap of
 -30 to the room and shows in the upkeep, so the room reads 850 planned and 1050 used, -200.
 

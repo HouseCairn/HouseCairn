@@ -1,4 +1,4 @@
-{% load i18n tasks_extras people navigation %}{# The Done filter of the task list: the history of the home (docs/adr/0017). #}
+{% load i18n tasks_extras people money navigation %}{# The Done filter of the task list: the history of the home (docs/adr/0017). #}
   <form method="get" class="history-filters" role="search" aria-label="{% translate "Search the history" %}">
     <input type="hidden" name="status" value="done">
     <details class="history-filter-fields"{% if filtered %} open{% endif %}>
@@ -61,7 +61,7 @@
   </form>
   <p class="history-total" role="status">
     {% blocktranslate count counter=cost.count %}{{ counter }} entry{% plural %}{{ counter }} entries{% endblocktranslate %}
-    {% if cost.with_cost %} · {% blocktranslate with total=cost.total currency=home.currency count counter=cost.with_cost %}real cost: {{ total }} {{ currency }}, entered on {{ counter }} entry{% plural %}real cost: {{ total }} {{ currency }}, entered on {{ counter }} entries{% endblocktranslate %}{% endif %}
+    {% if cost.with_cost %} · {% blocktranslate with total=cost.total|money:home.currency count counter=cost.with_cost %}real cost: {{ total }}, entered on {{ counter }} entry{% plural %}real cost: {{ total }}, entered on {{ counter }} entries{% endblocktranslate %}{% endif %}
   </p>
   {% if page %}
     <ul class="task-list">
@@ -72,7 +72,7 @@
               <span class="row-title">{{ occurrence.task.title }}</span>
               <span class="row-text">{{ occurrence|where_and_who }}</span>
               <span class="pill {% if occurrence.status == 'done' %}pill-success{% else %}pill-ghost{% endif %}">{{ occurrence.get_status_display }} · {{ occurrence.closed_on|date:"SHORT_DATE_FORMAT" }}</span>
-              {% if occurrence.actual_cost is not None %}<span class="row-text">{{ occurrence.actual_cost }} {{ home.currency }}</span>{% endif %}
+              {% if occurrence.actual_cost is not None %}<span class="row-text">{{ occurrence.actual_cost|money:home.currency }}</span>{% endif %}
             </span>
           </a>
         </li>

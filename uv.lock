@@ -510,6 +510,7 @@ version = "0.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "apprise" },
+    { name = "babel" },
     { name = "cryptography" },
     { name = "django" },
     { name = "django-allauth", extra = ["mfa", "socialaccount"] },
@@ -560,6 +561,7 @@ docs = [
 [package.metadata]
 requires-dist = [
     { name = "apprise", specifier = ">=2.1" },
+    { name = "babel", specifier = ">=2.18" },
     { name = "cryptography", specifier = ">=45" },
     { name = "django", specifier = ">=5.2.8,<5.3" },
     { name = "django-allauth", extras = ["mfa", "socialaccount"], specifier = ">=65.13" },

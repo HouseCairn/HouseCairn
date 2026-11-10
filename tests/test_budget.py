@@ -641,7 +641,7 @@ class TestSeveralHomesAndCurrencies:
         entry = signed_in.get(url(""))
         assert entry["Location"] == url("overview", alice_home)
         page = signed_in.get(entry["Location"]).content.decode()
-        assert "EUR" in page
+        assert "€" in page  # the money filter writes the symbol of the currency
         assert "CHF" not in page
 
     def test_the_entry_of_an_account_with_no_home_offers_to_add_one(
@@ -811,7 +811,7 @@ class TestOnTheTaskPages:
             )
         )
         assert form.status_code == 200
-        assert "Estimated at 100.00" in form.content.decode()
+        assert "Estimated at €100.00" in form.content.decode()
 
     def test_a_task_of_a_project_shows_no_cost_of_its_own(
         self, signed_in: Client, alice: User, alice_home: Home, living_room_project: Project

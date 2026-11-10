@@ -449,7 +449,7 @@ class TestScreens:
         content = response.content.decode()
         assert response.status_code == 200
         assert content.index("Clean the gutters") < content.index("Paint the hall")
-        assert "100.00 EUR" in content
+        assert "€100.00" in content
         filtered = signed_in.get(
             web("history", past), {"q": "washer", "status": "done"}, follow=True
         )

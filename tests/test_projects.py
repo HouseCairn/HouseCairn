@@ -86,9 +86,9 @@ class TestLivingRoomScenario:
         assert "800.00" in html
         assert "620.00" in html
         assert "120.00" in html
-        assert "180.00\u00a0EUR left" in html
+        assert "€180.00 left" in html
         listing = signed_in.get(url("list", alice_home) + "?view=ideas").content.decode()
-        assert "180.00\u00a0EUR left" in listing
+        assert "€180.00 left" in listing
 
     def test_a_project_over_its_budget_says_so_in_words(
         self,
@@ -109,7 +109,7 @@ class TestLivingRoomScenario:
         html = signed_in.get(
             url("detail", alice_home, project_id=living_room_project.id)
         ).content.decode()
-        assert "Over budget by 150.00\u00a0EUR" in html
+        assert "Over budget by €150.00" in html
 
     def test_payments_above_the_commitment_also_count_against_the_plan(
         self, alice: User, living_room_project: Project, labour_line: BudgetLine
@@ -152,7 +152,7 @@ class TestLivingRoomScenario:
             url("list", alice_home) + "?view=ideas",
         ):
             html = signed_in.get(page).content.decode()
-            assert "Over budget by 90.50\u00a0EUR" in html, page
+            assert "Over budget by €90.50" in html, page
             assert "259.50" not in html, page
 
     def test_a_project_without_a_budget_has_no_gap_pill(
@@ -1333,9 +1333,9 @@ class TestWeb:
     ) -> None:
         project = services.create_project(alice, alice_home, title="Palace", budget=MAX)
         english = signed_in.get(url("detail", alice_home, project_id=project.id)).content.decode()
-        assert "9,999,999,999.99\u00a0EUR" in english
+        assert "€9,999,999,999.99" in english
         french = signed_in.get(
             url("detail", alice_home, project_id=project.id), headers={"accept-language": "fr"}
         ).content.decode()
-        assert re.search(r"9\W999\W999\W999,99\WEUR", french)
+        assert re.search(r"9\W999\W999\W999,99\W€", french)
         assert "Prévu" in french

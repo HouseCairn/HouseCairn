@@ -49,7 +49,7 @@ of the project is the sum of the gaps of its lines, so that an overrun on one li
 hidden by room left on another. The page says it in
 words, never by colour alone: **... left**, **On budget** or **Over budget by ...**. For
 the living room painted with a plan of 800, a quote of 620 accepted and 120 paid, the gap
-is 180 and the page says "180.00 EUR left". Amounts have two decimals; how to type one
+is 180 and the page says "€180.00 left". Amounts have two decimals; how to type one
 is in [Entering an amount](amounts.md).
 
 ## Keep links of inspiration
