@@ -92,6 +92,45 @@ def test_the_downloads_are_limited(client: Client, alice: User, large: Home, set
     assert not list((Path(settings.MEDIA_ROOT) / "exports" / str(large.id)).glob("*.zip"))
 
 
+def test_two_downloads_of_the_last_one_at_once_hand_it_once(
+    client: Client, alice: User, large: Home, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The credit is taken by one conditional UPDATE, not by the reading before it.
+
+    The second request comes in while the first has read the job (one download left)
+    and not yet taken it: both have passed the purge and the reading; only one may win.
+    """
+    client.force_login(alice)
+    job = start(client, large)
+    ExportJob.objects.filter(pk=job.pk).update(downloads_left=1)
+    read = jobs.job_of
+    handed: list[str] = []
+    refused: list[str] = []
+    let_in: list[bool] = []
+
+    def take() -> None:
+        try:
+            handle, _name = jobs.open_download(alice, large, job.id)
+        except jobs.ExportUnavailableError:
+            refused.append("refused")
+            return
+        handle.close()
+        handed.append("handed")
+
+    def read_then_let_the_other_in(actor: Any, home: Home, job_id: Any) -> ExportJob:
+        found = read(actor, home, job_id)
+        if not let_in:
+            let_in.append(True)
+            take()  # the other request, all the way through
+        return found
+
+    monkeypatch.setattr(jobs, "job_of", read_then_let_the_other_in)
+    take()
+    assert handed == ["handed"]
+    assert refused == ["refused"]
+    assert ExportJob.all_objects.get(pk=job.pk).downloads_left == 0
+
+
 def test_an_expired_archive_is_not_handed_and_is_removed(
     client: Client, alice: User, large: Home, settings: Any
 ) -> None:

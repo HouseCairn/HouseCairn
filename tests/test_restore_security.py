@@ -133,6 +133,25 @@ def test_a_symbolic_link_is_refused(exported: bytes, alice: User) -> None:
     refused(alice, rebuild(entries(exported), extra=link), "symbolic link")
 
 
+def test_an_encrypted_entry_is_refused(exported: bytes, alice: User) -> None:
+    """zipfile writes no encrypted entry: bit 0 of the flags is set as an encrypting tool would.
+
+    Without the check, zipfile would ask for a password (RuntimeError) on reading it.
+    """
+    data = bytearray(rebuild(entries(exported)))
+    name = b"data/rooms.json"
+    # Local header: flags at offset 6, name at 30; central directory: flags at 8, name at 46.
+    for signature, flags_at, name_at in ((b"PK\x03\x04", 6, 30), (b"PK\x01\x02", 8, 46)):
+        start = data.find(signature)
+        while start != -1:
+            if data[start + name_at : start + name_at + len(name)] == name:
+                data[start + flags_at] |= 0x1
+            start = data.find(signature, start + 4)
+    with zipfile.ZipFile(io.BytesIO(bytes(data))) as archive:
+        assert archive.getinfo("data/rooms.json").flag_bits & 0x1
+    refused(alice, bytes(data), "encrypted file")
+
+
 def test_a_zip_bomb_is_refused_before_it_is_unpacked(
     exported: bytes, alice: User, monkeypatch: pytest.MonkeyPatch
 ) -> None:
