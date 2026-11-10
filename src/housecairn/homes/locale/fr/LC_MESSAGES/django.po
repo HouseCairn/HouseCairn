@@ -533,6 +533,9 @@ msgstr "Enregistrer"
 msgid "Create the home"
 msgstr "Créer le logement"
 
+msgid "My homes"
+msgstr "Mes logements"
+
 #, python-format
 msgid "%(provider)s required"
 msgstr "%(provider)s exigé"

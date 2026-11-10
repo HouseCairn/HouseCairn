@@ -10,5 +10,8 @@ Removing someone and leaving both ask you to confirm on a page of their own
 first. You can leave a home that requires a sign-in provider without signing
 in through it.
 
+The link at the top of the confirmation page and its **Cancel** button lead back to
+the screen it was opened from: the member, or the household for **Leave this home**.
+
 Removing someone takes effect at once: their next request no longer sees the
 home, and their API tokens lose it too.

@@ -39,3 +39,5 @@ Calendar, Thunderbird or Home Assistant can subscribe to; see the
 
 A feed shows the title, home, room, date, status and a link to each task, and nothing more. It
 is a secret address: anyone who has it reads the feed, so share it with nobody.
+
+The link at the top of the feeds leads back to [More](more.md), on a phone.

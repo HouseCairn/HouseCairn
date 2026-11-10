@@ -66,6 +66,9 @@ msgstr "**Révoquer** supprime le flux. Quitter un logement révoque votre flux 
 msgid "A feed shows the title, home, room, date, status and a link to each task, and nothing more. It is a secret address: anyone who has it reads the feed, so share it with nobody."
 msgstr "Un flux montre le titre, le logement, la pièce, la date, le statut et un lien vers chaque tâche, et rien de plus. C'est une adresse secrète : quiconque la possède lit le flux, ne la partagez donc avec personne."
 
+msgid "The link at the top of the feeds leads back to [More](more.md), on a phone."
+msgstr "Le lien du haut des flux ramène à [Plus](more.md), sur téléphone."
+
 #~ msgid "**Today, All, Calendar**: the tabs of the Today section, when the calendar shows one home (your only home, or the one chosen in the filter)."
 #~ msgstr "**Aujourd'hui, Toutes, Calendrier** : les onglets de la section Aujourd'hui, quand le calendrier montre un seul logement (votre seul logement, ou celui choisi dans le filtre)."
 

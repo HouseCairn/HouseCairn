@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{{ channel.name }}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'notifications:index' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Notifications" %}</a>
+  {% url 'notifications:index' as parent %}{% translate "Notifications" as label %}{% back_link parent label %}
   <h1>{{ channel.name }}</h1>
   <p class="small">{% blocktranslate with service=channel.service scheme=channel.scheme %}{{ service }} ({{ scheme }}). The address is kept encrypted and is never shown again: to change it, delete this channel and add another.{% endblocktranslate %}</p>
   <form method="post" class="card" novalidate>

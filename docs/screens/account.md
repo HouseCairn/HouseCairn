@@ -29,3 +29,5 @@ with them. Type your address, and your password if you have one.
 - If you are the only owner of a home with other members, the page lists it:
   hand ownership over, or delete the home, first.
 - The only administrator of the instance cannot delete the account.
+
+The link at the top of the page leads back to **Security and sign-in**.

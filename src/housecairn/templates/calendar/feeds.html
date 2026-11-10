@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "Calendar feeds" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'calendar:week' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Calendar" %}</a>
+  {% url 'more' as parent %}{% back_link parent %}
   <h1>{% translate "Calendar feeds" %}</h1>
   <p class="small">{% translate "A feed lets a calendar application (Google Calendar, Apple Calendar, Thunderbird, Home Assistant) show your tasks. Its address is a secret: anyone who has it sees the tasks of the feed, so share it with nobody. It shows titles, home, room, date and status, never notes, costs or files." %}</p>
   {% if new_url %}

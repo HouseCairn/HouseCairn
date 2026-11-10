@@ -5,6 +5,9 @@ The form to add a photo of a room, at
 `/h/<home id>/items/<item id>/photos/new/`. From a phone, the file field offers
 the camera and the gallery.
 
+The link at the top names the room or the item, or the screen the form was opened from,
+and the form once sent leads back there.
+
 | Field | Content |
 | --- | --- |
 | Photo | A JPEG, PNG or WebP image, 10 MB at most by default (see [Rooms and items](../guides/rooms-and-items.md)). |

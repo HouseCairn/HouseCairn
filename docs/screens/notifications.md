@@ -23,6 +23,8 @@ Opening a channel lets you:
   five tests a minute;
 - **Delete the channel**. To change an address, delete the channel and add another.
 
+The link at the top of a channel leads back to **Notifications**.
+
 ## Reminders
 
 - **First reminder (days before)**: how many days before the due date the first reminder

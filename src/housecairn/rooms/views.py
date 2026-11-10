@@ -400,7 +400,7 @@ class PhotoAddView(RoomFormMixin):
             form.add_error("file", exc)
             return self.form_invalid(form)
         messages.success(self.request, _("Photo added."))
-        return HttpResponseRedirect(self.back_url(target))
+        return HttpResponseRedirect(navigation.back_url(self.request, self.back_url(target)))
 
 
 class ItemPhotoAddView(PhotoAddView):

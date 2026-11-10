@@ -42,3 +42,6 @@ msgstr "Si vous êtes l'unique propriétaire d'un logement qui a d'autres membre
 msgid "The only administrator of the instance cannot delete the account."
 msgstr "L'unique administrateur de l'instance ne peut pas supprimer son compte."
 
+msgid "The link at the top of the page leads back to **Security and sign-in**."
+msgstr "Le lien du haut de la page ramène à **Sécurité et connexion**."
+

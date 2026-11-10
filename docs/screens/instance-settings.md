@@ -11,6 +11,8 @@ only its own settings; another section's fields sent with it are ignored. The ol
 addresses still work: `/instance/settings/?section=<section>` opens the page of the
 section.
 
+The link at the top of a section leads back to **Instance settings**.
+
 Each setting is paired with an environment variable (see [Settings](../administration/settings.md)):
 
 - **Editable**: no variable sets it. Change the value and press the button at the bottom of

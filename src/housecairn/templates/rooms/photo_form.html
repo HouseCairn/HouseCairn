@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "Add a photo" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{{ back_url }}">{% include "components/icon.html" with name="chevron" %}{{ target.name }}</a>
+  {% back_link back_url target.name %}
   <h1>{% translate "Add a photo" %}</h1>
   <form method="post" enctype="multipart/form-data" class="card">
     {% csrf_token %}
+    {% next_field %}
     {{ form.as_p }}
     <button type="submit" class="button-block">{% translate "Upload" %}</button>
     <p class="small">{% blocktranslate with size=max_bytes|filesizeformat %}JPEG, PNG or WebP, up to {{ size }}. Location data and other information stored in the file are removed.{% endblocktranslate %}</p>

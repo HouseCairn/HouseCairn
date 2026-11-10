@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{% translate "Delete my account" %}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'more-security' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Security and sign-in" %}</a>
+  {% url 'more-security' as parent %}{% translate "Security and sign-in" as label %}{% back_link parent label %}
   <h1>{% translate "Delete my account" %}</h1>
   <section class="card">
     <p>{% translate "This erases your account, your sign-in methods, your API tokens and the homes where you are the only member. It cannot be undone. Homes shared with others stay with them." %}</p>

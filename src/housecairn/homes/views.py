@@ -489,6 +489,7 @@ class MemberRemoveView(ConfirmedActionView):
             "action": reverse("homes:member-remove", args=[home.id, membership.id]),
             "button": _("Leave") if me else _("Remove"),
             "back": reverse("homes:member", args=[home.id, membership.id]),
+            "back_label": person_name(membership.user),
         }
 
     def act(self, home: Home) -> HttpResponse | None:
