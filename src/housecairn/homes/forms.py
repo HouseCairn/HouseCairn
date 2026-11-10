@@ -88,6 +88,47 @@ class DeleteHomeForm(forms.Form):
     )
 
 
+class ImportForm(forms.Form):
+    """CSV tables to import into a home, one optional file per table (docs/adr/0048).
+
+    The confirmation posts the text of the files back, as checked by the preview.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        from housecairn.homes import csv_import
+
+        super().__init__(*args, **kwargs)
+        for name, entity in csv_import.entities().items():
+            self.fields[name] = forms.FileField(
+                label=entity.label,
+                required=False,
+                widget=forms.ClearableFileInput(attrs={"accept": ".csv,text/csv"}),
+            )
+            self.fields[f"text_{name}"] = forms.CharField(
+                required=False, strip=False, widget=forms.HiddenInput
+            )
+
+    def texts(self) -> dict[str, str]:
+        """The text of each table given: an upload, or the text sent back by the preview."""
+        from housecairn.homes import csv_import
+
+        uploads = {
+            name: self.cleaned_data[name]
+            for name in csv_import.entities()
+            if self.cleaned_data.get(name)
+        }
+        if uploads:
+            return csv_import.texts_from_uploads(uploads)
+        texts = {
+            name: self.cleaned_data[f"text_{name}"]
+            for name in csv_import.entities()
+            if self.cleaned_data.get(f"text_{name}")
+        }
+        if sum(len(t.encode()) for t in texts.values()) > csv_import.MAX_BYTES:
+            raise csv_import.ImportRefusedError(csv_import.too_large_message())
+        return texts
+
+
 class RestoreForm(forms.Form):
     """The archive of a home, made by Export all data (docs/adr/0048)."""
 

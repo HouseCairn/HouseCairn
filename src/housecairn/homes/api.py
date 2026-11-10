@@ -23,7 +23,7 @@ from housecairn.accounts.names import person_name
 from housecairn.apitokens.models import ApiToken
 from housecairn.audit import services as audit_services
 from housecairn.audit.api import AuditEventSerializer
-from housecairn.homes import csv_export, exports, jobs, restore, services, sso
+from housecairn.homes import csv_export, csv_import, exports, jobs, restore, services, sso
 from housecairn.homes.models import ExportJob, Home, Invitation, Membership, Role
 from housecairn.homes.scoping import (
     HomeScopedMixin,
@@ -105,6 +105,19 @@ class ExportJobSerializer(serializers.ModelSerializer[ExportJob]):
         return reverse(
             "api-v1:home-export-download", kwargs={"home_id": job.home_id, "job_id": job.id}
         )
+
+
+class ImportSerializer(serializers.Serializer[Any]):
+    rooms = serializers.FileField(required=False, help_text="CSV of rooms.")
+    items = serializers.FileField(required=False, help_text="CSV of items.")
+    tasks = serializers.FileField(required=False, help_text="CSV of tasks.")
+    stock = serializers.FileField(required=False, help_text="CSV of the stock.")
+    contractors = serializers.FileField(required=False, help_text="CSV of contractors.")
+    confirm = serializers.BooleanField(
+        required=False,
+        default=False,
+        help_text="False (the default): preview only, nothing is written. True: write.",
+    )
 
 
 class RestoreSerializer(serializers.Serializer[Any]):
@@ -282,6 +295,52 @@ class HomeViewSet(
         response = HttpResponse(data, content_type="text/csv; charset=utf-8")
         response["Content-Disposition"] = f'attachment; filename="{name}"'
         return response
+
+    @extend_schema(
+        request={"multipart/form-data": ImportSerializer},
+        responses={200: OpenApiTypes.OBJECT, 201: OpenApiTypes.OBJECT},
+        description=(
+            "Import CSV tables (the columns of `export/<table>.csv`, separated by commas, "
+            "UTF-8 with or without a byte order mark) into the home. Without `confirm`, a "
+            "preview: every row accepted or refused with its reasons, nothing written (200). "
+            "With `confirm=true`, the rows accepted are written in one transaction (201). "
+            "Owners and members, and a token with the `write` scope on this home."
+        ),
+    )
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path="import",
+        url_name="import",
+        parser_classes=[MultiPartParser],
+    )
+    def import_tables(self, request: Request, home_id: str) -> Response:
+        home = self.get_home()
+        if not services.can_write(request.user, home):
+            raise exceptions.PermissionDenied()
+        if int(request.META.get("CONTENT_LENGTH") or 0) > csv_import.MAX_BYTES * 2:
+            raise exceptions.ValidationError({"detail": [csv_import.too_large_message()]})
+        serializer = ImportSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        uploads = {
+            name: serializer.validated_data[name]
+            for name in csv_import.entities()
+            if serializer.validated_data.get(name)
+        }
+        if not uploads:
+            raise exceptions.ValidationError({"detail": ["Give at least one CSV file."]})
+        confirm = serializer.validated_data["confirm"]
+        try:
+            texts = csv_import.texts_from_uploads(uploads)
+            report = csv_import.run(request.user, home, texts, confirm=confirm)
+        except csv_import.ImportRefusedError as exc:
+            raise serializers.ValidationError({"detail": exc.messages}) from exc
+        except PermissionDenied as exc:  # pragma: no cover - checked above
+            raise exceptions.PermissionDenied() from exc
+        if report.error:
+            return Response(report.as_data(), status=status.HTTP_400_BAD_REQUEST)
+        code = status.HTTP_201_CREATED if report.written else status.HTTP_200_OK
+        return Response(report.as_data(), status=code)
 
     @extend_schema(
         request={"multipart/form-data": RestoreSerializer},

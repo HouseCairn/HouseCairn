@@ -49,6 +49,9 @@
       {% for entity, label in csv_tables %}
         <li><a class="row" href="{% url 'homes:export-csv' home_id=home.id entity=entity %}" download><span class="row-body"><span class="row-title">{{ label }}</span><span class="row-text">CSV</span></span></a></li>
       {% endfor %}
+      {% if can_write %}
+        <li><a class="row" href="{% url_with_next 'homes:import' home_id=home.id %}"><span class="row-body"><span class="row-title">{% translate "Import tables" %}</span><span class="row-text">{% translate "Rooms, items, tasks, stock and contractors, from CSV files" %}</span></span>{% include "components/icon.html" with name="chevron" class="chevron" %}</a></li>
+      {% endif %}
     </ul>
   {% endif %}
   {% if role == "owner" %}

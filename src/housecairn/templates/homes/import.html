@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n navigation %}
+{% block head_title %}{% translate "Import tables" %}{% endblock head_title %}
+{% block content %}
+  {% url 'homes:detail' home_id=home.id as parent %}{% back_link parent home.name %}
+  <h1>{% translate "Import tables" %}</h1>
+  {% if not report %}
+    <p class="small">{% blocktranslate trimmed %}CSV files with the columns of the tables this home exports, separated by commas, in UTF-8. Nothing is written before you confirm: the next page shows each row, accepted or refused, with the reason.{% endblocktranslate %}</p>
+    <p class="small">{% blocktranslate trimmed with rows=max_rows megabytes=max_megabytes %}At most {{ rows }} rows and {{ megabytes }} MB for the files of one import.{% endblocktranslate %}</p>
+    <form method="post" enctype="multipart/form-data" class="card">
+      {% csrf_token %}
+      {% next_field %}
+      {{ form.non_field_errors }}
+      {% for field in form.visible_fields %}
+        <p>{{ field.label_tag }} {{ field }} {{ field.errors }}</p>
+      {% endfor %}
+      <button type="submit" class="button-block">{% translate "Preview" %}</button>
+    </form>
+  {% else %}
+    {% if report.error %}
+      <p class="small">{% translate "A file cannot be imported. Correct it, then try again." %}</p>
+    {% elif report.can_confirm %}
+      <p class="small">{% blocktranslate trimmed count count=report.accepted %}{{ count }} row will be added.{% plural %}{{ count }} rows will be added.{% endblocktranslate %} {% if report.refused %}{% blocktranslate trimmed count count=report.refused %}{{ count }} row is refused and will not be.{% plural %}{{ count }} rows are refused and will not be.{% endblocktranslate %}{% endif %}</p>
+    {% else %}
+      <p class="small">{% translate "No row can be added." %}</p>
+    {% endif %}
+    {% for file in report.files %}
+      <h2>{{ file.label }}</h2>
+      <div class="card">
+        {% if file.error %}
+          <p>{{ file.error }}</p>
+        {% else %}
+          <p class="small">{% blocktranslate trimmed with accepted=file.accepted refused=file.refused %}Accepted: {{ accepted }}. Refused: {{ refused }}.{% endblocktranslate %}</p>
+          {% if file.ignored_columns %}
+            <p class="small">{% translate "Columns ignored:" %} {{ file.ignored_columns|join:", " }}</p>
+          {% endif %}
+          <ul class="card-list">
+            {% for row in file.rows %}
+              {% if row.refused or row.warnings %}
+                <li>
+                  <span class="row-body">
+                    <span class="row-title">{% blocktranslate trimmed with line=row.line %}Line {{ line }}{% endblocktranslate %}{% if row.label %}: {{ row.label }}{% endif %} · {% if row.refused %}{% translate "refused" %}{% else %}{% translate "accepted" %}{% endif %}</span>
+                    {% for message in row.errors %}<span class="row-text">{{ message }}</span>{% endfor %}
+                    {% for message in row.warnings %}<span class="row-text">{{ message }}</span>{% endfor %}
+                  </span>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <form method="post" class="card">
+      {% csrf_token %}
+      {% next_field %}
+      {% for file in report.files %}
+        <input type="hidden" name="text_{{ file.entity }}" value="{{ file.text }}">
+      {% endfor %}
+      {% if report.can_confirm %}
+        <input type="hidden" name="confirm" value="1">
+        <button type="submit" class="button-block">{% blocktranslate trimmed count count=report.accepted %}Import {{ count }} row{% plural %}Import {{ count }} rows{% endblocktranslate %}</button>
+      {% endif %}
+      {% back_href parent as cancel %}<a class="button button-secondary button-block" href="{{ cancel }}">{% translate "Cancel" %}</a>
+    </form>
+  {% endif %}
+{% endblock content %}

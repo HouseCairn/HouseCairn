@@ -16,6 +16,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _lazy
+from django.utils.translation import ngettext
 from django.views import View
 from django.views.generic import DetailView, FormView, ListView
 
@@ -24,7 +25,7 @@ from housecairn.accounts.names import person_name
 from housecairn.accounts.services import email_is_configured
 from housecairn.audit import services as audit_services
 from housecairn.core import navigation
-from housecairn.homes import csv_export, exports, forms, jobs, restore, services, sso
+from housecairn.homes import csv_export, csv_import, exports, forms, jobs, restore, services, sso
 from housecairn.homes.models import ExportStatus, Home, Invitation, Membership
 from housecairn.homes.scoping import (
     WebHomeScopedMixin,
@@ -255,6 +256,65 @@ class HomeCsvView(WebHomeScopedMixin, View):
         response = HttpResponse(data, content_type="text/csv; charset=utf-8")
         response["Content-Disposition"] = f'attachment; filename="{name}"'
         return response
+
+
+class HomeImportView(WebHomeScopedMixin, FormView[forms.ImportForm]):
+    """Import CSV tables into the home of the address: upload, preview, then confirm.
+
+    The preview runs the import and rolls it back; the confirmation runs it again on the
+    same text and writes it, in one transaction. Owners and members only.
+    """
+
+    template_name = "homes/import.html"
+    form_class = forms.ImportForm
+
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
+        if request.method == "POST" and int(request.META.get("CONTENT_LENGTH") or 0) > (
+            csv_import.MAX_BYTES * 2
+        ):
+            return HttpResponse(_("This file is too large."), status=413, content_type="text/plain")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        self.home = getattr(self, "home", None) or self.get_home()
+        if not services.can_write(self.request.user, self.home):
+            raise PermissionDenied
+        context["home"] = self.home
+        context["max_rows"] = csv_import.MAX_ROWS
+        context["max_megabytes"] = csv_import.MAX_BYTES // (1024 * 1024)
+        return context
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.home = self.get_home()
+        if not services.can_write(request.user, self.home):
+            raise PermissionDenied
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form: forms.ImportForm) -> HttpResponse:
+        self.home = self.get_home()
+        confirm = self.request.POST.get("confirm") == "1"
+        try:
+            texts = form.texts()
+            if not texts:
+                form.add_error(None, _("Choose at least one file."))
+                return self.form_invalid(form)
+            report = csv_import.run(self.request.user, self.home, texts, confirm=confirm)
+        except csv_import.ImportRefusedError as exc:
+            form.add_error(None, exc.messages)
+            return self.form_invalid(form)
+        if report.written:
+            messages.success(
+                self.request,
+                ngettext("Imported: %(count)s row.", "Imported: %(count)s rows.", report.accepted)
+                % {"count": report.accepted},
+            )
+            return redirect(
+                navigation.back_url(
+                    self.request, reverse("homes:detail", kwargs={"home_id": self.home.id})
+                )
+            )
+        return self.render_to_response(self.get_context_data(form=form, report=report))
 
 
 class HomeRestoreView(LoginRequiredMixin, FormView[forms.RestoreForm]):
