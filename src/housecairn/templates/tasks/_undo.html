@@ -1,11 +1,15 @@
-{% load i18n %}{# The banner after a task was marked done or skipped: one tap takes it back. `undo` is the occurrence. #}
+{% load i18n %}{# The content of the undo region of base.html (#undo-region, aria-live): the banner after a task was marked done or skipped, one tap takes it back; or a single line (`notice`). `undo` is the occurrence, `undo_return` the page to come back to; `in_place` when it came with the row, so that Undo answers in place too. Never from the address (NAV-12). #}
 {% if undo %}
-  <div class="undo-banner" role="status">
-    <span>{% if undo.status == "done" %}{% translate "Marked done." %}{% else %}{% translate "Skipped." %}{% endif %}</span>
-    <form method="post" action="{% url 'tasks:undo' home_id=home.id task_id=undo.task_id occurrence_id=undo.id %}">
+  <div class="undo-banner">
+    <span>{% if undo.status == "done" %}{% translate "Marked done." %}{% else %}{% translate "Skipped." %}{% endif %}{% if notice %} {{ notice }}{% endif %}</span>
+    {% url 'tasks:undo' home_id=home.id task_id=undo.task_id occurrence_id=undo.id as undo_url %}
+    <form method="post" action="{{ undo_url }}"{% if in_place %} hx-post="{{ undo_url }}" hx-target="#undo-region" hx-swap="innerHTML" hx-disabled-elt="find button"{% endif %}>
       {% csrf_token %}
-      <input type="hidden" name="next" value="{{ undo_return|default:request.path }}">
+      <input type="hidden" name="next" value="{{ undo_return }}">
+      {% if in_place %}<input type="hidden" name="in_place" value="banner">{% endif %}
       <button type="submit" class="button-secondary button-small">{% translate "Undo" %}</button>
     </form>
   </div>
+{% elif notice %}
+  <div class="undo-banner"><span>{{ notice }}</span></div>
 {% endif %}

@@ -17,8 +17,10 @@ The page is made of sections, in this order:
   have no date.
 
 Each row shows the task, its room and item, and its state. **Done**, on the right
-of the row, closes it in one tap, for every task; the page comes back with a banner
-that offers **Undo**. A row opens the [task](task.md).
+of the row, closes it in one tap, for every task. The page does not reload nor move: the
+row shows the task as done, and a banner at the bottom of the screen, above the bar, offers
+**Undo**, which puts the row back as it was. The banner stays until the next action or
+page, and a screen reader announces it. A row opens the [task](task.md).
 
 - The **tabs** above the list switch between the three views of the Today section:
   **Today**, **All** (the [task list](tasks.md)) and **Calendar** (the

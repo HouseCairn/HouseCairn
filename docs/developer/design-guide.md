@@ -386,7 +386,7 @@ Done, Skip, Undo, postponing by one day, a stock movement, the status of a quote
 - The banner and the bar **must not** hide the focused element (WCAG 2.2, 2.4.11).
 - Without JavaScript, the same form **must** still work: a post, then a redirect to
   `next#<anchor>` (for an occurrence, `#occ-<id>`), which brings the person back to
-  the row. After an undo, the redirect drops the undo state from the address.
+  the row. The undo banner never lives in the address, with or without script.
 - Done **must not** ask for a confirmation: Undo is the safety net
   ([ADR 0033](../adr/0033-done-with-undo.md)). A question on every task is the
   friction that makes people stop using the application.
@@ -397,6 +397,86 @@ An action **must** open a screen instead when:
   note), postponing to a chosen date, a quantity other than the one offered;
 - it cannot be taken back: a deletion goes through its confirmation page;
 - it changes who may do what: roles, transfer of a home, an invitation sent by email.
+
+### How it is built
+
+Done, Skip and Undo of an occurrence work this way; a new action in place follows the
+same pattern.
+
+- **HTMX** is vendored (`static/vendor/htmx/`, version and checksums in its
+  `README.md`), loaded by `base.html` with its subresource integrity, under the strict
+  CSP: no `hx-on`, no inline script, `allowEval` and `allowScriptTags` off. Nothing
+  else is needed on the page.
+- **The row** (`templates/tasks/_occurrence_row.html`) is an `li` with the id
+  `occ-<id>`. Its form posts to the same view with or without script: `action` and
+  `hx-post` give the same address, `hx-target="closest li"` and
+  `hx-swap="outerHTML"` replace the row only, `hx-disabled-elt="find button"` stops a
+  double tap, and two hidden fields say where it is: `next` (the page, from the
+  view's `row_next`) and `in_place=row`.
+- **The view** (`OccurrenceActionView`) reads `in_place` only with the `HX-Request`
+  header (`tasks.in_place.origin`). Then it answers `templates/tasks/_in_place.html`,
+  never a page: the row as it now is, and the banner as an out-of-band swap
+  (`hx-swap-oob="innerHTML"`) into `#undo-region`. Errors (a task already closed by a
+  second tap) come back in the banner, with the row as it is, in a 200 answer: HTMX
+  does not swap an error status.
+- **The banner** lives in `#undo-region`, at the end of `base.html` on every signed-in
+  page, empty, with `aria-live="polite"`: a live region must be in the page before
+  its content changes for a screen reader to hear it. It is fixed at the bottom,
+  above the bar, and stays until the next action or page. The room the page keeps
+  for it at its end follows its real height (`--hc-undo-height`, set by
+  `static/js/undo-region.js`): a long message wraps on four lines at 320 px. Without
+  script nothing can measure it, so `<noscript>` loads `static/css/no-script.css`: the
+  region becomes a sticky box at the end of the page, in the flow, which takes its own
+  room and sticks above the bar (at the corner on a wide screen) while the end of the
+  page is out of sight; no height is reserved, whatever the length of the message. Its
+  Undo posts in place with `in_place=banner`: the answer is the content of the region ("Undone."), and the row
+  back as an out-of-band swap.
+- **Focus**: the element that had it is replaced, so the answer gives it back with
+  `autofocus`, which HTMX applies after a swap: the row's link after Done or Skip, the
+  row's Done button after Undo. `scroll-padding-bottom` keeps a focused element clear
+  of the banner (WCAG 2.2, 2.4.11).
+- **Without script** the same form posts and the view redirects to `next#occ-<id>`.
+  The banner is kept in the session for that one page (`tasks.in_place.remember`),
+  read once by `{% undo_banner %}` in `base.html`, never in the address: the browser's
+  back button cannot show it again. A row that left the list after Done (an open
+  list no longer shows it) has no anchor to come back to: the page then opens at its
+  top.
+- **The task page and the calendar** keep the post and its redirect, with or without
+  script: an action there changes the whole card (state, history, materials), or an
+  entry that is not an occurrence row. The banner comes from the session, as above,
+  and the calendar's entries carry the `occ-<id>` anchor.
+
+To make another one-tap action work in place: give its fragment an id, post with
+`hx-post` to the same address as `action`, send `next` and `in_place`, and have the
+view answer the fragment and, if the action can be undone, the banner out of band;
+keep the redirect to `next#<id>` for the post without script.
+
+### Creation forms and the back button
+
+Every page whose route ends in `new/` (the convention of the creation forms) goes
+through `core.middleware.CreationFormMiddleware`:
+
+- it is sent with `Cache-Control: no-store`, so that the back button asks the server
+  again instead of showing the form already sent;
+- each of its forms gets a hidden `form_token`, next to the CSRF field, new at each
+  display (a form sent with an error gets a new one);
+- a post that brings back a token already used is refused before the view runs: the
+  person goes to `next` (else Today) with "This form was already sent". The tokens
+  used are kept in the session and in the cache, whose atomic `add` stops two
+  sendings at the same instant (with a cache shared by the workers, across workers
+  too). A post without a token is let through as before.
+
+- every form that posts on such a page gets `autocomplete="off"`, so that the browser does
+  not put back what was typed when the person comes back to the page.
+
+What the token guarantees: the same page, with the same token, sent twice (a double
+tap, or a replay of the post) creates one record. What it does not guarantee: a second
+sending from a page asked for again. The back button asks the server again
+(`no-store`), the page it gets carries a new token, and sending it creates a second
+record. Only the empty fields (`autocomplete="off"`) and the person's attention stand in
+the way of that case; the token is not a promise against duplicates.
+
+A new creation form gets all this by its address alone: its route ends in `new/`.
 
 ## Current home
 

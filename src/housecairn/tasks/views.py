@@ -15,6 +15,7 @@ from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
+from django.template.response import TemplateResponse
 from django.urls import Resolver404, resolve, reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
@@ -30,7 +31,7 @@ from housecairn.rooms import conf
 from housecairn.rooms.models import Item, Room
 from housecairn.rooms.views import HomeRoomsMixin
 from housecairn.stock import services as stock_services
-from housecairn.tasks import agenda, forms, services
+from housecairn.tasks import agenda, forms, in_place, services
 from housecairn.tasks import materials as material_services
 from housecairn.tasks.files import attachment_response
 from housecairn.tasks.forms.materials import BaseMaterialFormSet
@@ -66,43 +67,9 @@ class HomeTasksMixin(HomeRoomsMixin):
         )
         return occurrence
 
-    def undo_banner(self) -> Occurrence | None:
-        """The occurrence just closed, whose address came back in `?undo=`: it can be undone."""
-        raw = self.request.GET.get("undo", "")
-        try:
-            pk = UUID(raw)
-        except ValueError:
-            return None
-        found = services.occurrences_of(self.home).filter(
-            pk=pk, status__in=[Status.DONE, Status.SKIPPED]
-        )
-        return found.first() if self.can_write else None
-
-    def undo_return(self) -> str:
-        """The address of this page as it is, filters and page included, minus `?undo=`.
-
-        The banner sends it back as `next`, so that taking back a closing returns to the
-        same list and not to an unfiltered first page.
-        """
-        return _with_query(self.request.get_full_path(), ("undo",))
-
 
 def _url(name: str, **kwargs: object) -> str:
     return reverse(f"tasks:{name}", kwargs=kwargs)
-
-
-def _back(request: HttpRequest, default: str) -> str:
-    """Where to go after an action: the page it was sent from, if that is on this site.
-
-    The rule of `core.redirects` (a safe shape, then Django's own check of host and scheme)
-    is written out where the address is used, so that the check is on the value redirected to.
-    """
-    target = request.POST.get("next", "")
-    if has_safe_shape(target) and url_has_allowed_host_and_scheme(
-        target, allowed_hosts={request.get_host()}, require_https=request.is_secure()
-    ):
-        return target
-    return default
 
 
 def _with_query(url: str, drop: tuple[str, ...], add: list[tuple[str, str]] | None = None) -> str:
@@ -110,11 +77,6 @@ def _with_query(url: str, drop: tuple[str, ...], add: list[tuple[str, str]] | No
     parts = urlsplit(url)
     query = [(k, v) for k, v in parse_qsl(parts.query) if k not in drop]
     return urlunsplit(parts._replace(query=urlencode(query + (add or []))))
-
-
-def _with_undo(url: str, occurrence: Occurrence) -> str:
-    """The address of the page, with `?undo=` naming the occurrence just closed."""
-    return _with_query(url, ("undo",), [("undo", str(occurrence.id))])
 
 
 def _errors(form: Any, exc: ValidationError) -> None:
@@ -168,8 +130,7 @@ class TaskListView(HomeTasksMixin, TemplateView):
                 show_hidden_url=_with_query(
                     self.request.get_full_path(), ("undo", "hidden"), [("hidden", "1")]
                 ),
-                undo=self.undo_banner(),
-                undo_return=self.undo_return(),
+                row_next=navigation.current_path(self.request),
             ),
             **kwargs,
         )
@@ -317,8 +278,6 @@ class TaskDetailView(HomeTasksMixin, TemplateView):
                 ),
                 images=[a for a in attachments if a.is_image],
                 documents=[a for a in attachments if not a.is_image],
-                undo=self.undo_banner(),
-                undo_return=self.undo_return(),
             ),
             **kwargs,
         )
@@ -426,24 +385,77 @@ class MaterialRemoveView(HomeTasksMixin, View):
 
 
 class OccurrenceActionView(HomeTasksMixin, View):
-    """A button: one POST, then back to the page it came from."""
+    """A button that acts in place (docs/developer/design-guide.md, "Actions in place").
+
+    From a row, with HTMX, the answer is the row itself and the undo banner, swapped out
+    of band into `#undo-region`: the page does not reload and the address does not change.
+    Without script, a redirect to `next#occ-<id>`, the banner kept in the session for
+    that one page, never in the address.
+    """
 
     require_write = True
     http_method_names = ["post"]
 
-    def act(self, occurrence: Occurrence) -> Occurrence | None:
+    def act(self, occurrence: Occurrence) -> tuple[Occurrence | None, str]:
+        """Do it: the occurrence to offer an undo for, if any, and a line to show."""
         raise NotImplementedError  # pragma: no cover
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         occurrence = self.get_occurrence()
         default = _url("detail", home_id=self.home.id, task_id=occurrence.task_id)
+        back = navigation.back_url(request, default)
+        banner: Occurrence | None = None
+        notice = error = ""
         try:
-            banner = self.act(occurrence)
+            banner, notice = self.act(occurrence)
         except ValidationError as exc:
-            messages.error(request, " ".join(exc.messages))
-            return redirect(_back(request, default))
-        target = _back(request, default)
-        return redirect(_with_undo(target, banner) if banner else target)
+            error = " ".join(exc.messages)
+        origin = in_place.origin(request)
+        if origin is not None:
+            return self.fragment(origin, occurrence, back, banner, error or notice)
+        in_place.forget(request)
+        if error:
+            messages.error(request, error)
+        elif banner is not None:
+            in_place.remember(request, banner, back, notice)
+        elif notice:
+            messages.success(request, notice)
+        return redirect(f"{back}#{in_place.anchor(occurrence.id)}")
+
+    def fragment(
+        self,
+        origin: str,
+        occurrence: Occurrence,
+        back: str,
+        banner: Occurrence | None,
+        notice: str,
+    ) -> HttpResponse:
+        """The row as it is now and the content of the undo region, one of them out of band."""
+        current = (
+            services.occurrences_of(self.home)
+            .select_related("task", "task__room", "task__item", "task__assignee")
+            .get(pk=occurrence.pk)
+        )
+        prefs = agenda.preferences_of(self.request.user)  # type: ignore[arg-type]
+        return TemplateResponse(
+            self.request,
+            "tasks/_in_place.html",
+            self.page(
+                origin=origin,
+                # As the page shows it: Today names the person unless grouped by person.
+                show_person=navigation.route_name(back) == "tasks:today"
+                and prefs.today_group != "person",
+                occurrence=current,
+                today=services.today(),
+                row_next=back,
+                undo=banner,
+                undo_return=back,
+                notice=notice,
+                in_place=True,
+                # The focus: the Done button back after an undo, else the row itself.
+                focus="done" if current.is_open else "row",
+            ),
+        )
 
 
 def short_message(short: Iterable[material_services.Shortage]) -> str:
@@ -461,22 +473,20 @@ def short_message(short: Iterable[material_services.Shortage]) -> str:
 
 
 class OccurrenceCompleteView(OccurrenceActionView):
-    def act(self, occurrence: Occurrence) -> Occurrence:
+    def act(self, occurrence: Occurrence) -> tuple[Occurrence | None, str]:
         closing = services.complete(self.request.user, occurrence)
-        if closing.short:
-            messages.warning(self.request, short_message(closing.short))
-        return closing.occurrence
+        return closing.occurrence, short_message(closing.short) if closing.short else ""
 
 
 class OccurrenceSkipView(OccurrenceActionView):
-    def act(self, occurrence: Occurrence) -> Occurrence:
-        return services.skip(self.request.user, occurrence).occurrence
+    def act(self, occurrence: Occurrence) -> tuple[Occurrence | None, str]:
+        return services.skip(self.request.user, occurrence).occurrence, ""
 
 
 class OccurrenceUndoView(OccurrenceActionView):
-    def act(self, occurrence: Occurrence) -> None:
+    def act(self, occurrence: Occurrence) -> tuple[Occurrence | None, str]:
         services.undo(self.request.user, occurrence)
-        messages.success(self.request, _("Undone."))
+        return None, _("Undone.")
 
 
 class OccurrencePostponeView(HomeTasksMixin, FormView[Any]):
@@ -553,8 +563,7 @@ class TodayView(HomeTasksMixin, TemplateView):
                 prefs=prefs,
                 show_person=prefs.today_group != "person",
                 today=day,
-                undo=self.undo_banner(),
-                undo_return=self.undo_return(),
+                row_next=navigation.current_path(self.request),
             ),
             **kwargs,
         )

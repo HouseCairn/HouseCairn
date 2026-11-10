@@ -3,7 +3,6 @@
 {% block head_title %}{% translate "Tasks" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Tasks" %}</h1>
-  {% include "tasks/_undo.html" %}
   {% tab_bar "today" %}
   <form method="get" class="filter-row" role="search" aria-label="{% translate "Filter the tasks" %}">
     <label class="visually-hidden" for="filter-status">{% translate "Show" %}</label>
@@ -25,26 +24,7 @@
   {% elif page %}
     <ul class="task-list">
       {% for occurrence in page %}
-        <li class="task-row{% if occurrence|late_days:today %} task-row-overdue{% endif %}">
-          <a class="row" href="{% url_with_next 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
-            <span class="row-body">
-              <span class="row-title">{{ occurrence.task.title }}</span>
-              <span class="row-text">
-                {% if occurrence.task.room %}{{ occurrence.task.room.name }}{% if occurrence.task.item %} · {{ occurrence.task.item.name }}{% endif %}{% elif occurrence.task.item %}{{ occurrence.task.item.name }}{% endif %}
-              </span>
-              {% if status == "open" %}{% include "tasks/_due.html" %}{% else %}
-                <span class="pill {% if occurrence.status == 'done' %}pill-success{% else %}pill-ghost{% endif %}">{{ occurrence.get_status_display }}{% if occurrence.completed_on %} · {{ occurrence.completed_on|date:"SHORT_DATE_FORMAT" }}{% endif %}</span>
-              {% endif %}
-            </span>
-          </a>
-          {% if can_write and status == "open" %}
-            <form method="post" action="{% url 'tasks:complete' home_id=home.id task_id=occurrence.task_id occurrence_id=occurrence.id %}">
-              {% csrf_token %}
-              <input type="hidden" name="next" value="{{ request.get_full_path }}">
-              <button type="submit" class="button-small">{% translate "Done" context "task" %}<span class="visually-hidden"> {{ occurrence.task.title }}</span></button>
-            </form>
-          {% endif %}
-        </li>
+        {% include "tasks/_occurrence_row.html" %}
       {% endfor %}
     </ul>
     {% if page.paginator.num_pages > 1 %}

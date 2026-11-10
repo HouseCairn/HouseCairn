@@ -1,4 +1,4 @@
-{% load static i18n %}<!DOCTYPE html>
+{% load static i18n tasks_extras %}<!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
@@ -15,7 +15,9 @@
   <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
   <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <noscript><link rel="stylesheet" href="{% static 'css/no-script.css' %}"></noscript>
   <script src="{% static 'vendor/htmx/htmx.min.js' %}" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" defer></script>
+  {% if user.is_authenticated %}<script src="{% static 'js/undo-region.js' %}" defer></script>{% endif %}
   {% block extra_head %}{% endblock extra_head %}
 </head>
 <body class="{% if user.is_authenticated %}has-nav{% else %}no-nav{% endif %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
@@ -39,6 +41,10 @@
       {% endif %}
       {% block content %}{% endblock content %}
     </main>
+    {% if user.is_authenticated %}
+      {# The undo banner of the actions in place, near the finger and announced (docs/developer/design-guide.md, "Actions in place"). Always there, empty, so that a screen reader hears what HTMX puts in it. #}
+      <div id="undo-region" class="undo-region" aria-live="polite" aria-atomic="true">{% undo_banner %}</div>
+    {% endif %}
   </div>
   {% block extra_body %}{% endblock extra_body %}
 </body>

@@ -74,6 +74,64 @@
   margin: 0;
 }
 
+/* The undo banner of the actions in place (design guide, "Actions in place"): at the
+   bottom, above the tab bar on a phone, near the finger. The region is always in the
+   page, empty, so that screen readers hear what is put in it. */
+.undo-region {
+  position: fixed;
+  left: var(--hc-space-4);
+  right: var(--hc-space-4);
+  bottom: calc(var(--hc-layout-tabbar-height) + var(--hc-space-2) + env(safe-area-inset-bottom));
+  z-index: 25;
+  max-width: var(--hc-layout-content-max);
+  margin: 0 auto;
+  pointer-events: none;
+}
+
+.undo-region .undo-banner {
+  margin-bottom: 0;
+  box-shadow: var(--hc-shadow-lg);
+  pointer-events: auto;
+}
+
+/* The banner must not hide the element that has the focus (WCAG 2.2, 2.4.11). */
+html:has(.undo-region .undo-banner) {
+  scroll-padding-bottom: calc(
+    var(--hc-layout-tabbar-height) + var(--hc-undo-height, 5rem) + var(--hc-space-4)
+  );
+}
+
+/* ...and it must not hide the end of the page either: while the banner is there, the
+   page keeps its real height above what the tab bar already takes. --hc-undo-height is
+   set from the banner by static/js/undo-region.js and follows it (a long message wraps
+   on four lines at 320 px); 5rem, one line, is what stays without script. */
+.has-nav:has(.undo-region .undo-banner) .content {
+  padding-bottom: calc(
+    var(--hc-layout-tabbar-height) + var(--hc-space-8) + var(--hc-undo-height, 5rem) +
+      env(safe-area-inset-bottom)
+  );
+}
+
+.task-row-closed .row-title {
+  text-decoration: line-through;
+}
+
+@media (min-width: 56rem) {
+  .undo-region {
+    left: calc(var(--hc-layout-nav-width) + var(--hc-space-4));
+    bottom: var(--hc-space-4);
+  }
+
+  html:has(.undo-region .undo-banner) {
+    scroll-padding-bottom: calc(var(--hc-undo-height, 5rem) + var(--hc-space-8));
+  }
+
+  /* No tab bar on a wide screen: the banner floats at the corner. */
+  .has-nav:has(.undo-region .undo-banner) .content {
+    padding-bottom: calc(var(--hc-space-8) + var(--hc-undo-height, 5rem));
+  }
+}
+
 .filter-row {
   display: flex;
   flex-wrap: wrap;

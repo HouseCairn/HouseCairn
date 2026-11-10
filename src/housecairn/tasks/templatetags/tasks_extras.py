@@ -1,4 +1,5 @@
 import datetime
+from typing import Any
 
 from django import template
 from django.db.models import F
@@ -8,11 +9,30 @@ from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 
 from housecairn.accounts.names import person_name
+from housecairn.core import navigation
 from housecairn.rooms.models import Item, Room
-from housecairn.tasks import durations, markup
+from housecairn.tasks import durations, in_place, markup
 from housecairn.tasks.models import OPEN_STATUSES, Occurrence, RepeatMode, Season, Task
 
 register = template.Library()
+
+
+@register.filter
+def with_next(url: str, next_url: str | None) -> str:
+    """`url` with `next=<next_url>`, cleaned as every `next` (core.navigation).
+
+    For the row of an occurrence, which knows the page it is on even when it comes back
+    alone, in the answer to an action in place.
+    """
+    return navigation.with_next(url, navigation.clean_next(next_url or ""))
+
+
+@register.inclusion_tag("tasks/_undo.html", takes_context=True)
+def undo_banner(context: template.Context) -> dict[str, Any]:
+    """The banner kept for this page by an action without script, read once (NAV-12)."""
+    request = context.get("request")
+    kept = in_place.take(request) if request is not None else None
+    return {"request": request, "csrf_token": context.get("csrf_token"), **(kept or {})}
 
 
 @register.filter

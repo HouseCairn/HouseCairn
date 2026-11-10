@@ -4,7 +4,6 @@
 {% block extra_head %}{% load static %}<script src="{% static 'js/calendar.js' %}" defer></script>{% endblock extra_head %}
 {% block content %}
   <h1>{% translate "Calendar" %}</h1>
-  {% if undo %}{% include "tasks/_undo.html" with home=undo.home %}{% endif %}
   {% tab_bar "today" %}
   <nav class="seg" aria-label="{% translate 'Calendar views' %}">
     {% for name, label, url in views %}

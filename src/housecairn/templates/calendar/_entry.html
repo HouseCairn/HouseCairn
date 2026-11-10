@@ -1,5 +1,5 @@
 {% load i18n %}{# One occurrence in a list: link, status in words, and Done in one tap. `entry`, `request`. #}
-<li class="task-row calendar-entry calendar-{{ entry.status }}">
+<li{% if entry.occurrence_id %} id="occ-{{ entry.occurrence_id }}"{% endif %} class="task-row calendar-entry calendar-{{ entry.status }}">
   <a class="row" href="{% url 'tasks:detail' home_id=entry.home.id task_id=entry.task_id %}">
     <span class="row-body">
       <span class="row-title">{{ entry.title }}</span>

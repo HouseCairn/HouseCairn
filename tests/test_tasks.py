@@ -712,7 +712,8 @@ class TestScreens:
         )
         response = signed_in.post(address, {"next": url("list", alice_home)})
         assert response.status_code == 302
-        assert f"undo={owner_occurrence.id}" in response["Location"]
+        # Back to the row, the banner kept for that page only, never in the address (NAV-12).
+        assert response["Location"] == f"{url('list', alice_home)}#occ-{owner_occurrence.id}"
         page = signed_in.get(response["Location"])
         assert "Marked done." in page.content.decode()
         undo = url("undo", alice_home, task_id=owner_task.id, occurrence_id=owner_occurrence.id)
