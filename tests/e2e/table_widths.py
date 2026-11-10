@@ -76,7 +76,11 @@ def main() -> None:
                 ok = scroll_width <= client_width
                 if name == "api tokens":
                     # Under 56 rem a cell with no label is not drawn: Revoke must stay visible.
-                    ok = ok and bool(tables) and page.locator("a[href$='/revoke/']").first.is_visible()
+                    ok = (
+                        ok
+                        and bool(tables)
+                        and page.locator("a[href$='/revoke/']").first.is_visible()
+                    )
                 failures += not ok
                 status = response.status if response else "?"
                 sys.stdout.write(
