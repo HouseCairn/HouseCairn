@@ -3,6 +3,7 @@
 from decimal import Decimal
 
 import pytest
+from django.template import Context, Template
 from django.utils import translation
 
 from housecairn.core.templatetags.money import money
@@ -50,3 +51,33 @@ class TestMoney:
 
     def test_a_language_babel_does_not_know_falls_back_to_english(self) -> None:
         assert shown("1250.50", "EUR", "xx") == "€1,250.50"
+
+
+class TestMoneyNeverRaises:
+    """A bad value is a text on the screen, never a 500 (Babel raises on all of these)."""
+
+    @pytest.mark.parametrize("language", ["fr", "en"])
+    def test_an_empty_value_shows_nothing(self, language: str) -> None:
+        with translation.override(language):
+            assert money("", "EUR") == ""
+
+    def test_a_missing_template_variable_shows_nothing(self) -> None:
+        html = Template("{% load money %}{{ missing|money:'EUR' }}").render(Context({}))
+        assert html == ""
+
+    @pytest.mark.parametrize("language", ["fr", "en"])
+    def test_a_value_that_is_no_number_is_shown_as_it_is(self, language: str) -> None:
+        with translation.override(language):
+            assert money("abc", "EUR") == "abc"
+            assert money("abc") == "abc"
+
+    def test_a_value_that_is_no_number_is_escaped_once_in_a_template(self) -> None:
+        html = Template("{% load money %}{{ v|money:'EUR' }}").render(Context({"v": "<b>"}))
+        assert html == "&lt;b&gt;"
+
+    @pytest.mark.parametrize("language", ["fr", "en"])
+    def test_more_than_28_digits_is_written_in_full(self, language: str) -> None:
+        text = shown("123456789012345678901234567890.12", "EUR", language)
+        digits = "".join(c for c in text if c.isdigit())
+        assert digits == "12345678901234567890123456789012"
+        assert text.endswith("EUR") or "€" in text
