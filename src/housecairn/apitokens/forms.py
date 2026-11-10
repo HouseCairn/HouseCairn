@@ -4,7 +4,7 @@ from typing import Any
 
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import ngettext_lazy
+from django.utils.translation import ngettext
 
 from housecairn.accounts.models import User
 from housecairn.apitokens import services
@@ -17,10 +17,11 @@ class HomeChoiceField(forms.ModelMultipleChoiceField[Home]):
         return obj.name
 
 
-def _lifetime_label(days: int) -> Any:
+def _lifetime_label(days: int) -> str:
+    """Worded in the language of the request: called when the form is built, not at import."""
     if days % 365 == 0:
-        return ngettext_lazy("%(n)d year", "%(n)d years", days // 365) % {"n": days // 365}
-    return ngettext_lazy("%(n)d day", "%(n)d days", days) % {"n": days}
+        return ngettext("%(n)d year", "%(n)d years", days // 365) % {"n": days // 365}
+    return ngettext("%(n)d day", "%(n)d days", days) % {"n": days}
 
 
 class TokenForm(forms.Form):
@@ -49,7 +50,7 @@ class TokenForm(forms.Form):
     lifetime_days = forms.TypedChoiceField(
         label=_("Expires after"),
         coerce=int,
-        choices=[(days, _lifetime_label(days)) for days in services.LIFETIME_CHOICES],
+        choices=[],
         widget=forms.RadioSelect,
         help_text=_("There is no token without an expiry: you create a new one before it ends."),
     )
@@ -60,7 +61,11 @@ class TokenForm(forms.Form):
         self.fields["homes"].queryset = homes  # type: ignore[attr-defined]
         if not self.is_bound and homes.count() == 1:
             self.fields["homes"].initial = list(homes)
-        self.fields["lifetime_days"].initial = services.default_lifetime_days()
+        lifetime = self.fields["lifetime_days"]
+        lifetime.choices = [  # type: ignore[attr-defined]
+            (days, _lifetime_label(days)) for days in services.LIFETIME_CHOICES
+        ]
+        lifetime.initial = services.default_lifetime_days()
 
     def clean_name(self) -> str:
         return " ".join(self.cleaned_data["name"].split())
