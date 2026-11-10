@@ -24,7 +24,9 @@ from housecairn.apitokens.permissions import SessionOnly
 from housecairn.homes.models import Home
 
 # These routes take the cookie of a signed-in person only, never a token (see SessionOnly).
-SESSION_AUTH = ["cookieAuth"]
+# drf-spectacular types `auth` as names but writes each item as a security requirement,
+# which OpenAPI wants as an object: a bare name is rejected by `spectacular --validate`.
+SESSION_AUTH: Any = [{"cookieAuth": []}]
 
 
 class TokenSerializer(serializers.ModelSerializer[ApiToken]):
