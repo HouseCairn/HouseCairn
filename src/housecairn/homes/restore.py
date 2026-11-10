@@ -49,10 +49,11 @@ SUPPORTED_VERSIONS = frozenset({2})
 DOCUMENT_MAX_BYTES = 64 * 1024 * 1024
 MAX_ENTRIES = 200_000
 _UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+# Matched with `fullmatch`: `$` alone would accept a name ending with a newline.
 _NAME = re.compile(
-    rf"^(?:{re.escape(exports.MANIFEST)}|{re.escape(exports.README_NAME)}"
+    rf"(?:{re.escape(exports.MANIFEST)}|{re.escape(exports.README_NAME)}"
     rf"|{exports.DATA_FOLDER}/[a-z_]{{1,40}}\.json"
-    rf"|{exports.FILES_FOLDER}/[a-z_]{{1,40}}/{_UUID}(?:\.[a-z0-9]{{1,8}})?)$"
+    rf"|{exports.FILES_FOLDER}/[a-z_]{{1,40}}/{_UUID}(?:\.[a-z0-9]{{1,8}})?)"
 )
 
 
@@ -123,7 +124,7 @@ def _check_entries(zipped: zipfile.ZipFile) -> list[zipfile.ZipInfo]:
             raise _refuse(_("The archive holds a symbolic link: %(name)s."), name=name)
         if info.flag_bits & 0x1:
             raise _refuse(_("The archive holds an encrypted file: %(name)s."), name=name)
-        if not _NAME.match(name) or "\\" in name or "\x00" in name:
+        if not _NAME.fullmatch(name) or "\\" in name or "\x00" in name:
             raise _refuse(
                 _("The archive holds a file outside of what the format allows: %(name)s."),
                 name=name[:120],

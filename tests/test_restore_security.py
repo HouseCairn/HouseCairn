@@ -113,6 +113,9 @@ def test_the_untouched_archive_restores(exported: bytes, alice: User) -> None:
         "files\\photos\\x.jpg",
         "data/../manifest.json",
         "other.txt",
+        # A trailing newline: `$` would let both through, the whole name must match.
+        "data/rooms.json\n",
+        "files/photos/00000000-0000-0000-0000-000000000000.jpg\n",
     ],
 )
 def test_a_name_outside_the_format_is_refused(exported: bytes, alice: User, name: str) -> None:
