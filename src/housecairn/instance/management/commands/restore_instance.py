@@ -138,7 +138,7 @@ class Command(BaseCommand):
                 program = shutil.which("pg_restore")
                 if program is None:
                     raise CommandError("pg_restore is not installed in this container.")
-                subprocess.run(  # noqa: S603 - fixed arguments
+                result = subprocess.run(  # noqa: S603 - fixed arguments
                     [
                         program,
                         "--clean",
@@ -149,8 +149,12 @@ class Command(BaseCommand):
                         str(database),
                     ],
                     env=postgres_environment(),
-                    check=True,
+                    capture_output=True,
+                    text=True,
+                    check=False,
                 )
+                if result.returncode != 0:
+                    raise CommandError(f"pg_restore failed: {result.stderr.strip()[:500]}")
             else:
                 raise CommandError("The backup names a database this instance does not know.")
             restored_media = work / "parts" / "media"

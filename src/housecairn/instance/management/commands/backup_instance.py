@@ -68,11 +68,16 @@ def dump_database(target: Path) -> str:
         program = shutil.which("pg_dump")
         if program is None:
             raise CommandError("pg_dump is not installed in this container.")
-        subprocess.run(  # noqa: S603 - fixed arguments, the connection comes from the environment
+        result = subprocess.run(  # noqa: S603 - fixed arguments, the connection from the environment
             [program, "--format=custom", "--no-owner", f"--file={target}"],
             env=postgres_environment(),
-            check=True,
+            capture_output=True,
+            text=True,
+            check=False,
         )
+        if result.returncode != 0:
+            # pg_dump says why on stderr (a server newer than the client, a refused login).
+            raise CommandError(f"pg_dump failed: {result.stderr.strip()[:500]}")
         return "postgresql"
     raise CommandError(f"Backups of a {vendor} database are not supported.")  # pragma: no cover
 
