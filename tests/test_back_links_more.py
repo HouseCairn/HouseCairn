@@ -9,10 +9,11 @@ comes from `reverse`, so the same tests hold under `HOUSECAIRN_URL_PREFIX`.
 import re
 from collections.abc import Callable, Iterator
 from decimal import Decimal
+from typing import Any
 
 import pytest
 from django.test import Client, override_settings
-from django.urls import reverse
+from django.urls import get_script_prefix, reverse, set_script_prefix
 
 from housecairn.accounts.models import User
 from housecairn.accounts.names import person_name
@@ -38,6 +39,19 @@ pytest_plugins = (
 )
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture(autouse=True)
+def _script_prefix(settings: Any) -> Iterator[None]:
+    """The prefix of the instance before any address is built, whatever ran before.
+
+    The addresses expected are built with `reverse` before the first request of the test;
+    another module may have left the script prefix at `/`.
+    """
+    previous = get_script_prefix()
+    set_script_prefix((settings.FORCE_SCRIPT_NAME or "") + "/")
+    yield
+    set_script_prefix(previous)
 
 
 def url(name: str, **kwargs: object) -> str:
