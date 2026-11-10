@@ -132,7 +132,7 @@ def _home(context: template.Context, request: HttpRequest, view: str) -> list[Ta
         return []
     kwargs = {"home_id": home_id}
     tabs = [
-        Tab(_("Overview"), reverse("homes:detail", kwargs=kwargs), view == "homes:detail"),
+        Tab(_("Home settings"), reverse("homes:detail", kwargs=kwargs), view == "homes:detail"),
         Tab(
             _("Household and roles"),
             reverse("homes:household", kwargs=kwargs),
@@ -141,22 +141,26 @@ def _home(context: template.Context, request: HttpRequest, view: str) -> list[Ta
     ]
     if context.get("is_owner") or context.get("role") == "owner":
         tabs.append(
-            Tab(_("Audit log"), reverse("homes:audit", kwargs=kwargs), view == "homes:audit")
+            Tab(_("Home audit log"), reverse("homes:audit", kwargs=kwargs), view == "homes:audit")
         )
     return tabs
 
 
 def _instance(context: template.Context, request: HttpRequest, view: str) -> list[Tab]:
     return [
-        Tab(_("Overview"), reverse("instance:overview"), view == "instance:overview"),
+        # The files of the homes are reached from the overview: four tabs at most.
+        Tab(
+            _("Overview"),
+            reverse("instance:overview"),
+            view in ("instance:overview", "instance:usage"),
+        ),
         Tab(_("Settings"), reverse("instance:settings"), view == "instance:settings"),
         Tab(
             _("Sign-in providers"),
             reverse("instance:providers"),
             view in ("instance:providers", "instance:provider"),
         ),
-        Tab(_("Files of the homes"), reverse("instance:usage"), view == "instance:usage"),
-        Tab(_("Audit log"), reverse("instance:audit"), view == "instance:audit"),
+        Tab(_("Instance audit log"), reverse("instance:audit"), view == "instance:audit"),
     ]
 
 

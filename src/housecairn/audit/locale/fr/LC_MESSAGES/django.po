@@ -310,7 +310,7 @@ msgid "Account deleted in the administration site"
 msgstr "Compte supprimé dans le site d'administration"
 
 msgid "Home"
-msgstr "Accueil"
+msgstr "Logement"
 
 msgid "Instance"
 msgstr "Instance"

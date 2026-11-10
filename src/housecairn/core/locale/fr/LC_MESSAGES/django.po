@@ -223,11 +223,11 @@ msgstr "Projets"
 msgid "Upkeep"
 msgstr "Entretien"
 
+msgid "Home audit log"
+msgstr "Journal d'audit du logement"
+
 msgid "Overview"
 msgstr "Vue d'ensemble"
-
-msgid "Audit log"
-msgstr "Journal d'audit"
 
 msgid "Settings"
 msgstr "Réglages"
@@ -235,11 +235,11 @@ msgstr "Réglages"
 msgid "Sign-in providers"
 msgstr "Fournisseurs de connexion"
 
-msgid "Files of the homes"
-msgstr "Fichiers des logements"
+msgid "Instance audit log"
+msgstr "Journal d'audit de l'instance"
 
 msgid "Home"
-msgstr "Accueil"
+msgstr "Logement"
 
 msgid "What needs doing in the house, where, when, with what and for how much."
 msgstr "Ce qu'il y a à faire dans la maison, où, quand, avec quoi et pour combien."

@@ -42,7 +42,7 @@ creates the account first. One invitation at a time per address.
 
 ## Audit log
 
-The **Audit log** tab, for owners, lists who did what in this home. See [Audit log of a
+The **Home audit log** tab, for owners, lists who did what in this home. See [Audit log of a
 home](audit.md).
 
 ## Sign-in rule

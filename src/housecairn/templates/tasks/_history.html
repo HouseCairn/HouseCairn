@@ -40,7 +40,7 @@
       <label for="filter-outcome">{% translate "Outcome" %}</label>
       <select id="filter-outcome" name="outcome">
         <option value="">{% translate "Done or skipped" %}</option>
-        <option value="done"{% if selection.status == "done" %} selected{% endif %}>{% translate "Done" context "task" %}</option>
+        <option value="done"{% if selection.status == "done" %} selected{% endif %}>{% translate "Done" context "task filter" %}</option>
         <option value="skipped"{% if selection.status == "skipped" %} selected{% endif %}>{% translate "Skipped" %}</option>
       </select>
     </p>

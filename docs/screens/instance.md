@@ -9,8 +9,8 @@ invitations, never a home, a member of a home, a task or a document (see
 [Instance administrator](../administration/instance.md)).
 
 The tabs at the top switch between the **Overview**, the **Settings**, the **Sign-in
-providers**, the **Files of the homes** and the **Audit log**, and are the same on each of
-those pages.
+providers** and the **Instance audit log**, and are the same on each of those pages.
+**Files of the homes** is a page of the overview, reached by its link.
 
 - **Overview**: the number of accounts, whether open sign-up is on, whether
   outgoing email is configured and the sign-in providers the instance offers.
@@ -30,8 +30,8 @@ those pages.
   cannot be changed there, and no account is created there). Deleting an account follows
   the rules of erasure: the only administrator, and the only owner of a home
   with other members, cannot be deleted.
-- **Files of the homes**: the space and the number of files each home takes, against the
+- **Files of the homes** (from the overview): the space and the number of files each home takes, against the
   quotas, by identifier only (see [Files of the homes](instance-usage.md)).
-- **Audit log**: administration actions, invitations to the instance, accounts
+- **Instance audit log**: administration actions, invitations to the instance, accounts
   created or erased, homes unlocked, homes deleted (without the name), each
   with who did it and when. It holds nothing about the inside of a home.

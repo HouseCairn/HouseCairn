@@ -257,8 +257,8 @@ msgstr "membre · tâches, projets, réalisation"
 msgid "read only · sees the home, changes nothing"
 msgstr "lecture seule · voit le logement, ne modifie rien"
 
-msgid "Audit log"
-msgstr "Journal d'audit"
+msgid "Home audit log"
+msgstr "Journal d'audit du logement"
 
 msgid "Who did what in this home and when: rooms, items, tasks, photos and files added, changed or deleted, roles, invitations, the sign-in rule, exports. Each entry names what it concerns by its title only. Only owners see it, and it holds no note, cost, file or procedure."
 msgstr "Qui a fait quoi dans ce logement et quand : pièces, éléments, tâches, photos et fichiers ajoutés, modifiés ou supprimés, rôles, invitations, règle de connexion, exports. Chaque entrée désigne son objet par son titre seulement. Seuls les propriétaires le voient, et il ne contient ni note, ni coût, ni fichier, ni mode opératoire."

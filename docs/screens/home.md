@@ -2,8 +2,8 @@
 
 The page of one home, at `/h/<home id>/`: its name, your role in it, its
 currency and its hemisphere. Its address stays the same as long as the home exists. The tabs above
-the page switch between the **Overview**, **Household and roles** (its members) and,
-for owners, the **Audit log**; they are the same on those three pages.
+the page switch between **Home settings**, **Household and roles** (its members) and,
+for owners, the **Home audit log**; they are the same on those three pages.
 
 When the home requires signing in through a provider and your session did not,
 the page asks you to continue with that provider instead.
