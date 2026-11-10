@@ -90,8 +90,8 @@ msgstr "Flux de calendrier secrets"
 msgid "API tokens"
 msgstr "Jetons d'API"
 
-msgid "Let Home Assistant or another tool read your homes"
-msgstr "Laisser Home Assistant ou un autre outil lire vos logements"
+msgid "Let Home Assistant or another tool read, change or send events to your homes"
+msgstr "Laisser Home Assistant ou un autre outil lire vos logements, les modifier ou leur envoyer des événements"
 
 msgid "Security and sign-in"
 msgstr "Sécurité et connexion"
