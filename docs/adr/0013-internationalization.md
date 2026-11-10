@@ -43,8 +43,9 @@ Django, and by the contributor after `uv sync`. It needs GNU gettext (`msgfmt`),
 as `check_translations --sources` already does; the application itself does not
 need gettext at run time, since the image carries the compiled file. A pure
 Python compiler was not retained: no such tool is a dependency of the
-application (Babel only comes with the documentation group), and one more
-dependency would need its own decision (ADR 0001). The catalogs are also kept
+application (at that date Babel only came with the documentation group; it became a runtime
+dependency on 2026-11-10 for amounts, ADR 0054, and still is not used to compile
+catalogs), and one more dependency would need its own decision (ADR 0001). The catalogs are also kept
 free of what changes at every run: `makemessages` (the project's own command in
 `housecairn.core`) writes no source locations, no line wrapping and no
 `POT-Creation-Date`, and `scripts/build_docs.py --update-catalogs` drops that

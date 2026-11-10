@@ -1,22 +1,11 @@
-from decimal import Decimal
 from typing import Any
 
 from django import template
-from django.utils.formats import number_format
 
 from housecairn.projects import services
 from housecairn.tasks.models import Task
 
 register = template.Library()
-
-
-@register.filter
-def money(amount: Decimal | None, currency: str = "") -> str:
-    """An amount as people read it: `1 250,50 EUR`, exact (a `Decimal`, never a float)."""
-    if amount is None:
-        return ""
-    text = number_format(amount, decimal_pos=2, use_l10n=True, force_grouping=True)
-    return f"{text}\u00a0{currency}".strip()
 
 
 @register.inclusion_tag("projects/_gap.html")

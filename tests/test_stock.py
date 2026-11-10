@@ -432,7 +432,7 @@ class TestScreens:
         )
         entry(alice, article, "4", note="bought in store")
         page = signed_in.get(url("detail", alice_home, article_id=article.id)).content.decode()
-        for text in ("Boiler filter", "BF-200", "Garage", "Acme", "9.90 EUR", "bought in store"):
+        for text in ("Boiler filter", "BF-200", "Garage", "Acme", "€9.90", "bought in store"):
             assert text in page
         assert 'href="https://shop.example.com/x"' in page
         assert 'rel="noopener noreferrer nofollow"' in page

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n projects_extras tasks_extras navigation %}
+{% load i18n money tasks_extras navigation %}
 {% block head_title %}{% translate "Compare projects" %}{% endblock head_title %}
 {% block content %}
   {% url 'projects:list' home_id=home.id as parent %}{% back_link parent %}
