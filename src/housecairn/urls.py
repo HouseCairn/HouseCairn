@@ -52,6 +52,8 @@ urlpatterns = [
     path("me/profile/", account_views.ProfileView.as_view(), name="profile"),
     # Notification channels and reminders of the person (docs/adr/0043).
     path("me/notifications/", include("housecairn.notifications.urls")),
+    # API tokens of the person: list, creation (secret shown once), revocation.
+    path("me/tokens/", include("housecairn.apitokens.urls")),
     # Calendar (week, month, year) and its secret feeds (docs/adr/0052).
     path("calendar/", include("housecairn.calendar.urls")),
     # Stock items, suppliers and movements of a home (docs/adr/0038); /stock/ is the entry.

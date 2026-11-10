@@ -24,6 +24,51 @@ msgstr "En-tête de jeton invalide."
 msgid "Invalid, expired or revoked token."
 msgstr "Jeton invalide, expiré ou révoqué."
 
+#, python-format
+msgid "%(n)d year"
+msgid_plural "%(n)d years"
+msgstr[0] "%(n)d an"
+msgstr[1] "%(n)d ans"
+
+#, python-format
+msgid "%(n)d day"
+msgid_plural "%(n)d days"
+msgstr[0] "%(n)d jour"
+msgstr[1] "%(n)d jours"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "What the token is for, for example Home Assistant."
+msgstr "À quoi sert le jeton, par exemple Home Assistant."
+
+msgid "What it may do"
+msgstr "Ce qu'il peut faire"
+
+msgid "Read: see the homes, tasks and stock"
+msgstr "Lecture : voir les logements, les tâches et le stock"
+
+msgid "Write: change them, mark a task done"
+msgstr "Écriture : les modifier, marquer une tâche comme faite"
+
+msgid "Post events: receive events from another tool"
+msgstr "Envoi d'événements : recevoir les événements d'un autre outil"
+
+msgid "Write does not include read: tick both for an integration that does both."
+msgstr "L'écriture n'inclut pas la lecture : cochez les deux pour une intégration qui fait les deux."
+
+msgid "Homes"
+msgstr "Logements"
+
+msgid "The token opens these homes and no other."
+msgstr "Le jeton ouvre ces logements, et aucun autre."
+
+msgid "Expires after"
+msgstr "Expire après"
+
+msgid "There is no token without an expiry: you create a new one before it ends."
+msgstr "Il n'existe pas de jeton sans expiration : vous en créez un nouveau avant la fin."
+
 msgid "Read"
 msgstr "Lecture"
 
@@ -60,8 +105,101 @@ msgstr "jeton d'API"
 msgid "This token does not have the scope this request needs."
 msgstr "Ce jeton n'a pas la portée nécessaire à cette requête."
 
+msgid "API tokens are managed by a person signed in, not by an API token."
+msgstr "Les jetons d'API sont gérés par une personne connectée, pas par un jeton d'API."
+
 msgid "A token needs at least one scope."
 msgstr "Un jeton a besoin d'au moins une portée."
 
 msgid "A token is bound to at least one home."
 msgstr "Un jeton est lié à au moins un logement."
+
+msgid "Choose one of the lifetimes offered."
+msgstr "Choisissez l'une des durées proposées."
+
+msgid "Choose one of your homes."
+msgstr "Choisissez l'un de vos logements."
+
+msgid "Token revoked: it no longer works."
+msgstr "Jeton révoqué : il ne fonctionne plus."
+
+msgid "Your new API token"
+msgstr "Votre nouveau jeton d'API"
+
+msgid "Copy it now: it is shown only once and cannot be found again."
+msgstr "Copiez-le maintenant : il n'est affiché qu'une seule fois et ne pourra pas être retrouvé."
+
+msgid "Copied"
+msgstr "Copié"
+
+msgid "Copy"
+msgstr "Copier"
+
+#, python-format
+msgid "It stops working on %(day)s. Lost it? Revoke it and create another."
+msgstr "Il cesse de fonctionner le %(day)s. Perdu ? Révoquez-le et créez-en un autre."
+
+msgid "Back to the API tokens"
+msgstr "Retour aux jetons d'API"
+
+msgid "New API token"
+msgstr "Nouveau jeton d'API"
+
+msgid "The token is shown once, right after you create it."
+msgstr "Le jeton s'affiche une seule fois, juste après sa création."
+
+msgid "Create the token"
+msgstr "Créer le jeton"
+
+msgid "A token lets another tool, such as Home Assistant, use HouseCairn for you, in the homes you choose and with the rights you give it. It acts as you: keep it secret, give each tool its own, and revoke one you no longer use. A token cannot create or revoke tokens."
+msgstr "Un jeton permet à un autre outil, comme Home Assistant, d'utiliser HouseCairn pour vous, dans les logements que vous choisissez et avec les droits que vous lui donnez. Il agit en votre nom : gardez-le secret, donnez-en un à chaque outil et révoquez celui que vous n'utilisez plus. Un jeton ne peut ni créer ni révoquer de jetons."
+
+msgid "Create a token"
+msgstr "Créer un jeton"
+
+msgid "You have no home that a token can open yet. A token cannot open a home that requires a sign-in provider."
+msgstr "Vous n'avez encore aucun logement qu'un jeton puisse ouvrir. Un jeton ne peut pas ouvrir un logement qui exige une connexion par fournisseur."
+
+msgid "Your API tokens"
+msgstr "Vos jetons d'API"
+
+msgid "Rights"
+msgstr "Droits"
+
+msgid "Created"
+msgstr "Créé le"
+
+msgid "Last used"
+msgstr "Dernière utilisation"
+
+msgid "Expires"
+msgstr "Expire le"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Never"
+msgstr "Jamais"
+
+#, python-format
+msgid "Expired on %(day)s"
+msgstr "Expiré le %(day)s"
+
+msgid "Revoke"
+msgstr "Révoquer"
+
+msgid "No API token yet."
+msgstr "Aucun jeton d'API pour le moment."
+
+msgid "Revoke the token"
+msgstr "Révoquer le jeton"
+
+#, python-format
+msgid "Revoke %(name)s?"
+msgstr "Révoquer %(name)s ?"
+
+msgid "The tool that uses this token loses its access with its next request. This cannot be undone: you would create a new token."
+msgstr "L'outil qui utilise ce jeton perd son accès dès sa prochaine requête. Cette action est irréversible : vous devrez créer un nouveau jeton."
+
+msgid "Cancel"
+msgstr "Annuler"

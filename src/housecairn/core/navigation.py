@@ -121,6 +121,7 @@ LABELS: dict[str, Any] = {
     "homes:detail": Record("homes.Home", "home_id", "name"),
     "homes:list": _("My homes"),
     "homes:household": _("Household and roles"),
+    "api-tokens:list": _("API tokens"),
     "stock:list": _("Stock"),
     "stock:detail": Record("stock.Article", "article_id", "name"),
     "projects:list": _("Projects"),
@@ -219,6 +220,8 @@ FORM_TITLES: dict[str, Any] = {
     "projects:create": _("Add a project"),
     "projects:edit": _("Edit the project"),
     "reports:create": _("Report a problem"),
+    "api-tokens:new": _("New API token"),
+    "api-tokens:revoke": _("Revoke the token"),
 }
 
 RECORD_TITLES: dict[str, Record] = {
@@ -261,6 +264,8 @@ PARENTS: dict[str, Callable[[dict[str, Any]], tuple[str, dict[str, Any]] | None]
     "labels:list": lambda kw: ("homes:detail", _home(kw)),
     "homes:household": lambda kw: ("homes:detail", _home(kw)),
     "budget:room": lambda kw: ("budget:rooms", _home(kw)),
+    "api-tokens:new": lambda kw: ("api-tokens:list", {}),
+    "api-tokens:revoke": lambda kw: ("api-tokens:list", {}),
 }
 
 

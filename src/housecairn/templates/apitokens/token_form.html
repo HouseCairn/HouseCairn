@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n navigation %}
+{% block head_title %}{% translate "New API token" %}{% endblock head_title %}
+{% block content %}
+  {% url 'api-tokens:list' as parent %}{% back_link parent %}
+  <h1>{% translate "New API token" %}</h1>
+  <p class="small">{% translate "The token is shown once, right after you create it." %}</p>
+  <form method="post" class="card" novalidate>
+    {% csrf_token %}
+    {% next_field %}
+    {{ form.as_p }}
+    <button type="submit" class="button-block">{% translate "Create the token" %}</button>
+  </form>
+{% endblock content %}

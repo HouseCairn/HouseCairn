@@ -1,0 +1,56 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "API tokens"
+msgstr "Jetons d'API"
+
+msgid "The tokens that let another tool, such as Home Assistant, use HouseCairn for you, at `/me/tokens/` (**More**, then **API tokens**, next to [Security and sign-in](security-and-sign-in.md)). A token acts as you, in the homes you choose and with the rights you give it. The same operations are in the [API](../api/index.md): `GET` and `POST /api/v1/me/tokens/`, `DELETE /api/v1/me/tokens/<id>/`."
+msgstr "Les jetons qui permettent à un autre outil, comme Home Assistant, d'utiliser HouseCairn pour vous, sur `/me/tokens/` (**Plus**, puis **Jetons d'API**, à côté de [Sécurité et connexion](security-and-sign-in.md)). Un jeton agit en votre nom, dans les logements que vous choisissez et avec les droits que vous lui donnez. Les mêmes opérations existent dans l'[API](../api/index.md) : `GET` et `POST /api/v1/me/tokens/`, `DELETE /api/v1/me/tokens/<id>/`."
+
+msgid "**The list** shows your tokens that are not revoked: name and first characters, rights, homes, creation date, last use and expiry. The value is never shown. An expired token stays in the list, marked **Expired on**, so that you can revoke it and see why a tool stopped working. On a phone, each token is a card."
+msgstr "**La liste** montre vos jetons non révoqués : nom et premiers caractères, droits, logements, date de création, dernière utilisation et expiration. La valeur n'est jamais affichée. Un jeton expiré reste dans la liste, marqué **Expiré le**, pour que vous puissiez le révoquer et voir pourquoi un outil s'est arrêté. Sur téléphone, chaque jeton est une carte."
+
+msgid "**Create a token** opens the form:"
+msgstr "**Créer un jeton** ouvre le formulaire :"
+
+msgid "**Name**: what it is for, for example Home Assistant."
+msgstr "**Nom** : à quoi il sert, par exemple Home Assistant."
+
+msgid "**What it may do**: **Read** (ticked by default), **Write** and **Post events**. They do not include each other: a tool that reads and marks tasks done needs **Read** and **Write**. A token never does more than you: in each home it keeps at most your role."
+msgstr "**Ce qu'il peut faire** : **Lecture** (cochée par défaut), **Écriture** et **Envoi d'événements**. Ces droits ne s'incluent pas les uns les autres : un outil qui lit et marque des tâches comme faites a besoin de **Lecture** et d'**Écriture**. Un jeton ne fait jamais plus que vous : dans chaque logement, il garde au plus votre rôle."
+
+msgid "**Homes**: the homes it opens, and no other. A home that requires a sign-in provider is not offered: a token is not a sign-in through a provider and could not open it. When you have one home, it is ticked."
+msgstr "**Logements** : les logements qu'il ouvre, et aucun autre. Un logement qui exige une connexion par fournisseur n'est pas proposé : un jeton n'est pas une connexion par un fournisseur et ne pourrait pas l'ouvrir. Quand vous n'avez qu'un logement, il est coché."
+
+msgid "**Expires after**: 30 days, **90 days** (the default, the lifetime set for the instance) or 1 year. There is no token without an expiry: a forgotten token is a standing key, and creating a new one takes a minute."
+msgstr "**Expire après** : 30 jours, **90 jours** (par défaut, la durée réglée pour l'instance) ou 1 an. Il n'existe pas de jeton sans expiration : un jeton oublié est une clé qui reste en place, et en créer un nouveau prend une minute."
+
+msgid "**The value is shown once.** After **Create the token**, the page shows the value (it starts with `hc_`) and a **Copy** button (when the browser can copy; otherwise select the field). HouseCairn keeps only a digest of it: nobody, administrators included, can read it again. If you lose it, revoke the token and create another. Reloading the page or tapping twice creates nothing more, and the value is never shown again. Going back with the browser's back button gives a new form, though, and sending it creates another token: check the list and revoke the one you do not need."
+msgstr "**La valeur s'affiche une seule fois.** Après **Créer le jeton**, la page montre la valeur (elle commence par `hc_`) et un bouton **Copier** (quand le navigateur sait copier ; sinon, sélectionnez le champ). HouseCairn n'en garde qu'une empreinte : personne, administrateurs compris, ne peut la relire. Si vous la perdez, révoquez le jeton et créez-en un autre. Recharger la page ou appuyer deux fois ne crée rien de plus, et la valeur n'est jamais réaffichée. Revenir en arrière avec le bouton retour du navigateur donne en revanche un nouveau formulaire, et l'envoyer crée un autre jeton : vérifiez la liste et révoquez celui dont vous n'avez pas besoin."
+
+msgid "**Revoke** opens a confirmation page. The tool that uses the token loses its access with its next request. Revoking cannot be undone."
+msgstr "**Révoquer** ouvre une page de confirmation. L'outil qui utilise le jeton perd son accès dès sa prochaine requête. Une révocation est irréversible."
+
+msgid "**What a token cannot do.** It cannot list, create nor revoke tokens: these are for a person signed in. It also cannot change your account, your display preferences or your notification channels (see the [API](../api/index.md))."
+msgstr "**Ce qu'un jeton ne peut pas faire.** Il ne peut ni lister, ni créer, ni révoquer de jetons : cela revient à une personne connectée. Il ne peut pas non plus modifier votre compte, vos préférences d'affichage ni vos canaux de notification (voir l'[API](../api/index.md))."
+
+msgid "**Audit log.** Creating and revoking a token are noted in the audit log of the instance, with the name of the token and who did it, never its value."
+msgstr "**Journal d'audit.** La création et la révocation d'un jeton sont notées dans le journal d'audit de l'instance, avec le nom du jeton et l'auteur de l'action, jamais sa valeur."
+

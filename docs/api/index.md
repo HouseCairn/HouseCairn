@@ -16,8 +16,9 @@ web interface: every request only sees the homes of its user
 - **Authentication** by API token, `Authorization: Bearer hc_...`, with the
   scopes `read`, `write` and `events`, bound to one or more homes and expiring
   after 90 days by default
-  ([ADR 0007](../adr/0007-authentication-and-api-tokens.md)). There is no
-  screen to create a token yet. An API token is tied to homes: it can read the routes under
+  ([ADR 0007](../adr/0007-authentication-and-api-tokens.md)). A person creates,
+  lists and revokes their tokens on the [API tokens](../screens/api-tokens.md)
+  screen, or through `/api/v1/me/tokens/` (below). An API token is tied to homes: it can read the routes under
   `/api/v1/me/` where it could, but it cannot change the account, the display
   preferences or the notification channels and reminders of the person. Those are for the
   person signed in, and a token gets a 403 there:
@@ -26,11 +27,25 @@ web interface: every request only sees the homes of its user
   - `POST`, `PATCH` and `DELETE` on `/api/v1/me/notification-channels/` and
     `POST .../<id>/test/` (a test sends a message);
   - `PATCH /api/v1/me/notification-preferences/`;
-  - `POST /api/v1/account/delete/`.
+  - `POST /api/v1/account/delete/`;
+  - `GET` and `POST /api/v1/me/tokens/` and `DELETE /api/v1/me/tokens/<id>/`: a token
+    never lists, creates nor revokes a token.
 
   `GET /api/v1/me/`, `me/home/` and `me/display-preferences/` stay open to a token;
   the `GET` routes of notifications need the `write` scope
   ([ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)).
+- **API tokens** of the person signed in: `GET /api/v1/me/tokens/` lists the tokens that are
+  not revoked (name, `prefix`, `scopes`, `homes`, `created_at`, `expires_at`, `last_used_at`,
+  never the value). `POST` creates one from `name`, `homes` (ids, among the homes the person
+  may open with a token), `scopes` (`read` by default; `read`, `write` and `events` do not
+  imply each other) and `expires_in_days` (`30`, `90` or `365`, the lifetime of the instance
+  by default; there is no token without an expiry). The answer, `201`, carries the secret in
+  `token`: it is shown once, is not kept and cannot be asked again. `DELETE .../<id>/`
+  revokes a token, which then fails with `401` on its next request. These routes are for a
+  person signed in, with the CSRF token of the session on writes: an API token gets a `403`
+  on all of them, and another person's token is a `404`. Creating and revoking go to the
+  audit log of the instance, by name, never with the value
+  ([ADR 0007](../adr/0007-authentication-and-api-tokens.md)).
 - **Rooms, items and photos** of a home: `/api/v1/homes/<home id>/rooms/`,
   `.../items/`, `.../photos/` and `.../search/?q=`, with the same rules as the
   screens ([ADR 0029](../adr/0029-rooms-items-and-room-memory.md),

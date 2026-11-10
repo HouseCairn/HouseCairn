@@ -87,6 +87,12 @@ msgstr "Calendrier dans une autre application"
 msgid "Secret calendar feeds"
 msgstr "Flux de calendrier secrets"
 
+msgid "API tokens"
+msgstr "Jetons d'API"
+
+msgid "Let Home Assistant or another tool read, change or send events to your homes"
+msgstr "Laisser Home Assistant ou un autre outil lire vos logements, les modifier ou leur envoyer des événements"
+
 msgid "Security and sign-in"
 msgstr "Sécurité et connexion"
 
@@ -193,6 +199,12 @@ msgstr "Modifier le projet"
 
 msgid "Report a problem"
 msgstr "Signaler un problème"
+
+msgid "New API token"
+msgstr "Nouveau jeton d'API"
+
+msgid "Revoke the token"
+msgstr "Révoquer le jeton"
 
 msgctxt "added message"
 msgid "Open"

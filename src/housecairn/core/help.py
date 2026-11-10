@@ -149,6 +149,9 @@ HELP_PAGES: dict[str, str] = {
     "reports:reopen": "screens/report/",
     "more": "screens/more/",
     "more-security": "screens/security-and-sign-in/",
+    "api-tokens:list": "screens/api-tokens/",
+    "api-tokens:new": "screens/api-tokens/",
+    "api-tokens:revoke": "screens/api-tokens/",
     "about": "screens/about/",
 }
 # Other routes of django-allauth (sign-up, password, email addresses,

@@ -252,6 +252,14 @@ msgstr "Invitation à l'instance révoquée"
 msgid "Instance invitation accepted"
 msgstr "Invitation à l'instance acceptée"
 
+#, python-format
+msgid "API token created: %(title)s"
+msgstr "Jeton d'API créé : %(title)s"
+
+#, python-format
+msgid "API token revoked: %(title)s"
+msgstr "Jeton d'API révoqué : %(title)s"
+
 msgid "Account created"
 msgstr "Compte créé"
 

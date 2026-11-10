@@ -43,6 +43,7 @@ contractor-form
 profile
 notifications
 calendar
+api-tokens
 stock
 stock-item
 stock-item-form

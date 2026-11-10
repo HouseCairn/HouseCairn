@@ -10,7 +10,8 @@ The browser asks for French, the longest wording. The data set needs a project t
 budget by a very large amount (100 billion or more, e.g. a dozen accepted quotes of
 9,000,000,000 on one line): at 320 px the "Budget dépassé de ..." pill of the Budget screens is
 then wider than its card unless it wraps. Give it as the last `--project`: the first one is the
-project sheet, whose header pill is not in a table.
+project sheet, whose header pill is not in a table. The account needs at least one API token
+(More, API tokens): without one the list is not a table, and the page checks nothing.
 
 For each Budget view, the project sheet and the other screens that hold a table, it checks
 that the page is not wider than the viewport, then lists every table and how it is boxed
@@ -53,6 +54,7 @@ def main() -> None:
         "projects compare": f"{home}/projects/compare/?{compared}",
         "calendar month": f"{args.base}/calendar/month/",
         "calendar year": f"{args.base}/calendar/year/",
+        "api tokens": f"{args.base}/me/tokens/",
     }
     failures = 0
     with sync_playwright() as playwright:
@@ -72,6 +74,13 @@ def main() -> None:
                 )
                 tables = page.evaluate(TABLES_JS)
                 ok = scroll_width <= client_width
+                if name == "api tokens":
+                    # Under 56 rem a cell with no label is not drawn: Revoke must stay visible.
+                    ok = (
+                        ok
+                        and bool(tables)
+                        and page.locator("a[href*='/revoke/']").first.is_visible()
+                    )
                 failures += not ok
                 status = response.status if response else "?"
                 sys.stdout.write(

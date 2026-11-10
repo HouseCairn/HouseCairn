@@ -71,6 +71,8 @@ LABELS: dict[str, Promise] = {
     "instance_invitation.resent": _("Instance invitation sent again"),
     "instance_invitation.revoked": _("Instance invitation revoked"),
     "instance_invitation.accepted": _("Instance invitation accepted"),
+    "apitoken.created": _("API token created: %(title)s"),
+    "apitoken.revoked": _("API token revoked: %(title)s"),
     "account.created": _("Account created"),
     "account.email_verified": _("Email address verified from the server"),
     "account.email_primary": _("Primary email address changed from the server"),
