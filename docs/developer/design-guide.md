@@ -22,10 +22,10 @@ Where the rules come from:
 - the navigation and design audits of the interface, summed up in the appendix
   [Why these rules](#why-these-rules).
 
-The navigation described here is the target. It is built in several changes; until
-they are all merged, some screens still differ from it. A change that alters one of
-these behaviours updates the section of this guide that describes it, in the same
-pull request.
+The navigation described here is built: every finding of the audit (NAV-01 to NAV-16)
+has its change merged. A screen that still differs from it is a bug to fix. A change
+that alters one of these behaviours updates the section of this guide that describes
+it, in the same pull request.
 
 ## Information architecture
 
@@ -63,7 +63,8 @@ holds the rest.
 
 A signed-in person has one start screen, Today, and every way in leads to it.
 
-- The root address `/` **must** lead a signed-in person to Today: Today of the
+- The root address `/` (the route `index`; under a [path prefix](#addresses-and-links),
+  the prefix itself) **must** lead a signed-in person to Today: Today of the
   [current home](#current-home), or all their homes together on one Today page when
   they chose "All homes" (and before they chose a home). The logo, the Today entry of
   the navigation outside a home, the `start_url` of the web app manifest and
@@ -116,11 +117,12 @@ Budget                      tabs: Summary | Rooms | Projects | Upkeep
 └─ Upkeep ── Task
 
 More (root)
-├─ Home: settings of the home · Household and roles · Reports (count)
-│        · Contractors · QR labels · Export the data · My homes
-├─ Me: Profile · Notifications · Display preferences · Calendar feeds
+├─ Home: Home settings (export and deletion at the bottom) · Household and roles
+│        · Reports (count) · Contractors · QR labels · My homes
+├─ Me: Profile · Notifications · Display preferences
+│      · Calendar in another application · API tokens
 │      · Security and sign-in (deleting the account at the bottom)
-├─ Instance (administrators only): Administration ── index ── one page per section
+├─ Instance (administrators only): Instance administration ── one page per section
 └─ Help: Help · API documentation · About                     [Sign out]
 ```
 
@@ -139,11 +141,12 @@ Rooms
 Projects
 Budget
 ─────────────
-Home        Household and roles · Reports (2) · Contractors · QR labels · Settings
-Me          Profile · Notifications · Security and sign-in
-Administration (administrators only)
+Home        Home settings · Household and roles · Reports (2) · Contractors · QR labels
+Me          Profile · Notifications · API tokens · Security and sign-in
+Instance    Instance administration (administrators only)
+Help        Help · API documentation · About
 ─────────────
-Help · About · Sign out
+Sign out
 ```
 
 The diagram is indicative and does not show every entry; the entries are those of
@@ -167,6 +170,10 @@ More holds four groups, in this order: **Home** (about the home being viewed),
 - An entry of More **must** be added in `housecairn/core/more.py`, in its group, with
   its routes for the marking of the current entry, never in a template. The page of More
   and the column both show it.
+- The bar marks More for every route outside the four sections
+  (`section_of` in `core/context_processors.py`). A page of More whose route is in the
+  namespace of a section (the contractors, in `tasks`; the calendar feeds, in
+  `calendar`) **must** be listed in `_IN_MORE` there, or the bar marks that section.
 
 ### Where a new screen goes
 
@@ -204,9 +211,13 @@ Answer these questions in order, and stop at the first yes:
 7. **Is it about the instance**? More, group Instance, shown to administrators only.
 8. **Is it help or information about the application**? More, group Help.
 
-A screen **must** be reachable from the navigation, never only from an address
-typed by hand or a link in an email. A page nobody can reach again is lost after the
-first visit.
+A screen of a signed-in person **must** be reachable from the navigation, never only
+from an address typed by hand or a link in an email. A page nobody can reach again is
+lost after the first visit. The screens of a visitor who is not signed in are outside
+the navigation, which they cannot see: they are reached from the sign-in page (sign-up,
+and the first administrator screen `/setup/` while it is open,
+[ADR 0056](../adr/0056-first-administrator-on-a-web-screen.md)) or from the link of an
+email (an invitation).
 
 ## Return rule
 
@@ -237,7 +248,7 @@ itself.
 
 | Helper | What it does |
 | --- | --- |
-| `back_url(request, default)` | The `next` of the request (the form first, then the query) when it is safe, else `default`. Safe: checked by `is_safe_redirect`, a path starting with one `/`, a nested `next` and `undo` removed, 512 characters at most (past that the query is dropped, then the address is refused). |
+| `back_url(request, default)` | The `next` of the request (the form first, then the query) when it is safe, else `default`. Safe: checked by `is_safe_redirect`, a path starting with one `/` and, under a [path prefix](#addresses-and-links), leading under the prefix once resolved (`core.prefix.in_application`), a nested `next` and `undo` removed, 512 characters at most (past that the query is dropped, then the address is refused). |
 | `safe_next(request)` | The same, or `None` without a safe `next`. |
 | `after_create(request, record_url, section_list, added=…, saved=…)` | Where a creation goes: `next`, with the message "*added* · Open" linking to `record_url`; the record itself when `next` is missing or is the route `section_list` (the list of its own section). |
 | `after_delete(request, parent, gone)` | Where a deletion goes: `next`, unless its route names one of the ids in `gone` (the object and its children), else `parent`. |
@@ -316,7 +327,7 @@ to it. The page of the room leads to its budget by its block "Budget of the room
 | Section root (Today, Rooms, Projects, Budget, More) | no back link | no breadcrumbs |
 | Tab of a section (All, Stock, Ideas, budget by room) | no back link, the tab is marked | no breadcrumbs |
 | Record (room, task, article, project) | `‹ <origin>` | `Section › … › Record` |
-| Form | `‹ Cancel`, main action at the bottom | breadcrumbs, then Cancel and Save buttons |
+| Form | `‹ <origin>`, main action at the bottom | breadcrumbs, and the back link `‹ <origin>` |
 | Page of More | `‹ More` (or the origin) | `Home › Household and roles` |
 
 - A section root **must not** have a back link. A top-level destination has nowhere
@@ -348,7 +359,9 @@ to it. The page of the room leads to its budget by its block "Budget of the room
 - **Created from the list of its own section** (a project from the project list): the
   form **must** open the new record. The next step is there: adding a quote to a new
   project.
-- **Cancel** **must** lead to `next` as well, or to the parent without it.
+- **Cancel**, the back link of the form or its Cancel button when it has one (a
+  confirmation page, the report form), **must** lead to `next` as well, or to the
+  parent without it.
 - **Changed** (edit form): back to `next`, or to the record without it.
 
 ### After a deletion
@@ -568,8 +581,11 @@ These rules come from earlier decisions; this guide gathers them so that a new s
 is checked against all of them at once.
 
 - **Amounts** **must** be shown in the format of the language of the reader, with the
-  symbol of the currency: `1 250,50 €` in French. Every amount goes through the same
-  template filter. Three formats on three screens read as three different numbers.
+  symbol of the currency: `1 250,50 €` in French, `€1,250.50` in English. Every amount
+  goes through the one filter, `{% load money %}` then `{{ amount|money:currency }}`
+  with the currency of the home (`core/templatetags/money.py`, [ADR 0054](../adr/0054-amounts-with-babel.md)), never
+  written by hand. The CSV exports and the API keep the raw number and the ISO code in
+  a field of its own. Three formats on three screens read as three different numbers.
 - **Deleting** **must** go through a confirmation page (see
   [After a deletion](#after-a-deletion)). Only Done and its siblings rely on Undo.
 - **Lists**: wherever a generic list exists (type of room, category of a photo, trade
@@ -583,7 +599,9 @@ is checked against all of them at once.
 - **Sign-in** **must** offer one button per configured identity provider, and passkeys
   through the browser's autofill of the address field, without a passkey button
   ([ADR 0018](../adr/0018-sign-in-page-and-passkeys.md)). The page stays a form and at
-  most one button per provider.
+  most one button per provider. While the instance has no administrator, it also shows
+  a notice with a link to `/setup/`, and never redirects there: people who already have
+  an account still sign in ([ADR 0056](../adr/0056-first-administrator-on-a-web-screen.md)).
 - **Touch targets** **must** be at least 44 px (`--hc-layout-touch-target`), and the
   Done button 48 px (`--hc-layout-touch-target-lg`). A small link in a table is missed
   by a finger.
@@ -604,6 +622,27 @@ is checked against all of them at once.
 - **Resources**: a screen **must not** load anything from another host, nor use an
   inline style or script ([ADR 0011](../adr/0011-no-external-resources-and-csp.md)).
   The strict content security policy refuses them.
+
+## Addresses and links
+
+An instance may be served under a path prefix, such as `https://example.com/housecairn/`
+or Home Assistant's Ingress (`HOUSECAIRN_URL_PREFIX`, or a header from a trusted proxy:
+[ADR 0055](../adr/0055-serving-under-a-path-prefix.md)). Every address of the
+application then starts with the prefix.
+
+- An address in a template **must** come from `{% url %}`, `{% url_with_next %}` or a
+  value built with `reverse` in the view, never be written from the root (`href="/…"`,
+  `action="/…"`, `hx-post="/…"`), and a script of `static/js` **must not** hold one
+  either. Under a prefix, `/…` leaves the application. `tests/test_url_prefix.py` fails
+  on any such address, and the CI runs the navigation tests under a prefix.
+- An address sent away (an invitation email, a QR label, a calendar feed) is
+  `homes.scoping.site_url(request)` followed by `reverse(…)`: the scheme and the host
+  come from `HOUSECAIRN_SITE_URL` when it is set, else from the request, and the path,
+  prefix included, from `reverse`.
+- A link to an address that a person typed (a purchase link, a contract, the links of an
+  item or of a project, a document in Paperless-ngx) **must** carry
+  `rel="noopener noreferrer nofollow"`. Its field is a `WebUrlField`
+  (`rooms/models.py`), which accepts `http` and `https` only, never `javascript:`.
 
 ## Labels
 
@@ -686,7 +725,8 @@ holds. The review checks the same list.
   [Where a new screen goes](#where-a-new-screen-goes), and is reachable from the
   navigation.
 - [ ] A new entry of More is added in `housecairn/core/more.py`, in its group, with its
-  routes for the marking, and in no template.
+  routes for the marking, and in no template; a page of More in the namespace of a
+  section is in `_IN_MORE`.
 - [ ] A record reachable from two places has one parent, named in its screen reference
   page; without `next`, its back link leads to it.
 - [ ] A date to act on is a task; a date that informs is a list of the agenda digest; an event
@@ -696,8 +736,12 @@ holds. The review checks the same list.
 - [ ] The marked entry of the bar is the section the person entered by.
 - [ ] A section root has no back link; any other page has one that names its target.
 - [ ] Every link to a record or a form carries `next` (`{% url_with_next %}`), the
-  back link and Cancel use `{% back_link %}` and `{% back_href %}`, and the form keeps
+  back link and Cancel use `{% back_link %}` and `{% back_href %}` (or
+  `navigation.back_url` in the view, as the confirmation pages do), and the form keeps
   `next` with `{% next_field %}`; a route that a back link must name is in `LABELS`.
+- [ ] Every address comes from `{% url %}`, `{% url_with_next %}` or `reverse`, none
+  written from `/`; a link to an address a person typed carries
+  `rel="noopener noreferrer nofollow"`.
 - [ ] After a creation from a context, the person is back in the context with
   "Added · Open"; from the list of its own section, on the new record.
 - [ ] A deletion goes through a confirmation page and lands on the parent.
@@ -711,8 +755,8 @@ holds. The review checks the same list.
 - [ ] One-tap actions stay in place with HTMX, with the undo banner, and work without
   JavaScript.
 - [ ] The screen shows the current home and only data of the person's homes.
-- [ ] Amounts in the format of the language with the currency symbol; people by their
-  display name; generic lists with "Other".
+- [ ] Amounts through the `money` filter; people by their display name; generic lists
+  with "Other".
 - [ ] Touch targets of 44 px at least, visible focus, never hidden by the bar or the
   banner; WCAG 2.2 AA.
 - [ ] Tried at 375 px and 1280 px, with no horizontal scroll of the page.

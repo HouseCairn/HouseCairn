@@ -41,8 +41,8 @@ msgstr "la maquette v2, `design/mockup/housecairn-maquette-v2.html`, et les jeto
 msgid "the navigation and design audits of the interface, summed up in the appendix [Why these rules](#why-these-rules)."
 msgstr "les audits de navigation et de design de l'interface, résumés dans l'annexe [Pourquoi ces règles](#why-these-rules)."
 
-msgid "The navigation described here is the target. It is built in several changes; until they are all merged, some screens still differ from it. A change that alters one of these behaviours updates the section of this guide that describes it, in the same pull request."
-msgstr "La navigation décrite ici est la cible. Elle se construit en plusieurs changements ; tant qu'ils ne sont pas tous fusionnés, certains écrans en diffèrent encore. Un changement qui modifie l'un de ces comportements met à jour la section de ce guide qui le décrit, dans la même pull request."
+msgid "The navigation described here is built: every finding of the audit (NAV-01 to NAV-16) has its change merged. A screen that still differs from it is a bug to fix. A change that alters one of these behaviours updates the section of this guide that describes it, in the same pull request."
+msgstr "La navigation décrite ici est construite : chaque constat de l'audit (NAV-01 à NAV-16) a son changement fusionné. Un écran qui en diffère encore est un bogue à corriger. Un changement qui modifie l'un de ces comportements met à jour la section de ce guide qui le décrit, dans la même pull request."
 
 msgid "Information architecture"
 msgstr "Architecture de l'information"
@@ -134,8 +134,8 @@ msgstr "Une seule page d'accueil : Aujourd'hui"
 msgid "A signed-in person has one start screen, Today, and every way in leads to it."
 msgstr "Une personne connectée a un seul écran de départ, Aujourd'hui, et toutes les entrées y mènent."
 
-msgid "The root address `/` **must** lead a signed-in person to Today: Today of the [current home](#current-home), or all their homes together on one Today page when they chose \"All homes\" (and before they chose a home). The logo, the Today entry of the navigation outside a home, the `start_url` of the web app manifest and `LOGIN_REDIRECT_URL` **must** all be this address, never a second home screen."
-msgstr "L'adresse racine `/` **doit** mener une personne connectée à Aujourd'hui : l'Aujourd'hui du [logement courant](#current-home), ou tous ses logements ensemble sur une page Aujourd'hui quand elle a choisi « Tous les logements » (et avant qu'elle ait choisi un logement). Le logo, l'entrée Aujourd'hui de la navigation hors d'un logement, le `start_url` du manifeste de l'application web et `LOGIN_REDIRECT_URL` **doivent** tous être cette adresse, jamais un second écran d'accueil."
+msgid "The root address `/` (the route `index`; under a [path prefix](#addresses-and-links), the prefix itself) **must** lead a signed-in person to Today: Today of the [current home](#current-home), or all their homes together on one Today page when they chose \"All homes\" (and before they chose a home). The logo, the Today entry of the navigation outside a home, the `start_url` of the web app manifest and `LOGIN_REDIRECT_URL` **must** all be this address, never a second home screen."
+msgstr "L'adresse racine `/` (la route `index` ; sous un [préfixe d'adresse](#addresses-and-links), le préfixe lui-même) **doit** mener une personne connectée à Aujourd'hui : l'Aujourd'hui du [logement courant](#current-home), ou tous ses logements ensemble sur une page Aujourd'hui quand elle a choisi « Tous les logements » (et avant qu'elle ait choisi un logement). Le logo, l'entrée Aujourd'hui de la navigation hors d'un logement, le `start_url` du manifeste de l'application web et `LOGIN_REDIRECT_URL` **doivent** tous être cette adresse, jamais un second écran d'accueil."
 
 msgid "The welcome page **must** be shown only to a visitor who is signed out and to an account with no home to open, with **Add a home**."
 msgstr "La page de bienvenue **doit** n'être montrée qu'à un visiteur déconnecté et à un compte sans logement à ouvrir, avec **Ajouter un logement**."
@@ -185,6 +185,9 @@ msgstr "Une action qui ne se rattrape pas (supprimer le compte, un logement) **d
 msgid "An entry of More **must** be added in `housecairn/core/more.py`, in its group, with its routes for the marking of the current entry, never in a template. The page of More and the column both show it."
 msgstr "Une entrée de Plus **doit** être ajoutée dans `housecairn/core/more.py`, dans son groupe, avec ses routes pour le marquage de l'entrée courante, jamais dans un gabarit. La page de Plus et la colonne la montrent toutes deux."
 
+msgid "The bar marks More for every route outside the four sections (`section_of` in `core/context_processors.py`). A page of More whose route is in the namespace of a section (the contractors, in `tasks`; the calendar feeds, in `calendar`) **must** be listed in `_IN_MORE` there, or the bar marks that section."
+msgstr "La barre marque Plus pour toute route hors des quatre sections (`section_of` dans `core/context_processors.py`). Une page de Plus dont la route est dans l'espace de noms d'une section (les intervenants, dans `tasks` ; les flux de calendrier, dans `calendar`) **doit** figurer dans `_IN_MORE` de ce fichier, sinon la barre marque cette section."
+
 msgid "Where a new screen goes"
 msgstr "Où ranger un nouvel écran"
 
@@ -227,8 +230,8 @@ msgstr "**Cela concerne-t-il l'instance** ? Plus, groupe Instance, montré aux s
 msgid "**Is it help or information about the application**? More, group Help."
 msgstr "**Est-ce de l'aide ou une information sur l'application** ? Plus, groupe Aide."
 
-msgid "A screen **must** be reachable from the navigation, never only from an address typed by hand or a link in an email. A page nobody can reach again is lost after the first visit."
-msgstr "Un écran **doit** être accessible depuis la navigation, jamais seulement par une adresse saisie à la main ou un lien dans un e-mail. Une page que personne ne peut retrouver est perdue après la première visite."
+msgid "A screen of a signed-in person **must** be reachable from the navigation, never only from an address typed by hand or a link in an email. A page nobody can reach again is lost after the first visit. The screens of a visitor who is not signed in are outside the navigation, which they cannot see: they are reached from the sign-in page (sign-up, and the first administrator screen `/setup/` while it is open, [ADR 0056](../adr/0056-first-administrator-on-a-web-screen.md)) or from the link of an email (an invitation)."
+msgstr "Un écran d'une personne connectée **doit** être accessible depuis la navigation, jamais seulement par une adresse saisie à la main ou un lien dans un e-mail. Une page que personne ne peut retrouver est perdue après la première visite. Les écrans d'un visiteur non connecté sont hors de la navigation, qu'il ne voit pas : on y arrive depuis la page de connexion (l'inscription, et l'écran du premier administrateur `/setup/` tant qu'il est ouvert, [ADR 0056](../adr/0056-first-administrator-on-a-web-screen.md)) ou par le lien d'un e-mail (une invitation)."
 
 msgid "Return rule"
 msgstr "Règle de retour"
@@ -270,8 +273,8 @@ msgstr "Ce qu'elle fait"
 msgid "`back_url(request, default)`"
 msgstr "`back_url(request, default)`"
 
-msgid "The `next` of the request (the form first, then the query) when it is safe, else `default`. Safe: checked by `is_safe_redirect`, a path starting with one `/`, a nested `next` and `undo` removed, 512 characters at most (past that the query is dropped, then the address is refused)."
-msgstr "Le `next` de la requête (le formulaire d'abord, puis la chaîne de requête) quand il est sûr, sinon `default`. Sûr : vérifié par `is_safe_redirect`, un chemin qui commence par un seul `/`, sans `next` imbriqué ni `undo`, 512 caractères au plus (au-delà, la chaîne de requête est retirée, puis l'adresse est refusée)."
+msgid "The `next` of the request (the form first, then the query) when it is safe, else `default`. Safe: checked by `is_safe_redirect`, a path starting with one `/` and, under a [path prefix](#addresses-and-links), leading under the prefix once resolved (`core.prefix.in_application`), a nested `next` and `undo` removed, 512 characters at most (past that the query is dropped, then the address is refused)."
+msgstr "Le `next` de la requête (le formulaire d'abord, puis la chaîne de requête) quand il est sûr, sinon `default`. Sûr : vérifié par `is_safe_redirect`, un chemin qui commence par un seul `/` et, sous un [préfixe d'adresse](#addresses-and-links), qui mène sous le préfixe une fois résolu (`core.prefix.in_application`), sans `next` imbriqué ni `undo`, 512 caractères au plus (au-delà, la chaîne de requête est retirée, puis l'adresse est refusée)."
 
 msgid "`safe_next(request)`"
 msgstr "`safe_next(request)`"
@@ -416,11 +419,11 @@ msgstr "`Section › … › Fiche`"
 msgid "Form"
 msgstr "Formulaire"
 
-msgid "`‹ Cancel`, main action at the bottom"
-msgstr "`‹ Annuler`, action principale en bas"
+msgid "`‹ <origin>`, main action at the bottom"
+msgstr "`‹ <origine>`, action principale en bas"
 
-msgid "breadcrumbs, then Cancel and Save buttons"
-msgstr "fil d'Ariane, puis boutons Annuler et Enregistrer"
+msgid "breadcrumbs, and the back link `‹ <origin>`"
+msgstr "fil d'Ariane, et le lien retour `‹ <origine>`"
 
 msgid "Page of More"
 msgstr "Page de Plus"
@@ -465,8 +468,8 @@ msgstr "**Créée depuis un contexte** (une tâche depuis un élément, un élé
 msgid "**Created from the list of its own section** (a project from the project list): the form **must** open the new record. The next step is there: adding a quote to a new project."
 msgstr "**Créée depuis la liste de sa propre section** (un projet depuis la liste des projets) : le formulaire **doit** ouvrir la nouvelle fiche. L'étape suivante y est : ajouter un devis à un projet neuf."
 
-msgid "**Cancel** **must** lead to `next` as well, or to the parent without it."
-msgstr "**Annuler** **doit** mener aussi à `next`, ou au parent à défaut."
+msgid "**Cancel**, the back link of the form or its Cancel button when it has one (a confirmation page, the report form), **must** lead to `next` as well, or to the parent without it."
+msgstr "**Annuler**, c'est-à-dire le lien retour du formulaire ou son bouton Annuler quand il en a un (une page de confirmation, le formulaire de signalement), **doit** mener aussi à `next`, ou au parent sans lui."
 
 msgid "**Changed** (edit form): back to `next`, or to the record without it."
 msgstr "**Modifiée** (formulaire de modification) : retour à `next`, ou à la fiche à défaut."
@@ -664,8 +667,9 @@ msgstr "Règles d'écran déjà décidées"
 msgid "These rules come from earlier decisions; this guide gathers them so that a new screen is checked against all of them at once."
 msgstr "Ces règles viennent de décisions antérieures ; ce guide les réunit pour qu'un nouvel écran soit vérifié contre toutes à la fois."
 
-msgid "**Amounts** **must** be shown in the format of the language of the reader, with the symbol of the currency: `1 250,50 €` in French. Every amount goes through the same template filter. Three formats on three screens read as three different numbers."
-msgstr "Les **montants** **doivent** s'afficher au format de la langue du lecteur, avec le symbole de la devise : `1 250,50 €` en français. Tout montant passe par le même filtre de gabarit. Trois formats sur trois écrans se lisent comme trois nombres différents."
+#, python-brace-format, python-format
+msgid "**Amounts** **must** be shown in the format of the language of the reader, with the symbol of the currency: `1 250,50 €` in French, `€1,250.50` in English. Every amount goes through the one filter, `{% load money %}` then `{{ amount|money:currency }}` with the currency of the home (`core/templatetags/money.py`, [ADR 0054](../adr/0054-amounts-with-babel.md)), never written by hand. The CSV exports and the API keep the raw number and the ISO code in a field of its own. Three formats on three screens read as three different numbers."
+msgstr "Les **montants** **doivent** s'afficher au format de la langue du lecteur, avec le symbole de la devise : `1 250,50 €` en français, `€1,250.50` en anglais. Tout montant passe par le filtre unique, `{% load money %}` puis `{{ amount|money:currency }}` avec la devise du logement (`core/templatetags/money.py`, [ADR 0054](../adr/0054-amounts-with-babel.md)), jamais écrit à la main. Les exports CSV et l'API gardent le nombre brut, et le code ISO dans un champ à part. Trois formats sur trois écrans se lisent comme trois nombres différents."
 
 msgid "**Deleting** **must** go through a confirmation page (see [After a deletion](#after-a-deletion)). Only Done and its siblings rely on Undo."
 msgstr "**Supprimer** **doit** passer par une page de confirmation (voir [Après une suppression](#after-a-deletion)). Seuls « Fait » et les actions de la même famille s'appuient sur Annuler."
@@ -676,8 +680,8 @@ msgstr "**Listes** : partout où une liste générique existe (type de pièce, c
 msgid "**People** **must** be shown by their display name (`accounts.names.person_name`), never by their email address, except on a page whose subject is the address (the card of a household member, a contractor). An address on every screen is personal data shown to the whole household."
 msgstr "Les **personnes** **doivent** être affichées par leur nom d'affichage (`accounts.names.person_name`), jamais par leur adresse e-mail, sauf sur une page dont l'adresse est le sujet (la fiche d'un membre du foyer, un intervenant). Une adresse sur chaque écran est une donnée personnelle montrée à tout le foyer."
 
-msgid "**Sign-in** **must** offer one button per configured identity provider, and passkeys through the browser's autofill of the address field, without a passkey button ([ADR 0018](../adr/0018-sign-in-page-and-passkeys.md)). The page stays a form and at most one button per provider."
-msgstr "La **connexion** **doit** proposer un bouton par fournisseur d'identité configuré, et les passkeys par l'autoremplissage du champ d'adresse du navigateur, sans bouton de passkey ([ADR 0018](../adr/0018-sign-in-page-and-passkeys.md)). La page reste un formulaire et au plus un bouton par fournisseur."
+msgid "**Sign-in** **must** offer one button per configured identity provider, and passkeys through the browser's autofill of the address field, without a passkey button ([ADR 0018](../adr/0018-sign-in-page-and-passkeys.md)). The page stays a form and at most one button per provider. While the instance has no administrator, it also shows a notice with a link to `/setup/`, and never redirects there: people who already have an account still sign in ([ADR 0056](../adr/0056-first-administrator-on-a-web-screen.md))."
+msgstr "La **connexion** **doit** proposer un bouton par fournisseur d'identité configuré, et les passkeys par l'autoremplissage du champ d'adresse du navigateur, sans bouton de passkey ([ADR 0018](../adr/0018-sign-in-page-and-passkeys.md)). La page reste un formulaire et au plus un bouton par fournisseur. Tant que l'instance n'a pas d'administrateur, elle affiche aussi un avis avec un lien vers `/setup/`, sans jamais y rediriger : les personnes qui ont déjà un compte se connectent toujours ([ADR 0056](../adr/0056-first-administrator-on-a-web-screen.md))."
 
 msgid "**Touch targets** **must** be at least 44 px (`--hc-layout-touch-target`), and the Done button 48 px (`--hc-layout-touch-target-lg`). A small link in a table is missed by a finger."
 msgstr "Les **cibles tactiles** **doivent** mesurer au moins 44 px (`--hc-layout-touch-target`), et le bouton « Fait » 48 px (`--hc-layout-touch-target-lg`). Un petit lien dans un tableau échappe au doigt."
@@ -696,6 +700,22 @@ msgstr "**Langue** : chaque chaîne **doit** passer par les fonctions de traduct
 
 msgid "**Resources**: a screen **must not** load anything from another host, nor use an inline style or script ([ADR 0011](../adr/0011-no-external-resources-and-csp.md)). The strict content security policy refuses them."
 msgstr "**Ressources** : un écran **ne doit** rien charger depuis un autre hôte, ni utiliser de style ou de script en ligne ([ADR 0011](../adr/0011-no-external-resources-and-csp.md)). La politique de sécurité du contenu, stricte, les refuse."
+
+msgid "Addresses and links"
+msgstr "Adresses et liens"
+
+msgid "An instance may be served under a path prefix, such as `https://example.com/housecairn/` or Home Assistant's Ingress (`HOUSECAIRN_URL_PREFIX`, or a header from a trusted proxy: [ADR 0055](../adr/0055-serving-under-a-path-prefix.md)). Every address of the application then starts with the prefix."
+msgstr "Une instance peut être servie sous un préfixe d'adresse, comme `https://example.com/housecairn/` ou l'Ingress de Home Assistant (`HOUSECAIRN_URL_PREFIX`, ou un en-tête venu d'un proxy de confiance : [ADR 0055](../adr/0055-serving-under-a-path-prefix.md)). Toute adresse de l'application commence alors par le préfixe."
+
+#, python-brace-format, python-format
+msgid "An address in a template **must** come from `{% url %}`, `{% url_with_next %}` or a value built with `reverse` in the view, never be written from the root (`href=\"/…\"`, `action=\"/…\"`, `hx-post=\"/…\"`), and a script of `static/js` **must not** hold one either. Under a prefix, `/…` leaves the application. `tests/test_url_prefix.py` fails on any such address, and the CI runs the navigation tests under a prefix."
+msgstr "Une adresse dans un gabarit **doit** venir de `{% url %}`, de `{% url_with_next %}` ou d'une valeur construite avec `reverse` dans la vue, sans jamais être écrite depuis la racine (`href=\"/…\"`, `action=\"/…\"`, `hx-post=\"/…\"`), et un script de `static/js` **ne doit** pas en contenir non plus. Sous un préfixe, `/…` sort de l'application. `tests/test_url_prefix.py` échoue sur une telle adresse, et la CI lance les tests de navigation sous un préfixe."
+
+msgid "An address sent away (an invitation email, a QR label, a calendar feed) is `homes.scoping.site_url(request)` followed by `reverse(…)`: the scheme and the host come from `HOUSECAIRN_SITE_URL` when it is set, else from the request, and the path, prefix included, from `reverse`."
+msgstr "Une adresse envoyée au-dehors (un e-mail d'invitation, une étiquette QR, un flux de calendrier) est `homes.scoping.site_url(request)` suivi de `reverse(…)` : le schéma et l'hôte viennent de `HOUSECAIRN_SITE_URL` quand il est défini, sinon de la requête, et le chemin, préfixe compris, de `reverse`."
+
+msgid "A link to an address that a person typed (a purchase link, a contract, the links of an item or of a project, a document in Paperless-ngx) **must** carry `rel=\"noopener noreferrer nofollow\"`. Its field is a `WebUrlField` (`rooms/models.py`), which accepts `http` and `https` only, never `javascript:`."
+msgstr "Un lien vers une adresse saisie par une personne (un lien d'achat, un contrat, les liens d'un élément ou d'un projet, un document dans Paperless-ngx) **doit** porter `rel=\"noopener noreferrer nofollow\"`. Son champ est un `WebUrlField` (`rooms/models.py`), qui n'accepte que `http` et `https`, jamais `javascript:`."
 
 msgid "Labels"
 msgstr "Libellés"
@@ -773,8 +793,8 @@ msgstr "Recopiez cette liste dans la pull request qui ajoute ou modifie un écra
 msgid "[ ] The screen has its place in the tree, found with [Where a new screen goes](#where-a-new-screen-goes), and is reachable from the navigation."
 msgstr "[ ] L'écran a sa place dans l'arbre, trouvée avec [Où ranger un nouvel écran](#where-a-new-screen-goes), et il est accessible depuis la navigation."
 
-msgid "[ ] A new entry of More is added in `housecairn/core/more.py`, in its group, with its routes for the marking, and in no template."
-msgstr "[ ] Une nouvelle entrée de Plus est ajoutée dans `housecairn/core/more.py`, dans son groupe, avec ses routes pour le marquage, et dans aucun gabarit."
+msgid "[ ] A new entry of More is added in `housecairn/core/more.py`, in its group, with its routes for the marking, and in no template; a page of More in the namespace of a section is in `_IN_MORE`."
+msgstr "[ ] Une nouvelle entrée de Plus est ajoutée dans `housecairn/core/more.py`, dans son groupe, avec ses routes pour le marquage, et dans aucun gabarit ; une page de Plus dans l'espace de noms d'une section figure dans `_IN_MORE`."
 
 msgid "[ ] A record reachable from two places has one parent, named in its screen reference page; without `next`, its back link leads to it."
 msgstr "[ ] Une fiche accessible depuis deux endroits a un seul parent, nommé dans sa page de référence ; sans `next`, son lien de retour y mène."
@@ -792,8 +812,12 @@ msgid "[ ] A section root has no back link; any other page has one that names it
 msgstr "[ ] Une racine de section n'a pas de lien retour ; toute autre page en a un, qui nomme sa cible."
 
 #, python-brace-format, python-format
-msgid "[ ] Every link to a record or a form carries `next` (`{% url_with_next %}`), the back link and Cancel use `{% back_link %}` and `{% back_href %}`, and the form keeps `next` with `{% next_field %}`; a route that a back link must name is in `LABELS`."
-msgstr "[ ] Chaque lien vers une fiche ou un formulaire porte `next` (`{% url_with_next %}`), le lien retour et Annuler passent par `{% back_link %}` et `{% back_href %}`, et le formulaire garde `next` avec `{% next_field %}` ; une route qu'un lien retour doit nommer figure dans `LABELS`."
+msgid "[ ] Every link to a record or a form carries `next` (`{% url_with_next %}`), the back link and Cancel use `{% back_link %}` and `{% back_href %}` (or `navigation.back_url` in the view, as the confirmation pages do), and the form keeps `next` with `{% next_field %}`; a route that a back link must name is in `LABELS`."
+msgstr "[ ] Chaque lien vers une fiche ou un formulaire porte `next` (`{% url_with_next %}`), le lien retour et Annuler passent par `{% back_link %}` et `{% back_href %}` (ou par `navigation.back_url` dans la vue, comme les pages de confirmation), et le formulaire garde `next` avec `{% next_field %}` ; une route qu'un lien retour doit nommer figure dans `LABELS`."
+
+#, python-brace-format, python-format
+msgid "[ ] Every address comes from `{% url %}`, `{% url_with_next %}` or `reverse`, none written from `/`; a link to an address a person typed carries `rel=\"noopener noreferrer nofollow\"`."
+msgstr "[ ] Chaque adresse vient de `{% url %}`, de `{% url_with_next %}` ou de `reverse`, aucune n'est écrite depuis `/` ; un lien vers une adresse saisie par une personne porte `rel=\"noopener noreferrer nofollow\"`."
 
 msgid "[ ] After a creation from a context, the person is back in the context with \"Added · Open\"; from the list of its own section, on the new record."
 msgstr "[ ] Après une création depuis un contexte, la personne revient au contexte avec « Ajoutée · Ouvrir » ; depuis la liste de sa propre section, sur la nouvelle fiche."
@@ -813,8 +837,8 @@ msgstr "[ ] Les actions en un geste restent sur place avec HTMX, avec le bandeau
 msgid "[ ] The screen shows the current home and only data of the person's homes."
 msgstr "[ ] L'écran montre le logement courant et seulement des données des logements de la personne."
 
-msgid "[ ] Amounts in the format of the language with the currency symbol; people by their display name; generic lists with \"Other\"."
-msgstr "[ ] Montants au format de la langue avec le symbole de la devise ; personnes par leur nom d'affichage ; listes génériques avec « Autre »."
+msgid "[ ] Amounts through the `money` filter; people by their display name; generic lists with \"Other\"."
+msgstr "[ ] Montants par le filtre `money` ; personnes par leur nom d'affichage ; listes génériques avec « Autre »."
 
 msgid "[ ] Touch targets of 44 px at least, visible focus, never hidden by the bar or the banner; WCAG 2.2 AA."
 msgstr "[ ] Cibles tactiles de 44 px au moins, focus visible, jamais masqué par la barre ou le bandeau ; WCAG 2.2 AA."
@@ -1025,4 +1049,13 @@ msgstr "L'audit a comparé l'interface à Material 3, aux recommandations d'Appl
 
 #~ msgid "Today **must** offer \"All homes\" in the selector; the other sections show one home at a time."
 #~ msgstr "Aujourd'hui **doit** proposer « Tous les logements » dans le sélecteur ; les autres sections montrent un logement à la fois."
+
+#~ msgid "A screen **must** be reachable from the navigation, never only from an address typed by hand or a link in an email. A page nobody can reach again is lost after the first visit."
+#~ msgstr "Un écran **doit** être accessible depuis la navigation, jamais seulement par une adresse saisie à la main ou un lien dans un e-mail. Une page que personne ne peut retrouver est perdue après la première visite."
+
+#~ msgid "breadcrumbs, then Cancel and Save buttons"
+#~ msgstr "fil d'Ariane, puis boutons Annuler et Enregistrer"
+
+#~ msgid "**Cancel** **must** lead to `next` as well, or to the parent without it."
+#~ msgstr "**Annuler** **doit** mener aussi à `next`, ou au parent à défaut."
 
