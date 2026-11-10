@@ -393,18 +393,40 @@ class TestScreens:
         assert "Add a task" not in content
         assert "/complete/" not in content
 
-    def test_my_home_selects_a_home(self, busy: Home, alice: User, signed_in: Client) -> None:
+    def test_my_home_follows_the_home_chosen_in_the_selector(
+        self, busy: Home, alice: User, signed_in: Client
+    ) -> None:
         second = home_services.create_home(alice, name="Holiday flat")
-        services.create_task(alice, second, title="Close the shutters", assignee=alice)
+        services.create_task(
+            alice, second, title="Close the shutters", due_on=TODAY, assignee=alice
+        )
         both = signed_in.get(reverse("index")).content.decode()
         assert "Holiday flat" in both
         assert "Close the shutters" in both
         assert "Due today" in both
-        one = signed_in.get(reverse("index"), {"home": str(second.id)}).content.decode()
+        response = signed_in.post(reverse("homes:current"), {"home": str(second.id)})
+        assert response.status_code == 302
+        one = signed_in.get(reverse("index"), follow=True).content.decode()
         assert "Close the shutters" in one
         assert "Due today" not in one
-        unknown = signed_in.get(reverse("index"), {"home": "nonsense"}).content.decode()
-        assert "Due today" in unknown
+
+    def test_the_home_filter_of_the_address_is_gone(
+        self, busy: Home, alice: User, signed_in: Client
+    ) -> None:
+        second = home_services.create_home(alice, name="Holiday flat")
+        services.create_task(
+            alice, second, title="Close the shutters", due_on=TODAY, assignee=alice
+        )
+        for value in (str(second.id), "nonsense"):
+            after = signed_in.get(reverse("index"), {"home": value}).content.decode()
+            assert "Due today" in after
+            assert "Close the shutters" in after
+        # A query string chooses nothing: the page is the same as without it.
+        signed_in.post(reverse("homes:current"), {"home": str(busy.id)})
+        chosen = signed_in.get(
+            reverse("index"), {"home": str(second.id)}, follow=True
+        ).content.decode()
+        assert "Close the shutters" not in chosen
 
     def test_the_start_page_of_an_account_with_no_home_is_the_welcome(
         self, client: Client, make_user: Callable[..., User]
