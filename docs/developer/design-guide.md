@@ -557,6 +557,25 @@ is checked against all of them at once.
   inline style or script ([ADR 0011](../adr/0011-no-external-resources-and-csp.md)).
   The strict content security policy refuses them.
 
+## Tables on a phone
+
+A table of 5 or 7 columns is 650 to 850 px wide: on a phone it would make the whole page
+scroll sideways. The rule has two renderings, chosen by how the table is read.
+
+- **Read row by row** (a room, a project, a task, a budget line): the table takes the
+  class `table-stack`. Under 56 rem each row becomes a card: the row head is the title,
+  every value shows its label in front of it and is aligned to the right, as a
+  formatted amount. From 56 rem it is the plain table. Every `td` with
+  content **must** carry a `data-label` with the translated name of its column; an
+  empty cell is not drawn.
+- **Read column by column** (a comparison of projects side by side): the table stays a
+  table, in a `table-scroll` container with `role="region"`, `tabindex="0"` and an
+  `aria-labelledby` that points to the caption of the table, so the page keeps its width
+  and a keyboard user can scroll the container.
+
+A new table **must** take one of the two. `tests/e2e/table_widths.py` measures every table
+of the screens at 360 and 375 px, in a browser, on a local instance.
+
 ## Visual system
 
 The visual system was laid down with the application shell in J1-F

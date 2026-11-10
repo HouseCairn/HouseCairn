@@ -721,3 +721,87 @@ input.setting-locked {
   object-fit: cover;
   border-radius: var(--hc-radius-md);
 }
+
+/* ---------- a table on a phone (design guide, "Tables on a phone") ----------
+   `.table-stack`: under 56 rem each row becomes a card, the label of every value shown in front
+   of it (the `data-label` of the cell) and the value at the right. From 56 rem it is the plain
+   table. A cell with no label and a cell with no content are not drawn.
+   `.table-scroll`: a wrapper for a table read column by column (a comparison): the page keeps
+   its width and the wrapper scrolls on its own, as a named, focusable region. */
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.table-scroll table {
+  min-width: 40rem;
+}
+
+@media (max-width: 55.99rem) {
+  .table-stack,
+  .table-stack tbody,
+  .table-stack tfoot,
+  .table-stack tr,
+  .table-stack th,
+  .table-stack td {
+    display: block;
+  }
+
+  /* The column heads are repeated in every card: keep them for screen readers only. */
+  .table-stack thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .table-stack tr {
+    margin-bottom: var(--hc-space-3);
+    padding: var(--hc-space-3);
+    background: var(--hc-color-surface);
+    border: 1px solid var(--hc-color-border);
+    border-radius: var(--hc-radius-lg);
+  }
+
+  .table-stack th[scope="row"] {
+    padding: 0 0 var(--hc-space-2);
+    font-size: var(--hc-font-size-sm);
+    font-weight: var(--hc-font-weight-bold);
+    color: var(--hc-color-text);
+    border-bottom: 0;
+  }
+
+  .table-stack td {
+    display: flow-root;
+    padding: var(--hc-space-1) 0;
+    text-align: right;
+    border-bottom: 0;
+  }
+
+  .table-stack td::before {
+    content: attr(data-label);
+    float: left;
+    margin-right: var(--hc-space-3);
+    font-size: var(--hc-font-size-xs);
+    color: var(--hc-color-text-muted);
+    text-align: left;
+  }
+
+  .table-stack td:empty,
+  .table-stack td:not([data-label]) {
+    display: none;
+  }
+
+  .table-stack tfoot tr {
+    background: var(--hc-color-surface-muted);
+    font-weight: var(--hc-font-weight-bold);
+  }
+
+  /* A pill is one line on a wide screen; in a card it wraps rather than widen the page. */
+  .table-stack .pill {
+    white-space: normal;
+  }
+}
