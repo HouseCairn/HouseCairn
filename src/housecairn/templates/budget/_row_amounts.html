@@ -1,4 +1,4 @@
-{% load i18n projects_extras budget_extras %}{# The cells of the three amounts, the gauge and the words. `amounts`, `home`. #}
+{% load i18n projects_extras money budget_extras %}{# The cells of the three amounts, the gauge and the words. `amounts`, `home`. #}
 <td data-label="{% translate 'Planned' context 'amount' %}">{{ amounts.planned|money:home.currency }}</td>
 <td data-label="{% translate 'Committed' %}">{{ amounts.committed|money:home.currency }}</td>
 <td data-label="{% translate 'Paid' %}">{{ amounts.paid|money:home.currency }}</td>
