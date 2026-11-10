@@ -93,8 +93,9 @@ own page, which `X-Frame-Options: DENY` and `frame-ancestors 'none'` refuse.
 application (the links of emails and invitations, the address a QR label holds, the address
 of a calendar feed and the links inside it, the address of the first-account screen in the
 log) is built by one function, `core.links.external_url`: the scheme and host of
-`HOUSECAIRN_SITE_URL` (else those of the request), then the fixed `HOUSECAIRN_URL_PREFIX`,
-then the route. It never takes the prefix of the request. An Ingress path only works inside
+`HOUSECAIRN_SITE_URL` (else, for an address built during a request, those of the request),
+then the fixed `HOUSECAIRN_URL_PREFIX`, then the route. Without a public address, the links of
+the task worker (reminders, report alerts) are left out and the log shows a path only. It never takes the prefix of the request. An Ingress path only works inside
 Home Assistant's interface, for a person signed in to it, and only as long as its token
 lasts: a feed added to a calendar application, a printed label or an emailed link that
 carried it would stop working, or never work. The web process and the task worker now give

@@ -3,8 +3,10 @@
 An address that is sent away, printed or copied elsewhere (the links of emails and
 invitations, the address a QR label holds, a calendar feed and the links inside it, the
 address of the first-account screen in the log) is always built here, on the public address
-of the instance: the scheme and host of `HOUSECAIRN_SITE_URL` (else those of the request),
-then the fixed prefix `HOUSECAIRN_URL_PREFIX`, then the route.
+of the instance: the scheme and host of `HOUSECAIRN_SITE_URL` (else, for an address built
+during a request, those of the request), then the fixed prefix `HOUSECAIRN_URL_PREFIX`, then
+the route. Without a public address, the links of the task worker (reminders, report alerts)
+are left out, and the log shows the path of the first-account screen only.
 
 It never takes the prefix of the request: a prefix given by a proxy header, such as Home
 Assistant's Ingress path, only works through that proxy, and its token changes. Addresses

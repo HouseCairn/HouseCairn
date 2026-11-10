@@ -80,8 +80,12 @@ of its events, and the address of the first-account screen written in the log.
 A prefix given by a header only works through that proxy: an Ingress path, for example, only
 opens inside Home Assistant's interface, and its token changes. Behind such a proxy, set
 `HOUSECAIRN_SITE_URL` to an address that reaches HouseCairn without it, if you have one, and
-`HOUSECAIRN_URL_PREFIX` to the path of that address. Without `HOUSECAIRN_SITE_URL`, the links
-take the scheme and host of the request, with `HOUSECAIRN_URL_PREFIX`.
+`HOUSECAIRN_URL_PREFIX` to the path of that address.
+
+Without `HOUSECAIRN_SITE_URL`, the links built during a request (invitations, password reset
+and address verification emails, QR labels, calendar feeds) take the scheme and host of the
+request, with `HOUSECAIRN_URL_PREFIX`. Reminders and report alerts, sent by the task worker,
+then carry no link, and the first-account address in the log is a path only.
 
 ## In a frame of the same site
 
