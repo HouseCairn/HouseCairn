@@ -56,11 +56,15 @@ curl -fsS -H "Authorization: Bearer $TOKEN" "$HC/api/v1/homes/$HOME_ID/rooms/"
 curl -fsS -H "Authorization: Bearer $TOKEN" "$HC/api/v1/homes/$HOME_ID/tasks/?status=open"
 ```
 
-A table of the home as CSV, for a spreadsheet:
+A table of the home as CSV, for a spreadsheet. The address ends with a `/` like every
+other: without it the answer is a redirect, and `curl` writes an empty file. The first line
+of the file names the columns:
 
 ```sh
 curl -fsS -H "Authorization: Bearer $TOKEN" -o rooms.csv \
-  "$HC/api/v1/homes/$HOME_ID/export/rooms.csv"
+  "$HC/api/v1/homes/$HOME_ID/export/rooms.csv/"
+head -n 1 rooms.csv | tr , "\n" | grep -x name
+# prints: name
 ```
 
 ## Writing

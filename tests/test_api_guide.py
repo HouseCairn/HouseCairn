@@ -76,6 +76,9 @@ def test_a_command_of_the_guide_runs_as_written(instance: dict[str, str], index:
     assert result.returncode == 0, shown
     for expected in re.findall(r"^# prints: (.+)$", block, re.M):
         assert expected in result.stdout.split(), f"{block}\n--- stdout\n{result.stdout}"
+    # A file a command writes is never empty: `curl -o` of a redirect still exits 0.
+    for written in Path(instance["WORKDIR"]).iterdir():
+        assert written.stat().st_size > 0, f"{block}\n--- {written.name} is empty"
     if "next" in block:
         # The loop of the pages read every task, two by two.
         assert result.stdout.count('"results"') >= 2

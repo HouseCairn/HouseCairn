@@ -57,8 +57,8 @@ msgstr "Lire"
 msgid "The rooms of a home, then its tasks that are still open:"
 msgstr "Les pièces d'un logement, puis ses tâches encore ouvertes :"
 
-msgid "A table of the home as CSV, for a spreadsheet:"
-msgstr "Une table du logement en CSV, pour un tableur :"
+msgid "A table of the home as CSV, for a spreadsheet. The address ends with a `/` like every other: without it the answer is a redirect, and `curl` writes an empty file. The first line of the file names the columns:"
+msgstr "Une table du logement en CSV, pour un tableur. L'adresse se termine par une `/` comme toutes les autres : sans elle, la réponse est une redirection, et `curl` écrit un fichier vide. La première ligne du fichier nomme les colonnes :"
 
 msgid "Writing"
 msgstr "Écrire"
