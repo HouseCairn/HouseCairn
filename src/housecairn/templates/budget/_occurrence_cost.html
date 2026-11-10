@@ -1,2 +1,2 @@
-{% load i18n projects_extras %}{# Next to the real cost: what the task was estimated at. #}
+{% load i18n money %}{# Next to the real cost: what the task was estimated at. #}
 {% if estimate is not None %}<p class="small">{% blocktranslate with amount=estimate|money:home.currency %}Estimated at {{ amount }} each time.{% endblocktranslate %}</p>{% endif %}

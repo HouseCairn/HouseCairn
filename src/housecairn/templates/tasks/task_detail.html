@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras people projects_extras budget_extras navigation %}
+{% load i18n tasks_extras people projects_extras budget_extras money navigation %}
 {% block head_title %}{{ task.title }}{% endblock head_title %}
 {% block content %}
   {% url 'tasks:list' home_id=home.id as parent %}{% back_link parent %}
@@ -66,8 +66,8 @@
     <section class="card">
       <dl class="facts">
         {% if task.estimated_minutes %}<div><dt>{% translate "Estimated duration" %}</dt><dd>{{ task.estimated_minutes|duration }}</dd></div>{% endif %}
-        {% if task.labour_budget is not None %}<div><dt>{% translate "Labour budget" %}</dt><dd>{{ task.labour_budget }} {{ home.currency }}</dd></div>{% endif %}
-        {% if task.material_budget is not None %}<div><dt>{% translate "Material budget" %}</dt><dd>{{ task.material_budget }} {{ home.currency }}</dd></div>{% endif %}
+        {% if task.labour_budget is not None %}<div><dt>{% translate "Labour budget" %}</dt><dd>{{ task.labour_budget|money:home.currency }}</dd></div>{% endif %}
+        {% if task.material_budget is not None %}<div><dt>{% translate "Material budget" %}</dt><dd>{{ task.material_budget|money:home.currency }}</dd></div>{% endif %}
         {% if task.contractor %}<div><dt>{% translate "Contractor" %}</dt><dd><a href="{% url_with_next 'tasks:contractor-detail' home_id=home.id contractor_id=task.contractor_id %}">{{ task.contractor.name }}</a>{% if task.contractor.trade_label %} · {{ task.contractor.trade_label }}{% endif %}</dd></div>{% endif %}
         {% if task.notes %}<div><dt>{% translate "Notes" %}</dt><dd class="prose">{{ task.notes|linebreaksbr }}</dd></div>{% endif %}
       </dl>
@@ -95,7 +95,7 @@
           <div class="row">
             <span class="row-body">
               <span class="row-title">{{ done.get_status_display }}{% if done.completed_on %} · {{ done.completed_on|date:"DATE_FORMAT" }}{% endif %}</span>
-              {% if done.actual_cost is not None %}<span class="row-text">{{ done.actual_cost }} {{ home.currency }}</span>{% endif %}
+              {% if done.actual_cost is not None %}<span class="row-text">{{ done.actual_cost|money:home.currency }}</span>{% endif %}
               {% if done.completion_note %}<span class="history-note">{{ done.completion_note }}</span>{% endif %}
             </span>
             {% if can_write and done.status == "done" %}

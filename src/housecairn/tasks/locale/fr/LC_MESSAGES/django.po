@@ -697,10 +697,10 @@ msgstr[0] "%(counter)s entrée"
 msgstr[1] "%(counter)s entrées"
 
 #, python-format
-msgid "real cost: %(total)s %(currency)s, entered on %(counter)s entry"
-msgid_plural "real cost: %(total)s %(currency)s, entered on %(counter)s entries"
-msgstr[0] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrée"
-msgstr[1] "coût réel : %(total)s %(currency)s, saisi sur %(counter)s entrées"
+msgid "real cost: %(total)s, entered on %(counter)s entry"
+msgid_plural "real cost: %(total)s, entered on %(counter)s entries"
+msgstr[0] "coût réel : %(total)s, saisi sur %(counter)s entrée"
+msgstr[1] "coût réel : %(total)s, saisi sur %(counter)s entrées"
 
 msgid "Pages"
 msgstr "Pages"

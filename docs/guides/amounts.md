@@ -12,5 +12,6 @@ quote, the envelope, and the labour budget, material budget and actual cost of a
 - **The largest amount is 9999999999.99**, and the smallest 0. The API and the files
   always use a dot and no space: `"1250.50"`.
 
-Screens show amounts with the habits of your language, such as `1,250.50 EUR` or
-`1 250,50 EUR`; what is shown is not always what you type.
+Screens show amounts with the habits of your language, such as `€1,250.50` or
+`1 250,50 €`. The symbol is the one your language gives to the currency of the home, and the
+ISO code (`SEK`) when it has none; what is shown is not always what you type.

@@ -790,7 +790,7 @@ class TestOnTheTaskPages:
             )
         )
         assert form.status_code == 200
-        assert "Estimated at 100.00" in form.content.decode()
+        assert "Estimated at €100.00" in form.content.decode()
 
     def test_a_task_of_a_project_shows_no_cost_of_its_own(
         self, signed_in: Client, alice: User, alice_home: Home, living_room_project: Project
