@@ -405,7 +405,12 @@ POST_HOSTILE = [
     "//evil.example.com/",
     "/\\evil.example.com/",
     "javascript:alert(1)",
+    "/\t/evil.example.com/",
+    "/" + "a" * 700,
 ]
+
+# Kept as a path, its inner `next` removed: so not a redirect to the plain parent.
+POST_NESTED = "/h/1/rooms/?next=/h/1/today/"
 
 
 def home_form(**extra: str) -> dict[str, str]:
@@ -530,7 +535,7 @@ def posts(
 
 class TestHostileNextOnPost:
     @pytest.mark.parametrize("app", ["stock", "projects", "reports", "labels"])
-    @pytest.mark.parametrize("hostile", POST_HOSTILE)
+    @pytest.mark.parametrize("hostile", [*POST_HOSTILE, POST_NESTED])
     def test_a_post_never_leaves_the_site(
         self,
         signed_in: Client,
@@ -546,4 +551,13 @@ class TestHostileNextOnPost:
         assert not location.startswith("//")
         assert "\\" not in location
         assert "evil.example.com" not in location
-        assert "javascript:" not in location
+        # What the redirect carries as `next` is read decoded: encoded, it would hide.
+        carried = parse_qs(urlsplit(location).query).get("next", [])
+        for value in carried:
+            assert value.startswith("/")
+            assert not value.startswith("//")
+            assert "javascript:" not in value
+            assert "evil.example.com" not in value
+            assert "\t" not in value
+            assert "next=" not in value
+            assert len(value) <= navigation.MAX_LENGTH
