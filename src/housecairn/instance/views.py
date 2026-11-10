@@ -15,7 +15,7 @@ from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
-from django.urls import reverse
+from django.urls import get_script_prefix, reverse
 from django.utils.http import urlencode
 from django.utils.translation import get_language
 from django.utils.translation import gettext as _
@@ -478,7 +478,7 @@ class ProvidersView(InstanceAdminMixin, TemplateView):
         context.update(
             providers=providers.describe_all(),
             form=kwargs.get("form") or ProviderForm(),
-            callback_base=self.request.build_absolute_uri("/accounts/oidc/"),
+            callback_base=self.request.build_absolute_uri(f"{get_script_prefix()}accounts/oidc/"),
             variables=providers.ENVIRONMENT_VARIABLES,
             docs_url=docs_page_url("administration/oidc/", get_language()),
         )
@@ -522,7 +522,7 @@ class ProviderView(InstanceAdminMixin, TemplateView):
             state=providers.describe(self.provider),
             form=kwargs.get("form") or ProviderForm(initial=initial, editing=True),
             callback=self.request.build_absolute_uri(
-                f"/accounts/oidc/{self.provider.slug}/login/callback/"
+                reverse("openid_connect_callback", kwargs={"provider_id": self.provider.slug})
             ),
             docs_url=docs_page_url("administration/oidc/", get_language()),
         )

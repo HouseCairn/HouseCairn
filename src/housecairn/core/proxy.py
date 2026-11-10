@@ -25,6 +25,8 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest, HttpResponse
 
+from housecairn.core.prefix import header_key
+
 Network = ipaddress.IPv4Network | ipaddress.IPv6Network
 Address = ipaddress.IPv4Address | ipaddress.IPv6Address
 
@@ -129,6 +131,9 @@ class ForwardedHeadersMiddleware:
         if not self.trusted.trusts(parse_address(meta.get("REMOTE_ADDR"))):
             for name in FORWARDING_HEADERS:
                 meta.pop(name, None)
+            # The header that may give the path prefix, when one is named (core.prefix).
+            if (prefix_header := header_key()) is not None:
+                meta.pop(prefix_header, None)
         elif forwarded_for := meta.get("HTTP_X_FORWARDED_FOR"):
             client = client_address(self.trusted, forwarded_for)
             if client is not None:

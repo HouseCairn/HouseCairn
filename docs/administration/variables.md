@@ -11,6 +11,8 @@ changed in the interface; a variable that is set locks its field there. The full
 | `CSRF_TRUSTED_ORIGINS` | (none) | `https://` origins of those host names. |
 | `HOUSECAIRN_BEHIND_TLS_PROXY` | `false` | `true` behind a reverse proxy that sets `X-Forwarded-Proto`. |
 | `HOUSECAIRN_FORWARDED_ALLOW_IPS` | `127.0.0.1,::1` | Addresses or networks of that proxy, comma-separated: only their forwarding headers count (see [Reverse proxy](reverse-proxy.md)). |
+| `HOUSECAIRN_URL_PREFIX` | (none: the root) | Path the instance is served under, such as `/housecairn` (see [Serving under a path prefix](url-prefix.md)). |
+| `HOUSECAIRN_URL_PREFIX_HEADER` | (none: off) | Header in which a trusted proxy gives the path prefix of each request, such as `X-Ingress-Path`. |
 | `SECRET_KEY` | generated in `/data/secret_key` | Set it only to manage the key yourself. |
 | `DATABASE_URL` | SQLite in `/data` | For example `postgres://housecairn:<password>@postgres:5432/housecairn`. |
 | `TIME_ZONE` | `UTC` | Time zone of the households, such as `Europe/Paris`: it decides what today is. Also in the interface. |

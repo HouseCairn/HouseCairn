@@ -6,6 +6,7 @@ safe ones: `DEBUG` is off, cookies are secure, HTTPS is enforced, and nothing
 is loaded from a third-party host.
 """
 
+import re
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -15,6 +16,7 @@ import environ
 from csp.constants import NONE, SELF
 from django.core.exceptions import ImproperlyConfigured
 
+from housecairn.core import prefix as url_prefix
 from housecairn.core.proxy import TrustedProxies
 from housecairn.instance import registry
 from housecairn.instance.ratelimits import RateLimits
@@ -94,6 +96,8 @@ MIDDLEWARE = [
     # First: forwarding headers count only from a trusted reverse proxy, before
     # the HTTPS redirect or anything else reads them (docs/adr/0012).
     "housecairn.core.proxy.ForwardedHeadersMiddleware",
+    # Then the path prefix, before anything reads the path or sets a cookie (docs/adr/0055).
+    "housecairn.core.prefix.UrlPrefixMiddleware",
     "django.middleware.security.SecurityMiddleware",
     # Switches off the browser features the application never uses.
     "housecairn.core.middleware.PermissionsPolicyMiddleware",
@@ -119,6 +123,16 @@ MIDDLEWARE = [
     # Last: reads the database, so after the checks that need no query (docs/adr/0035).
     "housecairn.instance.middleware.SettingsSnapshotMiddleware",
 ]
+
+# Path prefix of the application, such as /housecairn, empty at the root (docs/adr/0055). It is
+# FORCE_SCRIPT_NAME: every address Django builds starts with it, emails of the worker included.
+HOUSECAIRN_URL_PREFIX: str = url_prefix.parse_prefix(env.str("HOUSECAIRN_URL_PREFIX", default=""))
+FORCE_SCRIPT_NAME: str | None = HOUSECAIRN_URL_PREFIX or None
+# A header that gives the prefix of each request, such as X-Ingress-Path: off unless named,
+# and read only from HOUSECAIRN_FORWARDED_ALLOW_IPS (core.proxy removes it from anyone else).
+HOUSECAIRN_URL_PREFIX_HEADER: str = url_prefix.parse_header_name(
+    env.str("HOUSECAIRN_URL_PREFIX_HEADER", default="")
+)
 
 ROOT_URLCONF = "housecairn.urls"
 WSGI_APPLICATION = "housecairn.wsgi.application"
@@ -226,7 +240,10 @@ LOGIN_REDIRECT_URL = "index"
 
 # Security headers and cookies (docs/adr/0012). Safe values unless DEBUG is on.
 SECURE_SSL_REDIRECT: bool = env.bool("SECURE_SSL_REDIRECT", default=not DEBUG)
-SECURE_REDIRECT_EXEMPT = [r"^healthz$"]
+# Django matches it against the path, prefix included, without its leading slash.
+SECURE_REDIRECT_EXEMPT = [
+    "^" + (re.escape(HOUSECAIRN_URL_PREFIX[1:] + "/") if HOUSECAIRN_URL_PREFIX else "") + "healthz$"
+]
 HOUSECAIRN_BEHIND_TLS_PROXY: bool = env.bool("HOUSECAIRN_BEHIND_TLS_PROXY", default=False)
 if HOUSECAIRN_BEHIND_TLS_PROXY:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -258,6 +275,9 @@ SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SECURE: bool = env.bool("CSRF_COOKIE_SECURE", default=not DEBUG)
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = "Lax"
+# Under a prefix, the cookies of the application are sent to its addresses only. A prefix that
+# comes from a header is applied to each response by core.prefix.UrlPrefixMiddleware.
+SESSION_COOKIE_PATH = CSRF_COOKIE_PATH = LANGUAGE_COOKIE_PATH = HOUSECAIRN_URL_PREFIX or "/"
 X_FRAME_OPTIONS = "DENY"
 # Including subdomains in HSTS and asking for preloading are commitments for the
 # whole domain, which only its owner can make: they stay opt-in, so Django's
@@ -431,6 +451,11 @@ SPECTACULAR_SETTINGS = {
         "LabelKindEnum": "housecairn.labels.models.LabelKind",
         "OccurrenceStatusEnum": "housecairn.tasks.models.Status",
     },
+    # Under a prefix, `servers` says where the API is (core.prefix, docs/adr/0055).
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+        "housecairn.core.prefix.schema_servers",
+    ],
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",

@@ -16,7 +16,7 @@ from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
-from django.urls import Resolver404, resolve, reverse
+from django.urls import Resolver404, reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views import View
@@ -24,6 +24,7 @@ from django.views.generic import FormView, TemplateView
 
 from housecairn.accounts import names
 from housecairn.core import navigation
+from housecairn.core.prefix import in_application, resolve_url
 from housecairn.core.redirects import has_safe_shape
 from housecairn.homes import current
 from housecairn.homes.models import Home
@@ -669,8 +670,14 @@ class PreferencesView(LoginRequiredMixin, FormView[Any]):
 
     def _next(self) -> str:
         target = self.request.POST.get("next") or self.request.GET.get("next", "")
-        if has_safe_shape(target) and url_has_allowed_host_and_scheme(
-            target, allowed_hosts={self.request.get_host()}, require_https=self.request.is_secure()
+        if (
+            has_safe_shape(target)
+            and url_has_allowed_host_and_scheme(
+                target,
+                allowed_hosts={self.request.get_host()},
+                require_https=self.request.is_secure(),
+            )
+            and in_application(target)
         ):
             return target
         return reverse("index")
@@ -681,7 +688,7 @@ class PreferencesView(LoginRequiredMixin, FormView[Any]):
         Only for the tabs of its tasks; it reads nothing from the address but the home.
         """
         try:
-            match = resolve(urlsplit(self._next()).path)
+            match = resolve_url(self._next())
         except Resolver404:
             return None
         home_id = match.kwargs.get("home_id")

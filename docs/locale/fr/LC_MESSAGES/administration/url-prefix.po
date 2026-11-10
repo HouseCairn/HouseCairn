@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Serving under a path prefix"
+msgstr "Servir sous un préfixe d'adresse"
+
+msgid "HouseCairn can be served under a path, such as `https://example.com/housecairn/`, instead of at the root of a host name. Everything follows the prefix: the pages, the static files, the cookies, the installed application, the API and the links of emails, QR labels and calendar feeds."
+msgstr "HouseCairn peut être servi sous un chemin, comme `https://example.com/housecairn/`, plutôt qu'à la racine d'un nom d'hôte. Tout suit le préfixe : les pages, les fichiers statiques, les cookies, l'application installée, l'API et les liens des courriels, des étiquettes QR et des flux de calendrier."
+
+msgid "A fixed prefix"
+msgstr "Un préfixe fixe"
+
+msgid "Set the prefix in `deploy/production.env`:"
+msgstr "Indiquez le préfixe dans `deploy/production.env` :"
+
+msgid "`HOUSECAIRN_URL_PREFIX` is a path: it starts with `/`, and its segments hold letters, digits and `. _ ~ -`. A trailing slash is ignored. HouseCairn refuses to start with any other value."
+msgstr "`HOUSECAIRN_URL_PREFIX` est un chemin : il commence par `/`, et ses segments contiennent des lettres, des chiffres et `. _ ~ -`. Une barre oblique finale est ignorée. HouseCairn refuse de démarrer avec toute autre valeur."
+
+msgid "`HOUSECAIRN_SITE_URL` and `CSRF_TRUSTED_ORIGINS` stay a scheme and a host, without the prefix: HouseCairn adds it to the links it builds."
+msgstr "`HOUSECAIRN_SITE_URL` et `CSRF_TRUSTED_ORIGINS` restent un schéma et un hôte, sans le préfixe : HouseCairn l'ajoute aux liens qu'il construit."
+
+msgid "The cookies of HouseCairn are limited to the prefix: another application on the same host name does not receive them."
+msgstr "Les cookies de HouseCairn sont limités au préfixe : une autre application sur le même nom d'hôte ne les reçoit pas."
+
+msgid "The proxy may pass the path with the prefix or remove it: both work. With Caddy:"
+msgstr "Le proxy peut transmettre le chemin avec le préfixe ou le retirer : les deux fonctionnent. Avec Caddy :"
+
+msgid "With nginx:"
+msgstr "Avec nginx :"
+
+msgid "The [reverse proxy](reverse-proxy.md) settings stay the same: `HOUSECAIRN_BEHIND_TLS_PROXY` and `HOUSECAIRN_FORWARDED_ALLOW_IPS`. The health check of the container keeps calling `/healthz` directly."
+msgstr "Les réglages du [reverse proxy](reverse-proxy.md) ne changent pas : `HOUSECAIRN_BEHIND_TLS_PROXY` et `HOUSECAIRN_FORWARDED_ALLOW_IPS`. Le contrôle de santé du conteneur continue d'appeler `/healthz` directement."
+
+msgid "A prefix given by the proxy"
+msgstr "Un préfixe donné par le proxy"
+
+msgid "Some proxies only know the prefix when the request arrives, and send it in a header. Home Assistant's Ingress, for example, serves an add-on under `/api/hassio_ingress/<token>/` and sends that path in `X-Ingress-Path`. Name the header:"
+msgstr "Certains proxys ne connaissent le préfixe qu'à l'arrivée de la requête, et l'envoient dans un en-tête. L'Ingress de Home Assistant, par exemple, sert un module sous `/api/hassio_ingress/<jeton>/` et envoie ce chemin dans `X-Ingress-Path`. Nommez l'en-tête :"
+
+msgid "The header is ignored unless `HOUSECAIRN_URL_PREFIX_HEADER` names it."
+msgstr "L'en-tête est ignoré tant que `HOUSECAIRN_URL_PREFIX_HEADER` ne le nomme pas."
+
+msgid "It counts only from the addresses of `HOUSECAIRN_FORWARDED_ALLOW_IPS`; from any other peer, HouseCairn removes it before reading the request. With `*`, any peer that reaches the container can set it."
+msgstr "Il ne compte que venant des adresses de `HOUSECAIRN_FORWARDED_ALLOW_IPS` ; venant de tout autre pair, HouseCairn le retire avant de lire la requête. Avec `*`, tout pair qui atteint le conteneur peut le poser."
+
+msgid "A value that is not a plain path is ignored. A valid value replaces `HOUSECAIRN_URL_PREFIX` for that request."
+msgstr "Une valeur qui n'est pas un simple chemin est ignorée. Une valeur valide remplace `HOUSECAIRN_URL_PREFIX` pour cette requête."
+
+msgid "Reminder emails are sent by the task worker, which sees no request: their links use `HOUSECAIRN_URL_PREFIX`. Set it too when the prefix is known at start-up."
+msgstr "Les courriels de rappel sont envoyés par le processus des tâches, qui ne voit aucune requête : leurs liens utilisent `HOUSECAIRN_URL_PREFIX`. Indiquez-le aussi quand le préfixe est connu au démarrage."
+
+msgid "What stays the same"
+msgstr "Ce qui ne change pas"
+
+msgid "The address of each page after the prefix is the same as at the root, so is the API: `/housecairn/api/v1/...`, and the schema at `/housecairn/api/schema/` gives it in its `servers` entry. A `next` address, which brings you back to the screen you came from, is refused when it leads outside the prefix."
+msgstr "L'adresse de chaque page après le préfixe est la même qu'à la racine, comme celle de l'API : `/housecairn/api/v1/...`, et le schéma, à `/housecairn/api/schema/`, la donne dans son entrée `servers`. Une adresse `next`, qui vous ramène à l'écran d'où vous venez, est refusée quand elle mène hors du préfixe."
+
