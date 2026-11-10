@@ -4,6 +4,7 @@ import csv
 import datetime
 import io
 import time
+from collections.abc import Callable
 from decimal import Decimal
 
 import pytest
@@ -622,14 +623,34 @@ class TestSeveralHomesAndCurrencies:
         assert result["CHF"]["total"].planned == D("70.00")
         assert [h.name for h, _report in result["EUR"]["homes"]] == ["Main house", "Flat"]
 
-    def test_the_entry_page_lists_each_currency(
+    def test_the_entry_opens_the_budget_of_the_current_home_in_its_own_currency(
         self, signed_in: Client, alice: User, alice_home: Home
     ) -> None:
-        home_services.create_home(alice, name="Chalet", currency="CHF")
-        html = signed_in.get(url("")).content.decode()
-        assert "CHF" in html
-        assert "EUR" in html
-        assert "never converted" in html
+        chalet = home_services.create_home(alice, name="Chalet", currency="CHF")
+        project_services.create_project(alice, alice_home, title="Work", budget=D("100"))
+        project_services.create_project(alice, chalet, title="Work", budget=D("70"))
+        # Before any choice: the first home by name ("Chalet" < "Main house"), never an addition.
+        entry = signed_in.get(url(""))
+        assert entry.status_code == 302
+        assert entry["Location"] == url("overview", chalet)
+        page = signed_in.get(entry["Location"]).content.decode()
+        assert "CHF" in page
+        assert "never converted" not in page
+        # Choosing the other home: the entry follows it, and so does the currency.
+        signed_in.post(reverse("homes:current"), {"home": str(alice_home.id)})
+        entry = signed_in.get(url(""))
+        assert entry["Location"] == url("overview", alice_home)
+        page = signed_in.get(entry["Location"]).content.decode()
+        assert "EUR" in page
+        assert "CHF" not in page
+
+    def test_the_entry_of_an_account_with_no_home_offers_to_add_one(
+        self, client: Client, make_user: Callable[..., User]
+    ) -> None:
+        client.force_login(make_user("alone@example.com"))
+        response = client.get(url(""))
+        assert response.status_code == 200
+        assert reverse("homes:create") in response.content.decode()
 
     def test_one_home_goes_straight_to_its_budget(
         self, signed_in: Client, alice_home: Home
