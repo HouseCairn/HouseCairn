@@ -148,6 +148,33 @@ def sso(browser: Browser, base: str, provider: str) -> None:
     page.close()
 
 
+def reach_the_end_of_the_list(page: Page, row_id: str) -> None:
+    """The banner of Undo must not cover the last button of the page (NAV-05).
+
+    Mark a row done, go to the bottom, and ask the browser what is at the middle of the
+    last button of `main`: it must be the button itself, not the banner.
+    """
+    page.locator(f"#{row_id} button.button-done").click()
+    page.wait_for_selector("#undo-region .undo-banner button")
+    page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
+    page.wait_for_timeout(200)
+    covered = page.evaluate(
+        """() => {
+            const buttons = [...document.querySelectorAll('main a.button, main button')]
+                .filter((el) => el.offsetParent !== null && !el.closest('#undo-region'));
+            const last = buttons[buttons.length - 1];
+            if (!last) return 'no button in main';
+            const box = last.getBoundingClientRect();
+            const at = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+            return at && last.contains(at) ? '' : 'covered by ' + (at && (at.id || at.className));
+        }"""
+    )
+    check(covered == "", f"the last button of the page is not covered by the banner ({covered})")
+    page.locator("#undo-region .undo-banner button").click()
+    page.wait_for_selector(f"#{row_id}:not(.task-row-closed) button.button-done")
+    page.evaluate("window.scrollTo(0, 0)")
+
+
 def in_place(browser: Browser, base: str) -> None:
     """Done and Undo keep the person where they are (NAV-05). Local only, not in CI.
 
@@ -211,6 +238,7 @@ def in_place(browser: Browser, base: str) -> None:
     )
     check("Undone." in (page.locator("#undo-region").text_content() or ""), "Undo is announced")
     check(page.url == address, "Undo leaves the address as it was")
+    reach_the_end_of_the_list(page, row_id)
     check(not errors, f"no error in the console (CSP included): {errors}")
     context.close()
 
