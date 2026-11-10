@@ -488,7 +488,7 @@ scroll sideways. The rule has two renderings, chosen by how the table is read.
 - **Read row by row** (a room, a project, a task, a budget line): the table takes the
   class `table-stack`. Under 56 rem each row becomes a card: the row head is the title,
   every value shows its label in front of it and is aligned to the right, as a
-  formatted amount (`1 250,50 €`). From 56 rem it is the plain table. Every `td` with
+  formatted amount. From 56 rem it is the plain table. Every `td` with
   content **must** carry a `data-label` with the translated name of its column; an
   empty cell is not drawn.
 - **Read column by column** (a comparison of projects side by side): the table stays a
