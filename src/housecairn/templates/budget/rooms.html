@@ -7,7 +7,7 @@
   {% include "budget/_year.html" %}
   <p class="small">{% blocktranslate with year=year|unlocalize %}Projects counted in {{ year }}, shared evenly between their rooms, and the upkeep of {{ year }}.{% endblocktranslate %}</p>
   {% if report.lines %}
-    <table>
+    <table class="table-stack">
       <caption class="visually-hidden">{% translate "Planned, committed and paid, room by room" %}</caption>
       <thead>
         <tr><th scope="col">{% translate "Room" %}</th>{% include "budget/_head_amounts.html" %}</tr>

@@ -69,7 +69,7 @@
 
   <h2>{% translate "Budget" %}</h2>
   {% if lines %}
-    <table>
+    <table class="table-stack">
       <caption class="visually-hidden">{% blocktranslate with currency=home.currency %}Budget lines, in {{ currency }}{% endblocktranslate %}</caption>
       <thead>
         <tr>
@@ -87,20 +87,20 @@
               {{ summary.line.label }}<br><span class="small">{{ summary.line.get_nature_display }}</span>
               {% if can_write %}<br><a class="small" href="{% url_with_next 'projects:line-edit' home_id=home.id line_id=summary.line.id %}">{% translate "Edit" %}<span class="visually-hidden"> {{ summary.line.label }}</span></a>{% endif %}
             </th>
-            <td>{{ summary.amounts.planned|money:home.currency }}</td>
-            <td>{{ summary.amounts.committed|money:home.currency }}</td>
-            <td>{{ summary.amounts.paid|money:home.currency }}</td>
-            <td>{% budget_gap summary.amounts home.currency %}</td>
+            <td data-label="{% translate 'Planned' %}">{{ summary.amounts.planned|money:home.currency }}</td>
+            <td data-label="{% translate 'Committed' %}">{{ summary.amounts.committed|money:home.currency }}</td>
+            <td data-label="{% translate 'Paid' %}">{{ summary.amounts.paid|money:home.currency }}</td>
+            <td data-label="{% translate 'Gap' %}">{% budget_gap summary.amounts home.currency %}</td>
           </tr>
         {% endfor %}
       </tbody>
       <tfoot>
         <tr>
           <th scope="row">{% translate "Total" %}</th>
-          <td>{{ total.planned|money:home.currency }}</td>
-          <td>{{ total.committed|money:home.currency }}</td>
-          <td>{{ total.paid|money:home.currency }}</td>
-          <td>{% budget_gap total home.currency %}</td>
+          <td data-label="{% translate 'Planned' %}">{{ total.planned|money:home.currency }}</td>
+          <td data-label="{% translate 'Committed' %}">{{ total.committed|money:home.currency }}</td>
+          <td data-label="{% translate 'Paid' %}">{{ total.paid|money:home.currency }}</td>
+          <td data-label="{% translate 'Gap' %}">{% budget_gap total home.currency %}</td>
         </tr>
       </tfoot>
     </table>

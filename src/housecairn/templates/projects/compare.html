@@ -7,8 +7,9 @@
   {% if rows|length < 2 %}
     <p class="empty">{% translate "Tick at least two projects in the list to compare them." %}</p>
   {% else %}
+    <div class="table-scroll" role="region" tabindex="0" aria-labelledby="compare-caption">
     <table>
-      <caption class="visually-hidden">{% translate "The projects side by side" %}</caption>
+      <caption id="compare-caption" class="visually-hidden">{% translate "The projects side by side" %}</caption>
       <thead>
         <tr>
           <th scope="col">{% translate "Project" %}</th>
@@ -34,5 +35,6 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
   {% endif %}
 {% endblock content %}
