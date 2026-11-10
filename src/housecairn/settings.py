@@ -218,7 +218,7 @@ HOUSECAIRN_PHOTO_MAX_BYTES: int = _ENV.values["file_max_bytes"]
 HOUSECAIRN_HOME_STORAGE_MB: int = _ENV.values["home_storage_mb"]
 HOUSECAIRN_HOME_MAX_FILES: int = _ENV.values["home_max_files"]
 
-STATIC_URL = "static/"
+STATIC_URL = url_prefix.STATIC_PATH
 STATIC_ROOT = Path(env.str("STATIC_ROOT", default=str(DATA_DIR / "static")))
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_ROOT = Path(env.str("MEDIA_ROOT", default=str(DATA_DIR / "media")))
@@ -228,7 +228,8 @@ MEDIA_URL = "media/"
 # cache headers (docs/adr/0015). With DEBUG on, the hashed names are not used.
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    # WhiteNoise's storage, with addresses that follow the path prefix (core.storage).
+    "staticfiles": {"BACKEND": "housecairn.core.storage.ManifestStorage"},
 }
 
 # Public source repository, shown on the About screen.

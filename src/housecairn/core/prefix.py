@@ -36,6 +36,8 @@ from django.urls import Resolver404, ResolverMatch, get_script_prefix, resolve, 
 _SEGMENT = re.compile(r"[A-Za-z0-9._~-]+")
 # A header name (RFC 9110 token, without the characters no proxy uses in a name).
 _HEADER_NAME = re.compile(r"[A-Za-z0-9-]+")
+# STATIC_URL, relative so that Django and core.storage put the prefix in front of it.
+STATIC_PATH = "static/"
 # Longer than any proxy's prefix (Ingress: 60 characters or so), short enough for a log line.
 MAX_LENGTH = 200
 

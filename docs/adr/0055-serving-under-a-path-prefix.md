@@ -44,8 +44,13 @@ check applies to allauth's `next` and to the display preferences. The routes of 
 are read without the prefix (`core.prefix.resolve_url`), so labels, breadcrumbs and the
 section of the bar work the same.
 
-**What follows the prefix without code:** static files (WhiteNoise serves the relative
-`STATIC_URL` under the prefix), the manifest (`start_url` and `scope`), the API and its
+**Static files.** Django keeps the base URL of the static files storage, and
+`settings.STATIC_URL` with its prefix, from the first time they are read; a prefix given by
+the header would then be that of the first request. `core.storage` builds the base URL at
+each call from the script prefix of the request. WhiteNoise matches the path without the
+prefix, so it serves them in both modes.
+
+**What else follows the prefix:** the manifest (`start_url` and `scope`), the API and its
 schema (a `servers` entry under a prefix, so clients call the right path), the links of
 emails, of QR labels and of calendar feeds (`HOUSECAIRN_SITE_URL` stays scheme and host,
 the path comes from `reverse`). The Content Security Policy names origins only (`'self'`);
