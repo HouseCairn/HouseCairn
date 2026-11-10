@@ -154,6 +154,17 @@ class FromTemplatesSerializer(serializers.Serializer[Any]):
     room = serializers.UUIDField(required=False, allow_null=True, help_text="A room of the home.")
     due_on = serializers.DateField(required=False, allow_null=True, help_text="The first date.")
 
+    def validate_templates(self, value: list[str]) -> list[str]:
+        from housecairn.tasks import task_templates
+
+        found = task_templates.library()
+        unknown = [t for t in dict.fromkeys(value) if found.get(t) is None]
+        if unknown:
+            raise serializers.ValidationError(
+                "Unknown templates: " + ", ".join(unknown) + ". See GET /api/v1/task-templates/."
+            )
+        return value
+
     def validate_room(self, value: Any) -> Room | None:
         if value is None:
             return None
@@ -299,8 +310,9 @@ class TaskViewSet(
                 room=data.get("room"),
                 due_on=data.get("due_on"),
             )
-        except ValueError as exc:
-            raise exceptions.ValidationError({"templates": [f"Unknown template: {exc}"]}) from exc
+        except ValueError:
+            # Checked by FromTemplatesSerializer; never send the text of an exception.
+            raise exceptions.ValidationError({"templates": ["Unknown template."]}) from None
         except DjangoValidationError as exc:
             raise _validation(exc) from exc
         rows = self.get_queryset().filter(id__in=[t.id for t in tasks]).order_by("created_at")

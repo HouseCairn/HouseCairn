@@ -266,3 +266,19 @@ def test_the_api_refuses_another_home_and_unknown_templates(
     other = reverse("api-v1:home-task-from-templates", kwargs={"home_id": bob_home.id})
     assert api_client.post(other, {"templates": ["rcd-test"]}).status_code == 404
     assert not Task.objects.exists()
+
+
+@pytest.mark.django_db
+def test_the_api_names_unknown_templates_without_exception_text(
+    api_client: APIClient, alice: User, alice_home: Home
+) -> None:
+    api_client.force_authenticate(alice)
+    url = reverse("api-v1:home-task-from-templates", kwargs={"home_id": alice_home.id})
+    refused = api_client.post(
+        url, {"templates": ["rcd-test", "no-such", "nor-this", "no-such"]}, format="json"
+    )
+    assert (refused.status_code, refused.json()) == (
+        400,
+        {"templates": ["Unknown templates: no-such, nor-this. See GET /api/v1/task-templates/."]},
+    )
+    assert not Task.objects.filter(home=alice_home).exists()
