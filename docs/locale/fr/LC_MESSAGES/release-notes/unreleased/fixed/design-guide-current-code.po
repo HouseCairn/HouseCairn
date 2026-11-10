@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Design guide matches the code.** The [design guide](../../../developer/design-guide.md) now lists the entries of More as they are, describes the back link of a form as it is drawn, and gathers the rules the code already follows: amounts through one filter, addresses built for a path prefix, links to typed addresses, and the first administrator screen reached from the sign-in page."
+msgstr "**Guide de conception conforme au code.** Le [guide de conception](../../../developer/design-guide.md) liste désormais les entrées de Plus telles qu'elles sont, décrit le lien retour d'un formulaire tel qu'il s'affiche, et rassemble les règles que le code suit déjà : les montants par un filtre unique, les adresses construites pour un préfixe d'adresse, les liens vers des adresses saisies, et l'écran du premier administrateur atteint depuis la page de connexion."
+
