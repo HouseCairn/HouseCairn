@@ -66,8 +66,39 @@ HOUSECAIRN_FORWARDED_ALLOW_IPS=192.0.2.10
   the container can set it.
 - A value that is not a plain path is ignored. A valid value replaces
   `HOUSECAIRN_URL_PREFIX` for that request.
-- Reminder emails are sent by the task worker, which sees no request: their links use
-  `HOUSECAIRN_URL_PREFIX`. Set it too when the prefix is known at start-up.
+- The pages, forms and static files follow the prefix of the header, since the browser is
+  behind that proxy. The cookies are limited to it.
+
+## Links sent away
+
+A link made to leave HouseCairn is always built on the public address:
+`HOUSECAIRN_SITE_URL`, then `HOUSECAIRN_URL_PREFIX`, never the prefix of the request. This
+covers the links of emails (invitations, password reset, address verification, reminders,
+report alerts), the address a QR label holds, the address of a calendar feed and the links
+of its events, and the address of the first-account screen written in the log.
+
+A prefix given by a header only works through that proxy: an Ingress path, for example, only
+opens inside Home Assistant's interface, and its token changes. Behind such a proxy, set
+`HOUSECAIRN_SITE_URL` to an address that reaches HouseCairn without it, if you have one, and
+`HOUSECAIRN_URL_PREFIX` to the path of that address. Without `HOUSECAIRN_SITE_URL`, the links
+take the scheme and host of the request, with `HOUSECAIRN_URL_PREFIX`.
+
+## In a frame of the same site
+
+By default, no page may show HouseCairn in a frame (`X-Frame-Options: DENY`, Content
+Security Policy `frame-ancestors 'none'`). A proxy that shows it in a frame of its own page,
+on the same scheme, host and port, as Home Assistant's Ingress panel does, needs:
+
+```ini
+HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING=true
+```
+
+The headers become `X-Frame-Options: SAMEORIGIN` and `frame-ancestors 'self'`; a page of any
+other origin still cannot frame it. The value is `true` or `false`; HouseCairn refuses to
+start with any other.
+
+Behind Ingress, HouseCairn keeps its own sign-in: it does not sign anyone in from the Home
+Assistant user that the Supervisor names in its headers.
 
 ## What stays the same
 

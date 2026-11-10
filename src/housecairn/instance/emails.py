@@ -9,13 +9,14 @@ from django.urls import reverse
 from django.utils import translation
 from rest_framework.request import Request
 
+from housecairn.core.links import external_url
 from housecairn.homes.scoping import site_url
 from housecairn.instance.config import get_setting
 from housecairn.instance.models import InstanceInvitation
 
 
 def invitation_link(base_url: str, raw: str) -> str:
-    return base_url.rstrip("/") + reverse("instance-invitation", kwargs={"token": raw})
+    return external_url(reverse("instance-invitation", kwargs={"token": raw}), base_url)
 
 
 def send_invitation(invitation: InstanceInvitation, link: str, *, language: str | None) -> None:

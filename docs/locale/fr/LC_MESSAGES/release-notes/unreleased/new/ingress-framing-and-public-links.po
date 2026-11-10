@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Behind Home Assistant's Ingress.** `HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING=true` lets a page of the same origin show HouseCairn in a frame, as the Ingress panel does; it is off by default. Links made to leave the application (emails, invitations, QR labels, calendar feeds) are now always on `HOUSECAIRN_SITE_URL` and `HOUSECAIRN_URL_PREFIX`, never on a prefix given by a proxy header. See [Serving under a path prefix](../../../administration/url-prefix.md)."
+msgstr "**Derrière l'Ingress de Home Assistant.** `HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING=true` permet à une page de la même origine d'afficher HouseCairn dans un cadre, comme le fait le panneau Ingress ; ce réglage est désactivé par défaut. Les liens faits pour sortir de l'application (courriels, invitations, étiquettes QR, flux de calendrier) sont maintenant toujours construits sur `HOUSECAIRN_SITE_URL` et `HOUSECAIRN_URL_PREFIX`, jamais sur un préfixe donné par un en-tête de proxy. Voir [Servir sous un préfixe d'adresse](../../../administration/url-prefix.md)."
+

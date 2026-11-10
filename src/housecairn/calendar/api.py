@@ -21,6 +21,7 @@ from rest_framework.views import APIView
 from housecairn.apitokens.models import ApiToken, Scope
 from housecairn.calendar import feeds, services
 from housecairn.calendar.models import Feed
+from housecairn.core.links import external_url
 from housecairn.homes.scoping import open_homes_for_request, site_url
 from housecairn.tasks.models import Priority, Status
 
@@ -138,7 +139,9 @@ def _shown(request: Request, feed: Feed, raw: str | None = None) -> dict[str, An
     data = dict(FeedSerializer(feed).data)
     data.pop("url", None)
     if raw is not None:
-        data["url"] = site_url(request) + reverse("calendar:feed", kwargs={"token": raw})
+        data["url"] = external_url(
+            reverse("calendar:feed", kwargs={"token": raw}), site_url(request)
+        )
     return data
 
 

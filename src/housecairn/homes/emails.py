@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import translation
 
+from housecairn.core.links import external_url
 from housecairn.homes.models import Invitation
 from housecairn.instance.config import get_setting
 
@@ -13,9 +14,10 @@ def invitation_link(base_url: str, raw: str) -> str:
     """Absolute address of the invitation page.
 
     `base_url` is `HOUSECAIRN_SITE_URL` when set, else the scheme and host of
-    the request, which Django has checked against `ALLOWED_HOSTS`.
+    the request, which Django has checked against `ALLOWED_HOSTS`; the path is under
+    `HOUSECAIRN_URL_PREFIX`, never under the prefix of the request (core.links).
     """
-    return base_url.rstrip("/") + reverse("invitation", kwargs={"token": raw})
+    return external_url(reverse("invitation", kwargs={"token": raw}), base_url)
 
 
 def send_invitation(invitation: Invitation, link: str, *, language: str | None) -> None:

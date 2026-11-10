@@ -279,7 +279,12 @@ CSRF_COOKIE_SAMESITE = "Lax"
 # Under a prefix, the cookies of the application are sent to its addresses only. A prefix that
 # comes from a header is applied to each response by core.prefix.UrlPrefixMiddleware.
 SESSION_COOKIE_PATH = CSRF_COOKIE_PATH = LANGUAGE_COOKIE_PATH = HOUSECAIRN_URL_PREFIX or "/"
-X_FRAME_OPTIONS = "DENY"
+# Framing (docs/adr/0055): refused to every page by default. `true` lets a page of the same
+# origin show HouseCairn in a frame, as Home Assistant's Ingress panel does; never another origin.
+HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING: bool = registry.boolean_variable(
+    "HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING", default=False
+)
+X_FRAME_OPTIONS = "SAMEORIGIN" if HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING else "DENY"
 # Including subdomains in HSTS and asking for preloading are commitments for the
 # whole domain, which only its owner can make: they stay opt-in, so Django's
 # reminders about them are silenced (docs/adr/0012).
@@ -412,7 +417,7 @@ CONTENT_SECURITY_POLICY = {
         "connect-src": [SELF],
         "manifest-src": [SELF],
         "form-action": _form_action,
-        "frame-ancestors": [NONE],
+        "frame-ancestors": [SELF if HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING else NONE],
         "base-uri": [NONE],
         "object-src": [NONE],
     },

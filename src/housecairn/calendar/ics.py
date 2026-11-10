@@ -10,9 +10,10 @@ import datetime
 import hashlib
 from typing import Any
 
+from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Count, Max
-from django.urls import get_script_prefix, reverse
+from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
 from django.utils.translation import pgettext
@@ -21,6 +22,7 @@ from icalendar import Calendar, Event
 from housecairn.calendar import services
 from housecairn.calendar.feeds import feed_homes
 from housecairn.calendar.models import Feed
+from housecairn.core.links import external_url
 from housecairn.homes.models import Home
 from housecairn.instance.config import instance_name
 from housecairn.notifications import services as notification_services
@@ -82,7 +84,7 @@ def _event(entry: services.Entry, base_url: str, uid: str) -> Event:
     event.add("status", _STATUS_ICS.get(Status(entry.status), "CONFIRMED"))
     event.add("transp", "TRANSPARENT")
     path = reverse("tasks:detail", kwargs={"home_id": entry.home.id, "task_id": entry.task_id})
-    event.add("url", f"{base_url}{path}")
+    event.add("url", external_url(path, base_url))
     return event
 
 
@@ -149,8 +151,8 @@ def _fingerprint(feed: Feed, base_url: str, now: datetime.datetime | None) -> st
     parts = [
         str(feed.pk),
         base_url,
-        # The links of the document carry the path prefix of the request (docs/adr/0055).
-        get_script_prefix(),
+        # Its links are under the fixed prefix, whatever the request (core.links, ADR 0055).
+        settings.HOUSECAIRN_URL_PREFIX,
         ",".join(ids),
         str(services.zone_of(user)),
         notification_services.preferences_of(user).language,

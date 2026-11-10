@@ -64,7 +64,8 @@ fails the suite, and a CI step runs the navigation tests with a prefix set.
 - An instance served at the root behaves as before: no setting, cookie or address changes.
 - With the header, a link built during a request carries that request's prefix, and a link
   built by the task worker carries `HOUSECAIRN_URL_PREFIX`. An add-on that knows its Ingress
-  path at start-up should set the variable as well, so that both agree.
+  path at start-up should set the variable as well, so that both agree. (Changed on
+  2026-11-10 for the links sent away: see below.)
 - `*` in `HOUSECAIRN_FORWARDED_ALLOW_IPS` lets any peer set the prefix through the header,
   as it lets any peer set the other forwarding headers.
 
@@ -75,6 +76,42 @@ fails the suite, and a CI step runs the navigation tests with a prefix set.
   it, and the task worker never sees it. `FORCE_SCRIPT_NAME` covers both.
 - **Building every address sent away on `HOUSECAIRN_SITE_URL` plus the configured prefix,
   whatever the request.** It would change every place that builds one, for a case (header and site
-  address together) that the add-on can avoid by setting the variable.
+  address together) that the add-on can avoid by setting the variable. Adopted on 2026-11-10:
+  see below.
 - **Trusting `X-Forwarded-Prefix` by default.** A prefix header is off unless named, so a
   proxy that forwards a client's header unchanged cannot move the application.
+
+## Change of 2026-11-10: behind Home Assistant's Ingress
+
+The first version of the Home Assistant add-on showed two things this record did not settle.
+The add-on cannot set `HOUSECAIRN_URL_PREFIX` to its Ingress path, as the consequences above
+suggested: a fixed prefix gives the cookies a path that the Ingress addresses do not share,
+and the Ingress token changes. And Home Assistant shows an Ingress add-on in a frame of its
+own page, which `X-Frame-Options: DENY` and `frame-ancestors 'none'` refuse.
+
+**Links sent away are on the public address, always.** An address made to leave the
+application (the links of emails and invitations, the address a QR label holds, the address
+of a calendar feed and the links inside it, the address of the first-account screen in the
+log) is built by one function, `core.links.external_url`: the scheme and host of
+`HOUSECAIRN_SITE_URL` (else those of the request), then the fixed `HOUSECAIRN_URL_PREFIX`,
+then the route. It never takes the prefix of the request. An Ingress path only works inside
+Home Assistant's interface, for a person signed in to it, and only as long as its token
+lasts: a feed added to a calendar application, a printed label or an emailed link that
+carried it would stop working, or never work. The web process and the task worker now give
+the same address. Addresses used inside a page (navigation, forms, redirects, static files,
+the manifest, the API) keep the prefix of the request: the browser is behind that proxy.
+
+The callback addresses of the single sign-on providers, shown on the providers screens, are
+not changed: allauth sends the provider the callback of the request, and the address shown
+must be that one.
+
+**Framing by the same origin, opt-in.** `HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING` (`false` by
+default, true or false checked at start-up) sends `X-Frame-Options: SAMEORIGIN` and
+`frame-ancestors 'self'` instead of `DENY` and `'none'`: a page of the same scheme, host and
+port may show HouseCairn in a frame, as Home Assistant's Ingress panel does; no other
+origin may. The rest of the Content Security Policy is unchanged. The add-on sets it; an
+instance served on its own host name has no reason to.
+
+**No sign-in through the Supervisor's headers.** Ingress also sends the Home Assistant user in
+`X-Remote-User-*` headers. HouseCairn does not use them to sign anyone in: it keeps its own
+accounts and sign-in, behind Ingress as anywhere else.

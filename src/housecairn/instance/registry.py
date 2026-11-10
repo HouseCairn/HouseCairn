@@ -658,6 +658,20 @@ def read_environment(environ: dict[str, str] | None = None) -> Environment:
     return Environment(values, frozenset(locked))
 
 
+def boolean_variable(name: str, default: bool, environ: dict[str, str] | None = None) -> bool:
+    """A true-or-false variable that only the environment sets, read as strictly as those of
+    the settings above: empty gives `default`, any other value than true or false stops the
+    start-up."""
+    raw = (os.environ if environ is None else environ).get(name, "").strip().lower()
+    if not raw:
+        return default
+    if raw in _TRUE:
+        return True
+    if raw in _FALSE:
+        return False
+    raise ImproperlyConfigured(f"{name} is not valid: expected true or false.")
+
+
 # Settings of other apps, declared next to their code (docs/adr/0043).
 from housecairn.notifications.conf import SETTINGS as _NOTIFICATIONS  # noqa: E402
 

@@ -29,6 +29,7 @@ from django.views.generic import TemplateView
 from housecairn.accounts.models import User
 from housecairn.calendar import feeds, ics, services
 from housecairn.calendar.models import Feed
+from housecairn.core.links import external_url
 from housecairn.homes import current
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
@@ -255,7 +256,7 @@ class FeedsView(LoginRequiredMixin, TemplateView):
         return super().get_context_data(rows=rows, **kwargs)
 
     def address(self, raw: str) -> str:
-        return site_url(self.request) + reverse("calendar:feed", kwargs={"token": raw})
+        return external_url(reverse("calendar:feed", kwargs={"token": raw}), site_url(self.request))
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         home = None
