@@ -1,16 +1,19 @@
 """API v1 of homes, households and invitations. Validation only; rules live in `services`."""
 
+import uuid
 from typing import Any
 
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models, transaction
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, extend_schema_field, inline_serializer
 from rest_framework import exceptions, mixins, permissions, serializers, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -20,8 +23,8 @@ from housecairn.accounts.names import person_name
 from housecairn.apitokens.models import ApiToken
 from housecairn.audit import services as audit_services
 from housecairn.audit.api import AuditEventSerializer
-from housecairn.homes import exports, services, sso
-from housecairn.homes.models import Home, Invitation, Membership, Role
+from housecairn.homes import csv_export, exports, jobs, restore, services, sso
+from housecairn.homes.models import ExportJob, Home, Invitation, Membership, Role
 from housecairn.homes.scoping import (
     HomeScopedMixin,
     allow,
@@ -88,6 +91,24 @@ class HomeSerializer(serializers.ModelSerializer[Home]):
 
     def get_locked(self, home: Home) -> bool:
         return not services.is_open(home, sso.signed_in_providers(self.context["request"]))
+
+
+class ExportJobSerializer(serializers.ModelSerializer[ExportJob]):
+    download = serializers.SerializerMethodField(help_text="POST here to download, when ready.")
+
+    class Meta:
+        model = ExportJob
+        fields = ["id", "status", "size_bytes", "downloads_left", "expires_at", "download"]
+        read_only_fields = fields
+
+    def get_download(self, job: ExportJob) -> str:
+        return reverse(
+            "api-v1:home-export-download", kwargs={"home_id": job.home_id, "job_id": job.id}
+        )
+
+
+class RestoreSerializer(serializers.Serializer[Any]):
+    archive = serializers.FileField(help_text="The zip file made by the export, as it is.")
 
 
 class HomeViewSet(
@@ -198,12 +219,95 @@ class HomeViewSet(
         if isinstance(request.auth, ApiToken):
             raise exceptions.PermissionDenied(NoTokenForHousehold.message)
         try:
+            exports.check_owner(request.user, home)
+            if jobs.is_large(home):
+                job = jobs.start_export(request.user, home)
+                return Response(
+                    ExportJobSerializer(job, context={"request": request}).data,
+                    status=status.HTTP_202_ACCEPTED,
+                )
             archive, name = exports.export_home(request.user, home)
         except PermissionDenied as exc:
             raise exceptions.PermissionDenied() from exc
         return FileResponse(
             archive, as_attachment=True, filename=name, content_type="application/zip"
         )
+
+    def _job(self, request: Request, job_id: str) -> tuple[Home, ExportJob]:
+        home = self.get_home()
+        if isinstance(request.auth, ApiToken):
+            raise exceptions.PermissionDenied(NoTokenForHousehold.message)
+        try:
+            return home, jobs.job_of(request.user, home, uuid.UUID(job_id))
+        except PermissionDenied as exc:
+            raise exceptions.PermissionDenied() from exc
+        except (jobs.ExportUnavailableError, ValueError):
+            raise exceptions.NotFound() from None
+
+    @extend_schema(responses={200: ExportJobSerializer})
+    @action(detail=True, methods=["get"], url_path=r"export/(?P<job_id>[0-9a-f-]{36})")
+    def export_job(self, request: Request, home_id: str, job_id: str) -> Response:
+        """An archive made in the background: `pending`, `ready` or `failed`. Owners only."""
+        _home, job = self._job(request, job_id)
+        return Response(ExportJobSerializer(job, context={"request": request}).data)
+
+    @extend_schema(request=None, responses={(200, "application/zip"): OpenApiTypes.BINARY})
+    @action(detail=True, methods=["post"], url_path=r"export/(?P<job_id>[0-9a-f-]{36})/download")
+    def export_download(self, request: Request, home_id: str, job_id: str) -> Any:
+        """Download the archive of a job; each call uses one of its downloads. Owners only."""
+        home, job = self._job(request, job_id)
+        try:
+            archive, name = jobs.open_download(request.user, home, job.id)
+        except jobs.ExportUnavailableError:
+            raise exceptions.NotFound() from None
+        return FileResponse(
+            archive, as_attachment=True, filename=name, content_type="application/zip"
+        )
+
+    @extend_schema(
+        responses={(200, "text/csv"): OpenApiTypes.BINARY},
+        description=(
+            "One table of the home as CSV (UTF-8 with a byte order mark): `rooms`, `items`, "
+            "`tasks`, `history`, `stock`, `contractors` or `reports`. Every member, and a "
+            "token with the `read` scope on this home."
+        ),
+    )
+    @action(detail=True, methods=["get"], url_path=r"export/(?P<entity>[a-z_]+)\.csv")
+    def export_csv(self, request: Request, home_id: str, entity: str) -> HttpResponse:
+        home = self.get_home()
+        found = csv_export.ENTITIES.get(entity)
+        if found is None:
+            raise exceptions.NotFound()
+        data, name = csv_export.build_csv(home, found)
+        response = HttpResponse(data, content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = f'attachment; filename="{name}"'
+        return response
+
+    @extend_schema(
+        request={"multipart/form-data": RestoreSerializer},
+        responses={201: HomeSerializer},
+        description=(
+            "Restore the archive of a home (made by `export`) as a new home owned by the "
+            "person signed in. Refused with 400 and the reason when the archive is altered, "
+            "of an unknown version, or already on this instance. An API token cannot."
+        ),
+    )
+    @action(detail=False, methods=["post"], parser_classes=[MultiPartParser])
+    def restore(self, request: Request) -> Response:
+        if isinstance(request.auth, ApiToken):
+            raise exceptions.PermissionDenied("API tokens cannot restore a home; sign in instead.")
+        declared = int(request.META.get("CONTENT_LENGTH") or 0)
+        if declared > restore.max_unpacked_bytes():
+            raise exceptions.ValidationError({"archive": ["This file is too large."]})
+        serializer = RestoreSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            result = restore.restore_home(request.user, serializer.validated_data["archive"])
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError({"archive": exc.messages}) from exc
+        data = dict(self.get_serializer(result.home).data)
+        data["unattributed"] = result.unattributed
+        return Response(data, status=status.HTTP_201_CREATED)
 
     @extend_schema(
         request=inline_serializer("HomeDeletion", {"confirmation": serializers.CharField()}),

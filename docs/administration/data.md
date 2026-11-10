@@ -9,57 +9,117 @@ administrator of the instance does neither for a home they do not own.
 
 An owner downloads the archive from the page of the home (**Export all
 data**) or from the API (`POST /api/v1/homes/<id>/export/`, signed in; an API
-token cannot). The export is written to the audit log of the home.
+token cannot). The export is written to the audit log of the home
+([ADR 0048](../adr/0048-export-format-and-restore.md)).
+
+When the files of the home take more than 50 MB, the archive is made in the
+background by the worker: the page of the export says when it is ready, and the
+API answers `202` with the job (`GET /api/v1/homes/<id>/export/<job id>/`).
+The archive is then downloaded by an owner, signed in, at most 3 times and
+within 24 hours (`POST .../download/`, never a link that opens without
+signing in); after that it is removed.
 
 The archive is a zip:
 
 | Part | Content |
 | --- | --- |
-| `export.json` | The data, as JSON (below). |
-| `files/` | The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`, the photos, the pictures of links and the quote files of projects, under `files/projects/`, and the photos of the reports, under `files/reports/`. |
+| `manifest.json` | `format` (`"housecairn-export"`), `version` (`2`), `application_version`, `exported_at`, `home` (its id), `apps` (the documents below) and `entries`: the SHA-256 digest and the size of every other file of the archive. |
+| `data/<app>.json` | The data of one part of the application: `{"app": ..., "sections": {<section>: [objects]}}`. |
+| `files/<folder>/<id>.<extension>` | The files: `photos/`, `attachments/` (files of tasks), `stock/` (labels of stock items), `projects/` (photos, link pictures, quotes) and `reports/`. |
 | `README.txt` | A reminder of the format. |
 
-`export.json` is versioned. Version `1` has these keys:
+Its [JSON Schema](../_static/schemas/housecairn-export-v2.schema.json) is
+published with this documentation. The rules that hold for every section:
 
-| Key | Content |
+- **Every field of the table**, by its name in the code: an object of
+  `rooms` has `id`, `name`, `kind`, `position`, `notes`, `paint_colour`, ...,
+  `created_at` and `updated_at`. A field added by a later version is in the
+  archive without a change of format; a field removed or renamed raises the
+  version.
+- **Identifiers are the UUIDs** of the objects, never an internal number. A
+  reference is the id of an object of the same archive, or `null`; a link to
+  several objects (the rooms of a project) is a list of ids.
+- **People** are named by an id of the `people` list of `data/homes.json`,
+  which alone holds their e-mail address and display name; the restore uses
+  the address to find their account.
+- **Amounts and quantities** are text with a point (`"1250.50"`), never a
+  number of JSON; amounts are in the currency of the home (`home.currency`).
+  Dates are ISO 8601.
+- **Files** are a path of the archive, or `null` when the file is missing on
+  the disk. Photos are exported as stored, already stripped of their metadata
+  at upload; documents as received. Thumbnails are not exported: a restore makes
+  them again.
+- **Only what is not deleted**, and nothing whose parent is: the history of a
+  deleted task is not exported.
+
+| Document | Sections |
 | --- | --- |
-| `format`, `version` | `"housecairn-export"` and `1`. A change that removes or renames a key raises the version. |
-| `exported_at`, `application_version` | When, and by which version. |
-| `home` | `id`, `name`, `currency`, `hemisphere` (`north` or `south`), `required_provider`, `created_at`. |
-| `members` | `id`, `email`, `name` (the display name, else the full name, else the part of the address before the `@`), `role`, `joined_at` of each member. |
-| `pending_invitations` | `id`, `email`, `role`, `sent_at`, `expires_at`; never a link. |
-| `events` | `id`, `kind`, `payload`, `received_at` of the events received. |
-| `rooms` | `id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch, `paint_article` (a stock item id or `null`), floor and wall covering, memory notes). |
-| `items` | `id`, `room`, `name`, `kind`, `brand`, `model`, `serial_number`, `installed_on`, `warranty_ends_on`, `contract_provider`, `contract_number`, `contract_url`, `links`, `notes`, `created_at` of each item. |
-| `photos` | `id`, `room` or `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the photo in the archive (`files/photos/<id>.<extension>`, or `null` if the file is missing). |
-| `attachments` | `id`, `task`, `occurrence` or `null`, `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the file in the archive (`files/attachments/<id>.<extension>`, or `null` if the file is missing). |
-| `stock_items` | `id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (a code of the list, or `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (item ids), `rooms` (room ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`). |
-| `stock_suppliers` | `id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`. |
-| `stock_movements` | `id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (the occurrence of a task whose closing wrote the line, or `null`), `created_at`. |
-| `task_materials` | `id`, `task`, `article`, `quantity`, `created_at`: the stock items each task needs. |
-| `stock_draws` | `id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at`: what each closed occurrence took from the stock. |
-| `projects` | `id`, `title`, `goal`, `status`, `priority`, `rooms` (room ids), `estimated_minutes`, `season` with `season_start_month` and `season_end_month`, `created_at`. |
-| `project_budget_lines` | `id`, `project`, `label`, `nature`, `planned`, `committed` (the sum of the accepted quotes), `paid`, `created_at`. Amounts are text with two decimals, in the currency of the home. |
-| `project_quotes` | `id`, `project`, `contractor` (an id or `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (the line an accepted quote is committed on, else `null`), `note`, `paperless_id`, `paperless_url`, `created_at`. |
-| `project_files` | `id`, `project`, `quote` (or `null` for a photo of the project), `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path in the archive (`files/projects/<id>.<extension>`, or `null` if the file is missing). |
-| `project_links` | `id`, `project`, `url`, `title`, `image` (the id of the picture in `project_files`, or `null`), `created_at`. |
-| `project_tasks` | `id`, `project`, `task`: the tasks that belong to a project. |
-| `project_envelopes` | `id`, `year`, `amount`: the annual budget envelope. |
-| `tasks` | `id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, the budgets, `notes`, `procedure`, `assignee`, `contractor` (an id), the repeat rule, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` or empty) with `season_start_month` and `season_end_month`, `hide_days_before`. |
-| `contractors` | `id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`. |
-| `calendar_feeds` | `id`, `created_at`, `regenerated_at` of each [calendar feed](../guides/calendar.md) of the home. Never the address or its secret, which is not kept; the combined feed of a person belongs to the person, not to a home. |
-| `labels` | `id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing. |
-| `reports` | `id`, `title`, `status`, `place`, `room`, `item` or `stock_item`, `task`, `reporter` (the e-mail address that `members` already holds), `created_at`, `closed_at`, and `file`, the path of the photo in the archive (`files/reports/<id>.<extension>`, or `null`). |
-| `files` | `path` and `size` of each file in `files/`. |
+| `homes` | `home` (id, name, currency, hemisphere, sign-in requirement, dates), `people`, `members` (person and role) and `pending_invitations` (address, role, dates; never the link). |
+| `events` | `events` received, without the token they came with. |
+| `rooms` | `rooms` (with the room memory), `items`, `photos`. |
+| `stock` | `stock_items`, `stock_suppliers`, `stock_movements`. The quantity in stock is the sum of the movements. |
+| `tasks` | `contractors`, `tasks`, `task_materials`, `occurrences` (the history: done, skipped, planned), `stock_draws`, `attachments`. |
+| `projects` | `projects`, `project_budget_lines`, `project_quotes`, `project_files`, `project_links`, `project_tasks`, `project_envelopes`. What a line has committed is the sum of its accepted quotes. |
+| `calendar` | `calendar_feeds`: that a feed exists and when; never its address or the digest of its secret. |
+| `labels` | `labels`: the `code` an active QR label carries, so that the stickers still open the right page after a restore; `null` for a revoked one. |
+| `reports` | `reports`, with their photo. |
 
-Photos and the images attached to tasks are exported as they are stored, already
-stripped of their metadata at upload; the documents attached to tasks are exported
-as they were received. Thumbnails are not exported, and neither is anything
-deleted. The archive has no size limit of its own: it is as large as the files of
-the home (each is limited by `HOUSECAIRN_PHOTO_MAX_BYTES`).
+The archive never holds a secret: no API token (not even its digest), no link
+of an invitation or of a calendar feed, no address of a notification channel,
+no password, no setting or single sign-on secret of the instance, nothing of
+the first setup. Each app adds its tables to the registry of the export
+(`homes.exports.register`); a test fails on a table that is in no section.
 
-Each lot that adds data adds its section here and to the archive. The archive
-holds the home it was made for and nothing of another.
+Version 1 archives (a single `export.json`, before this version) cannot be
+restored: export the home again.
+
+## Tables for a spreadsheet
+
+Every member downloads a table of the home as CSV from the page of the home
+(**Tables for a spreadsheet**), or from the API
+(`GET /api/v1/homes/<id>/export/<table>.csv`, a token with the `read` scope
+on the home included): `rooms`, `items`, `tasks`, `history`, `stock`,
+`contractors`, `reports`. The file is UTF-8 with a byte order mark, which
+Excel needs to read accents; the columns are the fields of the archive, people
+are named by their display name and never by their address, amounts are numbers
+with a point and the currency is a column of its own. A text that a spreadsheet
+would run as a formula (starting with `=`, `+`, `-`, `@`, a tab or a carriage
+return) is written after a `'`, so that it stays text.
+
+## Restore of a home
+
+**Homes > Restore a home** (or `POST /api/v1/homes/restore/`, signed in; an
+API token cannot) makes the archive a new home, owned by the person who
+restores it. It does not become the current home. The identifiers are kept, so
+that QR labels and links still lead to the same objects.
+
+The archive is checked before anything is written, and refused with the
+reason when it is not one HouseCairn made, or was changed since:
+
+- only the names the format allows, no symbolic link, no encrypted file, no
+  name that leaves the archive;
+- a size, once unpacked, read from the zip before unpacking, no larger than the
+  file quota of a home; no file larger than the largest upload;
+- a format and a version this instance knows, and every file present with the
+  digest and the size its manifest gives;
+- every value accepted by its field (a choice of the list, a valid date, a text
+  no longer than allowed), every reference to an object the archive holds,
+  never to an object of another home;
+- no object already on this instance: the home it was made from must be
+  deleted first, or the archive restored on another instance;
+- every file decoded again, of the type its object says.
+
+People are never given an account. From the web, the person restoring is
+attached to what was theirs; the others are listed, left unattributed, and can
+be invited again. For an instance that moves, the administrator runs:
+
+```sh
+docker compose exec housecairn python -m housecairn.entrypoint manage \
+  restore_home /data/backups/housecairn-home.zip --owner owner@example.com
+```
+
+which attaches again every person of the archive who has an account here with
+the same address, with their role.
 
 ## Deletion of a home
 
@@ -74,7 +134,7 @@ The photos, the labels of stock items, the photos, link pictures and quote files
 (photos deleted one by one included). If the disk refuses (permissions, a full or
 read-only volume), the home is still deleted and the error is logged by
 `housecairn.files` with the path of the directory (`photos/<home id>`,
-`attachments/<home id>`, `stock/<home id>`, `projects/<home id>` or `reports/<home id>`): remove that directory by hand.
+`attachments/<home id>`, `stock/<home id>`, `projects/<home id>`, `reports/<home id>` or `exports/<home id>`, the archives made in the background): remove that directory by hand.
 
 The budget screens (by room, by project, by task, the envelope) keep no data of their own:
 they are worked out from the projects, tasks and envelopes above, so they are in the export

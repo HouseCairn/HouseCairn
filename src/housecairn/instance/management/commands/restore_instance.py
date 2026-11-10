@@ -1,0 +1,175 @@
+"""Put a backup of `backup_instance` back: database, uploaded files and secret key.
+
+Stop the application first (docs/administration/backup.md). Every part is checked against
+the manifest before anything is replaced; a name that would leave its directory, a link
+or a device is refused. What was there before is kept next to it, renamed
+`<name>.before-restore-<date>`, never deleted. `--database-file`, `--media-root` and
+`--data-dir` restore elsewhere, to check a backup without touching the instance.
+"""
+
+import datetime
+import hashlib
+import json
+import shutil
+import sqlite3
+import subprocess
+import tarfile
+import tempfile
+from pathlib import Path, PurePosixPath
+from typing import Any
+
+from django.conf import settings
+from django.core.management.base import BaseCommand, CommandError, CommandParser
+
+from housecairn.instance.management.commands.backup_instance import (
+    FORMAT,
+    VERSION,
+    postgres_environment,
+)
+
+
+def _safe_name(name: str) -> bool:
+    path = PurePosixPath(name)
+    return (
+        not path.is_absolute() and ".." not in path.parts and "\\" not in name and bool(path.parts)
+    )
+
+
+def _set_aside(path: Path, stamp: str) -> Path | None:
+    if not path.exists():
+        return None
+    aside = path.with_name(f"{path.name}.before-restore-{stamp}")
+    path.rename(aside)
+    return aside
+
+
+class Command(BaseCommand):
+    help = "Restore a backup made by backup_instance (stop the application first)."
+
+    def add_arguments(self, parser: CommandParser) -> None:
+        parser.add_argument("backup", type=Path)
+        parser.add_argument("--yes", action="store_true", help="replace what is there now")
+        parser.add_argument("--database-file", type=Path, default=None)
+        parser.add_argument("--media-root", type=Path, default=None)
+        parser.add_argument("--data-dir", type=Path, default=None)
+
+    def handle(self, *args: Any, **options: Any) -> None:
+        from housecairn.entrypoint import SECRET_KEY_FILE, data_dir
+
+        target_data: Path = options["data_dir"] or data_dir()
+        media: Path = options["media_root"] or Path(settings.MEDIA_ROOT)
+        stamp = datetime.datetime.now(datetime.UTC).strftime("%Y%m%dT%H%M%SZ")
+        try:
+            archive = tarfile.open(options["backup"], mode="r:")  # noqa: SIM115
+        except (OSError, tarfile.TarError) as exc:
+            raise CommandError(f"Not a backup of HouseCairn: {exc}") from None
+        with (
+            archive,
+            tempfile.TemporaryDirectory(
+                dir=target_data if target_data.is_dir() else None
+            ) as scratch,
+        ):
+            work = Path(scratch)
+            members = archive.getmembers()
+            for member in members:
+                if not member.isfile() or not _safe_name(member.name):
+                    raise CommandError(
+                        f"The backup holds an entry that is refused: {member.name[:120]}"
+                    )
+            by_name = {m.name: m for m in members}
+            if "manifest.json" not in by_name:
+                raise CommandError("Not a backup of HouseCairn: no manifest.")
+            handle = archive.extractfile(by_name["manifest.json"])
+            assert handle is not None  # noqa: S101 - a regular file, checked above
+            try:
+                manifest = json.loads(handle.read())
+            except ValueError:
+                raise CommandError(
+                    "Not a backup of HouseCairn: its manifest is not JSON."
+                ) from None
+            if manifest.get("format") != FORMAT or manifest.get("version") != VERSION:
+                raise CommandError(
+                    "Not a backup of HouseCairn, or of a version this one cannot restore."
+                )
+            parts: dict[str, str] = manifest.get("parts", {})
+            if set(parts) != set(by_name) - {"manifest.json"} or "database" not in parts:
+                raise CommandError(
+                    "The backup was changed: its files are not those of its manifest."
+                )
+            for name, expected in parts.items():
+                source = archive.extractfile(by_name[name])
+                assert source is not None  # noqa: S101
+                destination = work / "parts" / name
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                digest = hashlib.sha256()
+                with destination.open("wb") as out:
+                    while chunk := source.read(1024 * 1024):
+                        digest.update(chunk)
+                        out.write(chunk)
+                if digest.hexdigest() != expected:
+                    raise CommandError(f"The backup was changed: {name}.")
+            database = work / "parts" / "database"
+            if manifest.get("database") == "sqlite":
+                target = options["database_file"] or Path(
+                    str(settings.DATABASES["default"]["NAME"])
+                )
+                on_sqlite = settings.DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3"
+                if str(target) == ":memory:" or (not on_sqlite and not options["database_file"]):
+                    raise CommandError(
+                        "This instance does not use a SQLite file: give --database-file."
+                    )
+                if target.exists() and not options["yes"]:
+                    raise CommandError(
+                        f"{target} exists: add --yes to replace it (it is kept aside)."
+                    )
+                target.parent.mkdir(parents=True, exist_ok=True)
+                for suffix in ("", "-wal", "-shm"):
+                    _set_aside(Path(f"{target}{suffix}"), stamp)
+                source_db = sqlite3.connect(database)
+                destination_db = sqlite3.connect(target)
+                try:
+                    source_db.backup(destination_db)
+                finally:
+                    source_db.close()
+                    destination_db.close()
+            elif manifest.get("database") == "postgresql":
+                if not options["yes"]:
+                    raise CommandError("Restoring PostgreSQL replaces the database: add --yes.")
+                program = shutil.which("pg_restore")
+                if program is None:
+                    raise CommandError("pg_restore is not installed in this container.")
+                subprocess.run(  # noqa: S603 - fixed arguments
+                    [
+                        program,
+                        "--clean",
+                        "--if-exists",
+                        "--no-owner",
+                        "--dbname",
+                        str(settings.DATABASES["default"]["NAME"]),
+                        str(database),
+                    ],
+                    env=postgres_environment(),
+                    check=True,
+                )
+            else:
+                raise CommandError("The backup names a database this instance does not know.")
+            restored_media = work / "parts" / "media"
+            if media.exists() and any(media.iterdir()) and not options["yes"]:
+                raise CommandError(
+                    f"{media} is not empty: add --yes to replace it (it is kept aside)."
+                )
+            _set_aside(media, stamp)
+            if restored_media.is_dir():
+                shutil.move(str(restored_media), str(media))
+            else:
+                media.mkdir(parents=True, exist_ok=True)
+            secret = work / "parts" / "secret_key"
+            if secret.is_file():
+                target_data.mkdir(parents=True, exist_ok=True)
+                key_file = target_data / SECRET_KEY_FILE
+                _set_aside(key_file, stamp)
+                shutil.move(str(secret), str(key_file))
+                key_file.chmod(0o600)
+        files = sum(1 for name in parts if name.startswith("media/"))
+        key = "secret key, " if "secret_key" in parts else ""
+        self.stdout.write(f"Restored: database, {key}{files} files.")

@@ -27,8 +27,11 @@ msgstr "Les données d'un logement appartiennent à ses propriétaires, qui peuv
 msgid "Export of a home"
 msgstr "Export d'un logement"
 
-msgid "An owner downloads the archive from the page of the home (**Export all data**) or from the API (`POST /api/v1/homes/<id>/export/`, signed in; an API token cannot). The export is written to the audit log of the home."
-msgstr "Un propriétaire télécharge l'archive depuis la page du logement (**Exporter toutes les données**) ou depuis l'API (`POST /api/v1/homes/<id>/export/`, connecté ; un jeton d'API ne peut pas). L'export est inscrit au journal d'audit du logement."
+msgid "An owner downloads the archive from the page of the home (**Export all data**) or from the API (`POST /api/v1/homes/<id>/export/`, signed in; an API token cannot). The export is written to the audit log of the home ([ADR 0048](../adr/0048-export-format-and-restore.md))."
+msgstr "Un propriétaire télécharge l'archive depuis la page du logement (**Exporter toutes les données**) ou par l'API (`POST /api/v1/homes/<id>/export/`, connecté ; un jeton d'API ne le peut pas). L'export est inscrit au journal d'audit du logement ([ADR 0048](../adr/0048-export-format-and-restore.md))."
+
+msgid "When the files of the home take more than 50 MB, the archive is made in the background by the worker: the page of the export says when it is ready, and the API answers `202` with the job (`GET /api/v1/homes/<id>/export/<job id>/`). The archive is then downloaded by an owner, signed in, at most 3 times and within 24 hours (`POST .../download/`, never a link that opens without signing in); after that it is removed."
+msgstr "Quand les fichiers du logement dépassent 50 Mo, l'archive est préparée en tâche de fond par le worker : la page de l'export indique quand elle est prête, et l'API répond `202` avec la tâche (`GET /api/v1/homes/<id>/export/<id de la tâche>/`). L'archive est ensuite téléchargée par un propriétaire connecté, 3 fois au plus et dans les 24 heures (`POST .../download/`, jamais un lien qui s'ouvre sans connexion) ; ensuite, elle est supprimée."
 
 msgid "The archive is a zip:"
 msgstr "L'archive est un fichier zip :"
@@ -39,17 +42,24 @@ msgstr "Élément"
 msgid "Content"
 msgstr "Contenu"
 
-msgid "`export.json`"
-msgstr "`export.json`"
+msgid "`manifest.json`"
+msgstr "`manifest.json`"
 
-msgid "The data, as JSON (below)."
-msgstr "Les données, au format JSON (ci-dessous)."
+msgid "`format` (`\"housecairn-export\"`), `version` (`2`), `application_version`, `exported_at`, `home` (its id), `apps` (the documents below) and `entries`: the SHA-256 digest and the size of every other file of the archive."
+msgstr "`format` (`\"housecairn-export\"`), `version` (`2`), `application_version`, `exported_at`, `home` (son identifiant), `apps` (les documents ci-dessous) et `entries` : l'empreinte SHA-256 et la taille de chacun des autres fichiers de l'archive."
 
-msgid "`files/`"
-msgstr "`files/`"
+msgid "`data/<app>.json`"
+msgstr "`data/<app>.json`"
 
-msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`, the photos, the pictures of links and the quote files of projects, under `files/projects/`, and the photos of the reports, under `files/reports/`."
-msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, les fichiers des tâches, sous `files/attachments/`, les photos d'étiquettes des articles du matériel, sous `files/stock/`, les photos, les images de liens et les fichiers de devis des projets, sous `files/projects/`, et les photos des signalements, sous `files/reports/`."
+#, python-brace-format
+msgid "The data of one part of the application: `{\"app\": ..., \"sections\": {<section>: [objects]}}`."
+msgstr "Les données d'une partie de l'application : `{\"app\": ..., \"sections\": {<section>: [objets]}}`."
+
+msgid "`files/<folder>/<id>.<extension>`"
+msgstr "`files/<dossier>/<id>.<extension>`"
+
+msgid "The files: `photos/`, `attachments/` (files of tasks), `stock/` (labels of stock items), `projects/` (photos, link pictures, quotes) and `reports/`."
+msgstr "Les fichiers : `photos/`, `attachments/` (fichiers des tâches), `stock/` (étiquettes des articles en stock), `projects/` (photos, images des liens, devis) et `reports/`."
 
 msgid "`README.txt`"
 msgstr "`README.txt`"
@@ -57,185 +67,131 @@ msgstr "`README.txt`"
 msgid "A reminder of the format."
 msgstr "Un rappel du format."
 
-msgid "`export.json` is versioned. Version `1` has these keys:"
-msgstr "`export.json` est versionné. La version `1` comporte ces clés :"
+msgid "Its [JSON Schema](../_static/schemas/housecairn-export-v2.schema.json) is published with this documentation. The rules that hold for every section:"
+msgstr "Son [schéma JSON](../_static/schemas/housecairn-export-v2.schema.json) est publié avec cette documentation. Les règles valables pour toutes les sections :"
 
-msgid "Key"
-msgstr "Clé"
+msgid "**Every field of the table**, by its name in the code: an object of `rooms` has `id`, `name`, `kind`, `position`, `notes`, `paint_colour`, ..., `created_at` and `updated_at`. A field added by a later version is in the archive without a change of format; a field removed or renamed raises the version."
+msgstr "**Tous les champs de la table**, sous leur nom dans le code : un objet de `rooms` a `id`, `name`, `kind`, `position`, `notes`, `paint_colour`, ..., `created_at` et `updated_at`. Un champ ajouté par une version ultérieure figure dans l'archive sans changement de format ; un champ supprimé ou renommé fait monter la version."
 
-msgid "`format`, `version`"
-msgstr "`format`, `version`"
+msgid "**Identifiers are the UUIDs** of the objects, never an internal number. A reference is the id of an object of the same archive, or `null`; a link to several objects (the rooms of a project) is a list of ids."
+msgstr "**Les identifiants sont les UUID** des objets, jamais un numéro interne. Une référence est l'identifiant d'un objet de la même archive, ou `null` ; un lien vers plusieurs objets (les pièces d'un projet) est une liste d'identifiants."
 
-msgid "`\"housecairn-export\"` and `1`. A change that removes or renames a key raises the version."
-msgstr "`\"housecairn-export\"` et `1`. Un changement qui supprime ou renomme une clé augmente la version."
+msgid "**People** are named by an id of the `people` list of `data/homes.json`, which alone holds their e-mail address and display name; the restore uses the address to find their account."
+msgstr "**Les personnes** sont désignées par un identifiant de la liste `people` de `data/homes.json`, seule à contenir leur adresse e-mail et leur nom d'affichage ; la restauration se sert de l'adresse pour retrouver leur compte."
 
-msgid "`exported_at`, `application_version`"
-msgstr "`exported_at`, `application_version`"
+msgid "**Amounts and quantities** are text with a point (`\"1250.50\"`), never a number of JSON; amounts are in the currency of the home (`home.currency`). Dates are ISO 8601."
+msgstr "**Les montants et les quantités** sont du texte avec un point (`\"1250.50\"`), jamais un nombre JSON ; les montants sont dans la devise du logement (`home.currency`). Les dates sont au format ISO 8601."
 
-msgid "When, and by which version."
-msgstr "Quand, et par quelle version."
+msgid "**Files** are a path of the archive, or `null` when the file is missing on the disk. Photos are exported as stored, already stripped of their metadata at upload; documents as received. Thumbnails are not exported: a restore makes them again."
+msgstr "**Les fichiers** sont un chemin de l'archive, ou `null` quand le fichier manque sur le disque. Les photos sont exportées telles qu'elles sont stockées, déjà débarrassées de leurs métadonnées à l'envoi ; les documents tels que reçus. Les miniatures ne sont pas exportées : une restauration les refait."
 
-msgid "`home`"
-msgstr "`home`"
+msgid "**Only what is not deleted**, and nothing whose parent is: the history of a deleted task is not exported."
+msgstr "**Seulement ce qui n'est pas supprimé**, et rien dont le parent l'est : l'historique d'une tâche supprimée n'est pas exporté."
 
-msgid "`id`, `name`, `currency`, `hemisphere` (`north` or `south`), `required_provider`, `created_at`."
-msgstr "`id`, `name`, `currency`, `hemisphere` (`north` ou `south`), `required_provider`, `created_at`."
+msgid "Document"
+msgstr "Document"
 
-msgid "`members`"
-msgstr "`members`"
+msgid "Sections"
+msgstr "Sections"
 
-msgid "`id`, `email`, `name` (the display name, else the full name, else the part of the address before the `@`), `role`, `joined_at` of each member."
-msgstr "`id`, `email`, `name` (le nom d'affichage, sinon le nom complet, sinon la partie de l'adresse avant le `@`), `role`, `joined_at` de chaque membre."
+msgid "`homes`"
+msgstr "`homes`"
 
-msgid "`pending_invitations`"
-msgstr "`pending_invitations`"
-
-msgid "`id`, `email`, `role`, `sent_at`, `expires_at`; never a link."
-msgstr "`id`, `email`, `role`, `sent_at`, `expires_at` ; jamais de lien."
+msgid "`home` (id, name, currency, hemisphere, sign-in requirement, dates), `people`, `members` (person and role) and `pending_invitations` (address, role, dates; never the link)."
+msgstr "`home` (identifiant, nom, devise, hémisphère, exigence de connexion, dates), `people`, `members` (personne et rôle) et `pending_invitations` (adresse, rôle, dates ; jamais le lien)."
 
 msgid "`events`"
 msgstr "`events`"
 
-msgid "`id`, `kind`, `payload`, `received_at` of the events received."
-msgstr "`id`, `kind`, `payload`, `received_at` des événements reçus."
+msgid "`events` received, without the token they came with."
+msgstr "`events` reçus, sans le jeton avec lequel ils sont arrivés."
 
 msgid "`rooms`"
 msgstr "`rooms`"
 
-msgid "`id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch, `paint_article` (a stock item id or `null`), floor and wall covering, memory notes)."
-msgstr "`id`, `name`, `kind`, `position`, `notes`, `created_at` de chaque pièce, et sa `memory` (couleur, marque, référence et lot de la peinture, `paint_article` (l'identifiant d'un article ou `null`), revêtement de sol et de mur, notes de mémoire)."
+msgid "`rooms` (with the room memory), `items`, `photos`."
+msgstr "`rooms` (avec la mémoire de la pièce), `items`, `photos`."
 
-msgid "`items`"
-msgstr "`items`"
+msgid "`stock`"
+msgstr "`stock`"
 
-msgid "`id`, `room`, `name`, `kind`, `brand`, `model`, `serial_number`, `installed_on`, `warranty_ends_on`, `contract_provider`, `contract_number`, `contract_url`, `links`, `notes`, `created_at` of each item."
-msgstr "`id`, `room`, `name`, `kind`, `brand`, `model`, `serial_number`, `installed_on`, `warranty_ends_on`, `contract_provider`, `contract_number`, `contract_url`, `links`, `notes`, `created_at` de chaque élément."
-
-msgid "`photos`"
-msgstr "`photos`"
-
-msgid "`id`, `room` or `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the photo in the archive (`files/photos/<id>.<extension>`, or `null` if the file is missing)."
-msgstr "`id`, `room` ou `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, et `file`, le chemin de la photo dans l'archive (`files/photos/<id>.<extension>`, ou `null` si le fichier manque)."
-
-msgid "`attachments`"
-msgstr "`attachments`"
-
-msgid "`id`, `task`, `occurrence` or `null`, `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the file in the archive (`files/attachments/<id>.<extension>`, or `null` if the file is missing)."
-msgstr "`id`, `task`, `occurrence` ou `null`, `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, et `file`, le chemin du fichier dans l'archive (`files/attachments/<id>.<extension>`, ou `null` si le fichier manque)."
-
-msgid "`stock_items`"
-msgstr "`stock_items`"
-
-msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (a code of the list, or `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (item ids), `rooms` (room ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
-msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (un code de la liste, ou `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `rooms` (identifiants de pièces), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
-
-msgid "`stock_suppliers`"
-msgstr "`stock_suppliers`"
-
-msgid "`id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`."
-msgstr "`id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`."
-
-msgid "`stock_movements`"
-msgstr "`stock_movements`"
-
-msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (the occurrence of a task whose closing wrote the line, or `null`), `created_at`."
-msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (l'occurrence d'une tâche dont la clôture a écrit la ligne, ou `null`), `created_at`."
-
-msgid "`task_materials`"
-msgstr "`task_materials`"
-
-msgid "`id`, `task`, `article`, `quantity`, `created_at`: the stock items each task needs."
-msgstr "`id`, `task`, `article`, `quantity`, `created_at` : les articles dont chaque tâche a besoin."
-
-msgid "`stock_draws`"
-msgstr "`stock_draws`"
-
-msgid "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at`: what each closed occurrence took from the stock."
-msgstr "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at` : ce que chaque occurrence close a pris dans le stock."
-
-msgid "`projects`"
-msgstr "`projects`"
-
-msgid "`id`, `title`, `goal`, `status`, `priority`, `rooms` (room ids), `estimated_minutes`, `season` with `season_start_month` and `season_end_month`, `created_at`."
-msgstr "`id`, `title`, `goal`, `status`, `priority`, `rooms` (identifiants de pièces), `estimated_minutes`, `season` avec `season_start_month` et `season_end_month`, `created_at`."
-
-msgid "`project_budget_lines`"
-msgstr "`project_budget_lines`"
-
-msgid "`id`, `project`, `label`, `nature`, `planned`, `committed` (the sum of the accepted quotes), `paid`, `created_at`. Amounts are text with two decimals, in the currency of the home."
-msgstr "`id`, `project`, `label`, `nature`, `planned`, `committed` (la somme des devis acceptés), `paid`, `created_at`. Les montants sont du texte à deux décimales, dans la devise du logement."
-
-msgid "`project_quotes`"
-msgstr "`project_quotes`"
-
-msgid "`id`, `project`, `contractor` (an id or `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (the line an accepted quote is committed on, else `null`), `note`, `paperless_id`, `paperless_url`, `created_at`."
-msgstr "`id`, `project`, `contractor` (un identifiant ou `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (la ligne sur laquelle un devis accepté est engagé, sinon `null`), `note`, `paperless_id`, `paperless_url`, `created_at`."
-
-msgid "`project_files`"
-msgstr "`project_files`"
-
-msgid "`id`, `project`, `quote` (or `null` for a photo of the project), `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path in the archive (`files/projects/<id>.<extension>`, or `null` if the file is missing)."
-msgstr "`id`, `project`, `quote` (ou `null` pour une photo du projet), `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, et `file`, le chemin dans l'archive (`files/projects/<id>.<extension>`, ou `null` si le fichier manque)."
-
-msgid "`project_links`"
-msgstr "`project_links`"
-
-msgid "`id`, `project`, `url`, `title`, `image` (the id of the picture in `project_files`, or `null`), `created_at`."
-msgstr "`id`, `project`, `url`, `title`, `image` (l'identifiant de l'image dans `project_files`, ou `null`), `created_at`."
-
-msgid "`project_tasks`"
-msgstr "`project_tasks`"
-
-msgid "`id`, `project`, `task`: the tasks that belong to a project."
-msgstr "`id`, `project`, `task` : les tâches qui appartiennent à un projet."
-
-msgid "`project_envelopes`"
-msgstr "`project_envelopes`"
-
-msgid "`id`, `year`, `amount`: the annual budget envelope."
-msgstr "`id`, `year`, `amount` : l'enveloppe budgétaire annuelle."
+msgid "`stock_items`, `stock_suppliers`, `stock_movements`. The quantity in stock is the sum of the movements."
+msgstr "`stock_items`, `stock_suppliers`, `stock_movements`. La quantité en stock est la somme des mouvements."
 
 msgid "`tasks`"
 msgstr "`tasks`"
 
-msgid "`id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, the budgets, `notes`, `procedure`, `assignee`, `contractor` (an id), the repeat rule, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` or empty) with `season_start_month` and `season_end_month`, `hide_days_before`."
-msgstr "`id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, les budgets, `notes`, `procedure`, `assignee`, `contractor` (un identifiant), la règle de répétition, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` ou vide) avec `season_start_month` et `season_end_month`, `hide_days_before`."
+msgid "`contractors`, `tasks`, `task_materials`, `occurrences` (the history: done, skipped, planned), `stock_draws`, `attachments`."
+msgstr "`contractors`, `tasks`, `task_materials`, `occurrences` (l'historique : faites, passées, prévues), `stock_draws`, `attachments`."
 
-msgid "`contractors`"
-msgstr "`contractors`"
+msgid "`projects`"
+msgstr "`projects`"
 
-msgid "`id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`."
-msgstr "`id`, `name`, `trade` (un code de la liste, ou `other`), `trade_other`, `phone`, `email`, `address`, `note`."
+msgid "`projects`, `project_budget_lines`, `project_quotes`, `project_files`, `project_links`, `project_tasks`, `project_envelopes`. What a line has committed is the sum of its accepted quotes."
+msgstr "`projects`, `project_budget_lines`, `project_quotes`, `project_files`, `project_links`, `project_tasks`, `project_envelopes`. L'engagé d'une ligne est la somme de ses devis acceptés."
 
-msgid "`calendar_feeds`"
-msgstr "`calendar_feeds`"
+msgid "`calendar`"
+msgstr "`calendar`"
 
-msgid "`id`, `created_at`, `regenerated_at` of each [calendar feed](../guides/calendar.md) of the home. Never the address or its secret, which is not kept; the combined feed of a person belongs to the person, not to a home."
-msgstr "`id`, `created_at`, `regenerated_at` de chaque [flux de calendrier](../guides/calendar.md) du logement. Jamais l'adresse ni son secret, qui n'est pas conservé ; le flux combiné d'une personne appartient à la personne, pas à un logement."
+msgid "`calendar_feeds`: that a feed exists and when; never its address or the digest of its secret."
+msgstr "`calendar_feeds` : qu'un flux existe et depuis quand ; jamais son adresse ni l'empreinte de son secret."
 
 msgid "`labels`"
 msgstr "`labels`"
 
-msgid "`id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing."
-msgstr "`id`, `kind` (`room`, `item` ou `article`), `target` (l'identifiant de la pièce, de l'élément ou de l'article), `code`, `revoked_at`, `created_at` de chaque étiquette QR. Le `code` est l'identifiant opaque que porte son autocollant : il est exporté pour une étiquette active et vaut `null` pour une étiquette révoquée, qui n'ouvre rien."
+msgid "`labels`: the `code` an active QR label carries, so that the stickers still open the right page after a restore; `null` for a revoked one."
+msgstr "`labels` : le `code` que porte une étiquette QR active, pour que les autocollants ouvrent toujours la bonne page après une restauration ; `null` pour une étiquette révoquée."
 
 msgid "`reports`"
 msgstr "`reports`"
 
-msgid "`id`, `title`, `status`, `place`, `room`, `item` or `stock_item`, `task`, `reporter` (the e-mail address that `members` already holds), `created_at`, `closed_at`, and `file`, the path of the photo in the archive (`files/reports/<id>.<extension>`, or `null`)."
-msgstr "`id`, `title`, `status`, `place`, `room`, `item` ou `stock_item`, `task`, `reporter` (l'adresse e-mail que `members` contient déjà), `created_at`, `closed_at`, et `file`, le chemin de la photo dans l'archive (`files/reports/<id>.<extension>`, ou `null`)."
+msgid "`reports`, with their photo."
+msgstr "`reports`, avec leur photo."
 
-msgid "`files`"
-msgstr "`files`"
+msgid "The archive never holds a secret: no API token (not even its digest), no link of an invitation or of a calendar feed, no address of a notification channel, no password, no setting or single sign-on secret of the instance, nothing of the first setup. Each app adds its tables to the registry of the export (`homes.exports.register`); a test fails on a table that is in no section."
+msgstr "L'archive ne contient jamais de secret : aucun jeton d'API (pas même son empreinte), aucun lien d'invitation ou de flux d'agenda, aucune adresse de canal de notification, aucun mot de passe, aucun réglage ni secret d'authentification unique de l'instance, rien de la première installation. Chaque application ajoute ses tables au registre de l'export (`homes.exports.register`) ; un test échoue sur une table qui n'est dans aucune section."
 
-msgid "`path` and `size` of each file in `files/`."
-msgstr "`path` et `size` de chaque fichier de `files/`."
+msgid "Version 1 archives (a single `export.json`, before this version) cannot be restored: export the home again."
+msgstr "Les archives de version 1 (un seul `export.json`, avant cette version) ne peuvent pas être restaurées : exportez de nouveau le logement."
 
-msgid "Photos and the images attached to tasks are exported as they are stored, already stripped of their metadata at upload; the documents attached to tasks are exported as they were received. Thumbnails are not exported, and neither is anything deleted. The archive has no size limit of its own: it is as large as the files of the home (each is limited by `HOUSECAIRN_PHOTO_MAX_BYTES`)."
-msgstr "Les photos et les images jointes aux tâches sont exportées telles qu'elles sont stockées, déjà dépouillées de leurs métadonnées au dépôt ; les documents joints aux tâches sont exportés tels qu'ils ont été reçus. Les miniatures ne sont pas exportées, ni rien de ce qui a été supprimé. L'archive n'a pas de plafond de taille propre : elle est aussi grosse que les fichiers du logement (chacun est limité par `HOUSECAIRN_PHOTO_MAX_BYTES`)."
+msgid "Tables for a spreadsheet"
+msgstr "Tableaux pour un tableur"
 
-msgid "Each lot that adds data adds its section here and to the archive. The archive holds the home it was made for and nothing of another."
-msgstr "Chaque lot qui ajoute des données ajoute sa section ici et dans l'archive. L'archive contient le logement pour lequel elle a été faite, et rien d'un autre."
+msgid "Every member downloads a table of the home as CSV from the page of the home (**Tables for a spreadsheet**), or from the API (`GET /api/v1/homes/<id>/export/<table>.csv`, a token with the `read` scope on the home included): `rooms`, `items`, `tasks`, `history`, `stock`, `contractors`, `reports`. The file is UTF-8 with a byte order mark, which Excel needs to read accents; the columns are the fields of the archive, people are named by their display name and never by their address, amounts are numbers with a point and the currency is a column of its own. A text that a spreadsheet would run as a formula (starting with `=`, `+`, `-`, `@`, a tab or a carriage return) is written after a `'`, so that it stays text."
+msgstr "Chaque membre télécharge une table du logement en CSV depuis la page du logement (**Tableaux pour un tableur**), ou par l'API (`GET /api/v1/homes/<id>/export/<table>.csv`, y compris avec un jeton de portée `read` sur le logement) : `rooms`, `items`, `tasks`, `history`, `stock`, `contractors`, `reports`. Le fichier est en UTF-8 avec une marque d'ordre des octets, dont Excel a besoin pour lire les accents ; les colonnes sont les champs de l'archive, les personnes sont désignées par leur nom d'affichage et jamais par leur adresse, les montants sont des nombres avec un point et la devise a sa propre colonne. Un texte qu'un tableur exécuterait comme une formule (commençant par `=`, `+`, `-`, `@`, une tabulation ou un retour chariot) est écrit après une `'`, pour rester du texte."
+
+msgid "Restore of a home"
+msgstr "Restauration d'un logement"
+
+msgid "**Homes > Restore a home** (or `POST /api/v1/homes/restore/`, signed in; an API token cannot) makes the archive a new home, owned by the person who restores it. It does not become the current home. The identifiers are kept, so that QR labels and links still lead to the same objects."
+msgstr "**Logements > Restaurer un logement** (ou `POST /api/v1/homes/restore/`, connecté ; un jeton d'API ne le peut pas) fait de l'archive un nouveau logement, dont la personne qui restaure est propriétaire. Il ne devient pas le logement courant. Les identifiants sont conservés, pour que les étiquettes QR et les liens mènent toujours aux mêmes objets."
+
+msgid "The archive is checked before anything is written, and refused with the reason when it is not one HouseCairn made, or was changed since:"
+msgstr "L'archive est vérifiée avant toute écriture, et refusée avec la raison quand elle n'a pas été faite par HouseCairn, ou a été modifiée depuis :"
+
+msgid "only the names the format allows, no symbolic link, no encrypted file, no name that leaves the archive;"
+msgstr "seulement les noms que le format autorise, aucun lien symbolique, aucun fichier chiffré, aucun nom qui sort de l'archive ;"
+
+msgid "a size, once unpacked, read from the zip before unpacking, no larger than the file quota of a home; no file larger than the largest upload;"
+msgstr "une taille décompressée, lue dans le zip avant toute décompression, qui ne dépasse pas le quota de fichiers d'un logement ; aucun fichier plus grand que le plus grand envoi accepté ;"
+
+msgid "a format and a version this instance knows, and every file present with the digest and the size its manifest gives;"
+msgstr "un format et une version que cette instance connaît, et chaque fichier présent avec l'empreinte et la taille que donne son manifeste ;"
+
+msgid "every value accepted by its field (a choice of the list, a valid date, a text no longer than allowed), every reference to an object the archive holds, never to an object of another home;"
+msgstr "chaque valeur acceptée par son champ (un choix de la liste, une date valide, un texte pas plus long que permis), chaque référence vers un objet que contient l'archive, jamais vers un objet d'un autre logement ;"
+
+msgid "no object already on this instance: the home it was made from must be deleted first, or the archive restored on another instance;"
+msgstr "aucun objet déjà présent sur cette instance : le logement d'origine doit d'abord être supprimé, ou l'archive restaurée sur une autre instance ;"
+
+msgid "every file decoded again, of the type its object says."
+msgstr "chaque fichier décodé de nouveau, du type qu'indique son objet."
+
+msgid "People are never given an account. From the web, the person restoring is attached to what was theirs; the others are listed, left unattributed, and can be invited again. For an instance that moves, the administrator runs:"
+msgstr "Personne ne reçoit de compte. Depuis le web, la personne qui restaure est rattachée à ce qui était à elle ; les autres sont listées, laissées non attribuées, et peuvent être invitées de nouveau. Pour une instance qui déménage, l'administrateur lance :"
+
+msgid "which attaches again every person of the archive who has an account here with the same address, with their role."
+msgstr "qui rattache chaque personne de l'archive ayant ici un compte à la même adresse, avec son rôle."
 
 msgid "Deletion of a home"
 msgstr "Suppression d'un logement"
@@ -243,8 +199,8 @@ msgstr "Suppression d'un logement"
 msgid "An owner deletes the home from its page (**Delete this home**): type its exact name. The home and everything in it go for good, for all its members: members, invitations, events, calendar feeds, its audit log and its files; an API token left without a home is revoked. **There is no grace period and no way back**: export first. The audit log of the instance records that a home was deleted, without its name."
 msgstr "Un propriétaire supprime le logement depuis sa page (**Supprimer ce logement**) : saisissez son nom exact. Le logement et tout ce qu'il contient disparaissent définitivement, pour tous ses membres : membres, invitations, événements, flux de calendrier, son journal d'audit et ses fichiers ; un jeton d'API resté sans logement est révoqué. **Il n'y a ni délai de grâce ni retour en arrière** : exportez d'abord. Le journal d'audit de l'instance enregistre qu'un logement a été supprimé, sans son nom."
 
-msgid "The photos, the labels of stock items, the photos, link pictures and quote files of projects, the photos of reports and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>`, `stock/<home id>`, `projects/<home id>` or `reports/<home id>`): remove that directory by hand."
-msgstr "Les photos, les étiquettes des articles du matériel, les photos, images de liens et fichiers de devis des projets, les photos des signalements et les fichiers joints aux tâches sont effacés du disque avec le logement (les photos supprimées une à une comprises). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est consignée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>`, `stock/<id du logement>`, `projects/<id du logement>` ou `reports/<id du logement>`) : supprimez ce dossier à la main."
+msgid "The photos, the labels of stock items, the photos, link pictures and quote files of projects, the photos of reports and the files attached to tasks are erased from the disk with the home (photos deleted one by one included). If the disk refuses (permissions, a full or read-only volume), the home is still deleted and the error is logged by `housecairn.files` with the path of the directory (`photos/<home id>`, `attachments/<home id>`, `stock/<home id>`, `projects/<home id>`, `reports/<home id>` or `exports/<home id>`, the archives made in the background): remove that directory by hand."
+msgstr "Les photos, les étiquettes des articles en stock, les photos, images de liens et fichiers de devis des projets, les photos des signalements et les fichiers joints aux tâches sont effacés du disque avec le logement (y compris les photos supprimées une à une). Si le disque refuse (droits, volume plein ou en lecture seule), le logement est tout de même supprimé et l'erreur est journalisée par `housecairn.files` avec le chemin du dossier (`photos/<id du logement>`, `attachments/<id du logement>`, `stock/<id du logement>`, `projects/<id du logement>`, `reports/<id du logement>` ou `exports/<id du logement>`, les archives préparées en tâche de fond) : supprimez ce dossier à la main."
 
 msgid "The budget screens (by room, by project, by task, the envelope) keep no data of their own: they are worked out from the projects, tasks and envelopes above, so they are in the export and go with the home."
 msgstr "Les écrans du budget (par pièce, par projet, par tâche, l'enveloppe) ne gardent aucune donnée à eux : ils sont calculés à partir des projets, des tâches et des enveloppes ci-dessus, donc ils sont dans l'export et partent avec le logement."
@@ -281,4 +237,166 @@ msgstr "Les données supprimées restent dans les sauvegardes jusqu'à leur expi
 
 #~ msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (item ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
 #~ msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
+
+#~ msgid "The data, as JSON (below)."
+#~ msgstr "Les données, au format JSON (ci-dessous)."
+
+#~ msgid "`files/`"
+#~ msgstr "`files/`"
+
+#~ msgid "The files of the home, at the paths `export.json` lists: the photos, under `files/photos/`, the files of the tasks, under `files/attachments/`, the photos of the labels of stock items, under `files/stock/`, the photos, the pictures of links and the quote files of projects, under `files/projects/`, and the photos of the reports, under `files/reports/`."
+#~ msgstr "Les fichiers du logement, aux chemins que liste `export.json` : les photos, sous `files/photos/`, les fichiers des tâches, sous `files/attachments/`, les photos d'étiquettes des articles du matériel, sous `files/stock/`, les photos, les images de liens et les fichiers de devis des projets, sous `files/projects/`, et les photos des signalements, sous `files/reports/`."
+
+#~ msgid "`export.json` is versioned. Version `1` has these keys:"
+#~ msgstr "`export.json` est versionné. La version `1` comporte ces clés :"
+
+#~ msgid "Key"
+#~ msgstr "Clé"
+
+#~ msgid "`format`, `version`"
+#~ msgstr "`format`, `version`"
+
+#~ msgid "`\"housecairn-export\"` and `1`. A change that removes or renames a key raises the version."
+#~ msgstr "`\"housecairn-export\"` et `1`. Un changement qui supprime ou renomme une clé augmente la version."
+
+#~ msgid "`exported_at`, `application_version`"
+#~ msgstr "`exported_at`, `application_version`"
+
+#~ msgid "When, and by which version."
+#~ msgstr "Quand, et par quelle version."
+
+#~ msgid "`id`, `name`, `currency`, `hemisphere` (`north` or `south`), `required_provider`, `created_at`."
+#~ msgstr "`id`, `name`, `currency`, `hemisphere` (`north` ou `south`), `required_provider`, `created_at`."
+
+#~ msgid "`members`"
+#~ msgstr "`members`"
+
+#~ msgid "`id`, `email`, `name` (the display name, else the full name, else the part of the address before the `@`), `role`, `joined_at` of each member."
+#~ msgstr "`id`, `email`, `name` (le nom d'affichage, sinon le nom complet, sinon la partie de l'adresse avant le `@`), `role`, `joined_at` de chaque membre."
+
+#~ msgid "`pending_invitations`"
+#~ msgstr "`pending_invitations`"
+
+#~ msgid "`id`, `email`, `role`, `sent_at`, `expires_at`; never a link."
+#~ msgstr "`id`, `email`, `role`, `sent_at`, `expires_at` ; jamais de lien."
+
+#~ msgid "`id`, `kind`, `payload`, `received_at` of the events received."
+#~ msgstr "`id`, `kind`, `payload`, `received_at` des événements reçus."
+
+#~ msgid "`id`, `name`, `kind`, `position`, `notes`, `created_at` of each room, and its `memory` (paint colour, brand, reference, batch, `paint_article` (a stock item id or `null`), floor and wall covering, memory notes)."
+#~ msgstr "`id`, `name`, `kind`, `position`, `notes`, `created_at` de chaque pièce, et sa `memory` (couleur, marque, référence et lot de la peinture, `paint_article` (l'identifiant d'un article ou `null`), revêtement de sol et de mur, notes de mémoire)."
+
+#~ msgid "`items`"
+#~ msgstr "`items`"
+
+#~ msgid "`id`, `room`, `name`, `kind`, `brand`, `model`, `serial_number`, `installed_on`, `warranty_ends_on`, `contract_provider`, `contract_number`, `contract_url`, `links`, `notes`, `created_at` of each item."
+#~ msgstr "`id`, `room`, `name`, `kind`, `brand`, `model`, `serial_number`, `installed_on`, `warranty_ends_on`, `contract_provider`, `contract_number`, `contract_url`, `links`, `notes`, `created_at` de chaque élément."
+
+#~ msgid "`photos`"
+#~ msgstr "`photos`"
+
+#~ msgid "`id`, `room` or `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the photo in the archive (`files/photos/<id>.<extension>`, or `null` if the file is missing)."
+#~ msgstr "`id`, `room` ou `item`, `category`, `caption`, `content_type`, `size_bytes`, `width`, `height`, `created_at`, et `file`, le chemin de la photo dans l'archive (`files/photos/<id>.<extension>`, ou `null` si le fichier manque)."
+
+#~ msgid "`attachments`"
+#~ msgstr "`attachments`"
+
+#~ msgid "`id`, `task`, `occurrence` or `null`, `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path of the file in the archive (`files/attachments/<id>.<extension>`, or `null` if the file is missing)."
+#~ msgstr "`id`, `task`, `occurrence` ou `null`, `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, et `file`, le chemin du fichier dans l'archive (`files/attachments/<id>.<extension>`, ou `null` si le fichier manque)."
+
+#~ msgid "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (a code of the list, or `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (item ids), `rooms` (room ids), `notes`, `created_at`, and `label`, the path of the photo of the label in the archive (`files/stock/<id>.<extension>`, or `null`)."
+#~ msgstr "`id`, `name`, `manufacturer_reference`, `dimensions`, `storage_location`, `unit` (un code de la liste, ou `other`), `unit_other`, `threshold`, `quantity`, `compatible_items` (identifiants d'éléments), `rooms` (identifiants de pièces), `notes`, `created_at`, et `label`, le chemin de la photo de l'étiquette dans l'archive (`files/stock/<id>.<extension>`, ou `null`)."
+
+#~ msgid "`stock_suppliers`"
+#~ msgstr "`stock_suppliers`"
+
+#~ msgid "`id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`."
+#~ msgstr "`id`, `article`, `name`, `reference`, `url`, `last_price`, `created_at`."
+
+#~ msgid "`stock_movements`"
+#~ msgstr "`stock_movements`"
+
+#~ msgid "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (the occurrence of a task whose closing wrote the line, or `null`), `created_at`."
+#~ msgstr "`id`, `article`, `kind`, `quantity`, `delta`, `occurred_on`, `note`, `occurrence` (l'occurrence d'une tâche dont la clôture a écrit la ligne, ou `null`), `created_at`."
+
+#~ msgid "`task_materials`"
+#~ msgstr "`task_materials`"
+
+#~ msgid "`id`, `task`, `article`, `quantity`, `created_at`: the stock items each task needs."
+#~ msgstr "`id`, `task`, `article`, `quantity`, `created_at` : les articles dont chaque tâche a besoin."
+
+#~ msgid "`stock_draws`"
+#~ msgstr "`stock_draws`"
+
+#~ msgid "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at`: what each closed occurrence took from the stock."
+#~ msgstr "`id`, `occurrence`, `article`, `wanted`, `drawn`, `created_at` : ce que chaque occurrence close a pris dans le stock."
+
+#~ msgid "`id`, `title`, `goal`, `status`, `priority`, `rooms` (room ids), `estimated_minutes`, `season` with `season_start_month` and `season_end_month`, `created_at`."
+#~ msgstr "`id`, `title`, `goal`, `status`, `priority`, `rooms` (identifiants de pièces), `estimated_minutes`, `season` avec `season_start_month` et `season_end_month`, `created_at`."
+
+#~ msgid "`project_budget_lines`"
+#~ msgstr "`project_budget_lines`"
+
+#~ msgid "`id`, `project`, `label`, `nature`, `planned`, `committed` (the sum of the accepted quotes), `paid`, `created_at`. Amounts are text with two decimals, in the currency of the home."
+#~ msgstr "`id`, `project`, `label`, `nature`, `planned`, `committed` (la somme des devis acceptés), `paid`, `created_at`. Les montants sont du texte à deux décimales, dans la devise du logement."
+
+#~ msgid "`project_quotes`"
+#~ msgstr "`project_quotes`"
+
+#~ msgid "`id`, `project`, `contractor` (an id or `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (the line an accepted quote is committed on, else `null`), `note`, `paperless_id`, `paperless_url`, `created_at`."
+#~ msgstr "`id`, `project`, `contractor` (un identifiant ou `null`), `amount`, `issued_on`, `valid_until`, `status`, `budget_line` (la ligne sur laquelle un devis accepté est engagé, sinon `null`), `note`, `paperless_id`, `paperless_url`, `created_at`."
+
+#~ msgid "`project_files`"
+#~ msgstr "`project_files`"
+
+#~ msgid "`id`, `project`, `quote` (or `null` for a photo of the project), `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, and `file`, the path in the archive (`files/projects/<id>.<extension>`, or `null` if the file is missing)."
+#~ msgstr "`id`, `project`, `quote` (ou `null` pour une photo du projet), `name`, `content_type`, `is_image`, `size_bytes`, `width`, `height`, `created_at`, et `file`, le chemin dans l'archive (`files/projects/<id>.<extension>`, ou `null` si le fichier manque)."
+
+#~ msgid "`project_links`"
+#~ msgstr "`project_links`"
+
+#~ msgid "`id`, `project`, `url`, `title`, `image` (the id of the picture in `project_files`, or `null`), `created_at`."
+#~ msgstr "`id`, `project`, `url`, `title`, `image` (l'identifiant de l'image dans `project_files`, ou `null`), `created_at`."
+
+#~ msgid "`project_tasks`"
+#~ msgstr "`project_tasks`"
+
+#~ msgid "`id`, `project`, `task`: the tasks that belong to a project."
+#~ msgstr "`id`, `project`, `task` : les tâches qui appartiennent à un projet."
+
+#~ msgid "`project_envelopes`"
+#~ msgstr "`project_envelopes`"
+
+#~ msgid "`id`, `year`, `amount`: the annual budget envelope."
+#~ msgstr "`id`, `year`, `amount` : l'enveloppe budgétaire annuelle."
+
+#~ msgid "`id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, the budgets, `notes`, `procedure`, `assignee`, `contractor` (an id), the repeat rule, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` or empty) with `season_start_month` and `season_end_month`, `hide_days_before`."
+#~ msgstr "`id`, `title`, `room`, `item`, `priority`, `estimated_minutes`, les budgets, `notes`, `procedure`, `assignee`, `contractor` (un identifiant), la règle de répétition, `season` (`spring`, `summer`, `autumn`, `winter`, `heating`, `custom` ou vide) avec `season_start_month` et `season_end_month`, `hide_days_before`."
+
+#~ msgid "`contractors`"
+#~ msgstr "`contractors`"
+
+#~ msgid "`id`, `name`, `trade` (a code of the list, or `other`), `trade_other`, `phone`, `email`, `address`, `note`."
+#~ msgstr "`id`, `name`, `trade` (un code de la liste, ou `other`), `trade_other`, `phone`, `email`, `address`, `note`."
+
+#~ msgid "`id`, `created_at`, `regenerated_at` of each [calendar feed](../guides/calendar.md) of the home. Never the address or its secret, which is not kept; the combined feed of a person belongs to the person, not to a home."
+#~ msgstr "`id`, `created_at`, `regenerated_at` de chaque [flux de calendrier](../guides/calendar.md) du logement. Jamais l'adresse ni son secret, qui n'est pas conservé ; le flux combiné d'une personne appartient à la personne, pas à un logement."
+
+#~ msgid "`id`, `kind` (`room`, `item` or `article`), `target` (the id of the room, item or stock item), `code`, `revoked_at`, `created_at` of each QR label. The `code` is the opaque identifier its sticker carries: it is exported for an active label and is `null` for a revoked one, which opens nothing."
+#~ msgstr "`id`, `kind` (`room`, `item` ou `article`), `target` (l'identifiant de la pièce, de l'élément ou de l'article), `code`, `revoked_at`, `created_at` de chaque étiquette QR. Le `code` est l'identifiant opaque que porte son autocollant : il est exporté pour une étiquette active et vaut `null` pour une étiquette révoquée, qui n'ouvre rien."
+
+#~ msgid "`id`, `title`, `status`, `place`, `room`, `item` or `stock_item`, `task`, `reporter` (the e-mail address that `members` already holds), `created_at`, `closed_at`, and `file`, the path of the photo in the archive (`files/reports/<id>.<extension>`, or `null`)."
+#~ msgstr "`id`, `title`, `status`, `place`, `room`, `item` ou `stock_item`, `task`, `reporter` (l'adresse e-mail que `members` contient déjà), `created_at`, `closed_at`, et `file`, le chemin de la photo dans l'archive (`files/reports/<id>.<extension>`, ou `null`)."
+
+#~ msgid "`files`"
+#~ msgstr "`files`"
+
+#~ msgid "`path` and `size` of each file in `files/`."
+#~ msgstr "`path` et `size` de chaque fichier de `files/`."
+
+#~ msgid "Photos and the images attached to tasks are exported as they are stored, already stripped of their metadata at upload; the documents attached to tasks are exported as they were received. Thumbnails are not exported, and neither is anything deleted. The archive has no size limit of its own: it is as large as the files of the home (each is limited by `HOUSECAIRN_PHOTO_MAX_BYTES`)."
+#~ msgstr "Les photos et les images jointes aux tâches sont exportées telles qu'elles sont stockées, déjà dépouillées de leurs métadonnées au dépôt ; les documents joints aux tâches sont exportés tels qu'ils ont été reçus. Les miniatures ne sont pas exportées, ni rien de ce qui a été supprimé. L'archive n'a pas de plafond de taille propre : elle est aussi grosse que les fichiers du logement (chacun est limité par `HOUSECAIRN_PHOTO_MAX_BYTES`)."
+
+#~ msgid "Each lot that adds data adds its section here and to the archive. The archive holds the home it was made for and nothing of another."
+#~ msgstr "Chaque lot qui ajoute des données ajoute sa section ici et dans l'archive. L'archive contient le logement pour lequel elle a été faite, et rien d'un autre."
 

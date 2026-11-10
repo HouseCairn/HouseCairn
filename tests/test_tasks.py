@@ -1,7 +1,6 @@
 """Tasks: services (create, done, undo, skip, postpone), web screens, roles and isolation."""
 
 import datetime
-import json
 import time
 import zipfile
 from decimal import Decimal
@@ -24,6 +23,7 @@ from housecairn.rooms.models import Item, Room
 from housecairn.tasks import services
 from housecairn.tasks.forms import TaskForm
 from housecairn.tasks.models import Occurrence, Status, Task
+from tests.data_support import archive_text, export_data
 from tests.tasks_fixtures import TODAY
 
 pytest_plugins = ("tests.tasks_fixtures",)
@@ -1227,17 +1227,22 @@ class TestExportAndDeletion:
         done = services.complete(alice, owner_occurrence, actual_cost=Decimal("4.5"), note="AAA")
         services.create_task(bob, bob_home, title="Their secret", due_on=TODAY)
         archive, _name = exports.export_home(alice, alice_home)
-        raw = zipfile.ZipFile(archive).read("export.json").decode()
-        data = json.loads(raw)
+        zipped = zipfile.ZipFile(archive)
+        raw = archive_text(zipped)
+        data = export_data(zipped)
+        people = {p["id"]: p["email"] for p in data["people"]}
         [task] = data["tasks"]
         assert task["title"] == "Change the smoke detector battery"
-        assert (task["assignee"], task["contractor"]) == ("alice@example.com", str(contractor.id))
+        assert (people[task["assignee"]], task["contractor"]) == (
+            "alice@example.com",
+            str(contractor.id),
+        )
         assert task["repeat_mode"] == "after_last"
         assert [c["name"] for c in data["contractors"]] == ["A. Plumber"]
         by_status = {o["status"]: o for o in data["occurrences"]}
-        assert by_status["done"]["completed_by"] == "alice@example.com"
+        assert people[by_status["done"]["completed_by"]] == "alice@example.com"
         assert by_status["done"]["actual_cost"] == "4.50"
-        assert by_status["done"]["note"] == "AAA"
+        assert by_status["done"]["completion_note"] == "AAA"
         assert by_status["planned"]["due_on"] == str(done.next.due_on)  # type: ignore[union-attr]
         assert "Their secret" not in raw
 

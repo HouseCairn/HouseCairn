@@ -1,5 +1,6 @@
 """Web views of homes, households and invitations. Rules live in `services`."""
 
+from collections.abc import Callable
 from typing import Any
 
 from django.contrib import messages
@@ -23,8 +24,8 @@ from housecairn.accounts.names import person_name
 from housecairn.accounts.services import email_is_configured
 from housecairn.audit import services as audit_services
 from housecairn.core import navigation
-from housecairn.homes import exports, forms, services, sso
-from housecairn.homes.models import Home, Invitation, Membership
+from housecairn.homes import csv_export, exports, forms, jobs, restore, services, sso
+from housecairn.homes.models import ExportStatus, Home, Invitation, Membership
 from housecairn.homes.scoping import (
     WebHomeScopedMixin,
     allow,
@@ -33,6 +34,17 @@ from housecairn.homes.scoping import (
     invitation_link,
 )
 from housecairn.instance.config import get_setting
+
+# The tables a member downloads as CSV (homes.csv_export), as the home page names them.
+CSV_LABELS: dict[str, Callable[[], str]] = {
+    "rooms": lambda: _("Rooms"),
+    "items": lambda: _("Items"),
+    "tasks": lambda: _("Tasks"),
+    "history": lambda: _("History of the tasks"),
+    "stock": lambda: _("Stock"),
+    "contractors": lambda: _("Contractors"),
+    "reports": lambda: _("Reports"),
+}
 
 DELIVERY_FAILED = _lazy(
     "The invitation is saved, but the email could not be sent. "
@@ -97,6 +109,7 @@ class HomeDetailView(WebHomeScopedMixin, DetailView[Home]):
         context["role"] = services.role_of(self.request.user, self.object)
         context["member_count"] = services.members(self.object).count()
         context["can_write"] = services.can_write(self.request.user, self.object)
+        context["csv_tables"] = [(name, label()) for name, label in CSV_LABELS.items()]
         return context
 
 
@@ -185,10 +198,93 @@ class HomeExportView(WebHomeScopedMixin, View):
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
         home = self.get_home()
+        exports.check_owner(request.user, home)
+        if jobs.is_large(home):
+            # Too large for one request: the worker makes it, the page of the job hands it.
+            job = jobs.start_export(request.user, home)
+            return redirect(
+                reverse("homes:export-job", kwargs={"home_id": home.id, "job_id": job.id})
+            )
         archive, name = exports.export_home(request.user, home)
         return FileResponse(
             archive, as_attachment=True, filename=name, content_type="application/zip"
         )
+
+
+class HomeExportJobView(WebHomeScopedMixin, View):
+    """The archive made in the background: being made, ready to download, or gone."""
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        home = self.get_home()
+        try:
+            job = jobs.job_of(request.user, home, kwargs["job_id"])
+        except jobs.ExportUnavailableError:
+            raise Http404 from None
+        return TemplateResponse(
+            request,
+            "homes/export_job.html",
+            {"home": home, "job": job, "ready": job.status == ExportStatus.READY},
+        )
+
+
+class HomeExportDownloadView(WebHomeScopedMixin, View):
+    """Hand the archive of a job: a POST, so that no preview or prefetch uses a download."""
+
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponseBase:
+        home = self.get_home()
+        try:
+            archive, name = jobs.open_download(request.user, home, kwargs["job_id"])
+        except jobs.ExportUnavailableError:
+            raise Http404 from None
+        return FileResponse(
+            archive, as_attachment=True, filename=name, content_type="application/zip"
+        )
+
+
+class HomeCsvView(WebHomeScopedMixin, View):
+    """One table of the home as a CSV file, for every member who may read it."""
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        home = self.get_home()
+        entity = csv_export.ENTITIES.get(kwargs["entity"])
+        if entity is None:
+            raise Http404
+        data, name = csv_export.build_csv(home, entity)
+        response = HttpResponse(data, content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = f'attachment; filename="{name}"'
+        return response
+
+
+class HomeRestoreView(LoginRequiredMixin, FormView[forms.RestoreForm]):
+    """Restore the archive of a home as a new home, owned by whoever restores it.
+
+    The restored home does not become the current home: the person opens it from the list.
+    """
+
+    template_name = "homes/restore.html"
+    form_class = forms.RestoreForm
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        declared = int(request.META.get("CONTENT_LENGTH") or 0)
+        if declared > restore.max_unpacked_bytes():
+            return HttpResponse(_("This file is too large."), status=413, content_type="text/plain")
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form: forms.RestoreForm) -> HttpResponse:
+        try:
+            result = restore.restore_home(self.request.user, form.cleaned_data["archive"])
+        except ValidationError as exc:
+            form.add_error("archive", exc.messages)
+            return self.form_invalid(form)
+        message = _("Home restored: %(name)s.") % {"name": result.home.name}
+        if result.unattributed:
+            message += " " + _(
+                "Left unattributed, with no account here: %(names)s. Invite them again."
+            ) % {"names": ", ".join(n or "?" for n in result.unattributed)}
+        messages.success(self.request, message)
+        return redirect("homes:list")
 
 
 class HomeDeleteView(WebHomeScopedMixin, FormView[forms.DeleteHomeForm]):

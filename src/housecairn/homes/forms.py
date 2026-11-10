@@ -86,3 +86,12 @@ class DeleteHomeForm(forms.Form):
     confirmation = forms.CharField(
         label=_("Type the name of the home to confirm"), max_length=120, strip=True
     )
+
+
+class RestoreForm(forms.Form):
+    """The archive of a home, made by Export all data (docs/adr/0048)."""
+
+    archive = forms.FileField(
+        label=_("Archive of a home"),
+        help_text=_("The zip file that Export all data gave, as it is."),
+    )

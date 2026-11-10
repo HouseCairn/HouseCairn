@@ -18,6 +18,7 @@ from housecairn.labels import services as label_services
 from housecairn.labels.models import Label
 from housecairn.rooms.models import Item
 from housecairn.stock.models import Article
+from tests.data_support import export_data
 
 pytest_plugins = ("tests.rooms_fixtures", "tests.stock_fixtures")
 pytestmark = pytest.mark.django_db
@@ -51,10 +52,10 @@ class TestExport:
             0
         ]
         label_services.revoke_label(alice, gone)
-        data = json.loads(export(client, alice, alice_home).read("export.json"))
+        data = export_data(export(client, alice, alice_home))
         rows = {row["id"]: row for row in data["labels"]}
         assert rows[str(active.id)]["code"] == active.code
-        assert rows[str(active.id)]["target"] == str(owner_item.id)
+        assert rows[str(active.id)]["item"] == str(owner_item.id)
         assert rows[str(active.id)]["kind"] == "item"
         assert rows[str(gone.id)]["code"] is None
         assert rows[str(gone.id)]["revoked_at"] is not None

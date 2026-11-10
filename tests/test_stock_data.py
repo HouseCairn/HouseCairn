@@ -1,7 +1,6 @@
 """Export of stock, erasure of its files with the home, reversible migration (docs/adr/0038)."""
 
 import io
-import json
 import zipfile
 from decimal import Decimal
 from pathlib import Path
@@ -17,8 +16,9 @@ from housecairn.accounts.models import User
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
 from housecairn.rooms.models import Item
-from housecairn.stock import exports, services
+from housecairn.stock import services
 from housecairn.stock.models import Article
+from tests.data_support import archive_text, export_data, exported_files, stored_file
 from tests.rooms_support import image_bytes, upload
 
 pytest_plugins = ("tests.rooms_fixtures", "tests.stock_fixtures")
@@ -67,18 +67,19 @@ class TestExport:
         services.record_movement(bob, foreign_article, kind="entry", quantity=Decimal("7"))
 
         archive = export(client, alice, alice_home)
-        raw = archive.read("export.json").decode()
-        data = json.loads(raw)
+        raw = archive_text(archive)
+        data = export_data(archive)
         (item,) = data["stock_items"]
         assert (item["name"], item["manufacturer_reference"], item["threshold"]) == (
             "Boiler filter",
             "BF-200",
             "2.00",
         )
-        assert (item["quantity"], item["compatible_items"]) == ("2.00", [str(owner_item.id)])
+        # The quantity is the sum of the movements, which are exported; it is not a field.
+        assert item["compatible_items"] == [str(owner_item.id)]
         assert item["label"] == f"files/stock/{article.id}.jpg"
         assert item["label"].removeprefix("files/") in {
-            f["path"].removeprefix("files/") for f in data["files"]
+            n.removeprefix("files/") for n in data["manifest"]["entries"] if n.startswith("files/")
         }
         (supplier,) = data["stock_suppliers"]
         assert (supplier["article"], supplier["last_price"]) == (str(article.id), "9.50")
@@ -104,7 +105,7 @@ class TestExport:
         services.create_supplier(alice, deleted, name="Orphan")
         services.record_movement(alice, deleted, kind="entry", quantity=Decimal("1"))
         services.delete_article(alice, deleted)
-        data = json.loads(export(client, alice, alice_home).read("export.json"))
+        data = export_data(export(client, alice, alice_home))
         assert [(a["name"], a["label"]) for a in data["stock_items"]] == [("Gone", None)]
         assert data["stock_suppliers"] == []
         assert data["stock_movements"] == []
@@ -118,11 +119,11 @@ class TestExport:
             label=f"{bob_home.id}/{Path(theirs.label.name).name}"
         )
         mine.refresh_from_db()
-        assert exports._stored_file(mine) is None
+        assert stored_file(mine) is None
         Article.objects.filter(id=mine.id).update(label="../../etc/passwd")
         mine.refresh_from_db()
-        assert exports._stored_file(mine) is None
-        assert list(exports._files(alice_home)) == []
+        assert stored_file(mine) is None
+        assert exported_files(alice_home) == []
 
 
 class TestEraseFilesWithTheHome:
