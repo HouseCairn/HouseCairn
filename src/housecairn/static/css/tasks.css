@@ -99,6 +99,15 @@ html:has(.undo-region .undo-banner) {
   scroll-padding-bottom: calc(var(--hc-layout-tabbar-height) + 6rem);
 }
 
+/* ...and it must not hide the end of the page either: while the banner is there, the
+   page keeps its height (about 5rem: one line of text, the button, the padding) above
+   what the tab bar already takes. */
+.has-nav:has(.undo-region .undo-banner) .content {
+  padding-bottom: calc(
+    var(--hc-layout-tabbar-height) + var(--hc-space-8) + 5rem + env(safe-area-inset-bottom)
+  );
+}
+
 .task-row-closed .row-title {
   text-decoration: line-through;
 }
@@ -111,6 +120,11 @@ html:has(.undo-region .undo-banner) {
 
   html:has(.undo-region .undo-banner) {
     scroll-padding-bottom: 6rem;
+  }
+
+  /* No tab bar on a wide screen: the banner floats at the corner. */
+  .has-nav:has(.undo-region .undo-banner) .content {
+    padding-bottom: calc(var(--hc-space-8) + 5rem);
   }
 }
 
