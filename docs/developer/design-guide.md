@@ -648,7 +648,9 @@ application then starts with the prefix.
 - A link to an address that a person typed (a purchase link, a contract, the links of an
   item or of a project, a document in Paperless-ngx) **must** carry
   `rel="noopener noreferrer nofollow"`. Its field is a `WebUrlField`
-  (`rooms/models.py`), which accepts `http` and `https` only, never `javascript:`.
+  (`rooms/models.py`), which accepts `http` and `https` only, never `javascript:`. The
+  links of an item are a list in a `JSONField` instead: `validate_links`
+  (`rooms/models.py`) checks each address with the same validator.
 
 ## Labels
 
