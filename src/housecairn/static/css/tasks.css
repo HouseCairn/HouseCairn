@@ -96,15 +96,19 @@
 
 /* The banner must not hide the element that has the focus (WCAG 2.2, 2.4.11). */
 html:has(.undo-region .undo-banner) {
-  scroll-padding-bottom: calc(var(--hc-layout-tabbar-height) + 6rem);
+  scroll-padding-bottom: calc(
+    var(--hc-layout-tabbar-height) + var(--hc-undo-height, 5rem) + var(--hc-space-4)
+  );
 }
 
 /* ...and it must not hide the end of the page either: while the banner is there, the
-   page keeps its height (about 5rem: one line of text, the button, the padding) above
-   what the tab bar already takes. */
+   page keeps its real height above what the tab bar already takes. --hc-undo-height is
+   set from the banner by static/js/undo-region.js and follows it (a long message wraps
+   on four lines at 320 px); 5rem, one line, is what stays without script. */
 .has-nav:has(.undo-region .undo-banner) .content {
   padding-bottom: calc(
-    var(--hc-layout-tabbar-height) + var(--hc-space-8) + 5rem + env(safe-area-inset-bottom)
+    var(--hc-layout-tabbar-height) + var(--hc-space-8) + var(--hc-undo-height, 5rem) +
+      env(safe-area-inset-bottom)
   );
 }
 
@@ -119,12 +123,12 @@ html:has(.undo-region .undo-banner) {
   }
 
   html:has(.undo-region .undo-banner) {
-    scroll-padding-bottom: 6rem;
+    scroll-padding-bottom: calc(var(--hc-undo-height, 5rem) + var(--hc-space-8));
   }
 
   /* No tab bar on a wide screen: the banner floats at the corner. */
   .has-nav:has(.undo-region .undo-banner) .content {
-    padding-bottom: calc(var(--hc-space-8) + 5rem);
+    padding-bottom: calc(var(--hc-space-8) + var(--hc-undo-height, 5rem));
   }
 }
 
