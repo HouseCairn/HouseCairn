@@ -31,6 +31,14 @@ notes concern instances that ran an image built from `main` (`edge` or
 
 ### New
 
+- **Longer estimated durations, and a contractor chosen in a list.** The estimated duration
+  of a task takes weeks, months and years as well as minutes, hours and days, up to one
+  year instead of thirty days (a week is 7 days, a month 30 days, a year 365 days), and the
+  number is readable next to its unit on a phone. The contractor of a task is chosen in the
+  list of the contractors of the home; its last choice, **Add a contractor…**, adds one
+  (name and trade) without leaving the form, with or without script
+  ([task form](screens/task-form.md)).
+
 - **Done without losing your place.** On [Today](screens/today.md) and in
   [all the tasks](screens/tasks.md), **Done** no longer reloads the page nor sends
   it back to the top: the row shows the task as done, and a banner at the bottom of the
@@ -125,7 +133,12 @@ notes concern instances that ran an image built from `main` (`edge` or
   prefix given by a proxy header. See
   [Serving under a path prefix](administration/url-prefix.md).
 
-- **Instance settings in sections.** The settings of the instance are no longer one long page with nine Save buttons: **Instance administration, Settings** is now an index, and each section (public address, sign-up, outgoing email, rate limits and the others) has its own page with one button that names what it saves. A variable still locks its field and shows the value in force. The old addresses, `/instance/settings/?section=<section>`, open the page of the section. See [Instance settings](screens/instance-settings.md).
+- **Instance settings in sections.** The settings of the instance are no longer one long page with
+  nine Save buttons: **Instance administration, Settings** is now an index, and each section (public
+  address, sign-up, outgoing email, rate limits and the others) has its own page with one button
+  that names what it saves. A variable still locks its field and shows the value in force. The old
+  addresses, `/instance/settings/?section=<section>`, open the page of the section. See [Instance
+  settings](screens/instance-settings.md).
 
 - **Breadcrumbs on a computer.** From 56 rem wide, a record or a form shows the path
   from its section down to the page (Rooms › Living room › Boiler). A phone keeps the
@@ -203,7 +216,8 @@ notes concern instances that ran an image built from `main` (`edge` or
 
 - **Calendar and calendar feeds.** See your tasks by week, month or year, with filters by home,
   room, person and priority, **Done** and **Undo** in place, and the next dates of a task that
-  repeats marked as forecast. **Calendar feeds** (**More**, **Calendar in another application**) gives a secret address per home, or for all your homes,
+  repeats marked as forecast. **Calendar feeds** (**More**, **Calendar in another application**)
+  gives a secret address per home, or for all your homes,
   that Google Calendar, Apple Calendar, Thunderbird or Home Assistant can subscribe to: it shows
   titles, home, room, date and status, never notes, costs or files. You can get a new address or
   revoke it at any time; leaving a home revokes your feed of it. See
@@ -304,17 +318,17 @@ notes concern instances that ran an image built from `main` (`edge` or
   [Display preferences](screens/display-preferences.md), [Room](screens/room.md) and
   [Audit log of a home](screens/audit.md).
 
-- **Seasons, display name, duration and contractors.** A task can be limited to a predefined
-  season (spring, summer, autumn or winter) that follows the hemisphere
-  of the home, which you set on the home page, or to custom months; existing windows become
-  the matching season or a custom one. Each person can choose a display name on the new
-  [profile](screens/profile.md) screen and in the API (`/api/v1/me/`), and the person in
-  charge is shown by that name on every page, never by an address. The estimated duration
-  is a number and a unit (minutes, hours, days). A task has a single contractor field, and
-  each contractor has a [sheet](screens/contractor.md): trade from a list (plus Other),
-  phone, email address, address, note and the tasks that name them, downloadable as a
-  contact file (.vcf). Existing trades are matched to the list, otherwise kept under Other.
-  See [Tasks and recurrence](guides/tasks-and-recurrence.md).
+- **Seasons, display name, duration and contractors.** A task can be limited to a predefined season
+  (spring, summer, autumn or winter) that follows the hemisphere of the home, which you set on the
+  home page, or to custom months; existing windows become the matching season or a custom one. Each
+  person can choose a display name on the new [profile](screens/profile.md) screen and in the API
+  (`/api/v1/me/`), and the person in charge is shown by that name on every page, never by an
+  address. The estimated duration is a number and a unit (minutes, hours, days, weeks, months or
+  years). A task has a single contractor field, and each contractor has a
+  [sheet](screens/contractor.md): trade from a list (plus Other), phone, email address, address,
+  note and the tasks that name them, downloadable as a contact file (.vcf). Existing trades are
+  matched to the list, otherwise kept under Other. See [Tasks and
+  recurrence](guides/tasks-and-recurrence.md).
 
 - **The stock follows the tasks and the rooms.** A task lists the stock items it needs, with
   a quantity (the **Materials** section of its form and its page, and `task-materials` in the
@@ -353,6 +367,19 @@ notes concern instances that ran an image built from `main` (`edge` or
   **My homes**, renamed from "Homes" to match their entry of More, now have their link back
   to More on a phone. On a computer, the forms of a quote, a budget line, the annual
   envelope, a contractor, a supplier and a photo show their breadcrumbs.
+
+- **A budget summary you read at a glance.** The top of the Budget page showed up to nine
+  figures. It now shows three (what is set aside, **Spent** and **Left**) and a gauge with the
+  share spent in words; a spending past the limit says **Over by ...** and *over budget*. The
+  other figures (planned against the envelope, left to plan, paid, projects and upkeep apart,
+  Budget in Sure) are under **Details of the year**. "Used, projects and upkeep" and "Left to
+  spend" are gone: they were the same figures as **Spent** and **Left**.
+
+- **The provider of a maintenance contract is preselected.** **Add a task** from an item
+  whose maintenance contract names a provider now starts with that provider as the contractor
+  of the task, when the home has a contractor of that name (whatever the case), and the
+  **Who** section is open so that you see it. A provider that is not a contractor of the
+  home is left alone: nothing is created until you save.
 
 - **Design guide matches the code.** The [design guide](developer/design-guide.md)
   now lists the entries of More as they are, describes the back link of a form as it
@@ -411,13 +438,13 @@ notes concern instances that ran an image built from `main` (`edge` or
   are reversible: going back writes the text again (the plural of the list for a unit).
   Clients of the API must use the new names.
 
-- **Photo categories and the contract of an item change shape.** The category `open_walls`
-  of a photo is now `behind_walls`, in the API and in exports; the field `contract` of an
-  item is now `contract_provider` (the old text, whole) and `contract_number`, in the API
-  and in exports. The migrations are reversible, but going back turns the categories `before`, `after` and
-  `other` into `general`, and joins the two fields of the contract into the one text again and
-  cuts it at 200 characters: the contract number is lost when the provider
-  alone is longer than that. Clients of the API must use the new names.
+- **Photo categories and the contract of an item change shape.** The category `open_walls` of a
+  photo is now `behind_walls`, in the API and in exports; the field `contract` of an item is now
+  `contract_provider` (the old text, whole) and `contract_number`, in the API and in exports. The
+  migrations are reversible, but going back turns the categories `before`, `after` and `other` into
+  `general`, and joins the two fields of the contract into the one text again and cuts it at 200
+  characters: the contract number is lost when the provider alone is longer than that. Clients of
+  the API must use the new names.
 
 - **Each home now has quotas of files**: 5 GB and 5000 files by default, deleted files
   included until they are purged. Raise them in **Instance administration, Settings, Files of
