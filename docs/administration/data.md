@@ -185,7 +185,9 @@ in one import.
 **Homes > Restore a home** (or `POST /api/v1/homes/restore/`, signed in; an
 API token cannot) makes the archive a new home, owned by the person who
 restores it. It does not become the current home. The identifiers are kept, so
-that QR labels and links still lead to the same objects.
+that QR labels and links still lead to the same objects. The archive holds no
+API token: create new ones after a restore, including the one of the Home
+Assistant integration, which then asks for it again.
 
 The archive is checked before anything is written, and refused with the
 reason when it is not one HouseCairn made, or was changed since:

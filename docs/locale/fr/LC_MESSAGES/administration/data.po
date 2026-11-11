@@ -229,7 +229,7 @@ msgstr "L'import est inscrit au journal d'audit du logement, avec le nombre de l
 msgid "Restore of a home"
 msgstr "Restauration d'un logement"
 
-msgid "**Homes > Restore a home** (or `POST /api/v1/homes/restore/`, signed in; an API token cannot) makes the archive a new home, owned by the person who restores it. It does not become the current home. The identifiers are kept, so that QR labels and links still lead to the same objects."
+msgid "**Homes > Restore a home** (or `POST /api/v1/homes/restore/`, signed in; an API token cannot) makes the archive a new home, owned by the person who restores it. It does not become the current home. The identifiers are kept, so that QR labels and links still lead to the same objects. The archive holds no API token: create new ones after a restore, including the one of the Home Assistant integration, which then asks for it again."
 msgstr "**Logements > Restaurer un logement** (ou `POST /api/v1/homes/restore/`, connecté ; un jeton d'API ne le peut pas) fait de l'archive un nouveau logement, dont la personne qui restaure est propriétaire. Il ne devient pas le logement courant. Les identifiants sont conservés, pour que les étiquettes QR et les liens mènent toujours aux mêmes objets."
 
 msgid "The archive is checked before anything is written, and refused with the reason when it is not one HouseCairn made, or was changed since:"
@@ -471,3 +471,4 @@ msgstr "Les données supprimées restent dans les sauvegardes jusqu'à leur expi
 
 #~ msgid "Version 1 archives (a single `export.json`, before this version) cannot be restored: export the home again."
 #~ msgstr "Les archives de version 1 (un seul `export.json`, avant cette version) ne peuvent pas être restaurées : exportez de nouveau le logement."
+

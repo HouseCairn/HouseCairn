@@ -51,7 +51,7 @@ msgstr "Récupérez `compose.yaml` et `deploy/production.env.example` depuis le 
 msgid "Edit `deploy/production.env`: set `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` to your host name (see [Environment variables](../administration/variables.md)). Leave `SECRET_KEY` empty: a key is generated on first start. `HOUSECAIRN_FORWARDED_ALLOW_IPS` names the reverse proxy whose headers HouseCairn trusts: keep `192.0.2.1` for a proxy on this host, the gateway of the network fixed in `compose.yaml`."
 msgstr "Modifiez `deploy/production.env` : définissez `ALLOWED_HOSTS` et `CSRF_TRUSTED_ORIGINS` avec votre nom d'hôte (voir [Variables d'environnement](../administration/variables.md)). Laissez `SECRET_KEY` vide : une clé est générée au premier démarrage. `HOUSECAIRN_FORWARDED_ALLOW_IPS` désigne le reverse proxy dont HouseCairn accepte les en-têtes : gardez `192.0.2.1` pour un proxy sur cet hôte, la passerelle du réseau fixé dans `compose.yaml`."
 
-msgid "In `compose.yaml`, replace the `edge` tag with a released version, ideally with its digest (`ghcr.io/housecairn/housecairn:X.Y.Z@sha256:...`). [Verify the image](../security/verify-image.md) before the first start."
+msgid "`compose.yaml` names a released version pinned by its digest (`ghcr.io/housecairn/housecairn:X.Y.Z@sha256:...`); to install a later one, change both. [Verify the image](../security/verify-image.md) before the first start."
 msgstr "Dans `compose.yaml`, remplacez l'étiquette `edge` par une version publiée, idéalement avec son condensat (`ghcr.io/housecairn/housecairn:X.Y.Z@sha256:...`). [Vérifiez l'image](../security/verify-image.md) avant le premier démarrage."
 
 msgid "Start it, then check its state:"
