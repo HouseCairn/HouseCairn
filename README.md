@@ -88,10 +88,11 @@ default.
 
 ## Project status
 
-**Under active development; no version has been released yet.** The first one,
-v0.1.0, is planned. Until then, the container image is only published as
-`edge` and `sha-<commit>` tags, built from `main`, and things may change from
-one commit to the next. Try it, but keep a backup of what you enter.
+**First beta: [v0.1.0](https://github.com/HouseCairn/housecairn/releases/tag/v0.1.0).**
+It has not been used in a real home for any length of time yet, and what it
+stores can still change shape between 0.x versions: try it, and keep a backup
+of what you enter. Released images are tagged `X.Y.Z`, `X.Y` and `latest`;
+`edge` and `sha-<commit>` follow the `main` branch and are for testing only.
 
 ## Privacy and security
 

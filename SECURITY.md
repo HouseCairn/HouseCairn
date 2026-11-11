@@ -2,8 +2,13 @@
 
 ## Supported versions
 
-HouseCairn has no released version yet. Until the first release, only the
-`main` branch is considered, and nothing in it is meant for production use.
+HouseCairn is in beta (0.x). Only the latest release receives security fixes,
+in a new patch version; the `main` branch and the `edge` image are for testing
+only.
+
+| Version | Supported |
+| ------- | --------- |
+| 0.1.x   | Yes       |
 
 ## Reporting a vulnerability
 
