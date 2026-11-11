@@ -50,7 +50,10 @@ if not SECRET_KEY:
 # Former keys, comma-separated, during a rotation (docs/administration/settings.md#secrets):
 # sessions and signed links made with them stay valid, and so do the secrets encrypted in the
 # database (instance.crypto), which a new key alone could no longer read.
-SECRET_KEY_FALLBACKS: list[str] = [k for k in env.list("SECRET_KEY_FALLBACKS", default=[]) if k]
+# Spaces around each key are dropped: "<new>, <old>" would otherwise lose the former key.
+SECRET_KEY_FALLBACKS: list[str] = [
+    k.strip() for k in env.list("SECRET_KEY_FALLBACKS", default=[]) if k.strip()
+]
 
 ALLOWED_HOSTS: list[str] = env.list(
     "ALLOWED_HOSTS", default=["localhost", "127.0.0.1"] if DEBUG else []

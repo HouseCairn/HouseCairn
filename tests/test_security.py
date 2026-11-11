@@ -112,6 +112,18 @@ def test_a_rotated_key_still_reads_the_secrets_sealed_with_the_former_one() -> N
     assert "SecretUnreadableError" in result.stderr
 
 
+@pytest.mark.parametrize(
+    ("value", "keys"), [("a, b", ["a", "b"]), (" a ,, b ,", ["a", "b"]), ("", [])]
+)
+def test_the_former_keys_are_read_without_the_spaces_around_them(
+    value: str, keys: list[str]
+) -> None:
+    """`"<new>, <old>"`, with a space after the comma, keeps the former key as it is."""
+    code = "import housecairn.settings as s; print(repr(s.SECRET_KEY_FALLBACKS))"
+    result = _run_python(code, {"DEBUG": "true", "SECRET_KEY_FALLBACKS": value})
+    assert result.stdout.strip() == repr(keys), result.stderr
+
+
 def test_debug_is_off_by_default() -> None:
     code = "import housecairn.settings as s; print(s.DEBUG, s.SESSION_COOKIE_SECURE)"
     result = _run_python(code, {"SECRET_KEY": secrets.token_urlsafe(50)})
