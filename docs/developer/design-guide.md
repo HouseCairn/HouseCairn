@@ -611,6 +611,12 @@ is checked against all of them at once.
   most one button per provider. While the instance has no administrator, it also shows
   a notice with a link to `/setup/`, and never redirects there: people who already have
   an account still sign in ([ADR 0056](../adr/0056-first-administrator-on-a-web-screen.md)).
+- **A field that only one choice uses** (the months of a custom season, the date a fixed
+  repetition counts from) **must** be hidden by script while that choice is not made, and
+  stay visible without script, the server ignoring it then. The task form does it with
+  `data-shown-when` (`static/js/task-form.js`). What the fields amount to is said in one
+  sentence under them, worked out by the server in the language of the reader. A form
+  that shows every option at once reads as harder than it is.
 - **Touch targets** **must** be at least 44 px (`--hc-layout-touch-target`), and the
   Done button 48 px (`--hc-layout-touch-target-lg`). A small link in a table is missed
   by a finger.

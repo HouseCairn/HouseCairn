@@ -79,6 +79,7 @@ HELP_PAGES: dict[str, str] = {
     "tasks:templates": "screens/task-templates/",
     "tasks:detail": "screens/task/",
     "tasks:edit": "screens/task-form/",
+    "tasks:repeat-summary": "screens/task-form/",
     "tasks:delete": "screens/task/",
     "tasks:complete": "screens/task/",
     "tasks:undo": "screens/task/",

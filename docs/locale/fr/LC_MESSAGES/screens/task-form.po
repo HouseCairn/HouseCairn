@@ -33,11 +33,11 @@ msgstr "Section"
 msgid "Content"
 msgstr "Contenu"
 
-msgid "Repeat (open when the task is added from an item)"
-msgstr "Répéter (ouvert quand la tâche est ajoutée depuis un élément)"
+msgid "Repeat (open when the task is added from an item, or when it repeats)"
+msgstr "Répéter (ouvert quand la tâche est ajoutée depuis un élément, ou quand elle se répète)"
 
-msgid "**Once**, **Fixed date** (every N days, weeks, months or years from the first date) or **After the last time** (N units after the day it was done). A **season** outside of which nothing falls (see below), and the number of days before the date from which the task shows."
-msgstr "**Une fois**, **Date fixe** (tous les N jours, semaines, mois ou années à partir de la première date) ou **Après la dernière fois** (N unités après le jour où elle a été faite). Une **saison** hors de laquelle rien ne tombe (voir plus bas), et le nombre de jours avant la date à partir duquel la tâche s'affiche."
+msgid "One sentence: **Repeat this task**, **Repeat every** N days, weeks, months or years, **Count from** the due date or the day it is done (see below). A **season** outside of which nothing falls (see below), the number of days before the date from which the task shows, and the repetition said in plain words."
+msgstr "Une phrase : **Répéter cette tâche**, **Répéter tous les** N jours, semaines, mois ou ans, **Compter depuis** la date prévue ou le jour où c'est fait (voir plus bas). Une **saison** hors de laquelle rien ne tombe (voir plus bas), le nombre de jours avant la date à partir duquel la tâche s'affiche, et la répétition dite en clair."
 
 msgid "Who"
 msgstr "Qui"
@@ -63,11 +63,32 @@ msgstr "Comment faire"
 msgid "The procedure in Markdown, notes and, when adding, photos and files."
 msgstr "Le mode opératoire en Markdown, des notes et, à l'ajout, des photos et des fichiers."
 
+msgid "Repeat"
+msgstr "Répéter"
+
+msgid "Leave **Repeat this task** unticked for a task done once. Ticked, the task comes back **every** N days, weeks, months or years, counted from:"
+msgstr "Laissez **Répéter cette tâche** décoché pour une tâche faite une fois. Coché, la tâche revient **tous les** N jours, semaines, mois ou ans, comptés depuis :"
+
+msgid "**the due date**: the task keeps its day, whenever it is done. A date field, **Starting on**, opens with the calendar of the device; it is the due date of the first block, and typing in one fills in the other. A task due on 15 January 2027, every 3 months, stays on the 15th even when it is done on the 20th."
+msgstr "**la date prévue** : la tâche garde son jour, quel que soit le jour où elle est faite. Un champ de date, **À partir du**, s'ouvre avec le calendrier de l'appareil ; c'est la date prévue du premier bloc, et saisir l'une remplit l'autre. Une tâche prévue le 15 janvier 2027, tous les 3 mois, reste le 15 même quand elle est faite le 20."
+
+msgid "**the day it is done**: the period is the number of days, weeks, months or years chosen, counted from the day the task is marked done. A filter changed on 3 March, every 3 months, is due on 3 June. The date field is hidden, as it is not used."
+msgstr "**le jour où c'est fait** : la période est le nombre de jours, de semaines, de mois ou d'années choisi, compté depuis le jour où la tâche est marquée faite. Un filtre changé le 3 mars, tous les 3 mois, est prévu le 3 juin. Le champ de date est masqué, puisqu'il ne sert pas."
+
+msgid "Under the fields, **In short** says the repetition in plain words and follows what you type: \"Next time: 3 months after the last time\", \"Day 15 of every quarter, from 01/15/2027\", with the months of the season if there is one. A task set on the 31st falls on the last day of shorter months, one set on 29 February on 28 February in other years: the sentence says so."
+msgstr "Sous les champs, **En bref** dit la répétition en clair et suit ce que vous saisissez : « Prochaine fois : 3 mois après la dernière fois », « Le 15 de chaque trimestre à partir du 15/01/2027 », avec les mois de la saison s'il y en a une. Une tâche fixée au 31 tombe le dernier jour des mois plus courts, une tâche fixée au 29 février le 28 février les autres années : la phrase le dit."
+
+msgid "Without script, every field stays visible and nothing is lost: the server ignores what the choices do not use (the interval of a task done once, the date field when counting from the day it is done). If both date fields were changed to two different dates, the form asks for one."
+msgstr "Sans script, tous les champs restent visibles et rien n'est perdu : le serveur ignore ce que les choix n'utilisent pas (l'intervalle d'une tâche faite une fois, le champ de date quand on compte depuis le jour où c'est fait). Si les deux champs de date ont été changés pour deux dates différentes, le formulaire en demande une seule."
+
 msgid "Season"
 msgstr "Saison"
 
-msgid "A task can be limited to a season: **Spring**, **Summer**, **Autumn**, **Winter**, **Heating season** or **Custom months** (a first and a last month; November to March is fine). The predefined seasons follow the **hemisphere** of the home, which you set on the [home](home.md) page: in the northern hemisphere spring is March to May, summer June to August, autumn September to November, winter December to February and the heating season October to April; in the southern one they are shifted by six months. Changing the hemisphere of the home moves the tasks on a predefined season; a custom season keeps its months."
-msgstr "Une tâche peut être limitée à une saison : **Printemps**, **Été**, **Automne**, **Hiver**, **Saison de chauffe** ou **Mois personnalisés** (un premier et un dernier mois ; de novembre à mars est possible). Les saisons prédéfinies suivent l'**hémisphère** du logement, que vous réglez sur la page du [logement](home.md) : dans l'hémisphère nord, le printemps va de mars à mai, l'été de juin à août, l'automne de septembre à novembre, l'hiver de décembre à février et la saison de chauffe d'octobre à avril ; dans l'hémisphère sud, elles sont décalées de six mois. Changer l'hémisphère du logement déplace les tâches qui ont une saison prédéfinie ; une saison personnalisée garde ses mois."
+msgid "A task can be limited to a season: **Spring**, **Summer**, **Autumn**, **Winter** or **Custom months** (a first and a last month; November to March is fine). The two month fields show only with **Custom months**; without script they stay visible and are ignored for another season. The predefined seasons follow the **hemisphere** of the home, which you set on the [home](home.md) page: in the northern hemisphere spring is March to May, summer June to August, autumn September to November and winter December to February; in the southern one they are shifted by six months. Changing the hemisphere of the home moves the tasks on a predefined season; a custom season keeps its months."
+msgstr "Une tâche peut être limitée à une saison : **Printemps**, **Été**, **Automne**, **Hiver** ou **Mois personnalisés** (un premier et un dernier mois ; de novembre à mars est possible). Les deux champs de mois n'apparaissent qu'avec **Mois personnalisés** ; sans script, ils restent visibles et sont ignorés pour une autre saison. Les saisons prédéfinies suivent l'**hémisphère** du logement, que vous réglez sur la page du [logement](home.md) : dans l'hémisphère nord, le printemps va de mars à mai, l'été de juin à août, l'automne de septembre à novembre et l'hiver de décembre à février ; dans l'hémisphère sud, elles sont décalées de six mois. Changer l'hémisphère du logement déplace les tâches qui ont une saison prédéfinie ; une saison personnalisée garde ses mois."
+
+msgid "The heating season is no longer offered: for the heating, take **Custom months**, October to April in the north. A task or a project that had it was given those months when the application was updated, and an archive, a CSV file or an API client of before that sends it gets them too, so nothing changes for it."
+msgstr "La saison de chauffe n'est plus proposée : pour le chauffage, prenez **Mois personnalisés**, d'octobre à avril au nord. Une tâche ou un projet qui l'avait a reçu ces mois à la mise à jour de l'application, et une archive, un fichier CSV ou un client de l'API d'avant qui l'envoie les reçoit aussi : rien ne change pour eux."
 
 msgid "Estimated duration"
 msgstr "Durée estimée"

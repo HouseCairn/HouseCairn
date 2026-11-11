@@ -23,7 +23,7 @@
     <details class="form-section"{% if form.repeat_interval.errors or form.repeat_start.errors or form.season.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeats.value or not task and form.item.value %} open{% endif %}>
       <summary>{% translate "Repeat" %}</summary>
       {# One sentence: repeat every N units, counting from the due date or the day it is done. With script, the fields a choice does not use are hidden (static/js/task-form.js) and the summary follows the fields; without it, every field shows and the server ignores the unused ones. #}
-      <div class="repeat-fields" hx-get="{% url 'tasks:repeat-summary' home_id=home.id %}" hx-trigger="change, input delay:400ms, change from:#{{ form.due_on.id_for_label }}" hx-include="this, #{{ form.due_on.id_for_label }}" hx-target="#repeat-summary" hx-swap="innerHTML">
+      <div id="repeat-fields" hx-get="{% url 'tasks:repeat-summary' home_id=home.id %}" hx-trigger="change, input delay:400ms, change from:#{{ form.due_on.id_for_label }}" hx-include="#repeat-fields input, #repeat-fields select, #{{ form.due_on.id_for_label }}" hx-target="#repeat-summary" hx-swap="innerHTML">
         {% include "tasks/_field.html" with field=form.repeats %}
         <div data-shown-when="repeats">
           <p>

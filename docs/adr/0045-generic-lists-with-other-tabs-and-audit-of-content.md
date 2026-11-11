@@ -221,6 +221,24 @@ character boundaries, so that a name or a note can never start a line of its own
 telephone number is checked on the way in (digits, spaces and `+ ( ) - . /`), which also
 keeps the `tel:` link of the sheet safe.
 
+## Change of 2026-11-11: no heating season
+
+The heating season is no longer a predefined season. Its window was the same as a custom
+season of October to April, and offering both made the choice longer for nothing; the
+maintainer took it out of the list after trying the task form. `Season` now holds spring,
+summer, autumn, winter and custom.
+
+- Data migrations of `tasks` and `projects`: a task on `heating` becomes `custom` with the
+  months it already held (October to April in the north, April to October in the south), a
+  project with the months of its home's hemisphere. Going back leaves them custom: the
+  months were valid before too, and a custom season of October to April cannot be told
+  from a former heating season.
+- `heating` stays accepted where a value of before may come from, and is stored the same
+  way (`recurrence.legacy_season`): the API (version 1 only gets additive changes), the
+  restore of an archive (`on_restore` of the sections, which now gets the home) and the CSV
+  import (`upgrade` of the entity, which also reads the labels "Heating season" and "Saison
+  de chauffe"). The JSON Schema of the archive no longer lists it.
+
 ## Consequences
 
 - API clients that wrote `open_walls` or the `contract` field must use the new names; exports
