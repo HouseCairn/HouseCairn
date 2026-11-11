@@ -37,6 +37,7 @@ from housecairn.rooms.models import (
     validate_links,
 )
 from housecairn.stock.models import Article
+from housecairn.tasks.models import Contractor
 
 QUERY = OpenApiParameter("q", str, description="Only names containing this text.")
 
@@ -247,6 +248,13 @@ class ItemSerializer(serializers.ModelSerializer[Item]):
         queryset=Room.objects.none(),
         help_text="The room the item is in; change it to move the item.",
     )
+    contract_contractor = serializers.PrimaryKeyRelatedField(
+        queryset=Contractor.objects.none(),
+        allow_null=True,
+        required=False,
+        help_text="The contractor of the home who services it (the provider of its "
+        "maintenance contract), or null.",
+    )
     links = LinkSerializer(many=True, required=False)
 
     class Meta:
@@ -261,7 +269,7 @@ class ItemSerializer(serializers.ModelSerializer[Item]):
             "serial_number",
             "installed_on",
             "warranty_ends_on",
-            "contract_provider",
+            "contract_contractor",
             "contract_number",
             "contract_url",
             "links",
@@ -276,6 +284,9 @@ class ItemSerializer(serializers.ModelSerializer[Item]):
         home: Home | None = self.context.get("home")
         if home is not None:
             self.fields["room"].queryset = Room.objects.filter(home=home)  # type: ignore[attr-defined]
+            self.fields["contract_contractor"].queryset = Contractor.objects.filter(  # type: ignore[attr-defined]
+                home=home
+            )
 
     def validate_links(self, value: list[dict[str, str]]) -> list[dict[str, str]]:
         try:

@@ -27,7 +27,7 @@ the chips above it keep one category.
 
 **Add an item** on the page of a room. Note the brand, the model, the serial
 number, the installation date and the end of the warranty, the maintenance contract
-(who services it, and its number) and a link to it, and any link worth keeping, such as the manual online. The item
+(who services it, chosen among the contractors of the home or added on the spot, and its number) and a link to it, and any link worth keeping, such as the manual online. The item
 page shows a label that tells whether the warranty is still running.
 
 If you put an item in the wrong room, edit it and choose another room: the item

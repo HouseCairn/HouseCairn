@@ -58,3 +58,4 @@ later record supersedes it.
 | [0055](0055-serving-under-a-path-prefix.md) | Serving the application under a path prefix | 2026-11-10 |
 | [0056](0056-first-administrator-on-a-web-screen.md) | First administrator on a web screen, with a one-time code of the log | 2026-11-10 |
 | [0057](0057-api-tokens-of-a-home-that-requires-a-provider.md) | API tokens of a home that requires a sign-in provider | 2026-11-10 |
+| [0058](0058-contract-provider-is-a-contractor.md) | The provider of a maintenance contract is a contractor, and export format 3 | 2026-11-11 |

@@ -105,8 +105,8 @@ msgstr "Si le stock en contient moins que nécessaire, **Fait** passe quand mêm
 msgid "Contractors"
 msgstr "Intervenants"
 
-msgid "Name the person or the company on the task: choose one of the home's contractors in the list, or its last choice, **Add a contractor…**, to add one in place (name and trade); the contractor is created when you save. A task added from an item starts with the provider of the item's maintenance contract, when the home has a contractor of that name. Each contractor has a [sheet](../screens/contractor.md) (trade from a list, phone, email address, address, note, the tasks that name them) that downloads as a contact file (.vcf) to put in your phone. The API also lists and edits them."
-msgstr "Nommez la personne ou l'entreprise sur la tâche : choisissez un intervenant du logement dans la liste, ou son dernier choix, **Ajouter un intervenant…**, pour en ajouter un sur place (nom et métier) ; l'intervenant est créé à l'enregistrement. Une tâche ajoutée depuis un élément démarre avec le prestataire du contrat d'entretien de l'élément, quand le logement a un intervenant de ce nom. Chaque intervenant a une [fiche](../screens/contractor.md) (métier choisi dans une liste, téléphone, adresse e-mail, adresse, note, tâches qui le nomment) qui se télécharge comme fiche contact (.vcf) à ajouter à votre téléphone. L'API les liste et les modifie aussi."
+msgid "Name the person or the company on the task: choose one of the home's contractors in the list, or its last choice, **Add a contractor…**, to add one in place (name and trade); the contractor is created when you save. A task added from an item starts with the contractor chosen as the provider of the item's maintenance contract. Each contractor has a [sheet](../screens/contractor.md) (trade from a list, phone, email address, address, note, the tasks that name them) that downloads as a contact file (.vcf) to put in your phone. The API also lists and edits them."
+msgstr "Nommez la personne ou l'entreprise sur la tâche : choisissez un intervenant du logement dans la liste, ou son dernier choix, **Ajouter un intervenant…**, pour en ajouter un sur place (nom et métier) ; l'intervenant est créé à l'enregistrement. Une tâche ajoutée depuis un élément démarre avec l'intervenant choisi comme prestataire du contrat d'entretien de l'élément. Chaque intervenant a une [fiche](../screens/contractor.md) (métier choisi dans une liste, téléphone, adresse e-mail, adresse, note, tâches qui le nomment) qui se télécharge comme fiche contact (.vcf) à ajouter à votre téléphone. L'API les liste et les modifie aussi."
 
 msgid "Estimated duration and who does it"
 msgstr "Durée estimée et responsable"
@@ -140,4 +140,3 @@ msgstr "Tout ce qui précède est disponible par l'[API](../api/index.md) : les 
 
 #~ msgid "After the last time"
 #~ msgstr "Après la dernière fois"
-

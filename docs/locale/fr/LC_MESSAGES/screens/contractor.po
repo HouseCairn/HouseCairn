@@ -27,9 +27,8 @@ msgstr "La fiche d'un intervenant, sur `/h/<home id>/contractors/<contractor id>
 msgid "**Download the contact (.vcf)** gives a contact file (vCard 3.0, `text/vcard`) that iOS, Android, Outlook and Thunderbird import as a new contact. Every member of the home can download it, read-only members included. The file name is the contractor's name without accents or punctuation, and everything typed in the sheet is escaped, so a note cannot add a field to the file."
 msgstr "**Télécharger la fiche contact (.vcf)** donne un fichier contact (vCard 3.0, `text/vcard`) qu'iOS, Android, Outlook et Thunderbird importent comme un nouveau contact. Tout membre du logement peut le télécharger, lecteurs seuls compris. Le nom du fichier est le nom de l'intervenant sans accents ni ponctuation, et tout ce qui est saisi dans la fiche est échappé : une note ne peut pas ajouter un champ au fichier."
 
-msgid "**Edit** and **Delete** are for those who can write in the home. Deleting a contractor keeps the tasks that named them, without a contractor."
-msgstr "**Modifier** et **Supprimer** sont pour ceux qui peuvent écrire dans le logement. Supprimer un intervenant garde les tâches qui le nommaient, sans intervenant."
+msgid "**Edit** and **Delete** are for those who can write in the home. Deleting a contractor keeps the tasks that named them, without a contractor, and the maintenance contracts of the items that named them, without a provider: the number and the link of the contract stay."
+msgstr "**Modifier** et **Supprimer** sont pour ceux qui peuvent écrire dans le logement. Supprimer un intervenant garde les tâches qui le nommaient, sans intervenant, et les contrats d'entretien des éléments qui le nommaient, sans prestataire : le numéro et le lien du contrat restent."
 
 msgid "The phone number and the email address are links (`tel:` and `mailto:`)."
 msgstr "Le numéro de téléphone et l'adresse e-mail sont des liens (`tel:` et `mailto:`)."
-

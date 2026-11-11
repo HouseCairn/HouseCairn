@@ -1,4 +1,4 @@
-"""The item form: brands suggested from the home, the contract as a provider and a number."""
+"""The item form: brands suggested from the home, the contract as a contractor and a number."""
 
 import pytest
 from django.test import Client
@@ -9,6 +9,7 @@ from housecairn.accounts.models import User
 from housecairn.homes.models import Home
 from housecairn.rooms import services
 from housecairn.rooms.models import Item, Room
+from housecairn.tasks import services as task_services
 
 pytest_plugins = ("tests.rooms_fixtures",)
 
@@ -65,29 +66,36 @@ class TestBrandSuggestions:
 
 class TestContract:
     def test_two_fields_on_the_form_and_the_sheet(
-        self, signed_in: Client, alice_home: Home, owner_room: Room
+        self, signed_in: Client, alice: User, alice_home: Home, owner_room: Room
     ) -> None:
+        acme = task_services.create_contractor(alice, alice_home, name="Acme Heating")
         signed_in.post(
             create_url(alice_home, owner_room),
             {
                 "room": owner_room.id,
                 "name": "Boiler",
                 "kind": "equipment",
-                "contract_provider": "Acme Heating",
+                "contract_contractor": str(acme.id),
                 "contract_number": "C-2024-0187",
             },
         )
         item = Item.objects.get(name="Boiler")
-        assert (item.contract_provider, item.contract_number) == ("Acme Heating", "C-2024-0187")
+        assert (item.contract_contractor, item.contract_number) == (acme, "C-2024-0187")
         page = signed_in.get(
             reverse("rooms:item-detail", kwargs={"home_id": alice_home.id, "item_id": item.id})
         ).content.decode()
         assert "Acme Heating" in page
         assert "C-2024-0187" in page
+        # The provider is a link to the sheet of the contractor.
+        sheet = reverse(
+            "tasks:contractor-detail", kwargs={"home_id": alice_home.id, "contractor_id": acme.id}
+        )
+        assert f'<a href="{sheet}">Acme Heating</a>' in page
 
     def test_the_api_reads_and_writes_both(
         self, api_client: APIClient, alice: User, alice_home: Home, owner_room: Room
     ) -> None:
+        acme = task_services.create_contractor(alice, alice_home, name="Acme Heating")
         api_client.force_authenticate(alice)
         url = reverse("api-v1:home-item-list", kwargs={"home_id": alice_home.id})
         created = api_client.post(
@@ -95,12 +103,13 @@ class TestContract:
             {
                 "room": str(owner_room.id),
                 "name": "Boiler",
-                "contract_provider": "Acme Heating",
+                "contract_contractor": str(acme.id),
                 "contract_number": "C-1",
             },
             format="json",
         )
         assert created.status_code == 201, created.content
         body = created.json()
-        assert (body["contract_provider"], body["contract_number"]) == ("Acme Heating", "C-1")
+        assert (body["contract_contractor"], body["contract_number"]) == (str(acme.id), "C-1")
+        assert "contract_provider" not in body
         assert "contract" not in body

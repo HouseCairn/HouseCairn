@@ -12,7 +12,7 @@ The form to add an item to a room, at
 | Brand | Free text, 120 characters at most. The brands already entered for the items of the home are suggested as you type; any other text is kept. |
 | Model, serial number | Free text, 120 characters at most each. |
 | Installed on, warranty ends on | Dates. |
-| Maintenance contract: provider | Who services it, 200 characters at most. |
+| Maintenance contract: provider | Who services it: one of the contractors of the home, or the last choice, **Add a contractor…**, which shows the fields of a new one right under the list: its name (required) and its trade. The contractor is created when the item is saved; complete it later on its [sheet](contractor.md). A form refused for another reason creates no contractor, and a name that is already a contractor of the home, whatever its case, is refused: choose it in the list. Without script the fields of a new contractor are always shown, and read only when **Add a contractor…** is chosen. Optional. |
 | Maintenance contract: number | The number to quote when you call them, 120 characters at most. |
 | Contract link | An `http` or `https` address. |
 | Links | One address per line, then an optional label; ten at most, `http` or `https` only. |

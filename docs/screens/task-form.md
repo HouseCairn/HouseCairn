@@ -108,11 +108,10 @@ home, whatever its case, is refused with a message: choose it in the list. Witho
 fields of a new contractor are always shown, and are read only when **Add a contractor…** is
 chosen.
 
-When the task is added from an [item](item.md) whose maintenance contract names a provider
-that is a contractor of the home (whatever the case), that contractor is already chosen in
-the list, and the **Who** section is open so that you see it. Choose the dash to remove it.
-A provider that is not a contractor of the home is not chosen for you, and nothing is
-created.
+When the task is added from an [item](item.md) whose maintenance contract has a provider (a
+contractor of the home), that contractor is already chosen in the list, and the **Who**
+section is open so that you see it. Choose the dash to remove it. An item without a provider
+chooses nobody.
 
 ## Photos and files
 

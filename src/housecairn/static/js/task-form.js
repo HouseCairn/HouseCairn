@@ -1,4 +1,5 @@
-// The task form hides the fields its choices do not use (docs/screens/task-form.md).
+// The task form hides the fields its choices do not use (docs/screens/task-form.md); the
+// item form (`data-in-place-form`) does the same for Add a contractor…
 // First-party, no library. An element with `data-shown-when="name"` shows while the box
 // `name` is ticked; with `data-shown-when="name=value"`, while the field `name` has that
 // value. Without script nothing is hidden, and the server ignores what is not used.
@@ -9,7 +10,7 @@
 // "Add lines", which sends the form back with more lines.
 (function () {
   "use strict";
-  var form = document.querySelector("form[data-task-form]");
+  var form = document.querySelector("form[data-task-form], form[data-in-place-form]");
   if (!form) {
     return;
   }

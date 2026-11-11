@@ -15,6 +15,10 @@ from housecairn.rooms.models import (
     validate_links,
 )
 from housecairn.stock.models import Article
+from housecairn.tasks import services as tasks_services
+from housecairn.tasks.forms.contractor import clean_new_contractor, new_contractor_fields
+from housecairn.tasks.forms.fields import AddInPlaceChoiceField
+from housecairn.tasks.models import Contractor
 
 BRAND_LIST_ID = "brand-suggestions"
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
@@ -130,6 +134,9 @@ def text_to_links(text: str) -> list[dict[str, str]]:
     return links
 
 
+_NEW_CONTRACTOR = new_contractor_fields()
+
+
 class ItemForm(forms.ModelForm[Item]):
     """The item's own fields; `room` is a choice among the rooms of its home."""
 
@@ -138,6 +145,18 @@ class ItemForm(forms.ModelForm[Item]):
         queryset=Room.objects.none(),
         help_text=_("Where the item is. Choose another room to move it."),
     )
+    # The contractors of the home, the last choice adding one in place (the fields below,
+    # read only with that choice; docs/developer/design-guide.md).
+    contract_contractor = AddInPlaceChoiceField(
+        label=_("Maintenance contract: provider"),
+        queryset=Contractor.objects.none(),
+        required=False,
+        new_label=_("Add a contractor…"),
+        help_text=_("Who services it, from the contractors of the home. Example: Acme Heating."),
+    )
+    new_contractor_name = _NEW_CONTRACTOR["new_contractor_name"]
+    new_contractor_trade = _NEW_CONTRACTOR["new_contractor_trade"]
+    new_contractor_trade_other = _NEW_CONTRACTOR["new_contractor_trade_other"]
     links = forms.CharField(
         label=_("Links"),
         required=False,
@@ -156,7 +175,7 @@ class ItemForm(forms.ModelForm[Item]):
             "serial_number",
             "installed_on",
             "warranty_ends_on",
-            "contract_provider",
+            "contract_contractor",
             "contract_number",
             "contract_url",
             "links",
@@ -168,8 +187,32 @@ class ItemForm(forms.ModelForm[Item]):
             "notes": forms.Textarea(attrs={"rows": 4}),
         }
 
-    def __init__(self, *args: Any, rooms: Any, brands: Any = (), **kwargs: Any) -> None:
+    field_order = [
+        "room",
+        "name",
+        "kind",
+        "brand",
+        "model",
+        "serial_number",
+        "installed_on",
+        "warranty_ends_on",
+        "contract_contractor",
+        "new_contractor_name",
+        "new_contractor_trade",
+        "new_contractor_trade_other",
+        "contract_number",
+        "contract_url",
+        "links",
+        "notes",
+    ]
+
+    def __init__(self, *args: Any, rooms: Any, home: Any, brands: Any = (), **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        self.home = home
+        provider = self.fields["contract_contractor"]
+        assert isinstance(provider, forms.ModelChoiceField)  # noqa: S101 - narrows the type
+        provider.queryset = tasks_services.contractors_of(home)
+        provider.empty_label = "—"
         # The brands already entered in the home are suggested; any other text is kept.
         self.brands = list(brands)
         self.fields["brand"].widget.attrs.update({"list": BRAND_LIST_ID, "autocomplete": "off"})
@@ -178,6 +221,11 @@ class ItemForm(forms.ModelForm[Item]):
         room_field.queryset = rooms
         if self.instance.pk:
             self.initial["links"] = links_to_text(self.instance.links)
+
+    def clean(self) -> dict[str, Any]:
+        data: dict[str, Any] = super().clean() or {}
+        clean_new_contractor(self, data, self.home, field="contract_contractor")
+        return data
 
     def clean_links(self) -> list[dict[str, str]]:
         links = text_to_links(self.cleaned_data.get("links") or "")
