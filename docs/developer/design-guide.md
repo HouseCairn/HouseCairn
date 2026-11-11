@@ -50,7 +50,9 @@ holds the rest.
   bar is the map of the product; every entry added makes the others harder to find.
 - A section **must** have four tabs at most, all visible at 360 px. A tab hidden by
   a horizontal scroll is a screen nobody finds. A label longer than its share of the width
-  wraps inside its tab (`tabs-fit`), never over the next one.
+  wraps between words inside its tab (`tabs-fit`), never over the next one; a word that does
+  not fit in a tab at 360 px is a label to shorten, in the catalog if needed (the instance
+  tabs are "Aperçu" and "SSO" in French).
 - Tabs **must** switch between sister views of the same content, never lead to
   another section or a setting. Tabs used as a menu hide what they announce.
 - A page **must** show one row of tabs at most. Two rows on a phone take half of the
@@ -628,10 +630,15 @@ is checked against all of them at once.
   swapped fragment), so the person sees it without scrolling. The message stays under each field too
   (`{{ field.errors }}`, which Django links to the field with `aria-invalid` and `aria-describedby`).
   A folded `<details>` that holds a field in error **must** open: by its own `open` condition
-  on the server, and `static/js/form-errors.js` opens any that is left. A form that redirects with an error in
-  the banner of the page it comes from (stock movement, a stock item added to a task) does not
-  need it. `tests/test_form_errors.py` posts an invalid form to every screen and scans the templates:
-  a form added without the component fails it.
+  on the server, and `static/js/form-errors.js` opens any that is left. A refused form
+  **must** come back as its page, with status 422, even when the page shows a record (the forms of
+  the project page, the household, the instance overview). Two forms are an exception, being
+  actions in place on a page that already shows the record: the stock movement and the stock item
+  added to a task redirect to it, and say why in its banner, each message led by the label of
+  its field (`core.form_errors.banner_messages`), never "This field is required." alone.
+  `tests/test_form_errors.py` posts an invalid form to each form of the templates (the table
+  `TEMPLATE_CASES` names its case) and scans the templates form by form: a `<form>` added without
+  the component, or without a case, fails it.
 - **Adding to a list in place**: a form field that picks a record of the home the person
   may not have created yet (the contractor, the room, the item or the stock item of a task,
   the provider of the maintenance contract of an item) **must** be a list of the home's
