@@ -4,13 +4,15 @@ from typing import Any, cast
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import DisallowedHost
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import get_script_prefix, reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.cache import cache_control, never_cache
 from django.views.decorators.http import require_safe
+from django.views.defaults import bad_request as default_bad_request
 from django.views.generic import TemplateView
 
 from housecairn.core import more, services
@@ -121,3 +123,20 @@ def manifest(request: HttpRequest) -> HttpResponse:
         {ord("<"): "\\u003c", ord(">"): "\\u003e", ord("&"): "\\u0026"}
     )
     return HttpResponse(body, content_type="application/manifest+json")
+
+
+def bad_request(request: HttpRequest, exception: Exception) -> HttpResponse:
+    """The 400 page; for a host name the instance refuses, it says what to change.
+
+    Any other 400 is Django's own page, unchanged. Here the page gets only the sentence
+    of `HOUSECAIRN_DISALLOWED_HOST_HINT` (empty: the generic one): not the `Host` header
+    that was refused, not `ALLOWED_HOSTS`, not the message of the exception.
+    """
+    if not isinstance(exception, DisallowedHost):
+        return default_bad_request(request, exception)
+    return render(
+        request,
+        "400.html",
+        {"disallowed_host": True, "host_hint": settings.HOUSECAIRN_DISALLOWED_HOST_HINT},
+        status=400,
+    )

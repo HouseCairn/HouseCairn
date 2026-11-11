@@ -304,6 +304,9 @@ msgstr "Requête invalide"
 msgid "The request could not be understood."
 msgstr "La requête n'a pas pu être comprise."
 
+msgid "This address is not one this instance answers to. Its administrator must add the name to ALLOWED_HOSTS."
+msgstr "Cette adresse n'est pas de celles auxquelles cette instance répond. Son administrateur doit ajouter ce nom à ALLOWED_HOSTS."
+
 msgid "Back to the home page"
 msgstr "Retour à l'accueil"
 
