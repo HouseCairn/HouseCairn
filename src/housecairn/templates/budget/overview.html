@@ -8,21 +8,33 @@
   <section class="card" aria-labelledby="envelope-title">
     <h2 id="envelope-title">{% blocktranslate with year=year|unlocalize %}Envelope {{ year }}{% endblocktranslate %}</h2>
     {% if envelope.envelope is None %}
-      <p class="small">{% translate "No envelope set for this year." %}</p>
+      <p class="small">{% translate "No envelope set for this year: the figures are those of the plans." %}</p>
     {% endif %}
     <dl class="facts">
-      {% if envelope.envelope is not None %}<div><dt>{% translate "Envelope" %}</dt><dd>{{ envelope.envelope|money:home.currency }}</dd></div>{% endif %}
-      <div><dt>{% translate "Planned, projects and upkeep" %}</dt><dd>{{ envelope.total.planned|money:home.currency }}</dd></div>
-      <div><dt>{% translate "Used, projects and upkeep" %}</dt><dd>{{ envelope.total.engaged|money:home.currency }}</dd></div>
-      <div><dt>{% translate "Paid" %}</dt><dd>{{ envelope.total.paid|money:home.currency }}</dd></div>
-      {% if envelope.envelope is not None %}
-        <div><dt>{% translate "Left to plan" %}</dt><dd>{% if envelope.left_to_plan < 0 %}{% blocktranslate with amount=envelope.left_to_plan|money:home.currency %}{{ amount }} (the plans exceed the envelope){% endblocktranslate %}{% else %}{{ envelope.left_to_plan|money:home.currency }}{% endif %}</dd></div>
-        <div><dt>{% translate "Left to spend" %}</dt><dd>{% if envelope.left_to_spend < 0 %}{% blocktranslate with amount=envelope.left_to_spend|money:home.currency %}{{ amount }} (the spending exceeds the envelope){% endblocktranslate %}{% else %}{{ envelope.left_to_spend|money:home.currency }}{% endif %}</dd></div>
-      {% endif %}
-      <div><dt>{% translate "Projects" %}</dt><dd>{% blocktranslate with planned=envelope.projects.planned|money:home.currency paid=envelope.projects.paid|money:home.currency %}planned {{ planned }}, paid {{ paid }}{% endblocktranslate %}</dd></div>
-      <div><dt>{% translate "Upkeep" %}</dt><dd>{% blocktranslate with planned=envelope.upkeep.planned|money:home.currency paid=envelope.upkeep.paid|money:home.currency %}planned {{ planned }}, paid {{ paid }}{% endblocktranslate %}</dd></div>
-      <div><dt>{% translate "Budget in Sure" %}</dt><dd>{% translate "Not connected" %}</dd></div>
+      <div><dt>{% if envelope.envelope is None %}{% translate "Planned" context "amount" %}{% else %}{% translate "Envelope" %}{% endif %}</dt><dd>{{ envelope.set_aside|money:home.currency }}</dd></div>
+      <div><dt>{% translate "Spent" %}</dt><dd>{{ envelope.spent|money:home.currency }}</dd></div>
+      <div><dt>{% translate "Left" %}</dt><dd>{% if envelope.left < 0 %}{% blocktranslate with amount=envelope.left_over|money:home.currency %}Over by {{ amount }}{% endblocktranslate %}{% else %}{{ envelope.left|money:home.currency }}{% endif %}</dd></div>
     </dl>
+    {% if envelope.percent is not None %}
+      <p class="envelope-gauge">
+        <progress max="100" value="{{ envelope.gauge_value }}" aria-label="{% translate 'Spent against the envelope or the plans' %}">{{ envelope.percent }} %</progress>
+        <span class="small">{% if envelope.left < 0 %}<strong>{% blocktranslate with percent=envelope.percent %}{{ percent }} % spent: over budget{% endblocktranslate %}</strong>{% else %}{% blocktranslate with percent=envelope.percent %}{{ percent }} % spent{% endblocktranslate %}{% endif %}</span>
+      </p>
+    {% endif %}
+    <details class="form-section">
+      <summary>{% translate "Details of the year" %}</summary>
+      <dl class="facts">
+        {% if envelope.envelope is not None %}
+          <div><dt>{% translate "Planned, projects and upkeep" %}</dt><dd>{{ envelope.total.planned|money:home.currency }}</dd></div>
+          <div><dt>{% translate "Left to plan" %}</dt><dd>{% if envelope.left_to_plan < 0 %}{% blocktranslate with amount=envelope.left_to_plan|money:home.currency %}{{ amount }} (the plans exceed the envelope){% endblocktranslate %}{% else %}{{ envelope.left_to_plan|money:home.currency }}{% endif %}</dd></div>
+        {% endif %}
+        <div><dt>{% translate "Paid" %}</dt><dd>{{ envelope.total.paid|money:home.currency }}</dd></div>
+        <div><dt>{% translate "Projects" %}</dt><dd>{% blocktranslate with planned=envelope.projects.planned|money:home.currency paid=envelope.projects.paid|money:home.currency %}planned {{ planned }}, paid {{ paid }}{% endblocktranslate %}</dd></div>
+        <div><dt>{% translate "Upkeep" %}</dt><dd>{% blocktranslate with planned=envelope.upkeep.planned|money:home.currency paid=envelope.upkeep.paid|money:home.currency %}planned {{ planned }}, paid {{ paid }}{% endblocktranslate %}</dd></div>
+        <div><dt>{% translate "Budget in Sure" %}</dt><dd>{% translate "Not connected" %}</dd></div>
+      </dl>
+      <p class="small">{% translate "Spent is the more of committed and paid, line by line." %}</p>
+    </details>
     {% if can_write %}<a class="button button-secondary button-small" href="{% url_with_next 'projects:envelope' home_id=home.id %}">{% translate "Set the envelope" %}</a>{% endif %}
   </section>
 

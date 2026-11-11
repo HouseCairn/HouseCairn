@@ -10,12 +10,14 @@ reads it, read-only members included. How the figures are worked out is in the
 
 - **Year** picks the year of the figures; **Download as CSV** gives the same figures as a
   file.
-- **The envelope of the year** sets what the household wants to spend against what the
-  projects counted in that year and the upkeep plan (**Planned**), **Used** (the more of
-  committed and paid) and **Paid**. It says in words what is **left to plan** and **left to
-  spend**, and when the plans or the spending **exceed the envelope**. **Set the envelope**
-  (owners and members) leads to the projects screen. **Budget in Sure** says *Not connected*:
-  that place is kept for a later version and nothing is fetched.
+- **The envelope of the year** is three figures and a gauge: what is set aside (the
+  **envelope**, or **Planned** when no envelope is set), what is **Spent** (the more of
+  committed and paid) and what is **Left**. Next to the gauge, a sentence says the share
+  spent in percent; past the limit it says **Over by ...** and *over budget*, so colour is
+  never the only signal. **Details of the year** (closed by default) holds the rest: planned
+  against the envelope, what is left to plan, what is paid, projects and upkeep apart, and
+  **Budget in Sure**, which says *Not connected*: that place is kept for a later version and
+  nothing is fetched. **Set the envelope** (owners and members) leads to the projects screen.
 - **By nature** splits the year into materials, labour, rental and other. The cost typed on
   a task that is done is shared between *Materials* and *Labour* as the estimate of the task
   is, so it stands against its own plan; with no estimate, it counts under *Other*.

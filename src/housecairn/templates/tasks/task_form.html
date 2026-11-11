@@ -52,7 +52,7 @@
         <p class="field-summary"><strong>{% translate "In short:" %}</strong> <output id="repeat-summary" aria-live="polite">{{ form.summary }}</output></p>
       </div>
     </details>
-    <details class="form-section"{% if form.assignee.errors or form.contractor.errors or form.new_contractor_name.errors or form.new_contractor_trade_other.errors %} open{% endif %}>
+    <details class="form-section"{% if form.assignee.errors or form.contractor.errors or form.new_contractor_name.errors or form.new_contractor_trade_other.errors or not task and form.contractor.value %} open{% endif %}>
       <summary>{% translate "Who" %}</summary>
       <div>
         {% include "tasks/_field.html" with field=form.priority %}
