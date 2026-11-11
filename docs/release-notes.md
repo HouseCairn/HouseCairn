@@ -203,7 +203,7 @@ notes concern instances that ran an image built from `main` (`edge` or
 
 - **Calendar and calendar feeds.** See your tasks by week, month or year, with filters by home,
   room, person and priority, **Done** and **Undo** in place, and the next dates of a task that
-  repeats marked as forecast. **Feeds** gives a secret address per home, or for all your homes,
+  repeats marked as forecast. **Calendar feeds** (**More**, **Calendar in another application**) gives a secret address per home, or for all your homes,
   that Google Calendar, Apple Calendar, Thunderbird or Home Assistant can subscribe to: it shows
   titles, home, room, date and status, never notes, costs or files. You can get a new address or
   revoke it at any time; leaving a home revokes your feed of it. See
@@ -414,8 +414,9 @@ notes concern instances that ran an image built from `main` (`edge` or
 - **Photo categories and the contract of an item change shape.** The category `open_walls`
   of a photo is now `behind_walls`, in the API and in exports; the field `contract` of an
   item is now `contract_provider` (the old text, whole) and `contract_number`, in the API
-  and in exports. The migrations are reversible, but going back joins the two into the one
-  text again and cuts it at 200 characters: the contract number is lost when the provider
+  and in exports. The migrations are reversible, but going back turns the categories `before`, `after` and
+  `other` into `general`, and joins the two fields of the contract into the one text again and
+  cuts it at 200 characters: the contract number is lost when the provider
   alone is longer than that. Clients of the API must use the new names.
 
 - **Each home now has quotas of files**: 5 GB and 5000 files by default, deleted files
