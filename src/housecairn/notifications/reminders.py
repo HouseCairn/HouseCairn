@@ -31,10 +31,11 @@ from typing import Any
 
 from django.db import IntegrityError, models, transaction
 from django.urls import reverse
-from django.utils import formats, timezone, translation
+from django.utils import timezone, translation
 from django.utils.translation import gettext as _
 
 from housecairn.accounts.models import User
+from housecairn.core import dates
 from housecairn.core.links import external_url
 from housecairn.homes.models import WRITE_ROLES, Membership
 from housecairn.instance.config import get_setting, instance_zone
@@ -121,7 +122,7 @@ def _line(occurrence: Occurrence) -> str:
     text = _("%(title)s, %(home)s, due %(date)s") % {
         "title": one_line(occurrence.task.title),
         "home": one_line(occurrence.home.name),
-        "date": formats.date_format(occurrence.due_on, "DATE_FORMAT") if occurrence.due_on else "",
+        "date": dates.day(occurrence.due_on),
     }
     link = _link(occurrence)
     return f"{text}\n{link}" if link else text

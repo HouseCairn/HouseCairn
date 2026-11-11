@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras navigation %}
+{% load i18n tasks_extras navigation dates %}
 {% block head_title %}{{ item.name }}{% endblock head_title %}
 {% block content %}
   {% url 'rooms:detail' home_id=home.id room_id=item.room_id as parent %}{% back_link parent item.room.name %}
@@ -9,15 +9,15 @@
     <dl class="facts">
       {% if item.brand or item.model %}<div><dt>{% translate "Brand, model" %}</dt><dd>{{ item.brand }}{% if item.brand and item.model %} · {% endif %}{{ item.model }}</dd></div>{% endif %}
       {% if item.serial_number %}<div><dt>{% translate "Serial number" %}</dt><dd class="mono">{{ item.serial_number }}</dd></div>{% endif %}
-      {% if item.installed_on %}<div><dt>{% translate "Installed on" %}</dt><dd>{{ item.installed_on|date:"DATE_FORMAT" }}</dd></div>{% endif %}
+      {% if item.installed_on %}<div><dt>{% translate "Installed on" %}</dt><dd>{{ item.installed_on|day }}</dd></div>{% endif %}
       {% if item.warranty_ends_on %}
         <div>
           <dt>{% translate "Warranty" %}</dt>
           <dd>
             {% if warranty == "expired" %}
-              <span class="pill pill-danger">{% blocktranslate with date=item.warranty_ends_on|date:"DATE_FORMAT" %}ended on {{ date }}{% endblocktranslate %}</span>
+              <span class="pill pill-danger">{% blocktranslate with date=item.warranty_ends_on|day %}ended on {{ date }}{% endblocktranslate %}</span>
             {% else %}
-              <span class="pill pill-sand">{% blocktranslate with date=item.warranty_ends_on|date:"DATE_FORMAT" %}until {{ date }}{% endblocktranslate %}</span>
+              <span class="pill pill-sand">{% blocktranslate with date=item.warranty_ends_on|day %}until {{ date }}{% endblocktranslate %}</span>
             {% endif %}
           </dd>
         </div>
@@ -73,7 +73,7 @@
           <a class="row" href="{% url_with_next 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
             <span class="row-body">
               <span class="row-title">{{ occurrence.task.title }}</span>
-              <span class="row-text">{% if occurrence.due_on %}{{ occurrence.due_on|date:"SHORT_DATE_FORMAT" }}{% else %}{% translate "No date" %}{% endif %}</span>
+              <span class="row-text">{% if occurrence.due_on %}{{ occurrence.due_on|day }}{% else %}{% translate "No date" %}{% endif %}</span>
             </span>
             {% include "components/icon.html" with name="chevron" class="chevron" %}
           </a>

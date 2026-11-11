@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n stock_extras money navigation %}
+{% load i18n stock_extras money navigation dates %}
 {% block head_title %}{{ article.name }}{% endblock head_title %}
 {% block content %}
   {% url 'stock:list' home_id=home.id as parent %}{% back_link parent %}
@@ -122,7 +122,7 @@
         <li class="row">
           <span class="row-body">
             <span class="row-title">{{ movement.get_kind_display }} · {% if movement.delta > 0 %}+{% endif %}{{ article|amount:movement.delta }}</span>
-            <span class="row-text">{{ movement.occurred_on|date:"SHORT_DATE_FORMAT" }}{% if movement.kind == "inventory" %} · {% blocktranslate with count=movement.quantity|floatformat:"-2" %}counted {{ count }}{% endblocktranslate %}{% endif %}{% if movement.note %} · {{ movement.note }}{% endif %}{% if movement.occurrence %} · <a href="{% url_with_next 'tasks:detail' home_id=home.id task_id=movement.occurrence.task_id %}">{{ movement.occurrence.task.title }}</a>{% endif %}</span>
+            <span class="row-text">{{ movement.occurred_on|day }}{% if movement.kind == "inventory" %} · {% blocktranslate with count=movement.quantity|floatformat:"-2" %}counted {{ count }}{% endblocktranslate %}{% endif %}{% if movement.note %} · {{ movement.note }}{% endif %}{% if movement.occurrence %} · <a href="{% url_with_next 'tasks:detail' home_id=home.id task_id=movement.occurrence.task_id %}">{{ movement.occurrence.task.title }}</a>{% endif %}</span>
           </span>
         </li>
       {% endfor %}

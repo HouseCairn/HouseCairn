@@ -6,6 +6,7 @@ from django import forms
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from housecairn.core.forms import MoneyField, QuantityField
 from housecairn.rooms.models import Item, Room
 from housecairn.stock.models import Article, MovementKind, Supplier, Unit
 
@@ -54,6 +55,7 @@ class ArticleForm(forms.ModelForm[Article]):
             "notes",
         ]
         widgets = {"notes": forms.Textarea(attrs={"rows": 4})}
+        field_classes = {"threshold": QuantityField}
 
     def __init__(self, *args: Any, items: Any, rooms: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -74,15 +76,14 @@ class SupplierForm(forms.ModelForm[Supplier]):
     class Meta:
         model = Supplier
         fields = ["name", "reference", "url", "last_price"]
+        field_classes = {"last_price": MoneyField}
 
 
 class MovementForm(forms.Form):
     """The quick form of the article page; the button pressed gives `kind`."""
 
     kind = forms.ChoiceField(choices=MovementKind.choices)
-    quantity = forms.DecimalField(
-        label=_("Quantity"), min_value=0, max_digits=10, decimal_places=2, initial=1
-    )
+    quantity = QuantityField(label=_("Quantity"), min_value=0, initial=1)
     occurred_on = forms.DateField(
         label=_("Date"),
         required=False,

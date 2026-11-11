@@ -3,26 +3,18 @@
 import re
 from decimal import Decimal, InvalidOperation
 
-from babel import Locale, UnknownLocaleError
 from babel.numbers import format_currency
 from django import template
 from django.utils.formats import number_format
 from django.utils.html import conditional_escape
-from django.utils.translation import get_language
+
+from housecairn.core.dates import current_locale
 
 register = template.Library()
 
 # A symbol made of letters ("CHF", "SEK", "F CFA") must not touch the digits: CLDR puts a
 # no-break space there, which Babel leaves out when the pattern has none.
 _LETTER_THEN_DIGIT = re.compile(r"([^\W\d_])(?=\d)")
-
-
-def _locale() -> Locale:
-    """The locale of the language being served; English when Babel does not know it."""
-    try:
-        return Locale.parse(get_language() or "en", sep="-")
-    except (UnknownLocaleError, ValueError):
-        return Locale.parse("en")
 
 
 def _number(amount: object) -> Decimal | None:
@@ -60,7 +52,7 @@ def money(amount: Decimal | str | None, currency: str = "") -> str:
         text = format_currency(
             number,
             currency.upper(),
-            locale=_locale(),
+            locale=current_locale(),
             currency_digits=False,
             decimal_quantization=True,
         )

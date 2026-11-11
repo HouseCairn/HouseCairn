@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tabs navigation %}
+{% load i18n tabs navigation dates %}
 {% block head_title %}{% translate "Instance administration" %}{% endblock head_title %}
 {% block content %}
   {% url 'more' as parent %}{% back_link parent %}
@@ -33,7 +33,7 @@
     {% for invitation in invitations %}
       <section class="card">
         <p class="row-title">{{ invitation.email }}</p>
-        <p class="row-text">{% blocktranslate with date=invitation.expires_at|date:"SHORT_DATE_FORMAT" %}until {{ date }}{% endblocktranslate %}</p>
+        <p class="row-text">{% blocktranslate with date=invitation.expires_at|day %}until {{ date }}{% endblocktranslate %}</p>
         <div class="button-row">
           <form method="post" action="{% url 'instance:invitation-resend' invitation_id=invitation.id %}">
             {% csrf_token %}

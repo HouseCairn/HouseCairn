@@ -1,0 +1,29 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**One way to write a date.** An English screen could show `Nov. 8, 2026` beside `02/08/2027`, which reads as 2 August or as 8 February. Every date now has its month in letters, in one format per language: `Nov 8, 2026` in English, `8 nov. 2026` in French ([how dates are shown](../../../guides/dates.md))."
+msgstr "**Une seule façon d'écrire une date.** Un écran en anglais pouvait montrer `Nov. 8, 2026` à côté de `02/08/2027`, qui se lit 2 août ou 8 février. Toute date a désormais son mois en lettres, dans un format par langue : `Nov 8, 2026` en anglais, `8 nov. 2026` en français ([comment les dates sont affichées](../../../guides/dates.md))."
+
+msgid "**A comma in a number tells what to type.** In English `12,5` is still refused, but the message now says \"Enter a number with a point as the decimal mark, for example 12.5.\" instead of \"Enter a number.\" The quantities of stock and of materials, the quantity used when a task is marked done, the threshold of a stock item and the last price paid to a supplier follow the rule of the amounts, which was only that of money fields: in French they accept the comma (`12,5`) ([entering an amount](../../../guides/amounts.md))."
+msgstr "**Une virgule dans un nombre dit quoi saisir.** En anglais `12,5` est toujours refusé, mais le message dit désormais « Enter a number with a point as the decimal mark, for example 12.5. » au lieu de « Enter a number. ». Les quantités de stock et de matériel, la quantité utilisée quand une tâche est faite, le seuil d'un article et le dernier prix payé à un fournisseur suivent la règle des montants, qui n'était que celle des champs d'argent : en français ils acceptent la virgule (`12,5`) ([saisir un montant](../../../guides/amounts.md))."
+
+msgid "**The tests no longer read your `.env`.** Following the quick start, `cp .env.example .env` sets `DEBUG=true`, which made `test_debug_is_off_by_default` fail. The tests that import the settings do it from a copy of the sources, without any `.env`, and the contributor guide lists the `data` folder the quick start needed."
+msgstr "**Les tests ne lisent plus votre `.env`.** En suivant le démarrage rapide, `cp .env.example .env` pose `DEBUG=true`, ce qui faisait échouer `test_debug_is_off_by_default`. Les tests qui importent les réglages le font depuis une copie des sources, sans aucun `.env`, et le guide du contributeur mentionne le dossier `data` dont le démarrage rapide avait besoin."
+

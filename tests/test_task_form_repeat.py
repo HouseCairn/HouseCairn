@@ -205,7 +205,7 @@ class TestTheFormShows:
         assert 'name="repeat_start" value="2027-01-15"' in page
         assert '<option value="custom" selected>' in page
         assert '<option value="10" selected>' in page
-        assert "Day 15 of every quarter, from 01/15/2027." in page
+        assert "Day 15 of every quarter, from Jan 15, 2027." in page
 
     def test_the_summary_follows_the_fields(self, signed_in: Client, alice_home: Home) -> None:
         response = signed_in.get(
@@ -237,7 +237,7 @@ class TestTheFormShows:
             headers={"Accept-Language": "fr"},
         )
         assert response.text == (
-            "Le 15 de chaque trimestre à partir du 15/01/2027. Seulement entre mars et mai : "
+            "Le 15 de chaque trimestre à partir du 15 janv. 2027. Seulement entre mars et mai : "
             "une date en dehors passe au 1er mars."
         )
 
@@ -283,25 +283,25 @@ class TestSentences:
     @pytest.mark.parametrize(
         ("unit", "interval", "start", "text"),
         [
-            ("day", 1, D(2027, 1, 15), "Every day, from 01/15/2027."),
-            ("day", 10, D(2027, 1, 15), "Every 10 days, from 01/15/2027."),
-            ("week", 1, D(2027, 1, 15), "Every Friday, from 01/15/2027."),
-            ("week", 2, D(2027, 1, 15), "Every 2 weeks on Friday, from 01/15/2027."),
-            ("month", 1, D(2027, 1, 15), "Day 15 of every month, from 01/15/2027."),
-            ("month", 3, D(2027, 1, 15), "Day 15 of every quarter, from 01/15/2027."),
-            ("month", 6, D(2027, 1, 15), "Day 15, every 6 months, from 01/15/2027."),
+            ("day", 1, D(2027, 1, 15), "Every day, from Jan 15, 2027."),
+            ("day", 10, D(2027, 1, 15), "Every 10 days, from Jan 15, 2027."),
+            ("week", 1, D(2027, 1, 15), "Every Friday, from Jan 15, 2027."),
+            ("week", 2, D(2027, 1, 15), "Every 2 weeks on Friday, from Jan 15, 2027."),
+            ("month", 1, D(2027, 1, 15), "Day 15 of every month, from Jan 15, 2027."),
+            ("month", 3, D(2027, 1, 15), "Day 15 of every quarter, from Jan 15, 2027."),
+            ("month", 6, D(2027, 1, 15), "Day 15, every 6 months, from Jan 15, 2027."),
             (
                 "month",
                 1,
                 D(2027, 1, 31),
-                "Day 31 of every month, from 01/31/2027. In a shorter month, its last day.",
+                "Day 31 of every month, from Jan 31, 2027. In a shorter month, its last day.",
             ),
-            ("year", 1, D(2027, 1, 15), "Every year on January 15, from 01/15/2027."),
+            ("year", 1, D(2027, 1, 15), "Every year on Jan 15, from Jan 15, 2027."),
             (
                 "year",
                 4,
                 D(2028, 2, 29),
-                "Every 4 years on February 29, from 02/29/2028. In other years, 28 February.",
+                "Every 4 years on Feb 29, from Feb 29, 2028. In other years, 28 February.",
             ),
         ],
     )
@@ -330,7 +330,7 @@ class TestSentences:
                 "Prochaine fois : 3 mois après la dernière fois."
             )
             assert say(mode="fixed", unit="month", start=D(2027, 1, 31)) == (
-                "Le 31 de chaque mois à partir du 31/01/2027. Dans un mois plus court, le "
+                "Le 31 de chaque mois à partir du 31 janv. 2027. Dans un mois plus court, le "
                 "dernier jour."
             )
         assert say(mode="once") == "Not repeated: the task is done once."
@@ -346,4 +346,4 @@ class TestSentences:
             },
             home=alice_home,
         )
-        assert repeat_summary(form, alice_home) == "Every Friday, from 01/15/2027."
+        assert repeat_summary(form, alice_home) == "Every Friday, from Jan 15, 2027."

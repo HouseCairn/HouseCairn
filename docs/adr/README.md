@@ -62,3 +62,4 @@ later record supersedes it.
 | [0059](0059-notifications-refuse-private-networks.md) | Notifications refuse private networks unless allowed, and `connect` checks its address | 2026-11-11 |
 | [0060](0060-secret-key-apart-from-the-backups.md) | The secret key: rotation by `SECRET_KEY_FALLBACKS`, kept out of the backups | 2026-11-11 |
 | [0065](0065-installable-application-and-offline-reading.md) | Installable application and offline reading | 2026-11-11 |
+| [0068](0068-one-date-format-and-decimal-mark-messages.md) | One date format per language, and a decimal field that says what it expects | 2026-11-11 |

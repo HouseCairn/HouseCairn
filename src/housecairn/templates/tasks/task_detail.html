@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras people projects_extras budget_extras money navigation %}
+{% load i18n tasks_extras people projects_extras budget_extras money navigation dates %}
 {% block head_title %}{{ task.title }}{% endblock head_title %}
 {% block content %}
   {% url 'tasks:list' home_id=home.id as parent %}{% back_link parent %}
@@ -9,7 +9,7 @@
         {% include "tasks/_due.html" with occurrence=current %}
         {% if current.status == "postponed" %}<span class="pill pill-info">{% translate "Postponed" %}</span>{% endif %}
       {% elif last_closed %}
-        <span class="pill {% if last_closed.status == 'done' %}pill-success{% else %}pill-ghost{% endif %}">{{ last_closed.get_status_display }}{% if last_closed.completed_on %} · {{ last_closed.completed_on|date:"SHORT_DATE_FORMAT" }}{% endif %}</span>
+        <span class="pill {% if last_closed.status == 'done' %}pill-success{% else %}pill-ghost{% endif %}">{{ last_closed.get_status_display }}{% if last_closed.completed_on %} · {{ last_closed.completed_on|day }}{% endif %}</span>
       {% endif %}
       {% if task.priority == "high" %}<span class="pill pill-warning">{% translate "High priority" %}</span>{% elif task.priority == "low" %}<span class="pill pill-ghost">{% translate "Low priority" %}</span>{% endif %}
       {% if task.repeats %}<span class="pill pill-info">{{ task|repeat_summary }}</span>{% endif %}
@@ -49,10 +49,10 @@
   <section class="card">
     <dl class="facts">
       <div><dt>{% translate "Repeat" %}</dt><dd>{{ task|repeat_summary }}</dd></div>
-      {% if current and current.due_on %}<div><dt>{% translate "Due on" %}</dt><dd>{{ current.due_on|date:"DATE_FORMAT" }}</dd></div>{% endif %}
-      {% if current and current.postponed_from %}<div><dt>{% translate "Postponed from" %}</dt><dd>{{ current.postponed_from|date:"DATE_FORMAT" }}</dd></div>{% endif %}
+      {% if current and current.due_on %}<div><dt>{% translate "Due on" %}</dt><dd>{{ current.due_on|day }}</dd></div>{% endif %}
+      {% if current and current.postponed_from %}<div><dt>{% translate "Postponed from" %}</dt><dd>{{ current.postponed_from|day }}</dd></div>{% endif %}
       {% if task.hide_days_before %}<div><dt>{% translate "Hidden until" %}</dt><dd>{% blocktranslate count counter=task.hide_days_before %}{{ counter }} day before the date{% plural %}{{ counter }} days before the date{% endblocktranslate %}</dd></div>{% endif %}
-      {% if next_dates %}<div><dt>{% translate "Then" %}</dt><dd>{% for day in next_dates %}{{ day|date:"SHORT_DATE_FORMAT" }}{% if not forloop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
+      {% if next_dates %}<div><dt>{% translate "Then" %}</dt><dd>{% for day in next_dates %}{{ day|day }}{% if not forloop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
     </dl>
   </section>
 
@@ -101,12 +101,12 @@
         <li>
           <div class="row">
             <span class="row-body">
-              <span class="row-title">{{ done.get_status_display }}{% if done.completed_on %} · {{ done.completed_on|date:"DATE_FORMAT" }}{% endif %}</span>
+              <span class="row-title">{{ done.get_status_display }}{% if done.completed_on %} · {{ done.completed_on|day }}{% endif %}</span>
               {% if done.actual_cost is not None %}<span class="row-text">{{ done.actual_cost|money:home.currency }}</span>{% endif %}
               {% if done.completion_note %}<span class="history-note">{{ done.completion_note }}</span>{% endif %}
             </span>
             {% if can_write and done.status == "done" %}
-              <a class="button button-secondary button-small" href="{% url 'tasks:occurrence-edit' home_id=home.id task_id=task.id occurrence_id=done.id %}">{% translate "Details" %}<span class="visually-hidden"> {{ done.completed_on|date:"DATE_FORMAT" }}</span></a>
+              <a class="button button-secondary button-small" href="{% url 'tasks:occurrence-edit' home_id=home.id task_id=task.id occurrence_id=done.id %}">{% translate "Details" %}<span class="visually-hidden"> {{ done.completed_on|day }}</span></a>
             {% endif %}
           </div>
         </li>
