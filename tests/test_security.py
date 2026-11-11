@@ -33,7 +33,14 @@ def _env_file(path: Path) -> dict[str, str]:
 
 def _run_python(code: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     base = {k: v for k, v in os.environ.items() if not k.startswith(("DJANGO_", "PYTEST"))}
-    for key in ("SECRET_KEY", "DEBUG", "ALLOWED_HOSTS", "DATABASE_URL", "SECURE_SSL_REDIRECT"):
+    for key in (
+        "SECRET_KEY",
+        "SECRET_KEY_FALLBACKS",
+        "DEBUG",
+        "ALLOWED_HOSTS",
+        "DATABASE_URL",
+        "SECURE_SSL_REDIRECT",
+    ):
         base.pop(key, None)
     base.update(env)
     base["PYTHONPATH"] = str(REPO / "src")
@@ -77,6 +84,32 @@ def test_secret_key_is_required_without_debug() -> None:
     result = _run_python("import housecairn.settings", {"DEBUG": "false"})
     assert result.returncode != 0
     assert "SECRET_KEY must be set" in result.stderr
+
+
+def test_a_rotated_key_still_reads_the_secrets_sealed_with_the_former_one() -> None:
+    """`SECRET_KEY_FALLBACKS` is read from the environment, comma-separated: a secret sealed
+    with the former key is read after the rotation, and sealed again with the new key."""
+    from django.test.utils import override_settings
+
+    from housecairn.instance import crypto
+
+    old, new = secrets.token_urlsafe(50), secrets.token_urlsafe(50)
+    with override_settings(SECRET_KEY=old, SECRET_KEY_FALLBACKS=[]):
+        sealed = crypto.encrypt("smtp-password")
+    code = (
+        "import os, django; os.environ['DJANGO_SETTINGS_MODULE'] = 'housecairn.settings';"
+        "django.setup(); from django.conf import settings; from housecairn.instance import crypto;"
+        "print(len(settings.SECRET_KEY_FALLBACKS)); print(crypto.decrypt(os.environ['SEALED']));"
+        "fresh = crypto.encrypt('x'); settings.SECRET_KEY_FALLBACKS = [];"
+        "crypto._cipher.cache_clear(); print(crypto.decrypt(fresh))"
+    )
+    rotated = {"SECRET_KEY": new, "SEALED": sealed, "DEBUG": "true"}
+    result = _run_python(code, {**rotated, "SECRET_KEY_FALLBACKS": f"another-old-key,{old}"})
+    assert result.stdout.split() == ["2", "smtp-password", "x"], result.stderr
+    # Without the former key, the secret is unreadable: what the rotation would lose.
+    result = _run_python(code, rotated)
+    assert result.returncode != 0
+    assert "SecretUnreadableError" in result.stderr
 
 
 def test_debug_is_off_by_default() -> None:

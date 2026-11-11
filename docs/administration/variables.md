@@ -14,7 +14,8 @@ changed in the interface; a variable that is set locks its field there. The full
 | `HOUSECAIRN_URL_PREFIX` | (none: the root) | Path the instance is served under, such as `/housecairn` (see [Serving under a path prefix](url-prefix.md)). |
 | `HOUSECAIRN_URL_PREFIX_HEADER` | (none: off) | Header in which a trusted proxy gives the path prefix of each request, such as `X-Ingress-Path`. |
 | `HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING` | `false` | `true` lets a page of the same origin show HouseCairn in a frame, as Home Assistant's Ingress panel does (see [Serving under a path prefix](url-prefix.md)). |
-| `SECRET_KEY` | generated in `/data/secret_key` | Set it only to manage the key yourself. |
+| `SECRET_KEY` | generated in `/data/secret_key` | Signs sessions and encrypts the stored secrets. Set it here to keep the key apart from `/data` and its backups (see [Secrets](settings.md#secrets)). |
+| `SECRET_KEY_FALLBACKS` | (none) | Former keys, comma-separated, still accepted after a rotation: the secrets they encrypted stay readable (see [Rotate the key](settings.md#rotate-the-key)). |
 | `DATABASE_URL` | SQLite in `/data` | For example `postgres://housecairn:<password>@postgres:5432/housecairn`. |
 | `TIME_ZONE` | `UTC` | Time zone of the households, such as `Europe/Paris`: it decides what today is. Also in the interface. |
 | `HOUSECAIRN_DEFAULT_LANGUAGE` | `en` | `en` or `fr`, for browsers that ask for no language the instance offers. Also in the interface. |
@@ -36,6 +37,7 @@ changed in the interface; a variable that is set locks its field there. The full
 | `HOUSECAIRN_INVITATION_LIFETIME_DAYS` | `7` | Days an invitation link stays valid, from 1 to 90. |
 | `HOUSECAIRN_NOTIFICATIONS_ENABLED` | `false` | Reminders through Apprise channels; off, nothing is sent. See [Notifications](../guides/notifications.md). |
 | `HOUSECAIRN_NOTIFICATIONS_INTERVAL` | `5` | Minutes between two looks for reminders to send, from 1 to 60. |
+| `HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS` | `false` | Let channels send to private network addresses, for a ntfy or a Gotify of the local network. Off, they are refused. Also in the interface. See [Hardening](hardening.md). |
 | `HOUSECAIRN_LINK_PREVIEW_ENABLED` | `false` | Read the title and the picture of a page when a link is added to a project. Off, nothing is read. The server only calls public addresses. Also in the interface. See [Projects](../guides/projects.md). |
 | `HOUSECAIRN_DOCS_URL` | `https://docs.housecairn.app` | Address of this documentation, used by the help link of each screen. |
 | `HOUSECAIRN_WEB_WORKERS` | `2` | Web server processes. |

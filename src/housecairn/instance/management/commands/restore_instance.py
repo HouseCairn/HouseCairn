@@ -1,10 +1,15 @@
-"""Put a backup of `backup_instance` back: database, uploaded files and secret key.
+"""Put a backup of `backup_instance` back: database, uploaded files and, if it holds it,
+the secret key.
 
 Stop the application first (docs/administration/backup.md). Every part is checked against
 the manifest before anything is replaced; a name that would leave its directory, a link
 or a device is refused. What was there before is kept next to it, renamed
 `<name>.before-restore-<date>`, never deleted. `--database-file`, `--media-root` and
 `--data-dir` restore elsewhere, to check a backup without touching the instance.
+
+A backup without the secret key (the default since docs/adr/0060) leaves the key of the
+data directory as it is, and says what it means: the instance must start with the key it
+had, or the secrets stored in the database cannot be read and are entered again.
 """
 
 import datetime
@@ -25,6 +30,14 @@ from housecairn.instance.management.commands.backup_instance import (
     FORMAT,
     VERSION,
     postgres_environment,
+)
+
+KEY_LEFT_OUT = (
+    "The backup holds no secret key: start the instance with the key it had when the backup "
+    "was made, in SECRET_KEY (or in secret_key of the data directory). With another key, the "
+    "stored secrets cannot be read: enter the SMTP password and the secrets of the sign-in "
+    "providers again, and add the notification channels again; everyone signs in again. The "
+    "homes, their files and the accounts are restored either way."
 )
 
 
@@ -177,3 +190,5 @@ class Command(BaseCommand):
         files = sum(1 for name in parts if name.startswith("media/"))
         key = "secret key, " if "secret_key" in parts else ""
         self.stdout.write(f"Restored: database, {key}{files} files.")
+        if "secret_key" not in parts:
+            self.stdout.write(KEY_LEFT_OUT)

@@ -5,7 +5,7 @@ Everything HouseCairn writes is in the `/data` volume:
 | Path | Content |
 | --- | --- |
 | `/data/db.sqlite3` (and `-wal`, `-shm`) | The SQLite database, unless `DATABASE_URL` points to PostgreSQL. |
-| `/data/secret_key` | The key that signs sessions and tokens, mode 600. Losing it signs everyone out; keep it secret. |
+| `/data/secret_key` | The key that signs sessions and encrypts the stored secrets, mode 600, generated when `SECRET_KEY` is not set. Losing it signs everyone out and makes the stored secrets unreadable; keep it secret, and apart from the backups (see [The secret key](#the-secret-key)). |
 | `/data/media/` | Uploaded files. |
 | `/data/backups/` | Copies made by the `backup_instance` and `backup` commands below. |
 
@@ -25,11 +25,29 @@ docker compose exec housecairn python -m housecairn.entrypoint manage backup_ins
 
 The archive holds a consistent copy of the database (SQLite's online backup
 API, the same as `sqlite3 db.sqlite3 ".backup ..."`), the uploaded files of
-`/data/media/`, the secret key, and `manifest.json` with the SHA-256 digest of
-each. It is written with mode 600: it holds every home and
-the secret key, keep it as safe as the server. Copy it off the machine, and
-remove old copies from `/data/backups/` yourself. `--output <directory>`
-writes it elsewhere.
+`/data/media/`, and `manifest.json` with the SHA-256 digest of each. It is
+written with mode 600: it holds every home, keep it as safe as the server. Copy
+it off the machine, and remove old copies from `/data/backups/` yourself.
+`--output <directory>` writes it elsewhere.
+
+**The secret key is not in the archive**, unless you add `--include-secret-key`.
+
+### The secret key
+
+The stored secrets (the SMTP password, the secrets of the sign-in providers added in the
+interface, the addresses of the notification channels) are encrypted in the database with
+a key derived from the secret key. An archive that held the key as well would give them
+all to whoever got a copy of it, so `backup_instance` leaves it out
+([ADR 0060](../adr/0060-secret-key-apart-from-the-backups.md)). Keep the key apart:
+
+- best, set `SECRET_KEY` in `deploy/production.env` (see
+  [Secrets](settings.md#secrets)), and keep a copy of that file, or of the key, somewhere
+  else than your backups, such as a password manager;
+- if the key was generated in `/data/secret_key`, keep a copy of that file the same way.
+
+`--include-secret-key` puts `/data/secret_key` in the archive all the same, for a copy
+that must restore alone; it then gives the stored secrets to whoever has it. Without a
+key file (the key comes from `SECRET_KEY`), there is nothing to include.
 
 ### With PostgreSQL
 
@@ -45,15 +63,13 @@ version as the server:
 docker compose --profile postgres exec -T postgres \
   pg_dump -U housecairn -d housecairn --format=custom > housecairn-db.dump
 
-# 2. The uploaded files and the secret key, from the volume, read only.
+# 2. The uploaded files, from the volume, read only.
 docker run --rm -v housecairn_housecairn-data:/data:ro -v "$PWD":/backup \
-  debian:stable-slim tar -cf /backup/housecairn-files.tar -C /data media secret_key
+  debian:stable-slim tar -cf /backup/housecairn-files.tar -C /data media
 ```
 
-If `SECRET_KEY` is set in `deploy/production.env` rather than generated in
-`/data/secret_key`, leave `secret_key` out of the second command and keep a copy
-of `production.env` instead. Both files hold every home; keep them as safe as
-the server.
+Keep the secret key apart from these two files, as [above](#the-secret-key). Both
+files hold every home; keep them as safe as the server.
 
 These commands follow the `compose.yaml` of the repository (service, user,
 database and volume names), but have not yet been tried on a real server: try
@@ -61,7 +77,9 @@ a restore on another machine before you rely on them.
 
 Two other ways remain:
 
-- **Cold copy**: stop the container, copy the volume, start it again.
+- **Cold copy**: stop the container, copy the volume, start it again. The copy
+  holds `/data/secret_key` when the key was generated there: keep it as you would
+  the key.
 
   ```sh
   docker compose stop housecairn
@@ -74,7 +92,7 @@ Two other ways remain:
 
 - **The database only**, with `python -m housecairn.entrypoint backup`
   (prints `/data/backups/db-<UTC date and time>.sqlite3`); then copy
-  `/data/secret_key` and `/data/media/` as well.
+  `/data/media/` as well, and keep the key apart.
 
 The owners of a home can also keep their own copy of it: **Export all data**,
 which a restore makes a new home again ([Export and deletion](data.md)).
@@ -94,6 +112,14 @@ leaves its directory or a link is refused and nothing is replaced. The
 database, `/data/media/` and the secret key that were there are not deleted:
 they are kept next to it, renamed `<name>.before-restore-<date>`, until you
 remove them. Without `--yes`, the command refuses to replace anything.
+
+An archive without the secret key (the default) leaves `/data/secret_key` as it
+is, and the command says so. Start the instance with the key it had when the
+backup was made: in `SECRET_KEY`, or by putting its `secret_key` file back in
+`/data`. With another key the homes, their files and the accounts are all there,
+but everyone signs in again and the stored secrets cannot be read: the screens
+say so, the SMTP password and the secrets of the sign-in providers are entered
+again, and the notification channels are added again.
 
 To check a backup without touching the instance, restore it elsewhere:
 

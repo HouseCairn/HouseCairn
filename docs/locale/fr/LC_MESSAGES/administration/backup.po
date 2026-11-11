@@ -39,8 +39,8 @@ msgstr "La base SQLite, sauf si `DATABASE_URL` pointe vers PostgreSQL."
 msgid "`/data/secret_key`"
 msgstr "`/data/secret_key`"
 
-msgid "The key that signs sessions and tokens, mode 600. Losing it signs everyone out; keep it secret."
-msgstr "La clé qui signe les sessions et les jetons, en mode 600. La perdre déconnecte tout le monde ; gardez-la secrète."
+msgid "The key that signs sessions and encrypts the stored secrets, mode 600, generated when `SECRET_KEY` is not set. Losing it signs everyone out and makes the stored secrets unreadable; keep it secret, and apart from the backups (see [The secret key](#the-secret-key))."
+msgstr "La clé qui signe les sessions et chiffre les secrets enregistrés, en mode 600, générée quand `SECRET_KEY` n'est pas définie. La perdre déconnecte tout le monde et rend les secrets enregistrés illisibles ; gardez-la secrète, et à part des sauvegardes (voir [La clé secrète](#the-secret-key))."
 
 msgid "`/data/media/`"
 msgstr "`/data/media/`"
@@ -63,8 +63,26 @@ msgstr "Sauvegarder"
 msgid "With SQLite, the default, the simplest complete backup, while HouseCairn runs, is one command ([ADR 0048](../adr/0048-export-format-and-restore.md)):"
 msgstr "Avec SQLite, la base par défaut, la sauvegarde complète la plus simple, pendant que HouseCairn tourne, tient en une commande ([ADR 0048](../adr/0048-export-format-and-restore.md)) :"
 
-msgid "The archive holds a consistent copy of the database (SQLite's online backup API, the same as `sqlite3 db.sqlite3 \".backup ...\"`), the uploaded files of `/data/media/`, the secret key, and `manifest.json` with the SHA-256 digest of each. It is written with mode 600: it holds every home and the secret key, keep it as safe as the server. Copy it off the machine, and remove old copies from `/data/backups/` yourself. `--output <directory>` writes it elsewhere."
-msgstr "L'archive contient une copie cohérente de la base de données (l'API de sauvegarde à chaud de SQLite, la même que `sqlite3 db.sqlite3 \".backup ...\"`), les fichiers envoyés de `/data/media/`, la clé secrète, et `manifest.json` avec l'empreinte SHA-256 de chacun. Elle est écrite en mode 600 : elle contient tous les logements et la clé secrète, gardez-la aussi bien que le serveur. Copiez-la hors de la machine, et supprimez vous-même les anciennes copies de `/data/backups/`. `--output <dossier>` l'écrit ailleurs."
+msgid "The archive holds a consistent copy of the database (SQLite's online backup API, the same as `sqlite3 db.sqlite3 \".backup ...\"`), the uploaded files of `/data/media/`, and `manifest.json` with the SHA-256 digest of each. It is written with mode 600: it holds every home, keep it as safe as the server. Copy it off the machine, and remove old copies from `/data/backups/` yourself. `--output <directory>` writes it elsewhere."
+msgstr "L'archive contient une copie cohérente de la base de données (l'API de sauvegarde à chaud de SQLite, la même que `sqlite3 db.sqlite3 \".backup ...\"`), les fichiers envoyés de `/data/media/`, et `manifest.json` avec l'empreinte SHA-256 de chacun. Elle est écrite en mode 600 : elle contient tous les logements, gardez-la aussi bien que le serveur. Copiez-la hors de la machine, et supprimez vous-même les anciennes copies de `/data/backups/`. `--output <dossier>` l'écrit ailleurs."
+
+msgid "**The secret key is not in the archive**, unless you add `--include-secret-key`."
+msgstr "**La clé secrète n'est pas dans l'archive**, sauf si vous ajoutez `--include-secret-key`."
+
+msgid "The secret key"
+msgstr "La clé secrète"
+
+msgid "The stored secrets (the SMTP password, the secrets of the sign-in providers added in the interface, the addresses of the notification channels) are encrypted in the database with a key derived from the secret key. An archive that held the key as well would give them all to whoever got a copy of it, so `backup_instance` leaves it out ([ADR 0060](../adr/0060-secret-key-apart-from-the-backups.md)). Keep the key apart:"
+msgstr "Les secrets enregistrés (le mot de passe SMTP, les secrets des fournisseurs de connexion ajoutés dans l'interface, les adresses des canaux de notification) sont chiffrés dans la base de données avec une clé dérivée de la clé secrète. Une archive qui contiendrait aussi la clé les livrerait tous à quiconque en obtient une copie : `backup_instance` la laisse donc de côté ([ADR 0060](../adr/0060-secret-key-apart-from-the-backups.md)). Gardez la clé à part :"
+
+msgid "best, set `SECRET_KEY` in `deploy/production.env` (see [Secrets](settings.md#secrets)), and keep a copy of that file, or of the key, somewhere else than your backups, such as a password manager;"
+msgstr "le mieux : définissez `SECRET_KEY` dans `deploy/production.env` (voir [Secrets](settings.md#secrets)), et gardez une copie de ce fichier, ou de la clé, ailleurs qu'avec vos sauvegardes, par exemple dans un gestionnaire de mots de passe ;"
+
+msgid "if the key was generated in `/data/secret_key`, keep a copy of that file the same way."
+msgstr "si la clé a été générée dans `/data/secret_key`, gardez une copie de ce fichier de la même façon."
+
+msgid "`--include-secret-key` puts `/data/secret_key` in the archive all the same, for a copy that must restore alone; it then gives the stored secrets to whoever has it. Without a key file (the key comes from `SECRET_KEY`), there is nothing to include."
+msgstr "`--include-secret-key` met tout de même `/data/secret_key` dans l'archive, pour une copie qui doit se restaurer seule ; elle livre alors les secrets enregistrés à qui la détient. Sans fichier de clé (la clé vient de `SECRET_KEY`), il n'y a rien à inclure."
 
 msgid "With PostgreSQL"
 msgstr "Avec PostgreSQL"
@@ -72,8 +90,8 @@ msgstr "Avec PostgreSQL"
 msgid "With PostgreSQL, `backup_instance` calls `pg_dump`, and `restore_instance` calls `pg_restore`. **The official image contains neither**: in it, both commands stop with `pg_dump is not installed in this container` (or `pg_restore`). Back up the two parts separately instead, with the `postgres` service of `compose.yaml`, whose image has both programs and is of the same version as the server:"
 msgstr "Avec PostgreSQL, `backup_instance` appelle `pg_dump`, et `restore_instance` appelle `pg_restore`. **L'image officielle ne contient ni l'un ni l'autre** : les deux commandes s'y arrêtent sur `pg_dump is not installed in this container` (ou `pg_restore`). Sauvegardez plutôt les deux parties séparément, avec le service `postgres` de `compose.yaml`, dont l'image contient les deux programmes, dans la même version que le serveur :"
 
-msgid "If `SECRET_KEY` is set in `deploy/production.env` rather than generated in `/data/secret_key`, leave `secret_key` out of the second command and keep a copy of `production.env` instead. Both files hold every home; keep them as safe as the server."
-msgstr "Si `SECRET_KEY` est défini dans `deploy/production.env` au lieu d'être généré dans `/data/secret_key`, retirez `secret_key` de la seconde commande et gardez plutôt une copie de `production.env`. Les deux fichiers contiennent tous les logements ; gardez-les aussi bien que le serveur."
+msgid "Keep the secret key apart from these two files, as [above](#the-secret-key). Both files hold every home; keep them as safe as the server."
+msgstr "Gardez la clé secrète à part de ces deux fichiers, comme [plus haut](#the-secret-key). Les deux fichiers contiennent tous les logements ; gardez-les aussi bien que le serveur."
 
 msgid "These commands follow the `compose.yaml` of the repository (service, user, database and volume names), but have not yet been tried on a real server: try a restore on another machine before you rely on them."
 msgstr "Ces commandes suivent le `compose.yaml` du dépôt (noms du service, de l'utilisateur, de la base et du volume), mais n'ont pas encore été essayées sur un vrai serveur : essayez une restauration sur une autre machine avant de vous y fier."
@@ -81,14 +99,14 @@ msgstr "Ces commandes suivent le `compose.yaml` du dépôt (noms du service, de 
 msgid "Two other ways remain:"
 msgstr "Deux autres façons restent possibles :"
 
-msgid "**Cold copy**: stop the container, copy the volume, start it again."
-msgstr "**Copie à froid** : arrêtez le conteneur, copiez le volume, redémarrez-le."
+msgid "**Cold copy**: stop the container, copy the volume, start it again. The copy holds `/data/secret_key` when the key was generated there: keep it as you would the key."
+msgstr "**Copie à froid** : arrêtez le conteneur, copiez le volume, redémarrez-le. La copie contient `/data/secret_key` quand la clé y a été générée : gardez-la comme vous garderiez la clé."
 
 msgid "(The volume name is `<project>_housecairn-data`; `docker volume ls` shows it.)"
 msgstr "(Le nom du volume est `<project>_housecairn-data` ; `docker volume ls` l'affiche.)"
 
-msgid "**The database only**, with `python -m housecairn.entrypoint backup` (prints `/data/backups/db-<UTC date and time>.sqlite3`); then copy `/data/secret_key` and `/data/media/` as well."
-msgstr "**La base de données seule**, avec `python -m housecairn.entrypoint backup` (affiche `/data/backups/db-<date et heure UTC>.sqlite3`) ; copiez alors aussi `/data/secret_key` et `/data/media/`."
+msgid "**The database only**, with `python -m housecairn.entrypoint backup` (prints `/data/backups/db-<UTC date and time>.sqlite3`); then copy `/data/media/` as well, and keep the key apart."
+msgstr "**La base de données seule**, avec `python -m housecairn.entrypoint backup` (affiche `/data/backups/db-<date et heure UTC>.sqlite3`) ; copiez alors aussi `/data/media/`, et gardez la clé à part."
 
 msgid "The owners of a home can also keep their own copy of it: **Export all data**, which a restore makes a new home again ([Export and deletion](data.md))."
 msgstr "Les propriétaires d'un logement peuvent aussi en garder leur propre copie : **Exporter toutes les données**, qu'une restauration transforme de nouveau en logement ([Export et suppression](data.md))."
@@ -101,6 +119,9 @@ msgstr "Avec SQLite, arrêtez l'application, restaurez l'archive de `backup_inst
 
 msgid "Every part is checked against the manifest first; a changed backup, a name that leaves its directory or a link is refused and nothing is replaced. The database, `/data/media/` and the secret key that were there are not deleted: they are kept next to it, renamed `<name>.before-restore-<date>`, until you remove them. Without `--yes`, the command refuses to replace anything."
 msgstr "Chaque partie est d'abord vérifiée d'après le manifeste ; une sauvegarde modifiée, un nom qui sort de son dossier ou un lien sont refusés, et rien n'est remplacé. La base de données, `/data/media/` et la clé secrète qui étaient en place ne sont pas supprimées : elles sont gardées à côté, renommées `<nom>.before-restore-<date>`, jusqu'à ce que vous les supprimiez. Sans `--yes`, la commande refuse de remplacer quoi que ce soit."
+
+msgid "An archive without the secret key (the default) leaves `/data/secret_key` as it is, and the command says so. Start the instance with the key it had when the backup was made: in `SECRET_KEY`, or by putting its `secret_key` file back in `/data`. With another key the homes, their files and the accounts are all there, but everyone signs in again and the stored secrets cannot be read: the screens say so, the SMTP password and the secrets of the sign-in providers are entered again, and the notification channels are added again."
+msgstr "Une archive sans la clé secrète (le cas par défaut) laisse `/data/secret_key` tel quel, et la commande le dit. Démarrez l'instance avec la clé qu'elle avait au moment de la sauvegarde : dans `SECRET_KEY`, ou en remettant son fichier `secret_key` dans `/data`. Avec une autre clé, les logements, leurs fichiers et les comptes sont tous là, mais tout le monde se reconnecte et les secrets enregistrés ne sont plus lisibles : les écrans le disent, le mot de passe SMTP et les secrets des fournisseurs de connexion sont à saisir de nouveau, et les canaux de notification à ajouter de nouveau."
 
 msgid "To check a backup without touching the instance, restore it elsewhere:"
 msgstr "Pour vérifier une sauvegarde sans toucher à l'instance, restaurez-la ailleurs :"
@@ -125,4 +146,13 @@ msgstr "`--clean --if-exists` supprime chaque table du dump avant de la recréer
 
 #~ msgid "With PostgreSQL, back up the database with `pg_dump`, and `/data` for the key and the uploaded files."
 #~ msgstr "Avec PostgreSQL, sauvegardez la base avec `pg_dump`, et `/data` pour la clé et les fichiers téléversés."
+
+#~ msgid "The key that signs sessions and tokens, mode 600. Losing it signs everyone out; keep it secret."
+#~ msgstr "La clé qui signe les sessions et les jetons, en mode 600. La perdre déconnecte tout le monde ; gardez-la secrète."
+
+#~ msgid "If `SECRET_KEY` is set in `deploy/production.env` rather than generated in `/data/secret_key`, leave `secret_key` out of the second command and keep a copy of `production.env` instead. Both files hold every home; keep them as safe as the server."
+#~ msgstr "Si `SECRET_KEY` est défini dans `deploy/production.env` au lieu d'être généré dans `/data/secret_key`, retirez `secret_key` de la seconde commande et gardez plutôt une copie de `production.env`. Les deux fichiers contiennent tous les logements ; gardez-les aussi bien que le serveur."
+
+#~ msgid "**Cold copy**: stop the container, copy the volume, start it again."
+#~ msgstr "**Copie à froid** : arrêtez le conteneur, copiez le volume, redémarrez-le."
 

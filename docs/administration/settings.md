@@ -64,6 +64,7 @@ time zone and the name of the instance included.
 | Number of files of a home | `HOUSECAIRN_HOME_MAX_FILES` | Files of a home | `5000` | At once |
 | Notifications | `HOUSECAIRN_NOTIFICATIONS_ENABLED` | Notifications | `false` | At once |
 | Check for reminders every (minutes) | `HOUSECAIRN_NOTIFICATIONS_INTERVAL` | Notifications | `5` | At once |
+| Channels on the local network | `HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS` | Notifications | `false` | At once |
 | Preview of inspiration links | `HOUSECAIRN_LINK_PREVIEW_ENABLED` | Projects | `false` | At once |
 % settings-table:end
 
@@ -83,9 +84,35 @@ The SMTP password is write-only. The interface and the API say whether one is se
 what it is; it is absent from the audit log, the exports and the logs. A secret stored
 from the interface is encrypted in the database with a key derived from the instance's
 `SECRET_KEY`. If `SECRET_KEY` changes, the stored secret can no longer be read: the instance
-treats it as not set, the screen says so, and you enter it again. To rotate the key
-without losing it, list the old key in Django's `SECRET_KEY_FALLBACKS` while you re-enter
-the secrets. A password set by `EMAIL_HOST_PASSWORD` is shown as "set", without its value.
+treats it as not set, the screen says so, and you enter it again. A password set by
+`EMAIL_HOST_PASSWORD` is shown as "set", without its value.
+
+The same key encrypts the secrets of the [sign-in providers](oidc.md) added in the
+interface and the addresses of the [notification channels](../guides/notifications.md).
+Keep it apart from the data: set `SECRET_KEY` in the environment (`deploy/production.env`)
+rather than leave it generated in `/data/secret_key`, and keep a copy of it somewhere else
+than your backups. [Backups](backup.md) leave it out.
+
+### Rotate the key
+
+To change the key without losing the stored secrets:
+
+1. Generate a new key:
+   `python -c "import secrets; print(secrets.token_urlsafe(50))"`.
+2. In `deploy/production.env`, set `SECRET_KEY` to the new key and
+   `SECRET_KEY_FALLBACKS` to the old one (the value of the old `SECRET_KEY`, or the content of
+   `/data/secret_key` if the key was generated there). Several old keys are separated by
+   commas.
+3. Restart the instance: `docker compose up -d`.
+
+The instance now signs and encrypts with the new key, and still reads what the old one
+made: the stored secrets, and the sessions (nobody is signed out). A secret saved again (the SMTP password entered again, a provider saved again)
+is encrypted with the new key. Keep the old key in `SECRET_KEY_FALLBACKS` for as long as
+you want the secrets saved before the rotation to stay readable: once it is removed, they
+can no longer be read, the screens say so, the SMTP password and the secrets of the
+sign-in providers are entered again and the notification channels are added again, and
+everyone signs in again. If the old key leaked, remove it as soon as those secrets are
+entered again: until then, whoever has it can read them in a copy of the database.
 
 ## What changing a setting asks for
 
@@ -117,6 +144,7 @@ screen shows them read-only, without secrets.
 | Variable | Why it stays in the environment |
 | --- | --- |
 | `SECRET_KEY` | Signs sessions and encrypts stored secrets. |
+| `SECRET_KEY_FALLBACKS` | Former keys, still accepted during a rotation. |
 | `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` | A wrong value makes the instance unreachable. |
 | `DATABASE_URL`, `HOUSECAIRN_DATA_DIR` | Needed before the settings can be read. |
 | `HOUSECAIRN_BEHIND_TLS_PROXY`, `HOUSECAIRN_FORWARDED_ALLOW_IPS` | Decide which proxy headers to trust. |

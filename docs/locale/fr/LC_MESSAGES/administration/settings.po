@@ -346,6 +346,12 @@ msgstr "Chercher les rappels toutes les (minutes)"
 msgid "`HOUSECAIRN_NOTIFICATIONS_INTERVAL`"
 msgstr "`HOUSECAIRN_NOTIFICATIONS_INTERVAL`"
 
+msgid "Channels on the local network"
+msgstr "Canaux sur le réseau local"
+
+msgid "`HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS`"
+msgstr "`HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS`"
+
 msgid "Preview of inspiration links"
 msgstr "Aperçu des liens d'inspiration"
 
@@ -364,8 +370,29 @@ msgstr "La liste des réglages est celle que renvoie l'API (`GET /api/v1/instanc
 msgid "Secrets"
 msgstr "Secrets"
 
-msgid "The SMTP password is write-only. The interface and the API say whether one is set, never what it is; it is absent from the audit log, the exports and the logs. A secret stored from the interface is encrypted in the database with a key derived from the instance's `SECRET_KEY`. If `SECRET_KEY` changes, the stored secret can no longer be read: the instance treats it as not set, the screen says so, and you enter it again. To rotate the key without losing it, list the old key in Django's `SECRET_KEY_FALLBACKS` while you re-enter the secrets. A password set by `EMAIL_HOST_PASSWORD` is shown as \"set\", without its value."
-msgstr "Le mot de passe SMTP est en écriture seule. L'interface et l'API disent si un mot de passe est défini, jamais lequel ; il est absent du journal d'audit, des exports et des journaux. Un secret enregistré depuis l'interface est chiffré en base de données avec une clé dérivée de la `SECRET_KEY` de l'instance. Si `SECRET_KEY` change, le secret enregistré n'est plus lisible : l'instance le considère comme non défini, l'écran le dit, et vous le saisissez de nouveau. Pour changer la clé sans perdre le secret, listez l'ancienne clé dans `SECRET_KEY_FALLBACKS` de Django le temps de ressaisir les secrets. Un mot de passe posé par `EMAIL_HOST_PASSWORD` s'affiche « défini », sans sa valeur."
+msgid "The SMTP password is write-only. The interface and the API say whether one is set, never what it is; it is absent from the audit log, the exports and the logs. A secret stored from the interface is encrypted in the database with a key derived from the instance's `SECRET_KEY`. If `SECRET_KEY` changes, the stored secret can no longer be read: the instance treats it as not set, the screen says so, and you enter it again. A password set by `EMAIL_HOST_PASSWORD` is shown as \"set\", without its value."
+msgstr "Le mot de passe SMTP est en écriture seule. L'interface et l'API disent si un mot de passe est défini, jamais lequel ; il est absent du journal d'audit, des exports et des journaux. Un secret enregistré depuis l'interface est chiffré en base de données avec une clé dérivée de la `SECRET_KEY` de l'instance. Si `SECRET_KEY` change, le secret enregistré n'est plus lisible : l'instance le considère comme non défini, l'écran le dit, et vous le saisissez de nouveau. Un mot de passe posé par `EMAIL_HOST_PASSWORD` s'affiche « défini », sans sa valeur."
+
+msgid "The same key encrypts the secrets of the [sign-in providers](oidc.md) added in the interface and the addresses of the [notification channels](../guides/notifications.md). Keep it apart from the data: set `SECRET_KEY` in the environment (`deploy/production.env`) rather than leave it generated in `/data/secret_key`, and keep a copy of it somewhere else than your backups. [Backups](backup.md) leave it out."
+msgstr "La même clé chiffre les secrets des [fournisseurs de connexion](oidc.md) ajoutés dans l'interface et les adresses des [canaux de notification](../guides/notifications.md). Gardez-la à part des données : définissez `SECRET_KEY` dans l'environnement (`deploy/production.env`) plutôt que de la laisser générer dans `/data/secret_key`, et gardez-en une copie ailleurs qu'avec vos sauvegardes. Les [sauvegardes](backup.md) la laissent de côté."
+
+msgid "Rotate the key"
+msgstr "Changer la clé"
+
+msgid "To change the key without losing the stored secrets:"
+msgstr "Pour changer la clé sans perdre les secrets enregistrés :"
+
+msgid "Generate a new key: `python -c \"import secrets; print(secrets.token_urlsafe(50))\"`."
+msgstr "Générez une nouvelle clé : `python -c \"import secrets; print(secrets.token_urlsafe(50))\"`."
+
+msgid "In `deploy/production.env`, set `SECRET_KEY` to the new key and `SECRET_KEY_FALLBACKS` to the old one (the value of the old `SECRET_KEY`, or the content of `/data/secret_key` if the key was generated there). Several old keys are separated by commas."
+msgstr "Dans `deploy/production.env`, mettez la nouvelle clé dans `SECRET_KEY` et l'ancienne dans `SECRET_KEY_FALLBACKS` (la valeur de l'ancienne `SECRET_KEY`, ou le contenu de `/data/secret_key` si la clé y avait été générée). Plusieurs anciennes clés se séparent par des virgules."
+
+msgid "Restart the instance: `docker compose up -d`."
+msgstr "Redémarrez l'instance : `docker compose up -d`."
+
+msgid "The instance now signs and encrypts with the new key, and still reads what the old one made: the stored secrets, and the sessions (nobody is signed out). A secret saved again (the SMTP password entered again, a provider saved again) is encrypted with the new key. Keep the old key in `SECRET_KEY_FALLBACKS` for as long as you want the secrets saved before the rotation to stay readable: once it is removed, they can no longer be read, the screens say so, the SMTP password and the secrets of the sign-in providers are entered again and the notification channels are added again, and everyone signs in again. If the old key leaked, remove it as soon as those secrets are entered again: until then, whoever has it can read them in a copy of the database."
+msgstr "L'instance signe et chiffre désormais avec la nouvelle clé, et lit toujours ce que l'ancienne a produit : les secrets enregistrés, et les sessions (personne n'est déconnecté). Un secret enregistré de nouveau (le mot de passe SMTP ressaisi, un fournisseur enregistré de nouveau) est chiffré avec la nouvelle clé. Gardez l'ancienne clé dans `SECRET_KEY_FALLBACKS` aussi longtemps que les secrets enregistrés avant le changement doivent rester lisibles : une fois retirée, ils ne sont plus lisibles, les écrans le disent, le mot de passe SMTP et les secrets des fournisseurs de connexion sont à saisir de nouveau, les canaux de notification à ajouter de nouveau, et tout le monde se reconnecte. Si l'ancienne clé a fuité, retirez-la dès que ces secrets sont saisis de nouveau : jusque-là, qui la détient peut les lire dans une copie de la base de données."
 
 msgid "What changing a setting asks for"
 msgstr "Ce qu'exige la modification d'un réglage"
@@ -399,6 +426,12 @@ msgstr "`SECRET_KEY`"
 
 msgid "Signs sessions and encrypts stored secrets."
 msgstr "Signe les sessions et chiffre les secrets enregistrés."
+
+msgid "`SECRET_KEY_FALLBACKS`"
+msgstr "`SECRET_KEY_FALLBACKS`"
+
+msgid "Former keys, still accepted during a rotation."
+msgstr "Anciennes clés, encore acceptées pendant un changement de clé."
 
 msgid "`ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`"
 msgstr "`ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`"

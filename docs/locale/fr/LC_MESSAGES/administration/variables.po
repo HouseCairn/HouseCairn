@@ -99,8 +99,14 @@ msgstr "`SECRET_KEY`"
 msgid "generated in `/data/secret_key`"
 msgstr "générée dans `/data/secret_key`"
 
-msgid "Set it only to manage the key yourself."
-msgstr "À définir seulement pour gérer la clé vous-même."
+msgid "Signs sessions and encrypts the stored secrets. Set it here to keep the key apart from `/data` and its backups (see [Secrets](settings.md#secrets))."
+msgstr "Signe les sessions et chiffre les secrets enregistrés. Définissez-la ici pour garder la clé à part de `/data` et de ses sauvegardes (voir [Secrets](settings.md#secrets))."
+
+msgid "`SECRET_KEY_FALLBACKS`"
+msgstr "`SECRET_KEY_FALLBACKS`"
+
+msgid "Former keys, comma-separated, still accepted after a rotation: the secrets they encrypted stay readable (see [Rotate the key](settings.md#rotate-the-key))."
+msgstr "Anciennes clés, séparées par des virgules, encore acceptées après un changement de clé : les secrets qu'elles ont chiffrés restent lisibles (voir [Changer la clé](settings.md#rotate-the-key))."
 
 msgid "`DATABASE_URL`"
 msgstr "`DATABASE_URL`"
@@ -276,6 +282,12 @@ msgstr "`5`"
 msgid "Minutes between two looks for reminders to send, from 1 to 60."
 msgstr "Minutes entre deux recherches de rappels à envoyer, de 1 à 60."
 
+msgid "`HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS`"
+msgstr "`HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS`"
+
+msgid "Let channels send to private network addresses, for a ntfy or a Gotify of the local network. Off, they are refused. Also in the interface. See [Hardening](hardening.md)."
+msgstr "Permet aux canaux d'envoyer à des adresses de réseau privé, pour un ntfy ou un Gotify du réseau local. Désactivé, elles sont refusées. Aussi dans l'interface. Voir [Durcissement](hardening.md)."
+
 msgid "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
 msgstr "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
 
@@ -368,4 +380,7 @@ msgstr "Un serveur PostgreSQL existant convient aussi : pointez `DATABASE_URL` v
 
 #~ msgid "Links in emails point to `HOUSECAIRN_SITE_URL` when it is set. Set it when `ALLOWED_HOSTS` lists several names, so that every email uses the public one."
 #~ msgstr "Les liens des courriels pointent vers `HOUSECAIRN_SITE_URL` quand elle est renseignée. Renseignez-la quand `ALLOWED_HOSTS` liste plusieurs noms, pour que chaque courriel utilise le nom public."
+
+#~ msgid "Set it only to manage the key yourself."
+#~ msgstr "À définir seulement pour gérer la clé vous-même."
 

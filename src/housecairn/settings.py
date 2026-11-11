@@ -47,6 +47,10 @@ if not SECRET_KEY:
     if not DEBUG:
         raise ImproperlyConfigured("SECRET_KEY must be set when DEBUG is false.")
     SECRET_KEY = _DEV_SECRET_KEY
+# Former keys, comma-separated, during a rotation (docs/administration/settings.md#secrets):
+# sessions and signed links made with them stay valid, and so do the secrets encrypted in the
+# database (instance.crypto), which a new key alone could no longer read.
+SECRET_KEY_FALLBACKS: list[str] = [k for k in env.list("SECRET_KEY_FALLBACKS", default=[]) if k]
 
 ALLOWED_HOSTS: list[str] = env.list(
     "ALLOWED_HOSTS", default=["localhost", "127.0.0.1"] if DEBUG else []
@@ -495,6 +499,7 @@ HOUSECAIRN_EXPORT_KEEP_HOURS = 24
 # Notifications (docs/adr/0043): on or off, and how often the worker looks for reminders.
 HOUSECAIRN_NOTIFICATIONS_ENABLED: bool = _ENV.values["notifications_enabled"]
 HOUSECAIRN_NOTIFICATIONS_INTERVAL: int = _ENV.values["notifications_interval"]
+HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS: bool = _ENV.values["notifications_private_networks"]
 # Preview of the links of projects (docs/adr/0050).
 HOUSECAIRN_LINK_PREVIEW_ENABLED: bool = _ENV.values["link_preview_enabled"]
 

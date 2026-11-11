@@ -38,8 +38,13 @@ task worker and the static files. Everything it writes goes to one volume,
 
 2. Edit `deploy/production.env`: set `ALLOWED_HOSTS` and
    `CSRF_TRUSTED_ORIGINS` to your host name (see
-   [Environment variables](../administration/variables.md)). Leave `SECRET_KEY`
-   empty: a key is generated on first start. `HOUSECAIRN_FORWARDED_ALLOW_IPS`
+   [Environment variables](../administration/variables.md)). Set `SECRET_KEY`
+   to a key of your own,
+   `python -c "import secrets; print(secrets.token_urlsafe(50))"`, and keep a
+   copy of it apart from your backups: it encrypts the secrets stored in the
+   database, and [backups](../administration/backup.md#the-secret-key) leave it
+   out. Left empty, a key is generated in `/data/secret_key` on first start; keep
+   a copy of that file apart the same way. `HOUSECAIRN_FORWARDED_ALLOW_IPS`
    names the reverse proxy whose headers HouseCairn trusts: keep `192.0.2.1`
    for a proxy on this host, the gateway of the network fixed in
    `compose.yaml`.

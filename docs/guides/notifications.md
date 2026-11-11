@@ -42,8 +42,14 @@ The address is encrypted, never shown again and never exported. Some addresses a
 services that would run something on the server, write to its logs or open a raw
 connection, generic webhooks (`json://`, `xml://`, `form://`), options that make the server
 read a file or add headers or fields to the request (`+name`, `-name`, `:name`), and
-addresses of the server itself or of a cloud metadata service. Addresses of your local
-network are accepted, for a self-hosted ntfy or Gotify.
+addresses of the server itself or of a cloud metadata service.
+
+Addresses of a private network, such as a ntfy or a Gotify on your local network, are
+refused too, unless an instance administrator turns on **Channels on the local network**
+(**Instance administration, Settings, Notifications**; see
+[Hardening](../administration/hardening.md)). An address that gives the IP address of such
+a server is refused when you add the channel; a name that leads to one is refused when a
+message is sent, and **Send a test message** then says so.
 
 ## Choose when
 
