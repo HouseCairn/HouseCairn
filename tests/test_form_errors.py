@@ -133,6 +133,20 @@ CASES: list[Case] = [
         lambda c: reverse("tasks:edit", args=[c["home"].id, c["task"].id]),
         {"title": "A task", "repeats": "on", "repeat_interval": "0", "repeat_unit": "months"},
     ),
+    (
+        # Only `repeat_unit` is wrong, and `repeats` is off: nothing else opens the section.
+        "task-edit-folded-unit",
+        lambda c: reverse("tasks:edit", args=[c["home"].id, c["task"].id]),
+        {
+            "title": "A task",
+            "priority": "normal",
+            "hide_days_before": "0",
+            "repeat_interval": "2",
+            "repeat_unit": "fortnights",
+            "materials-TOTAL_FORMS": "0",
+            "materials-INITIAL_FORMS": "0",
+        },
+    ),
     ("task-templates", lambda c: reverse("tasks:templates", args=[c["home"].id]), {}),
     (
         "task-attachment",
@@ -178,6 +192,12 @@ CASES: list[Case] = [
         "project-photo-add",
         lambda c: reverse("projects:file-add", args=[c["home"].id, c["project"].id]),
         {},
+    ),
+    (
+        # Only `duration_unit` is wrong: nothing else opens the section of the form.
+        "project-edit-folded-unit",
+        lambda c: reverse("projects:edit", args=[c["home"].id, c["project"].id]),
+        {"title": "A project", "duration_value": "2", "duration_unit": "fortnights"},
     ),
     (
         "line-create",
