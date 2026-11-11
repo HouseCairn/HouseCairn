@@ -36,8 +36,9 @@ checks, with script, with HTMX swapping the page in place, and without script, t
 of the errors is on screen and holds the focus, that the section is unfolded and that a line of
 the summary puts the focus in its field. `instance-tabs` (CI) measures the tabs of the instance
 administration at 360, 375, 768 and 1280 px, in English and in French: no tab text runs into its
-neighbour and no word of a label is cut over two lines. Both need the administrator account
-`admin@example.com` of the CI instance.
+neighbour and no word of a label is cut over two lines. `form-errors` signs in as
+`forms@example.com`, `instance-tabs` as the administrator `admin@example.com`: both are accounts
+of the CI instance.
 """
 
 import argparse
@@ -49,11 +50,14 @@ from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
 
 EMAIL = "demo@example.com"
 PASSWORD = "correct-horse-battery-staple"  # throwaway account of the CI instance
+# The account of the form checks: the passkey check leaves a passkey on `EMAIL`, which then asks
+# for it at every sign-in.
+FORMS_EMAIL = "forms@example.com"
 
 
-def sign_in(page: Page, base: str) -> None:
+def sign_in(page: Page, base: str, email: str = EMAIL) -> None:
     page.goto(f"{base}/accounts/login/")
-    page.fill("input[name=login]", EMAIL)
+    page.fill("input[name=login]", email)
     page.fill("input[name=password]", PASSWORD)
     page.click("main form:has(input[name=login]) button[type=submit]")
     page.wait_for_url("**/today/")
@@ -823,7 +827,7 @@ def form_errors(browser: Browser, base: str) -> None:
         # With script, a full page: the summary, the unfolded section, a click on a line.
         context = browser.new_context(viewport={"width": width, "height": 700})
         page = context.new_page()
-        sign_in(page, base)
+        sign_in(page, base, FORMS_EMAIL)
         _refuse_task_form(page, base, script=True)
         page.click("form[data-task-form] > button.button-block[type=submit]")
         page.wait_for_selector(SUMMARY)
@@ -847,7 +851,7 @@ def form_errors(browser: Browser, base: str) -> None:
         # With script, HTMX swapping the page in place (a partial response): same behaviour.
         context = browser.new_context(viewport={"width": width, "height": 700})
         page = context.new_page()
-        sign_in(page, base)
+        sign_in(page, base, FORMS_EMAIL)
         _refuse_task_form(page, base, script=True)
         page.evaluate(
             """() => {
@@ -874,7 +878,7 @@ def form_errors(browser: Browser, base: str) -> None:
     # Without script: the browser alone puts the summary in focus (autofocus).
     context = browser.new_context(viewport={"width": 360, "height": 700}, java_script_enabled=False)
     page = context.new_page()
-    context.add_cookies(_session_cookies(browser, base))
+    context.add_cookies(_session_cookies(browser, base, FORMS_EMAIL))
     _refuse_task_form(page, base, script=False)
     page.click("form[data-task-form] > button.button-block[type=submit]")
     page.wait_for_selector(SUMMARY)
@@ -886,11 +890,11 @@ def form_errors(browser: Browser, base: str) -> None:
     context.close()
 
 
-def _session_cookies(browser: Browser, base: str) -> list[Any]:
+def _session_cookies(browser: Browser, base: str, email: str = EMAIL) -> list[Any]:
     """The cookies of a signed-in session: signing in needs no script, but is simplest with it."""
     context = browser.new_context()
     page = context.new_page()
-    sign_in(page, base)
+    sign_in(page, base, email)
     cookies = context.cookies()
     context.close()
     return cookies

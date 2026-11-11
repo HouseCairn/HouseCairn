@@ -89,6 +89,10 @@ jobs:
           from housecairn.homes import services
           user = User.objects.create_user(email='demo@example.com', password='correct-horse-battery-staple')
           services.create_home(user, name='Main house')
+          # The passkey check registers a passkey on the account above, which then asks for it
+          # at every sign-in: the form checks sign in as an account of their own.
+          forms = User.objects.create_user(email='forms@example.com', password='correct-horse-battery-staple')
+          services.create_home(forms, name='Main house')
           User.objects.create_superuser(email='admin@example.com', password='correct-horse-battery-staple')
           "
           nohup uv run python manage.py runserver 127.0.0.1:8001 --noreload > "$RUNNER_TEMP/passkey-server.log" 2>&1 &
