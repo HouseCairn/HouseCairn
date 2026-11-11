@@ -33,6 +33,9 @@ msgstr "Changez l'étiquette (et le condensat) dans `compose.yaml`, [vérifiez l
 msgid "Migrations run at start. Going back to an older version after its migrations have run needs the backup."
 msgstr "Les migrations s'exécutent au démarrage. Revenir à une version plus ancienne après l'exécution de ses migrations demande la sauvegarde."
 
+msgid "On Coolify, see [Deploy with Coolify](coolify.md#update)."
+msgstr "Sur Coolify, voyez [Déployer avec Coolify](coolify.md#update)."
+
 msgid "Tags"
 msgstr "Étiquettes"
 

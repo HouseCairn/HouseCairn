@@ -1,0 +1,90 @@
+# documentation: https://docs.housecairn.app/administration/coolify/
+# slogan: Plan the upkeep and the projects of your home, room by room, with budget, materials and schedule.
+# category: productivity
+# tags: home,house,maintenance,upkeep,planning,household
+# port: 8000
+
+# Compose file for Coolify (docs/administration/coolify.md). The example
+# compose.yaml at the root of the repository is for plain Docker Compose with a
+# reverse proxy on the host; this one is for Coolify, whose proxy reaches the
+# container over the resource's network:
+#   - no published port, no env_file, no fixed network range, no project name;
+#   - the domain comes from Coolify's generated variables (SERVICE_URL_*,
+#     SERVICE_FQDN_*), set from the resource's Domains;
+#   - every other setting is an environment variable Coolify shows in its
+#     interface, with the default written here.
+# Same image and same hardening as compose.yaml: tests/test_coolify_compose.py
+# fails when they differ.
+
+services:
+  housecairn:
+    # A released version pinned by its digest, the same as in compose.yaml.
+    image: ghcr.io/housecairn/housecairn:0.1.0@sha256:bda44926c8fe1f063e2651ea64fac47ad86e59e0420a678caea0384b30e889e4
+    # The digest cannot move: pull only when the image is missing. With a moving
+    # tag (`edge`, `latest`) instead, set `always`, or Coolify keeps the image
+    # it already has.
+    pull_policy: missing
+    restart: unless-stopped
+    environment:
+      # Coolify routes the domain set in Domains to port 8000 of this service.
+      - SERVICE_URL_HOUSECAIRN_8000
+      - ALLOWED_HOSTS=${SERVICE_FQDN_HOUSECAIRN}
+      - CSRF_TRUSTED_ORIGINS=${SERVICE_URL_HOUSECAIRN}
+      - HOUSECAIRN_SITE_URL=${SERVICE_URL_HOUSECAIRN}
+      # Coolify's proxy terminates HTTPS and sets X-Forwarded-Proto.
+      - HOUSECAIRN_BEHIND_TLS_PROXY=true
+      # Addresses whose forwarding headers count: by default the range Docker
+      # gives its networks, since only containers on this resource's network can
+      # reach the container. Narrow it to that network's subnet
+      # (docs/administration/coolify.md).
+      - HOUSECAIRN_FORWARDED_ALLOW_IPS=${HOUSECAIRN_FORWARDED_ALLOW_IPS:-172.16.0.0/12}
+      - DEBUG=false
+      - HOUSECAIRN_DATA_DIR=/data
+      # Settings that the interface can also change: empty, the field stays
+      # free in the interface; set, it locks it (docs/administration/settings.md).
+      - TIME_ZONE=${TIME_ZONE:-}
+      - HOUSECAIRN_SIGNUP_OPEN=${HOUSECAIRN_SIGNUP_OPEN:-}
+      - EMAIL_HOST=${EMAIL_HOST:-}
+      - EMAIL_PORT=${EMAIL_PORT:-}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-}
+      # Single sign-on through any OpenID Connect provider: off while
+      # OIDC_SERVER_URL is empty (docs/administration/oidc.md).
+      - OIDC_SERVER_URL=${OIDC_SERVER_URL:-}
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID:-}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET:-}
+      - HOUSECAIRN_OIDC_SIGNUP=${HOUSECAIRN_OIDC_SIGNUP:-}
+      - HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL=${HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL:-}
+      # Web server and task worker processes, and the application log level.
+      - HOUSECAIRN_WEB_WORKERS=${HOUSECAIRN_WEB_WORKERS:-2}
+      - HOUSECAIRN_TASK_WORKERS=${HOUSECAIRN_TASK_WORKERS:-2}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      # Database, uploaded files and the generated secret key: back this up.
+      - housecairn-data:/data
+    # Hardening: nothing but /data and /tmp is writable, no Linux capability,
+    # no privilege escalation.
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    # Time for the web server and the task worker to finish their work.
+    stop_grace_period: 30s
+    # The image's own health check, written out because Coolify reads the
+    # Compose file's. The start period covers the migrations of the first start.
+    healthcheck:
+      test: ["CMD", "python", "-m", "housecairn.entrypoint", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 120s
+      start_interval: 2s
+
+# PostgreSQL: SQLite in /data is the default and is enough for a household. A
+# PostgreSQL service needs a few more lines, given in
+# docs/administration/coolify.md.
+
+volumes:
+  housecairn-data:

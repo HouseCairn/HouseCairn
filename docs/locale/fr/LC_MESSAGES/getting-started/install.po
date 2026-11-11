@@ -24,6 +24,9 @@ msgstr "Installer avec Docker Compose"
 msgid "HouseCairn ships as a single container image, `ghcr.io/housecairn/housecairn`, for `linux/amd64` and `linux/arm64`. It holds the web server, the background task worker and the static files. Everything it writes goes to one volume, `/data`. The design decisions behind the image are in [ADR 0015](../adr/0015-container-image-and-publication.md)."
 msgstr "HouseCairn est livré sous la forme d'une seule image de conteneur, `ghcr.io/housecairn/housecairn`, pour `linux/amd64` et `linux/arm64`. Elle contient le serveur web, le worker de tâches de fond et les fichiers statiques. Tout ce qu'elle écrit va dans un seul volume, `/data`. Les décisions de conception de l'image sont dans l'[ADR 0015](../adr/0015-container-image-and-publication.md)."
 
+msgid "On Coolify, use its own Compose file instead: see [Deploy with Coolify](../administration/coolify.md)."
+msgstr "Sur Coolify, utilisez plutôt son propre fichier Compose : voyez [Déployer avec Coolify](../administration/coolify.md)."
+
 msgid "Requirements"
 msgstr "Prérequis"
 

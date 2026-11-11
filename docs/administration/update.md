@@ -13,6 +13,8 @@
 Migrations run at start. Going back to an older version after its migrations
 have run needs the backup.
 
+On Coolify, see [Deploy with Coolify](coolify.md#update).
+
 ## Tags
 
 | Tag | Points to |
