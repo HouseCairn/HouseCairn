@@ -6,6 +6,9 @@
     <p class="error-code" aria-hidden="true">400</p>
     <h1>{% translate "Bad request" %}</h1>
     <p class="lead">{% translate "The request could not be understood." %}</p>
+    {% if disallowed_host %}
+      <p>{% if host_hint %}{{ host_hint }}{% else %}{% translate "This address is not one this instance answers to. Its administrator must add the name to ALLOWED_HOSTS." %}{% endif %}</p>
+    {% endif %}
     <a class="button" href="{% url 'index' %}">{% translate "Back to the home page" %}</a>
   </section>
 {% endblock content %}
