@@ -134,6 +134,32 @@ class TestNewRoom:
         assert response.status_code == 200
         assert not Room.objects.filter(name="Attic bedroom").exists()
 
+    def test_an_edit_refused_by_the_service_leaves_nothing_behind(
+        self, signed_in: Client, alice_home: Home, owner_task: Task
+    ) -> None:
+        rooms, items, articles = Room.objects.count(), Item.objects.count(), Article.objects.count()
+        data = with_lines(
+            {"article": "new", "quantity": "1", "new_article_name": "Masking tape"},
+            title=owner_task.title,
+            room="new",
+            new_room_name="Attic bedroom",
+            item="new",
+            new_item_name="Skylight",
+        )
+        with mock.patch.object(
+            services, "update_task", side_effect=ValidationError({"title": "No."})
+        ):
+            response = signed_in.post(url("edit", alice_home, task_id=owner_task.id), data)
+        assert response.status_code == 200
+        assert not Room.objects.filter(name="Attic bedroom").exists()
+        assert not Item.objects.filter(name="Skylight").exists()
+        assert not Article.objects.filter(name="Masking tape").exists()
+        assert (Room.objects.count(), Item.objects.count(), Article.objects.count()) == (
+            rooms,
+            items,
+            articles,
+        )
+
     def test_editing_a_task_can_add_a_room_too(
         self, signed_in: Client, alice_home: Home, owner_task: Task
     ) -> None:
