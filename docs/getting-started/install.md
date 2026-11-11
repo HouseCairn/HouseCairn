@@ -6,6 +6,9 @@ task worker and the static files. Everything it writes goes to one volume,
 `/data`. The design decisions behind the image are in
 [ADR 0015](../adr/0015-container-image-and-publication.md).
 
+On Coolify, use its own Compose file instead: see
+[Deploy with Coolify](../administration/coolify.md).
+
 ## Requirements
 
 - Docker Engine 25.0 or later, with the Compose plugin (`docker compose`)

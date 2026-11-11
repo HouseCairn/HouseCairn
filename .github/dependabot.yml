@@ -73,9 +73,10 @@ updates:
 
   # Images of the example compose.yaml (the PostgreSQL service). The PostgreSQL
   # image of ci.yml and of .github/scripts/image-smoke.sh is the same one and
-  # is updated by hand in the same pull request.
+  # is updated by hand in the same pull request. deploy/coolify/docker-compose.yaml
+  # (Coolify) runs the same images (tests/test_coolify_compose.py).
   - package-ecosystem: docker-compose
-    directory: /
+    directories: ["/", "/deploy/coolify"]
     schedule:
       interval: weekly
       day: monday
