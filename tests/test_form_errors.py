@@ -6,6 +6,7 @@ the scan test makes a form added without the component fail (design guide, "Form
 """
 
 import re
+import time
 from collections.abc import Callable
 from html.parser import HTMLParser
 from pathlib import Path
@@ -15,7 +16,11 @@ import pytest
 from django.test import Client
 from django.urls import reverse
 
-from housecairn.homes.models import Home
+from housecairn.accounts import setup
+from housecairn.homes import services as home_services
+from housecairn.homes.models import Home, Membership
+from housecairn.instance import services as instance_services
+from housecairn.notifications.services import add_channel
 from housecairn.projects.models import BudgetLine, Project, Quote
 from housecairn.rooms.models import Item, Room
 from housecairn.stock.models import Article
@@ -205,9 +210,42 @@ CASES: list[Case] = [
         {"provider": "unknown"},
     ),
     ("instance-invite", lambda c: reverse("instance:invite"), {"email": "not an address"}),
+    (
+        "member-role",
+        lambda c: reverse("homes:member-role", args=[c["home"].id, c["membership"].id]),
+        {"role": "nobody"},
+    ),
+    ("home-delete", lambda c: reverse("homes:delete", args=[c["home"].id]), {"confirmation": "x"}),
+    ("account-delete", lambda c: reverse("account_delete"), {"confirm_email": "other@example.com"}),
+    (
+        "room-memory",
+        lambda c: reverse("rooms:memory", args=[c["home"].id, c["room"].id]),
+        {"paint_colour": "x" * 500},
+    ),
+    (
+        "project-task-attach",
+        lambda c: reverse("projects:task-attach", args=[c["home"].id, c["project"].id]),
+        {"task": "not a task"},
+    ),
+    ("instance-provider", lambda c: reverse("instance:providers"), {"name": ""}),
+    (
+        "instance-settings",
+        lambda c: reverse("instance:settings", kwargs={"section": "email"}),
+        {"email_port": "70000", "email_timeout": "15"},
+    ),
     ("home-import", lambda c: reverse("homes:import", args=[c["home"].id]), {}),
     ("home-restore", lambda c: reverse("homes:restore"), {}),
     ("profile", lambda c: reverse("profile"), {"display_name": "x" * 300}),
+    (
+        "notification-channel-edit",
+        lambda c: reverse("notifications:channel", args=[c["channel"].id]),
+        {"name": ""},
+    ),
+    (
+        "notification-preferences",
+        lambda c: reverse("notifications:preferences"),
+        {"days_before": "-4", "send_at": "x"},
+    ),
     ("notification-channel", lambda c: reverse("notifications:add"), {"name": "", "url": ""}),
     ("api-token", lambda c: reverse("api-tokens:new"), {"name": ""}),
 ]
@@ -220,6 +258,7 @@ NO_FIELD = {"home-import"}
 
 @pytest.fixture
 def context(
+    signed_in: Client,
     alice: Any,
     alice_home: Home,
     owner_room: Room,
@@ -236,8 +275,12 @@ def context(
     settings.SOCIALACCOUNT_PROVIDERS = PROVIDERS  # the household offers the sign-in rule
     settings.EMAIL_HOST = "smtp.example.com"  # the instance can invite
     settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
-    alice.is_staff = alice.is_superuser = True  # an instance administrator
+    alice.is_staff = alice.is_superuser = True  # an instance administrator...
     alice.save()
+    session = signed_in.session  # ...who has just typed the password (settings ask for it)
+    session["account_authentication_methods"] = [{"method": "password", "at": time.time()}]
+    session["account_authentication_methods_user"] = str(alice.pk)
+    session.save()
     return {
         "home": alice_home,
         "room": owner_room,
@@ -246,19 +289,18 @@ def context(
         "occurrence": owner_occurrence,
         "project": living_room_project,
         "article": article,
+        "membership": Membership.objects.get(home=alice_home, user=alice),
+        "channel": add_channel(
+            alice,
+            name="Phone",
+            url="tgram://123456789:AAAA-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/987654",
+        ),
+        "alice": alice,
     }
 
 
-@pytest.mark.parametrize(("name", "url", "data"), CASES, ids=[c[0] for c in CASES])
-def test_a_refused_form_gets_the_summary(
-    name: str,
-    url: Callable[[dict[str, Any]], str],
-    data: dict[str, Any],
-    signed_in: Client,
-    context: dict[str, Any],
-) -> None:
-    response = signed_in.post(url(context), data)
-    assert response.status_code in (200, 422), f"{name}: the form was not refused"
+def assert_summary(name: str, response: Any, statuses: tuple[int, ...] = (200, 422)) -> None:
+    assert response.status_code in statuses, f"{name}: the form was not refused"
     page = read(response.content.decode())
     assert page.summary is not None, f"{name}: no summary of the errors"
     assert page.summary.get("role") == "alert"
@@ -272,6 +314,64 @@ def test_a_refused_form_gets_the_summary(
     assert not missing, f"{name}: the summary links to ids the page does not have: {missing}"
     assert page.invalid, f"{name}: no field is marked aria-invalid"
     assert page.invalid_in_closed_section == 0, f"{name}: a field in error is in a folded section"
+
+
+@pytest.mark.parametrize(("name", "url", "data"), CASES, ids=[c[0] for c in CASES])
+def test_a_refused_form_gets_the_summary(
+    name: str,
+    url: Callable[[dict[str, Any]], str],
+    data: dict[str, Any],
+    signed_in: Client,
+    context: dict[str, Any],
+) -> None:
+    assert_summary(name, signed_in.post(url(context), data))
+
+
+def _home_invitation(c: dict[str, Any]) -> str:
+    sent: list[str] = []
+    delivery = home_services.Delivery(send=lambda _invitation, raw: sent.append(raw))
+    home_services.invite(
+        c["alice"], c["home"], email="new@example.com", role="member", delivery=delivery
+    )
+    return reverse("invitation", kwargs={"token": sent[0]})
+
+
+def _instance_invitation(c: dict[str, Any]) -> str:
+    sent: list[str] = []
+    instance_services.invite(
+        c["alice"], email="other@example.com", send=lambda _invitation, raw: sent.append(raw)
+    )
+    return reverse("instance-invitation", kwargs={"token": sent[0]})
+
+
+# Pages of someone who has no account yet: no password typed.
+ANONYMOUS: list[Case] = [
+    ("home-invitation", _home_invitation, {"password1": "", "password2": ""}),
+    ("instance-invitation", _instance_invitation, {"password1": "", "password2": ""}),
+]
+
+
+@pytest.mark.parametrize(("name", "url", "data"), ANONYMOUS, ids=[c[0] for c in ANONYMOUS])
+def test_a_refused_form_of_someone_signed_out_gets_the_summary(
+    name: str,
+    url: Callable[[dict[str, Any]], str],
+    data: dict[str, Any],
+    context: dict[str, Any],
+) -> None:
+    assert_summary(name, Client().post(url(context), data))
+
+
+def test_the_setup_screen_gets_the_summary() -> None:
+    """The first administrator: a refused code or field is a 400, and says why."""
+    code = setup.issue_code()
+    data = {
+        "code": code,
+        "name": "",
+        "email": "sam@example.com",
+        "password1": "a",
+        "password2": "b",
+    }
+    assert_summary("setup", Client().post(reverse("setup"), data), statuses=(400,))
 
 
 @pytest.mark.parametrize("language", ["en", "fr"])
@@ -320,34 +420,101 @@ def test_a_banner_form_names_the_field_and_says_it_once(
     assert not any(text.startswith("This field") for text in shown), shown
 
 
-# Forms that report an error in the banner of the page they redirect to (the action is in
-# place, on a page that already shows the record), not in a page of their own.
-BANNER_FORMS = {"stock/article_detail.html", "tasks/_materials.html"}
+# The forms that report an error in the banner of the page they redirect to (an action in
+# place, on a page that already shows the record), by the name of the address they post to.
+BANNER_FORMS = {"stock:movement-add", "tasks:material-save"}
 
 FORM_RENDERING = re.compile(
     r"\.as_p\b|\{\{\s*field\b|_field\.html|label_tag|\{\{\s*\w*form\.\w+\s*\}\}"
 )
+COMPONENT = "components/form_errors.html"
+
+# The case of CASES (or ANONYMOUS, or the setup test) that refuses each form of a template.
+TEMPLATE_CASES: dict[str, list[str]] = {
+    "accounts/delete.html": ["account-delete"],
+    "accounts/profile.html": ["profile"],
+    "accounts/setup.html": ["setup"],
+    "apitokens/token_form.html": ["api-token"],
+    "homes/delete.html": ["home-delete"],
+    "homes/home_form.html": ["home-create", "home-edit"],
+    "homes/household.html": ["household-invite", "household-provider"],
+    "homes/import.html": ["home-import"],
+    "homes/invitation.html": ["home-invitation"],
+    "homes/member.html": ["member-role"],
+    "homes/restore.html": ["home-restore"],
+    "instance/invitation.html": ["instance-invitation"],
+    "instance/overview.html": ["instance-invite"],
+    "instance/settings_section.html": ["instance-settings"],
+    "notifications/channel.html": ["notification-channel-edit"],
+    "notifications/index.html": ["notification-channel", "notification-preferences"],
+    "projects/envelope_form.html": ["envelope"],
+    "projects/line_form.html": ["line-create"],
+    "projects/project_detail.html": [
+        "project-task-add",
+        "project-task-attach",
+        "project-link-add",
+        "project-photo-add",
+    ],
+    "projects/project_form.html": ["project-create", "project-edit-folded"],
+    "projects/quote_form.html": ["quote-create"],
+    "reports/report_form.html": ["report-create"],
+    "rooms/item_form.html": ["item-create", "item-edit"],
+    "rooms/photo_form.html": ["room-photo"],
+    "rooms/room_form.html": ["room-create", "room-edit"],
+    "rooms/room_memory_form.html": ["room-memory"],
+    "stock/article_form.html": ["article-create"],
+    "stock/supplier_form.html": ["supplier-create"],
+    "tasks/attachment_form.html": ["task-attachment"],
+    "tasks/completion_form.html": ["task-completion"],
+    "tasks/contractor_form.html": ["contractor-create"],
+    "tasks/postpone_form.html": ["task-postpone"],
+    "tasks/preferences.html": ["preferences"],
+    "tasks/task_form.html": ["task-create", "task-edit"],
+    "tasks/task_templates.html": ["task-templates"],
+}
 
 
-def test_every_template_that_draws_a_form_includes_the_summary() -> None:
-    """A template that renders form fields includes the component, or is listed above."""
-    partials = {"tasks/_field.html", "tasks/_duration_field.html", "tasks/_material_line.html"}
-    # Included inside a form that carries the summary itself.
-    inside = {"tasks/_materials_form.html", "instance/_provider_form.html"}
+def _forms_of(text: str) -> list[tuple[str, str]]:
+    """The `<form>` of a template that draw fields: (name of the address it posts to, body)."""
+    found = []
+    for chunk in re.split(r"(?=<form\b)", text)[1:]:
+        body = chunk.split("</form>")[0]
+        if not FORM_RENDERING.search(body):
+            continue
+        action = re.search(r"\{% url '([^']+)'", body.split(">")[0])
+        found.append((action.group(1) if action else "", body))
+    return found
+
+
+def test_every_form_of_every_template_includes_the_summary() -> None:
+    """Each `<form>` that draws fields includes the component itself, not just its file."""
     problems = []
     for path in sorted(TEMPLATES.rglob("*.html")):
         name = path.relative_to(TEMPLATES).as_posix()
-        text = path.read_text(encoding="utf-8")
-        if name in partials | inside | BANNER_FORMS or name.startswith("components/"):
+        if name.startswith("components/"):
             continue
-        if "<form" not in text:
+        for action, body in _forms_of(path.read_text(encoding="utf-8")):
+            if action not in BANNER_FORMS and COMPONENT not in body:
+                problems.append(f"{name} ({action or 'no address'})")
+    assert not problems, f"these forms draw fields without the summary: {problems}"
+    # Included in the middle of a form that carries the summary: the partial has no `<form>`.
+    assert COMPONENT in (TEMPLATES / "instance/_provider_form.html").read_text()
+
+
+def test_every_form_has_a_case_that_refuses_it() -> None:
+    """A form added to a template needs a case above: the summary is shown, not only included."""
+    known = {c[0] for c in CASES} | {c[0] for c in ANONYMOUS} | {"setup"}
+    problems = []
+    for path in sorted(TEMPLATES.rglob("*.html")):
+        name = path.relative_to(TEMPLATES).as_posix()
+        forms_in_page = [a for a, _ in _forms_of(path.read_text(encoding="utf-8"))]
+        count = len([a for a in forms_in_page if a not in BANNER_FORMS])
+        if not count:
             continue
-        if not FORM_RENDERING.search(text):
-            continue
-        if "components/form_errors.html" not in text:
-            problems.append(name)
-    assert not problems, f"these templates draw a form without the summary: {problems}"
-    assert "components/form_errors.html" in (TEMPLATES / "instance/_provider_form.html").read_text()
+        cases = TEMPLATE_CASES.get(name, [])
+        if len(cases) < count or not set(cases) <= known:
+            problems.append(f"{name}: {count} form(s), cases {cases}")
+    assert not problems, f"forms without a case that refuses them: {problems}"
 
 
 def test_the_sign_in_forms_of_allauth_get_the_summary(alice: Any) -> None:

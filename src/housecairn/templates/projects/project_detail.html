@@ -57,7 +57,7 @@
       {{ task_form.as_p }}
       <button type="submit" class="button-block">{% translate "Add the task" %}</button>
     </form>
-    {% if attach_form.fields.task.queryset.exists %}
+    {% if attach_form.fields.task.queryset.exists or attach_form.is_bound %}
       <form method="post" action="{% url 'projects:task-attach' home_id=home.id project_id=project.id %}" class="card">
         {% csrf_token %}
         {% next_field %}

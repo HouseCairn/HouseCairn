@@ -352,7 +352,8 @@ class ProjectDetailView(HomeProjectsMixin, TemplateView):
                 has_lines=bool(lines),
                 statuses=[(s.value, s.label) for s in QuoteStatus if s != QuoteStatus.ACCEPTED],
                 task_form=kwargs.pop("task_form", None) or forms.TaskAddForm(home=self.home),
-                attach_form=forms.TaskAttachForm(tasks=services.attachable_tasks(self.home)),
+                attach_form=kwargs.pop("attach_form", None)
+                or forms.TaskAttachForm(tasks=services.attachable_tasks(self.home)),
                 photo_form=kwargs.pop("photo_form", None) or forms.PhotoForm(),
                 max_bytes=conf.photo_max_bytes(),
                 inspiration_links=list(
@@ -464,14 +465,13 @@ class TaskAttachView(PostView):
         project = self.get_project()
         form = forms.TaskAttachForm(request.POST, tasks=services.attachable_tasks(self.home))
         if not form.is_valid():
-            messages.error(request, _("Choose a task that is in no project yet."))
-            return self.stay(project)
+            return self.refuse(attach_form=form)
         try:
             services.attach_task(request.user, project, form.cleaned_data["task"])
         except ValidationError as exc:
-            messages.error(request, " ".join(exc.messages))
-        else:
-            messages.success(request, _("Task put in the project."))
+            _form_errors(form, exc)
+            return self.refuse(attach_form=form)
+        messages.success(request, _("Task put in the project."))
         return self.stay(project)
 
 

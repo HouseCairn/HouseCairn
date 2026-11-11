@@ -453,11 +453,17 @@ class HomeActionView(WebHomeScopedMixin, View):
         return response or self.household(home)
 
     def refuse(self, home: Home, **bound: Any) -> HttpResponse:
-        """The household page itself (422), with the refused form bound and its summary."""
-        page = HouseholdView()
+        """The page of the form itself (422), with the refused form bound and its summary."""
+        page = self.page_of_form(home)
         page.setup(self.request, *self.args, **self.kwargs)
+        response: HttpResponse = page.render_to_response(page.get_context_data(**bound), status=422)
+        return response
+
+    def page_of_form(self, home: Home) -> Any:
+        """The view that draws the form of this action; the household unless said otherwise."""
+        page = HouseholdView()
         page.object = home
-        return page.render_to_response(page.get_context_data(**bound), status=422)
+        return page
 
     def household(self, home: Home) -> HttpResponse:
         """The household again, still knowing where it was opened from (an action in place)."""
@@ -560,16 +566,21 @@ class MemberView(WebHomeScopedMixin, DetailView[Membership]):
             home=membership.home,
             is_owner=services.is_owner(self.request.user, membership.home),
             is_me=membership.user_id == self.request.user.pk,
-            role_form=forms.RoleForm(initial={"role": membership.role}),
+            role_form=kwargs.get("role_form") or forms.RoleForm(initial={"role": membership.role}),
         )
         return context
 
 
 class MemberRoleView(HomeActionView):
+    def page_of_form(self, home: Home) -> Any:
+        page = MemberView()
+        page.object = self.membership(home)
+        return page
+
     def act(self, home: Home) -> HttpResponse | None:
         form = forms.RoleForm(self.request.POST)
         if not form.is_valid():
-            raise ValidationError(_("Choose a role."))
+            raise FormRefused(role_form=form)
         services.change_role(self.request.user, self.membership(home), form.cleaned_data["role"])
         messages.success(self.request, _("Role changed."))
         return None

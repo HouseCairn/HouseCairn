@@ -243,7 +243,10 @@ class TaskAddForm(forms.Form):
 
 class TaskAttachForm(forms.Form):
     task = forms.ModelChoiceField(
-        label=_("Existing task"), queryset=Task.objects.none(), empty_label=None
+        label=_("Existing task"),
+        queryset=Task.objects.none(),
+        empty_label=None,
+        error_messages={"invalid_choice": _("Choose a task that is in no project yet.")},
     )
 
     def __init__(self, *args: Any, tasks: Any, **kwargs: Any) -> None:
