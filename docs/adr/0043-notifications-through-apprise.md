@@ -2,6 +2,8 @@
 
 - Status: accepted
 - Date: 2026-11-08
+- Amended by: [0059](0059-notifications-refuse-private-networks.md) (private networks refused
+  unless an administrator allows them; `connect` checks its address)
 
 ## Context
 

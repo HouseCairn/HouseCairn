@@ -3,11 +3,13 @@
 Two kinds of caller share this module:
 
 - the addresses a person may point the server at. `forbidden_address` is the rule of the
-  test of an identity provider (docs/adr/0041) and of the notifications (docs/adr/0043):
-  loopback, link-local, multicast, unspecified and reserved addresses are refused and
-  private networks are allowed, since an identity provider or a notification server often
-  runs on the local network. An IPv6 address that carries an IPv4 one is judged by the IPv4
-  address (`embedded_ipv4`);
+  test of an identity provider (docs/adr/0041): loopback, link-local, multicast,
+  unspecified and reserved addresses are refused and private networks are allowed, since
+  an identity provider often runs on the local network. The notifications start from it
+  and refuse more (`notifications.outbound.refusal`, docs/adr/0059): the metadata services
+  of cloud providers always, and every address that is not global (`is_public`) unless an
+  administrator allows private networks. An IPv6 address that carries an IPv4 one is
+  judged by the IPv4 address (`embedded_ipv4`);
 - the preview of a link (docs/adr/0050), where a person types the address of a page on the
   open web and the server reads it. `is_public` is stricter: only global addresses, so no
   private network, no shared address space and no metadata service of a cloud provider.
@@ -47,8 +49,10 @@ from urllib.parse import urljoin, urlsplit
 Address = ipaddress.IPv4Address | ipaddress.IPv6Address
 
 NAT64 = ipaddress.IPv6Network("64:ff9b::/96")  # RFC 6052: the IPv4 address is the last 32 bits
-# Metadata services of cloud providers, refused even though private networks are allowed:
-# AWS, Azure, GCP and others (link-local, refused anyway), Alibaba, Oracle, AWS in IPv6.
+# Metadata services of cloud providers: AWS, Azure, GCP and others (link-local, refused
+# anyway), Alibaba, Oracle, AWS in IPv6. `is_public` refuses them; the
+# notifications refuse them even when an administrator allows private networks
+# (docs/adr/0059).
 SITE_LOCAL = ipaddress.IPv6Network("fec0::/10")  # RFC 3879: deprecated, yet "global" to Python
 METADATA_ADDRESSES = frozenset(
     ipaddress.ip_address(a)

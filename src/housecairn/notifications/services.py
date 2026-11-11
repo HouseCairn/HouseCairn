@@ -42,6 +42,11 @@ REFUSALS = {
         "accepted: remove them."
     ),
     "address": gettext_lazy("The instance does not send to this address."),
+    "private": gettext_lazy(
+        "This address is on a private network, which this instance does not send to. An "
+        "administrator of the instance can allow it: Settings, Notifications, Channels on "
+        "the local network."
+    ),
 }
 ADDRESS_FIXED = gettext_lazy(
     "The address of a channel cannot change: delete the channel and add another."
@@ -147,7 +152,11 @@ def _consume_test(user: User) -> bool:
 
 
 def test_channel(actor: AnyUser, channel: Channel) -> bool:
-    """Send a real message; the answer is one of two fixed sentences, never the service's."""
+    """Send a real message; the answer is one of two fixed sentences, never the service's.
+
+    An address on a private network that the instance does not allow is a `ValidationError`
+    that says so (docs/adr/0059): nothing was sent, and the person can do something about it.
+    """
     user = _require_owner(actor, channel)
     _require_enabled()
     if not _consume_test(user):
@@ -155,7 +164,10 @@ def test_channel(actor: AnyUser, channel: Channel) -> bool:
     with translation.override(preferences_of(user).language):
         title = _("HouseCairn test")
         body = _("This channel receives the reminders of your tasks.")
-    return outbound.send(channel.url, title=title, body=body)
+    outcome = outbound.deliver(channel.url, title=title, body=body)
+    if outcome is outbound.Outcome.PRIVATE:
+        raise ValidationError(REFUSALS["private"])
+    return outcome is outbound.Outcome.SENT
 
 
 # ---------- preferences ----------
