@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% load i18n navigation %}
+{% load i18n navigation static %}
+{% block extra_head %}<script src="{% static 'js/task-form.js' %}" defer></script>{% endblock extra_head %}
 {% block head_title %}{% if item %}{% translate "Edit the item" %}{% else %}{% translate "Add an item" %}{% endif %}{% endblock head_title %}
 {% block content %}
   {% if item %}
@@ -9,10 +10,28 @@
     {% url 'rooms:detail' home_id=home.id room_id=room.id as parent %}{% back_link parent room.name %}
     <h1>{% translate "Add an item" %}</h1>
   {% endif %}
-  <form method="post" class="card">
+  <form method="post" class="card" data-in-place-form>
     {% csrf_token %}
     {% next_field %}
-    {{ form.as_p }}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      {% if field.name == "new_contractor_name" or field.name == "new_contractor_trade" or field.name == "new_contractor_trade_other" %}
+      {% else %}
+        {% include "tasks/_field.html" %}
+      {% endif %}
+      {% if field.name == "contract_contractor" %}
+        {# Added in place: shown with the choice "Add a contractor…"; without script always shown, and read only with that choice. #}
+        <fieldset class="add-in-place" data-shown-when="contract_contractor=new">
+          <legend>{% translate "New contractor" %}</legend>
+          <p class="helptext">{% translate "Only used with Add a contractor… in the list above. The contractor joins the home when you save the item; complete it on its sheet." %}</p>
+          {% include "tasks/_field.html" with field=form.new_contractor_name %}
+          {% include "tasks/_field.html" with field=form.new_contractor_trade %}
+          <div data-shown-when="new_contractor_trade=other">
+            {% include "tasks/_field.html" with field=form.new_contractor_trade_other %}
+          </div>
+        </fieldset>
+      {% endif %}
+    {% endfor %}
     <datalist id="brand-suggestions">{% for brand in form.brands %}<option value="{{ brand }}">{% endfor %}</datalist>
     <button type="submit" class="button-block">{% if item %}{% translate "Save" %}{% else %}{% translate "Add the item" %}{% endif %}</button>
   </form>

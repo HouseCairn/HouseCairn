@@ -9,6 +9,7 @@ phone, email address, address, note, and the tasks that name them.
   without accents or punctuation, and everything typed in the sheet is escaped, so a note
   cannot add a field to the file.
 - **Edit** and **Delete** are for those who can write in the home. Deleting a contractor
-  keeps the tasks that named them, without a contractor.
+  keeps the tasks that named them, without a contractor, and the maintenance contracts of
+  the items that named them, without a provider: the number and the link of the contract stay.
 
 The phone number and the email address are links (`tel:` and `mailto:`).

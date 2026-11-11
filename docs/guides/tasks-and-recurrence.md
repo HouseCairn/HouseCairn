@@ -90,8 +90,8 @@ less puts the difference back, more takes it as far as the stock allows.
 Name the person or the company on the task: choose one of the home's contractors in the
 list, or its last choice, **Add a contractor…**, to add one in place (name and trade); the
 contractor is created when you save.
-A task added from an item starts with the provider of the item's maintenance contract, when
-the home has a contractor of that name.
+A task added from an item starts with the contractor chosen as the provider of the item's
+maintenance contract.
 Each contractor has a [sheet](../screens/contractor.md) (trade from a list, phone, email
 address, address, note, the tasks that name them) that downloads as a contact file (.vcf)
 to put in your phone. The API also lists and edits them.

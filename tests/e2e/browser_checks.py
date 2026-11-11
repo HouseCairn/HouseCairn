@@ -21,6 +21,12 @@ banner's real height, without it the banner is a sticky box that takes its own r
 
     python tests/e2e/browser_checks.py in-place --base http://localhost:8001
 
+`item-contract` (local only) measures the item form at 375 and 1280 px, in English and in French,
+with and without script: the provider of the maintenance contract is a list of the contractors
+whose last choice adds one in place, and the sheet of the item links to the contractor.
+
+    python tests/e2e/browser_checks.py item-contract --base http://localhost:8001
+
 `task-form` and `task-lines` (local only) measure the task form at 320, 360, 375 and 1280 px,
 in French, with and without script: the repetition, the duration and the contractor, then the
 room, item and stock item added in place and the lines of the materials.
@@ -626,9 +632,81 @@ def new_records_and_materials(browser: Browser, base: str) -> None:
             context.close()
 
 
+ITEM_CONTRACT_WIDTHS = (375, 1280)
+ITEM_CONTRACT_LANGUAGES = (
+    ("en-GB", "Add a contractor…", "Maintenance contract"),
+    ("fr-FR", "Ajouter un intervenant…", "Contrat d'entretien"),
+)
+
+
+def item_contract(browser: Browser, base: str) -> None:
+    """The provider of the contract of an item: a list, adding one in place. Local only.
+
+    At 375 and 1280 px, in English and in French, with and without script: the last choice
+    of the list adds a contractor; with script its fields are hidden until the choice, without
+    script they are always there; the list is a touch target; the page does not scroll
+    sideways; once saved, the sheet of the item links to the sheet of the contractor.
+    Prints the measures.
+    """
+    serial = 0
+    for width in ITEM_CONTRACT_WIDTHS:
+        for locale, last, heading in ITEM_CONTRACT_LANGUAGES:
+            for script in (True, False):
+                serial += 1
+                label = f"{width} px, {locale}{'' if script else ', no script'}"
+                context = browser.new_context(
+                    viewport={"width": width, "height": 900},
+                    locale=locale,
+                    java_script_enabled=script,
+                )
+                page = context.new_page()
+                sign_in(page, base)
+                page.goto(f"{base}/rooms/")
+                page.locator("main a.row[href*='/rooms/']").first.click()
+                page.locator("main a[href*='/items/']:not([href*='/new/'])").first.click()
+                page.locator("main a[href*='/edit/']").first.click()
+                page.wait_for_selector("form[data-in-place-form]")
+                options = page.locator("#id_contract_contractor option").all_text_contents()
+                check(options[-1] == last, f"{label}: the last choice: {options}")
+                height = _box(page, "#id_contract_contractor")["height"]
+                say(f"{label}: the list is {height:.0f} px high")
+                check(height >= 44, f"{label}: the list is a touch target")
+                check(
+                    _shown(page, "#id_new_contractor_name") is not script,
+                    f"{label}: the fields of a new contractor {'hidden' if script else 'shown'}",
+                )
+                if script:
+                    page.select_option("#id_contract_contractor", "new")
+                    check(_shown(page, "#id_new_contractor_name"), f"{label}: shown once chosen")
+                    check(not _shown(page, "#id_new_contractor_trade_other"), f"{label}: no Other")
+                    page.select_option("#id_new_contractor_trade", "other")
+                    check(_shown(page, "#id_new_contractor_trade_other"), f"{label}: which trade")
+                    page.fill("#id_new_contractor_trade_other", "Pool")
+                else:
+                    page.select_option("#id_contract_contractor", "new")
+                    page.select_option("#id_new_contractor_trade", "plumber")
+                page.fill("#id_new_contractor_name", f"Pipes {serial}")
+                page_width = page.evaluate("document.documentElement.scrollWidth")
+                check(page_width <= width, f"{label}: no horizontal scroll ({page_width} px)")
+                page.click("form[data-in-place-form] button[type=submit]")
+                page.wait_for_selector("dl.facts")
+                facts = page.locator("dl.facts div", has_text=heading)
+                link = facts.locator("a[href*='/contractors/']")
+                check(link.count() == 1, f"{label}: the sheet links to the contractor")
+                check(link.inner_text() == f"Pipes {serial}", f"{label}: the contractor's name")
+                page_width = page.evaluate("document.documentElement.scrollWidth")
+                check(page_width <= width, f"{label}: the sheet does not scroll ({page_width} px)")
+                link.click()
+                page.wait_for_selector("h1")
+                check(f"Pipes {serial}" in page.inner_text("h1"), f"{label}: the sheet opens")
+                context.close()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("mode", choices=["passkey", "sso", "in-place", "task-form", "task-lines"])
+    parser.add_argument(
+        "mode", choices=["passkey", "sso", "in-place", "task-form", "task-lines", "item-contract"]
+    )
     parser.add_argument("--base", required=True, help="address of the running instance")
     parser.add_argument("--provider", help="address of the stub identity provider (sso mode)")
     args = parser.parse_args()
@@ -643,6 +721,8 @@ def main() -> None:
             task_form(browser, base)
         elif args.mode == "task-lines":
             new_records_and_materials(browser, base)
+        elif args.mode == "item-contract":
+            item_contract(browser, base)
         else:
             passkey(browser, base)
         browser.close()

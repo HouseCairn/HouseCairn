@@ -1,0 +1,25 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**The provider of the maintenance contract of an item is now a contractor.** The update changes the data of every home, once, and can be undone (`manage.py migrate rooms 0004`): for each item whose provider was a text, items in the trash included, the contractor of the same home with that name (case and extra spaces ignored) becomes its provider; when the home has none, a contractor of that name is created, with the trade **Other** said as **Maintenance** (change it on its sheet), and shared by the items that name the same provider. A text longer than 120 characters, the length of a name, is cut for the name and kept whole in the note of the contractor. Going back puts the name of the contractor into the text again; the contractors made by the update stay. Nothing is asked and nothing is lost."
+msgstr "**Le prestataire du contrat d'entretien d'un élément est maintenant un intervenant.** La mise à jour modifie une fois les données de chaque logement, et peut être annulée (`manage.py migrate rooms 0004`) : pour chaque élément dont le prestataire était un texte, éléments de la corbeille compris, l'intervenant du même logement portant ce nom (casse et espaces superflus ignorés) devient son prestataire ; si le logement n'en a pas, un intervenant de ce nom est créé, avec le métier **Autre** décrit comme **Maintenance** (à changer sur sa fiche), et partagé par les éléments qui nomment le même prestataire. Un texte de plus de 120 caractères, la longueur d'un nom, est coupé pour le nom et conservé en entier dans la note de l'intervenant. En arrière, le nom de l'intervenant redevient le texte ; les intervenants créés par la mise à jour restent. Rien n'est demandé et rien n'est perdu."
+
+msgid "**Export format 3.** The archive of a home and the table of items name the provider of a contract by the id of its contractor (`contract_contractor`) in place of the text (`contract_provider`), and the archive says version 3. A version 2 archive, and a table of items with the old column, are still restored and imported, by the rule above. API clients that read or write `contract_provider` on an item use `contract_contractor`, the id of a contractor of the home, instead ([export](../../../administration/data.md), [API](../../../api/index.md), [ADR 0058](../../../adr/0058-contract-provider-is-a-contractor.md))."
+msgstr "**Format d'export 3.** L'archive d'un logement et la table des éléments désignent le prestataire d'un contrat par l'identifiant de son intervenant (`contract_contractor`) au lieu du texte (`contract_provider`), et l'archive indique la version 3. Une archive de version 2, et une table d'éléments avec l'ancienne colonne, sont toujours restaurées et importées, selon la règle ci-dessus. Les clients de l'API qui lisent ou écrivent `contract_provider` sur un élément utilisent à la place `contract_contractor`, l'identifiant d'un intervenant du logement ([export](../../../administration/data.md), [API](../../../api/index.md), [ADR 0058](../../../adr/0058-contract-provider-is-a-contractor.md))."

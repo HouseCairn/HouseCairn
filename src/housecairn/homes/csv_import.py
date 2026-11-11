@@ -90,8 +90,11 @@ class ImportEntity:
     create: Create
     references: dict[str, str] = field(default_factory=dict)
     label: Any = ""
-    # Rewrites the cells of a row from a file of before (a value no longer offered).
-    upgrade: Callable[[dict[str, str], Home], dict[str, str]] | None = None
+    # Rewrites the cells of a row from a file of before (a value no longer offered); it is
+    # given the person importing, for what it has to make (a contractor, say).
+    upgrade: Callable[[dict[str, str], Home, Any], dict[str, str]] | None = None
+    # Columns of a file of before that the upgrade reads, though no field has them any more.
+    legacy: frozenset[str] = frozenset()
 
     def section(self) -> exports.Section:
         found = exports.section_of_model(self.model)
@@ -260,7 +263,7 @@ def _read(
         for index, raw in enumerate(header):
             title = raw.strip()
             name = known.get(title.casefold())
-            if name is None and title.casefold() in IGNORED | {"id"}:
+            if name is None and title.casefold() in IGNORED | {"id"} | entity.legacy:
                 name = title.casefold()
             if name is not None and name in mapped.values():
                 raise ImportRefusedError(
@@ -436,7 +439,7 @@ def _row(
     seen: set[uuid.UUID],
 ) -> tuple[RowReport, models.Model | None, uuid.UUID | None]:
     if entity.upgrade is not None:
-        cells = entity.upgrade(dict(cells), context.home)
+        cells = entity.upgrade(dict(cells), context.home, actor)
     report = RowReport(line=line, label=unneutralise(cells.get(entity.key, "")).strip()[:120])
     key: uuid.UUID | None = None
     if cells.get("id", "").strip():
@@ -667,7 +670,7 @@ def _create_task(actor: Any, home: Home, values: dict[str, Any]) -> models.Model
 _HEATING_CELLS = frozenset({"heating", "heating season", "saison de chauffe"})
 
 
-def _upgrade_task(cells: dict[str, str], home: Home) -> dict[str, str]:
+def _upgrade_task(cells: dict[str, str], home: Home, actor: Any) -> dict[str, str]:
     """A task on the heating season becomes a custom season of the same months.
 
     The file holds the months the task had; without them, those of the heating season in
@@ -684,6 +687,45 @@ def _upgrade_task(cells: dict[str, str], home: Home) -> dict[str, str]:
         if window is not None:
             cells["season_start_month"], cells["season_end_month"] = map(str, window)
     return cells
+
+
+def _upgrade_item(cells: dict[str, str], home: Home, actor: Any) -> dict[str, str]:
+    """The provider of a contract given by its name becomes the contractor of that name.
+
+    A file of before typed the provider as text (`contract_provider`); the column of today
+    takes an identifier or a name. The rule is that of the migration of the data
+    (docs/adr/0058): the contractor of the home of that name (case and spaces ignored), or
+    a new one with the trade Other. An identifier is left as it is, for the reference to
+    check; so is a row that gives both columns, the contractor column winning.
+    """
+    from housecairn.tasks import services as tasks
+
+    legacy = cells.pop("contract_provider", "")
+    given = unneutralise(cells.get("contract_contractor", "")).strip()
+    text = " ".join((given or unneutralise(legacy)).split())
+    if not text or _is_uuid(text):
+        return cells
+    wanted = text.casefold()
+    found = next((c for c in tasks.contractors_of(home) if c.name.casefold() == wanted), None)
+    if found is None:
+        found = tasks.create_contractor(
+            actor,
+            home,
+            name=text[:120],
+            trade="other",
+            trade_other="Maintenance",
+            note=text if len(text) > 120 else "",
+        )
+    cells["contract_contractor"] = str(found.pk)
+    return cells
+
+
+def _is_uuid(text: str) -> bool:
+    try:
+        uuid.UUID(text)
+    except ValueError:
+        return False
+    return True
 
 
 def _register() -> None:
@@ -713,21 +755,23 @@ def _register() -> None:
             label=gettext_lazy("Rooms"),
         ),
         ImportEntity(
-            "items",
-            Item,
-            "name",
-            rooms.ITEM_FIELDS | {"room"},
-            _create_item,
-            references={"room": "rooms"},
-            label=gettext_lazy("Items"),
-        ),
-        ImportEntity(
             "contractors",
             Contractor,
             "name",
             tasks.CONTRACTOR_FIELDS,
             _create_contractor,
             label=gettext_lazy("Contractors"),
+        ),
+        ImportEntity(
+            "items",
+            Item,
+            "name",
+            rooms.ITEM_FIELDS | {"room"},
+            _create_item,
+            references={"room": "rooms", "contract_contractor": "contractors"},
+            upgrade=_upgrade_item,
+            legacy=frozenset({"contract_provider"}),
+            label=gettext_lazy("Items"),
         ),
         ImportEntity(
             "tasks",

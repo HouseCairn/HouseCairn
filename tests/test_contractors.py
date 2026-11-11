@@ -496,7 +496,7 @@ class TestContractOfAnItem:
         self, signed_in: Client, alice: User, alice_home: Home, owner_item: Item
     ) -> None:
         pipes = services.create_contractor(alice, alice_home, **FULL)
-        owner_item.contract_provider = "pipes LTD"  # typed by hand: case is not a difference
+        owner_item.contract_contractor = pipes
         owner_item.save()
         page = self.create_page(signed_in, alice_home, owner_item)
         assert self.chosen(page) == str(pipes.pk)
@@ -508,7 +508,7 @@ class TestContractOfAnItem:
         self, signed_in: Client, alice: User, alice_home: Home, owner_item: Item
     ) -> None:
         pipes = services.create_contractor(alice, alice_home, **FULL)
-        owner_item.contract_provider = pipes.name
+        owner_item.contract_contractor = pipes
         owner_item.save()
         page = self.create_page(signed_in, alice_home, owner_item)
         response = signed_in.post(
@@ -526,24 +526,20 @@ class TestContractOfAnItem:
         assert response.status_code == 302, response.context["form"].errors
         assert Task.objects.get(title="Service the boiler").contractor == pipes
 
-    def test_an_unknown_provider_or_none_preselects_nobody(
+    def test_no_provider_preselects_nobody(
         self, signed_in: Client, alice: User, alice_home: Home, owner_item: Item
     ) -> None:
         services.create_contractor(alice, alice_home, **FULL)
-        for provider in ("", "Somebody else"):
-            owner_item.contract_provider = provider
-            owner_item.save()
-            page = self.create_page(signed_in, alice_home, owner_item)
-            assert not self.chosen(page)
-            # Nothing is preselected, so the section that holds the field stays closed.
-            who = page.split("<summary>Who</summary>", 1)[0].rsplit("<details", 1)[1]
-            assert " open" not in who
+        page = self.create_page(signed_in, alice_home, owner_item)
+        assert not self.chosen(page)
+        # Nothing is preselected, so the section that holds the field stays closed.
+        who = page.split("<summary>Who</summary>", 1)[0].rsplit("<details", 1)[1]
+        assert " open" not in who
         assert Contractor.objects.count() == 1  # opening the form creates nothing
 
-    def test_a_contractor_of_another_home_is_not_used(
-        self, signed_in: Client, bob: User, bob_home: Home, alice_home: Home, owner_item: Item
+    def test_the_name_of_a_contractor_no_longer_decides(
+        self, signed_in: Client, alice: User, alice_home: Home, owner_item: Item
     ) -> None:
-        services.create_contractor(bob, bob_home, **FULL)
-        owner_item.contract_provider = FULL["name"]
-        owner_item.save()
+        """Only the link of the contract counts, not a contractor named like the brand."""
+        services.create_contractor(alice, alice_home, name=owner_item.brand)
         assert not self.chosen(self.create_page(signed_in, alice_home, owner_item))

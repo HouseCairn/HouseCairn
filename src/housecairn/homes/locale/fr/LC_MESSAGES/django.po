@@ -113,11 +113,11 @@ msgstr "Matériel"
 msgid "Rooms"
 msgstr "Pièces"
 
-msgid "Items"
-msgstr "Éléments"
-
 msgid "Contractors"
 msgstr "Intervenants"
+
+msgid "Items"
+msgstr "Éléments"
 
 msgid "Tasks"
 msgstr "Tâches"

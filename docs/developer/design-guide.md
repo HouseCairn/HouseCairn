@@ -618,8 +618,8 @@ is checked against all of them at once.
   sentence under them, worked out by the server in the language of the reader. A form
   that shows every option at once reads as harder than it is.
 - **Adding to a list in place**: a form field that picks a record of the home the person
-  may not have created yet (the contractor, the room, the item or the stock item of a task)
-  **must** be a list of the home's
+  may not have created yet (the contractor, the room, the item or the stock item of a task,
+  the provider of the maintenance contract of an item) **must** be a list of the home's
   records whose last choice is "Add a …" (`tasks.forms.fields.AddInPlaceChoiceField`), and
   never a free-text field with suggestions, which reads as an empty field. That choice shows
   the fields of the new record right under the list, in an `add-in-place` fieldset with

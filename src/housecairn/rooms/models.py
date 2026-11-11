@@ -134,11 +134,17 @@ class Item(HomeOwnedModel):
     serial_number = models.CharField(_("serial number"), max_length=120, blank=True)
     installed_on = models.DateField(_("installed on"), null=True, blank=True)
     warranty_ends_on = models.DateField(_("warranty ends on"), null=True, blank=True)
-    contract_provider = models.CharField(
-        _("maintenance contract: provider"),
-        max_length=200,
+    # Who services it: one of the contractors of the home (docs/adr/0058). Deleting the
+    # contractor clears the link (`tasks.services.delete_contractor`), the number and the
+    # link of the contract stay.
+    contract_contractor = models.ForeignKey(
+        "tasks.Contractor",
+        null=True,
         blank=True,
-        help_text=_("Who services it. Example: Acme Heating."),
+        on_delete=models.SET_NULL,
+        related_name="maintained_items",
+        verbose_name=_("maintenance contract: provider"),
+        help_text=_("Who services it, from the contractors of the home. Example: Acme Heating."),
     )
     contract_number = models.CharField(
         _("maintenance contract: number"),
@@ -163,6 +169,15 @@ class Item(HomeOwnedModel):
         super().clean()
         if self.room_id and self.home_id and self.room.home_id != self.home_id:
             raise ValidationError({"room": _("This room is not in this home.")})
+        provider = self.contract_contractor if self.contract_contractor_id else None
+        # A form checks the contractor against the list of its home; the home is known here
+        # once a service has set it.
+        if provider is not None and (
+            provider.is_deleted or (self.home_id and provider.home_id != self.home_id)
+        ):
+            raise ValidationError(
+                {"contract_contractor": _("This contractor is not in this home.")}
+            )
 
     def warranty_state(self, today: datetime.date) -> str:
         """`none`, `active` or `expired`, at the date `today`."""

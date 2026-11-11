@@ -6,6 +6,7 @@ from typing import Any
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import transaction
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
@@ -24,6 +25,7 @@ from housecairn.homes.scoping import WebHomeScopedMixin
 from housecairn.rooms import conf, forms, services
 from housecairn.rooms.files import photo_response
 from housecairn.rooms.models import BEHIND_WALLS_HELP, Item, Photo, PhotoCategory, Room
+from housecairn.tasks import services as tasks_services
 
 
 class EntryView(LoginRequiredMixin, TemplateView):
@@ -252,8 +254,17 @@ class ItemFormMixin(RoomFormMixin):
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         kwargs["rooms"] = services.rooms_of(self.home)
+        kwargs["home"] = self.home
         kwargs["brands"] = services.brands_of(self.home)
         return kwargs
+
+    def contractor_of(self, data: dict[str, Any]) -> None:
+        """Add a contractor… chosen: the new one is made here, with the item."""
+        new = data.pop("new_contractor", None)
+        if new:
+            data["contract_contractor"] = tasks_services.create_contractor(
+                self.request.user, self.home, **new
+            )
 
 
 class ItemCreateView(ItemFormMixin):
@@ -267,7 +278,10 @@ class ItemCreateView(ItemFormMixin):
         data = dict(form.cleaned_data)
         room = data.pop("room")
         try:
-            item = services.create_item(self.request.user, room, **data)
+            # One unit: a form refused leaves no contractor, and no audit line, behind.
+            with transaction.atomic():
+                self.contractor_of(data)
+                item = services.create_item(self.request.user, room, **data)
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)
@@ -317,7 +331,9 @@ class ItemEditView(ItemFormMixin):
         room = data.pop("room")
         item = self.get_item()
         try:
-            services.update_item(self.request.user, item, room=room, **data)
+            with transaction.atomic():
+                self.contractor_of(data)
+                services.update_item(self.request.user, item, room=room, **data)
         except ValidationError as exc:
             _errors(form, exc)
             return self.form_invalid(form)

@@ -52,7 +52,7 @@ ITEM_FIELDS = frozenset(
         "serial_number",
         "installed_on",
         "warranty_ends_on",
-        "contract_provider",
+        "contract_contractor",
         "contract_number",
         "contract_url",
         "links",
@@ -103,7 +103,7 @@ def rooms_of(home: Home) -> models.QuerySet[Room]:
 
 
 def items_of(home: Home) -> models.QuerySet[Item]:
-    return Item.objects.filter(home=home).select_related("room")
+    return Item.objects.filter(home=home).select_related("room", "contract_contractor")
 
 
 def brands_of(home: Home) -> list[str]:

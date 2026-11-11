@@ -113,13 +113,13 @@ class TestNamesOfRoomsAndItems:
         assert owner_room.paint_brand == CLEAN
         assert owner_room.paint_colour == CLEAN
 
-    def test_brand_and_provider_of_an_item(self, alice: User, owner_room: Room) -> None:
+    def test_brand_and_contract_number_of_an_item(self, alice: User, owner_room: Room) -> None:
         item = room_services.create_item(
-            alice, owner_room, name="Boiler", brand=DIRTY, contract_provider=DIRTY
+            alice, owner_room, name="Boiler", brand=DIRTY, contract_number=DIRTY
         )
         item.refresh_from_db()
         assert item.brand == CLEAN
-        assert item.contract_provider == CLEAN
+        assert item.contract_number == CLEAN
         room_services.update_item(alice, item, name=DIRTY)
         assert Item.objects.get(pk=item.pk).name == CLEAN
 

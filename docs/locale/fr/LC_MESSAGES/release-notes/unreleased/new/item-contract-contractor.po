@@ -1,0 +1,22 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**The provider of a maintenance contract is a contractor of the home.** In the form of an item, the provider is chosen in the list of the contractors, whose last choice, **Add a contractor…**, adds one without leaving the form. The page of the item links to the sheet of the contractor, and a task added from the item starts with that contractor. Deleting a contractor leaves the contract of the item without a provider, its number and its link kept ([item form](../../../screens/item-form.md), [item](../../../screens/item.md))."
+msgstr "**Le prestataire d'un contrat d'entretien est un intervenant du logement.** Dans le formulaire d'un élément, le prestataire se choisit dans la liste des intervenants, dont le dernier choix, **Ajouter un intervenant…**, en ajoute un sans quitter le formulaire. La page de l'élément renvoie à la fiche de l'intervenant, et une tâche ajoutée depuis l'élément démarre avec cet intervenant. Supprimer un intervenant laisse le contrat de l'élément sans prestataire, son numéro et son lien conservés ([formulaire de l'élément](../../../screens/item-form.md), [élément](../../../screens/item.md))."

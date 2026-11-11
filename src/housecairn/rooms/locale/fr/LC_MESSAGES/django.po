@@ -57,6 +57,15 @@ msgstr "Pièce"
 msgid "Where the item is. Choose another room to move it."
 msgstr "Où se trouve l'élément. Choisissez une autre pièce pour le déplacer."
 
+msgid "Maintenance contract: provider"
+msgstr "Contrat d'entretien : prestataire"
+
+msgid "Add a contractor…"
+msgstr "Ajouter un intervenant…"
+
+msgid "Who services it, from the contractors of the home. Example: Acme Heating."
+msgstr "Qui l'entretient, parmi les intervenants du logement. Exemple : Acme Chauffage."
+
 msgid "Links"
 msgstr "Liens"
 
@@ -196,9 +205,6 @@ msgstr "fin de garantie"
 msgid "maintenance contract: provider"
 msgstr "contrat d'entretien : prestataire"
 
-msgid "Who services it. Example: Acme Heating."
-msgstr "Qui l'entretient. Exemple : Acme Chauffage."
-
 msgid "maintenance contract: number"
 msgstr "contrat d'entretien : numéro"
 
@@ -219,6 +225,9 @@ msgstr "éléments"
 
 msgid "This room is not in this home."
 msgstr "Cette pièce n'est pas dans ce logement."
+
+msgid "This contractor is not in this home."
+msgstr "Cet intervenant n'est pas dans ce logement."
 
 msgid "General"
 msgstr "Général"
@@ -393,6 +402,12 @@ msgstr "Journal d'entretien"
 
 msgid "Add an item"
 msgstr "Ajouter un élément"
+
+msgid "New contractor"
+msgstr "Nouvel intervenant"
+
+msgid "Only used with Add a contractor… in the list above. The contractor joins the home when you save the item; complete it on its sheet."
+msgstr "Utilisé seulement avec « Ajouter un intervenant… » dans la liste ci-dessus. L'intervenant rejoint le logement à l'enregistrement de l'élément ; complétez-le ensuite sur sa fiche."
 
 msgid "Save"
 msgstr "Enregistrer"

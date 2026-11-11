@@ -45,7 +45,7 @@ from housecairn.homes import exports, quotas
 from housecairn.homes.exports import FileSpec, Section
 from housecairn.homes.models import Home, Membership, Role
 
-SUPPORTED_VERSIONS = frozenset({2})
+SUPPORTED_VERSIONS = frozenset({2, 3})
 DOCUMENT_MAX_BYTES = 64 * 1024 * 1024
 MAX_ENTRIES = 200_000
 _UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
@@ -336,6 +336,55 @@ def _objects(archive: Archive) -> dict[str, list[dict[str, Any]]]:
                 raise _refuse(_("A data file of the archive is not valid: %(name)s."), name=app)
             out[name] = rows
     return out
+
+
+def _name_key(text: str) -> str:
+    """A name without its case and its extra spaces: what makes two names the same."""
+    return " ".join(text.split()).casefold()
+
+
+def _upgrade_v2(objects: dict[str, list[dict[str, Any]]]) -> None:
+    """Version 2 named the provider of the contract of an item as text; version 3, as a contractor.
+
+    The rule of the data migration of the application (docs/adr/0058): an item whose provider
+    is the name of a contractor of the archive (case and spaces ignored) takes that
+    contractor; any other provider becomes a contractor of the archive with the trade
+    Other, shared by the items that name it. The archive is rewritten in memory, before
+    its objects are checked like those of any other.
+    """
+    items = objects.get("items", [])
+    if not any(isinstance(row, dict) and "contract_provider" in row for row in items):
+        return
+    contractors = objects.setdefault("contractors", [])
+    by_name: dict[str, str] = {}
+    for contractor in contractors:
+        name = contractor.get("name")
+        if isinstance(name, str) and isinstance(contractor.get("id"), str):
+            by_name.setdefault(_name_key(name), contractor["id"])
+    for row in items:
+        provider = row.pop("contract_provider", "")
+        text = " ".join(provider.split()) if isinstance(provider, str) else ""
+        if not text or row.get("contract_contractor"):
+            continue
+        key = _name_key(text)
+        if key not in by_name:
+            made = str(uuid.uuid4())
+            contractors.append(
+                {
+                    "id": made,
+                    "name": text[:120],
+                    "trade": "other",
+                    "trade_other": "Maintenance",
+                    "phone": "",
+                    "email": "",
+                    "address": "",
+                    "note": text if len(text) > 120 else "",
+                    "created_at": row.get("created_at"),
+                    "updated_at": row.get("updated_at"),
+                }
+            )
+            by_name[key] = made
+        row["contract_contractor"] = by_name[key]
 
 
 def _prepare(
@@ -641,6 +690,8 @@ def restore_home(actor: Any, source: IO[bytes], *, match_people: bool = False) -
     people, matched, unattributed = _people(homes_doc, actor, match_people)
     home = Home(id=home_id, **home_values)
     objects = _objects(archive)
+    if archive.manifest["version"] == 2:
+        _upgrade_v2(objects)
     prepared = _prepare(home, objects, people, archive)
     _check_free(home_id, prepared)
     size = sum(

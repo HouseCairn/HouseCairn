@@ -69,8 +69,8 @@ msgstr "Dates."
 msgid "Maintenance contract: provider"
 msgstr "Contrat d'entretien : prestataire"
 
-msgid "Who services it, 200 characters at most."
-msgstr "Qui l'assure, 200 caractères au plus."
+msgid "Who services it: one of the contractors of the home, or the last choice, **Add a contractor…**, which shows the fields of a new one right under the list: its name (required) and its trade. The contractor is created when the item is saved; complete it later on its [sheet](contractor.md). A form refused for another reason creates no contractor, and a name that is already a contractor of the home, whatever its case, is refused: choose it in the list. Without script the fields of a new contractor are always shown, and read only when **Add a contractor…** is chosen. Optional."
+msgstr "Qui l'entretient : un des intervenants du logement, ou le dernier choix, **Ajouter un intervenant…**, qui affiche les champs d'un nouvel intervenant juste sous la liste : son nom (obligatoire) et son métier. L'intervenant est créé à l'enregistrement de l'élément ; complétez-le ensuite sur sa [fiche](contractor.md). Un formulaire refusé pour une autre raison ne crée aucun intervenant, et un nom qui est déjà celui d'un intervenant du logement, quelle que soit la casse, est refusé : choisissez-le dans la liste. Sans script, les champs d'un nouvel intervenant sont toujours affichés, et lus seulement quand **Ajouter un intervenant…** est choisi. Facultatif."
 
 msgid "Maintenance contract: number"
 msgstr "Contrat d'entretien : numéro"
@@ -105,3 +105,5 @@ msgstr "Le lien du haut et le formulaire une fois envoyé ramènent à l'écran 
 #~ msgid "Who services it, and the contract number if any."
 #~ msgstr "Qui l'entretient, et le numéro de contrat s'il y en a un."
 
+#~ msgid "Who services it, 200 characters at most."
+#~ msgstr "Qui l'assure, 200 caractères au plus."

@@ -54,7 +54,9 @@ web interface: every request only sees the homes of its user
   that writes. Rooms and items can be filtered with `q` (name); items with
   `room`; photos with `room`, `item` and `category` (`general`, `behind_walls`, `before`,
   `after` or `other`, [ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)).
-  An item carries `contract_provider` and `contract_number`.
+  An item carries `contract_contractor` (the id of one of the contractors of the home, or
+  `null`) and `contract_number`. Up to 0.1.0 the provider of the contract was a text,
+  `contract_provider`; it is gone ([ADR 0058](../adr/0058-contract-provider-is-a-contractor.md)).
 - **Task templates** ([ADR 0049](../adr/0049-task-templates.md)):
   `GET /api/v1/task-templates/` returns the library shipped with the instance, every text
   in English and in French, to any person signed in and any token with the `read` scope;

@@ -11,6 +11,7 @@ from housecairn.accounts.models import User
 from housecairn.core.forms import MoneyField
 from housecairn.rooms.models import Item, Room, RoomKind
 from housecairn.tasks import durations, files, recurrence, repeat_text, services
+from housecairn.tasks.forms.contractor import clean_new_contractor, new_contractor_fields
 from housecairn.tasks.forms.fields import (
     _DATE,
     NEW,
@@ -25,7 +26,6 @@ from housecairn.tasks.models import (
     RepeatMode,
     Season,
     Task,
-    Trade,
 )
 
 # "Count from": the two ways a task repeats, said as the end of the sentence.
@@ -76,6 +76,9 @@ def repeat_summary(form: forms.BaseForm, home: Any) -> str:
         start=start,
         season=window,
     )
+
+
+_NEW_CONTRACTOR = new_contractor_fields()
 
 
 class TaskForm(forms.ModelForm[Task]):
@@ -166,15 +169,9 @@ class TaskForm(forms.ModelForm[Task]):
         required=False,
         new_label=_("Add a contractor…"),
     )
-    new_contractor_name = forms.CharField(
-        label=_("Name of the new contractor"), max_length=120, required=False
-    )
-    new_contractor_trade = forms.ChoiceField(
-        label=_("Trade"), choices=[("", "—"), *Trade.choices], required=False
-    )
-    new_contractor_trade_other = forms.CharField(
-        label=_("Which trade"), max_length=120, required=False
-    )
+    new_contractor_name = _NEW_CONTRACTOR["new_contractor_name"]
+    new_contractor_trade = _NEW_CONTRACTOR["new_contractor_trade"]
+    new_contractor_trade_other = _NEW_CONTRACTOR["new_contractor_trade_other"]
     # Amounts are typed the way the person writes them, as in projects (docs/adr/0051).
     labour_budget = MoneyField(label=_("Labour budget"), required=False)
     material_budget = MoneyField(label=_("Material budget"), required=False)
@@ -362,32 +359,8 @@ class TaskForm(forms.ModelForm[Task]):
         data["new_item"] = {"name": name}
 
     def _clean_new_contractor(self, data: dict[str, Any]) -> None:
-        """ "Add a contractor…": the fields of the new one, checked; ignored otherwise.
-
-        `new_contractor` holds what to create, made by the view with the task. A name
-        already in the home, whatever its case, is refused: that one is in the list.
-        """
-        name = " ".join((data.pop("new_contractor_name", "") or "").split())
-        trade = data.pop("new_contractor_trade", "") or ""
-        other = (data.pop("new_contractor_trade_other", "") or "").strip()
-        data["new_contractor"] = None
-        if data.get("contractor") != NEW:
-            return
-        data["contractor"] = None
-        if not name:
-            self.add_error("new_contractor_name", _("Give the name of the new contractor."))
-            return
-        if any(c.name.casefold() == name.casefold() for c in services.contractors_of(self.home)):
-            self.add_error(
-                "new_contractor_name",
-                _("%(name)s is already a contractor of this home: choose it in the list.")
-                % {"name": name},
-            )
-            return
-        if trade == Trade.OTHER and not other:
-            self.add_error("new_contractor_trade_other", _("Say which trade."))
-            return
-        data["new_contractor"] = {"name": name, "trade": trade, "trade_other": other}
+        """Add a contractor…: the fields of the new one, checked; ignored otherwise."""
+        clean_new_contractor(self, data, self.home, field="contractor")
 
     def _clean_repeat(self, data: dict[str, Any]) -> None:
         """The sentence back to the model: `repeat_mode`, and one due date.

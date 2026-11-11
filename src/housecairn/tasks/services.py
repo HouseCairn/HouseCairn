@@ -277,6 +277,8 @@ def update_contractor(actor: AnyUser, contractor: Contractor, **changes: Any) ->
 def delete_contractor(actor: AnyUser, contractor: Contractor) -> None:
     _require_write(actor, contractor.home)
     Task.objects.filter(contractor=contractor).update(contractor=None)
+    # The contract of an item loses its provider and keeps its number and its link.
+    Item.all_objects.filter(contract_contractor=contractor).update(contract_contractor=None)
     contractor.soft_delete()
     audit.record_object(
         "contractor.deleted", actor=actor, home_id=contractor.home_id, title=contractor.name
@@ -296,19 +298,6 @@ def contractor_named(actor: AnyUser, home: Home, name: str) -> Contractor | None
         if known.name.casefold() == wanted.casefold():
             return known
     return create_contractor(actor, home, name=wanted)
-
-
-def contractor_of_provider(home: Home, provider: str) -> Contractor | None:
-    """The contractor of the home whose name is the provider of a maintenance contract.
-
-    The contract of an item names its provider as typed text; a task made from the item
-    starts with the contractor of that name, if the home has one. Case is not a difference;
-    nothing is created here.
-    """
-    wanted = _one_line(provider)
-    if not wanted:
-        return None
-    return next((c for c in contractors_of(home) if c.name.casefold() == wanted.casefold()), None)
 
 
 def tasks_of_contractor(contractor: Contractor) -> models.QuerySet[Task]:

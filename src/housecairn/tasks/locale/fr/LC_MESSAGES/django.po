@@ -103,6 +103,25 @@ msgstr "Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou W
 msgid "HEIC photos are not accepted. Choose the JPEG version of the photo, or set the camera to Most Compatible."
 msgstr "Les photos HEIC ne sont pas acceptées. Choisissez la version JPEG de la photo, ou réglez l'appareil photo sur « Le plus compatible »."
 
+msgid "Name of the new contractor"
+msgstr "Nom du nouvel intervenant"
+
+msgid "Trade"
+msgstr "Métier"
+
+msgid "Which trade"
+msgstr "Quel métier"
+
+msgid "Give the name of the new contractor."
+msgstr "Indiquez le nom du nouvel intervenant."
+
+#, python-format
+msgid "%(name)s is already a contractor of this home: choose it in the list."
+msgstr "%(name)s est déjà un intervenant de ce logement : choisissez-le dans la liste."
+
+msgid "Say which trade."
+msgstr "Dites de quel métier il s'agit."
+
 msgid "Quantity"
 msgstr "Quantité"
 
@@ -247,15 +266,6 @@ msgstr "Intervenant"
 msgid "Add a contractor…"
 msgstr "Ajouter un intervenant…"
 
-msgid "Name of the new contractor"
-msgstr "Nom du nouvel intervenant"
-
-msgid "Trade"
-msgstr "Métier"
-
-msgid "Which trade"
-msgstr "Quel métier"
-
 msgid "Labour budget"
 msgstr "Budget main d'œuvre"
 
@@ -291,16 +301,6 @@ msgstr "Choisissez la pièce du nouvel élément."
 #, python-format
 msgid "%(name)s is already an item of this room: choose it in the list."
 msgstr "%(name)s est déjà un élément de cette pièce : choisissez-le dans la liste."
-
-msgid "Give the name of the new contractor."
-msgstr "Indiquez le nom du nouvel intervenant."
-
-#, python-format
-msgid "%(name)s is already a contractor of this home: choose it in the list."
-msgstr "%(name)s est déjà un intervenant de ce logement : choisissez-le dans la liste."
-
-msgid "Say which trade."
-msgstr "Dites de quel métier il s'agit."
 
 msgid "Give how often the task comes back."
 msgstr "Indiquez tous les combien la tâche revient."

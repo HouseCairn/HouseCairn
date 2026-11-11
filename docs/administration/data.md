@@ -24,13 +24,13 @@ The archive is a zip:
 
 | Part | Content |
 | --- | --- |
-| `manifest.json` | `format` (`"housecairn-export"`), `version` (`2`), `application_version`, `exported_at`, `home` (its id), `apps` (the documents below) and `entries`: the SHA-256 digest and the size of every other file of the archive. |
+| `manifest.json` | `format` (`"housecairn-export"`), `version` (`3`), `application_version`, `exported_at`, `home` (its id), `apps` (the documents below) and `entries`: the SHA-256 digest and the size of every other file of the archive. |
 | `data/<app>.json` | The data of one part of the application: `{"app": ..., "sections": {<section>: [objects]}}`. |
 | `files/<folder>/<id>.<extension>` | The files: `photos/`, `attachments/` (files of tasks), `stock/` (labels of stock items), `projects/` (photos, link pictures, quotes) and `reports/`. |
 | `README.txt` | A reminder of the format. |
 
-Its [JSON Schema](../_static/schemas/housecairn-export-v2.schema.json) is
-published with this documentation. The rules that hold for every section:
+Its [JSON Schema](../_static/schemas/housecairn-export-v3.schema.json) is
+published with this documentation (the one of [version 2](../_static/schemas/housecairn-export-v2.schema.json) stays). The rules that hold for every section:
 
 - **Every field of the table**, by its name in the code: an object of
   `rooms` has `id`, `name`, `kind`, `position`, `notes`, `paint_colour`, ...,
@@ -71,8 +71,13 @@ no password, no setting or single sign-on secret of the instance, nothing of
 the first setup. Each app adds its tables to the registry of the export
 (`homes.exports.register`); a test fails on a table that is in no section.
 
-Version 1 archives (a single `export.json`, before this version) cannot be
-restored: export the home again.
+Version 1 archives (a single `export.json`) cannot be restored: export the home
+again. Version 2 archives are restored: the only difference is that the provider of
+the maintenance contract of an item was a text (`contract_provider`) and is, in
+version 3, the id of a contractor (`contract_contractor`). The restore links the item to the
+contractor of the archive of that name (case and extra spaces ignored) and, when the archive
+has none, adds one, with the trade Other
+([ADR 0058](../adr/0058-contract-provider-is-a-contractor.md)).
 
 ## Tables for a spreadsheet
 

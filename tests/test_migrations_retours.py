@@ -296,3 +296,82 @@ def test_a_unit_becomes_one_of_the_list_or_other_and_comes_back() -> None:
         assert apps.get_model("stock", "Article").objects.count() == len(units)
     finally:
         to_latest()
+
+
+def test_the_provider_of_a_contract_becomes_a_contractor_and_comes_back() -> None:
+    """ADR 0058: linked by name (case and spaces ignored), made otherwise, undone by name."""
+    try:
+        apps = apps_at(
+            ("rooms", "0004_room_paint_article"), ("tasks", "0011_estimate_up_to_a_year")
+        )
+        home = make_home(apps)
+        other_home = make_home(apps)
+        contractors = apps.get_model("tasks", "Contractor").objects
+        acme = contractors.create(home=home, name="Acme Heating", trade="plumber")
+        contractors.create(home=home, name="Gone Ltd", trade="", deleted_at="2026-01-01T00:00:00Z")
+        room = apps.get_model("rooms", "Room").objects.create(home=home, name="Cellar")
+        other_room = apps.get_model("rooms", "Room").objects.create(home=other_home, name="Hall")
+        items = apps.get_model("rooms", "Item").objects
+        long_text = "x" * 150
+        for room_, name, provider in [
+            (room, "Boiler", "  acme   HEATING "),
+            (room, "Pump", "Pool Co"),
+            (room, "Tank", "pool  co"),
+            (room, "Revived", "Gone Ltd"),
+            (room, "Fan", long_text),
+            (room, "Plain", ""),
+            (other_room, "Heater", "Acme Heating"),
+        ]:
+            items.create(home=room_.home, room=room_, name=name, contract_provider=provider)
+
+        apps = apps_at(
+            ("rooms", "0005_item_contract_contractor"), ("tasks", "0011_estimate_up_to_a_year")
+        )
+        items = apps.get_model("rooms", "Item").objects
+        contractors = apps.get_model("tasks", "Contractor").objects
+        by_name = {
+            i.name: i.contract_contractor for i in items.select_related("contract_contractor")
+        }
+        assert by_name["Boiler"].pk == acme.pk
+        assert by_name["Plain"] is None
+        assert by_name["Pump"] == by_name["Tank"]
+        pool = by_name["Pump"]
+        assert (pool.home_id, pool.name, pool.trade, pool.trade_other) == (
+            home.pk,
+            "Pool Co",
+            "other",
+            "Maintenance",
+        )
+        # A deleted contractor is not linked again: the text makes a live one.
+        assert by_name["Revived"].deleted_at is None
+        assert by_name["Revived"].name == "Gone Ltd"
+        assert (
+            by_name["Revived"].pk != contractors.get(name="Gone Ltd", deleted_at__isnull=False).pk
+        )
+        fan = by_name["Fan"]
+        assert (fan.name, fan.note) == ("x" * 120, long_text)
+        # A provider of another home is never matched across homes.
+        heater = by_name["Heater"]
+        assert heater.home_id == other_home.pk
+        assert heater.pk != acme.pk
+
+        # Undone: the text is the name of the contractor, the contractors stay.
+        before = contractors.count()
+        apps = apps_at(
+            ("rooms", "0004_room_paint_article"), ("tasks", "0011_estimate_up_to_a_year")
+        )
+        items = apps.get_model("rooms", "Item").objects
+        back = dict(items.values_list("name", "contract_provider"))
+        assert back["Boiler"] == "Acme Heating"
+        assert back["Pump"] == back["Tank"] == "Pool Co"
+        assert back["Fan"] == "x" * 120
+        assert back["Plain"] == ""
+        assert apps.get_model("tasks", "Contractor").objects.count() == before
+
+        # Redone: the contractors made the first time are the ones found.
+        apps = apps_at(
+            ("rooms", "0005_item_contract_contractor"), ("tasks", "0011_estimate_up_to_a_year")
+        )
+        assert apps.get_model("tasks", "Contractor").objects.count() == before
+    finally:
+        to_latest()
