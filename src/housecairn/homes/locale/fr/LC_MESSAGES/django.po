@@ -457,9 +457,6 @@ msgstr "Nouveau lien créé : partagez-le."
 msgid "Invitation revoked."
 msgstr "Invitation révoquée."
 
-msgid "Choose a role."
-msgstr "Choisissez un rôle."
-
 msgid "Role changed."
 msgstr "Rôle modifié."
 
@@ -495,9 +492,6 @@ msgstr "Exigence de connexion retirée."
 
 msgid "Ownership transferred. You are now a member."
 msgstr "Propriété transférée. Vous êtes désormais membre."
-
-msgid "Choose a sign-in provider."
-msgstr "Choisissez un fournisseur de connexion."
 
 msgid "Sign-in requirement saved."
 msgstr "Exigence de connexion enregistrée."
