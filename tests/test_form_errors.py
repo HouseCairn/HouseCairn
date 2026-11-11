@@ -30,6 +30,20 @@ pytest_plugins = (
 
 pytestmark = pytest.mark.django_db
 
+PROVIDERS = {
+    "openid_connect": {
+        "APPS": [
+            {
+                "provider_id": "company",
+                "name": "Company SSO",
+                "client_id": "housecairn",
+                "secret": "not-a-secret",
+                "settings": {"server_url": "https://id.example.com"},
+            }
+        ]
+    }
+}
+
 TEMPLATES = Path(__file__).resolve().parents[1] / "src" / "housecairn" / "templates"
 
 
@@ -80,7 +94,7 @@ def read(html: str) -> _Page:
 Case = tuple[str, Callable[[dict[str, Any]], str], dict[str, Any]]
 
 # Every screen that shows a form in the page, with an invalid post. A form sent with an
-# error comes back as the page itself (200), never as a redirect.
+# error comes back as the page itself (200, or 422), never as a redirect.
 CASES: list[Case] = [
     ("room-create", lambda c: reverse("rooms:create", args=[c["home"].id]), {"kind": "other"}),
     (
@@ -144,6 +158,22 @@ CASES: list[Case] = [
         lambda c: reverse("projects:edit", args=[c["home"].id, c["project"].id]),
         {"title": "A project", "season": "custom"},
     ),
+    # Forms of the project page: a refused one comes back as the page itself, not as a redirect.
+    (
+        "project-task-add",
+        lambda c: reverse("projects:task-add", args=[c["home"].id, c["project"].id]),
+        {"title": ""},
+    ),
+    (
+        "project-link-add",
+        lambda c: reverse("projects:link-add", args=[c["home"].id, c["project"].id]),
+        {"url": "javascript:alert(1)"},
+    ),
+    (
+        "project-photo-add",
+        lambda c: reverse("projects:file-add", args=[c["home"].id, c["project"].id]),
+        {},
+    ),
     (
         "line-create",
         lambda c: reverse("projects:line-create", args=[c["home"].id, c["project"].id]),
@@ -164,6 +194,17 @@ CASES: list[Case] = [
     ("report-create", lambda c: reverse("reports:create", args=[c["home"].id]), {"title": ""}),
     ("home-create", lambda c: reverse("homes:create"), {"name": ""}),
     ("home-edit", lambda c: reverse("homes:edit", args=[c["home"].id]), {"name": ""}),
+    (
+        "household-invite",
+        lambda c: reverse("homes:invite", args=[c["home"].id]),
+        {"email": "not an address", "role": "member"},
+    ),
+    (
+        "household-provider",
+        lambda c: reverse("homes:required-provider", args=[c["home"].id]),
+        {"provider": "unknown"},
+    ),
+    ("instance-invite", lambda c: reverse("instance:invite"), {"email": "not an address"}),
     ("home-import", lambda c: reverse("homes:import", args=[c["home"].id]), {}),
     ("home-restore", lambda c: reverse("homes:restore"), {}),
     ("profile", lambda c: reverse("profile"), {"display_name": "x" * 300}),
@@ -179,6 +220,7 @@ NO_FIELD = {"home-import"}
 
 @pytest.fixture
 def context(
+    alice: Any,
     alice_home: Home,
     owner_room: Room,
     owner_item: Item,
@@ -191,6 +233,11 @@ def context(
     settings: Any,
 ) -> dict[str, Any]:
     settings.HOUSECAIRN_NOTIFICATIONS_ENABLED = True  # the screen shows its forms
+    settings.SOCIALACCOUNT_PROVIDERS = PROVIDERS  # the household offers the sign-in rule
+    settings.EMAIL_HOST = "smtp.example.com"  # the instance can invite
+    settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+    alice.is_staff = alice.is_superuser = True  # an instance administrator
+    alice.save()
     return {
         "home": alice_home,
         "room": owner_room,

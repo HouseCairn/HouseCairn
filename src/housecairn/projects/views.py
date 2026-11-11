@@ -351,14 +351,14 @@ class ProjectDetailView(HomeProjectsMixin, TemplateView):
                 photos=[f for f in files if f.quote_id is None],
                 has_lines=bool(lines),
                 statuses=[(s.value, s.label) for s in QuoteStatus if s != QuoteStatus.ACCEPTED],
-                task_form=forms.TaskAddForm(home=self.home),
+                task_form=kwargs.pop("task_form", None) or forms.TaskAddForm(home=self.home),
                 attach_form=forms.TaskAttachForm(tasks=services.attachable_tasks(self.home)),
-                photo_form=forms.PhotoForm(),
+                photo_form=kwargs.pop("photo_form", None) or forms.PhotoForm(),
                 max_bytes=conf.photo_max_bytes(),
                 inspiration_links=list(
                     services.inspiration_links_of(self.home).filter(project=project)
                 ),
-                link_form=forms.LinkForm(auto_id="id_link_%s"),
+                link_form=kwargs.pop("link_form", None) or forms.LinkForm(auto_id="id_link_%s"),
                 preview_enabled=link_services.preview_enabled(),
             ),
             **kwargs,
@@ -430,14 +430,19 @@ class PostView(HomeProjectsMixin, View):
     require_write = True
     http_method_names = ["post"]
 
+    def refuse(self, **bound: Any) -> HttpResponse:
+        """The project page itself (422), with the refused form bound and its summary."""
+        page = ProjectDetailView()
+        page.setup(self.request, *self.args, **self.kwargs)
+        return page.render_to_response(page.get_context_data(**bound), status=422)
+
 
 class TaskAddView(PostView):
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         project = self.get_project()
         form = forms.TaskAddForm(request.POST, home=self.home)
         if not form.is_valid():
-            messages.error(request, " ".join(str(m) for e in form.errors.values() for m in e))
-            return self.stay(project)
+            return self.refuse(task_form=form)
         data = form.cleaned_data
         try:
             services.add_task(
@@ -448,9 +453,9 @@ class TaskAddView(PostView):
                 room=data["room"],
             )
         except ValidationError as exc:
-            messages.error(request, " ".join(exc.messages))
-        else:
-            messages.success(request, _("Task added to the project."))
+            _form_errors(form, exc)
+            return self.refuse(task_form=form)
+        messages.success(request, _("Task added to the project."))
         return self.stay(project)
 
 
@@ -702,14 +707,13 @@ class FileAddView(PostView):
             return refused
         form = forms.PhotoForm(request.POST, request.FILES)
         if not form.is_valid():
-            messages.error(request, _("Choose a photo."))
-            return self.stay(project)
+            return self.refuse(photo_form=form)
         try:
             services.add_file(request.user, project, upload=form.cleaned_data["photo"])
         except ValidationError as exc:
-            messages.error(request, " ".join(exc.messages))
-        else:
-            messages.success(request, _("Photo added."))
+            _form_errors(form, exc)
+            return self.refuse(photo_form=form)
+        messages.success(request, _("Photo added."))
         return self.stay(project)
 
 
@@ -756,17 +760,12 @@ class LinkAddView(PostView):
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         project = self.get_project()
-        form = forms.LinkForm(request.POST)
+        form = forms.LinkForm(request.POST, auto_id="id_link_%s")
         if not form.is_valid():
-            messages.error(
-                request, _("Give the address of a web page, such as https://example.com.")
-            )
-            return self.stay(project)
+            return self.refuse(link_form=form)
         if not link_services.preview_allowed(request, project):
-            messages.error(
-                request, _("Too many links added in a short time. Try again in a minute.")
-            )
-            return self.stay(project)
+            form.add_error(None, _("Too many links added in a short time. Try again in a minute."))
+            return self.refuse(link_form=form)
         try:
             link_services.add_link(
                 request.user,
@@ -775,9 +774,9 @@ class LinkAddView(PostView):
                 title=form.cleaned_data["title"],
             )
         except ValidationError as exc:
-            messages.error(request, " ".join(exc.messages))
-        else:
-            messages.success(request, _("Link added."))
+            _form_errors(form, exc)
+            return self.refuse(link_form=form)
+        messages.success(request, _("Link added."))
         return self.stay(project)
 
 

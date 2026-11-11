@@ -257,6 +257,7 @@ class PhotoForm(forms.Form):
     photo = forms.FileField(
         label=_("Photo"),
         widget=forms.FileInput(attrs={"accept": "image/jpeg,image/png,image/webp"}),
+        error_messages={"required": _("Choose a photo.")},
     )
 
 
@@ -266,6 +267,10 @@ class LinkForm(forms.Form):
         max_length=500,
         assume_scheme="https",
         widget=forms.URLInput(attrs={"placeholder": "https://example.com/page"}),
+        error_messages={
+            "invalid": _("Give the address of a web page, such as https://example.com."),
+            "required": _("Give the address of a web page, such as https://example.com."),
+        },
     )
     title = forms.CharField(
         label=_("Title"),

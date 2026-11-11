@@ -100,23 +100,42 @@ class InstanceActionView(InstanceAdminMixin, View):
         return invitation
 
 
-class InviteView(InstanceActionView):
-    def act(self) -> None:
+class InviteView(InstanceAdminMixin, View):
+    """Invite by email. A refused form comes back as the overview itself (422), with its summary."""
+
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         if not account_services.email_is_configured():
-            raise ValidationError(
-                _("This instance cannot send email: create the account in the administration site.")
+            messages.error(
+                request,
+                _(
+                    "This instance cannot send email: "
+                    "create the account in the administration site."
+                ),
             )
-        form = InstanceInviteForm(self.request.POST)
-        if not form.is_valid():
-            raise ValidationError([e for errors in form.errors.values() for e in errors])
-        if not allow(self.request, "housecairn_instance_invite"):
-            raise ValidationError(_("Too many invitations in a short time. Try again later."))
-        services.invite(
-            self.request.user,  # type: ignore[arg-type]
-            email=form.cleaned_data["email"],
-            send=emails.sender_for(self.request),
-        )
-        messages.success(self.request, _("Invitation sent."))
+            return redirect("instance:overview")
+        form = InstanceInviteForm(request.POST)
+        if form.is_valid() and not allow(request, "housecairn_instance_invite"):
+            form.add_error(None, _("Too many invitations in a short time. Try again later."))
+        if form.is_valid():
+            try:
+                services.invite(
+                    request.user,  # type: ignore[arg-type]
+                    email=form.cleaned_data["email"],
+                    send=emails.sender_for(request),
+                )
+            except ValidationError as exc:
+                form.add_error(None, exc)
+            except home_services.DeliveryFailedError:
+                messages.warning(request, DELIVERY_FAILED)
+                return redirect("instance:overview")
+            else:
+                messages.success(request, _("Invitation sent."))
+                return redirect("instance:overview")
+        page = OverviewView()
+        page.setup(request, *args, **kwargs)
+        return page.render_to_response(page.get_context_data(invite_form=form), status=422)
 
 
 class ResendView(InstanceActionView):
