@@ -218,6 +218,8 @@ No screenshots are taken in CI, for the documentation or for review: they come
 back in one dedicated change before the first public release
 ([ADR 0016](docs/adr/0016-documentation-site.md)).
 
+Exception: the images of the README (`docs/assets/readme-*.png`) are allowed. They are taken by hand on a local instance with made-up data, never in CI, and no page of the documentation uses them.
+
 The site is in `docs/_build/site/`. After changing a page, refresh the French
 catalogs with `uv run python scripts/build_docs.py --update-catalogs`, then
 translate the new strings in `docs/locale/fr/LC_MESSAGES/`; the build fails

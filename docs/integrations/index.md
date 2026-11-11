@@ -1,6 +1,14 @@
 # Integrations
 
-There is no integration yet. Connectors to Home Assistant, Paperless-ngx and
-Sure are planned; each will be optional and off by default, and HouseCairn
-works fully without them. Wherever possible, the other tool will push to
-HouseCairn (webhooks) rather than HouseCairn holding its token.
+HouseCairn works fully without any integration. Each one is optional and off by
+default. Wherever possible, the other tool pushes to HouseCairn (webhooks)
+rather than HouseCairn holding its token.
+
+- **Home Assistant**: the
+  [Home Assistant app](https://github.com/HouseCairn/home-assistant-addons)
+  runs HouseCairn inside Home Assistant and opens it in the sidebar (ingress).
+  The [integration](https://github.com/HouseCairn/home-assistant-housecairn),
+  installed with HACS, shows the tasks of a home as sensors and a to-do list and
+  marks a task done. It uses a HouseCairn API token; HouseCairn never holds a
+  Home Assistant token.
+- **Paperless-ngx** (documents) and **Sure** (actual spending): planned.

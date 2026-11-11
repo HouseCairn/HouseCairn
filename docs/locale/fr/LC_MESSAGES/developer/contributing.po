@@ -39,6 +39,9 @@ msgstr "Le site est dans `docs/_build/site/`, l'anglais à sa racine et le fran�
 msgid "The site has no screenshots for now, and the CI takes none: they come back in one dedicated change before the first public release."
 msgstr "Le site n'a pas de captures d'écran pour l'instant, et la CI n'en prend aucune : elles reviendront en une seule modification dédiée, avant la première version publique."
 
+msgid "Exception: the images of the README (`docs/assets/readme-*.png`) are allowed. They are taken by hand on a local instance with made-up data, never in CI, and no page of the documentation uses them."
+msgstr "Exception : les images du README (`docs/assets/readme-*.png`) sont autorisées. Elles sont prises à la main sur une instance locale avec des données fictives, jamais en CI, et aucune page de la documentation ne les utilise."
+
 msgid "Translations"
 msgstr "Traductions"
 

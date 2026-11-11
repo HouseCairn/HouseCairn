@@ -31,6 +31,8 @@ focus and reduced motion.
 The site has no screenshots for now, and the CI takes none: they come back in
 one dedicated change before the first public release.
 
+Exception: the images of the README (`docs/assets/readme-*.png`) are allowed. They are taken by hand on a local instance with made-up data, never in CI, and no page of the documentation uses them.
+
 ## Translations
 
 Pages are written in English. Their French translations are gettext catalogs,

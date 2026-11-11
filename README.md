@@ -2,81 +2,133 @@
 
 # HouseCairn
 
+Self-hosted planner for home maintenance and renovation work, for the people
+who live in the house: what needs doing, in which room, when, with what and for
+how much.
+
 [![CI](https://github.com/HouseCairn/housecairn/actions/workflows/ci.yml/badge.svg?event=merge_group)](https://github.com/HouseCairn/housecairn/actions/workflows/ci.yml?query=event%3Amerge_group)
 [![Image](https://github.com/HouseCairn/housecairn/actions/workflows/image.yml/badge.svg?branch=main)](https://github.com/HouseCairn/housecairn/actions/workflows/image.yml?query=branch%3Amain)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/HouseCairn/housecairn/badge)](https://securityscorecards.dev/viewer/?uri=github.com/HouseCairn/housecairn)
 [![License: AGPL-3.0-only](docs/assets/license-badge.svg)](LICENSE)
 
-Self-hosted planner for home maintenance and renovation projects: recurring
-tasks, schedules, budgets and supplies, room by room. Integrates with Home
-Assistant, Paperless-ngx and Sure.
+<p align="center">
+  <img src="docs/assets/readme-today-desktop.png" width="600"
+       alt="The Today screen on a computer: two overdue tasks (change the smoke detector battery, 3 days late; clean the cooker hood filter, 1 day late), two tasks due today and the boiler service coming up, each with its room, its item and a Done button.">
+  <img src="docs/assets/readme-item-phone.png" width="190"
+       alt="An item on a phone: the gas boiler of the utility room, with its brand and model, installation date, warranty end date, a Photos section and the boiler service task.">
+</p>
 
-> **Status: early development, not usable yet.** The application skeleton and
-> its architecture are in place, without any feature screen. Do not deploy it.
+Documentation, in English and French: <https://docs.housecairn.app>.
 
-## What it is for
+## What it does
 
-HouseCairn answers one question: what needs doing in the house, where, when,
-with what and for how much. Recurring maintenance (the smoke detector battery,
-the ventilation filter) and one-off projects (repainting a room) live in the
-same tool, with a planned budget, supplies and a history of what was done.
+- **Today**: overdue tasks, tasks due today and what is coming up, each marked
+  done in one tap, with Skip and Undo.
+- **Recurring maintenance**: every few days, weeks, months or years, on a fixed
+  date or counted from the last time it was done, optionally limited to a
+  season.
+- **Rooms and items**: the boiler, the smoke detectors, the windows, with brand,
+  model, warranty and photos; each room remembers its paint, floor and wall
+  coverings.
+- **Projects and budget**: a renovation with its steps, its quotes and its
+  budget lines; planned costs by room and by project, in the currency of the
+  home.
+- **Stock and QR labels**: spare filters, paint and batteries with an alert
+  threshold; a printed label on an item opens its page.
+- **A household**: invite the others with a role (owner, member, read-only),
+  sign in with a password, a passkey or single sign-on (OpenID Connect).
+- **Your data, out and in**: reminders through ntfy, email, Telegram and other
+  [Apprise](https://github.com/caronc/apprise) services, calendar feeds, CSV
+  import and export, a full export of a home, and a REST API.
 
-## Principles
+## Quick start
 
-- **Self-hosted.** You run it on your own server, in a single container.
-- **Works standalone.** Every feature works without any integration.
-- **Optional integrations.** Home Assistant, Paperless-ngx and Sure are
-  connectors you can enable; all are off by default. HouseCairn links to their
-  data instead of copying it.
-- **Least privilege.** Integrations push to HouseCairn (webhooks) wherever
-  possible, rather than HouseCairn holding their tokens.
-- **No telemetry.** No data leaves your server, and no outgoing connection is
-  made unless you configure it.
+Try it on your computer, from the source, with [uv](https://docs.astral.sh/uv/)
+and GNU gettext installed:
 
-## Install
+```sh
+git clone https://github.com/HouseCairn/housecairn.git && cd housecairn
+cp .env.example .env    # development settings (DEBUG=true)
+mkdir -p data           # the SQLite database and the uploaded files
+uv sync --locked
+uv run python manage.py compilemessages --ignore=.venv --ignore=docs
+uv run python manage.py migrate
+uv run python manage.py setup_code   # prints a one-time first-account code
+uv run python manage.py runserver
+```
 
-HouseCairn runs as a single container,
+Open <http://localhost:8000/setup/>, give the code, your name, your email
+address and a password: you are the administrator of the instance. Then create
+your home.
+
+To run it on a server, HouseCairn is a single container,
 `ghcr.io/housecairn/housecairn`, for `linux/amd64` and `linux/arm64`, with
-SQLite by default and PostgreSQL as an option. Every published image carries a
-signed build provenance and SBOM. See [Installing with Docker
-Compose](docs/getting-started/install.md) for the example `compose.yaml`, and
-the administration pages for backups, updates, environment variables and how
-to verify an image.
+SQLite by default and PostgreSQL as an option, behind a reverse proxy that
+terminates HTTPS. Follow [Install with Docker Compose](https://docs.housecairn.app/getting-started/install/),
+then [First start](https://docs.housecairn.app/getting-started/first-start/).
 
-## Documentation
+## Integrations
 
-The documentation is at <https://docs.housecairn.app>, in English and French.
-Its sources are in [docs/](docs/index.md); how to build it locally is in
-[CONTRIBUTING.md](CONTRIBUTING.md#documentation).
+HouseCairn works fully on its own; every integration is optional and off by
+default.
 
-## Cost
+- **Home Assistant**, experimental, in two repositories of its own:
+  - [home-assistant-addons](https://github.com/HouseCairn/home-assistant-addons):
+    HouseCairn as a Home Assistant app (add-on), opened in Home Assistant's
+    sidebar through ingress.
+  - [home-assistant-housecairn](https://github.com/HouseCairn/home-assistant-housecairn):
+    an integration, installed with HACS, that shows the tasks of a home as
+    sensors and a to-do list, and marks a task done from Home Assistant. It
+    uses a HouseCairn API token; HouseCairn never holds a Home Assistant token.
+- **Notifications** through [Apprise](https://github.com/caronc/apprise) URLs,
+  and **calendar feeds** (iCalendar) for any calendar application.
+- **REST API** (`/api/v1/`), with tokens limited to chosen homes and rights:
+  see [API](https://docs.housecairn.app/api/).
+- **Paperless-ngx** (documents) and **Sure** (actual spending): planned.
 
-Self-hosting HouseCairn is free, for everyone, under the license below. An
-official paid hosted offering may exist in the future; it would not change the
-license of the code.
+## Project status
 
-## How this project is built
+**Under active development; no version has been released yet.** The first one,
+v0.1.0, is planned. Until then, the container image is only published as
+`edge` and `sha-<commit>` tags, built from `main`, and things may change from
+one commit to the next. Try it, but keep a backup of what you enter.
+
+## Privacy and security
+
+- **Self-hosted**: your data stays on your server, in one volume (or your
+  PostgreSQL database).
+- **No telemetry, no tracker, no external resource**: the pages load nothing
+  from another site, and HouseCairn makes no outgoing connection you have not
+  configured (email, notifications, single sign-on).
+- **Secure defaults**: HTTPS required in production, strict content security
+  policy, rate-limited sign-in, an instance administrator who cannot read the
+  homes' content. Every published image carries a signed build provenance and
+  an SBOM: see [Verify an image](https://docs.housecairn.app/security/verify-image/).
+- To report a vulnerability, see [SECURITY.md](SECURITY.md); do not open a
+  public issue.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Contributions require signing the
+[Contributor License Agreement](CLA.md) and a `Signed-off-by` line on each
+commit. Please follow the [Code of Conduct](CODE_OF_CONDUCT.md). AI coding
+agents start with [AGENTS.md](AGENTS.md).
 
 HouseCairn is developed with an AI coding agent, under human review. Each pull
 request is reviewed by a second AI model, then read and merged by the human
 maintainer, who is responsible for what enters the repository. Every pull
 request states which AI tool and model were used.
 
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md). Contributions require signing the
-[Contributor License Agreement](CLA.md) and a `Signed-off-by` line on each
-commit. Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
-
-To report a vulnerability, see [SECURITY.md](SECURITY.md); do not open a public
-issue.
-
 ## License
 
-Copyright (C) 2026 Robvred.
+HouseCairn, by Robvred. Copyright (C) 2026 Robvred.
 
 HouseCairn is licensed under the
 [GNU Affero General Public License v3.0 only](LICENSE)
 (`AGPL-3.0-only`), with the additional terms in [NOTICE](NOTICE): modified
 versions must keep the author attribution given there, and the HouseCairn name
 and logo are not licensed as a trademark.
+
+Self-hosting HouseCairn is free, for everyone, under this license. An official
+paid hosted offering may exist in the future; it would not change the license
+of the code.

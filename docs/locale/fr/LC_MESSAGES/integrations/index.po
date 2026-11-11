@@ -21,6 +21,11 @@ msgstr ""
 msgid "Integrations"
 msgstr "Intégrations"
 
-msgid "There is no integration yet. Connectors to Home Assistant, Paperless-ngx and Sure are planned; each will be optional and off by default, and HouseCairn works fully without them. Wherever possible, the other tool will push to HouseCairn (webhooks) rather than HouseCairn holding its token."
-msgstr "Il n'y a pas encore d'intégration. Des connecteurs vers Home Assistant, Paperless-ngx et Sure sont prévus ; chacun sera optionnel et désactivé par défaut, et HouseCairn fonctionne entièrement sans eux. Chaque fois que possible, c'est l'autre outil qui poussera vers HouseCairn (webhooks), plutôt que HouseCairn ne détienne son jeton."
+msgid "HouseCairn works fully without any integration. Each one is optional and off by default. Wherever possible, the other tool pushes to HouseCairn (webhooks) rather than HouseCairn holding its token."
+msgstr "HouseCairn fonctionne entièrement sans intégration. Chacune est optionnelle et désactivée par défaut. Chaque fois que possible, c'est l'autre outil qui pousse vers HouseCairn (webhooks), plutôt que HouseCairn ne détienne son jeton."
 
+msgid "**Home Assistant**: the [Home Assistant app](https://github.com/HouseCairn/home-assistant-addons) runs HouseCairn inside Home Assistant and opens it in the sidebar (ingress). The [integration](https://github.com/HouseCairn/home-assistant-housecairn), installed with HACS, shows the tasks of a home as sensors and a to-do list and marks a task done. It uses a HouseCairn API token; HouseCairn never holds a Home Assistant token."
+msgstr "**Home Assistant** : l'[application Home Assistant](https://github.com/HouseCairn/home-assistant-addons) fait tourner HouseCairn dans Home Assistant et l'ouvre dans la barre latérale (ingress). L'[intégration](https://github.com/HouseCairn/home-assistant-housecairn), installée avec HACS, affiche les tâches d'un logement sous forme de capteurs et de liste de tâches, et marque une tâche comme faite. Elle utilise un jeton d'API HouseCairn ; HouseCairn ne détient jamais de jeton Home Assistant."
+
+msgid "**Paperless-ngx** (documents) and **Sure** (actual spending): planned."
+msgstr "**Paperless-ngx** (documents) et **Sure** (dépenses réelles) : prévus."
