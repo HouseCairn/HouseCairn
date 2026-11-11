@@ -1,0 +1,18 @@
+{% load i18n %}{# One line of the materials: a stock item and a quantity, or a new stock item. `line`: its form; `number`: its place, rewritten by the script when lines come and go. #}
+<fieldset class="material-line" data-material-line data-scope="{{ line.prefix }}-">
+  <legend class="visually-hidden">{% translate "Stock item" %} <span data-line-number>{{ number }}</span></legend>
+  {{ line.non_field_errors }}
+  {% include "tasks/_field.html" with field=line.article %}
+  {# Added in place: shown with the choice "Add a stock item…"; without script always shown, and read only with that choice. #}
+  <fieldset class="add-in-place" data-shown-when="article=new">
+    <legend>{% translate "New stock item" %}</legend>
+    <p class="helptext">{% translate "Only used with Add a stock item… in the list above. The item joins the stock of the home when you save the task; complete it on its sheet." %}</p>
+    {% include "tasks/_field.html" with field=line.new_article_name %}
+    {% include "tasks/_field.html" with field=line.new_article_unit %}
+    <div data-shown-when="new_article_unit=other">
+      {% include "tasks/_field.html" with field=line.new_article_unit_other %}
+    </div>
+  </fieldset>
+  {% include "tasks/_field.html" with field=line.quantity %}
+  <button type="button" class="button-secondary button-small" data-material-remove hidden><span aria-hidden="true">−</span><span class="visually-hidden">{% translate "Remove this line" %}</span></button>
+</fieldset>

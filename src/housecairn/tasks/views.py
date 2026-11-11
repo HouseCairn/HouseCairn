@@ -31,16 +31,21 @@ from housecairn.homes import current
 from housecairn.homes.models import Home
 from housecairn.homes.scoping import open_homes_for_request
 from housecairn.rooms import conf
+from housecairn.rooms import services as room_services
 from housecairn.rooms.models import Item, Room
 from housecairn.rooms.views import HomeRoomsMixin
 from housecairn.stock import services as stock_services
 from housecairn.tasks import agenda, forms, in_place, services
 from housecairn.tasks import materials as material_services
 from housecairn.tasks.files import attachment_response
-from housecairn.tasks.forms.materials import BaseMaterialFormSet
+from housecairn.tasks.forms.materials import BaseMaterialFormSet, MaterialLineForm
 from housecairn.tasks.models import Attachment, Occurrence, Status, Task
 
 PAGE_SIZE = 30
+# The button "Add lines" of the materials, for the form without script.
+MORE_LINES = "materials-add"
+# How many photos of the item or the room the page of a task shows; the sheet has them all.
+PLACE_PHOTOS = 6
 
 
 class EntryView(LoginRequiredMixin, TemplateView):
@@ -163,18 +168,57 @@ class TaskFormMixin(HomeTasksMixin, FormView[Any]):
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         kwargs.update(home=self.home, with_files=self.with_files)
+        if self.more_lines:
+            # "Add lines" without script: the form again with what was typed, nothing checked.
+            kwargs.pop("data", None)
+            kwargs.pop("files", None)
+            kwargs["initial"] = {**kwargs.get("initial", {}), **self.typed()}
         return kwargs
+
+    @cached_property
+    def more_lines(self) -> bool:
+        """The button "Add lines" (without script) sent the form: show it again, longer."""
+        return self.request.method == "POST" and MORE_LINES in self.request.POST
+
+    def typed(self) -> dict[str, Any]:
+        """The values of the task form as they were sent, to show them again as they are."""
+        blank = forms.TaskForm(home=self.home, with_files=False)
+        return {
+            name: field.widget.value_from_datadict(
+                self.request.POST, self.request.FILES, blank.add_prefix(name)
+            )
+            for name, field in blank.fields.items()
+        }
 
     def material_initial(self) -> list[dict[str, Any]]:
         return []
 
+    def typed_materials(self) -> list[dict[str, Any]]:
+        """The lines of the formset as they were sent (every one, empty ones too)."""
+        try:
+            count = int(self.request.POST.get("materials-TOTAL_FORMS", "0"))
+        except ValueError:
+            count = 0
+        count = min(max(count, 0), material_services.MAX_MATERIALS_PER_TASK)
+        fields = MaterialLineForm.base_fields
+        return [
+            {
+                name: field.widget.value_from_datadict(
+                    self.request.POST, self.request.FILES, f"materials-{index}-{name}"
+                )
+                for name, field in fields.items()
+            }
+            for index in range(count)
+        ]
+
     @cached_property
     def materials(self) -> BaseMaterialFormSet:
         """The stock items of the task, a formset next to the form (docs/adr/0046)."""
+        bound = self.request.method == "POST" and not self.more_lines
         formset = forms.MaterialFormSet(
-            self.request.POST if self.request.method == "POST" else None,
+            self.request.POST if bound else None,
             prefix="materials",
-            initial=self.material_initial(),
+            initial=self.typed_materials() if self.more_lines else self.material_initial(),
             form_kwargs={"articles": stock_services.articles_of(self.home)},
         )
         return cast(BaseMaterialFormSet, formset)
@@ -189,9 +233,20 @@ class TaskFormMixin(HomeTasksMixin, FormView[Any]):
 
     def save_materials(self, task: Task) -> None:
         if self.materials_sent:
-            material_services.set_materials(self.request.user, task, self.materials.lines())
+            lines = [
+                (
+                    stock_services.create_article(self.request.user, self.home, **target)
+                    if isinstance(target, dict)
+                    else target,
+                    quantity,
+                )
+                for target, quantity in self.materials.lines()
+            ]
+            material_services.set_materials(self.request.user, task, lines)
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if self.more_lines:
+            return self.render_to_response(self.get_context_data())
         form = self.get_form()
         valid = form.is_valid()
         if self.materials_sent:
@@ -201,8 +256,20 @@ class TaskFormMixin(HomeTasksMixin, FormView[Any]):
     def split(self, form: forms.TaskForm) -> tuple[dict[str, Any], dict[str, Any]]:
         """Fields of the task, and the rest (date, new contractor, files)."""
         data = dict(form.cleaned_data)
-        extra = {key: data.pop(key, None) for key in ("due_on", "new_contractor", "uploads")}
+        keys = ("due_on", "new_contractor", "new_room", "new_item", "uploads")
+        extra = {key: data.pop(key, None) for key in keys}
         return data, extra
+
+    def place_of(self, data: dict[str, Any], extra: dict[str, Any]) -> None:
+        """ "Add a room…" or "Add an item…" chosen: the new ones are made here, with the task."""
+        if extra["new_room"]:
+            data["room"] = room_services.create_room(
+                self.request.user, self.home, **extra["new_room"]
+            )
+        if extra["new_item"]:
+            data["item"] = room_services.create_item(
+                self.request.user, data["room"], **extra["new_item"]
+            )
 
     def contractor_of(self, data: dict[str, Any], extra: dict[str, Any]) -> None:
         """ "Add a contractor…" chosen: the new one is made here, with the task."""
@@ -238,6 +305,7 @@ class TaskCreateView(TaskFormMixin):
             # One unit: a form refused leaves no contractor, and no audit line, behind.
             with transaction.atomic():
                 self.contractor_of(data, extra)
+                self.place_of(data, extra)
                 task = services.create_task(
                     self.request.user, self.home, due_on=extra["due_on"], **data
                 )
@@ -291,9 +359,17 @@ class TaskDetailView(HomeTasksMixin, TemplateView):
             .order_by("-completed_on", "-updated_at", "-id")[:20]
         )
         attachments = list(task.attachments.all())
+        place = task.item or task.room
         return super().get_context_data(
             **self.page(
                 task=task,
+                place=place,
+                place_is_item=task.item is not None,
+                place_photos=list(
+                    room_services.photos_for(place).filter(home=self.home)[:PLACE_PHOTOS]
+                )
+                if place is not None
+                else [],
                 current=current,
                 last_closed=closed[0] if closed and current is None else None,
                 history=closed,
@@ -333,6 +409,7 @@ class TaskEditView(TaskFormMixin):
         try:
             with transaction.atomic():
                 self.contractor_of(data, extra)
+                self.place_of(data, extra)
                 services.update_task(self.request.user, task, due_on=extra["due_on"], **data)
                 self.save_materials(task)
         except ValidationError as exc:

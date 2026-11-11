@@ -7,7 +7,6 @@ from django import forms
 from housecairn.accounts import names
 from housecairn.accounts.models import User
 from housecairn.accounts.names import person_name
-from housecairn.rooms.models import Item
 
 _DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
 
@@ -73,10 +72,10 @@ class AddInPlaceChoiceField(forms.ModelChoiceField[Any]):
         return super().has_changed(initial, data)
 
 
-class ItemChoiceField(forms.ModelChoiceField[Item]):
-    """An item, shown with its room: two items can have the same name."""
+class ItemAddField(AddInPlaceChoiceField):
+    """The items of the home, each with its room, the last choice adding one."""
 
-    def label_from_instance(self, obj: Item) -> str:
+    def label_from_instance(self, obj: Any) -> str:
         return f"{obj.room.name} · {obj.name}"
 
 

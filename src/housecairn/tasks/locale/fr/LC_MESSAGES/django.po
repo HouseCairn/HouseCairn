@@ -100,11 +100,26 @@ msgstr[1] "%(n)d min"
 msgid "This type of file is not accepted. Use a JPEG, PNG or WebP image, or a PDF, text, Word, Excel or OpenDocument file."
 msgstr "Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou WebP, ou un fichier PDF, texte, Word, Excel ou OpenDocument."
 
+msgid "HEIC photos are not accepted. Choose the JPEG version of the photo, or set the camera to Most Compatible."
+msgstr "Les photos HEIC ne sont pas acceptées. Choisissez la version JPEG de la photo, ou réglez l'appareil photo sur « Le plus compatible »."
+
 msgid "Quantity"
 msgstr "Quantité"
 
 msgid "Stock item"
 msgstr "Article"
+
+msgid "Add a stock item…"
+msgstr "Ajouter un article…"
+
+msgid "Name of the new stock item"
+msgstr "Nom du nouvel article"
+
+msgid "Unit"
+msgstr "Unité"
+
+msgid "Which unit"
+msgstr "Quelle unité"
 
 msgid "Give the quantity."
 msgstr "Donnez la quantité."
@@ -112,8 +127,22 @@ msgstr "Donnez la quantité."
 msgid "Choose the stock item."
 msgstr "Choisissez l'article."
 
+msgid "Give the name of the new stock item."
+msgstr "Indiquez le nom du nouvel article."
+
+#, python-format
+msgid "%(name)s is already in the stock of this home: choose it in the list."
+msgstr "%(name)s est déjà dans le matériel de ce logement : choisissez-le dans la liste."
+
+msgid "Say which unit."
+msgstr "Dites de quelle unité il s'agit."
+
 msgid "A stock item is listed once for a task."
 msgstr "Un article ne figure qu'une fois pour une tâche."
+
+#, python-format
+msgid "%(name)s is already added by another line: a stock item is listed once."
+msgstr "%(name)s est déjà ajouté par une autre ligne : un article n'est listé qu'une fois."
 
 msgid "Actual cost"
 msgstr "Coût réel"
@@ -155,8 +184,26 @@ msgstr "le jour où c'est fait"
 msgid "Assignee"
 msgstr "Responsable"
 
+msgid "Room"
+msgstr "Pièce"
+
+msgid "Add a room…"
+msgstr "Ajouter une pièce…"
+
+msgid "Name of the new room"
+msgstr "Nom de la nouvelle pièce"
+
+msgid "Type of room"
+msgstr "Type de pièce"
+
 msgid "Item"
 msgstr "Élément"
+
+msgid "Add an item…"
+msgstr "Ajouter un élément…"
+
+msgid "Name of the new item"
+msgstr "Nom du nouvel élément"
 
 msgid "Due on"
 msgstr "Échéance"
@@ -194,9 +241,6 @@ msgstr "Utilisé seulement avec la saison « Mois personnalisés »."
 msgid "Estimated duration"
 msgstr "Durée estimée"
 
-msgid "Unit"
-msgstr "Unité"
-
 msgid "Contractor"
 msgstr "Intervenant"
 
@@ -218,9 +262,6 @@ msgstr "Budget main d'œuvre"
 msgid "Material budget"
 msgstr "Budget matériel"
 
-msgid "Room"
-msgstr "Pièce"
-
 msgid "Markdown: how to do it, step by step. Links to web pages only."
 msgstr "Markdown : comment faire, pas à pas. Liens vers des pages web seulement."
 
@@ -230,6 +271,26 @@ msgstr "La saison suit l'hémisphère du logement (%(hemisphere)s) : modifiez-le
 
 msgid "Give the first and the last month."
 msgstr "Indiquez le premier et le dernier mois."
+
+msgid "Give the name of the new room."
+msgstr "Indiquez le nom de la nouvelle pièce."
+
+#, python-format
+msgid "%(name)s is already a room of this home: choose it in the list."
+msgstr "%(name)s est déjà une pièce de ce logement : choisissez-la dans la liste."
+
+msgid "This item is not in this room."
+msgstr "Cet élément n'est pas dans cette pièce."
+
+msgid "Give the name of the new item."
+msgstr "Indiquez le nom du nouvel élément."
+
+msgid "Choose the room of the new item."
+msgstr "Choisissez la pièce du nouvel élément."
+
+#, python-format
+msgid "%(name)s is already an item of this room: choose it in the list."
+msgstr "%(name)s est déjà un élément de cette pièce : choisissez-le dans la liste."
 
 msgid "Give the name of the new contractor."
 msgstr "Indiquez le nom du nouvel intervenant."
@@ -458,9 +519,6 @@ msgstr "Cette pièce n'est pas dans ce logement."
 
 msgid "This item is not in this home."
 msgstr "Cet élément n'est pas dans ce logement."
-
-msgid "This item is not in this room."
-msgstr "Cet élément n'est pas dans cette pièce."
 
 msgid "This contractor is not in this home."
 msgstr "Cet intervenant n'est pas dans ce logement."
@@ -880,6 +938,15 @@ msgstr "Rien ne correspond."
 msgid "Nothing done yet."
 msgstr "Rien de fait pour l'instant."
 
+msgid "New stock item"
+msgstr "Nouvel article"
+
+msgid "Only used with Add a stock item… in the list above. The item joins the stock of the home when you save the task; complete it on its sheet."
+msgstr "Utilisé seulement avec « Ajouter un article… » dans la liste ci-dessus. L'article rejoint le matériel du logement à l'enregistrement de la tâche ; complétez-le ensuite sur sa fiche."
+
+msgid "Remove this line"
+msgstr "Retirer cette ligne"
+
 #, python-format
 msgid "needs %(needed)s · %(stocked)s in stock"
 msgstr "demande %(needed)s · %(stocked)s en stock"
@@ -910,11 +977,14 @@ msgid "Stock items the task needs, with the quantity. Marking the task done take
 msgstr "Articles dont la tâche a besoin, avec la quantité. Marquer la tâche faite prend ces quantités dans le stock. Pour retirer une ligne, remettez son article sur le tiret."
 
 #, python-format
-msgid "Stock item %(number)s"
-msgstr "Article %(number)s"
+msgid "A task lists at most %(max)s stock items."
+msgstr "Une tâche liste %(max)s articles au plus."
 
-msgid "No stock item in the stock of this home yet."
-msgstr "Aucun article dans le matériel de ce logement pour l'instant."
+msgid "Add a line"
+msgstr "Ajouter une ligne"
+
+msgid "Add lines"
+msgstr "Ajouter des lignes"
 
 #, python-format
 msgid "every day"
@@ -1100,6 +1170,18 @@ msgstr "Notes"
 msgid "Materials"
 msgstr "Fournitures"
 
+msgid "Photos of the item"
+msgstr "Photos de l'élément"
+
+msgid "Photos of the room"
+msgstr "Photos de la pièce"
+
+msgid "All photos of the item"
+msgstr "Toutes les photos de l'élément"
+
+msgid "All photos of the room"
+msgstr "Toutes les photos de la pièce"
+
 msgid "Add photos or files"
 msgstr "Ajouter des photos ou des fichiers"
 
@@ -1111,6 +1193,21 @@ msgstr "Historique"
 
 msgid "Add a task"
 msgstr "Ajouter une tâche"
+
+msgid "Add the task"
+msgstr "Ajouter la tâche"
+
+msgid "New room"
+msgstr "Nouvelle pièce"
+
+msgid "Only used with Add a room… in the list above. The room joins the home when you save the task."
+msgstr "Utilisé seulement avec « Ajouter une pièce… » dans la liste ci-dessus. La pièce rejoint le logement à l'enregistrement de la tâche."
+
+msgid "New item"
+msgstr "Nouvel élément"
+
+msgid "Only used with Add an item… in the list above. The item goes in the room chosen above, or added with the task; complete it on its sheet."
+msgstr "Utilisé seulement avec « Ajouter un élément… » dans la liste ci-dessus. L'élément va dans la pièce choisie ci-dessus, ou ajoutée avec la tâche ; complétez-le ensuite sur sa fiche."
 
 msgid "The period is the number of days, weeks, months or years chosen above, counted from the day the task is marked done."
 msgstr "La période est le nombre de jours, de semaines, de mois ou d'années choisi plus haut, compté depuis le jour où la tâche est marquée faite."
@@ -1129,9 +1226,6 @@ msgstr "Utilisé seulement avec « Ajouter un intervenant… » dans la liste ci
 
 msgid "Time and budget"
 msgstr "Durée et budget"
-
-msgid "Add the task"
-msgstr "Ajouter la tâche"
 
 msgid "Delete the task"
 msgstr "Supprimer la tâche"

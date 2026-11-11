@@ -13,11 +13,24 @@
   <form method="post" data-task-form{% if form.uploads %} enctype="multipart/form-data"{% endif %}>
     {% csrf_token %}
     {% next_field %}
+    {% if materials.can_add_more %}{# Enter in a field saves the task: this button, first in the form, is the one it presses, not "Add lines" of the materials. #}<button type="submit" class="visually-hidden" tabindex="-1" aria-hidden="true">{% if task %}{% translate "Save" %}{% else %}{% translate "Add the task" %}{% endif %}</button>{% endif %}
     {{ form.non_field_errors }}
     <div class="card">
       {% include "tasks/_field.html" with field=form.title %}
       {% include "tasks/_field.html" with field=form.room %}
+      {# Added in place, like the contractor below: shown with the choice "Add a room…"; without script always shown, and read only with that choice. #}
+      <fieldset class="add-in-place" data-shown-when="room=new">
+        <legend>{% translate "New room" %}</legend>
+        <p class="helptext">{% translate "Only used with Add a room… in the list above. The room joins the home when you save the task." %}</p>
+        {% include "tasks/_field.html" with field=form.new_room_name %}
+        {% include "tasks/_field.html" with field=form.new_room_kind %}
+      </fieldset>
       {% include "tasks/_field.html" with field=form.item %}
+      <fieldset class="add-in-place" data-shown-when="item=new">
+        <legend>{% translate "New item" %}</legend>
+        <p class="helptext">{% translate "Only used with Add an item… in the list above. The item goes in the room chosen above, or added with the task; complete it on its sheet." %}</p>
+        {% include "tasks/_field.html" with field=form.new_item_name %}
+      </fieldset>
       {% include "tasks/_field.html" with field=form.due_on %}
     </div>
     <details class="form-section"{% if form.repeat_interval.errors or form.repeat_start.errors or form.season.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeats.value or not task and form.item.value %} open{% endif %}>

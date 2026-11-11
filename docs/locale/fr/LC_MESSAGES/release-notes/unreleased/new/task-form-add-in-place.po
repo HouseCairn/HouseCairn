@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Add a room, an item or a stock item from the task form, and as many material lines as needed.** The last choice of the room, item and stock item lists (**Add a room…**, **Add an item…**, **Add a stock item…**) adds one without leaving the form; it is created when the task is saved. The materials are no longer limited to two lines: **+** and **−** add and remove lines up to 50 (without script, **Add lines** shows three more). The page of a task shows the photos of its item or room, and a HEIC photo sent from a phone is refused with a clear message ([task form](../../../screens/task-form.md), [task](../../../screens/task.md))."
+msgstr "**Ajouter une pièce, un élément ou un article depuis le formulaire de tâche, et autant de lignes de matériel que nécessaire.** Le dernier choix des listes de pièces, d'éléments et d'articles (**Ajouter une pièce…**, **Ajouter un élément…**, **Ajouter un article…**) en ajoute un sans quitter le formulaire ; il est créé à l'enregistrement de la tâche. Le matériel n'est plus limité à deux lignes : **+** et **−** ajoutent et retirent des lignes jusqu'à 50 (sans script, **Ajouter des lignes** en montre trois de plus). La page d'une tâche montre les photos de son élément ou de sa pièce, et une photo HEIC envoyée depuis un téléphone est refusée avec un message clair ([formulaire de tâche](../../../screens/task-form.md), [tâche](../../../screens/task.md))."
+

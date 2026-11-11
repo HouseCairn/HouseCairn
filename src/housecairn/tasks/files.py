@@ -51,6 +51,14 @@ def _refused() -> ValidationError:
     )
 
 
+# The brands of the box that opens a HEIC or HEIF file (an iPhone photo in its default format).
+_HEIF_BRANDS = (b"heic", b"heix", b"hevc", b"hevx", b"heim", b"heis", b"mif1", b"msf1")
+
+
+def _is_heif(data: bytes) -> bool:
+    return data[4:8] == b"ftyp" and data[8:12] in _HEIF_BRANDS
+
+
 def _zip_kind(data: bytes) -> FileKind | None:
     try:
         with zipfile.ZipFile(io.BytesIO(data)) as archive:
@@ -92,6 +100,13 @@ def _is_text(data: bytes) -> bool:
 def detect(data: bytes) -> FileKind:
     """The kind of a file that is not an image; ValidationError when it is not on the list."""
     kind: FileKind | None = None
+    if _is_heif(data):
+        raise ValidationError(
+            _(
+                "HEIC photos are not accepted. Choose the JPEG version of the photo, "
+                "or set the camera to Most Compatible."
+            )
+        )
     if data.startswith(b"%PDF-"):
         kind = PDF
     elif data.startswith(b"PK\x03\x04"):

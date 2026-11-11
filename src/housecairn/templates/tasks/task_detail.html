@@ -79,6 +79,13 @@
   <h2>{% translate "Materials" %}</h2>
   {% include "tasks/_materials.html" %}
 
+  {% if place_photos %}
+    {# Read only: the photos are those of the item (else of the room) and are managed on its sheet. #}
+    <h2>{% if place_is_item %}{% translate "Photos of the item" %}{% else %}{% translate "Photos of the room" %}{% endif %}</h2>
+    {% include "rooms/_photos.html" with photos=place_photos label=place.name can_write=False %}
+    <p class="small"><a href="{% if place_is_item %}{% url_with_next 'rooms:item-detail' home_id=home.id item_id=place.id %}{% else %}{% url_with_next 'rooms:detail' home_id=home.id room_id=place.id %}{% endif %}">{% if place_is_item %}{% translate "All photos of the item" %}{% else %}{% translate "All photos of the room" %}{% endif %}</a></p>
+  {% endif %}
+
   <h2>{% translate "Photos and files" %}</h2>
   {% include "tasks/_attachments.html" %}
   {% if can_write %}
