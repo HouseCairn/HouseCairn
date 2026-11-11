@@ -20,6 +20,10 @@ last button of the page reachable, with script and without: with script the page
 banner's real height, without it the banner is a sticky box that takes its own room.
 
     python tests/e2e/browser_checks.py in-place --base http://localhost:8001
+
+`task-form` and `task-lines` (local only) measure the task form at 320, 360, 375 and 1280 px,
+in French, with and without script: the repetition, the duration and the contractor, then the
+room, item and stock item added in place and the lines of the materials.
 """
 
 import argparse
