@@ -13,15 +13,19 @@ from housecairn.rooms.models import Item
 from housecairn.tasks import durations, files, recurrence, repeat_text, services
 from housecairn.tasks.forms.fields import (
     _DATE,
+    NEW,
+    AddInPlaceChoiceField,
     ItemChoiceField,
     MultipleFileField,
     MultipleFileInput,
     PersonChoiceField,
 )
 from housecairn.tasks.models import (
+    Contractor,
     RepeatMode,
     Season,
     Task,
+    Trade,
 )
 
 # "Count from": the two ways a task repeats, said as the end of the sentence.
@@ -124,20 +128,31 @@ class TaskForm(forms.ModelForm[Task]):
         help_text=_("Only used with the season Custom months."),
     )
     duration_value = forms.IntegerField(
-        label=_("Estimated duration"), required=False, min_value=1, max_value=durations.MAX_MINUTES
+        label=_("Estimated duration"),
+        required=False,
+        min_value=1,
+        max_value=durations.MAX_MINUTES,
+        widget=forms.NumberInput(attrs={"inputmode": "numeric"}),
     )
     duration_unit = forms.ChoiceField(
         label=_("Unit"), choices=durations.UNIT_CHOICES, initial=durations.HOUR, required=False
     )
-    contractor_name = forms.CharField(
+    # The contractors of the home in a list, the last choice adding one in place (the
+    # fields below, read only with that choice; docs/screens/task-form.md).
+    contractor = AddInPlaceChoiceField(
         label=_("Contractor"),
-        max_length=120,
+        queryset=Contractor.objects.none(),
         required=False,
-        widget=forms.TextInput(attrs={"list": "contractor-options", "autocomplete": "off"}),
-        help_text=_(
-            "Pick one from the suggestions or type a new name: it joins the contractors of "
-            "the home when you save."
-        ),
+        new_label=_("Add a contractor…"),
+    )
+    new_contractor_name = forms.CharField(
+        label=_("Name of the new contractor"), max_length=120, required=False
+    )
+    new_contractor_trade = forms.ChoiceField(
+        label=_("Trade"), choices=[("", "—"), *Trade.choices], required=False
+    )
+    new_contractor_trade_other = forms.CharField(
+        label=_("Which trade"), max_length=120, required=False
     )
     # Amounts are typed the way the person writes them, as in projects (docs/adr/0051).
     labour_budget = MoneyField(label=_("Labour budget"), required=False)
@@ -164,7 +179,10 @@ class TaskForm(forms.ModelForm[Task]):
         "season_end_month",
         "hide_days_before",
         "assignee",
-        "contractor_name",
+        "contractor",
+        "new_contractor_name",
+        "new_contractor_trade",
+        "new_contractor_trade_other",
         "duration_value",
         "duration_unit",
         "labour_budget",
@@ -204,13 +222,13 @@ class TaskForm(forms.ModelForm[Task]):
         self._choices("room").queryset = services.rooms_for_forms(home)
         self._choices("item").queryset = services.items_for_forms(home)
         self._choices("assignee").queryset = services.members_for_forms(home)
-        self.contractors = list(services.contractors_of(home))
+        self._choices("contractor").queryset = services.contractors_of(home)
         hemisphere = home.get_hemisphere_display().lower()
         self.fields["season"].help_text = _(
             "The season follows the hemisphere of the home (%(hemisphere)s): change it in the "
             "settings of the home."
         ) % {"hemisphere": hemisphere}
-        for name in ("room", "item", "assignee"):
+        for name in ("room", "item", "assignee", "contractor"):
             self.fields[name].empty_label = "—"  # type: ignore[attr-defined]
         if not with_files:
             del self.fields["uploads"]
@@ -229,8 +247,7 @@ class TaskForm(forms.ModelForm[Task]):
         self.initial.setdefault("repeat_start", self.initial.get("due_on"))
         self.home = home
         if self.instance.pk:
-            if self.instance.contractor is not None:
-                self.initial.setdefault("contractor_name", self.instance.contractor.name)
+            self.initial.setdefault("contractor", self.instance.contractor_id)
             if self.instance.estimated_minutes:
                 value, unit = durations.split(self.instance.estimated_minutes)
                 self.initial.setdefault("duration_value", value)
@@ -248,10 +265,9 @@ class TaskForm(forms.ModelForm[Task]):
         if value is not None:
             minutes = durations.to_minutes(value, unit or durations.HOUR)
             if not durations.within_bounds(minutes):
-                self.add_error(
-                    "duration_value", _("Give a duration between a minute and thirty days.")
-                )
+                self.add_error("duration_value", durations.bounds_message())
         data["estimated_minutes"] = minutes
+        self._clean_new_contractor(data)
         self._clean_repeat(data)
         if (
             not data.get("season")
@@ -265,6 +281,34 @@ class TaskForm(forms.ModelForm[Task]):
         elif data.get("season_start_month") is None or data.get("season_end_month") is None:
             self.add_error("season_start_month", _("Give the first and the last month."))
         return data
+
+    def _clean_new_contractor(self, data: dict[str, Any]) -> None:
+        """ "Add a contractor…": the fields of the new one, checked; ignored otherwise.
+
+        `new_contractor` holds what to create, made by the view with the task. A name
+        already in the home, whatever its case, is refused: that one is in the list.
+        """
+        name = " ".join((data.pop("new_contractor_name", "") or "").split())
+        trade = data.pop("new_contractor_trade", "") or ""
+        other = (data.pop("new_contractor_trade_other", "") or "").strip()
+        data["new_contractor"] = None
+        if data.get("contractor") != NEW:
+            return
+        data["contractor"] = None
+        if not name:
+            self.add_error("new_contractor_name", _("Give the name of the new contractor."))
+            return
+        if any(c.name.casefold() == name.casefold() for c in services.contractors_of(self.home)):
+            self.add_error(
+                "new_contractor_name",
+                _("%(name)s is already a contractor of this home: choose it in the list.")
+                % {"name": name},
+            )
+            return
+        if trade == Trade.OTHER and not other:
+            self.add_error("new_contractor_trade_other", _("Say which trade."))
+            return
+        data["new_contractor"] = {"name": name, "trade": trade, "trade_other": other}
 
     def _clean_repeat(self, data: dict[str, Any]) -> None:
         """The sentence back to the model: `repeat_mode`, and one due date.

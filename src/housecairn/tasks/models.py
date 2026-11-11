@@ -24,7 +24,7 @@ from django.utils.translation import pgettext_lazy
 from housecairn.core.models import BaseModel
 from housecairn.homes.models import HomeOwnedModel
 from housecairn.rooms.models import Item, Room, notes_field
-from housecairn.tasks import recurrence
+from housecairn.tasks import durations, recurrence
 from housecairn.tasks.storage import attachment_storage
 
 PROCEDURE_MAX_LENGTH = 20000
@@ -175,7 +175,7 @@ class Task(HomeOwnedModel):
         _("estimated duration (minutes)"),
         null=True,
         blank=True,
-        validators=[MaxValueValidator(60 * 24 * 30)],
+        validators=[MaxValueValidator(durations.MAX_MINUTES)],
     )
     labour_budget = _money(_("labour budget"))
     material_budget = _money(_("material budget"))

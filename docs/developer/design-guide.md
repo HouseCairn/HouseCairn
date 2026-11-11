@@ -617,6 +617,16 @@ is checked against all of them at once.
   `data-shown-when` (`static/js/task-form.js`). What the fields amount to is said in one
   sentence under them, worked out by the server in the language of the reader. A form
   that shows every option at once reads as harder than it is.
+- **Adding to a list in place**: a form field that picks a record of the home the person
+  may not have created yet (the contractor of a task) **must** be a list of the home's
+  records whose last choice is "Add a …" (`tasks.forms.fields.AddInPlaceChoiceField`), and
+  never a free-text field with suggestions, which reads as an empty field. That choice shows
+  the fields of the new record right under the list, in an `add-in-place` fieldset with
+  `data-shown-when="<field>=new"`; without script they are always shown and read only with
+  that choice. The record is created when the form is saved, in the same transaction, so a
+  refused form leaves nothing behind; an empty name, or a name already in the list whatever
+  its case, is refused with a message under the field. The person never leaves the form
+  for another page and back.
 - **Touch targets** **must** be at least 44 px (`--hc-layout-touch-target`), and the
   Done button 48 px (`--hc-layout-touch-target-lg`). A small link in a table is missed
   by a finger.

@@ -10,8 +10,8 @@ due date and, below, five sections that open when you need them:
 | Section | Content |
 | --- | --- |
 | Repeat (open when the task is added from an item, or when it repeats) | One sentence: **Repeat this task**, **Repeat every** N days, weeks, months or years, **Count from** the due date or the day it is done (see below). A **season** outside of which nothing falls (see below), the number of days before the date from which the task shows, and the repetition said in plain words. |
-| Who | Priority, the person in charge (a member of the home, shown by name) and the contractor, in one field: pick one of the home from the suggestions or type a new name, which is added to the contractors of the home when you save. Empty the field to remove the contractor. |
-| Time and budget | Estimated duration (a number and a unit: minutes, hours or days), labour and material budgets, in the currency of the home. |
+| Who | Priority, the person in charge (a member of the home, shown by name) and the contractor, chosen in the list of the contractors of the home; its last choice, **Add a contractor…**, adds one without leaving the form (see below). The dash removes the contractor. |
+| Time and budget | Estimated duration (a number and a unit: minutes, hours, days, weeks, months or years), labour and material budgets, in the currency of the home. |
 | Materials | The stock items the task needs, one line each: the stock item and the quantity. Two empty lines are offered for more; set a line's stock item to the dash to remove it. Marking the task done takes these quantities from the stock. |
 | How to do it | The procedure in Markdown, notes and, when adding, photos and files. |
 
@@ -57,15 +57,22 @@ it gets them too, so nothing changes for it.
 
 ## Estimated duration
 
-A whole number and a unit, from 1 minute to 30 days; it is stored in minutes and shown as
-people say it: **45 min**, **1 h 30**, **2 days**.
+A whole number and a unit, on one line from 360 px: the number takes the room, the unit its
+own width. From 1 minute to 1 year. The units are fixed lengths, as the estimate is of
+elapsed time: a week is 7 days, a month 30 days, a year 365 days. It is stored in minutes and
+shown as people say it, biggest unit first: **45 min**, **1 h 30**, **2 days**, **2 weeks**,
+**1 month 1 week**, **1 year**. Beyond a year, the form says so under the field.
 
 ## Contractor
 
-The field has no list to scroll through: start typing and the contractors of the home are
-suggested (with their trade); without script, type the name. A name that is already in the
-home, whatever its case, picks that contractor; a new name creates one, which you complete
-on its [sheet](contractor.md).
+The list holds the contractors of the home, by name. Its last choice, **Add a contractor…**,
+opens the fields of a new one right under the list: its name (required) and its trade, from
+the list of trades, with **Which trade** for Other. The contractor is created when the task is
+saved, and the task is linked to it; complete it later on its [sheet](contractor.md). A form
+refused for another reason creates no contractor. A name that is already a contractor of the
+home, whatever its case, is refused with a message: choose it in the list. Without script the
+fields of a new contractor are always shown, and are read only when **Add a contractor…** is
+chosen.
 
 Editing the date moves the occurrence that is open. Deleting the task, at the
 bottom of the edit form, asks for confirmation and removes the task, its history

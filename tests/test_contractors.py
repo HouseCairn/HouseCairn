@@ -151,7 +151,8 @@ TASK_FORM = {
     "repeat_interval": "1",
     "repeat_unit": "year",
     "hide_days_before": "0",
-    "contractor_name": "Brand New Ltd",
+    "contractor": "new",
+    "new_contractor_name": "Brand New Ltd",
 }
 
 

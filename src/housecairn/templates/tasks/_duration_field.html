@@ -2,5 +2,5 @@
 <p>
   {{ form.duration_value.errors }}{{ form.duration_unit.errors }}
   <label for="{{ form.duration_value.id_for_label }}">{{ form.duration_value.label }}</label>
-  <span class="field-pair">{{ form.duration_value }} {{ form.duration_unit }}</span>
+  <span class="field-pair">{{ form.duration_value }}<label class="sr-only" for="{{ form.duration_unit.id_for_label }}">{{ form.duration_unit.label }}</label>{{ form.duration_unit }}</span>
 </p>

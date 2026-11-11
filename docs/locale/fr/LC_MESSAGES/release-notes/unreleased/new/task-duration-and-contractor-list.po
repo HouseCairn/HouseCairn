@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Longer estimated durations, and a contractor chosen in a list.** The estimated duration of a task takes weeks, months and years as well as minutes, hours and days, up to one year instead of thirty days (a week is 7 days, a month 30 days, a year 365 days), and the number is readable next to its unit on a phone. The contractor of a task is chosen in the list of the contractors of the home; its last choice, **Add a contractor…**, adds one (name and trade) without leaving the form, with or without script ([task form](../../../screens/task-form.md))."
+msgstr "**Des durées estimées plus longues, et un intervenant choisi dans une liste.** La durée estimée d'une tâche accepte les semaines, les mois et les ans en plus des minutes, des heures et des jours, jusqu'à un an au lieu de trente jours (une semaine fait 7 jours, un mois 30 jours, un an 365 jours), et le nombre se lit à côté de son unité sur un téléphone. L'intervenant d'une tâche se choisit dans la liste des intervenants du logement ; son dernier choix, **Ajouter un intervenant…**, en ajoute un (nom et métier) sans quitter le formulaire, avec ou sans script ([formulaire de tâche](../../../screens/task-form.md))."
+

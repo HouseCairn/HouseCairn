@@ -54,17 +54,48 @@ msgstr "heures"
 msgid "days"
 msgstr "jours"
 
+msgid "weeks"
+msgstr "semaines"
+
+msgid "months"
+msgstr "mois"
+
+msgid "years"
+msgstr "ans"
+
 #, python-format
-msgid "%(n)d min"
-msgid_plural "%(n)d min"
-msgstr[0] "%(n)d min"
-msgstr[1] "%(n)d min"
+msgid "Give a duration between %(low)s and %(high)s."
+msgstr "Indiquez une durée entre %(low)s et %(high)s."
+
+#, python-format
+msgid "%(n)d year"
+msgid_plural "%(n)d years"
+msgstr[0] "%(n)d an"
+msgstr[1] "%(n)d ans"
+
+#, python-format
+msgid "%(n)d month"
+msgid_plural "%(n)d months"
+msgstr[0] "%(n)d mois"
+msgstr[1] "%(n)d mois"
+
+#, python-format
+msgid "%(n)d week"
+msgid_plural "%(n)d weeks"
+msgstr[0] "%(n)d semaine"
+msgstr[1] "%(n)d semaines"
 
 #, python-format
 msgid "%(n)d day"
 msgid_plural "%(n)d days"
 msgstr[0] "%(n)d jour"
 msgstr[1] "%(n)d jours"
+
+#, python-format
+msgid "%(n)d min"
+msgid_plural "%(n)d min"
+msgstr[0] "%(n)d min"
+msgstr[1] "%(n)d min"
 
 msgid "This type of file is not accepted. Use a JPEG, PNG or WebP image, or a PDF, text, Word, Excel or OpenDocument file."
 msgstr "Ce type de fichier n'est pas accepté. Utilisez une image JPEG, PNG ou WebP, ou un fichier PDF, texte, Word, Excel ou OpenDocument."
@@ -169,8 +200,17 @@ msgstr "Unité"
 msgid "Contractor"
 msgstr "Intervenant"
 
-msgid "Pick one from the suggestions or type a new name: it joins the contractors of the home when you save."
-msgstr "Choisissez parmi les suggestions ou saisissez un nouveau nom : il rejoint les intervenants du logement à l'enregistrement."
+msgid "Add a contractor…"
+msgstr "Ajouter un intervenant…"
+
+msgid "Name of the new contractor"
+msgstr "Nom du nouvel intervenant"
+
+msgid "Trade"
+msgstr "Métier"
+
+msgid "Which trade"
+msgstr "Quel métier"
 
 msgid "Labour budget"
 msgstr "Budget main d'œuvre"
@@ -188,11 +228,18 @@ msgstr "Markdown : comment faire, pas à pas. Liens vers des pages web seulement
 msgid "The season follows the hemisphere of the home (%(hemisphere)s): change it in the settings of the home."
 msgstr "La saison suit l'hémisphère du logement (%(hemisphere)s) : modifiez-le dans les réglages du logement."
 
-msgid "Give a duration between a minute and thirty days."
-msgstr "Indiquez une durée comprise entre une minute et trente jours."
-
 msgid "Give the first and the last month."
 msgstr "Indiquez le premier et le dernier mois."
+
+msgid "Give the name of the new contractor."
+msgstr "Indiquez le nom du nouvel intervenant."
+
+#, python-format
+msgid "%(name)s is already a contractor of this home: choose it in the list."
+msgstr "%(name)s est déjà un intervenant de ce logement : choisissez-le dans la liste."
+
+msgid "Say which trade."
+msgstr "Dites de quel métier il s'agit."
 
 msgid "Give how often the task comes back."
 msgstr "Indiquez tous les combien la tâche revient."
@@ -257,15 +304,6 @@ msgstr "Date fixe"
 
 msgid "After the last time"
 msgstr "Après la dernière fois"
-
-msgid "weeks"
-msgstr "semaines"
-
-msgid "months"
-msgstr "mois"
-
-msgid "years"
-msgstr "ans"
 
 msgid "Spring"
 msgstr "Printemps"
@@ -360,9 +398,6 @@ msgstr "intervenant"
 
 msgid "contractors"
 msgstr "intervenants"
-
-msgid "Say which trade."
-msgstr "Dites de quel métier il s'agit."
 
 msgid "title"
 msgstr "titre"
@@ -949,9 +984,6 @@ msgstr "Annuler"
 msgid "The contractor disappears from the screens. The tasks that named them stay, without a contractor."
 msgstr "L'intervenant disparaît des écrans. Les tâches qui le nommaient restent, sans intervenant."
 
-msgid "Trade"
-msgstr "Métier"
-
 msgid "Phone"
 msgstr "Téléphone"
 
@@ -1088,6 +1120,12 @@ msgstr "En bref :"
 
 msgid "Who"
 msgstr "Qui"
+
+msgid "New contractor"
+msgstr "Nouvel intervenant"
+
+msgid "Only used with Add a contractor… in the list above. The contractor joins the home when you save the task; complete it on its sheet."
+msgstr "Utilisé seulement avec « Ajouter un intervenant… » dans la liste ci-dessus. L'intervenant rejoint le logement à l'enregistrement de la tâche ; complétez-le ensuite sur sa fiche."
 
 msgid "Time and budget"
 msgstr "Durée et budget"
