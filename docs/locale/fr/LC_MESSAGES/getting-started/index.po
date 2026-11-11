@@ -21,6 +21,6 @@ msgstr ""
 msgid "Getting started"
 msgstr "Démarrer"
 
-msgid "Install HouseCairn with Docker Compose, then create the first administrator."
-msgstr "Installez HouseCairn avec Docker Compose, puis créez le premier administrateur."
+msgid "Install HouseCairn with Docker Compose, then create the first administrator and install the application on your phone."
+msgstr "Installez HouseCairn avec Docker Compose, puis créez le premier administrateur et installez l'application sur votre téléphone."
 

@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Install on a phone, read offline.** The browser offers to install HouseCairn (Android) or you add it to the home screen (iPhone). Today and the task list of your home stay readable without a connection, as they were when last opened, with writes off until the connection is back. Signing out deletes what was kept ([Install on a phone](../../../getting-started/phone.md)). Behind an authentication proxy, the manifest is now fetched with the cookie ([reverse proxy](../../../administration/reverse-proxy.md#behind-an-authentication-proxy))."
+msgstr "**Installer sur un téléphone, lire hors ligne.** Le navigateur propose d'installer HouseCairn (Android), ou vous l'ajoutez à l'écran d'accueil (iPhone). Aujourd'hui et la liste des tâches de votre logement restent lisibles sans connexion, telles qu'elles étaient à la dernière ouverture, avec les modifications désactivées jusqu'au retour de la connexion. La déconnexion supprime ce qui était gardé ([Installer sur un téléphone](../../../getting-started/phone.md)). Derrière un proxy d'authentification, le manifeste est désormais chargé avec le cookie ([reverse proxy](../../../administration/reverse-proxy.md#behind-an-authentication-proxy))."
+

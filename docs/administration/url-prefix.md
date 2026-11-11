@@ -104,6 +104,13 @@ start with any other.
 Behind Ingress, HouseCairn keeps its own sign-in: it does not sign anyone in from the Home
 Assistant user that the Supervisor names in its headers.
 
+## Installed application
+
+The manifest and the service worker follow the prefix: the installed application opens
+`/housecairn/`, and its service worker serves and keeps only addresses under it. Its caches
+are named after the prefix, so two applications under two prefixes of the same host never
+share nor delete each other's data. Nothing is to configure.
+
 ## What stays the same
 
 The address of each page after the prefix is the same as at the root, so is the API:

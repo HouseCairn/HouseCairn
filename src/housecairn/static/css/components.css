@@ -889,3 +889,8 @@ input.setting-locked {
     white-space: normal;
   }
 }
+
+/* The banner of the offline state (static/js/offline.js, docs/adr/0065): hidden online. */
+.offline-banner[hidden] {
+  display: none;
+}

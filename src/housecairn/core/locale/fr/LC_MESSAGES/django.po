@@ -432,6 +432,15 @@ msgstr "Ajouter un logement"
 msgid "Sign out"
 msgstr "Se déconnecter"
 
+msgid "Offline"
+msgstr "Hors ligne"
+
+msgid "This page was not saved on this device. Today and the task list of your home can be read offline once you have opened them with a connection."
+msgstr "Cette page n'a pas été enregistrée sur cet appareil. Aujourd'hui et la liste des tâches de votre logement se lisent hors ligne une fois ouvertes avec une connexion."
+
+msgid "Try again"
+msgstr "Réessayer"
+
 msgid "Account security"
 msgstr "Sécurité du compte"
 
@@ -470,3 +479,10 @@ msgstr "Changer de logement"
 
 msgid "Main navigation"
 msgstr "Navigation principale"
+
+#, python-format
+msgid "Offline: data from %(when)s"
+msgstr "Hors ligne : données du %(when)s"
+
+msgid "Changes are off until the connection is back."
+msgstr "Les modifications sont désactivées jusqu'au retour de la connexion."

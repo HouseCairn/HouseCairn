@@ -1,6 +1,7 @@
 # Interface checks in a real browser (docs/adr/0018): an end-to-end passkey sign-in
 # with Chromium's virtual authenticator, the one-click single sign-on button, the summary of
-# the errors of a refused form and the tabs of the instance administration.
+# the errors of a refused form and the tabs of the instance administration; the
+# installable application and offline reading (docs/adr/0065).
 # No screenshots until the dedicated lot before the public release (docs/adr/0017).
 # Not a required check. Playwright comes from the
 # `docs` dependency group (locked in uv.lock, docs/adr/0016): it is not a dependency
@@ -112,3 +113,61 @@ jobs:
       - name: The tabs of the instance administration do not run into each other
         run: |
           uv run python tests/e2e/browser_checks.py instance-tabs --base http://localhost:8001
+
+  offline:
+    # The installable application and offline reading (docs/adr/0065): the manifest, the
+    # service worker's scope at the root and under a path prefix, Today and the task list
+    # read from the cache with writes off, and the cache emptied at sign-out and for another
+    # person. Production settings and gunicorn, as in the image: the service worker and
+    # WhiteNoise are what is checked, not the development server.
+    name: Installable app and offline
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          python-version: "3.13"
+          enable-cache: true
+      - name: Install locked dependencies with the docs group (uv sync --locked)
+        run: uv sync --locked --group docs
+      - name: Compile the translations
+        uses: $/.github/actions/compile-messages
+      - name: Install the browser (playwright install)
+        run: uv run playwright install --with-deps --only-shell --no-progress chromium
+      - name: Two accounts, each with a home, and a task due today
+        run: |
+          export HOUSECAIRN_DATA_DIR="$RUNNER_TEMP/offline-data"
+          echo "HOUSECAIRN_DATA_DIR=$HOUSECAIRN_DATA_DIR" >> "$GITHUB_ENV"
+          mkdir -p "$HOUSECAIRN_DATA_DIR"
+          uv run python manage.py migrate --noinput
+          uv run python manage.py collectstatic --noinput -v0
+          uv run python manage.py shell -c "
+          from housecairn.accounts.models import User
+          from housecairn.homes import services
+          from housecairn.tasks import services as tasks
+          user = User.objects.create_user(email='demo@example.com', password='correct-horse-battery-staple')
+          home = services.create_home(user, name='Main house')
+          tasks.create_task(user, home, title='Replace the smoke alarm battery', due_on=tasks.today())
+          other = User.objects.create_user(email='second@example.com', password='correct-horse-battery-staple')
+          services.create_home(other, name='Flat')
+          "
+      - name: Start the instance at the root and under /housecairn (gunicorn)
+        working-directory: src
+        run: |
+          nohup ../.venv/bin/gunicorn housecairn.wsgi -b 127.0.0.1:8003 > "$RUNNER_TEMP/root.log" 2>&1 &
+          HOUSECAIRN_URL_PREFIX=/housecairn nohup ../.venv/bin/gunicorn housecairn.wsgi -b 127.0.0.1:8004 > "$RUNNER_TEMP/prefix.log" 2>&1 &
+          # The last try decides: a server that never answers fails here, with its log.
+          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8003/healthz && break; sleep 1; done
+          curl -fsS http://127.0.0.1:8003/healthz >/dev/null || { cat "$RUNNER_TEMP/root.log"; exit 1; }
+          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8004/housecairn/healthz && break; sleep 1; done
+          curl -fsS http://127.0.0.1:8004/housecairn/healthz >/dev/null || { cat "$RUNNER_TEMP/prefix.log"; exit 1; }
+      - name: Offline reading at the root
+        run: uv run python tests/e2e/pwa_checks.py --base http://localhost:8003
+      - name: Offline reading under a path prefix
+        run: uv run python tests/e2e/pwa_checks.py --base http://localhost:8004/housecairn

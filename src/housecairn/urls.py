@@ -29,6 +29,9 @@ urlpatterns = [
     path("", core_views.IndexView.as_view(), name="index"),
     path("healthz", core_views.healthz, name="healthz"),
     path("manifest.webmanifest", core_views.manifest, name="manifest"),
+    # The service worker at the root, so that its scope is the application (docs/adr/0065).
+    path("service-worker.js", core_views.service_worker, name="service-worker"),
+    path("offline/", core_views.offline_page, name="offline"),
     path("more/", core_views.MoreView.as_view(), name="more"),
     path("more/security/", core_views.SecurityView.as_view(), name="more-security"),
     path("about/", core_views.AboutView.as_view(), name="about"),

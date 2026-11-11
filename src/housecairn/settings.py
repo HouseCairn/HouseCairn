@@ -126,6 +126,9 @@ MIDDLEWARE = [
     "housecairn.core.middleware.RequestTooLargeMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Sees every response after the views and the middleware below: what the service worker
+    # may keep for reading offline, and when it must forget it (docs/adr/0065).
+    "housecairn.core.offline.OfflinePagesMiddleware",
     "housecairn.accounts.middleware.DeviceCookieMiddleware",
     # After authentication: a person's saved language wins over the browser's (docs/adr/0042).
     "housecairn.tasks.middleware.PersonLanguageMiddleware",
@@ -431,6 +434,8 @@ CONTENT_SECURITY_POLICY = {
         "font-src": [SELF],
         "connect-src": [SELF],
         "manifest-src": [SELF],
+        # The service worker of the application, and the worker of the anti-robot check.
+        "worker-src": [SELF],
         "form-action": _form_action,
         "frame-ancestors": [SELF if HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING else NONE],
         "base-uri": [NONE],

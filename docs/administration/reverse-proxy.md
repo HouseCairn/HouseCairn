@@ -177,3 +177,18 @@ Caddy (the `log` directive and its `filter` encoder) and Traefik (`accessLog.fie
 `RequestPath` and `RequestLine`) can drop or rewrite the same fields; check their documentation
 for your version, the project has not tried them. A log that has already kept an address is a
 leak: regenerate the address.
+
+## Behind an authentication proxy
+
+When a proxy asks for a sign-in before HouseCairn (forward authentication), browsers would
+fetch the web app manifest without the cookie of that sign-in, get the proxy's sign-in page
+instead, and offer no installation on a phone. HouseCairn asks the browser to send the
+cookie with the manifest (`crossorigin="use-credentials"`), so nothing needs to change in
+the proxy. If the proxy lets some paths through without a sign-in, the manifest
+(`/manifest.webmanifest`) and the service worker (`/service-worker.js`) do not need to be
+among them.
+
+The service worker keeps Today and the task list of the person for reading offline
+([Install on a phone](../getting-started/phone.md)). Whatever the proxy, it never keeps a
+page whose answer is `Cache-Control: no-store`: a proxy that adds that header to every page
+turns offline reading off.
