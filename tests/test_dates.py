@@ -14,8 +14,10 @@ from django.utils import timezone, translation
 from housecairn.accounts.models import User
 from housecairn.core import dates
 from housecairn.homes.models import Home
+from housecairn.notifications import reminders
+from housecairn.notifications.models import Preference
 from housecairn.tasks import services
-from housecairn.tasks.models import Task
+from housecairn.tasks.models import Occurrence, Task
 
 pytest_plugins = ("tests.tasks_fixtures",)
 
@@ -189,3 +191,21 @@ class TestScreens:
         assert response.status_code == 200
         text = visible_text(response.content.decode())
         assert SECOND_FORMAT[language].findall(text) == []
+
+
+@pytest.mark.django_db
+@pytest.mark.usefixtures("frozen_today")
+class TestReminders:
+    @pytest.mark.parametrize(("language", "shown"), [("en", "Feb 8, 2027"), ("fr", "8 févr. 2027")])
+    def test_a_reminder_writes_the_due_date_in_the_format_of_the_screens(
+        self, alice: User, alice_home: Home, language: str, shown: str
+    ) -> None:
+        task = services.create_task(
+            alice, alice_home, title="Bleed the radiators", due_on=datetime.date(2027, 2, 8)
+        )
+        occurrence = Occurrence.objects.get(task=task)
+        prefs = Preference(user=alice, language=language)
+        _title, body = reminders.reminder_message(occurrence, prefs)
+        assert shown in body
+        assert NUMERIC_DATE.findall(body) == []
+        assert SECOND_FORMAT[language].findall(body) == []
