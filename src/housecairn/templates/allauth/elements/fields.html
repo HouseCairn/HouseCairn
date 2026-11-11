@@ -1,0 +1,3 @@
+{# Adapted from django-allauth's allauth/elements/fields.html (MIT licence): the fields of a form, with the summary of the errors above them, as on every form of the application. #}
+{% include "components/form_errors.html" with form=attrs.form only %}
+{{ attrs.form.as_p }}

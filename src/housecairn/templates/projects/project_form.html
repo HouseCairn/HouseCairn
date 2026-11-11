@@ -12,13 +12,13 @@
   <form method="post" class="card" novalidate>
     {% csrf_token %}
     {% next_field %}
-    {{ form.non_field_errors }}
+    {% include "components/form_errors.html" with form=form only %}
     {% include "tasks/_field.html" with field=form.title %}
     {% include "tasks/_field.html" with field=form.goal %}
     {% include "tasks/_field.html" with field=form.status %}
     {% include "tasks/_field.html" with field=form.priority %}
     {% if form.budget %}{% include "tasks/_field.html" with field=form.budget %}{% endif %}
-    <details class="form-section"{% if form.rooms.errors or form.duration_value.errors or form.season.errors or form.season_start_month.errors %} open{% endif %}>
+    <details class="form-section"{% if form.rooms.errors or form.duration_value.errors or form.duration_unit.errors or form.season.errors or form.season_start_month.errors or form.season_end_month.errors %} open{% endif %}>
       <summary>{% translate "Rooms, duration and season" %}</summary>
       {% include "tasks/_field.html" with field=form.rooms %}
       {% include "tasks/_duration_field.html" %}

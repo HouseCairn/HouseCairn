@@ -20,6 +20,7 @@
       <h2>{% translate "Create your account" %}</h2>
       <form method="post">
         {% csrf_token %}
+        {% include "components/form_errors.html" with form=form only %}
         {{ form.as_p }}
         <button type="submit">{% translate "Create the account" %}</button>
       </form>

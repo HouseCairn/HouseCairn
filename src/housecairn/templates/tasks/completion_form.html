@@ -8,6 +8,7 @@
     {% csrf_token %}
     {% next_field %}
     {% occurrence_cost occurrence home %}
+    {% include "components/form_errors.html" with form=form only %}
     {{ form.as_p }}
     <button type="submit" class="button-block">{% translate "Save" %}</button>
   </form>

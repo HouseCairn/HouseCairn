@@ -404,6 +404,12 @@ msgid "Breadcrumbs"
 msgstr "Fil d'Ariane"
 
 #, python-format
+msgid "There is %(counter)s error:"
+msgid_plural "There are %(counter)s errors:"
+msgstr[0] "Il y a %(counter)s erreur :"
+msgstr[1] "Il y a %(counter)s erreurs :"
+
+#, python-format
 msgid "version %(version)s"
 msgstr "version %(version)s"
 

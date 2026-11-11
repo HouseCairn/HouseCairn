@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   <noscript><link rel="stylesheet" href="{% static 'css/no-script.css' %}"></noscript>
   <script src="{% static 'vendor/htmx/htmx.min.js' %}" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" defer></script>
+  <script src="{% static 'js/form-errors.js' %}" defer></script>
   {% if user.is_authenticated %}<script src="{% static 'js/undo-region.js' %}" defer></script>{% endif %}
   {% block extra_head %}{% endblock extra_head %}
 </head>

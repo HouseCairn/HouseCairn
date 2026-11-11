@@ -49,7 +49,8 @@ holds the rest.
 - A new entry **must not** be added to the bar without a new decision record. The
   bar is the map of the product; every entry added makes the others harder to find.
 - A section **must** have four tabs at most, all visible at 360 px. A tab hidden by
-  a horizontal scroll is a screen nobody finds.
+  a horizontal scroll is a screen nobody finds. A label longer than its share of the width
+  wraps inside its tab (`tabs-fit`), never over the next one.
 - Tabs **must** switch between sister views of the same content, never lead to
   another section or a setting. Tabs used as a menu hide what they announce.
 - A page **must** show one row of tabs at most. Two rows on a phone take half of the
@@ -617,6 +618,20 @@ is checked against all of them at once.
   `data-shown-when` (`static/js/task-form.js`). What the fields amount to is said in one
   sentence under them, worked out by the server in the language of the reader. A form
   that shows every option at once reads as harder than it is.
+- **A refused form** **must** say why at the top, with the one component
+  `components/form_errors.html` (`{% include "components/form_errors.html" with form=form only %}`,
+  `formset=` when the block holds one), put inside the `<form>` before the fields, never copied
+  into a template. It reads "There are N errors:", then one line per error: the label of the
+  field, linked to the field by its `id`, and the message; an error that belongs to no field
+  comes first, without a link. It is announced (`role="alert"`) and holds the focus when the
+  page opens (`tabindex="-1"` and `autofocus`, which the browser honours on a page and HTMX on a
+  swapped fragment), so the person sees it without scrolling. The message stays under each field too
+  (`{{ field.errors }}`, which Django links to the field with `aria-invalid` and `aria-describedby`).
+  A folded `<details>` that holds a field in error **must** open: by its own `open` condition
+  on the server, and `static/js/form-errors.js` opens any that is left. A form that redirects with an error in
+  the banner of the page it comes from (stock movement, a stock item added to a task) does not
+  need it. `tests/test_form_errors.py` posts an invalid form to every screen and scans the templates:
+  a form added without the component fails it.
 - **Adding to a list in place**: a form field that picks a record of the home the person
   may not have created yet (the contractor, the room, the item or the stock item of a task,
   the provider of the maintenance contract of an item) **must** be a list of the home's
@@ -786,6 +801,8 @@ holds. The review checks the same list.
 - [ ] After a creation from a context, the person is back in the context with
   "Added · Open"; from the list of its own section, on the new record.
 - [ ] A deletion goes through a confirmation page and lands on the parent.
+- [ ] A form includes the summary of its errors (`components/form_errors.html`), and a folded
+  section with a field in error opens.
 - [ ] Each new named web route has its entry in `housecairn/parity.py` (the API route
   that does the same, or an exemption with its reason), and its API endpoint, as
   [ADR 0003](../adr/0003-web-api-parity.md) requires; `tests/test_parity.py` passes.

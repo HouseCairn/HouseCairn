@@ -7,7 +7,7 @@
   <form method="post" class="card" enctype="multipart/form-data" novalidate>
     {% csrf_token %}
     {% next_field %}
-    {{ form.non_field_errors }}
+    {% include "components/form_errors.html" with form=form only %}
     {% include "tasks/_field.html" with field=form.contractor_name %}
     <datalist id="contractor-options">
       {% for candidate in form.contractors %}<option value="{{ candidate.name }}">{{ candidate.trade_label }}</option>{% endfor %}
