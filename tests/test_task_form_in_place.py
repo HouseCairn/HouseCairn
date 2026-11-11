@@ -450,6 +450,8 @@ class TestMaterialLines:
         assert line_count(page) == 3
         assert f'data-max="{LINE_LIMIT}"' in page
         assert 'name="materials-add"' in page
+        # The title is required: without formnovalidate the browser would refuse to add lines.
+        assert re.search(r'<button[^>]*name="materials-add"[^>]*formnovalidate', page)
         # The script shows + and -; without it they stay hidden.
         assert re.search(r"<button[^>]*data-material-add[^>]*hidden", page)
         assert re.search(r"<button[^>]*data-material-remove[^>]*hidden", page)
