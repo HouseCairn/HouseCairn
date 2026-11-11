@@ -973,8 +973,11 @@ msgstr "Ajouter l'article"
 msgid "Marking the task done takes these quantities from the stock; undoing puts them back."
 msgstr "Marquer la tâche faite prend ces quantités dans le stock ; annuler les remet."
 
-msgid "Stock items the task needs, with the quantity. Marking the task done takes these quantities from the stock. To remove a line, set its stock item to the dash."
-msgstr "Articles dont la tâche a besoin, avec la quantité. Marquer la tâche faite prend ces quantités dans le stock. Pour retirer une ligne, remettez son article sur le tiret."
+msgid "Stock items the task needs, with the quantity. Marking the task done takes these quantities from the stock."
+msgstr "Articles dont la tâche a besoin, avec la quantité. Marquer la tâche faite prend ces quantités dans le stock."
+
+msgid "To remove a line, set its stock item to the dash."
+msgstr "Pour retirer une ligne, remettez son article sur le tiret."
 
 #, python-format
 msgid "A task lists at most %(max)s stock items."

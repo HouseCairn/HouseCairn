@@ -452,6 +452,11 @@ class TestMaterialLines:
         assert 'name="materials-add"' in page
         # The title is required: without formnovalidate the browser would refuse to add lines.
         assert re.search(r'<button[^>]*name="materials-add"[^>]*formnovalidate', page)
+        # How to remove a line without script is said only to those without script.
+        assert (
+            "<span data-material-nojs>To remove a line, set its stock item to the dash.</span>"
+            in page
+        )
         # The script shows + and -; without it they stay hidden.
         assert re.search(r"<button[^>]*data-material-add[^>]*hidden", page)
         assert re.search(r"<button[^>]*data-material-remove[^>]*hidden", page)

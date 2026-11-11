@@ -89,6 +89,9 @@
     if (more) {
       more.remove();
     }
+    form.querySelectorAll("[data-material-nojs]").forEach(function (note) {
+      note.remove();
+    });
     lines.querySelectorAll("[data-material-remove]").forEach(function (button) {
       button.hidden = false;
     });
