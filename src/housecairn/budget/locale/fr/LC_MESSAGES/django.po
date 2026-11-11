@@ -153,14 +153,35 @@ msgstr "Ajouter un logement"
 msgid "Envelope %(year)s"
 msgstr "Enveloppe %(year)s"
 
-msgid "No envelope set for this year."
-msgstr "Aucune enveloppe fixée pour cette année."
+msgid "No envelope set for this year: the figures are those of the plans."
+msgstr "Aucune enveloppe fixée pour cette année : les chiffres sont ceux du prévu."
+
+msgid "Spent"
+msgstr "Dépensé"
+
+msgid "Left"
+msgstr "Reste"
+
+#, python-format
+msgid "Over by %(amount)s"
+msgstr "Dépassement de %(amount)s"
+
+msgid "Spent against the envelope or the plans"
+msgstr "Dépensé par rapport à l'enveloppe ou au prévu"
+
+#, python-format
+msgid "%(percent)s %% spent: over budget"
+msgstr "%(percent)s %% dépensé : budget dépassé"
+
+#, python-format
+msgid "%(percent)s %% spent"
+msgstr "%(percent)s %% dépensé"
+
+msgid "Details of the year"
+msgstr "Détail de l'année"
 
 msgid "Planned, projects and upkeep"
 msgstr "Prévu, projets et entretien"
-
-msgid "Used, projects and upkeep"
-msgstr "Consommé, projets et entretien"
 
 msgid "Left to plan"
 msgstr "Reste à prévoir"
@@ -168,13 +189,6 @@ msgstr "Reste à prévoir"
 #, python-format
 msgid "%(amount)s (the plans exceed the envelope)"
 msgstr "%(amount)s (le prévu dépasse l'enveloppe)"
-
-msgid "Left to spend"
-msgstr "Reste à dépenser"
-
-#, python-format
-msgid "%(amount)s (the spending exceeds the envelope)"
-msgstr "%(amount)s (les dépenses dépassent l'enveloppe)"
 
 msgid "Projects"
 msgstr "Projets"
@@ -191,6 +205,9 @@ msgstr "Budget dans Sure"
 
 msgid "Not connected"
 msgstr "Non connecté"
+
+msgid "Spent is the more of committed and paid, line by line."
+msgstr "Le dépensé est le plus élevé de l'engagé et du payé, ligne par ligne."
 
 msgid "Set the envelope"
 msgstr "Fixer l'enveloppe"

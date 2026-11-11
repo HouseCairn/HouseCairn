@@ -590,6 +590,37 @@ class EnvelopeReport:
     def left_to_spend(self) -> Decimal | None:
         return None if self.envelope is None else self.envelope - self.total.engaged
 
+    # The three figures at the top of the budget page: what is set aside, what is spent
+    # and what is left. The set aside is the envelope when there is one, else the plans.
+
+    @property
+    def set_aside(self) -> Decimal:
+        return self.total.planned if self.envelope is None else self.envelope
+
+    @property
+    def spent(self) -> Decimal:
+        return self.total.engaged
+
+    @property
+    def left(self) -> Decimal:
+        return self.set_aside - self.spent
+
+    @property
+    def left_over(self) -> Decimal:
+        """How far the spending is past what is set aside (positive); nothing when it is not."""
+        return max(-self.left, ZERO)
+
+    @property
+    def gauge_value(self) -> int:
+        return min(self.percent or 0, 100)
+
+    @property
+    def percent(self) -> int | None:
+        """Spent against what is set aside, whole percent; none when nothing is set aside."""
+        if self.set_aside <= ZERO:
+            return None
+        return int((self.spent * 100 / self.set_aside).quantize(Decimal(1)))
+
 
 def envelope(ledger: Ledger, year: int) -> EnvelopeReport:
     return EnvelopeReport(

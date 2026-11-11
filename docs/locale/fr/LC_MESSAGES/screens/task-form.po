@@ -102,6 +102,9 @@ msgstr "Intervenant"
 msgid "The field has no list to scroll through: start typing and the contractors of the home are suggested (with their trade); without script, type the name. A name that is already in the home, whatever its case, picks that contractor; a new name creates one, which you complete on its [sheet](contractor.md)."
 msgstr "Le champ n'a pas de liste à faire défiler : commencez à saisir et les intervenants du logement sont suggérés (avec leur métier) ; sans script, saisissez le nom. Un nom que le logement connaît déjà, quelle que soit la casse, choisit cet intervenant ; un nouveau nom en crée un, que vous complétez sur sa [fiche](contractor.md)."
 
+msgid "When the task is added from an [item](item.md) whose maintenance contract names a provider that is a contractor of the home (whatever the case), that contractor is already in the field, and the **Who** section is open so that you see it. Empty the field to remove it. A provider that is not a contractor of the home is not added for you."
+msgstr "Quand la tâche est ajoutée depuis un [élément](item.md) dont le contrat d'entretien nomme un prestataire qui est un intervenant du logement (quelle que soit la casse), cet intervenant est déjà dans le champ, et la section **Qui** est ouverte pour que vous le voyiez. Videz le champ pour le retirer. Un prestataire du contrat qui n'est pas un intervenant du logement n'est pas ajouté pour vous."
+
 msgid "Editing the date moves the occurrence that is open. Deleting the task, at the bottom of the edit form, asks for confirmation and removes the task, its history and its files from the screens."
 msgstr "Modifier la date déplace l'occurrence qui est ouverte. Supprimer la tâche, en bas du formulaire de modification, demande une confirmation et retire la tâche, son historique et ses fichiers des écrans."
 

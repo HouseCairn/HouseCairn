@@ -877,3 +877,82 @@ def test_the_budget_has_one_row_of_tabs(signed_in: Client, alice_home: Home) -> 
     assert 'href="' + url("overview", alice_home) + '"' in html
     assert html.count('<nav class="tabs') == 1
     assert "Upkeep" in html
+
+
+class TestSummaryAtAGlance:
+    """The top of the page: three figures and a gauge; the rest is in the details."""
+
+    def page(self, client: Client, home: Home, *, language: str = "en") -> str:
+        response = client.get(
+            url("overview", home) + "?year=2026", headers={"Accept-Language": language}
+        )
+        return response.content.decode()
+
+    def top(self, html: str) -> str:
+        """The envelope card without its details."""
+        card = html.split('aria-labelledby="envelope-title"', 1)[1].split("</section>", 1)[0]
+        return card.split("<details", 1)[0]
+
+    def test_three_figures_and_a_gauge_with_an_envelope(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        project_services.set_envelope(alice, alice_home, year=2026, amount=D("1000"))
+        task = make_task(alice, alice_home, labour_budget=D("150"), due=datetime.date(2026, 6, 1))
+        finish(alice, task, on=datetime.date(2026, 6, 2), cost="250")
+        top = self.top(self.page(signed_in, alice_home))
+        assert top.count("<dt>") == 3
+        for label in ("Envelope", "Spent", "Left"):
+            assert f"<dt>{label}</dt>" in top
+        for amount in ("1,000.00", "250.00", "750.00"):
+            assert amount in top, amount
+        assert "<progress" in top
+        assert 'value="25"' in top
+        assert "25 % spent" in top  # the words carry it, not the bar
+
+    def test_the_details_hold_the_other_figures(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        project_services.set_envelope(alice, alice_home, year=2026, amount=D("1000"))
+        html = self.page(signed_in, alice_home)
+        top = self.top(html)
+        for gone in ("Left to plan", "Paid", "Projects", "Upkeep", "Sure"):
+            assert gone not in top, gone
+        details = html.split("<details", 1)[1]
+        for kept in ("Left to plan", "Planned, projects and upkeep", "Paid", "Sure"):
+            assert kept in details, kept  # still on the page, below the summary
+        assert "Left to spend" not in html  # the same figure as "Left" above
+
+    def test_an_overrun_is_said_in_words(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        project_services.set_envelope(alice, alice_home, year=2026, amount=D("100"))
+        task = make_task(alice, alice_home, labour_budget=D("50"), due=datetime.date(2026, 6, 1))
+        finish(alice, task, on=datetime.date(2026, 6, 2), cost="250")
+        top = self.top(self.page(signed_in, alice_home))
+        assert "Over by" in top
+        assert "150.00" in top
+        assert "250 % spent: over budget" in top
+        assert 'value="100"' in top  # the bar is full, not past it
+
+    def test_without_an_envelope_the_plans_are_the_reference(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        make_task(alice, alice_home, labour_budget=D("150"), due=datetime.date(2026, 6, 1))
+        top = self.top(self.page(signed_in, alice_home))
+        assert top.count("<dt>") == 3
+        assert "<dt>Planned</dt>" in top
+        assert "150.00" in top
+        assert "0 % spent" in top
+
+    def test_nothing_to_set_aside_has_no_gauge(self, signed_in: Client, alice_home: Home) -> None:
+        top = self.top(self.page(signed_in, alice_home))
+        assert top.count("<dt>") == 3
+        assert "<progress" not in top
+
+    def test_french(self, signed_in: Client, alice: User, alice_home: Home) -> None:
+        project_services.set_envelope(alice, alice_home, year=2026, amount=D("100"))
+        task = make_task(alice, alice_home, labour_budget=D("50"), due=datetime.date(2026, 6, 1))
+        finish(alice, task, on=datetime.date(2026, 6, 2), cost="250")
+        top = self.top(self.page(signed_in, alice_home, language="fr"))
+        for word in ("Enveloppe", "Dépensé", "Reste", "Dépassement", "dépensé"):
+            assert word in top, word
