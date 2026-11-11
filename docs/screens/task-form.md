@@ -67,6 +67,11 @@ suggested (with their trade); without script, type the name. A name that is alre
 home, whatever its case, picks that contractor; a new name creates one, which you complete
 on its [sheet](contractor.md).
 
+When the task is added from an [item](item.md) whose maintenance contract names a provider
+that is a contractor of the home (whatever the case), that contractor is already in the
+field, and the **Who** section is open so that you see it. Empty the field to remove it. A
+provider that is not a contractor of the home is not added for you.
+
 Editing the date moves the occurrence that is open. Deleting the task, at the
 bottom of the edit form, asks for confirmation and removes the task, its history
 and its files from the screens.
