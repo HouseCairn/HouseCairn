@@ -111,8 +111,8 @@ msgstr "Nommez la personne ou l'entreprise sur la tâche : choisissez un interve
 msgid "Estimated duration and who does it"
 msgstr "Durée estimée et responsable"
 
-msgid "The estimated duration is a number and a unit (minutes, hours or days). The person in charge is shown by their [display name](../screens/profile.md), never by their address."
-msgstr "La durée estimée est un nombre et une unité (minutes, heures ou jours). La personne responsable est affichée par son [nom d'affichage](../screens/profile.md), jamais par son adresse."
+msgid "The estimated duration is a number and a unit (minutes, hours, days, weeks, months or years), up to one year. The person in charge is shown by their [display name](../screens/profile.md), never by their address."
+msgstr "La durée estimée est un nombre et une unité (minutes, heures, jours, semaines, mois ou ans), jusqu'à un an. La personne responsable est affichée par son [nom d'affichage](../screens/profile.md), jamais par son adresse."
 
 msgid "For scripts"
 msgstr "Pour les scripts"

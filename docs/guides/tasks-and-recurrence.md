@@ -98,8 +98,9 @@ to put in your phone. The API also lists and edits them.
 
 ## Estimated duration and who does it
 
-The estimated duration is a number and a unit (minutes, hours or days). The person in
-charge is shown by their [display name](../screens/profile.md), never by their address.
+The estimated duration is a number and a unit (minutes, hours, days, weeks, months or
+years), up to one year. The person in charge is shown by their
+[display name](../screens/profile.md), never by their address.
 
 ## For scripts
 

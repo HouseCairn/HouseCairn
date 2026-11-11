@@ -533,7 +533,11 @@ class TestContractOfAnItem:
         for provider in ("", "Somebody else"):
             owner_item.contract_provider = provider
             owner_item.save()
-            assert not self.chosen(self.create_page(signed_in, alice_home, owner_item))
+            page = self.create_page(signed_in, alice_home, owner_item)
+            assert not self.chosen(page)
+            # Nothing is preselected, so the section that holds the field stays closed.
+            who = page.split("<summary>Who</summary>", 1)[0].rsplit("<details", 1)[1]
+            assert " open" not in who
         assert Contractor.objects.count() == 1  # opening the form creates nothing
 
     def test_a_contractor_of_another_home_is_not_used(
