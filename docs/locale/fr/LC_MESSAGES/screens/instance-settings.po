@@ -27,6 +27,9 @@ msgstr "Les réglages de l'instance, accessibles depuis **Administration de l'in
 msgid "`/instance/settings/` is an **index**: one line per section, with the number of settings and how many a variable sets, then **Server**. Each section has its own page, `/instance/settings/<section>/` (for example `/instance/settings/rate-limits/`), with a single button that names what it saves, such as **Save the rate limits**. A page saves only its own settings; another section's fields sent with it are ignored. The old addresses still work: `/instance/settings/?section=<section>` opens the page of the section."
 msgstr "`/instance/settings/` est un **index** : une ligne par section, avec le nombre de réglages et combien sont définis par une variable, puis **Serveur**. Chaque section a sa propre page, `/instance/settings/<section>/` (par exemple `/instance/settings/rate-limits/`), avec un seul bouton qui nomme ce qu'il enregistre, comme **Enregistrer les limites de débit**. Une page n'enregistre que ses propres réglages ; les champs d'une autre section envoyés avec elle sont ignorés. Les anciennes adresses fonctionnent toujours : `/instance/settings/?section=<section>` ouvre la page de la section."
 
+msgid "The link at the top of a section leads back to **Instance settings**."
+msgstr "Le lien du haut d'une section ramène à **Réglages de l'instance**."
+
 msgid "Each setting is paired with an environment variable (see [Settings](../administration/settings.md)):"
 msgstr "Chaque réglage est associé à une variable d'environnement (voir [Réglages](../administration/settings.md)) :"
 

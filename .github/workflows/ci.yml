@@ -88,6 +88,7 @@ jobs:
           tests/test_account_screens.py tests/test_accounts.py tests/test_proxy.py
           tests/test_redirects.py tests/test_security.py tests/test_export_jobs.py
           tests/test_restore_security.py tests/test_csv_export.py tests/test_ingress_app.py
+          tests/test_back_links_more.py
           tests/test_csv_import.py
           tests/test_task_templates.py tests/test_api_guide.py
           tests/test_token_sso.py

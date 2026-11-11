@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n navigation %}
 {% block head_title %}{{ home.name }}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'homes:list' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Homes" %}</a>
+  {% url 'homes:list' as parent %}{% back_link parent %}
   <section class="card hero">
     <h1>{{ home.name }}</h1>
     <p class="lead">{% blocktranslate with provider=provider.name %}This home opens only after signing in through {{ provider }}.{% endblocktranslate %}</p>

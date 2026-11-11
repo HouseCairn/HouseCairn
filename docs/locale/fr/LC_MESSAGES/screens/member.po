@@ -27,6 +27,9 @@ msgstr "Une personne du foyer, sur `/h/<home id>/household/members/<id>/` : son 
 msgid "An owner can change the role, remove the person from the home, or **make them owner**: they become owner and you become a member, in one step. On your own page, **Leave this home** removes you from it; the last owner cannot leave. Removing someone and leaving both ask you to confirm on a page of their own first. You can leave a home that requires a sign-in provider without signing in through it."
 msgstr "Un propriétaire peut changer le rôle, retirer la personne du logement, ou la **nommer propriétaire** : elle devient propriétaire et vous devenez membre, en une seule étape. Sur votre propre page, **Quitter ce logement** vous en retire ; le dernier propriétaire ne peut pas partir. Retirer quelqu'un et partir demandent chacun de confirmer d'abord sur une page dédiée. Vous pouvez quitter un logement qui exige un fournisseur de connexion sans vous connecter par lui."
 
+msgid "The link at the top of the confirmation page and its **Cancel** button lead back to the screen it was opened from: the member, or the household for **Leave this home**."
+msgstr "Le lien du haut de la page de confirmation et son bouton **Annuler** ramènent à l'écran d'où elle a été ouverte : le membre, ou le foyer pour **Quitter ce logement**."
+
 msgid "Removing someone takes effect at once: their next request no longer sees the home, and their API tokens lose it too."
 msgstr "Le retrait prend effet immédiatement : sa requête suivante ne voit plus le logement, et ses jetons d'API le perdent aussi."
 

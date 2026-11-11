@@ -1,7 +1,8 @@
 {% extends "base.html" %}
-{% load i18n static %}
+{% load i18n navigation static %}
 {% block head_title %}{% translate "About" %}{% endblock head_title %}
 {% block content %}
+  {% if request.user.is_authenticated %}{% url 'more' as parent %}{% back_link parent %}{% endif %}
   <h1>{% translate "About" %}</h1>
   <section class="card card-center">
     <img class="about-logo" src="{% static 'img/brand/housecairn-icon.svg' %}" alt="" width="72" height="72">

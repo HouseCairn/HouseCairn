@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% load i18n navigation %}
-{% block head_title %}{% translate "Homes" %}{% endblock head_title %}
+{% block head_title %}{% translate "My homes" %}{% endblock head_title %}
 {% block content %}
-  <h1>{% translate "Homes" %}</h1>
+  {% url 'more' as parent %}{% back_link parent %}
+  <h1>{% translate "My homes" %}</h1>
   {% if rows %}
     <ul class="card-list">
       {% for row in rows %}

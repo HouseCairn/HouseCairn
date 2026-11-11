@@ -200,11 +200,47 @@ msgstr "Modifier le projet"
 msgid "Report a problem"
 msgstr "Signaler un problème"
 
+msgid "Add a photo"
+msgstr "Ajouter une photo"
+
+msgid "Add a supplier"
+msgstr "Ajouter un fournisseur"
+
+msgid "Edit the supplier"
+msgstr "Modifier le fournisseur"
+
+msgid "Add a quote"
+msgstr "Ajouter un devis"
+
+msgid "Edit the quote"
+msgstr "Modifier le devis"
+
+msgid "Add a budget line"
+msgstr "Ajouter une ligne de budget"
+
+msgid "Edit the budget line"
+msgstr "Modifier la ligne de budget"
+
+msgid "Annual envelope"
+msgstr "Enveloppe annuelle"
+
+msgid "Add a contractor"
+msgstr "Ajouter un intervenant"
+
+msgid "Edit the contractor"
+msgstr "Modifier l'intervenant"
+
 msgid "New API token"
 msgstr "Nouveau jeton d'API"
 
 msgid "Revoke the token"
 msgstr "Révoquer le jeton"
+
+msgid "Import tables"
+msgstr "Importer des tableaux"
+
+msgid "Add from a template"
+msgstr "Ajouter depuis un modèle"
 
 msgctxt "added message"
 msgid "Open"

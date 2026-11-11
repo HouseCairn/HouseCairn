@@ -24,6 +24,9 @@ msgstr "À propos"
 msgid "The version of the instance, the licence (AGPL-3.0), a link to the source code and security reports, and the statement that HouseCairn is developed with an AI agent under human review. It is at `/about/` and does not need an account."
 msgstr "La version de l'instance, la licence (AGPL-3.0), un lien vers le code source et le signalement de sécurité, et la mention que HouseCairn est développé avec un agent IA, sous revue humaine. La page est à l'adresse `/about/` et ne demande pas de compte."
 
+msgid "Once signed in, the link at the top leads back to [More](more.md), on a phone."
+msgstr "Une fois connecté, le lien du haut ramène à [Plus](more.md), sur téléphone."
+
 #~ msgid "The About page, on a computer."
 #~ msgstr "La page À propos, sur ordinateur."
 

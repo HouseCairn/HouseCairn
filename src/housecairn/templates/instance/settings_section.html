@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load i18n tabs %}
+{% load i18n navigation tabs %}
 {% block head_title %}{{ title }}{% endblock head_title %}
 {% block content %}
-  <a class="back-link" href="{% url 'instance:settings' %}">{% include "components/icon.html" with name="chevron" %}{% translate "Instance settings" %}</a>
+  {% url 'instance:settings' as parent %}{% translate "Instance settings" as label %}{% back_link parent label %}
   <h1>{{ title }}</h1>
   {% tab_bar "instance" %}
   {% if server %}

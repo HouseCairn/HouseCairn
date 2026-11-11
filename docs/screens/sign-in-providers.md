@@ -17,6 +17,8 @@ issuer clears it unless you enter it again in the same change.
 **Test the issuer** checks the issuer typed in the field and saves nothing. **Delete** is
 refused while a home requires the provider; disable it instead.
 
+The link at the top of the page of a provider leads back to **Sign-in providers**.
+
 Saving or deleting asks you to have signed in within the last five minutes. You cannot
 disable or delete your own last way to sign in, nor change its issuer, client identifier or
 secret. See [Single sign-on](../administration/oidc.md).

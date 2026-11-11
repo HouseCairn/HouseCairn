@@ -45,6 +45,9 @@ msgstr "**Envoyer un message de test** : un vrai message au service. La réponse
 msgid "**Delete the channel**. To change an address, delete the channel and add another."
 msgstr "**Supprimer le canal**. Pour changer une adresse, supprimez le canal et ajoutez-en un autre."
 
+msgid "The link at the top of a channel leads back to **Notifications**."
+msgstr "Le lien du haut d'un canal ramène à **Notifications**."
+
 msgid "Reminders"
 msgstr "Rappels"
 
