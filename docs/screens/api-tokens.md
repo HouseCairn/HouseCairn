@@ -11,15 +11,19 @@ creation date, last use and expiry. The value is never shown. An expired token s
 list, marked **Expired on**, so that you can revoke it and see why a tool stopped working.
 On a phone, each token is a card.
 
-**Create a token** opens the form:
+**Create a token** opens the form. It is there as soon as you belong to a home:
 
 - **Name**: what it is for, for example Home Assistant.
 - **What it may do**: **Read** (ticked by default), **Write** and **Post events**. They do not
   include each other: a tool that reads and marks tasks done needs **Read** and **Write**.
   A token never does more than you: in each home it keeps at most your role.
-- **Homes**: the homes it opens, and no other. A home that requires a sign-in provider is not
-  offered: a token is not a sign-in through a provider and could not open it. When you have
-  one home, it is ticked.
+- **Homes**: the homes it opens, and no other. When you have one home you can choose, it is
+  ticked. A home that requires a sign-in provider can be chosen only if you signed in
+  through that provider: otherwise it is listed but cannot be ticked, with **Continue with**
+  and the provider's name, which signs you in through it and brings you back to the form.
+  The token then remembers the provider and opens the home as long as the home requires
+  that provider or none; if an owner requires another provider, the token stops opening
+  it. Homes that require two different providers take two tokens.
 - **Expires after**: 30 days, **90 days** (the default, the lifetime set for the instance) or
   1 year. There is no token without an expiry: a forgotten token is a standing key, and
   creating a new one takes a minute.

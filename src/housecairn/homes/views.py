@@ -8,7 +8,7 @@ from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
-from django.db import models
+from django.db import models, transaction
 from django.http import FileResponse, Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
@@ -16,6 +16,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _lazy
+from django.utils.translation import ngettext
 from django.views import View
 from django.views.generic import DetailView, FormView, ListView
 
@@ -24,7 +25,7 @@ from housecairn.accounts.names import person_name
 from housecairn.accounts.services import email_is_configured
 from housecairn.audit import services as audit_services
 from housecairn.core import navigation
-from housecairn.homes import csv_export, exports, forms, jobs, restore, services, sso
+from housecairn.homes import csv_export, csv_import, exports, forms, jobs, restore, services, sso
 from housecairn.homes.models import ExportStatus, Home, Invitation, Membership
 from housecairn.homes.scoping import (
     WebHomeScopedMixin,
@@ -75,17 +76,24 @@ class HomeListView(WebHomeScopedMixin, ListView[Home]):
         return context
 
 
-class HomeCreateView(LoginRequiredMixin, FormView[forms.HomeForm]):
+class HomeCreateView(LoginRequiredMixin, FormView[forms.NewHomeForm]):
     template_name = "homes/home_form.html"
-    form_class = forms.HomeForm
+    form_class = forms.NewHomeForm
 
-    def form_valid(self, form: forms.HomeForm) -> HttpResponse:
-        home = services.create_home(
-            self.request.user,  # type: ignore[arg-type]
-            name=form.cleaned_data["name"],
-            currency=form.cleaned_data["currency"],
-            hemisphere=form.cleaned_data["hemisphere"],
-        )
+    def form_valid(self, form: forms.NewHomeForm) -> HttpResponse:
+        from housecairn.tasks import task_templates
+
+        # The home and the tasks of the equipment checked, together or not at all.
+        with transaction.atomic():
+            home = services.create_home(
+                self.request.user,  # type: ignore[arg-type]
+                name=form.cleaned_data["name"],
+                currency=form.cleaned_data["currency"],
+                hemisphere=form.cleaned_data["hemisphere"],
+            )
+            task_templates.add_equipment(
+                self.request.user, home, form.cleaned_data.get("equipment") or []
+            )
         return redirect(
             navigation.after_create(
                 self.request,
@@ -255,6 +263,102 @@ class HomeCsvView(WebHomeScopedMixin, View):
         response = HttpResponse(data, content_type="text/csv; charset=utf-8")
         response["Content-Disposition"] = f'attachment; filename="{name}"'
         return response
+
+
+class HomeImportView(WebHomeScopedMixin, FormView[forms.ImportForm]):
+    """Import CSV tables into the home of the address: upload, preview, then confirm.
+
+    The preview runs the import and rolls it back, and keeps the text it checked on the
+    server (`csv_import.keep_preview`); the confirmation sends back only its signed token,
+    runs the import again on that text and writes it in one transaction, all or nothing.
+    Owners and members only.
+    """
+
+    template_name = "homes/import.html"
+    form_class = forms.ImportForm
+    # The upload of the files, as declared, beyond which nothing reads it
+    # (`core.middleware.RequestTooLargeMiddleware`): the files and their multipart framing.
+    max_request_bytes = csv_import.MAX_BYTES * 2
+
+    @classmethod
+    def request_too_large(cls, request: HttpRequest, **kwargs: Any) -> HttpResponse:
+        """The screen and its reason, for a post too large to be read."""
+        view = cls()
+        view.setup(request, **kwargs)
+        view.home = view.get_home()
+        if not services.can_write(request.user, view.home):
+            raise PermissionDenied
+        form = forms.ImportForm(data={})
+        form.is_valid()
+        form.add_error(None, csv_import.too_large_message())
+        response = view.render_to_response(view.get_context_data(form=form))
+        response.status_code = 413
+        return response
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        self.home = getattr(self, "home", None) or self.get_home()
+        if not services.can_write(self.request.user, self.home):
+            raise PermissionDenied
+        context["home"] = self.home
+        context["max_rows"] = csv_import.MAX_ROWS
+        context["max_megabytes"] = csv_import.MAX_BYTES // (1024 * 1024)
+        return context
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.home = self.get_home()
+        if not services.can_write(request.user, self.home):
+            raise PermissionDenied
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form: forms.ImportForm) -> HttpResponse:
+        self.home = self.get_home()
+        if self.request.POST.get("confirm") == "1":
+            return self.confirm(form)
+        try:
+            texts = form.texts()
+            if not texts:
+                form.add_error(None, _("Choose at least one file."))
+                return self.form_invalid(form)
+            report = csv_import.run(self.request.user, self.home, texts, confirm=False)
+        except csv_import.ImportRefusedError as exc:
+            form.add_error(None, exc.messages)
+            return self.form_invalid(form)
+        preview = ""
+        if report.can_confirm:
+            preview = csv_import.keep_preview(self.request.user, self.home, texts)
+        return self.render_to_response(
+            self.get_context_data(form=form, report=report, preview=preview)
+        )
+
+    def confirm(self, form: forms.ImportForm) -> HttpResponse:
+        """Write the text a preview of this person kept, in this home, then forget it."""
+        try:
+            preview, texts = csv_import.take_preview(
+                self.request.user, self.home, form.cleaned_data["preview"]
+            )
+        except csv_import.PreviewInvalidError:
+            form.add_error(None, csv_import.preview_invalid_message())
+            return self.form_invalid(form)
+        # Taken once: a second confirmation of the same preview finds nothing.
+        deleted, _rows = type(preview).all_objects.filter(pk=preview.pk).delete()
+        if not deleted:  # pragma: no cover - two confirmations at the same instant
+            form.add_error(None, csv_import.preview_invalid_message())
+            return self.form_invalid(form)
+        report = csv_import.run(self.request.user, self.home, texts, confirm=True)
+        if report.written:
+            messages.success(
+                self.request,
+                ngettext("Imported: %(count)s row.", "Imported: %(count)s rows.", report.accepted)
+                % {"count": report.accepted},
+            )
+            return redirect(
+                navigation.back_url(
+                    self.request, reverse("homes:detail", kwargs={"home_id": self.home.id})
+                )
+            )
+        # The home changed since the preview: what is refused now is shown, nothing written.
+        return self.render_to_response(self.get_context_data(form=form, report=report))
 
 
 class HomeRestoreView(LoginRequiredMixin, FormView[forms.RestoreForm]):

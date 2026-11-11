@@ -8,6 +8,7 @@ from typing import Any
 from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
+from django.core.exceptions import RequestDataTooBig
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -29,6 +30,51 @@ class PermissionsPolicyMiddleware:
         response = self.get_response(request)
         response.headers.setdefault("Permissions-Policy", PERMISSIONS_POLICY)
         return response
+
+
+class RequestTooLargeMiddleware:
+    """The screen and its reason, not the bare 400 page, for a post too large to read.
+
+    For a view whose class offers `request_too_large(request, **kwargs)`: a post declared
+    larger than its `max_request_bytes`, or whose form fields Django refuses to read
+    (`RequestDataTooBig`, past `DATA_UPLOAD_MAX_MEMORY_SIZE`), gets that response. Before
+    `CsrfViewMiddleware`, whose check reads the form first and would answer 400.
+    """
+
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponse:
+        return self.get_response(request)
+
+    def process_view(
+        self,
+        request: HttpRequest,
+        view: Callable[..., Any],
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+    ) -> HttpResponse | None:
+        view_class = getattr(view, "view_class", None)
+        answer = getattr(view_class, "request_too_large", None)
+        if request.method != "POST" or answer is None:
+            return None
+        limit = getattr(view_class, "max_request_bytes", None)
+        try:
+            declared = int(request.META.get("CONTENT_LENGTH") or 0)
+        except ValueError:
+            declared = 0
+        if limit is not None and declared > limit:
+            response: HttpResponse = answer(request, **kwargs)
+            return response
+        try:
+            request.POST  # noqa: B018 - read here, where its refusal can be answered
+        except RequestDataTooBig:
+            # As Django's handler does: the form reads as empty from now on, rather than
+            # raising again in whatever renders the page (the `next` field, say).
+            request._mark_post_parse_error()  # type: ignore[attr-defined]
+            response = answer(request, **kwargs)
+            return response
+        return None
 
 
 # The hidden field of the one-time token of a creation form.

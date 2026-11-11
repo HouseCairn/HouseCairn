@@ -8,7 +8,7 @@
   {% if has_homes %}
     <a class="button button-block" href="{% url_with_next 'api-tokens:new' %}">{% translate "Create a token" %}</a>
   {% else %}
-    <p class="empty">{% translate "You have no home that a token can open yet. A token cannot open a home that requires a sign-in provider." %}</p>
+    <p class="empty">{% translate "You have no home yet: a token opens only homes you belong to." %}</p>
   {% endif %}
   {% if rows %}
     <table class="table-stack">

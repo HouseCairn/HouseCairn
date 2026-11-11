@@ -27,8 +27,8 @@ msgstr "Les jetons qui permettent à un autre outil, comme Home Assistant, d'uti
 msgid "**The list** shows your tokens that are not revoked: name and first characters, rights, homes, creation date, last use and expiry. The value is never shown. An expired token stays in the list, marked **Expired on**, so that you can revoke it and see why a tool stopped working. On a phone, each token is a card."
 msgstr "**La liste** montre vos jetons non révoqués : nom et premiers caractères, droits, logements, date de création, dernière utilisation et expiration. La valeur n'est jamais affichée. Un jeton expiré reste dans la liste, marqué **Expiré le**, pour que vous puissiez le révoquer et voir pourquoi un outil s'est arrêté. Sur téléphone, chaque jeton est une carte."
 
-msgid "**Create a token** opens the form:"
-msgstr "**Créer un jeton** ouvre le formulaire :"
+msgid "**Create a token** opens the form. It is there as soon as you belong to a home:"
+msgstr "**Créer un jeton** ouvre le formulaire. Il est là dès que vous êtes membre d'un logement :"
 
 msgid "**Name**: what it is for, for example Home Assistant."
 msgstr "**Nom** : à quoi il sert, par exemple Home Assistant."
@@ -36,8 +36,8 @@ msgstr "**Nom** : à quoi il sert, par exemple Home Assistant."
 msgid "**What it may do**: **Read** (ticked by default), **Write** and **Post events**. They do not include each other: a tool that reads and marks tasks done needs **Read** and **Write**. A token never does more than you: in each home it keeps at most your role."
 msgstr "**Ce qu'il peut faire** : **Lecture** (cochée par défaut), **Écriture** et **Envoi d'événements**. Ces droits ne s'incluent pas les uns les autres : un outil qui lit et marque des tâches comme faites a besoin de **Lecture** et d'**Écriture**. Un jeton ne fait jamais plus que vous : dans chaque logement, il garde au plus votre rôle."
 
-msgid "**Homes**: the homes it opens, and no other. A home that requires a sign-in provider is not offered: a token is not a sign-in through a provider and could not open it. When you have one home, it is ticked."
-msgstr "**Logements** : les logements qu'il ouvre, et aucun autre. Un logement qui exige une connexion par fournisseur n'est pas proposé : un jeton n'est pas une connexion par un fournisseur et ne pourrait pas l'ouvrir. Quand vous n'avez qu'un logement, il est coché."
+msgid "**Homes**: the homes it opens, and no other. When you have one home you can choose, it is ticked. A home that requires a sign-in provider can be chosen only if you signed in through that provider: otherwise it is listed but cannot be ticked, with **Continue with** and the provider's name, which signs you in through it and brings you back to the form. The token then remembers the provider and opens the home as long as the home requires that provider or none; if an owner requires another provider, the token stops opening it. Homes that require two different providers take two tokens."
+msgstr "**Logements** : les logements qu'il ouvre, et aucun autre. Quand vous n'avez qu'un logement à choisir, il est coché. Un logement qui exige une connexion par fournisseur ne peut être choisi que si vous vous êtes connecté par ce fournisseur : sinon il est listé mais ne peut pas être coché, avec **Continuer avec** et le nom du fournisseur, qui vous connecte par celui-ci et vous ramène au formulaire. Le jeton retient alors le fournisseur et ouvre le logement tant que celui-ci exige ce fournisseur ou aucun ; si un propriétaire en exige un autre, le jeton cesse de l'ouvrir. Des logements qui exigent deux fournisseurs différents demandent deux jetons."
 
 msgid "**Expires after**: 30 days, **90 days** (the default, the lifetime set for the instance) or 1 year. There is no token without an expiry: a forgotten token is a standing key, and creating a new one takes a minute."
 msgstr "**Expire après** : 30 jours, **90 jours** (par défaut, la durée réglée pour l'instance) ou 1 an. Il n'existe pas de jeton sans expiration : un jeton oublié est une clé qui reste en place, et en créer un nouveau prend une minute."
@@ -53,4 +53,3 @@ msgstr "**Ce qu'un jeton ne peut pas faire.** Il ne peut ni lister, ni créer, n
 
 msgid "**Audit log.** Creating and revoking a token are noted in the audit log of the instance, with the name of the token and who did it, never its value."
 msgstr "**Journal d'audit.** La création et la révocation d'un jeton sont notées dans le journal d'audit de l'instance, avec le nom du jeton et l'auteur de l'action, jamais sa valeur."
-

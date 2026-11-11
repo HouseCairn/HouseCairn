@@ -183,6 +183,94 @@ class TestTasks:
         assert client_of_alice.put(detail, {"title": "x"}, format="json").status_code == 405
 
 
+class TestUndatedTasks:
+    """`?due=none`: the active tasks with nothing planned, for an integration that polls."""
+
+    @pytest.fixture
+    def tasks(self, alice: User, alice_home: Home, bob: User, bob_home: Home) -> dict[str, Task]:
+        dated = services.create_task(alice, alice_home, title="dated", due_on=TODAY + DAY)
+        undated = services.create_task(alice, alice_home, title="undated")
+        undated_two = services.create_task(alice, alice_home, title="undated two")
+        done = services.create_task(alice, alice_home, title="done")
+        services.complete(alice, services.open_occurrence_of(done))  # type: ignore[arg-type]
+        archived = services.create_task(alice, alice_home, title="archived")
+        services.delete_task(alice, archived)
+        foreign = services.create_task(bob, bob_home, title="foreign")
+        return {
+            "dated": dated,
+            "undated": undated,
+            "undated_two": undated_two,
+            "done": done,
+            "foreign": foreign,
+        }
+
+    @staticmethod
+    def titles(client: APIClient, home: Home, query: str = "?due=none") -> list[str]:
+        response = client.get(api("task-list", home) + query)
+        assert response.status_code == 200, response.content
+        return sorted(t["title"] for t in response.json()["results"])
+
+    def test_only_the_active_tasks_without_a_date(
+        self, client_of_alice: APIClient, alice_home: Home, tasks: dict[str, Task]
+    ) -> None:
+        assert self.titles(client_of_alice, alice_home) == ["undated", "undated two"]
+
+    def test_the_filter_combines_with_the_others_and_the_cursor(
+        self, client_of_alice: APIClient, alice_home: Home, tasks: dict[str, Task]
+    ) -> None:
+        assert self.titles(client_of_alice, alice_home, "?due=none&q=two") == ["undated two"]
+        assert self.titles(client_of_alice, alice_home, "?due=none&status=closed") == []
+        assert self.titles(client_of_alice, alice_home, "?due=none&due_after=2000-01-01") == []
+        first = client_of_alice.get(api("task-list", alice_home) + "?due=none&page_size=1").json()
+        assert len(first["results"]) == 1
+        assert "due=none" in first["next"]
+        second = client_of_alice.get(first["next"]).json()
+        assert sorted([first["results"][0]["title"], second["results"][0]["title"]]) == [
+            "undated",
+            "undated two",
+        ]
+        assert second["next"] is None
+        assert all(t["due_on"] is None for t in first["results"] + second["results"])
+
+    def test_without_the_filter_everything_active_still_comes(
+        self, client_of_alice: APIClient, alice_home: Home, tasks: dict[str, Task]
+    ) -> None:
+        assert self.titles(client_of_alice, alice_home, "") == [
+            "dated",
+            "done",
+            "undated",
+            "undated two",
+        ]
+
+    @pytest.mark.parametrize("bad", ["soon", "all", "None", "1"])
+    def test_another_value_is_a_400(
+        self, client_of_alice: APIClient, alice_home: Home, bad: str
+    ) -> None:
+        response = client_of_alice.get(api("task-list", alice_home) + f"?due={bad}")
+        assert response.status_code == 400
+        assert "due" in response.json()
+
+    def test_a_token_that_reads_the_home_gets_the_same_answer(
+        self, alice: User, alice_home: Home, tasks: dict[str, Task]
+    ) -> None:
+        _token, raw = token_services.issue_token(
+            alice,
+            name="t",
+            scopes=["read"],
+            homes=[alice_home],
+            lifetime=timedelta(days=1),
+        )
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
+        assert self.titles(client, alice_home) == ["undated", "undated two"]
+
+    def test_the_schema_lists_the_parameter(self, client_of_alice: APIClient) -> None:
+        schema = client_of_alice.get(reverse("api-schema") + "?format=json").json()
+        listing = schema["paths"]["/api/v1/homes/{home_id}/tasks/"]["get"]
+        names = {q["name"]: q for q in listing["parameters"]}
+        assert names["due"]["schema"]["enum"] == ["none"]
+
+
 class TestDateBounds:
     """A date out of the window around today is a 400, never a long computation or a 500."""
 

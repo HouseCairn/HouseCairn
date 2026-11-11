@@ -126,8 +126,14 @@ is opened, by the web and by the API:
   marked, and gets a page that offers to continue with the provider;
 - the API answers `403` with `"code": "sso_required"` and the provider's
   identifier;
-- API tokens never open such a home, since a token is not a sign-in through
-  the provider.
+- an API token opens such a home only if it was created by a member signed in
+  through the provider ([API tokens](../screens/api-tokens.md),
+  [ADR 0057](../adr/0057-api-tokens-of-a-home-that-requires-a-provider.md)). The
+  token remembers the provider: it stops opening the home if the owner requires
+  another one. HouseCairn does not see an account disabled at the provider until
+  the next sign-in, so such a token keeps working until it expires (one year at
+  most) or is revoked: disable the account or remove the member in HouseCairn to
+  cut it at once.
 
 A member whose account is not yet linked to the provider links it from the
 account pages, signed in, then signs in through the provider. If a provider is

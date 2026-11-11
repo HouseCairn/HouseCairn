@@ -42,5 +42,6 @@
   {% endif %}
   {% if can_write %}
     <a class="button button-block" href="{% url_with_next 'tasks:create' home_id=home.id q_room=room.id %}">{% translate "Add a task" %}</a>
+    <a class="button button-secondary button-block" href="{% url_with_next 'tasks:templates' home_id=home.id %}">{% translate "Add from a template" %}</a>
   {% endif %}
 {% endblock content %}

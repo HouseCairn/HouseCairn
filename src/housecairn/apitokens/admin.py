@@ -20,6 +20,7 @@ class ApiTokenAdmin(admin.ModelAdmin[ApiToken]):
         "name",
         "prefix",
         "scopes",
+        "signed_in_provider",
         "expires_at",
         "revoked_at",
         "last_used_at",

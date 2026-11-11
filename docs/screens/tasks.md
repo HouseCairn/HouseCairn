@@ -23,5 +23,6 @@ offers **Undo** right after, as on [Today](today.md).
   and **Calendar**. The [contractors](contractors.md) and the
   [display preferences](display-preferences.md) are in [More](more.md).
 - **Add a task** opens the [task form](task-form.md).
+- **Add from a template** opens the [library of task templates](task-templates.md).
 
 Read-only members see the same list and none of the buttons that change it.

@@ -1,0 +1,50 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Add from a template"
+msgstr "Ajouter depuis un modèle"
+
+msgid "The page **Add from a template**, at `/h/<home id>/tasks/templates/`, adds common tasks of a home from the library that comes with HouseCairn ([ADR 0049](../adr/0049-task-templates.md)). Owners and members open it from the list of tasks, under **Add a task**; read-only members do not see it. Its back link and **Cancel** lead back to where it was opened."
+msgstr "La page **Ajouter depuis un modèle**, à `/h/<home id>/tasks/templates/`, ajoute des tâches courantes d'un logement depuis la bibliothèque livrée avec HouseCairn ([ADR 0049](../adr/0049-task-templates.md)). Propriétaires et membres l'ouvrent depuis la liste des tâches, sous **Ajouter une tâche** ; les membres en lecture seule ne la voient pas. Son lien retour et **Annuler** ramènent là où elle a été ouverte."
+
+msgid "The templates are grouped by equipment: smoke alarms, carbon monoxide alarms, boiler, fireplace or stove, heat pump, forced-air heating, mechanical ventilation, hot water tank, water softener, gutters, bathroom, tumble dryer, electrical installation, septic tank. Each line gives the interval of the template and a link to its **source**, the public page the interval comes from. A template that follows the rule of one country says so, *rule of FR* for France, and its task explains what to do elsewhere."
+msgstr "Les modèles sont regroupés par équipement : détecteurs de fumée, détecteurs de monoxyde de carbone, chaudière, cheminée ou poêle, pompe à chaleur, chauffage à air pulsé, ventilation mécanique, ballon d'eau chaude, adoucisseur d'eau, gouttières, salle de bains, sèche-linge, installation électrique, fosse septique. Chaque ligne donne l'intervalle du modèle et un lien vers sa **source**, la page publique dont vient l'intervalle. Un modèle qui suit la règle d'un pays le dit, *règle de FR* pour la France, et sa tâche explique quoi faire ailleurs."
+
+msgid "Tick the templates you need, choose a **Room** and a **First date** if you like, then **Add the tasks**. Each template becomes a task of this home, in your language:"
+msgstr "Cochez les modèles qu'il vous faut, choisissez si vous le souhaitez une **Pièce** et une **Première date**, puis **Ajouter les tâches**. Chaque modèle devient une tâche de ce logement, dans votre langue :"
+
+msgid "its title, its duration, its season when it has one, and its procedure;"
+msgstr "son titre, sa durée, sa saison quand il en a une, et sa procédure ;"
+
+msgid "it repeats after the last time it was done, at the interval of the template;"
+msgstr "elle se répète après la dernière réalisation, à l'intervalle du modèle ;"
+
+msgid "its notes give the materials, the regional rule if any, and the source."
+msgstr "ses notes donnent le matériel, la règle régionale s'il y en a une, et la source."
+
+msgid "From then on it is an ordinary task, which you change or delete as any other; a later version of the library does not touch it. Without a first date, the task waits for one: give it on the task, or mark it done the first time you do it. The page then goes back to the list of tasks with the tasks added."
+msgstr "C'est ensuite une tâche ordinaire, que vous modifiez ou supprimez comme les autres ; une version ultérieure de la bibliothèque n'y touche pas. Sans première date, la tâche en attend une : donnez-la sur la tâche, ou marquez-la faite la première fois que vous la faites. La page revient ensuite à la liste des tâches, avec les tâches ajoutées."
+
+msgid "The battery of a smoke alarm, for instance: **Tasks › Add from a template**, tick *Replace the battery of the smoke alarms*, **Add the tasks**."
+msgstr "La pile d'un détecteur de fumée, par exemple : **Tâches › Ajouter depuis un modèle**, cochez *Changer la pile des détecteurs de fumée*, **Ajouter les tâches**."
+
+msgid "The API gives the same library, `GET /api/v1/task-templates/`, and adds templates with `POST /api/v1/homes/<home id>/tasks/from-templates/` ([Using the API](../api/guide.md)). When a home is created, the equipment ticked on its form adds the tasks of its templates ([Add a home](new-home.md))."
+msgstr "L'API donne la même bibliothèque, `GET /api/v1/task-templates/`, et ajoute des modèles avec `POST /api/v1/homes/<home id>/tasks/from-templates/` ([Utiliser l'API](../api/guide.md)). À la création d'un logement, les équipements cochés sur son formulaire ajoutent les tâches de leurs modèles ([Ajouter un logement](new-home.md))."
+

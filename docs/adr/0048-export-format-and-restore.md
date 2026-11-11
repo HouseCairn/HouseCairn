@@ -81,6 +81,53 @@ A text that starts with `=`, `+`, `-`, `@`, a tab or a carriage return is writte
 with the `read` scope on the home, may download them; the archive stays an owner's,
 signed in.
 
+**Import of tables, all or nothing.** The rooms, items, tasks, stock and contractors come
+back from CSV files with the columns of their export, one table per file, several tables in
+one import (`homes.csv_import`). Every file is read as hostile:
+
+- UTF-8 with or without a byte order mark, separated by commas, as the export writes them;
+  nothing is guessed. A file in another encoding, or separated by semicolons (what a
+  spreadsheet set to French saves), is refused with what to do. A NUL byte or broken
+  quoting refuses the file.
+- The header names each known column once, by its field name or its label in English or
+  French; the mapping is automatic and shown in the preview, with the columns ignored. The
+  column that names a row (`name`, `title`) is required.
+- Every cell is parsed by the type of its field, and the `'` the export puts before a
+  formula is taken off again.
+- Rows are always new, with a new identifier: an import never updates a row. The `id`
+  column only lets the other files of the same import name a row; a row whose `id` is
+  already in this home is refused as a duplicate, never merged.
+- A reference is the `id` of a row of this home or of the same import, or the exact name
+  of a row of this home; an identifier or a name of another home is refused. A person is
+  the display name of a member, else the row is left unassigned and flagged.
+
+The preview is the import itself: every row goes through the service of its app, with the
+checks of its forms, inside a transaction that is rolled back. The confirmation runs it
+again on the same text and commits it, in one transaction, with one `home.imported` entry
+in the audit log. **A single row refused, and nothing is written**: the screen offers no
+confirmation and the API answers `confirm=true` with 400 and the reasons. Warnings (a name
+already used, a person left unassigned) do not stop it. Owners and members may import, and
+a token with the `write` scope on the home; the right is checked before any file is read.
+
+**At most 1,000 rows and 2 MB for the files of one import.** Each row costs about 7 ms
+through its service and runs twice, preview and confirmation (1,000 rooms of 1.9 MB,
+previewed then confirmed, in 13.5 s on SQLite in the tests); 1,000 rows keep each request
+well within gunicorn's 30-second timeout.
+2 MB leaves room for 1,000 rows with long notes.
+
+**The text waits on the server between the preview and the confirmation.** Sent back
+through hidden fields, a file inside the cap could weigh three times as much once
+URL-encoded (each accented letter) and pass Django's limit on form fields
+(`DATA_UPLOAD_MAX_MEMORY_SIZE`, 2.5 MB). So the preview of the screen keeps the text it
+checked in an `ImportPreview` row, for one person and one home, and the page carries only
+a token signed with the secret key that names it and the SHA-256 digest of the text. The
+confirmation is refused, with a message, when the token is not signed, is older than 30
+minutes or was already used, is another person's or another home's, or when the text no
+longer has its digest. The row is removed once confirmed, when the same person previews
+again in the same home, and by the hourly schedule of the worker once expired; it goes with
+the home and with the account. The API keeps nothing: each call sends the files (as files,
+which that limit does not count), the confirmation included.
+
 **Backup of the instance in one file.** `manage.py backup_instance` writes a tar of a
 consistent copy of the database (SQLite's online backup API, or `pg_dump` in its custom
 format), the uploaded files and the secret key, with a manifest of digests, mode 600.
@@ -95,8 +142,12 @@ elsewhere to check a backup.
   version.
 - A restore on the instance the home came from is refused while that home exists.
 - Archives of format 1 cannot be restored.
-- The import of CSV files, the library of task templates (ADR 0049) and the guide of the
-  API are a second pull request of the same lot.
+- An import that is partly wrong writes nothing: the person corrects the file and
+  imports it whole again; nothing is left half imported.
+- The text of an import waits at most 30 minutes on the server, in the database, then is
+  removed; a person never has more than one waiting per home.
+- The library of task templates (ADR 0049) and the guide of the API are a second pull
+  request of the same lot.
 
 ## Options not taken
 
@@ -108,3 +159,16 @@ elsewhere to check a backup.
   the checks above do not depend on who made the archive.
 - **Matching every person by address from the web**: it leaks which addresses have an
   account and attaches people who did not agree to it.
+- **Importing the rows accepted and leaving the refused ones out**: the person would have
+  to find which rows are missing and import them again without the others, or get
+  duplicates; all or nothing leaves one thing to do, correct the file.
+- **Updating a row by its `id`**: a file edited in a spreadsheet would overwrite the home
+  without a trace of what it was; an import adds, and a duplicate is refused.
+- **Guessing the encoding and the separator**, or choosing the columns by hand: a wrong
+  guess imports wrong data that looks right; a clear refusal and an automatic mapping
+  shown in the preview are safer and quicker.
+- **Sending the text back through the browser** (hidden fields, a signed cookie): it does
+  not hold the 2 MB cap once encoded, and a cookie holds 4 KB.
+- **The cache or the session** for the text between the two steps: the default cache is
+  in the memory of each worker, which the confirmation may not reach, and the session is
+  read on every request.

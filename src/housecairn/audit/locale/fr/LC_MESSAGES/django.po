@@ -58,6 +58,9 @@ msgstr "Logement exporté"
 msgid "Home restored from an archive"
 msgstr "Logement restauré depuis une archive"
 
+msgid "Tables imported from CSV files"
+msgstr "Tableaux importés depuis des fichiers CSV"
+
 #, python-format
 msgid "Room added: %(title)s"
 msgstr "Pièce ajoutée : %(title)s"

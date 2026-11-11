@@ -157,8 +157,74 @@ msgstr "Les archives de version 1 (un seul `export.json`, avant cette version) n
 msgid "Tables for a spreadsheet"
 msgstr "Tableaux pour un tableur"
 
-msgid "Every member downloads a table of the home as CSV from the page of the home (**Tables for a spreadsheet**), or from the API (`GET /api/v1/homes/<id>/export/<table>.csv`, a token with the `read` scope on the home included): `rooms`, `items`, `tasks`, `history`, `stock`, `contractors`, `reports`. The file is UTF-8 with a byte order mark, which Excel needs to read accents; the columns are the fields of the archive, people are named by their display name and never by their address, amounts are numbers with a point and the currency is a column of its own. A text that a spreadsheet would run as a formula (starting with `=`, `+`, `-`, `@`, a tab or a carriage return) is written after a `'`, so that it stays text."
-msgstr "Chaque membre télécharge une table du logement en CSV depuis la page du logement (**Tableaux pour un tableur**), ou par l'API (`GET /api/v1/homes/<id>/export/<table>.csv`, y compris avec un jeton de portée `read` sur le logement) : `rooms`, `items`, `tasks`, `history`, `stock`, `contractors`, `reports`. Le fichier est en UTF-8 avec une marque d'ordre des octets, dont Excel a besoin pour lire les accents ; les colonnes sont les champs de l'archive, les personnes sont désignées par leur nom d'affichage et jamais par leur adresse, les montants sont des nombres avec un point et la devise a sa propre colonne. Un texte qu'un tableur exécuterait comme une formule (commençant par `=`, `+`, `-`, `@`, une tabulation ou un retour chariot) est écrit après une `'`, pour rester du texte."
+msgid "Every member downloads a table of the home as CSV from the page of the home (**Tables for a spreadsheet**), or from the API (`GET /api/v1/homes/<id>/export/<table>.csv/`, a token with the `read` scope on the home included): `rooms`, `items`, `tasks`, `history`, `stock`, `contractors`, `reports`. The file is UTF-8 with a byte order mark, which Excel needs to read accents; the columns are the fields of the archive, people are named by their display name and never by their address, amounts are numbers with a point and the currency is a column of its own. A text that a spreadsheet would run as a formula (starting with `=`, `+`, `-`, `@`, a tab or a carriage return) is written after a `'`, so that it stays text."
+msgstr "Chaque membre télécharge une table du logement en CSV depuis la page du logement (**Tableaux pour un tableur**), ou par l'API (`GET /api/v1/homes/<id>/export/<table>.csv/`, y compris avec un jeton de portée `read` sur le logement) : `rooms`, `items`, `tasks`, `history`, `stock`, `contractors`, `reports`. Le fichier est en UTF-8 avec une marque d'ordre des octets, dont Excel a besoin pour lire les accents ; les colonnes sont les champs de l'archive, les personnes sont désignées par leur nom d'affichage et jamais par leur adresse, les montants sont des nombres avec un point et la devise a sa propre colonne. Un texte qu'un tableur exécuterait comme une formule (commençant par `=`, `+`, `-`, `@`, une tabulation ou un retour chariot) est écrit après une `'`, pour rester du texte."
+
+msgid "Every CSV of HouseCairn, exported or imported, is separated by **commas**, whatever the language."
+msgstr "Tout CSV de HouseCairn, exporté ou importé, est séparé par des **virgules**, quelle que soit la langue."
+
+msgid "Opening a table in a spreadsheet"
+msgstr "Ouvrir un tableau dans un tableur"
+
+msgid "A spreadsheet that opens a CSV file by a double click guesses its separator, its encoding and the type of each column from the settings of the computer. On a French system it expects semicolons and puts every row in one column; it also turns dates and identifiers into numbers. Open the file by the import of the spreadsheet instead, and save it the same way before an import."
+msgstr "Un tableur qui ouvre un fichier CSV par un double clic devine son séparateur, son encodage et le type de chaque colonne d'après les réglages de l'ordinateur. Sur un système en français, il attend des points-virgules et met chaque ligne dans une seule colonne ; il change aussi les dates et les identifiants en nombres. Ouvrez plutôt le fichier par l'import du tableur, et enregistrez-le de la même façon avant un import."
+
+msgid "**Microsoft Excel, in French:**"
+msgstr "**Microsoft Excel, en français :**"
+
+msgid "In a new workbook, **Données › À partir d'un fichier texte/CSV** (*Data › From Text/CSV*), then choose the file."
+msgstr "Dans un nouveau classeur, **Données › À partir d'un fichier texte/CSV**, puis choisissez le fichier."
+
+msgid "**Origine du fichier**: *65001 : Unicode (UTF-8)*; **Délimiteur**: *Virgule*; **Détection du type de données**: *Ne pas détecter les types de données*, so that dates stay `YYYY-MM-DD` and identifiers stay text. Then **Charger**."
+msgstr "**Origine du fichier** : *65001 : Unicode (UTF-8)* ; **Délimiteur** : *Virgule* ; **Détection du type de données** : *Ne pas détecter les types de données*, pour que les dates restent au format `AAAA-MM-JJ` et les identifiants du texte. Puis **Charger**."
+
+msgid "To save it for an import: **Fichier › Enregistrer sous**, type **CSV UTF-8 (délimité par des virgules)**. Excel writes the *list separator* of Windows, a semicolon on a French system, despite the name of the type: set it to a comma first (Windows settings, **Heure et langue › Région › Paramètres régionaux supplémentaires › Séparateur de liste**), or save the file with LibreOffice. An import refuses a file separated by semicolons and says so."
+msgstr "Pour l'enregistrer en vue d'un import : **Fichier › Enregistrer sous**, type **CSV UTF-8 (délimité par des virgules)**. Malgré le nom du type, Excel écrit le *séparateur de liste* de Windows, un point-virgule sur un système en français : réglez-le d'abord sur une virgule (paramètres de Windows, **Heure et langue › Région › Paramètres régionaux supplémentaires › Séparateur de liste**), ou enregistrez le fichier avec LibreOffice. Un import refuse un fichier séparé par des points-virgules, et le dit."
+
+msgid "**LibreOffice Calc:**"
+msgstr "**LibreOffice Calc :**"
+
+msgid "**Fichier › Ouvrir** (*File › Open*), then choose the file. In **Import de texte**: **Jeu de caractères** *Unicode (UTF-8)*, **Séparé par** *Virgule* only; select every column and give it the type *Texte* to keep dates and identifiers as they are."
+msgstr "**Fichier › Ouvrir**, puis choisissez le fichier. Dans **Import de texte** : **Jeu de caractères** *Unicode (UTF-8)*, **Séparé par** *Virgule* seulement ; sélectionnez toutes les colonnes et donnez-leur le type *Texte* pour garder les dates et les identifiants tels quels."
+
+msgid "To save it: **Fichier › Enregistrer sous**, type **Texte CSV (.csv)**, tick **Éditer les paramètres du filtre**, then **Utiliser le format Texte CSV**: **Jeu de caractères** *Unicode (UTF-8)*, **Séparateur de champ** `,`, **Séparateur de chaînes de caractères** `\"`."
+msgstr "Pour l'enregistrer : **Fichier › Enregistrer sous**, type **Texte CSV (.csv)**, cochez **Éditer les paramètres du filtre**, puis **Utiliser le format Texte CSV** : **Jeu de caractères** *Unicode (UTF-8)*, **Séparateur de champ** `,`, **Séparateur de chaînes de caractères** `\"`."
+
+msgid "The `'` before a text that starts with `=`, `+`, `-` or `@` stays visible in the cell; leave it there, the import takes it off."
+msgstr "L'`'` devant un texte qui commence par `=`, `+`, `-` ou `@` reste visible dans la cellule ; laissez-la, l'import la retire."
+
+msgid "Import of tables"
+msgstr "Import de tableaux"
+
+msgid "Owners and members add rows to a home from CSV files: on the page of the home, **Tables for a spreadsheet › Import tables** ([the screen](../screens/home-import.md)), or `POST /api/v1/homes/<id>/import/` (a token with the `write` scope on the home included). The tables are those of the exports, with the same columns: `rooms`, `items`, `tasks`, `stock` and `contractors`; a table exported, changed in a spreadsheet and saved again comes back, one file per table, several tables in one import."
+msgstr "Les propriétaires et les membres ajoutent des lignes à un logement depuis des fichiers CSV : sur la page du logement, **Tableaux pour un tableur › Importer des tableaux** ([l'écran](../screens/home-import.md)), ou par `POST /api/v1/homes/<id>/import/` (y compris avec un jeton de portée `write` sur le logement). Les tableaux sont ceux des exports, avec les mêmes colonnes : `rooms`, `items`, `tasks`, `stock` et `contractors` ; un tableau exporté, modifié dans un tableur puis enregistré de nouveau revient, un fichier par tableau, plusieurs tableaux en un seul import."
+
+msgid "**Nothing is written before the confirmation.** The preview runs the import and rolls it back: it shows each row accepted or refused, with the reason, and is what the confirmation then writes, in **one transaction**, through the same checks as the forms. The API previews unless it is sent `confirm=true`."
+msgstr "**Rien n'est écrit avant la confirmation.** L'aperçu exécute l'import puis l'annule : il montre chaque ligne acceptée ou refusée, avec la raison, et c'est ce que la confirmation écrit ensuite, en **une seule transaction**, avec les mêmes contrôles que les formulaires. L'API donne l'aperçu sauf si elle reçoit `confirm=true`."
+
+msgid "**All or nothing.** A single row refused, and nothing is imported: the page offers no confirmation, and the API answers `confirm=true` with 400 and the reason of each row. Correct the file and import it again, whole. A warning (a name already used, a person left unassigned) does not stop the import."
+msgstr "**Tout ou rien.** Une seule ligne refusée, et rien n'est importé : la page ne propose pas de confirmation, et l'API répond à `confirm=true` par 400 et la raison de chaque ligne. Corrigez le fichier et importez-le de nouveau, en entier. Un avertissement (un nom déjà utilisé, une personne laissée sans attribution) n'arrête pas l'import."
+
+msgid "**Every file is checked whole first**: UTF-8 with or without a byte order mark, separated by commas, a header naming each known column once (by its name in the export, or its label in English or in French), and the column that names a row (`name`, or `title` for tasks)."
+msgstr "**Chaque fichier est d'abord contrôlé en entier** : UTF-8 avec ou sans marque d'ordre des octets, séparé par des virgules, une ligne d'en-tête qui nomme une seule fois chaque colonne connue (par son nom dans l'export, ou son libellé en anglais ou en français), et la colonne qui nomme une ligne (`name`, ou `title` pour les tâches)."
+
+msgid "**Limits**: 1,000 rows and 2 MB for the files of one import, whatever their language; import a larger set in several times. Each row goes through the checks of the forms, twice (preview and confirmation): 1,000 rows keep each request within seconds, far from the 30 seconds after which the web server stops it. Files past a limit are refused whole, with the reason."
+msgstr "**Limites** : 1 000 lignes et 2 Mo pour les fichiers d'un import, quelle que soit leur langue ; importez un ensemble plus grand en plusieurs fois. Chaque ligne passe deux fois par les contrôles des formulaires (aperçu et confirmation) : 1 000 lignes tiennent chaque requête en quelques secondes, loin des 30 secondes après lesquelles le serveur web l'arrête. Des fichiers au-delà d'une limite sont refusés en entier, avec la raison."
+
+msgid "**Between the preview and the confirmation**, the page keeps the text of the files on the server, in the database, for the person who previewed it and this home only, for **30 minutes**: the confirmation sends back only a signed token, so the limits hold up to it. The text is removed once confirmed, when the same person previews again in the same home, and within the hour after it expires; a confirmation after that asks for the files again. The API keeps nothing: each call sends the files, `confirm=true` included."
+msgstr "**Entre l'aperçu et la confirmation**, la page garde le texte des fichiers sur le serveur, dans la base de données, pour la seule personne qui a fait l'aperçu et ce seul logement, pendant **30 minutes** : la confirmation ne renvoie qu'un jeton signé, si bien que les limites tiennent jusqu'à elle. Le texte est supprimé une fois confirmé, quand la même personne refait un aperçu dans le même logement, et dans l'heure qui suit son expiration ; une confirmation plus tardive redemande les fichiers. L'API ne garde rien : chaque appel envoie les fichiers, `confirm=true` compris."
+
+msgid "**A row is always new.** It gets a new identifier; its `id` only lets the other files of the import refer to it. A row whose `id` is a row already in this home is refused as a duplicate, never merged; a name already used is accepted and flagged."
+msgstr "**Une ligne est toujours nouvelle.** Elle reçoit un nouvel identifiant ; son `id` sert seulement aux autres fichiers de l'import à la désigner. Une ligne dont l'`id` est une ligne déjà présente dans ce logement est refusée comme doublon, jamais fusionnée ; un nom déjà utilisé est accepté et signalé."
+
+msgid "**References stay in the home**: the `id` of a row of this home or of the same import, or the exact name of a row of this home. An identifier or a name of another home is refused. People are named by the display name of a member of the home; otherwise the row is left unassigned, and flagged."
+msgstr "**Les références restent dans le logement** : l'`id` d'une ligne de ce logement ou du même import, ou le nom exact d'une ligne de ce logement. Un identifiant ou un nom d'un autre logement est refusé. Les personnes sont désignées par le nom d'affichage d'un membre du logement ; sinon la ligne reste sans responsable, et c'est signalé."
+
+msgid "`created_at`, `updated_at`, the position of a room and the type of a stock label are made again by the import; a task is due on its `series_start`."
+msgstr "`created_at`, `updated_at`, la position d'une pièce et le type de l'étiquette d'un article sont refaits par l'import ; une tâche est due à sa date `series_start`."
+
+msgid "The import is recorded in the audit log of the home, with the number of rows."
+msgstr "L'import est inscrit au journal d'audit du logement, avec le nombre de lignes."
 
 msgid "Restore of a home"
 msgstr "Restauration d'un logement"

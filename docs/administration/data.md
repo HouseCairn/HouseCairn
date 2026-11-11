@@ -78,7 +78,7 @@ restored: export the home again.
 
 Every member downloads a table of the home as CSV from the page of the home
 (**Tables for a spreadsheet**), or from the API
-(`GET /api/v1/homes/<id>/export/<table>.csv`, a token with the `read` scope
+(`GET /api/v1/homes/<id>/export/<table>.csv/`, a token with the `read` scope
 on the home included): `rooms`, `items`, `tasks`, `history`, `stock`,
 `contractors`, `reports`. The file is UTF-8 with a byte order mark, which
 Excel needs to read accents; the columns are the fields of the archive, people
@@ -86,6 +86,94 @@ are named by their display name and never by their address, amounts are numbers
 with a point and the currency is a column of its own. A text that a spreadsheet
 would run as a formula (starting with `=`, `+`, `-`, `@`, a tab or a carriage
 return) is written after a `'`, so that it stays text.
+
+Every CSV of HouseCairn, exported or imported, is separated by **commas**,
+whatever the language.
+
+## Opening a table in a spreadsheet
+
+A spreadsheet that opens a CSV file by a double click guesses its separator,
+its encoding and the type of each column from the settings of the computer. On
+a French system it expects semicolons and puts every row in one column; it also
+turns dates and identifiers into numbers. Open the file by the import of the
+spreadsheet instead, and save it the same way before an import.
+
+**Microsoft Excel, in French:**
+
+1. In a new workbook, **Données › À partir d'un fichier texte/CSV** (*Data ›
+   From Text/CSV*), then choose the file.
+2. **Origine du fichier**: *65001 : Unicode (UTF-8)*; **Délimiteur**:
+   *Virgule*; **Détection du type de données**: *Ne pas détecter les types de
+   données*, so that dates stay `YYYY-MM-DD` and identifiers stay text.
+   Then **Charger**.
+3. To save it for an import: **Fichier › Enregistrer sous**, type **CSV UTF-8
+   (délimité par des virgules)**. Excel writes the *list separator* of
+   Windows, a semicolon on a French system, despite the name of the type: set
+   it to a comma first (Windows settings, **Heure et langue › Région ›
+   Paramètres régionaux supplémentaires › Séparateur de liste**), or save the
+   file with LibreOffice. An import refuses a file separated by semicolons and
+   says so.
+
+**LibreOffice Calc:**
+
+1. **Fichier › Ouvrir** (*File › Open*), then choose the file. In **Import de
+   texte**: **Jeu de caractères** *Unicode (UTF-8)*, **Séparé par** *Virgule*
+   only; select every column and give it the type *Texte* to keep dates and
+   identifiers as they are.
+2. To save it: **Fichier › Enregistrer sous**, type **Texte CSV (.csv)**,
+   tick **Éditer les paramètres du filtre**, then **Utiliser le format Texte
+   CSV**: **Jeu de caractères** *Unicode (UTF-8)*, **Séparateur de champ**
+   `,`, **Séparateur de chaînes de caractères** `"`.
+
+The `'` before a text that starts with `=`, `+`, `-` or `@` stays visible in
+the cell; leave it there, the import takes it off.
+
+## Import of tables
+
+Owners and members add rows to a home from CSV files: on the page of the home,
+**Tables for a spreadsheet › Import tables** ([the screen](../screens/home-import.md)),
+or `POST /api/v1/homes/<id>/import/` (a token with the `write` scope on the
+home included). The tables are those of the exports, with the same columns:
+`rooms`, `items`, `tasks`, `stock` and `contractors`; a table exported, changed
+in a spreadsheet and saved again comes back, one file per table, several tables
+in one import.
+
+- **Nothing is written before the confirmation.** The preview runs the import
+  and rolls it back: it shows each row accepted or refused, with the reason,
+  and is what the confirmation then writes, in **one transaction**, through
+  the same checks as the forms. The API previews unless it is sent
+  `confirm=true`.
+- **All or nothing.** A single row refused, and nothing is imported: the page
+  offers no confirmation, and the API answers `confirm=true` with 400 and the
+  reason of each row. Correct the file and import it again, whole. A warning (a
+  name already used, a person left unassigned) does not stop the import.
+- **Every file is checked whole first**: UTF-8 with or without a byte order
+  mark, separated by commas, a header naming each known column once (by its
+  name in the export, or its label in English or in French), and the column
+  that names a row (`name`, or `title` for tasks).
+- **Limits**: 1,000 rows and 2 MB for the files of one import, whatever their
+  language; import a larger set in several times. Each row goes through the
+  checks of the forms, twice (preview and confirmation): 1,000 rows keep each
+  request within seconds, far from the 30 seconds after which the web server
+  stops it. Files past a limit are refused whole, with the reason.
+- **Between the preview and the confirmation**, the page keeps the text of the
+  files on the server, in the database, for the person who previewed it and
+  this home only, for **30 minutes**: the confirmation sends back only a signed
+  token, so the limits hold up to it. The text is removed once confirmed, when
+  the same person previews again in the same home, and within the hour after
+  it expires; a confirmation after that asks for the files again. The API
+  keeps nothing: each call sends the files, `confirm=true` included.
+- **A row is always new.** It gets a new identifier; its `id` only lets the
+  other files of the import refer to it. A row whose `id` is a row already in
+  this home is refused as a duplicate, never merged; a name already used is
+  accepted and flagged.
+- **References stay in the home**: the `id` of a row of this home or of the
+  same import, or the exact name of a row of this home. An identifier or a name
+  of another home is refused. People are named by the display name of a member
+  of the home; otherwise the row is left unassigned, and flagged.
+- `created_at`, `updated_at`, the position of a room and the type of a stock
+  label are made again by the import; a task is due on its `series_start`.
+- The import is recorded in the audit log of the home, with the number of rows.
 
 ## Restore of a home
 

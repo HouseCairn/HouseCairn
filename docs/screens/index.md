@@ -14,6 +14,7 @@ account
 homes
 new-home
 home
+home-import
 household
 audit
 member
@@ -36,6 +37,7 @@ today
 tasks
 task
 task-form
+task-templates
 history
 display-preferences
 contractors

@@ -43,6 +43,9 @@ dependencies = [
   "apprise>=2.1",
   "icalendar>=7.3,<8",
   "reportlab>=5.1",
+  # Reads the library of task templates (docs/adr/0049); already installed by
+  # drf-spectacular and apprise, now a direct dependency.
+  "pyyaml>=6",
 ]
 
 [project.optional-dependencies]

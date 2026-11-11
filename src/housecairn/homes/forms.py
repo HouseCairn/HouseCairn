@@ -26,6 +26,16 @@ class HomeForm(forms.ModelForm[Home]):
         )
 
 
+class NewHomeForm(HomeForm):
+    """A new home, and the equipment it has: each checked adds its usual tasks (docs/adr/0049)."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        from housecairn.tasks.forms.templates import equipment_field
+
+        super().__init__(*args, **kwargs)
+        self.fields["equipment"] = equipment_field()
+
+
 class InviteForm(forms.Form):
     email = forms.EmailField(label=_("Email address"), max_length=254)
     role = forms.ChoiceField(label=_("Role"), choices=Role.choices, initial=Role.MEMBER)
@@ -86,6 +96,39 @@ class DeleteHomeForm(forms.Form):
     confirmation = forms.CharField(
         label=_("Type the name of the home to confirm"), max_length=120, strip=True
     )
+
+
+class ImportForm(forms.Form):
+    """CSV tables to import into a home, one optional file per table (docs/adr/0048).
+
+    The confirmation sends back only `preview`, the signed token of the text the preview
+    checked and kept on the server (`csv_import.keep_preview`), never the text itself.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        from housecairn.homes import csv_import
+
+        super().__init__(*args, **kwargs)
+        for name, entity in csv_import.entities().items():
+            self.fields[name] = forms.FileField(
+                label=entity.label,
+                required=False,
+                widget=forms.ClearableFileInput(attrs={"accept": ".csv,text/csv"}),
+            )
+        self.fields["preview"] = forms.CharField(
+            required=False, max_length=500, widget=forms.HiddenInput
+        )
+
+    def texts(self) -> dict[str, str]:
+        """The text of each table uploaded."""
+        from housecairn.homes import csv_import
+
+        uploads = {
+            name: self.cleaned_data[name]
+            for name in csv_import.entities()
+            if self.cleaned_data.get(name)
+        }
+        return csv_import.texts_from_uploads(uploads) if uploads else {}
 
 
 class RestoreForm(forms.Form):
