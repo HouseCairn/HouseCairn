@@ -262,17 +262,31 @@ html:has(.undo-region .undo-banner) {
   font-weight: var(--hc-font-weight-bold);
 }
 
+/* One line of the materials: the stock item (or the fields of a new one), the quantity, and
+   the button that removes the line. One column, from 320 px wide. */
 .material-line {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 8rem);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--hc-space-2);
-  margin: 0 0 var(--hc-space-2);
-  padding: 0;
+  margin: 0 0 var(--hc-space-3);
+  padding: 0 0 var(--hc-space-3);
   border: 0;
+  border-bottom: 1px solid var(--hc-color-border);
 }
 
-.material-line > p {
+.material-line > p,
+.material-line > .add-in-place {
   margin: 0;
+}
+
+.material-line > button {
+  justify-self: start;
+}
+
+.material-line > button[hidden],
+[data-material-add][hidden],
+[data-material-more][hidden] {
+  display: none;
 }
 
 .material-row .inline-form {

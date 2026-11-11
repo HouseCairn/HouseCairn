@@ -31,6 +31,11 @@ interpreted), links to web pages are kept, images are never loaded.
 **Details** lists the estimated duration, the budgets, the contractor and the
 notes. **Photos and files** are described on the [files page](task-files.md).
 
+**Photos of the item** (or **of the room**, when the task has no item) shows, read only, the
+first six photos of the item or room the task is linked to, with a link to its sheet where
+they are managed; the section is absent when there is none. Photos of another home are
+never shown.
+
 **Materials** lists the stock items the task needs, with the quantity, what is in
 stock and a label when it is not enough; **Remove** takes one off, the quantity field
 changes it and **Add the stock item** adds one. On a phone the quantity field moves

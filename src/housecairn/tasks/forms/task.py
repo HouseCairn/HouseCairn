@@ -9,13 +9,13 @@ from django.utils.translation import gettext_lazy as _
 
 from housecairn.accounts.models import User
 from housecairn.core.forms import MoneyField
-from housecairn.rooms.models import Item
+from housecairn.rooms.models import Item, Room, RoomKind
 from housecairn.tasks import durations, files, recurrence, repeat_text, services
 from housecairn.tasks.forms.fields import (
     _DATE,
     NEW,
     AddInPlaceChoiceField,
-    ItemChoiceField,
+    ItemAddField,
     MultipleFileField,
     MultipleFileInput,
     PersonChoiceField,
@@ -82,7 +82,28 @@ class TaskForm(forms.ModelForm[Task]):
     """A task: the title is the only required field; the rest is under the headings."""
 
     assignee = PersonChoiceField(label=_("Assignee"), queryset=User.objects.none(), required=False)
-    item = ItemChoiceField(label=_("Item"), queryset=Item.objects.none(), required=False)
+    # The rooms and the items of the home in lists, the last choice adding one in place
+    # (the fields that follow each, read only with that choice).
+    room = AddInPlaceChoiceField(
+        label=_("Room"),
+        queryset=Room.objects.none(),
+        required=False,
+        new_label=_("Add a room…"),
+    )
+    new_room_name = forms.CharField(label=_("Name of the new room"), max_length=120, required=False)
+    new_room_kind = forms.ChoiceField(
+        label=_("Type of room"),
+        choices=RoomKind.choices,
+        initial=RoomKind.OTHER,
+        required=False,
+    )
+    item = ItemAddField(
+        label=_("Item"),
+        queryset=Item.objects.none(),
+        required=False,
+        new_label=_("Add an item…"),
+    )
+    new_item_name = forms.CharField(label=_("Name of the new item"), max_length=120, required=False)
 
     due_on = forms.DateField(label=_("Due on"), required=False, widget=_DATE)
     # The repetition as one sentence (docs/screens/task-form.md): "Repeat every 3 months,
@@ -166,7 +187,10 @@ class TaskForm(forms.ModelForm[Task]):
     field_order = [
         "title",
         "room",
+        "new_room_name",
+        "new_room_kind",
         "item",
+        "new_item_name",
         "due_on",
         "priority",
         "repeats",
@@ -212,7 +236,7 @@ class TaskForm(forms.ModelForm[Task]):
             "procedure": forms.Textarea(attrs={"rows": 8}),
             "notes": forms.Textarea(attrs={"rows": 3}),
         }
-        labels = {"room": _("Room"), "repeat_unit": _("Unit")}
+        labels = {"repeat_unit": _("Unit")}
         help_texts = {
             "procedure": _("Markdown: how to do it, step by step. Links to web pages only."),
         }
@@ -268,6 +292,8 @@ class TaskForm(forms.ModelForm[Task]):
                 self.add_error("duration_value", durations.bounds_message())
         data["estimated_minutes"] = minutes
         self._clean_new_contractor(data)
+        self._clean_new_room(data)
+        self._clean_new_item(data)
         self._clean_repeat(data)
         if (
             not data.get("season")
@@ -281,6 +307,59 @@ class TaskForm(forms.ModelForm[Task]):
         elif data.get("season_start_month") is None or data.get("season_end_month") is None:
             self.add_error("season_start_month", _("Give the first and the last month."))
         return data
+
+    def _clean_new_room(self, data: dict[str, Any]) -> None:
+        """ "Add a room…": the fields of the new room, checked; ignored otherwise.
+
+        `new_room` holds what to create, made by the view with the task. A name already in
+        the home, whatever its case, is refused: that room is in the list.
+        """
+        name = " ".join((data.pop("new_room_name", "") or "").split())
+        kind = data.pop("new_room_kind", "") or RoomKind.OTHER
+        data["new_room"] = None
+        if data.get("room") != NEW:
+            return
+        data["room"] = None
+        if not name:
+            self.add_error("new_room_name", _("Give the name of the new room."))
+            return
+        if any(r.name.casefold() == name.casefold() for r in services.rooms_for_forms(self.home)):
+            self.add_error(
+                "new_room_name",
+                _("%(name)s is already a room of this home: choose it in the list.")
+                % {"name": name},
+            )
+            return
+        data["new_room"] = {"name": name, "kind": kind}
+
+    def _clean_new_item(self, data: dict[str, Any]) -> None:
+        """ "Add an item…": its room is the room chosen, or the new one made with it."""
+        name = " ".join((data.pop("new_item_name", "") or "").split())
+        data["new_item"] = None
+        if data.get("item") != NEW:
+            if data.get("new_room") and data.get("item"):
+                self.add_error("item", _("This item is not in this room."))
+            return
+        data["item"] = None
+        if not name:
+            self.add_error("new_item_name", _("Give the name of the new item."))
+            return
+        room = data.get("room")
+        if room is None and not data.get("new_room"):
+            if "room" not in self.errors and "new_room_name" not in self.errors:
+                self.add_error("room", _("Choose the room of the new item."))
+            return
+        if room is not None and any(
+            i.name.casefold() == name.casefold()
+            for i in services.items_for_forms(self.home).filter(room=room)
+        ):
+            self.add_error(
+                "new_item_name",
+                _("%(name)s is already an item of this room: choose it in the list.")
+                % {"name": name},
+            )
+            return
+        data["new_item"] = {"name": name}
 
     def _clean_new_contractor(self, data: dict[str, Any]) -> None:
         """ "Add a contractor…": the fields of the new one, checked; ignored otherwise.

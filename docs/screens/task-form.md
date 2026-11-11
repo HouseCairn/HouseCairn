@@ -5,14 +5,16 @@ The form to add a task, at `/h/<home id>/tasks/new/`, and to edit it, at
 or an item, **Add a task** fills the room and the item in.
 
 The first block holds the title, the room, the item (listed with its room), the
-due date and, below, five sections that open when you need them:
+due date and, below, five sections that open when you need them. The last choice of the
+room list, **Add a room…**, and of the item list, **Add an item…**, adds one without
+leaving the form (see [Adding a room or an item](#adding-a-room-or-an-item)):
 
 | Section | Content |
 | --- | --- |
 | Repeat (open when the task is added from an item, or when it repeats) | One sentence: **Repeat this task**, **Repeat every** N days, weeks, months or years, **Count from** the due date or the day it is done (see below). A **season** outside of which nothing falls (see below), the number of days before the date from which the task shows, and the repetition said in plain words. |
 | Who | Priority, the person in charge (a member of the home, shown by name) and the contractor, chosen in the list of the contractors of the home; its last choice, **Add a contractor…**, adds one without leaving the form (see below). The dash removes the contractor. |
 | Time and budget | Estimated duration (a number and a unit: minutes, hours, days, weeks, months or years), labour and material budgets, in the currency of the home. |
-| Materials | The stock items the task needs, one line each: the stock item and the quantity. Two empty lines are offered for more; set a line's stock item to the dash to remove it. Marking the task done takes these quantities from the stock. |
+| Materials | The stock items the task needs, one line each: the stock item and the quantity; the last choice of the list, **Add a stock item…**, adds one. Three empty lines are offered; **+** adds a line and **−** removes one, up to 50 (see [Materials](#materials)). Marking the task done takes these quantities from the stock. |
 | How to do it | The procedure in Markdown, notes and, when adding, photos and files. |
 
 ## Repeat
@@ -63,6 +65,38 @@ elapsed time: a week is 7 days, a month 30 days, a year 365 days. It is stored i
 shown as people say it, biggest unit first: **45 min**, **1 h 30**, **2 days**, **2 weeks**,
 **1 month 1 week**, **1 year**. Beyond a year, the form says so under the field.
 
+## Adding a room or an item
+
+The last choice of the **Room** list, **Add a room…**, opens the fields of a new room right
+under the list: its name (required) and its type, from the generic list of types of room
+(Kitchen, Bedroom, … Other). The last choice of the **Item** list, **Add an item…**, opens
+the name of a new item. The new item goes in the room chosen above, or in the room added in
+the same send; with neither, the form asks you to **choose the room of the new item**. A
+known item cannot go with a room that is added: choose the room it is in.
+
+The room and the item are created when the task is saved, in the same transaction as the
+task: a form refused for another reason creates nothing. An empty name, or a name already
+in the home (for an item, already in that room), whatever the case, is refused with a
+message under the field: choose the existing one in the list. Complete them later on their
+[room](room.md) and [item](item.md) pages. Without script the fields of the new records are
+always shown and are read only with their choice. A member who may only read adds nothing:
+the form is closed to them.
+
+## Materials
+
+One line per stock item: the stock item, in the list of the stock of the home, and the
+quantity. The last choice of the list, **Add a stock item…**, opens its name (required) and
+its unit, from the list of units (**Which unit** for Other) right under the list; the stock
+item joins the stock of the home when the task is saved, and a form refused creates
+nothing. A name already in the stock, or added by another line, is refused with a message.
+
+Three empty lines are offered. With script, **+** adds a line and **−** removes the line it
+is on, up to 50 lines (the number of stock items a task may list); when the limit is reached
+**+** is disabled and a notice says so, which a screen reader announces. Without script,
+**Add lines** sends the form back with what was typed and three more lines, without
+checking or saving anything (the files chosen have to be chosen again); to remove a line,
+set its stock item to the dash. Pressing Enter in a field saves the task, never **Add lines**.
+
 ## Contractor
 
 The list holds the contractors of the home, by name. Its last choice, **Add a contractor…**,
@@ -79,6 +113,14 @@ that is a contractor of the home (whatever the case), that contractor is already
 the list, and the **Who** section is open so that you see it. Choose the dash to remove it.
 A provider that is not a contractor of the home is not chosen for you, and nothing is
 created.
+
+## Photos and files
+
+Photos chosen from the device are checked by their content, not their name: JPEG (including
+the multi-picture JPEG an iPhone writes), PNG and WebP are accepted and written again
+without their metadata. A HEIC photo is refused with a message that names the file and says
+to choose the JPEG version of the photo or to set the camera to Most Compatible; the file
+chooser only offers the accepted types, so a phone usually hands over a JPEG.
 
 Editing the date moves the occurrence that is open. Deleting the task, at the
 bottom of the edit form, asks for confirmation and removes the task, its history

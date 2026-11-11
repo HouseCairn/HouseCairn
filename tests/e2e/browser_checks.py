@@ -20,6 +20,10 @@ last button of the page reachable, with script and without: with script the page
 banner's real height, without it the banner is a sticky box that takes its own room.
 
     python tests/e2e/browser_checks.py in-place --base http://localhost:8001
+
+`task-form` and `task-lines` (local only) measure the task form at 320, 360, 375 and 1280 px,
+in French, with and without script: the repetition, the duration and the contractor, then the
+room, item and stock item added in place and the lines of the materials.
 """
 
 import argparse
@@ -401,6 +405,7 @@ def task_form(browser: Browser, base: str) -> None:
             check(not errors, f"{label}: no error in the console (CSP included): {errors}")
             context.close()
     duration_and_contractor(browser, base)
+    new_records_and_materials(browser, base)
 
 
 def _open_section(page: Page, field: str) -> None:
@@ -465,9 +470,165 @@ def duration_and_contractor(browser: Browser, base: str) -> None:
             context.close()
 
 
+def _new_task_page(page: Page, base: str) -> None:
+    page.goto(f"{base}/tasks/")
+    page.locator("main a[href*='/tasks/new/']").first.click()
+    page.wait_for_selector("form[data-task-form]")
+
+
+def _lines(page: Page) -> int:
+    return page.locator("[data-material-line]").count()
+
+
+def new_records_and_materials(browser: Browser, base: str) -> None:
+    """A room, an item and a stock item added in place; the lines of the materials. Local only.
+
+    At each width, with and without script, in French. The last choice of the room, item and
+    stock item lists adds one: its fields are hidden until chosen with script (each line has
+    its own), always there without. With script, + adds a line (renumbered, up to 50, the limit
+    announced in a live region) and - removes one; without, "Ajouter des lignes" sends the
+    form back with three more lines and what was typed. At 375 px, with and without script, a
+    task is created with the three new records. Prints the measures. Run alone, with any
+    demo account that has a home:
+
+        python tests/e2e/browser_checks.py task-lines --base http://localhost:8001
+    """
+    for width in TASK_FORM_WIDTHS:
+        for script in (True, False):
+            label = f"{width} px{'' if script else ', no script'}"
+            context = browser.new_context(
+                viewport={"width": width, "height": 900}, locale="fr-FR", java_script_enabled=script
+            )
+            page = context.new_page()
+            errors: list[str] = []
+            page.on(
+                "console",
+                lambda message, errors=errors: (
+                    errors.append(message.text) if message.type == "error" else None
+                ),
+            )
+            sign_in(page, base)
+            _new_task_page(page, base)
+            rooms = page.locator("#id_room option").all_text_contents()
+            items = page.locator("#id_item option").all_text_contents()
+            check(rooms[-1] == "Ajouter une pièce…", f"{label}: the last room choice: {rooms}")
+            check(items[-1] == "Ajouter un élément…", f"{label}: the last item choice: {items}")
+            kinds = page.locator("#id_new_room_kind option").all_text_contents()
+            check("Cuisine" in kinds, f"{label}: the types of room, translated: {kinds}")
+            for field in ("#id_new_room_name", "#id_new_item_name"):
+                check(_shown(page, field) is not script, f"{label}: {field} hidden iff script")
+            if script:
+                page.select_option("#id_room", "new")
+                check(_shown(page, "#id_new_room_name"), f"{label}: the new room's fields shown")
+                check(not _shown(page, "#id_new_item_name"), f"{label}: not the item's")
+                page.select_option("#id_item", "new")
+                check(_shown(page, "#id_new_item_name"), f"{label}: the new item's fields shown")
+            name_box = _box(page, "#id_new_room_name")
+            say(f"{label}: new room name {name_box['width']:.0f} px wide")
+            _open_section(page, "#id_materials-0-article")
+            check(_lines(page) == 3, f"{label}: three lines to begin with")
+            check(
+                _shown(page, "#id_materials-0-new_article_name") is not script,
+                f"{label}: the new stock item's fields hidden iff script",
+            )
+            select = _box(page, "#id_materials-0-article")
+            say(f"{label}: stock item select {select['width']:.0f} px wide")
+            if script:
+                check(not _shown(page, "[data-material-more]"), f"{label}: no Add lines button")
+                check(_shown(page, "[data-material-add]"), f"{label}: the + button")
+                check(_shown(page, "[data-material-remove]"), f"{label}: the - button")
+                page.click("[data-material-add]")
+                check(_lines(page) == 4, f"{label}: + adds a line")
+                check(
+                    page.locator("#id_materials-3-article").count() == 1,
+                    f"{label}: the new line is numbered 3",
+                )
+                page.select_option("#id_materials-3-article", "new")
+                check(_shown(page, "#id_materials-3-new_article_name"), f"{label}: its own fields")
+                check(
+                    not _shown(page, "#id_materials-0-new_article_name"),
+                    f"{label}: not those of the first line",
+                )
+                page.select_option("#id_materials-3-new_article_unit", "other")
+                check(
+                    _shown(page, "#id_materials-3-new_article_unit_other"), f"{label}: Which unit"
+                )
+                page.locator("[data-material-remove]").nth(1).click()
+                check(_lines(page) == 3, f"{label}: - removes a line")
+                check(
+                    page.locator("#id_materials-3-article").count() == 0
+                    and page.input_value("[name=materials-TOTAL_FORMS]") == "3",
+                    f"{label}: renumbered, 3 forms",
+                )
+                check(
+                    page.locator("#id_materials-2-article").input_value() == "new"
+                    and _shown(page, "#id_materials-2-new_article_name"),
+                    f"{label}: the new stock item moved up with its fields",
+                )
+                while _lines(page) < 50:
+                    page.click("[data-material-add]")
+                check(page.locator("[data-material-add]").is_disabled(), f"{label}: + off at 50")
+                limit = page.locator("[data-material-limit]")
+                check(
+                    "50 articles au plus" in (limit.text_content() or "")
+                    and limit.get_attribute("aria-live") == "polite",
+                    f"{label}: the limit is said in a live region: {limit.text_content()}",
+                )
+                page.locator("[data-material-remove]").last.click()
+                check(
+                    page.locator("[data-material-add]").is_enabled()
+                    and not (limit.text_content() or "").strip(),
+                    f"{label}: - frees a place and clears the notice",
+                )
+            else:
+                check(_shown(page, "[data-material-more]"), f"{label}: the Add lines button")
+                check(not _shown(page, "[data-material-add]"), f"{label}: no + without script")
+                page.fill("#id_title", "Essai lignes")
+                page.select_option("#id_materials-1-article", "new")
+                page.fill("#id_materials-1-new_article_name", "Ruban")
+                page.click("[data-material-more]")
+                page.wait_for_selector("form[data-task-form]")
+                check(_lines(page) == 6, f"{label}: three more lines after Add lines")
+                check(
+                    page.input_value("#id_title") == "Essai lignes"
+                    and page.input_value("#id_materials-1-new_article_name") == "Ruban",
+                    f"{label}: what was typed is kept",
+                )
+                check(page.locator(".errorlist").count() == 0, f"{label}: no error shown")
+            page_width = page.evaluate("document.documentElement.scrollWidth")
+            check(page_width <= width, f"{label}: no horizontal scroll ({page_width} px)")
+            check(not errors, f"{label}: no error in the console (CSP included): {errors}")
+            if width == 375:
+                suffix = "js" if script else "nojs"
+                _new_task_page(page, base)
+                _open_section(page, "#id_materials-0-article")
+                page.fill("#id_title", f"Peindre le mur {suffix}")
+                page.select_option("#id_room", "new")
+                page.fill("#id_new_room_name", f"Cellier {suffix}")
+                page.select_option("#id_new_room_kind", "cellar")
+                page.select_option("#id_item", "new")
+                page.fill("#id_new_item_name", f"Congélateur {suffix}")
+                page.select_option("#id_materials-0-article", "new")
+                page.fill("#id_materials-0-new_article_name", f"Pinceau {suffix}")
+                page.select_option("#id_materials-0-new_article_unit", "piece")
+                page.fill("#id_materials-0-quantity", "2")
+                page.click("form[data-task-form] button[type=submit]:visible >> nth=-1")
+                page.wait_for_url(lambda url: "/tasks/new/" not in url)
+                if page.locator("h1").first.text_content() != f"Peindre le mur {suffix}":
+                    page.locator(f"main a:has-text('Peindre le mur {suffix}')").first.click()
+                body = page.locator("main").inner_text()
+                check(
+                    f"Cellier {suffix}" in body
+                    and f"Congélateur {suffix}" in body
+                    and f"Pinceau {suffix}" in body,
+                    f"{label}: the task shows its new room, item and stock item",
+                )
+            context.close()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("mode", choices=["passkey", "sso", "in-place", "task-form"])
+    parser.add_argument("mode", choices=["passkey", "sso", "in-place", "task-form", "task-lines"])
     parser.add_argument("--base", required=True, help="address of the running instance")
     parser.add_argument("--provider", help="address of the stub identity provider (sso mode)")
     args = parser.parse_args()
@@ -480,6 +641,8 @@ def main() -> None:
             in_place(browser, base)
         elif args.mode == "task-form":
             task_form(browser, base)
+        elif args.mode == "task-lines":
+            new_records_and_materials(browser, base)
         else:
             passkey(browser, base)
         browser.close()

@@ -1,13 +1,11 @@
-{% load i18n %}{# The stock items a task needs. `materials`: the formset. #}
+{% load i18n %}{# The stock items a task needs. `materials`: the formset. With script, + adds a line and − removes one (static/js/task-form.js); without, "Add lines" sends the form back with more lines and checks nothing. #}
 {{ materials.management_form }}
 {{ materials.non_form_errors }}
-<p class="small">{% translate "Stock items the task needs, with the quantity. Marking the task done takes these quantities from the stock. To remove a line, set its stock item to the dash." %}</p>
-{% for line in materials %}
-  <fieldset class="material-line">
-    <legend class="visually-hidden">{% blocktranslate with number=forloop.counter %}Stock item {{ number }}{% endblocktranslate %}</legend>
-    {{ line.non_field_errors }}
-    {% include "tasks/_field.html" with field=line.article %}
-    {% include "tasks/_field.html" with field=line.quantity %}
-  </fieldset>
-{% endfor %}
-{% if not materials.forms %}<p class="empty">{% translate "No stock item in the stock of this home yet." %}</p>{% endif %}
+<p class="small">{% translate "Stock items the task needs, with the quantity. Marking the task done takes these quantities from the stock." %} <span data-material-nojs>{% translate "To remove a line, set its stock item to the dash." %}</span></p>
+<div data-material-lines data-prefix="{{ materials.prefix }}" data-max="{{ materials.max_num }}">
+  {% for line in materials %}{% include "tasks/_material_line.html" with line=line number=forloop.counter %}{% endfor %}
+</div>
+<p class="small" data-material-limit data-limit-text="{% blocktranslate with max=materials.max_num %}A task lists at most {{ max }} stock items.{% endblocktranslate %}" aria-live="polite">{% if not materials.can_add_more %}{% blocktranslate with max=materials.max_num %}A task lists at most {{ max }} stock items.{% endblocktranslate %}{% endif %}</p>
+<button type="button" class="button-secondary" data-material-add hidden><span aria-hidden="true">+</span> {% translate "Add a line" %}</button>
+{% if materials.can_add_more %}<button type="submit" name="materials-add" value="1" class="button-secondary" formnovalidate data-material-more>{% translate "Add lines" %}</button>{% endif %}
+<template data-material-template>{% include "tasks/_material_line.html" with line=materials.empty_form number="" %}</template>
