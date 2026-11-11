@@ -244,6 +244,8 @@ FORM_TITLES: dict[str, Any] = {
     "tasks:contractor-edit": _("Edit the contractor"),
     "api-tokens:new": _("New API token"),
     "api-tokens:revoke": _("Revoke the token"),
+    "homes:import": _("Import tables"),
+    "tasks:templates": _("Add from a template"),
 }
 
 RECORD_TITLES: dict[str, Record] = {

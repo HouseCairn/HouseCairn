@@ -236,6 +236,12 @@ msgstr "Nouveau jeton d'API"
 msgid "Revoke the token"
 msgstr "Révoquer le jeton"
 
+msgid "Import tables"
+msgstr "Importer des tableaux"
+
+msgid "Add from a template"
+msgstr "Ajouter depuis un modèle"
+
 msgctxt "added message"
 msgid "Open"
 msgstr "Ouvrir"

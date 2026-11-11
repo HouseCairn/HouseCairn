@@ -437,3 +437,11 @@ class TestFormBreadcrumbs:
             html = signed_in.get(page).text
             assert trail(html)[-2:] == [(detail, article.name), (None, title)]
             assert [label for _, label in trail(html)][:2] == ["Rooms", "Stock"]
+
+    def test_import_and_template_forms(self, signed_in: Client, alice_home: Home) -> None:
+        for page, title in [
+            (url("homes:import", home_id=alice_home.id), "Import tables"),
+            (url("tasks:templates", home_id=alice_home.id), "Add from a template"),
+        ]:
+            html = signed_in.get(page).text
+            assert trail(html)[-1] == (None, title)
