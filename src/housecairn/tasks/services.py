@@ -354,7 +354,7 @@ def resync_seasons(home: Home) -> int:
 
 
 def _check_estimate(task: Task, *, before: int | None = None, creating: bool = True) -> None:
-    """The estimated duration is between a minute and thirty days (docs/adr/0045).
+    """The estimated duration is between a minute and `durations.MAX_MINUTES` (ADR 0045).
 
     Held only when it is set or changed: a task kept from before the bound (a duration of 0
     was accepted) can still be edited for something else.
@@ -363,9 +363,7 @@ def _check_estimate(task: Task, *, before: int | None = None, creating: bool = T
     if not creating and minutes == before:
         return
     if minutes is not None and not durations.within_bounds(minutes):
-        raise ValidationError(
-            {"estimated_minutes": _("Give a duration between a minute and thirty days.")}
-        )
+        raise ValidationError({"estimated_minutes": durations.bounds_message()})
 
 
 def _check_links(home: Home, task: Task) -> None:

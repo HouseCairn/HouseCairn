@@ -153,7 +153,8 @@ TASK_FORM = {
     "repeat_interval": "1",
     "repeat_unit": "year",
     "hide_days_before": "0",
-    "contractor_name": "Brand New Ltd",
+    "contractor": "new",
+    "new_contractor_name": "Brand New Ltd",
 }
 
 
@@ -484,12 +485,12 @@ class TestContractOfAnItem:
         address = reverse("tasks:create", kwargs={"home_id": home.id}) + f"?item={item.id}"
         return client.get(address).content.decode()
 
-    def typed(self, page: str) -> str | None:
-        """The value of the contractor field as the form shows it (not the suggestions)."""
-        field = re.search(r'<input[^>]*name="contractor_name"[^>]*>', page)
-        assert field, "the contractor field is missing"
-        value = re.search(r'value="([^"]*)"', field.group(0))
-        return value.group(1) if value else None
+    def chosen(self, page: str) -> str | None:
+        """The value of the option selected in the contractor list ("" when none is)."""
+        select = re.search(r'<select[^>]*name="contractor"[^>]*>(.*?)</select>', page, re.S)
+        assert select, "the contractor list is missing"
+        option = re.search(r'<option value="([^"]*)"[^>]*\bselected\b', select.group(1))
+        return option.group(1) if option else None
 
     def test_the_provider_of_the_contract_is_preselected(
         self, signed_in: Client, alice: User, alice_home: Home, owner_item: Item
@@ -498,7 +499,7 @@ class TestContractOfAnItem:
         owner_item.contract_provider = "pipes LTD"  # typed by hand: case is not a difference
         owner_item.save()
         page = self.create_page(signed_in, alice_home, owner_item)
-        assert self.typed(page) == pipes.name
+        assert self.chosen(page) == str(pipes.pk)
         # The section that holds the field is open, so that the choice is seen.
         who = page.split("<summary>Who</summary>", 1)[0].rsplit("<details", 1)[1]
         assert " open" in who
@@ -516,7 +517,7 @@ class TestContractOfAnItem:
                 "title": "Service the boiler",
                 "room": str(owner_item.room_id),
                 "item": str(owner_item.id),
-                "contractor_name": self.typed(page),
+                "contractor": self.chosen(page),
                 "priority": "normal",
                 "repeat_unit": "month",
                 "hide_days_before": "0",
@@ -532,7 +533,11 @@ class TestContractOfAnItem:
         for provider in ("", "Somebody else"):
             owner_item.contract_provider = provider
             owner_item.save()
-            assert not self.typed(self.create_page(signed_in, alice_home, owner_item))
+            page = self.create_page(signed_in, alice_home, owner_item)
+            assert not self.chosen(page)
+            # Nothing is preselected, so the section that holds the field stays closed.
+            who = page.split("<summary>Who</summary>", 1)[0].rsplit("<details", 1)[1]
+            assert " open" not in who
         assert Contractor.objects.count() == 1  # opening the form creates nothing
 
     def test_a_contractor_of_another_home_is_not_used(
@@ -541,4 +546,4 @@ class TestContractOfAnItem:
         services.create_contractor(bob, bob_home, **FULL)
         owner_item.contract_provider = FULL["name"]
         owner_item.save()
-        assert not self.typed(self.create_page(signed_in, alice_home, owner_item))
+        assert not self.chosen(self.create_page(signed_in, alice_home, owner_item))

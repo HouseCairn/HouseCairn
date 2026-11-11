@@ -52,15 +52,22 @@
         <p class="field-summary"><strong>{% translate "In short:" %}</strong> <output id="repeat-summary" aria-live="polite">{{ form.summary }}</output></p>
       </div>
     </details>
-    <details class="form-section"{% if form.assignee.errors or form.contractor_name.errors or not task and form.contractor_name.value %} open{% endif %}>
+    <details class="form-section"{% if form.assignee.errors or form.contractor.errors or form.new_contractor_name.errors or form.new_contractor_trade_other.errors or not task and form.contractor.value %} open{% endif %}>
       <summary>{% translate "Who" %}</summary>
       <div>
         {% include "tasks/_field.html" with field=form.priority %}
         {% include "tasks/_field.html" with field=form.assignee %}
-        {% include "tasks/_field.html" with field=form.contractor_name %}
-        <datalist id="contractor-options">
-          {% for candidate in form.contractors %}<option value="{{ candidate.name }}">{{ candidate.trade_label }}</option>{% endfor %}
-        </datalist>
+        {% include "tasks/_field.html" with field=form.contractor %}
+        {# Added in place: shown with the choice "Add a contractor…"; without script always shown, and read only with that choice. #}
+        <fieldset class="add-in-place" data-shown-when="contractor=new">
+          <legend>{% translate "New contractor" %}</legend>
+          <p class="helptext">{% translate "Only used with Add a contractor… in the list above. The contractor joins the home when you save the task; complete it on its sheet." %}</p>
+          {% include "tasks/_field.html" with field=form.new_contractor_name %}
+          {% include "tasks/_field.html" with field=form.new_contractor_trade %}
+          <div data-shown-when="new_contractor_trade=other">
+            {% include "tasks/_field.html" with field=form.new_contractor_trade_other %}
+          </div>
+        </fieldset>
       </div>
     </details>
     <details class="form-section"{% if form.duration_value.errors or form.duration_unit.errors or form.labour_budget.errors or form.material_budget.errors %} open{% endif %}>

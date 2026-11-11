@@ -87,8 +87,9 @@ less puts the difference back, more takes it as far as the stock allows.
 
 ## Contractors
 
-Name the person or the company on the task, in one field: pick one that the home already
-knows from the suggestions, or type a new name, which creates the contractor when you save.
+Name the person or the company on the task: choose one of the home's contractors in the
+list, or its last choice, **Add a contractor…**, to add one in place (name and trade); the
+contractor is created when you save.
 A task added from an item starts with the provider of the item's maintenance contract, when
 the home has a contractor of that name.
 Each contractor has a [sheet](../screens/contractor.md) (trade from a list, phone, email
@@ -97,8 +98,9 @@ to put in your phone. The API also lists and edits them.
 
 ## Estimated duration and who does it
 
-The estimated duration is a number and a unit (minutes, hours or days). The person in
-charge is shown by their [display name](../screens/profile.md), never by their address.
+The estimated duration is a number and a unit (minutes, hours, days, weeks, months or
+years), up to one year. The person in charge is shown by their
+[display name](../screens/profile.md), never by their address.
 
 ## For scripts
 
