@@ -59,6 +59,10 @@ function purgePages(keep) {
 }
 
 self.addEventListener("message", (event) => {
+  // Only a page of this application may ask: same origin, under the scope.
+  if (event.origin !== self.location.origin) {
+    return;
+  }
   if (event.data && event.data.type === "purge") {
     event.waitUntil(purgePages(null));
   }
