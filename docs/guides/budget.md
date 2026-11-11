@@ -75,8 +75,8 @@ no date and are not in it. The envelope is set from **Projects**.
 
 ## Several homes and currencies
 
-**Budget** in the navigation adds your homes up by currency; amounts in different currencies
-are never converted. With one home it opens that home.
+**Budget** in the navigation opens the budget of the current home. The API adds your homes up
+by currency; amounts in different currencies are never converted.
 
 ## Files and scripts
 

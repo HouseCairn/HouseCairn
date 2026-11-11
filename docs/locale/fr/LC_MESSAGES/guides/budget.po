@@ -78,8 +78,8 @@ msgstr "Le haut de la vue d'ensemble tient en trois chiffres et une jauge : ce q
 msgid "Several homes and currencies"
 msgstr "Plusieurs logements et devises"
 
-msgid "**Budget** in the navigation adds your homes up by currency; amounts in different currencies are never converted. With one home it opens that home."
-msgstr "**Budget**, dans la navigation, additionne vos logements par devise ; les montants de devises différentes ne sont jamais convertis. Avec un seul logement, il ouvre celui-ci."
+msgid "**Budget** in the navigation opens the budget of the current home. The API adds your homes up by currency; amounts in different currencies are never converted."
+msgstr "**Budget**, dans la navigation, ouvre le budget du logement courant. L'API additionne vos logements par devise ; les montants de devises différentes ne sont jamais convertis."
 
 msgid "Files and scripts"
 msgstr "Fichiers et scripts"

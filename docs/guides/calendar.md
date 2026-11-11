@@ -5,7 +5,7 @@ iCalendar feed (RFC 5545), so that the calendar you already use can show them.
 
 ## Create a feed
 
-Open **Calendar**, then **Feeds**, and press **Create** for a home or for all your homes.
+Open **More**, then **Calendar in another application**, and press **Create** for a home or for all your homes.
 Copy the address that appears: it is shown once. It looks like
 `https://housecairn.example.com/calendar/feed/<secret>.ics`.
 
@@ -61,7 +61,7 @@ by the `icalendar` library in the tests.
 ## Keep it secret
 
 - The address is the only credential: do not post it, and prefer one feed per person.
-- **New address** in **Feeds** stops the old one. **Revoke** deletes the feed.
+- **New address** on **Calendar feeds** stops the old one. **Revoke** deletes the feed.
 - A feed stops working when the person leaves the home (that home's feed is revoked), when the
   account is deactivated or deleted, or when the home is deleted.
 - A home that requires a sign-in provider has no feed, since the address cannot prove which
