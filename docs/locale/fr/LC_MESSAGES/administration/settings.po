@@ -472,6 +472,24 @@ msgstr "Déterminent qui peut devenir le premier administrateur, et si l'écran 
 msgid "The **Server** part shows all of them except `HOUSECAIRN_WEB_WORKERS`: only the container's start-up program reads it, to start that many web processes; the application itself does not."
 msgstr "La partie **Serveur** les affiche toutes sauf `HOUSECAIRN_WEB_WORKERS` : seul le programme de démarrage du conteneur la lit, pour lancer autant de processus web ; l'application elle-même ne la lit pas."
 
+msgid "The page of a refused host name"
+msgstr "La page d'un nom d'hôte refusé"
+
+msgid "A request whose `Host` header is not in `ALLOWED_HOSTS` gets a 400 page that says the address is not one the instance answers to and that its administrator must add the name to `ALLOWED_HOSTS`. Whoever hosts HouseCairn for someone else, such as a Home Assistant add-on or a third-party image, can name the exact option to change instead: `HOUSECAIRN_DISALLOWED_HOST_HINT` holds a sentence that the page then shows in place of the generic one."
+msgstr "Une requête dont l'en-tête `Host` n'est pas dans `ALLOWED_HOSTS` reçoit une page 400 qui dit que l'adresse n'est pas de celles auxquelles l'instance répond et que son administrateur doit ajouter le nom à `ALLOWED_HOSTS`. Celui qui héberge HouseCairn pour quelqu'un d'autre, comme un module complémentaire Home Assistant ou une image d'un tiers, peut nommer à la place l'option exacte à changer : `HOUSECAIRN_DISALLOWED_HOST_HINT` contient une phrase que la page affiche alors à la place de la phrase générique."
+
+msgid "It is empty by default, and the generic sentence, which is translated, is shown."
+msgstr "Elle est vide par défaut, et la phrase générique, qui est traduite, s'affiche."
+
+msgid "The text is shown as it is, in the one language its author wrote it in, and as plain text: nothing in it is interpreted as HTML. It has at most 300 characters and no control character or line break; a longer or invalid text stops the instance at start-up."
+msgstr "Le texte est affiché tel quel, dans l'unique langue où son auteur l'a écrit, et comme du texte brut : rien n'y est interprété comme du HTML. Il compte au plus 300 caractères, sans caractère de contrôle ni saut de ligne ; un texte trop long ou invalide arrête l'instance au démarrage."
+
+msgid "The page never repeats the refused name, lists `ALLOWED_HOSTS` or shows any other setting."
+msgstr "La page ne répète jamais le nom refusé, ne liste pas `ALLOWED_HOSTS` et n'affiche aucun autre réglage."
+
+msgid "Only a refused host name changes the page: every other 400 keeps the usual one."
+msgstr "Seul un nom d'hôte refusé change la page : toute autre 400 garde la page habituelle."
+
 msgid "The single sign-on provider of the `OIDC_*` variables stays a variable; others are declared in the interface (see [Single sign-on](oidc.md))."
 msgstr "Le fournisseur d'authentification unique des variables `OIDC_*` reste une variable ; les autres se déclarent dans l'interface (voir [Authentification unique](oidc.md))."
 

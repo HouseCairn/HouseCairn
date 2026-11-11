@@ -93,6 +93,12 @@ msgstr "`HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING`"
 msgid "`true` lets a page of the same origin show HouseCairn in a frame, as Home Assistant's Ingress panel does (see [Serving under a path prefix](url-prefix.md))."
 msgstr "`true` permet à une page de la même origine d'afficher HouseCairn dans un cadre, comme le fait le panneau Ingress de Home Assistant (voir [Servir sous un préfixe d'adresse](url-prefix.md))."
 
+msgid "`HOUSECAIRN_DISALLOWED_HOST_HINT`"
+msgstr "`HOUSECAIRN_DISALLOWED_HOST_HINT`"
+
+msgid "Sentence the 400 page of a refused host name shows, for a host that knows which option to change; at most 300 characters (see [Settings](settings.md#the-page-of-a-refused-host-name))."
+msgstr "Phrase que montre la page 400 d'un nom d'hôte refusé, pour un hébergeur qui sait quelle option changer ; 300 caractères au plus (voir [Réglages](settings.md#the-page-of-a-refused-host-name))."
+
 msgid "`SECRET_KEY`"
 msgstr "`SECRET_KEY`"
 

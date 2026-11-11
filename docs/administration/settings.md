@@ -155,6 +155,26 @@ screen shows them read-only, without secrets.
 The **Server** part shows all of them except `HOUSECAIRN_WEB_WORKERS`: only the container's
 start-up program reads it, to start that many web processes; the application itself does not.
 
+### The page of a refused host name
+
+A request whose `Host` header is not in `ALLOWED_HOSTS` gets a 400 page that says the
+address is not one the instance answers to and that its administrator must add the name to
+`ALLOWED_HOSTS`. Whoever hosts HouseCairn for someone else, such as a Home Assistant add-on
+or a third-party image, can name the exact option to change instead:
+`HOUSECAIRN_DISALLOWED_HOST_HINT` holds a sentence that the page then shows in place of the
+generic one.
+
+```sh
+HOUSECAIRN_DISALLOWED_HOST_HINT="Add this name to the allowed_hosts option, then restart."
+```
+
+- It is empty by default, and the generic sentence, which is translated, is shown.
+- The text is shown as it is, in the one language its author wrote it in, and as plain text:
+  nothing in it is interpreted as HTML. It has at most 300 characters and no control
+  character or line break; a longer or invalid text stops the instance at start-up.
+- The page never repeats the refused name, lists `ALLOWED_HOSTS` or shows any other setting.
+- Only a refused host name changes the page: every other 400 keeps the usual one.
+
 The single sign-on provider of the `OIDC_*` variables stays a variable; others are declared in
 the interface (see [Single sign-on](oidc.md)).
 
