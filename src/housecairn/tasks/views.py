@@ -221,7 +221,7 @@ class TaskCreateView(TaskFormMixin):
             initial["item"], initial["room"] = item, item.room
             contractor = services.contractor_of_provider(self.home, item.contract_provider)
             if contractor:  # the provider of its maintenance contract does the upkeep
-                initial["contractor_name"] = contractor.name
+                initial["contractor"] = contractor.pk
         elif room:
             initial["room"] = room
         return initial
