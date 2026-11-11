@@ -1,4 +1,4 @@
-"""The one way a date is written on a screen (docs/adr/0059).
+"""The one way a date is written on a screen (docs/adr/0068).
 
 Django's own formats mix styles: in English its long date format gives `Nov. 8, 2026` while
 its short one gives `02/08/2027`, which reads as 2 August or 8 February depending on the

@@ -1,4 +1,4 @@
-"""Template filters for dates: `{{ value|day }}`, `|moment`, `|weekday_day` (docs/adr/0059).
+"""Template filters for dates: `{{ value|day }}`, `|moment`, `|weekday_day` (docs/adr/0068).
 
 They are the only filters that write a date in a template; `core.dates` holds the formats.
 `|date:` stays for the machine formats (`Y-m-d` of an input) and the parts of a calendar

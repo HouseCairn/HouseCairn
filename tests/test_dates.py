@@ -1,4 +1,4 @@
-"""One date format per language across the application (docs/adr/0059)."""
+"""One date format per language across the application (docs/adr/0068)."""
 
 import datetime
 import re
