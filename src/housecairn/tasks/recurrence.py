@@ -27,38 +27,50 @@ MAX_INTERVAL = {DAY: 18_250, WEEK: 2_600, MONTH: 600, YEAR: 50}
 
 
 # Predefined seasons, as the months they cover in the northern hemisphere (docs/adr/0045).
-# Meteorological seasons by whole months; the heating season runs from October to April.
-SPRING, SUMMER, AUTUMN, WINTER, HEATING, CUSTOM = (
-    "spring",
-    "summer",
-    "autumn",
-    "winter",
-    "heating",
-    "custom",
-)
+# Meteorological seasons by whole months.
+SPRING, SUMMER, AUTUMN, WINTER, CUSTOM = ("spring", "summer", "autumn", "winter", "custom")
+# The heating season was a predefined season until 2026-11 (docs/adr/0045, change of
+# 2026-11-11): it is now custom months, October to April in the north. An archive, a CSV
+# file or an API client of before may still send it; `legacy_season` gives its months.
+HEATING = "heating"
 NORTH, SOUTH = "north", "south"
 _NORTH_WINDOWS: dict[str, tuple[int, int]] = {
     SPRING: (3, 5),
     SUMMER: (6, 8),
     AUTUMN: (9, 11),
     WINTER: (12, 2),
-    HEATING: (10, 4),
 }
+_LEGACY_WINDOWS: dict[str, tuple[int, int]] = {HEATING: (10, 4)}
 PREDEFINED_SEASONS = tuple(_NORTH_WINDOWS)
+LEGACY_SEASONS = tuple(_LEGACY_WINDOWS)
+
+
+def _shift(window: tuple[int, int], hemisphere: str) -> tuple[int, int] | None:
+    if hemisphere == NORTH:
+        return window
+    if hemisphere == SOUTH:
+        return ((window[0] + 5) % 12 + 1, (window[1] + 5) % 12 + 1)
+    return None
+
+
+def legacy_season(season: str, hemisphere: str = NORTH) -> tuple[int, int] | None:
+    """The months of a season no longer offered (`heating`) in a hemisphere; else None.
+
+    The value is then stored as a custom season with these months: October to April in
+    the north, April to October in the south, as the heating season was.
+    """
+    window = _LEGACY_WINDOWS.get(season)
+    return None if window is None else _shift(window, hemisphere)
 
 
 def season_window(season: str, hemisphere: str = NORTH) -> tuple[int, int] | None:
     """First and last month of a predefined season in a hemisphere; None for any other value.
 
     The southern hemisphere is the northern one shifted by six months: its summer is
-    December to February, its heating season April to October.
+    December to February.
     """
     window = _NORTH_WINDOWS.get(season)
-    if window is None or hemisphere not in (NORTH, SOUTH):
-        return None
-    if hemisphere == NORTH:
-        return window
-    return ((window[0] + 5) % 12 + 1, (window[1] + 5) % 12 + 1)
+    return None if window is None else _shift(window, hemisphere)
 
 
 def season_named(start: int | None, end: int | None) -> str:

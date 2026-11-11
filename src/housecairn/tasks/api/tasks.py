@@ -25,7 +25,7 @@ from housecairn.rooms.api import (
     _validation,
 )
 from housecairn.rooms.models import Item, Room
-from housecairn.tasks import durations, services
+from housecairn.tasks import durations, recurrence, services
 from housecairn.tasks.api.common import DATE_PARAMS, _date_param
 from housecairn.tasks.api.materials import MaterialSummarySerializer
 from housecairn.tasks.models import (
@@ -70,11 +70,13 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
         queryset=Contractor.objects.none(), required=False, allow_null=True
     )
     season = serializers.ChoiceField(
-        choices=[("", "all year"), *Season.choices],
+        choices=[("", "all year"), *Season.choices, (recurrence.HEATING, "heating (deprecated)")],
         required=False,
-        help_text="`spring`, `summer`, `autumn`, `winter` and `heating` follow the hemisphere "
-        "of the home and set the two months below; `custom` takes the months given; empty is "
-        "the whole year. Months given without a season make a custom one.",
+        help_text="`spring`, `summer`, `autumn` and `winter` follow the hemisphere of the home "
+        "and set the two months below; `custom` takes the months given; empty is the whole "
+        "year. Months given without a season make a custom one. `heating`, no longer offered, "
+        "is still accepted and stored as `custom` with the months of the heating season "
+        "(October to April in the north, April to October in the south).",
     )
     due_on = serializers.DateField(
         source="open_due_on",

@@ -437,6 +437,33 @@ form p:has(> input[type="checkbox"], > input[type="radio"]) label {
   min-width: 0;
 }
 
+/* A group of choices under one question (radio buttons), as one field. */
+.choice-group {
+  margin: 0 0 var(--hc-space-3);
+  padding: 0;
+  border: 0;
+}
+
+.choice-group legend {
+  margin-bottom: var(--hc-space-1);
+  padding: 0;
+  font-size: var(--hc-font-size-sm);
+  font-weight: var(--hc-font-weight-bold);
+  color: var(--hc-color-text-muted);
+}
+
+.choice-group p {
+  margin: 0;
+}
+
+/* What a group of fields amounts to, in one sentence that follows them (task form). */
+.field-summary {
+  margin: 0 0 var(--hc-space-3);
+  padding: var(--hc-space-3);
+  background: var(--hc-color-surface-muted);
+  border-radius: var(--hc-radius-md);
+}
+
 .helptext ul {
   margin: var(--hc-space-1) 0 0;
   padding-left: var(--hc-space-4);

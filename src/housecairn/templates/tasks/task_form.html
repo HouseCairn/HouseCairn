@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% load i18n navigation %}
+{% load i18n navigation static %}
+{% block extra_head %}<script src="{% static 'js/task-form.js' %}" defer></script>{% endblock extra_head %}
 {% block head_title %}{% if task %}{% translate "Edit the task" %}{% else %}{% translate "Add a task" %}{% endif %}{% endblock head_title %}
 {% block content %}
   {% if task %}
@@ -9,7 +10,7 @@
     {% url 'tasks:list' home_id=home.id as parent %}{% back_link parent %}
     <h1>{% translate "Add a task" %}</h1>
   {% endif %}
-  <form method="post"{% if form.uploads %} enctype="multipart/form-data"{% endif %}>
+  <form method="post" data-task-form{% if form.uploads %} enctype="multipart/form-data"{% endif %}>
     {% csrf_token %}
     {% next_field %}
     {{ form.non_field_errors }}
@@ -19,16 +20,36 @@
       {% include "tasks/_field.html" with field=form.item %}
       {% include "tasks/_field.html" with field=form.due_on %}
     </div>
-    <details class="form-section"{% if form.repeat_mode.errors or form.repeat_interval.errors or form.season.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeat_mode.value != "once" or not task and form.item.value %} open{% endif %}>
+    <details class="form-section"{% if form.repeat_interval.errors or form.repeat_start.errors or form.season.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeats.value or not task and form.item.value %} open{% endif %}>
       <summary>{% translate "Repeat" %}</summary>
-      <div>
-        {% include "tasks/_field.html" with field=form.repeat_mode %}
-        {% include "tasks/_field.html" with field=form.repeat_interval %}
-        {% include "tasks/_field.html" with field=form.repeat_unit %}
+      {# One sentence: repeat every N units, counting from the due date or the day it is done. With script, the fields a choice does not use are hidden (static/js/task-form.js) and the summary follows the fields; without it, every field shows and the server ignores the unused ones. #}
+      <div class="repeat-fields" hx-get="{% url 'tasks:repeat-summary' home_id=home.id %}" hx-trigger="change, input delay:400ms, change from:#{{ form.due_on.id_for_label }}" hx-include="this, #{{ form.due_on.id_for_label }}" hx-target="#repeat-summary" hx-swap="innerHTML">
+        {% include "tasks/_field.html" with field=form.repeats %}
+        <div data-shown-when="repeats">
+          <p>
+            {{ form.repeat_interval.errors }}{{ form.repeat_unit.errors }}
+            <label for="{{ form.repeat_interval.id_for_label }}">{{ form.repeat_interval.label }}</label>
+            <span class="field-pair">{{ form.repeat_interval }}<label class="sr-only" for="{{ form.repeat_unit.id_for_label }}">{{ form.repeat_unit.label }}</label>{{ form.repeat_unit }}</span>
+          </p>
+          <fieldset class="choice-group">
+            <legend>{{ form.repeat_from.label }}</legend>
+            {{ form.repeat_from.errors }}
+            {% for choice in form.repeat_from %}<p><label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>{{ choice.tag }}</p>{% endfor %}
+          </fieldset>
+          <div data-shown-when="repeat_from=fixed">
+            {% include "tasks/_field.html" with field=form.repeat_start %}
+          </div>
+          <div data-shown-when="repeat_from=after_last">
+            <p class="helptext">{% translate "The period is the number of days, weeks, months or years chosen above, counted from the day the task is marked done." %}</p>
+          </div>
+        </div>
         {% include "tasks/_field.html" with field=form.season %}
-        {% include "tasks/_field.html" with field=form.season_start_month %}
-        {% include "tasks/_field.html" with field=form.season_end_month %}
+        <div data-shown-when="season=custom">
+          {% include "tasks/_field.html" with field=form.season_start_month %}
+          {% include "tasks/_field.html" with field=form.season_end_month %}
+        </div>
         {% include "tasks/_field.html" with field=form.hide_days_before %}
+        <p class="field-summary"><strong>{% translate "In short:" %}</strong> <output id="repeat-summary" aria-live="polite">{{ form.summary }}</output></p>
       </div>
     </details>
     <details class="form-section"{% if form.assignee.errors or form.contractor_name.errors %} open{% endif %}>

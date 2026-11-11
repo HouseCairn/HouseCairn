@@ -146,7 +146,8 @@ class TestRecord:
 TASK_FORM = {
     "title": "Service the boiler",
     "priority": "normal",
-    "repeat_mode": "fixed",  # without a date: refused by the service, after the form passed
+    "repeats": "on",
+    "repeat_from": "fixed",  # without a date: refused by the service, after the form passed
     "repeat_interval": "1",
     "repeat_unit": "year",
     "hide_days_before": "0",
@@ -179,7 +180,7 @@ class TestRefusedFormLeavesNothing:
         assert AuditEvent.objects.count() == before
 
     def test_an_accepted_form_still_creates_both(self, signed_in: Client, alice_home: Home) -> None:
-        data = {**TASK_FORM, "repeat_mode": "once"}
+        data = {**TASK_FORM, "repeats": ""}
         response = signed_in.post(reverse("tasks:create", kwargs={"home_id": alice_home.id}), data)
         assert response.status_code == 302
         assert Task.objects.get().contractor == Contractor.objects.get(name="Brand New Ltd")

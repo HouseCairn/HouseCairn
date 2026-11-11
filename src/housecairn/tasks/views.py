@@ -17,6 +17,7 @@ from django.http.response import HttpResponseBase
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.urls import Resolver404, reverse
+from django.utils.html import escape
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views import View
@@ -256,6 +257,22 @@ class TaskCreateView(TaskFormMixin):
         for line in refused:
             messages.error(self.request, _("File not added: %(reason)s") % {"reason": line})
         return redirect(target)
+
+
+class RepeatSummaryView(HomeTasksMixin, View):
+    """The sentence of the repetition for the values typed in the task form (HTMX).
+
+    The form asks for it as its fields change; the words are those of the server, in the
+    language of the person. Nothing is read or written but the home's hemisphere.
+    """
+
+    require_write = True
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        form = forms.TaskForm(data=request.GET, home=self.home, with_files=False)
+        response = HttpResponse(escape(forms.repeat_summary(form, self.home)))
+        response["Cache-Control"] = "no-store"
+        return response
 
 
 class TaskDetailView(HomeTasksMixin, TemplateView):

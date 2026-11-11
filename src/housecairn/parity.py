@@ -215,6 +215,7 @@ EXEMPT: dict[str, str] = {
     "about": "static information page",
     "setup": "first-account screen opened by a code of the server log, before any API token exists",
     "calendar:feed": "iCalendar document read by a calendar application, at a secret address",
+    "tasks:repeat-summary": "sentence of the task form while it is typed; the API has the fields",
 }
 
 # Third-party route trees: sign-in, administration. Their functions are either

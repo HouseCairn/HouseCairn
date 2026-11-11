@@ -47,6 +47,7 @@ from housecairn.rooms import images
 from housecairn.rooms.models import Room
 from housecairn.rooms.services import _read_upload
 from housecairn.tasks import files as task_files
+from housecairn.tasks import recurrence
 from housecairn.tasks import services as task_services
 from housecairn.tasks.models import Contractor, Season, Task
 
@@ -355,8 +356,15 @@ def _check_rooms(home: Home, rooms: Iterable[Room]) -> list[Room]:
 
 
 def _clean_season(project: Project) -> None:
-    """A predefined season has no months of its own; no season has none either."""
-    if project.season != Season.CUSTOM:
+    """A predefined season has no months of its own; no season has none either.
+
+    The heating season of a client of before becomes its months, as a custom season.
+    """
+    legacy = recurrence.legacy_season(project.season, project.home.hemisphere)
+    if legacy is not None:
+        project.season = Season.CUSTOM
+        project.season_start_month, project.season_end_month = legacy
+    elif project.season != Season.CUSTOM:
         project.season_start_month = project.season_end_month = None
 
 

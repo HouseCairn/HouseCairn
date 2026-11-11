@@ -35,7 +35,6 @@ class TestWindows:
             ("summer", (6, 8), (12, 2)),
             ("autumn", (9, 11), (3, 5)),
             ("winter", (12, 2), (6, 8)),
-            ("heating", (10, 4), (4, 10)),
         ],
     )
     def test_the_southern_hemisphere_is_shifted_by_six_months(
@@ -43,6 +42,14 @@ class TestWindows:
     ) -> None:
         assert recurrence.season_window(season, "north") == north
         assert recurrence.season_window(season, "south") == south
+
+    def test_the_heating_season_is_no_longer_a_season_but_keeps_its_months(self) -> None:
+        assert recurrence.season_window("heating", "north") is None
+        assert "heating" not in recurrence.PREDEFINED_SEASONS
+        assert recurrence.legacy_season("heating", "north") == (10, 4)
+        assert recurrence.legacy_season("heating", "south") == (4, 10)
+        assert recurrence.legacy_season("summer", "north") is None
+        assert recurrence.legacy_season("heating", "moon") is None
 
     def test_other_values_have_no_window(self) -> None:
         assert recurrence.season_window("custom", "north") is None
@@ -134,11 +141,19 @@ class TestScreens:
     ) -> None:
         url = reverse("tasks:create", kwargs={"home_id": alice_home.id})
         page = signed_in.get(url).text
-        assert 'value="heating"' in page
-        assert "Heating season" in page
-        assert signed_in.post(url, {**FORM, "season": "heating"}).status_code == 302
+        assert 'value="summer"' in page
+        assert 'value="heating"' not in page
+        assert "Heating season" not in page
+        assert signed_in.post(url, {**FORM, "season": "summer"}).status_code == 302
         task = Task.objects.get(title="Service the boiler")
-        assert (task.season, task.season_start_month, task.season_end_month) == ("heating", 10, 4)
+        assert (task.season, task.season_start_month, task.season_end_month) == ("summer", 6, 8)
+
+    def test_the_task_form_no_longer_takes_the_heating_season(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        url = reverse("tasks:create", kwargs={"home_id": alice_home.id})
+        assert signed_in.post(url, {**FORM, "season": "heating"}).status_code == 200
+        assert not Task.objects.exists()
 
     def test_months_chosen_with_a_predefined_season_are_ignored(
         self, signed_in: Client, alice_home: Home
@@ -174,15 +189,15 @@ class TestScreens:
             alice,
             alice_home,
             title="Bleed",
-            season="heating",
+            season="winter",
             repeat_mode="fixed",
             repeat_unit="year",
-            due_on=datetime.date(2026, 10, 20),
+            due_on=datetime.date(2026, 12, 20),
         )
         page = signed_in.get(
             reverse("tasks:detail", kwargs={"home_id": alice_home.id, "task_id": task.id})
         ).text
-        assert "Heating season" in page
+        assert "Winter" in page
 
 
 class TestHomeScreen:

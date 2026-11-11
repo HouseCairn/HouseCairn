@@ -4,7 +4,7 @@ from housecairn.tasks.forms.contractor import ContractorForm
 from housecairn.tasks.forms.materials import MaterialFormSet, MaterialSaveForm
 from housecairn.tasks.forms.occurrence import AttachmentForm, CompletionForm, PostponeForm
 from housecairn.tasks.forms.preferences import PreferencesForm
-from housecairn.tasks.forms.task import TaskForm
+from housecairn.tasks.forms.task import TaskForm, repeat_summary
 
 __all__ = [
     "AttachmentForm",
@@ -15,4 +15,5 @@ __all__ = [
     "PostponeForm",
     "PreferencesForm",
     "TaskForm",
+    "repeat_summary",
 ]

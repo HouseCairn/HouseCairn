@@ -90,6 +90,8 @@ class ImportEntity:
     create: Create
     references: dict[str, str] = field(default_factory=dict)
     label: Any = ""
+    # Rewrites the cells of a row from a file of before (a value no longer offered).
+    upgrade: Callable[[dict[str, str], Home], dict[str, str]] | None = None
 
     def section(self) -> exports.Section:
         found = exports.section_of_model(self.model)
@@ -433,6 +435,8 @@ def _row(
     actor: Any,
     seen: set[uuid.UUID],
 ) -> tuple[RowReport, models.Model | None, uuid.UUID | None]:
+    if entity.upgrade is not None:
+        cells = entity.upgrade(dict(cells), context.home)
     report = RowReport(line=line, label=unneutralise(cells.get(entity.key, "")).strip()[:120])
     key: uuid.UUID | None = None
     if cells.get("id", "").strip():
@@ -658,6 +662,30 @@ def _create_task(actor: Any, home: Home, values: dict[str, Any]) -> models.Model
     return tasks.create_task(actor, home, due_on=due_on, **values)
 
 
+# The heating season, no longer offered (docs/adr/0045, change of 2026-11-11), as an export
+# of before wrote it (its code) or as a person may have typed it (its label, en and fr).
+_HEATING_CELLS = frozenset({"heating", "heating season", "saison de chauffe"})
+
+
+def _upgrade_task(cells: dict[str, str], home: Home) -> dict[str, str]:
+    """A task on the heating season becomes a custom season of the same months.
+
+    The file holds the months the task had; without them, those of the heating season in
+    the hemisphere of this home.
+    """
+    from housecairn.tasks import recurrence
+
+    if unneutralise(cells.get("season", "")).strip().casefold() not in _HEATING_CELLS:
+        return cells
+    cells["season"] = recurrence.CUSTOM
+    start, end = cells.get("season_start_month", ""), cells.get("season_end_month", "")
+    if not start.strip() or not end.strip():
+        window = recurrence.legacy_season(recurrence.HEATING, home.hemisphere)
+        if window is not None:
+            cells["season_start_month"], cells["season_end_month"] = map(str, window)
+    return cells
+
+
 def _register() -> None:
     from housecairn.rooms import services as rooms
     from housecairn.rooms.models import Item, Room
@@ -709,6 +737,7 @@ def _register() -> None:
             _create_task,
             references={"room": "rooms", "item": "items", "contractor": "contractors"},
             label=gettext_lazy("Tasks"),
+            upgrade=_upgrade_task,
         ),
     ):
         register(entity)

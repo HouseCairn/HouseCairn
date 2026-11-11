@@ -11,6 +11,7 @@ urlpatterns = [
     path("history/", views.HistoryView.as_view(), name="history"),
     path("tasks/", views.TaskListView.as_view(), name="list"),
     path("tasks/new/", views.TaskCreateView.as_view(), name="create"),
+    path("tasks/repeat-summary/", views.RepeatSummaryView.as_view(), name="repeat-summary"),
     path("tasks/templates/", views.TemplateAddView.as_view(), name="templates"),
     path("tasks/<uuid:task_id>/", views.TaskDetailView.as_view(), name="detail"),
     path("tasks/<uuid:task_id>/edit/", views.TaskEditView.as_view(), name="edit"),
