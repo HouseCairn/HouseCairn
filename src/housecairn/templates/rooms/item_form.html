@@ -13,7 +13,7 @@
   <form method="post" class="card" data-in-place-form>
     {% csrf_token %}
     {% next_field %}
-    {{ form.non_field_errors }}
+    {% include "components/form_errors.html" with form=form only %}
     {% for field in form %}
       {% if field.name == "new_contractor_name" or field.name == "new_contractor_trade" or field.name == "new_contractor_trade_other" %}
       {% else %}

@@ -106,11 +106,20 @@ msgstr "Pièce"
 msgid "Existing task"
 msgstr "Tâche existante"
 
+msgid "Choose a task that is in no project yet."
+msgstr "Choisissez une tâche qui n'est dans aucun projet."
+
 msgid "Photo"
 msgstr "Photo"
 
+msgid "Choose a photo."
+msgstr "Choisissez une photo."
+
 msgid "Address of the page"
 msgstr "Adresse de la page"
+
+msgid "Give the address of a web page, such as https://example.com."
+msgstr "Indiquez l'adresse d'une page web, par exemple https://example.com."
 
 msgid "Title"
 msgstr "Titre"
@@ -126,9 +135,6 @@ msgstr "Enveloppe"
 
 msgid "What you want to spend on work this year, in the currency of the home."
 msgstr "Ce que vous voulez dépenser en travaux cette année, dans la devise du logement."
-
-msgid "Give the address of a web page, such as https://example.com."
-msgstr "Indiquez l'adresse d'une page web, par exemple https://example.com."
 
 msgid "The address cannot hold a user name or a password."
 msgstr "L'adresse ne peut pas contenir de nom d'utilisateur ni de mot de passe."
@@ -365,9 +371,6 @@ msgstr "Projet supprimé."
 msgid "Task added to the project."
 msgstr "Tâche ajoutée au projet."
 
-msgid "Choose a task that is in no project yet."
-msgstr "Choisissez une tâche qui n'est dans aucun projet."
-
 msgid "Task put in the project."
 msgstr "Tâche mise dans le projet."
 
@@ -403,9 +406,6 @@ msgstr "ce devis"
 
 msgid "Quote deleted."
 msgstr "Devis supprimé."
-
-msgid "Choose a photo."
-msgstr "Choisissez une photo."
 
 msgid "Photo added."
 msgstr "Photo ajoutée."

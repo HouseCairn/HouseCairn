@@ -463,8 +463,20 @@
 }
 
 .tabs-fit .tab {
-  justify-content: center;
+  /* A grid with one shrinkable column, not the flex row of `.tab`: the label wraps inside the
+     box. In a flex row it keeps the width of its longest word and runs into the next tab. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
   padding-right: var(--hc-space-1);
   padding-left: var(--hc-space-1);
   text-align: center;
+
+  /* A label longer than its share of the width goes on a second line, between words, and
+     hyphenated where the browser knows the language (the page carries `lang`); a word is
+     cut anywhere only when it does not fit in the box at all. */
+  white-space: normal;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.2;
 }

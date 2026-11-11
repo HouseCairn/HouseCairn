@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**The 400 page of a refused host name says what to do.** An address that is not in `ALLOWED_HOSTS` gets a page that tells the administrator to add the name. Whoever hosts HouseCairn for someone else can name the exact option with `HOUSECAIRN_DISALLOWED_HOST_HINT`; the page never repeats the refused name ([settings](../../../administration/settings.md#the-page-of-a-refused-host-name))."
+msgstr "**La page 400 d'un nom d'hôte refusé dit quoi faire.** Une adresse absente de `ALLOWED_HOSTS` reçoit une page qui demande à l'administrateur d'ajouter le nom. Celui qui héberge HouseCairn pour quelqu'un d'autre peut nommer l'option exacte avec `HOUSECAIRN_DISALLOWED_HOST_HINT` ; la page ne répète jamais le nom refusé ([réglages](../../../administration/settings.md#the-page-of-a-refused-host-name))."
+

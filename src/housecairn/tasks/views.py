@@ -25,6 +25,7 @@ from django.views.generic import FormView, TemplateView
 
 from housecairn.accounts import names
 from housecairn.core import navigation
+from housecairn.core.form_errors import banner_messages
 from housecairn.core.prefix import in_application, resolve_url
 from housecairn.core.redirects import has_safe_shape
 from housecairn.homes import current
@@ -455,9 +456,8 @@ class MaterialSaveView(HomeTasksMixin, View):
         form = forms.MaterialSaveForm(request.POST, articles=stock_services.articles_of(self.home))
         target = redirect("tasks:detail", home_id=self.home.id, task_id=task.id)
         if not form.is_valid():
-            messages.error(
-                request, " ".join(str(m) for errors in form.errors.values() for m in errors)
-            )
+            for message in banner_messages(form):
+                messages.error(request, message)
             return target
         try:
             material_services.save_material(

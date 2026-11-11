@@ -30,20 +30,34 @@ whose last choice adds one in place, and the sheet of the item links to the cont
 `task-form` and `task-lines` (local only) measure the task form at 320, 360, 375 and 1280 px,
 in French, with and without script: the repetition, the duration and the contractor, then the
 room, item and stock item added in place and the lines of the materials.
+
+`form-errors` (CI) refuses a task form with two errors, one of them in a folded section, and
+checks, with script, with HTMX swapping the page in place, and without script, that the summary
+of the errors is on screen and holds the focus, that the section is unfolded and that a line of
+the summary puts the focus in its field. `instance-tabs` (CI) measures the tabs of the instance
+administration at 360, 375, 768 and 1280 px, in English and in French: no tab text runs into its
+neighbour and no word of a label is cut over two lines. `form-errors` signs in as
+`forms@example.com`, `instance-tabs` as the administrator `admin@example.com`: both are accounts
+of the CI instance.
 """
 
 import argparse
 import sys
+from itertools import pairwise
+from typing import Any
 
 from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
 
 EMAIL = "demo@example.com"
 PASSWORD = "correct-horse-battery-staple"  # throwaway account of the CI instance
+# The account of the form checks: the passkey check leaves a passkey on `EMAIL`, which then asks
+# for it at every sign-in.
+FORMS_EMAIL = "forms@example.com"
 
 
-def sign_in(page: Page, base: str) -> None:
+def sign_in(page: Page, base: str, email: str = EMAIL) -> None:
     page.goto(f"{base}/accounts/login/")
-    page.fill("input[name=login]", EMAIL)
+    page.fill("input[name=login]", email)
     page.fill("input[name=password]", PASSWORD)
     page.click("main form:has(input[name=login]) button[type=submit]")
     page.wait_for_url("**/today/")
@@ -618,7 +632,7 @@ def new_records_and_materials(browser: Browser, base: str) -> None:
                 page.fill("#id_materials-0-new_article_name", f"Pinceau {suffix}")
                 page.select_option("#id_materials-0-new_article_unit", "piece")
                 page.fill("#id_materials-0-quantity", "2")
-                page.click("form[data-task-form] button[type=submit]:visible >> nth=-1")
+                page.click("form[data-task-form] > button.button-block[type=submit] >> nth=-1")
                 page.wait_for_url(lambda url: "/tasks/new/" not in url)
                 if page.locator("h1").first.text_content() != f"Peindre le mur {suffix}":
                     page.locator(f"main a:has-text('Peindre le mur {suffix}')").first.click()
@@ -702,10 +716,204 @@ def item_contract(browser: Browser, base: str) -> None:
                 context.close()
 
 
+ADMIN_EMAIL = "admin@example.com"
+TAB_WIDTHS = (360, 375, 768, 1280)
+
+# The text of every tab of the bar, where its box is, and the words of its label that are drawn
+# on more than one line. A range around the content gives the width the text really takes,
+# whether or not the box that holds it is as wide; a range around one word has one rectangle per
+# line it is drawn on.
+TABS_JS = """() => [...document.querySelectorAll('.tabs .tab')].map((tab) => {
+  const range = document.createRange();
+  range.selectNodeContents(tab);
+  const text = range.getBoundingClientRect();
+  const box = tab.getBoundingClientRect();
+  const cut = [];
+  const walker = document.createTreeWalker(tab, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    for (const word of node.data.matchAll(/\\S+/g)) {
+      const part = document.createRange();
+      part.setStart(node, word.index);
+      part.setEnd(node, word.index + word[0].length);
+      const lines = new Set([...part.getClientRects()].map((r) => Math.round(r.top / 4)));
+      if (lines.size > 1) cut.push(word[0]);
+    }
+  }
+  return {
+    label: tab.textContent.trim(),
+    box: [box.left, box.right],
+    text: [text.left, text.right],
+    cut,
+  };
+})"""
+
+
+def instance_tabs(browser: Browser, base: str) -> None:
+    """The tabs of the instance administration share the width without running into each other."""
+    for locale in ("en", "fr"):
+        for width in TAB_WIDTHS:
+            context = browser.new_context(viewport={"width": width, "height": 800}, locale=locale)
+            page = context.new_page()
+            page.goto(f"{base}/accounts/login/")
+            page.fill("input[name=login]", ADMIN_EMAIL)
+            page.fill("input[name=password]", PASSWORD)
+            page.click("main form:has(input[name=login]) button[type=submit]")
+            page.wait_for_load_state()
+            for path in ("/instance/", "/instance/providers/"):
+                page.goto(f"{base}{path}")
+                tabs = page.evaluate(TABS_JS)
+                label = f"{locale} {width} px {path}"
+                check(len(tabs) == 4, f"{label}: four tabs")
+                for tab in tabs:
+                    inside = (
+                        tab["box"][0] - 1 <= tab["text"][0] and tab["text"][1] <= tab["box"][1] + 1
+                    )
+                    check(inside, f"{label}: '{tab['label']}' stays in its own box {tab['box']}")
+                    # Hyphenation needs a dictionary the headless browser may not have: a word
+                    # drawn on two lines is a label to shorten, hyphen or not.
+                    check(
+                        not tab["cut"], f"{label}: '{tab['label']}' has no word cut: {tab['cut']}"
+                    )
+                for left, right in pairwise(tabs):
+                    check(
+                        left["text"][1] <= right["text"][0],
+                        f"{label}: '{left['label']}' does not run into '{right['label']}'",
+                    )
+                check(
+                    page.evaluate("document.documentElement.scrollWidth") <= width,
+                    f"{label}: the page does not scroll sideways",
+                )
+            context.close()
+
+
+# The task form of the CI instance: an empty title and an amount that is not one, the amount
+# sitting in the folded section "Time and budget".
+SUMMARY = "[data-form-errors]"
+
+
+def _on_summary(page: Page, label: str, count: int = 2) -> None:
+    check(page.locator(SUMMARY).count() == 1, f"{label}: one summary")
+    check(
+        page.evaluate("document.activeElement.hasAttribute('data-form-errors')"),
+        f"{label}: the summary holds the focus",
+    )
+    top = page.locator(SUMMARY).bounding_box()
+    check(
+        top is not None and 0 <= top["y"] < (page.viewport_size or {"height": 0})["height"],
+        f"{label}: the summary is on screen",
+    )
+    check(page.locator(f"{SUMMARY} li").count() == count, f"{label}: {count} lines in the summary")
+
+
+def _refuse_task_form(page: Page, base: str, script: bool) -> None:
+    page.goto(f"{base}/tasks/")
+    home = page.url.split("/h/")[1].split("/")[0]
+    page.goto(f"{base}/h/{home}/tasks/new/")
+    if script:
+        page.click("summary:has-text('Time and budget')")
+    else:
+        check(
+            not page.locator("details:has-text('Time and budget')").evaluate("d => d.open"),
+            "no script: the section is folded to begin with",
+        )
+        page.locator("details:has-text('Time and budget')").evaluate("d => { d.open = true; }")
+    page.fill("#id_labour_budget", "not an amount")
+    page.evaluate("document.querySelector('form[data-task-form]').noValidate = true")
+
+
+def form_errors(browser: Browser, base: str) -> None:
+    """A refused form puts its summary on screen and in focus; the folded section opens."""
+    for width in (360, 1280):
+        # With script, a full page: the summary, the unfolded section, a click on a line.
+        context = browser.new_context(viewport={"width": width, "height": 700})
+        page = context.new_page()
+        sign_in(page, base, FORMS_EMAIL)
+        _refuse_task_form(page, base, script=True)
+        page.click("form[data-task-form] > button.button-block[type=submit]")
+        page.wait_for_selector(SUMMARY)
+        label = f"{width} px, script"
+        _on_summary(page, label)
+        check(
+            page.locator("#id_labour_budget").is_visible(),
+            f"{label}: the folded section holding a field in error is open",
+        )
+        check(
+            page.get_attribute("#id_labour_budget", "aria-invalid") == "true",
+            f"{label}: the field is aria-invalid",
+        )
+        page.locator(f"{SUMMARY} a", has_text="Labour budget").click()
+        check(
+            page.evaluate("document.activeElement.id") == "id_labour_budget",
+            f"{label}: a line of the summary puts the focus in its field",
+        )
+        context.close()
+
+        # With script, HTMX swapping the page in place (a partial response): same behaviour.
+        context = browser.new_context(viewport={"width": width, "height": 700})
+        page = context.new_page()
+        sign_in(page, base, FORMS_EMAIL)
+        _refuse_task_form(page, base, script=True)
+        page.evaluate(
+            """() => {
+              window.__sameDocument = true;
+              const form = document.querySelector('form[data-task-form]');
+              form.setAttribute('hx-post', location.pathname);
+              form.setAttribute('hx-select', '#main');
+              form.setAttribute('hx-target', '#main');
+              form.setAttribute('hx-swap', 'outerHTML');
+              htmx.process(form);
+            }"""
+        )
+        page.click("form[data-task-form] > button.button-block[type=submit]")
+        page.wait_for_selector(SUMMARY)
+        label = f"{width} px, HTMX"
+        check(page.evaluate("window.__sameDocument === true"), f"{label}: the page was swapped")
+        _on_summary(page, label)
+        check(
+            page.locator("#id_labour_budget").is_visible(),
+            f"{label}: the folded section holding a field in error is open",
+        )
+        context.close()
+
+    # Without script: the browser alone puts the summary in focus (autofocus).
+    context = browser.new_context(viewport={"width": 360, "height": 700}, java_script_enabled=False)
+    page = context.new_page()
+    context.add_cookies(_session_cookies(browser, base, FORMS_EMAIL))
+    _refuse_task_form(page, base, script=False)
+    page.click("form[data-task-form] > button.button-block[type=submit]")
+    page.wait_for_selector(SUMMARY)
+    _on_summary(page, "360 px, no script")
+    check(
+        page.locator("#id_labour_budget").is_visible(),
+        "360 px, no script: the folded section holding a field in error is open",
+    )
+    context.close()
+
+
+def _session_cookies(browser: Browser, base: str, email: str = EMAIL) -> list[Any]:
+    """The cookies of a signed-in session: signing in needs no script, but is simplest with it."""
+    context = browser.new_context()
+    page = context.new_page()
+    sign_in(page, base, email)
+    cookies = context.cookies()
+    context.close()
+    return cookies
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument(
-        "mode", choices=["passkey", "sso", "in-place", "task-form", "task-lines", "item-contract"]
+        "mode",
+        choices=[
+            "passkey",
+            "sso",
+            "in-place",
+            "task-form",
+            "task-lines",
+            "item-contract",
+            "form-errors",
+            "instance-tabs",
+        ],
     )
     parser.add_argument("--base", required=True, help="address of the running instance")
     parser.add_argument("--provider", help="address of the stub identity provider (sso mode)")
@@ -723,6 +931,10 @@ def main() -> None:
             new_records_and_materials(browser, base)
         elif args.mode == "item-contract":
             item_contract(browser, base)
+        elif args.mode == "form-errors":
+            form_errors(browser, base)
+        elif args.mode == "instance-tabs":
+            instance_tabs(browser, base)
         else:
             passkey(browser, base)
         browser.close()

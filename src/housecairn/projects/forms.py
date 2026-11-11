@@ -243,7 +243,10 @@ class TaskAddForm(forms.Form):
 
 class TaskAttachForm(forms.Form):
     task = forms.ModelChoiceField(
-        label=_("Existing task"), queryset=Task.objects.none(), empty_label=None
+        label=_("Existing task"),
+        queryset=Task.objects.none(),
+        empty_label=None,
+        error_messages={"invalid_choice": _("Choose a task that is in no project yet.")},
     )
 
     def __init__(self, *args: Any, tasks: Any, **kwargs: Any) -> None:
@@ -257,6 +260,7 @@ class PhotoForm(forms.Form):
     photo = forms.FileField(
         label=_("Photo"),
         widget=forms.FileInput(attrs={"accept": "image/jpeg,image/png,image/webp"}),
+        error_messages={"required": _("Choose a photo.")},
     )
 
 
@@ -266,6 +270,10 @@ class LinkForm(forms.Form):
         max_length=500,
         assume_scheme="https",
         widget=forms.URLInput(attrs={"placeholder": "https://example.com/page"}),
+        error_messages={
+            "invalid": _("Give the address of a web page, such as https://example.com."),
+            "required": _("Give the address of a web page, such as https://example.com."),
+        },
     )
     title = forms.CharField(
         label=_("Title"),

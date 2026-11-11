@@ -1,0 +1,10 @@
+{% load i18n form_errors %}{# `form`, and `formset` when the block holds one. Draws nothing without an error. #}
+{% error_lines form formset as lines %}{% if lines %}
+<div class="form-errors" role="alert" tabindex="-1" autofocus data-form-errors>
+  <p class="form-errors-title">{% blocktranslate count counter=lines|length trimmed %}There is {{ counter }} error:{% plural %}There are {{ counter }} errors:{% endblocktranslate %}</p>
+  <ul>
+    {% for line in lines %}<li>{% if line.label %}{% if line.href %}<a href="{{ line.href }}">{{ line.label }}</a>{% else %}{{ line.label }}{% endif %}: {% endif %}{{ line.message }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

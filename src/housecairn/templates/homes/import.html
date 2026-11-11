@@ -10,7 +10,7 @@
     <form method="post" enctype="multipart/form-data" class="card">
       {% csrf_token %}
       {% next_field %}
-      {{ form.non_field_errors }}
+      {% include "components/form_errors.html" with form=form only %}
       {% for field in form.visible_fields %}
         <p>{{ field.label_tag }} {{ field }} {{ field.errors }}</p>
       {% endfor %}

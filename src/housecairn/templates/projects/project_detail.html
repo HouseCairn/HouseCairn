@@ -53,14 +53,16 @@
       {% csrf_token %}
       {% next_field %}
       <h3>{% translate "Add a task to the project" %}</h3>
+      {% include "components/form_errors.html" with form=task_form only %}
       {{ task_form.as_p }}
       <button type="submit" class="button-block">{% translate "Add the task" %}</button>
     </form>
-    {% if attach_form.fields.task.queryset.exists %}
+    {% if attach_form.fields.task.queryset.exists or attach_form.is_bound %}
       <form method="post" action="{% url 'projects:task-attach' home_id=home.id project_id=project.id %}" class="card">
         {% csrf_token %}
         {% next_field %}
         <h3>{% translate "Put an existing task in the project" %}</h3>
+        {% include "components/form_errors.html" with form=attach_form only %}
         {{ attach_form.as_p }}
         <button type="submit" class="button-secondary button-block">{% translate "Put it in the project" %}</button>
       </form>
@@ -184,6 +186,7 @@
     <form method="post" action="{% url 'projects:link-add' home_id=home.id project_id=project.id %}" class="card">
       {% csrf_token %}
       {% next_field %}
+      {% include "components/form_errors.html" with form=link_form only %}
       {{ link_form.as_p }}
       <p class="small">{% if preview_enabled %}{% translate "HouseCairn reads the page once, now, to find its title and its picture. The picture is kept on this server. If the page cannot be read, the link stays as you typed it." %}{% else %}{% translate "The link is kept as you typed it: this instance does not read the pages." %}{% endif %}</p>
       <button type="submit" class="button-secondary button-block">{% translate "Add the link" %}</button>
@@ -207,6 +210,7 @@
     <form method="post" action="{% url 'projects:file-add' home_id=home.id project_id=project.id %}" enctype="multipart/form-data" class="card">
       {% csrf_token %}
       {% next_field %}
+      {% include "components/form_errors.html" with form=photo_form only %}
       {{ photo_form.as_p }}
       <p class="small">{% blocktranslate with size=max_bytes|filesizeformat %}JPEG, PNG or WebP, up to {{ size }}. HouseCairn keeps the picture and nothing else: the location and every other piece of information hidden in the file are removed.{% endblocktranslate %}</p>
       <button type="submit" class="button-secondary button-block">{% translate "Add the photo" %}</button>

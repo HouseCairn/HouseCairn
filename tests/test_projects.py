@@ -258,9 +258,9 @@ class TestTaskLink:
         # On the screen, a message; through the API, a 400.
         monkeypatch.setattr(services, "attachable_tasks", lambda home: Task.objects.all())
         page = signed_in.post(
-            url("task-attach", alice_home, project_id=other.id), {"task": task.id}, follow=True
+            url("task-attach", alice_home, project_id=other.id), {"task": task.id}
         )
-        assert page.status_code == 200
+        assert page.status_code == 422
         assert "already in a project" in page.content.decode()
         api = APIClient()
         api.force_authenticate(alice)
@@ -1310,8 +1310,8 @@ class TestWeb:
         again = signed_in.post(
             url("task-attach", alice_home, project_id=living_room_project.id),
             {"task": task.id},
-            follow=True,
         )
+        assert again.status_code == 422
         assert "Choose a task that is in no project yet" in again.content.decode()
         signed_in.post(
             url("task-detach", alice_home, project_id=living_room_project.id, task_id=task.id)

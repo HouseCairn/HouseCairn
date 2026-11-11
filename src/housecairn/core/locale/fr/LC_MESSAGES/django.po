@@ -281,13 +281,14 @@ msgid "Home audit log"
 msgstr "Journal d'audit du logement"
 
 msgid "Overview"
-msgstr "Vue d'ensemble"
+msgstr "Aperçu"
 
 msgid "Settings"
 msgstr "Réglages"
 
+msgctxt "tab"
 msgid "Sign-in providers"
-msgstr "Fournisseurs de connexion"
+msgstr "SSO"
 
 msgid "Instance audit log"
 msgstr "Journal d'audit de l'instance"
@@ -303,6 +304,9 @@ msgstr "Requête invalide"
 
 msgid "The request could not be understood."
 msgstr "La requête n'a pas pu être comprise."
+
+msgid "This address is not one this instance answers to. Its administrator must add the name to ALLOWED_HOSTS."
+msgstr "Cette adresse n'est pas de celles auxquelles cette instance répond. Son administrateur doit ajouter ce nom à ALLOWED_HOSTS."
 
 msgid "Back to the home page"
 msgstr "Retour à l'accueil"
@@ -402,6 +406,12 @@ msgstr "Aller au contenu"
 
 msgid "Breadcrumbs"
 msgstr "Fil d'Ariane"
+
+#, python-format
+msgid "There is %(counter)s error:"
+msgid_plural "There are %(counter)s errors:"
+msgstr[0] "Il y a %(counter)s erreur :"
+msgstr[1] "Il y a %(counter)s erreurs :"
 
 #, python-format
 msgid "version %(version)s"

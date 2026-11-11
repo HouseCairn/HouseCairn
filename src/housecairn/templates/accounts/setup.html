@@ -6,6 +6,7 @@
   <p class="lead">{% translate "This instance has no administrator yet. Enter the code HouseCairn wrote in its log when it started, then create the account that will run the instance." %}</p>
   <form method="post" action="{% url 'setup' %}">
     {% csrf_token %}
+    {% include "components/form_errors.html" with form=form only %}
     {{ form.as_p }}
     <button type="submit">{% translate "Create the administrator" %}</button>
   </form>

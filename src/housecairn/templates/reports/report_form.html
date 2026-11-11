@@ -7,7 +7,7 @@
   <form method="post" enctype="multipart/form-data" class="card">
     {% csrf_token %}
     {% next_field %}
-    {{ form.non_field_errors }}
+    {% include "components/form_errors.html" with form=form only %}
     {% include "tasks/_field.html" with field=form.title %}
     {% include "tasks/_field.html" with field=form.place %}
     {% include "tasks/_field.html" with field=form.photo %}

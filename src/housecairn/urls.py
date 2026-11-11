@@ -23,6 +23,8 @@ from housecairn.tasks import views as task_views
 # staff through and answers 403 to anyone else.
 admin.site.login = secure_admin_login(admin.site.login)  # type: ignore[method-assign]
 
+handler400 = "housecairn.core.views.bad_request"
+
 urlpatterns = [
     path("", core_views.IndexView.as_view(), name="index"),
     path("healthz", core_views.healthz, name="healthz"),

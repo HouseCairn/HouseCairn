@@ -16,6 +16,7 @@ import environ
 from csp.constants import NONE, SELF
 from django.core.exceptions import ImproperlyConfigured
 
+from housecairn.core import hosthint
 from housecairn.core import prefix as url_prefix
 from housecairn.core.proxy import TrustedProxies
 from housecairn.instance import registry
@@ -52,6 +53,10 @@ ALLOWED_HOSTS: list[str] = env.list(
     "ALLOWED_HOSTS", default=["localhost", "127.0.0.1"] if DEBUG else []
 )
 CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+# What the 400 page says when the host name is refused; set by whoever hosts the instance.
+HOUSECAIRN_DISALLOWED_HOST_HINT: str = hosthint.parse_hint(
+    env.str("HOUSECAIRN_DISALLOWED_HOST_HINT", default="")
+)
 
 DATA_DIR = Path(env.str("HOUSECAIRN_DATA_DIR", default=str(REPO_DIR / "data")))
 
