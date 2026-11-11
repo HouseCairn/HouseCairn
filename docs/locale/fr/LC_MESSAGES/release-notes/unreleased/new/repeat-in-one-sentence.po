@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Repetition in one sentence.** The task form says the repetition as you would: **Repeat every** 3 months, **Count from** the due date (with the calendar of the device) or the day it is done, and a summary in plain words that follows what you type (\"Next time: 3 months after the last time\"). The fields a choice does not use are hidden, the months of a custom season among them; without script they stay visible and are ignored. See the [task form](../../../screens/task-form.md)."
+msgstr "**La répétition en une phrase.** Le formulaire de tâche dit la répétition comme vous le diriez : **Répéter tous les** 3 mois, **Compter depuis** la date prévue (avec le calendrier de l'appareil) ou le jour où c'est fait, et un résumé en clair qui suit ce que vous saisissez (« Prochaine fois : 3 mois après la dernière fois »). Les champs qu'un choix n'utilise pas sont masqués, dont les mois d'une saison personnalisée ; sans script, ils restent visibles et sont ignorés. Voir le [formulaire de tâche](../../../screens/task-form.md)."
+

@@ -19,7 +19,7 @@ def _hide_revoked_code(label: models.Model, data: dict[str, Any]) -> dict[str, A
     return data
 
 
-def _code_for_revoked(data: dict[str, Any]) -> dict[str, Any]:
+def _code_for_revoked(data: dict[str, Any], home: Any) -> dict[str, Any]:
     if data.get("code") is None and data.get("revoked_at") is not None:
         data["code"] = new_code()
     return data

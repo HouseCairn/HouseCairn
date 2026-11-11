@@ -115,6 +115,12 @@ msgstr "Automatique (navigateur, puis défaut de l'instance)"
 msgid "Applies to every page you open, on every device you sign in from."
 msgstr "S'applique à toutes les pages que vous ouvrez, sur tous les appareils où vous vous connectez."
 
+msgid "the due date"
+msgstr "la date prévue"
+
+msgid "the day it is done"
+msgstr "le jour où c'est fait"
+
 msgid "Assignee"
 msgstr "Responsable"
 
@@ -123,6 +129,21 @@ msgstr "Élément"
 
 msgid "Due on"
 msgstr "Échéance"
+
+msgid "Repeat this task"
+msgstr "Répéter cette tâche"
+
+msgid "Repeat every"
+msgstr "Répéter tous les"
+
+msgid "Count from"
+msgstr "Compter depuis"
+
+msgid "Starting on"
+msgstr "À partir du"
+
+msgid "The same date as the due date above: changing one changes the other."
+msgstr "La même date que la date prévue plus haut : changer l'une change l'autre."
 
 msgid "Season"
 msgstr "Saison"
@@ -172,6 +193,12 @@ msgstr "Indiquez une durée comprise entre une minute et trente jours."
 
 msgid "Give the first and the last month."
 msgstr "Indiquez le premier et le dernier mois."
+
+msgid "Give how often the task comes back."
+msgstr "Indiquez tous les combien la tâche revient."
+
+msgid "Give the same date as the due date."
+msgstr "Indiquez la même date que la date prévue."
 
 msgid "Templates"
 msgstr "Modèles"
@@ -251,9 +278,6 @@ msgstr "Automne"
 
 msgid "Winter"
 msgstr "Hiver"
-
-msgid "Heating season"
-msgstr "Saison de chauffe"
 
 msgid "Custom months"
 msgstr "Mois personnalisés"
@@ -507,6 +531,76 @@ msgstr "pièce jointe"
 
 msgid "attachments"
 msgstr "pièces jointes"
+
+#, python-format
+msgid "Next time: %(n)s day after the last time."
+msgid_plural "Next time: %(n)s days after the last time."
+msgstr[0] "Prochaine fois : %(n)s jour après la dernière fois."
+msgstr[1] "Prochaine fois : %(n)s jours après la dernière fois."
+
+#, python-format
+msgid "Next time: %(n)s week after the last time."
+msgid_plural "Next time: %(n)s weeks after the last time."
+msgstr[0] "Prochaine fois : %(n)s semaine après la dernière fois."
+msgstr[1] "Prochaine fois : %(n)s semaines après la dernière fois."
+
+#, python-format
+msgid "Next time: %(n)s month after the last time."
+msgid_plural "Next time: %(n)s months after the last time."
+msgstr[0] "Prochaine fois : %(n)s mois après la dernière fois."
+msgstr[1] "Prochaine fois : %(n)s mois après la dernière fois."
+
+#, python-format
+msgid "Next time: %(n)s year after the last time."
+msgid_plural "Next time: %(n)s years after the last time."
+msgstr[0] "Prochaine fois : %(n)s an après la dernière fois."
+msgstr[1] "Prochaine fois : %(n)s ans après la dernière fois."
+
+#, python-format
+msgid "Day %(day)s of every month, from %(date)s."
+msgstr "Le %(day)s de chaque mois à partir du %(date)s."
+
+#, python-format
+msgid "Day %(day)s of every quarter, from %(date)s."
+msgstr "Le %(day)s de chaque trimestre à partir du %(date)s."
+
+#, python-format
+msgid "Day %(day)s, every %(n)s months, from %(date)s."
+msgstr "Le %(day)s, tous les %(n)s mois, à partir du %(date)s."
+
+msgid "In a shorter month, its last day."
+msgstr "Dans un mois plus court, le dernier jour."
+
+#, python-format
+msgid "Every day, from %(date)s."
+msgid_plural "Every %(n)s days, from %(date)s."
+msgstr[0] "Tous les jours à partir du %(date)s."
+msgstr[1] "Tous les %(n)s jours à partir du %(date)s."
+
+#, python-format
+msgid "Every %(weekday)s, from %(date)s."
+msgid_plural "Every %(n)s weeks on %(weekday)s, from %(date)s."
+msgstr[0] "Chaque %(weekday)s à partir du %(date)s."
+msgstr[1] "Toutes les %(n)s semaines le %(weekday)s, à partir du %(date)s."
+
+#, python-format
+msgid "Every year on %(day)s, from %(date)s."
+msgid_plural "Every %(n)s years on %(day)s, from %(date)s."
+msgstr[0] "Chaque année le %(day)s, à partir du %(date)s."
+msgstr[1] "Tous les %(n)s ans le %(day)s, à partir du %(date)s."
+
+msgid "In other years, 28 February."
+msgstr "Les autres années, le 28 février."
+
+#, python-format
+msgid "Only from %(start)s to %(end)s: a date outside moves to the first day of %(start)s."
+msgstr "Seulement entre %(start)s et %(end)s : une date en dehors passe au 1er %(start)s."
+
+msgid "Not repeated: the task is done once."
+msgstr "Pas de répétition : la tâche se fait une fois."
+
+msgid "Give the date to count from."
+msgstr "Indiquez la date depuis laquelle compter."
 
 #, python-format
 msgid "Choose a date within %(years)d years of today."
@@ -985,6 +1079,12 @@ msgstr "Historique"
 
 msgid "Add a task"
 msgstr "Ajouter une tâche"
+
+msgid "The period is the number of days, weeks, months or years chosen above, counted from the day the task is marked done."
+msgstr "La période est le nombre de jours, de semaines, de mois ou d'années choisi plus haut, compté depuis le jour où la tâche est marquée faite."
+
+msgid "In short:"
+msgstr "En bref :"
 
 msgid "Who"
 msgstr "Qui"

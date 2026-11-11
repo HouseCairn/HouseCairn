@@ -70,8 +70,10 @@ web interface: every request only sees the homes of its user
   [ADR 0033](../adr/0033-done-with-undo.md),
   [ADR 0034](../adr/0034-task-attachments.md)). Only `title` is required to create
   a task; `due_on` is the date of its open occurrence. `season` is `spring`, `summer`,
-  `autumn`, `winter`, `heating` (the months follow the `hemisphere` of the home), `custom`
-  (with `season_start_month` and `season_end_month`) or empty;
+  `autumn`, `winter` (the months follow the `hemisphere` of the home), `custom`
+  (with `season_start_month` and `season_end_month`) or empty; `heating`, no longer
+  offered, is still accepted and stored as `custom` with the months of the heating season
+  (October to April in the north), for tasks and projects;
   `estimated_minutes` is in minutes, from 1 to 43200, and `estimated_text` reads it;
   `assignee_name` names the person in charge
   ([ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)). Everything the screens do

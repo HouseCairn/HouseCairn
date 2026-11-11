@@ -59,13 +59,15 @@ class RepeatUnit(models.TextChoices):
 
 
 class Season(models.TextChoices):
-    """Predefined seasons follow the hemisphere of the home; Custom takes its own months."""
+    """Predefined seasons follow the hemisphere of the home; Custom takes its own months.
+
+    The heating season is no longer one: it is custom months (`recurrence.legacy_season`).
+    """
 
     SPRING = recurrence.SPRING, _("Spring")
     SUMMER = recurrence.SUMMER, _("Summer")
     AUTUMN = recurrence.AUTUMN, _("Autumn")
     WINTER = recurrence.WINTER, _("Winter")
-    HEATING = recurrence.HEATING, _("Heating season")
     CUSTOM = recurrence.CUSTOM, _("Custom months")
 
 

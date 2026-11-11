@@ -48,20 +48,20 @@ msgstr "Mode"
 msgid "The next date is"
 msgstr "La date suivante est"
 
-msgid "Once"
-msgstr "Une fois"
+msgid "Once (**Repeat this task** unticked)"
+msgstr "Une fois (**Répéter cette tâche** décoché)"
 
 msgid "None: the task is finished when done."
 msgstr "Aucune : la tâche est terminée quand elle est faite."
 
-msgid "Fixed date"
-msgstr "Date fixe"
+msgid "Fixed date (**Count from** the due date)"
+msgstr "Date fixe (**Compter depuis** la date prévue)"
 
 msgid "The next date of the series that starts at the first date, for example the 15th of every month."
 msgstr "La date suivante de la série qui part de la première date, par exemple le 15 de chaque mois."
 
-msgid "After the last time"
-msgstr "Après la dernière fois"
+msgid "After the last time (**Count from** the day it is done)"
+msgstr "Après la dernière fois (**Compter depuis** le jour où c'est fait)"
 
 msgid "The day it was done plus the interval: a filter changed on 3 March, every 6 months, is due again on 3 September."
 msgstr "Le jour où elle a été faite plus l'intervalle : un filtre changé le 3 mars, tous les 6 mois, revient le 3 septembre."
@@ -69,8 +69,8 @@ msgstr "Le jour où elle a été faite plus l'intervalle : un filtre changé le 
 msgid "The months do what you would expect: a task set on the 31st falls on the last day of the shorter months, and a task set on 29 February falls on 28 February in the years that are not leap years. With **Fixed date**, a task done very late does not bring back every date it missed: the next occurrence is the first date of the series after today, and the one not done yet stays on top of the list as arrears."
 msgstr "Les mois font ce qu'on attend : une tâche fixée au 31 tombe le dernier jour des mois plus courts, et une tâche fixée au 29 février tombe le 28 février les années qui ne sont pas bissextiles. Avec **Date fixe**, une tâche faite très en retard ne ramène pas toutes les dates manquées : l'occurrence suivante est la première date de la série après aujourd'hui, et celle qui n'est pas faite reste en tête de la liste, comme arriéré."
 
-msgid "A **season** limits the task to some months. Pick a predefined one (spring, summer, autumn, winter or the heating season), which follows the hemisphere of the home, or **Custom months** (April to October for the lawn, November to March for the heating, over the new year if needed). A date that falls outside the season moves to the first day of the next one. The hemisphere is set on the page of the [home](../screens/home.md): never guessed."
-msgstr "Une **saison** limite la tâche à certains mois. Choisissez une saison prédéfinie (printemps, été, automne, hiver ou saison de chauffe), qui suit l'hémisphère du logement, ou **Mois personnalisés** (d'avril à octobre pour la pelouse, de novembre à mars pour le chauffage, à cheval sur le nouvel an si besoin). Une date qui tombe hors de la saison passe au premier jour de la suivante. L'hémisphère se règle sur la page du [logement](../screens/home.md) : il n'est jamais deviné."
+msgid "A **season** limits the task to some months. Pick a predefined one (spring, summer, autumn or winter), which follows the hemisphere of the home, or **Custom months** (April to October for the lawn, October to April for the heating, over the new year if needed). A date that falls outside the season moves to the first day of the next one. The hemisphere is set on the page of the [home](../screens/home.md): never guessed."
+msgstr "Une **saison** limite la tâche à certains mois. Choisissez une saison prédéfinie (printemps, été, automne ou hiver), qui suit l'hémisphère du logement, ou **Mois personnalisés** (d'avril à octobre pour la pelouse, d'octobre à avril pour le chauffage, à cheval sur le nouvel an si besoin). Une date qui tombe hors de la saison passe au premier jour de la suivante. L'hémisphère se règle sur la page du [logement](../screens/home.md) : il n'est jamais deviné."
 
 msgid "With **Fixed date**, the first day of a season is one more date of the series, not a new start: a monthly task set on 31 March with a season from March to May is due on 30 April and 31 May, then on 1 March of the next year (30 June is out of the season), then on 31 March, 30 April and 31 May again."
 msgstr "Avec **Date fixe**, le premier jour d'une saison est une date de plus de la série, pas un nouveau départ : une tâche mensuelle fixée au 31 mars avec une saison de mars à mai tombe le 30 avril et le 31 mai, puis le 1er mars de l'année suivante (le 30 juin est hors saison), puis de nouveau le 31 mars, le 30 avril et le 31 mai."
@@ -131,4 +131,13 @@ msgstr "Tout ce qui précède est disponible par l'[API](../api/index.md) : les 
 
 #~ msgid "Everything above is available through the [API](../api/index.md): tasks, occurrences (with `complete`, `undo`, `skip` and `postpone`), contractors and attachments."
 #~ msgstr "Tout ce qui précède est disponible par l'[API](../api/index.md) : tâches, occurrences (avec `complete`, `undo`, `skip` et `postpone`), intervenants et pièces jointes."
+
+#~ msgid "Once"
+#~ msgstr "Une fois"
+
+#~ msgid "Fixed date"
+#~ msgstr "Date fixe"
+
+#~ msgid "After the last time"
+#~ msgstr "Après la dernière fois"
 

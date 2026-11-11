@@ -30,9 +30,9 @@ for a season where the chore does not apply, and also creates the next one.
 
 | Mode | The next date is |
 | --- | --- |
-| Once | None: the task is finished when done. |
-| Fixed date | The next date of the series that starts at the first date, for example the 15th of every month. |
-| After the last time | The day it was done plus the interval: a filter changed on 3 March, every 6 months, is due again on 3 September. |
+| Once (**Repeat this task** unticked) | None: the task is finished when done. |
+| Fixed date (**Count from** the due date) | The next date of the series that starts at the first date, for example the 15th of every month. |
+| After the last time (**Count from** the day it is done) | The day it was done plus the interval: a filter changed on 3 March, every 6 months, is due again on 3 September. |
 
 The months do what you would expect: a task set on the 31st falls on the last day of
 the shorter months, and a task set on 29 February falls on 28 February in the years
@@ -41,10 +41,10 @@ back every date it missed: the next occurrence is the first date of the series a
 today, and the one not done yet stays on top of the list as arrears.
 
 A **season** limits the task to some months. Pick a predefined one (spring, summer,
-autumn, winter or the heating season), which follows the hemisphere of the home, or
-**Custom months** (April to October for the lawn, November to March for the heating, over
-the new year if needed). A date that falls outside the season moves to the first day of the
-next one. The hemisphere is set on the page of the [home](../screens/home.md): never guessed.
+autumn or winter), which follows the hemisphere of the home, or **Custom months** (April
+to October for the lawn, October to April for the heating, over the new year if needed).
+A date that falls outside the season moves to the first day of the next one. The
+hemisphere is set on the page of the [home](../screens/home.md): never guessed.
 
 With **Fixed date**, the first day of a season is one more date of the series, not a
 new start: a monthly task set on 31 March with a season from March to May is due on

@@ -50,8 +50,9 @@ from housecairn.rooms.api import (
     _validation,
 )
 from housecairn.rooms.models import Room
+from housecairn.tasks import recurrence
 from housecairn.tasks import services as task_services
-from housecairn.tasks.models import Contractor, Task
+from housecairn.tasks.models import Contractor, Season, Task
 
 
 class MoneyString(serializers.DecimalField):
@@ -161,6 +162,14 @@ class ProjectSerializer(AmountsMixin, serializers.ModelSerializer[Project]):
     )
     budget_state = serializers.SerializerMethodField(
         help_text="`over`, `under` or `on` budget, from the gap."
+    )
+    season = serializers.ChoiceField(
+        choices=[("", "any time"), *Season.choices, (recurrence.HEATING, "heating (deprecated)")],
+        required=False,
+        help_text="`spring`, `summer`, `autumn` and `winter` follow the hemisphere of the home; "
+        "`custom` takes the two months below; empty is any time. `heating`, no longer offered, "
+        "is still accepted and stored as `custom` with the months of the heating season "
+        "(October to April in the north, April to October in the south).",
     )
     season_months = serializers.SerializerMethodField(
         help_text="First and last month of the preferred season in the hemisphere of the home."

@@ -316,6 +316,10 @@ def _sync_season(task: Task, changes: dict[str, Any]) -> None:
     if "season" not in changes and {"season_start_month", "season_end_month"} & set(changes):
         given = task.season_start_month is not None or task.season_end_month is not None
         task.season = Season.CUSTOM if given else ""
+    legacy = recurrence.legacy_season(task.season, task.home.hemisphere)
+    if legacy is not None:  # the heating season of a client of before: its months, custom
+        task.season = Season.CUSTOM
+        task.season_start_month, task.season_end_month = legacy
     window = recurrence.season_window(task.season, task.home.hemisphere)
     if window is not None:
         task.season_start_month, task.season_end_month = window

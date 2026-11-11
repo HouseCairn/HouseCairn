@@ -366,7 +366,7 @@ def _prepare(
         for index, raw_row in enumerate(objects.get(section.name, [])):
             row = dict(raw_row)
             if section.on_restore is not None:
-                row = section.on_restore(row)
+                row = section.on_restore(row, home)
             values: dict[str, Any] = {"home": home}
             files: dict[str, str] = {}
             stamps: dict[str, Any] = {}

@@ -5,6 +5,8 @@ files of quotes go into `files/projects/`, as stored. What is committed on a bud
 is not a field: it is the sum of its accepted quotes.
 """
 
+from typing import Any
+
 from housecairn.homes import exports
 from housecairn.projects.models import (
     AnnualEnvelope,
@@ -15,12 +17,26 @@ from housecairn.projects.models import (
     ProjectTask,
     Quote,
 )
+from housecairn.tasks import recurrence
+
+
+def heating_to_custom(row: dict[str, Any], home: Any) -> dict[str, Any]:
+    """The heating season of an archive of before: custom months, those of the hemisphere.
+
+    A project on a predefined season kept no months: the custom season takes the months
+    of the heating season in the hemisphere of the restored home, so it reads the same.
+    """
+    window = recurrence.legacy_season(str(row.get("season") or ""), home.hemisphere)
+    if window is not None:
+        row["season"] = recurrence.CUSTOM
+        row["season_start_month"], row["season_end_month"] = window
+    return row
 
 
 def register() -> None:
     exports.register(
         "projects",
-        exports.Section("projects", Project),
+        exports.Section("projects", Project, on_restore=heating_to_custom),
         exports.Section("project_budget_lines", BudgetLine),
         exports.Section("project_quotes", Quote),
         exports.Section(

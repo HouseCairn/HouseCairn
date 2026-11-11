@@ -319,9 +319,92 @@ def stock_shortage_banner(browser: Browser, base: str, width: int, script: bool 
     context.close()
 
 
+TASK_FORM_WIDTHS = (320, 360, 375, 1280)
+
+
+def _open_task_form(page: Page, base: str) -> None:
+    page.goto(f"{base}/tasks/")
+    page.locator("main a:has-text('Purger les radiateurs')").first.click()
+    page.locator("main a[href*='/edit/']").first.click()
+    page.wait_for_selector("form[data-task-form]")
+    section = page.locator("details.form-section:has(#id_repeats)")
+    if section.get_attribute("open") is None:
+        section.locator("summary").click()
+
+
+def _shown(page: Page, selector: str) -> bool:
+    return page.locator(selector).first.is_visible()
+
+
+def task_form(browser: Browser, base: str) -> None:
+    """The repetition of the task form in one sentence, in French. Local only, not in CI.
+
+    Needs the demo account with a home holding a task titled "Purger les radiateurs et
+    vérifier la pression de la chaudière", repeating every 3 months from 31 January 2027,
+    with custom months from November to February. At each width, with script: no
+    horizontal scroll, the date field only when counting from the due date, the months only
+    with Custom months, the summary that follows the fields. Without script: every field.
+    """
+    for width in TASK_FORM_WIDTHS:
+        for script in (True, False):
+            label = f"{width} px{'' if script else ', no script'}"
+            context = browser.new_context(
+                viewport={"width": width, "height": 900}, locale="fr-FR", java_script_enabled=script
+            )
+            page = context.new_page()
+            errors: list[str] = []
+            page.on(
+                "console",
+                lambda message, errors=errors: (
+                    errors.append(message.text) if message.type == "error" else None
+                ),
+            )
+            sign_in(page, base)
+            _open_task_form(page, base)
+            page_width = page.evaluate("document.documentElement.scrollWidth")
+            check(page_width <= width, f"{label}: no horizontal scroll ({page_width} px)")
+            summary = page.locator("#repeat-summary").text_content() or ""
+            check("Le 31 de chaque trimestre" in summary, f"{label}: the summary: {summary}")
+            check(_shown(page, "#id_repeat_start"), f"{label}: the date field, counting from it")
+            check(page.locator("#id_repeat_start").get_attribute("type") == "date", "a calendar")
+            check(_shown(page, "#id_season_start_month"), f"{label}: the months, custom season")
+            if not script:
+                check(
+                    _shown(page, "text=compté depuis le jour où la tâche est marquée faite"),
+                    f"{label}: every field shows, the explanation of after the last time too",
+                )
+                context.close()
+                continue
+            check(
+                not _shown(page, "text=compté depuis le jour où la tâche est marquée faite"),
+                f"{label}: the explanation of after the last time is hidden",
+            )
+            page.locator("#id_repeat_from_1").check()
+            page.wait_for_selector("#repeat-summary:has-text('Prochaine fois')")
+            check(not _shown(page, "#id_repeat_start"), f"{label}: no date field after the last")
+            check(
+                _shown(page, "text=compté depuis le jour où la tâche est marquée faite"),
+                f"{label}: the period is said",
+            )
+            say(f"{label}: {page.locator('#repeat-summary').text_content()}")
+            page.select_option("#id_season", "spring")
+            check(not _shown(page, "#id_season_start_month"), f"{label}: no months for spring")
+            page.locator("#id_repeats").uncheck()
+            check(not _shown(page, "#id_repeat_interval"), f"{label}: nothing more, once")
+            page.wait_for_selector("#repeat-summary:has-text('Pas de répétition')")
+            page.locator("#id_repeats").check()
+            page.locator("#id_repeat_from_0").check()
+            page.fill("#id_repeat_start", "2028-02-29")
+            check(page.input_value("#id_due_on") == "2028-02-29", f"{label}: the due date follows")
+            page_width = page.evaluate("document.documentElement.scrollWidth")
+            check(page_width <= width, f"{label}: still no horizontal scroll ({page_width} px)")
+            check(not errors, f"{label}: no error in the console (CSP included): {errors}")
+            context.close()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("mode", choices=["passkey", "sso", "in-place"])
+    parser.add_argument("mode", choices=["passkey", "sso", "in-place", "task-form"])
     parser.add_argument("--base", required=True, help="address of the running instance")
     parser.add_argument("--provider", help="address of the stub identity provider (sso mode)")
     args = parser.parse_args()
@@ -332,6 +415,8 @@ def main() -> None:
             sso(browser, base, args.provider.rstrip("/"))
         elif args.mode == "in-place":
             in_place(browser, base)
+        elif args.mode == "task-form":
+            task_form(browser, base)
         else:
             passkey(browser, base)
         browser.close()

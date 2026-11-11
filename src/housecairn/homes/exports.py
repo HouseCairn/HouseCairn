@@ -74,7 +74,8 @@ class Section:
     `rows` gives the rows of the home (by default the live rows with `home=home`);
     `exclude` lists fields kept out (secrets, links to what is not exported);
     `restore` is False for a part kept for the owners' information only, with
-    `why_not_restored` saying why. `on_export` and `on_restore` adjust one object.
+    `why_not_restored` saying why. `on_export` and `on_restore` adjust one object;
+    `on_restore` also gets the home being restored (its hemisphere, for instance).
     """
 
     name: str
@@ -85,7 +86,7 @@ class Section:
     restore: bool = True
     why_not_restored: str = ""
     on_export: Callable[[models.Model, dict[str, Any]], dict[str, Any]] | None = None
-    on_restore: Callable[[dict[str, Any]], dict[str, Any]] | None = None
+    on_restore: Callable[[dict[str, Any], Home], dict[str, Any]] | None = None
     # Fields that `on_export` may write as null although the column is not (the schema says so).
     nulls: tuple[str, ...] = ()
     order_by: tuple[str, ...] = ("created_at", "id")

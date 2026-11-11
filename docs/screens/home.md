@@ -11,8 +11,8 @@ the page asks you to continue with that provider instead.
 ## Name, currency and hemisphere
 
 Owners and members open **Name, currency and hemisphere** (`/h/<home id>/edit/`) to change
-them. The hemisphere, **Northern** by default, decides what spring, summer, autumn, winter
-and the heating season mean for the [tasks](task-form.md): it is never guessed from a place.
+them. The hemisphere, **Northern** by default, decides what spring, summer, autumn and
+winter mean for the [tasks](task-form.md): it is never guessed from a place.
 Changing it moves the window of the tasks that use a predefined season. Read-only members
 do not see the row.
 
