@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n navigation %}
+{% load i18n navigation dates %}
 {% block head_title %}{% translate "Reports" %}{% endblock head_title %}
 {% block content %}
   {% url 'homes:detail' home_id=home.id as parent %}{% back_link parent home.name %}
@@ -17,7 +17,7 @@
           <a class="row" href="{% url_with_next 'reports:detail' home_id=home.id report_id=report.id %}">
             <span class="row-body">
               <span class="row-title">{{ report.title }}</span>
-              <span class="row-text">{% if report.place %}{{ report.place }} · {% endif %}{{ report.get_status_display }} · {{ report.created_at|date:"SHORT_DATE_FORMAT" }}{% if can_write %} · {{ report.reporter_label }}{% endif %}</span>
+              <span class="row-text">{% if report.place %}{{ report.place }} · {% endif %}{{ report.get_status_display }} · {{ report.created_at|day }}{% if can_write %} · {{ report.reporter_label }}{% endif %}</span>
             </span>
             {% include "components/icon.html" with name="chevron" class="chevron" %}
           </a>

@@ -6,6 +6,7 @@ from typing import Any
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from housecairn.core.forms import QuantityField
 from housecairn.stock.models import Article, Unit
 from housecairn.tasks import materials as material_services
 from housecairn.tasks.forms.fields import NEW, AddInPlaceChoiceField
@@ -31,14 +32,8 @@ class ArticleAddField(AddInPlaceChoiceField):
 EXTRA_LINES = 3
 
 
-def _quantity() -> forms.DecimalField:
-    return forms.DecimalField(
-        label=_("Quantity"),
-        min_value=MIN_QUANTITY,
-        max_digits=10,
-        decimal_places=2,
-        required=False,
-    )
+def _quantity() -> QuantityField:
+    return QuantityField(label=_("Quantity"), min_value=MIN_QUANTITY, required=False)
 
 
 class MaterialLineForm(forms.Form):
@@ -174,9 +169,7 @@ class MaterialSaveForm(forms.Form):
     article = ArticleChoiceField(
         label=_("Stock item"), queryset=Article.objects.none(), empty_label="—"
     )
-    quantity = forms.DecimalField(
-        label=_("Quantity"), min_value=MIN_QUANTITY, max_digits=10, decimal_places=2
-    )
+    quantity = QuantityField(label=_("Quantity"), min_value=MIN_QUANTITY)
 
     def __init__(self, *args: Any, articles: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)

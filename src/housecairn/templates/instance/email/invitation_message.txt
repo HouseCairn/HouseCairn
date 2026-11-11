@@ -1,9 +1,9 @@
-{% load i18n %}{% autoescape off %}{% translate "You are invited to create an account on HouseCairn, the planner for home maintenance and renovation." %}
+{% load i18n dates %}{% autoescape off %}{% translate "You are invited to create an account on HouseCairn, the planner for home maintenance and renovation." %}
 
 {% translate "Open this link to create your account:" %}
 {{ link }}
 
-{% blocktranslate with date=expires_at|date:"DATETIME_FORMAT" %}The link works once and expires on {{ date }}.{% endblocktranslate %}
+{% blocktranslate with date=expires_at|moment %}The link works once and expires on {{ date }}.{% endblocktranslate %}
 {% translate "If you did not expect this invitation, ignore this message." %}
 
 --

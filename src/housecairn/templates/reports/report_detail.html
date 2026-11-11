@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n reports_extras navigation %}
+{% load i18n reports_extras navigation dates %}
 {% block head_title %}{{ report.title }}{% endblock head_title %}
 {% block content %}
   {% url 'reports:list' home_id=home.id as parent %}{% if can_write %}{% translate "Reports" as list_label %}{% else %}{% translate "My reports" as list_label %}{% endif %}{% back_link parent list_label %}
@@ -11,8 +11,8 @@
     <dl class="facts">
       {% if report.place %}<div><dt>{% translate "Where" %}</dt><dd>{% if where %}<a href="{{ where_url }}">{{ report.place }}</a>{% else %}{{ report.place }}{% endif %}</dd></div>{% endif %}
       <div><dt>{% translate "Reported by" %}</dt><dd>{% if mine %}{% translate "you" %}{% else %}{{ reporter }}{% endif %}</dd></div>
-      <div><dt>{% translate "Reported on" %}</dt><dd>{{ report.created_at|date:"DATE_FORMAT" }}</dd></div>
-      {% if report.closed_at %}<div><dt>{% translate "Closed on" %}</dt><dd>{{ report.closed_at|date:"DATE_FORMAT" }}</dd></div>{% endif %}
+      <div><dt>{% translate "Reported on" %}</dt><dd>{{ report.created_at|day }}</dd></div>
+      {% if report.closed_at %}<div><dt>{% translate "Closed on" %}</dt><dd>{{ report.closed_at|day }}</dd></div>{% endif %}
       {% if task %}<div><dt>{% translate "Task" %}</dt><dd><a href="{% url_with_next 'tasks:detail' home_id=home.id task_id=task.id %}">{{ task.title }}</a></dd></div>{% endif %}
     </dl>
     {% if report.has_photo %}

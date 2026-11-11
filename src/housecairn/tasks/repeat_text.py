@@ -14,15 +14,16 @@ from django.utils.dates import MONTHS
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 
+from housecairn.core import dates
 from housecairn.tasks import recurrence
 
 
 def _short(day: datetime.date) -> str:
-    return formats.date_format(day, "SHORT_DATE_FORMAT")
+    return dates.day(day)
 
 
 def _month_day(day: datetime.date) -> str:
-    return formats.date_format(day, "MONTH_DAY_FORMAT")
+    return dates.month_day(day)
 
 
 def _after_last(unit: str, n: int) -> str:

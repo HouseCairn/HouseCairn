@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n projects_extras money tasks_extras navigation %}
+{% load i18n projects_extras money tasks_extras navigation dates %}
 {% block head_title %}{{ project.title }}{% endblock head_title %}
 {% block content %}
   {% url 'projects:list' home_id=home.id as parent %}{% back_link parent %}
@@ -31,7 +31,7 @@
           <a class="row-body" href="{% url_with_next 'tasks:detail' home_id=home.id task_id=link.task_id %}">
             <span class="row-title">{{ link.task.title }}</span>
             <span class="row-text">
-              {% if occurrence %}{% if occurrence.due_on %}{% blocktranslate with day=occurrence.due_on|date:"SHORT_DATE_FORMAT" %}Due {{ day }}{% endblocktranslate %}{% else %}{% translate "No date" %}{% endif %}{% else %}{% translate "Done" context "task" %}{% endif %}
+              {% if occurrence %}{% if occurrence.due_on %}{% blocktranslate with day=occurrence.due_on|day %}Due {{ day }}{% endblocktranslate %}{% else %}{% translate "No date" %}{% endif %}{% else %}{% translate "Done" context "task" %}{% endif %}
               {% if link.task.room %} · {{ link.task.room.name }}{% endif %}
             </span>
           </a>
@@ -124,8 +124,8 @@
           </p>
           <dl class="facts">
             {% if quote.budget_line %}<div><dt>{% translate "Committed on" %}</dt><dd>{{ quote.budget_line.label }}</dd></div>{% endif %}
-            {% if quote.issued_on %}<div><dt>{% translate "Date" %}</dt><dd>{{ quote.issued_on|date:"DATE_FORMAT" }}</dd></div>{% endif %}
-            {% if quote.valid_until %}<div><dt>{% translate "Valid until" %}</dt><dd>{{ quote.valid_until|date:"DATE_FORMAT" }}</dd></div>{% endif %}
+            {% if quote.issued_on %}<div><dt>{% translate "Date" %}</dt><dd>{{ quote.issued_on|day }}</dd></div>{% endif %}
+            {% if quote.valid_until %}<div><dt>{% translate "Valid until" %}</dt><dd>{{ quote.valid_until|day }}</dd></div>{% endif %}
             {% if quote.note %}<div><dt>{% translate "Note" %}</dt><dd>{{ quote.note }}</dd></div>{% endif %}
             {% if quote.paperless_url %}<div><dt>{% translate "Document in Paperless-ngx" %}</dt><dd><a href="{{ quote.paperless_url }}" rel="noopener noreferrer nofollow">{% if quote.paperless_id %}#{{ quote.paperless_id }}{% else %}{{ quote.paperless_url }}{% endif %}</a></dd></div>{% endif %}
             {% for stored in quote_files %}<div><dt>{% translate "File" %}</dt><dd><a href="{% url 'projects:file' home_id=home.id file_id=stored.id %}">{{ stored.name }}</a></dd></div>{% endfor %}
