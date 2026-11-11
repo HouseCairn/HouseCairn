@@ -298,6 +298,19 @@ def contractor_named(actor: AnyUser, home: Home, name: str) -> Contractor | None
     return create_contractor(actor, home, name=wanted)
 
 
+def contractor_of_provider(home: Home, provider: str) -> Contractor | None:
+    """The contractor of the home whose name is the provider of a maintenance contract.
+
+    The contract of an item names its provider as typed text; a task made from the item
+    starts with the contractor of that name, if the home has one. Case is not a difference;
+    nothing is created here.
+    """
+    wanted = _one_line(provider)
+    if not wanted:
+        return None
+    return next((c for c in contractors_of(home) if c.name.casefold() == wanted.casefold()), None)
+
+
 def tasks_of_contractor(contractor: Contractor) -> models.QuerySet[Task]:
     return Task.objects.filter(home=contractor.home_id, contractor=contractor).select_related(
         "room"
@@ -341,7 +354,7 @@ def resync_seasons(home: Home) -> int:
 
 
 def _check_estimate(task: Task, *, before: int | None = None, creating: bool = True) -> None:
-    """The estimated duration is between a minute and thirty days (docs/adr/0045).
+    """The estimated duration is between a minute and `durations.MAX_MINUTES` (ADR 0045).
 
     Held only when it is set or changed: a task kept from before the bound (a duration of 0
     was accepted) can still be edited for something else.
@@ -350,9 +363,7 @@ def _check_estimate(task: Task, *, before: int | None = None, creating: bool = T
     if not creating and minutes == before:
         return
     if minutes is not None and not durations.within_bounds(minutes):
-        raise ValidationError(
-            {"estimated_minutes": _("Give a duration between a minute and thirty days.")}
-        )
+        raise ValidationError({"estimated_minutes": durations.bounds_message()})
 
 
 def _check_links(home: Home, task: Task) -> None:

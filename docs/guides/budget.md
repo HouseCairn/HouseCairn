@@ -62,8 +62,12 @@ flagged, so that the gap does not look better than it is.
 
 ## The envelope, years and the last 12 months
 
-The overview sets the envelope of a year against the projects counted in it and the upkeep of
-the year, and splits the year by nature (materials, labour, rental, other; the real cost of a
+The top of the overview is three figures and a gauge: what is set aside for the year (the
+envelope, or the plans when there is no envelope), what is **spent** (the more of committed and
+paid, line by line, projects and upkeep together) and what is **left**, with the share spent in
+words next to the gauge. When the spending passes what is set aside, the figure says **Over by**
+and the gauge says *over budget*. The other figures (the plans against the envelope, what is
+paid, projects and upkeep apart) are under **Details of the year**. The overview also splits the year by nature (materials, labour, rental, other; the real cost of a
 task is shared between materials and labour as its estimate is, or counts under Other if it
 has no estimate). **By year** lists every year with a figure.
 **Last 12 months** is the upkeep done since the same day last year; payments on projects have

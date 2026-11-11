@@ -845,7 +845,9 @@ class TestScreens:
                 "season_start_month": "9",
                 "season_end_month": "11",
                 "hide_days_before": "30",
-                "contractor_name": "A. Plumber",
+                "contractor": "new",
+                "new_contractor_name": "A. Plumber",
+                "new_contractor_trade": "plumber",
                 "labour_budget": "80",
                 "procedure": "**Switch off** first",
                 "duration_value": "1",
@@ -879,7 +881,7 @@ class TestScreens:
         assert response.status_code == 200
         assert "needs a date" in response.content.decode()
 
-    def test_a_known_name_links_the_contractor_and_a_new_one_makes_it(
+    def test_a_contractor_is_chosen_in_the_list_or_added_in_place(
         self, signed_in: Client, alice_home: Home, alice: User
     ) -> None:
         known = services.create_contractor(alice, alice_home, name="X")
@@ -890,37 +892,93 @@ class TestScreens:
             "repeat_unit": "month",
             "hide_days_before": "0",
         }
-        signed_in.post(url("create", alice_home), {**base, "title": "a", "contractor_name": "x "})
-        signed_in.post(url("create", alice_home), {**base, "title": "b", "contractor_name": "Y"})
-        signed_in.post(url("create", alice_home), {**base, "title": "c"})
+        create = url("create", alice_home)
+        signed_in.post(create, {**base, "title": "a", "contractor": str(known.id)})
+        new = {"contractor": "new", "new_contractor_name": " New  One ", "new_contractor_trade": ""}
+        signed_in.post(create, {**base, "title": "b", **new})
+        # The fields of a new one are ignored without the choice "Add a contractor…".
+        signed_in.post(create, {**base, "title": "c", "new_contractor_name": "Ignored"})
         assert Task.objects.get(title="a").contractor == known
         made = Task.objects.get(title="b").contractor
         assert made is not None
-        assert made.name == "Y"
+        assert (made.name, made.trade) == ("New One", "")
         assert Task.objects.get(title="c").contractor is None
         assert services.contractors_of(alice_home).count() == 2
 
-    def test_the_field_is_a_text_input_with_suggestions(
-        self, signed_in: Client, alice_home: Home, alice: User
+    @pytest.mark.parametrize(
+        ("added", "error"),
+        [
+            ({"new_contractor_name": "  "}, "Give the name of the new contractor."),
+            ({"new_contractor_name": "pipes LTD"}, "is already a contractor of this home"),
+            (
+                {"new_contractor_name": "Pools", "new_contractor_trade": "other"},
+                "Say which trade.",
+            ),
+        ],
+    )
+    def test_a_new_contractor_is_refused_empty_twice_or_without_its_trade(
+        self, signed_in: Client, alice_home: Home, alice: User, added: dict[str, str], error: str
+    ) -> None:
+        services.create_contractor(alice, alice_home, name="Pipes Ltd")
+        form = {
+            "title": "a",
+            "priority": "normal",
+            "repeat_interval": "1",
+            "repeat_unit": "month",
+            "hide_days_before": "0",
+            "contractor": "new",
+            **added,
+        }
+        response = signed_in.post(url("create", alice_home), form)
+        assert response.status_code == 200
+        assert error in response.text
+        assert not Task.objects.filter(title="a").exists()
+        assert services.contractors_of(alice_home).count() == 1
+
+    def test_with_the_trade_other_the_words_are_kept(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        form = {
+            "title": "a",
+            "priority": "normal",
+            "repeat_interval": "1",
+            "repeat_unit": "month",
+            "hide_days_before": "0",
+            "contractor": "new",
+            "new_contractor_name": "Pools",
+            "new_contractor_trade": "other",
+            "new_contractor_trade_other": "Pool maintenance",
+        }
+        assert signed_in.post(url("create", alice_home), form).status_code == 302
+        made = Task.objects.get(title="a").contractor
+        assert made is not None
+        assert (made.trade, made.trade_other) == ("other", "Pool maintenance")
+
+    def test_the_field_is_a_list_of_the_home_ending_with_add(
+        self, signed_in: Client, alice_home: Home, alice: User, bob: User, bob_home: Home
     ) -> None:
         services.create_contractor(alice, alice_home, name="Pipes Ltd", trade="plumber")
+        services.create_contractor(bob, bob_home, name="Not Mine")
         page = signed_in.get(url("create", alice_home)).text
-        assert 'name="contractor_name"' in page
-        assert 'list="contractor-options"' in page
-        assert '<datalist id="contractor-options">' in page
-        assert '<option value="Pipes Ltd">Plumber</option>' in page
-        assert (
-            "<script"
-            not in page.split('<datalist id="contractor-options">')[1].split("</datalist>")[0]
-        )
+        field = page.split('name="contractor"')[1].split("</select>")[0]
+        assert "Pipes Ltd</option>" in field
+        assert "Not Mine" not in field
+        assert field.rstrip().endswith('<option value="new">Add a contractor…</option>')
+        assert 'name="contractor_name"' not in page
+        assert "<datalist" not in page
+        assert 'data-shown-when="contractor=new"' in page
+        # The choices are translated at each request, in the language of the reader.
+        page = signed_in.get(url("create", alice_home), HTTP_ACCEPT_LANGUAGE="fr").text
+        assert "Ajouter un intervenant…" in page
+        assert "semaines</option>" in page
 
-    def test_editing_keeps_the_contractor_and_emptying_the_field_clears_it(
+    def test_editing_keeps_the_contractor_and_the_dash_clears_it(
         self, signed_in: Client, alice_home: Home, alice: User, owner_task: Task
     ) -> None:
         contractor = services.create_contractor(alice, alice_home, name="Pipes Ltd")
         services.update_task(alice, owner_task, contractor=contractor)
         edit = url("edit", alice_home, task_id=owner_task.id)
-        assert 'value="Pipes Ltd"' in signed_in.get(edit).text
+        assert f'<option value="{contractor.id}" selected>' in signed_in.get(edit).text
         form = {
             "title": owner_task.title,
             "priority": "normal",
@@ -929,12 +987,27 @@ class TestScreens:
             "repeat_unit": "month",
             "hide_days_before": "0",
         }
-        signed_in.post(edit, {**form, "contractor_name": "Pipes Ltd"})
+        signed_in.post(edit, {**form, "contractor": str(contractor.id)})
         owner_task.refresh_from_db()
         assert owner_task.contractor == contractor
-        signed_in.post(edit, {**form, "contractor_name": ""})
+        signed_in.post(edit, {**form, "contractor": ""})
         owner_task.refresh_from_db()
         assert owner_task.contractor is None
+
+    def test_a_contractor_of_another_home_is_refused(
+        self, signed_in: Client, alice_home: Home, bob: User, bob_home: Home
+    ) -> None:
+        theirs = services.create_contractor(bob, bob_home, name="Theirs")
+        form = {
+            "title": "a",
+            "priority": "normal",
+            "repeat_interval": "1",
+            "repeat_unit": "month",
+            "hide_days_before": "0",
+            "contractor": str(theirs.id),
+        }
+        assert signed_in.post(url("create", alice_home), form).status_code == 200
+        assert not Task.objects.filter(title="a").exists()
 
     def test_edit_and_delete(self, signed_in: Client, alice_home: Home, owner_task: Task) -> None:
         edit = url("edit", alice_home, task_id=owner_task.id)

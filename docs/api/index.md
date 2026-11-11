@@ -74,7 +74,7 @@ web interface: every request only sees the homes of its user
   (with `season_start_month` and `season_end_month`) or empty; `heating`, no longer
   offered, is still accepted and stored as `custom` with the months of the heating season
   (October to April in the north), for tasks and projects;
-  `estimated_minutes` is in minutes, from 1 to 43200, and `estimated_text` reads it;
+  `estimated_minutes` is in minutes, from 1 to 525600 (one year), and `estimated_text` reads it;
   `assignee_name` names the person in charge
   ([ADR 0045](../adr/0045-generic-lists-with-other-tabs-and-audit-of-content.md)). Everything the screens do
   is there: `POST .../occurrences/<id>/complete/` marks it done and creates the next

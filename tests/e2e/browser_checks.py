@@ -400,6 +400,69 @@ def task_form(browser: Browser, base: str) -> None:
             check(page_width <= width, f"{label}: still no horizontal scroll ({page_width} px)")
             check(not errors, f"{label}: no error in the console (CSP included): {errors}")
             context.close()
+    duration_and_contractor(browser, base)
+
+
+def _open_section(page: Page, field: str) -> None:
+    section = page.locator(f"details.form-section:has({field})")
+    if section.get_attribute("open") is None:
+        section.locator("summary").click()
+
+
+def _box(page: Page, selector: str) -> dict[str, float]:
+    box = page.locator(selector).bounding_box()
+    check(box is not None, f"{selector} is drawn")
+    assert box is not None
+    return box
+
+
+def duration_and_contractor(browser: Browser, base: str) -> None:
+    """The duration on one line from 360 px, the contractor added in place. Local only.
+
+    At each width, with and without script, in French: the number of the duration is wider
+    than its unit and, from 360 px, on the same line; the units go up to years. With script,
+    "Ajouter un intervenant…" shows the fields of a new one, hidden before; without script
+    they are always there. Prints the measures.
+    """
+    for width in TASK_FORM_WIDTHS:
+        for script in (True, False):
+            label = f"{width} px{'' if script else ', no script'}"
+            context = browser.new_context(
+                viewport={"width": width, "height": 900}, locale="fr-FR", java_script_enabled=script
+            )
+            page = context.new_page()
+            sign_in(page, base)
+            page.goto(f"{base}/tasks/")
+            page.locator("main a[href*='/tasks/new/']").first.click()
+            page.wait_for_selector("form[data-task-form]")
+            _open_section(page, "#id_duration_value")
+            number, unit = _box(page, "#id_duration_value"), _box(page, "#id_duration_unit")
+            one_line = abs(number["y"] - unit["y"]) < 2
+            say(
+                f"{label}: duration number {number['width']:.0f} px, unit {unit['width']:.0f} px,"
+                f" {'one line' if one_line else 'two lines'}"
+            )
+            check(number["width"] > unit["width"], f"{label}: the number is wider than the unit")
+            if width >= 360:
+                check(one_line, f"{label}: number and unit on one line")
+            units = page.locator("#id_duration_unit option").all_text_contents()
+            check(units[-3:] == ["semaines", "mois", "ans"], f"{label}: the units: {units}")
+            _open_section(page, "#id_contractor")
+            options = page.locator("#id_contractor option").all_text_contents()
+            check(options[-1] == "Ajouter un intervenant…", f"{label}: the last choice: {options}")
+            check(
+                _shown(page, "#id_new_contractor_name") is not script,
+                f"{label}: the fields of a new contractor {'hidden' if script else 'shown'}",
+            )
+            if script:
+                page.select_option("#id_contractor", "new")
+                check(_shown(page, "#id_new_contractor_name"), f"{label}: shown once chosen")
+                check(not _shown(page, "#id_new_contractor_trade_other"), f"{label}: no Other")
+                page.select_option("#id_new_contractor_trade", "other")
+                check(_shown(page, "#id_new_contractor_trade_other"), f"{label}: Which trade")
+            page_width = page.evaluate("document.documentElement.scrollWidth")
+            check(page_width <= width, f"{label}: no horizontal scroll ({page_width} px)")
+            context.close()
 
 
 def main() -> None:

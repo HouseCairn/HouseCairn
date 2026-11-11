@@ -1,6 +1,7 @@
 """Contractors: the record, the single field of a task, the contact file (docs/adr/0045)."""
 
 import json
+import re
 import zipfile
 from collections.abc import Callable
 
@@ -16,6 +17,7 @@ from housecairn.audit.models import AuditEvent
 from housecairn.homes import exports
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
+from housecairn.rooms.models import Item
 from housecairn.tasks import services
 from housecairn.tasks.models import Contractor, Task
 from tests.data_support import export_data
@@ -151,7 +153,8 @@ TASK_FORM = {
     "repeat_interval": "1",
     "repeat_unit": "year",
     "hide_days_before": "0",
-    "contractor_name": "Brand New Ltd",
+    "contractor": "new",
+    "new_contractor_name": "Brand New Ltd",
 }
 
 
@@ -473,3 +476,74 @@ class TestExportAndErasure:
         home_services.delete_home(alice, alice_home, confirmation=alice_home.name)
         assert not Contractor.objects.filter(pk=contractor.pk).exists()
         assert not Task.objects.filter(home_id=alice_home.pk).exists()
+
+
+class TestContractOfAnItem:
+    """A task made from an item starts with the provider of its maintenance contract."""
+
+    def create_page(self, client: Client, home: Home, item: Item) -> str:
+        address = reverse("tasks:create", kwargs={"home_id": home.id}) + f"?item={item.id}"
+        return client.get(address).content.decode()
+
+    def chosen(self, page: str) -> str | None:
+        """The value of the option selected in the contractor list ("" when none is)."""
+        select = re.search(r'<select[^>]*name="contractor"[^>]*>(.*?)</select>', page, re.S)
+        assert select, "the contractor list is missing"
+        option = re.search(r'<option value="([^"]*)"[^>]*\bselected\b', select.group(1))
+        return option.group(1) if option else None
+
+    def test_the_provider_of_the_contract_is_preselected(
+        self, signed_in: Client, alice: User, alice_home: Home, owner_item: Item
+    ) -> None:
+        pipes = services.create_contractor(alice, alice_home, **FULL)
+        owner_item.contract_provider = "pipes LTD"  # typed by hand: case is not a difference
+        owner_item.save()
+        page = self.create_page(signed_in, alice_home, owner_item)
+        assert self.chosen(page) == str(pipes.pk)
+        # The section that holds the field is open, so that the choice is seen.
+        who = page.split("<summary>Who</summary>", 1)[0].rsplit("<details", 1)[1]
+        assert " open" in who
+
+    def test_saving_the_form_as_it_comes_links_the_contractor(
+        self, signed_in: Client, alice: User, alice_home: Home, owner_item: Item
+    ) -> None:
+        pipes = services.create_contractor(alice, alice_home, **FULL)
+        owner_item.contract_provider = pipes.name
+        owner_item.save()
+        page = self.create_page(signed_in, alice_home, owner_item)
+        response = signed_in.post(
+            reverse("tasks:create", kwargs={"home_id": alice_home.id}),
+            {
+                "title": "Service the boiler",
+                "room": str(owner_item.room_id),
+                "item": str(owner_item.id),
+                "contractor": self.chosen(page),
+                "priority": "normal",
+                "repeat_unit": "month",
+                "hide_days_before": "0",
+            },
+        )
+        assert response.status_code == 302, response.context["form"].errors
+        assert Task.objects.get(title="Service the boiler").contractor == pipes
+
+    def test_an_unknown_provider_or_none_preselects_nobody(
+        self, signed_in: Client, alice: User, alice_home: Home, owner_item: Item
+    ) -> None:
+        services.create_contractor(alice, alice_home, **FULL)
+        for provider in ("", "Somebody else"):
+            owner_item.contract_provider = provider
+            owner_item.save()
+            page = self.create_page(signed_in, alice_home, owner_item)
+            assert not self.chosen(page)
+            # Nothing is preselected, so the section that holds the field stays closed.
+            who = page.split("<summary>Who</summary>", 1)[0].rsplit("<details", 1)[1]
+            assert " open" not in who
+        assert Contractor.objects.count() == 1  # opening the form creates nothing
+
+    def test_a_contractor_of_another_home_is_not_used(
+        self, signed_in: Client, bob: User, bob_home: Home, alice_home: Home, owner_item: Item
+    ) -> None:
+        services.create_contractor(bob, bob_home, **FULL)
+        owner_item.contract_provider = FULL["name"]
+        owner_item.save()
+        assert not self.chosen(self.create_page(signed_in, alice_home, owner_item))

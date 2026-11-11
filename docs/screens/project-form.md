@@ -10,8 +10,8 @@ Adds a project (`/h/<home id>/projects/new/`) or changes one
   becomes the first [budget line](budget-line-form.md), which you can split into materials
   and labour later. Leave it empty to add lines yourself.
 - **Rooms, duration and season** is under a heading. The **rooms concerned** are rooms of
-  the home. The **estimated duration** is a number and a unit (minutes, hours, days), from
-  a minute to a year. The **preferred season** is one of the seasons of tasks; it follows
+  the home. The **estimated duration** is a number and a unit (minutes, hours, days, weeks, months or
+  years), from a minute to a year. The **preferred season** is one of the seasons of tasks; it follows
   the hemisphere of the home, and **Custom months** takes a first and a last month.
 
 **Delete the project** asks for confirmation. It removes the project, its budget lines, its

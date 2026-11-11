@@ -182,10 +182,17 @@ the next character. The name is a courtesy, not an identity: the address in brac
 two names coincide, and the role, are the only proof of who a person is, and nothing in the
 application relies on a display name for access.
 
-**Estimated duration.** A number and a unit (minutes, hours, days) on the screens, minutes
-in the data and in the API, between one minute and thirty days; the service layer checks the
-bounds for every way in. The page shows it as people say it ("45 min", "1 h 30", "2 days"),
-and the form shows a stored value back in the biggest unit that holds it exactly. The bound
+**Estimated duration.** A number and a unit (minutes, hours, days, weeks, months, years) on
+the screens, minutes in the data and in the API, between one minute and one year; the service
+layer checks the bounds for every way in. The estimate is of elapsed time, so the units are
+fixed lengths, whatever the calendar: a day is 24 hours, a week 7 days, a month 30 days and a
+year 365 days. The ceiling is one constant, `tasks.durations.MAX_MINUTES` (525,600 minutes),
+read by the form, the API, the service and the model; the error says it in the units of the
+page ("between 1 min and 1 year"). It was thirty days until 2026-11-11, which refused real
+work such as a renovation of several weeks; a stored value only gets more room, so nothing
+needs migrating but the validator. The page shows a duration as people say it, biggest unit
+first ("45 min", "1 h 30", "2 days", "2 weeks", "1 month 1 week", "1 year"), and the form
+shows a stored value back in the biggest unit that holds it exactly. The bound
 is held when the duration is set or changed, not each time the task is saved: a task kept
 from before it (a duration of 0 was accepted) can be renamed or moved. The migration
 `0007_estimate_zero_unset` turns such a 0 into "no estimate"; undone, it leaves them unset.

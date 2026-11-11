@@ -59,7 +59,7 @@ class TaskSerializer(serializers.ModelSerializer[Task]):
         allow_null=True,
         min_value=durations.MIN_MINUTES,
         max_value=durations.MAX_MINUTES,
-        help_text="Estimated duration in minutes, from 1 to 43200 (thirty days). The screens "
+        help_text="Estimated duration in minutes, from 1 to 525600 (one year). The screens "
         "take a number and a unit and store minutes.",
     )
     estimated_text = serializers.SerializerMethodField(
