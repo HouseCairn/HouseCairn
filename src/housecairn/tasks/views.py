@@ -234,9 +234,13 @@ class TaskFormMixin(HomeTasksMixin, FormView[Any]):
 
     def save_materials(self, task: Task) -> None:
         if self.materials_sent:
+            # A stock item made here fits the equipment of the task, when it has one.
+            fits = [task.item] if task.item is not None else []
             lines = [
                 (
-                    stock_services.create_article(self.request.user, self.home, **target)
+                    stock_services.create_article(
+                        self.request.user, self.home, compatible_items=fits, **target
+                    )
                     if isinstance(target, dict)
                     else target,
                     quantity,

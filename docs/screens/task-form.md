@@ -87,7 +87,8 @@ the form is closed to them.
 One line per stock item: the stock item, in the list of the stock of the home, and the
 quantity. The last choice of the list, **Add a stock item…**, opens its name (required) and
 its unit, from the list of units (**Which unit** for Other) right under the list; the stock
-item joins the stock of the home when the task is saved, and a form refused creates
+item joins the stock of the home when the task is saved, linked to the equipment chosen for
+the task (the one added by the same form included), and a form refused creates
 nothing. A name already in the stock, or added by another line, is refused with a message.
 
 Three empty lines are offered. With script, **+** adds a line and **−** removes the line it

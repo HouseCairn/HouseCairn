@@ -48,6 +48,7 @@ ARTICLE_FIELDS = frozenset(
         "unit",
         "unit_other",
         "threshold",
+        "unit_price",
         "notes",
     }
 )
@@ -365,23 +366,41 @@ def delete_article(actor: AnyUser, article: Article) -> None:
 # ---------- suppliers ----------
 
 
+def _prefill_unit_price(article: Article, supplier: Supplier) -> None:
+    """A stock item with no unit price takes the last price paid at a supplier (docs/adr/0062).
+
+    Only a price that is empty is filled: one the person typed is never replaced. It is a
+    first value to correct, not a link: the supplier keeps its own price.
+    """
+    current: Decimal | None = article.unit_price
+    paid: Decimal | None = supplier.last_price
+    if current is None and paid is not None:
+        article.unit_price = paid
+        article.save(update_fields=["unit_price", "updated_at"])
+
+
+@transaction.atomic
 def create_supplier(actor: AnyUser, article: Article, **fields: Any) -> Supplier:
     _require_write(actor, article.home)
     supplier = Supplier(home=article.home, article=article)
     _apply(supplier, SUPPLIER_FIELDS, fields)
     supplier.full_clean()
     supplier.save()
+    _prefill_unit_price(article, supplier)
     audit.record_object(
         "supplier.created", actor=actor, home_id=supplier.home_id, title=supplier.name
     )
     return supplier
 
 
+@transaction.atomic
 def update_supplier(actor: AnyUser, supplier: Supplier, **changes: Any) -> Supplier:
     _require_write(actor, supplier.home)
     _apply(supplier, SUPPLIER_FIELDS, changes)
     supplier.full_clean()
     supplier.save()
+    if "last_price" in changes:
+        _prefill_unit_price(supplier.article, supplier)
     audit.record_object(
         "supplier.updated",
         actor=actor,

@@ -80,6 +80,7 @@ def fill_home(owner: User, member: User, home: Home) -> dict[str, Any]:
         name="Filter",
         unit="piece",
         threshold=Decimal("2"),
+        unit_price=Decimal("3.40"),
         compatible_items=[item],
         rooms=[room, other_room],
         label=upload(image_bytes()),

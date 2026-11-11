@@ -49,6 +49,7 @@ class ArticleForm(forms.ModelForm[Article]):
             "unit",
             "unit_other",
             "threshold",
+            "unit_price",
             "compatible_items",
             "rooms",
             "notes",

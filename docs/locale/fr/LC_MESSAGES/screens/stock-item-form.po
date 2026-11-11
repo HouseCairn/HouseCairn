@@ -48,11 +48,29 @@ msgstr "Emplacement de rangement"
 msgid "Where it is kept, for example \"garage, second shelf\"."
 msgstr "Où il est rangé, par exemple « garage, deuxième étagère »."
 
+msgid "Unit, Which unit"
+msgstr "Unité, Quelle unité"
+
+msgid "A unit of the list (piece, litre, metre, kilogram, roll, box) or **Other**, with the unit written in **Which unit**."
+msgstr "Une unité de la liste (pièce, litre, mètre, kilogramme, rouleau, boîte) ou **Autre**, avec l'unité écrite dans **Quelle unité**."
+
 msgid "Threshold"
 msgstr "Seuil"
 
 msgid "The item is flagged when the stock falls to this quantity or below."
 msgstr "L'article est signalé quand le stock descend à cette quantité ou en dessous."
+
+msgid "Unit price"
+msgstr "Prix unitaire"
+
+msgid "What one unit costs, in the currency of the home; optional, not negative. The cost of the tasks that list the item is planned from it ([budget](../guides/budget.md#the-stock-in-the-cost-of-a-task)). A supplier's last price paid fills it when it is empty."
+msgstr "Ce que coûte une unité, dans la devise du logement ; facultatif, non négatif. Le coût des tâches qui listent l'article est prévu à partir de lui ([budget](../guides/budget.md#the-stock-in-the-cost-of-a-task)). Le dernier prix payé d'un fournisseur le remplit quand il est vide."
+
+msgid "Rooms"
+msgstr "Pièces"
+
+msgid "The rooms where the item is used, besides those of the equipment it fits; only rooms of this home can be chosen."
+msgstr "Les pièces où l'article sert, en plus de celles de l'équipement auquel il convient ; seules les pièces de ce logement peuvent être choisies."
 
 msgid "Compatible items"
 msgstr "Éléments compatibles"
@@ -75,14 +93,3 @@ msgstr "Texte libre, 4 000 caractères au plus."
 msgid "The quantity is not a field: the stock starts at zero and changes with the movements, which you record on the [page of the item](stock-item.md). Only the name is required."
 msgstr "La quantité n'est pas un champ : le stock part de zéro et évolue avec les mouvements, que vous enregistrez sur la [page de l'article](stock-item.md). Seul le nom est requis."
 
-msgid "Unit, Which unit"
-msgstr "Unité, Quelle unité"
-
-msgid "A unit of the list (piece, litre, metre, kilogram, roll, box) or **Other**, with the unit written in **Which unit**."
-msgstr "Une unité de la liste (pièce, litre, mètre, kilogramme, rouleau, boîte) ou **Autre**, avec l'unité écrite dans **Quelle unité**."
-
-msgid "Rooms"
-msgstr "Pièces"
-
-msgid "The rooms where the item is used, besides those of the equipment it fits; only rooms of this home can be chosen."
-msgstr "Les pièces où l'article sert, en plus de celles de l'équipement auquel il convient ; seules les pièces de ce logement peuvent être choisies."

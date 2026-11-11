@@ -699,3 +699,50 @@ class TestPhotosSentFromAPhone:
             signed_in.get(url("attachment-add", alice_home, task_id=owner_task.id)).text,
         ):
             assert f'accept="{accept}"' in page
+
+
+class TestNewArticleFitsTheItemOfTheTask:
+    """A stock item made in the task form is compatible with the equipment of the task."""
+
+    def line(self) -> dict[str, str]:
+        return {"article": "new", "quantity": "1", "new_article_name": "Gasket"}
+
+    def test_with_an_item_that_exists(
+        self, signed_in: Client, alice_home: Home, owner_room: Room, owner_item: Item
+    ) -> None:
+        data = with_lines(self.line(), room=str(owner_room.id), item=str(owner_item.id))
+        assert signed_in.post(url("create", alice_home), data).status_code == 302
+        article = Article.objects.get(name="Gasket")
+        assert list(article.compatible_items.all()) == [owner_item]
+
+    def test_with_an_item_made_in_the_same_form(
+        self, signed_in: Client, alice_home: Home, owner_room: Room
+    ) -> None:
+        data = with_lines(
+            self.line(), room=str(owner_room.id), item="new", new_item_name="Skylight"
+        )
+        assert signed_in.post(url("create", alice_home), data).status_code == 302
+        article = Article.objects.get(name="Gasket")
+        assert [i.name for i in article.compatible_items.all()] == ["Skylight"]
+
+    def test_editing_a_task_with_an_item(
+        self, signed_in: Client, alice_home: Home, owner_task: Task, owner_item: Item
+    ) -> None:
+        Task.objects.filter(id=owner_task.id).update(item=owner_item, room=owner_item.room)
+        data = with_lines(
+            self.line(),
+            title=owner_task.title,
+            room=str(owner_item.room_id),
+            item=str(owner_item.id),
+        )
+        assert (
+            signed_in.post(url("edit", alice_home, task_id=owner_task.id), data).status_code == 302
+        )
+        assert list(Article.objects.get(name="Gasket").compatible_items.all()) == [owner_item]
+
+    def test_without_an_item_it_fits_nothing(
+        self, signed_in: Client, alice_home: Home, owner_room: Room
+    ) -> None:
+        data = with_lines(self.line(), room=str(owner_room.id))
+        assert signed_in.post(url("create", alice_home), data).status_code == 302
+        assert not Article.objects.get(name="Gasket").compatible_items.exists()

@@ -37,7 +37,8 @@ they are managed; the section is absent when there is none. Photos of another ho
 never shown.
 
 **Materials** lists the stock items the task needs, with the quantity, what is in
-stock and a label when it is not enough; **Remove** takes one off, the quantity field
+stock, the unit price of the stock item when it has one, and a label when it is not
+enough; **Remove** takes one off, the quantity field
 changes it and **Add the stock item** adds one. On a phone the quantity field moves
 under the name, which keeps its full width. The choice of the stock item in the add form
 starts on a dash.

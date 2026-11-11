@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Stock: a unit price, without a new export format.** Migration `stock.0005` adds the optional field `unit_price` to the stock items (reversible; it drops the field). Archives of the home gain the field `unit_price` in `stock_items` and stay in format 3; an archive written before restores with no unit price. The planned cost of the tasks that list stock items with a price goes up by the cost of those items, which may change the figures of the budget."
+msgstr "**Matériel : un prix unitaire, sans nouveau format d'export.** La migration `stock.0005` ajoute le champ facultatif `unit_price` aux articles (réversible ; elle supprime le champ). Les archives du logement gagnent le champ `unit_price` dans `stock_items` et restent au format 3 ; une archive écrite avant se restaure sans prix unitaire. Le coût prévu des tâches qui listent des articles avec un prix augmente du coût de ces articles, ce qui peut changer les chiffres du budget."
+
