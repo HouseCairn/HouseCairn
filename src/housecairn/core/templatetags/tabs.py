@@ -173,7 +173,8 @@ def _instance(context: template.Context, request: HttpRequest, view: str) -> lis
         ),
         Tab(_("Settings"), reverse("instance:settings"), view == "instance:settings"),
         Tab(
-            _("Sign-in providers"),
+            # Its own entry: the French label is shorter than the title of the page.
+            pgettext_lazy("tab", "Sign-in providers"),
             reverse("instance:providers"),
             view in ("instance:providers", "instance:provider"),
         ),

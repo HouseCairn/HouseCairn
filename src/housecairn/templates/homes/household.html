@@ -31,6 +31,7 @@
     <form method="post" action="{% url 'homes:invite' home_id=home.id %}" class="card">
       {% csrf_token %}
       {% next_field %}
+      {% include "components/form_errors.html" with form=invite_form only %}
       {{ invite_form.as_p }}
       <button type="submit" class="button-block">{% translate "Invite" %}</button>
       <p class="small">{% if email_configured %}{% translate "The invitation is sent by email, with a link that works once." %}{% else %}{% translate "This instance does not send email: you will get a link to pass on, which works once." %}{% endif %} {% blocktranslate count days=invitation_days %}It expires after {{ days }} day.{% plural %}It expires after {{ days }} days.{% endblocktranslate %}</p>
@@ -61,6 +62,7 @@
       <form method="post" action="{% url 'homes:required-provider' home_id=home.id %}" class="card">
         {% csrf_token %}
         {% next_field %}
+        {% include "components/form_errors.html" with form=provider_form only %}
         {{ provider_form.as_p }}
         <p class="small">{% translate "When a provider is required, members open this home only after signing in through it, not with a password or a passkey alone. Set it from a session signed in through that provider." %}</p>
         <button type="submit" class="button-secondary button-block">{% translate "Save" %}</button>

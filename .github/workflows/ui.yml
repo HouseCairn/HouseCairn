@@ -1,5 +1,6 @@
 # Interface checks in a real browser (docs/adr/0018): an end-to-end passkey sign-in
-# with Chromium's virtual authenticator, and the one-click single sign-on button.
+# with Chromium's virtual authenticator, the one-click single sign-on button, the summary of
+# the errors of a refused form and the tabs of the instance administration.
 # No screenshots until the dedicated lot before the public release (docs/adr/0017).
 # Not a required check. Playwright comes from the
 # `docs` dependency group (locked in uv.lock, docs/adr/0016): it is not a dependency
@@ -88,6 +89,11 @@ jobs:
           from housecairn.homes import services
           user = User.objects.create_user(email='demo@example.com', password='correct-horse-battery-staple')
           services.create_home(user, name='Main house')
+          # The passkey check registers a passkey on the account above, which then asks for it
+          # at every sign-in: the form checks sign in as an account of their own.
+          forms = User.objects.create_user(email='forms@example.com', password='correct-horse-battery-staple')
+          services.create_home(forms, name='Main house')
+          User.objects.create_superuser(email='admin@example.com', password='correct-horse-battery-staple')
           "
           nohup uv run python manage.py runserver 127.0.0.1:8001 --noreload > "$RUNNER_TEMP/passkey-server.log" 2>&1 &
           # The last try decides: a server that never answers fails here, with its log.
@@ -100,3 +106,9 @@ jobs:
         run: |
           uv run python tests/e2e/browser_checks.py sso \
             --base http://localhost:8001 --provider http://127.0.0.1:8002
+      - name: A refused form puts its summary of errors on screen, with and without HTMX or script
+        run: |
+          uv run python tests/e2e/browser_checks.py form-errors --base http://localhost:8001
+      - name: The tabs of the instance administration do not run into each other
+        run: |
+          uv run python tests/e2e/browser_checks.py instance-tabs --base http://localhost:8001

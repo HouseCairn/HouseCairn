@@ -43,9 +43,10 @@ task worker and the static files. Everything it writes goes to one volume,
    names the reverse proxy whose headers HouseCairn trusts: keep `192.0.2.1`
    for a proxy on this host, the gateway of the network fixed in
    `compose.yaml`.
-3. In `compose.yaml`, replace the `edge` tag with a released version, ideally
-   with its digest (`ghcr.io/housecairn/housecairn:X.Y.Z@sha256:...`).
-   [Verify the image](../security/verify-image.md) before the first start.
+3. `compose.yaml` names a released version pinned by its digest
+   (`ghcr.io/housecairn/housecairn:X.Y.Z@sha256:...`); to install a later one,
+   change both. [Verify the image](../security/verify-image.md) before the
+   first start.
 4. Start it, then check its state:
 
    ```sh

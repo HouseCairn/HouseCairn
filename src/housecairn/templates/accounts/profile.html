@@ -7,6 +7,7 @@
   <p class="small">{% translate "Your display name is what the other members of your homes see: on tasks you are in charge of, in the history and in the household. Without one, the first part of your address is shown." %}</p>
   <form method="post" class="card" novalidate>
     {% csrf_token %}
+    {% include "components/form_errors.html" with form=form only %}
     {{ form.as_p }}
     {% if taken_from %}
       <p class="small" id="display-name-source">{% blocktranslate with provider=taken_from %}Taken from {{ provider }}. It follows the name your provider gives at each sign-in through it, until you change it here.{% endblocktranslate %}</p>

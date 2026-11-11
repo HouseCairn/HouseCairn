@@ -17,6 +17,7 @@
     <form method="post" action="{% url 'homes:member-role' home_id=home.id member_id=membership.id %}" class="card">
       {% csrf_token %}
       {% next_field %}
+      {% include "components/form_errors.html" with form=role_form only %}
       {{ role_form.as_p }}
       <button type="submit" class="button-secondary button-block">{% translate "Change the role" %}</button>
       <p class="small">{% translate "A home always keeps at least one owner." %}</p>

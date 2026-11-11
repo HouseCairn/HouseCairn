@@ -7,6 +7,7 @@
   <p class="small">{% blocktranslate with service=channel.service scheme=channel.scheme %}{{ service }} ({{ scheme }}). The address is kept encrypted and is never shown again: to change it, delete this channel and add another.{% endblocktranslate %}</p>
   <form method="post" class="card" novalidate>
     {% csrf_token %}
+    {% include "components/form_errors.html" with form=form only %}
     {{ form.as_p }}
     <button type="submit" class="button-block">{% translate "Save" %}</button>
   </form>

@@ -8,7 +8,7 @@
   <form method="post" novalidate>
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}">
-    {{ form.non_field_errors }}
+    {% include "components/form_errors.html" with form=form only %}
     <fieldset class="pref-group">
       <legend>{% translate "Group by" %}</legend>
       {{ form.today_group.errors }}

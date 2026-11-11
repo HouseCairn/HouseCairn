@@ -1,5 +1,5 @@
 {# The fields of `form`, a ProviderForm, in the layout of `form.as_p`, except that a box keeps its label beside it and its help in a paragraph below, as on the settings screen (J1-F). #}
-{{ form.non_field_errors }}
+{% include "components/form_errors.html" with form=form only %}
 {% for field in form %}
   {{ field.errors }}
   {% if field.widget_type == "checkbox" %}

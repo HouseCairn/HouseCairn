@@ -18,7 +18,7 @@
     <section class="card">
       <form method="post" action="">
         {% csrf_token %}
-        {{ form.non_field_errors }}
+        {% include "components/form_errors.html" with form=form only %}
         {% for item in items %}
           {% with key=item.setting.key %}
             {% if item.field %}
