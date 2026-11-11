@@ -281,13 +281,14 @@ msgid "Home audit log"
 msgstr "Journal d'audit du logement"
 
 msgid "Overview"
-msgstr "Vue d'ensemble"
+msgstr "Aperçu"
 
 msgid "Settings"
 msgstr "Réglages"
 
+msgctxt "tab"
 msgid "Sign-in providers"
-msgstr "Fournisseurs de connexion"
+msgstr "SSO"
 
 msgid "Instance audit log"
 msgstr "Journal d'audit de l'instance"

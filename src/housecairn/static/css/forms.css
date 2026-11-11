@@ -1,5 +1,5 @@
 /* The summary of the errors of a refused form (templates/components/form_errors.html, design guide,
-   Forms), and the tabs of a section whose labels are longer than their share of the width. */
+   Forms). */
 
 .form-errors {
   margin: 0 0 var(--hc-space-4);
@@ -30,13 +30,6 @@
 /* A field in error: the border says it too, not only the message. */
 [aria-invalid="true"] {
   border-color: var(--hc-color-danger);
-}
-
-/* Tabs that share the width wrap their label instead of running into the next tab. */
-.tabs-fit .tab {
-  white-space: normal;
-  overflow-wrap: anywhere;
-  line-height: 1.2;
 }
 
 /* The summary lists the errors that belong to no field: `as_p` draws them again above the fields. */

@@ -36,7 +36,8 @@ checks, with script, with HTMX swapping the page in place, and without script, t
 of the errors is on screen and holds the focus, that the section is unfolded and that a line of
 the summary puts the focus in its field. `instance-tabs` (CI) measures the tabs of the instance
 administration at 360, 375, 768 and 1280 px, in English and in French: no tab text runs into its
-neighbour. Both need the administrator account `admin@example.com` of the CI instance.
+neighbour and no word of a label is cut over two lines. Both need the administrator account
+`admin@example.com` of the CI instance.
 """
 
 import argparse
@@ -714,17 +715,31 @@ def item_contract(browser: Browser, base: str) -> None:
 ADMIN_EMAIL = "admin@example.com"
 TAB_WIDTHS = (360, 375, 768, 1280)
 
-# The text of every tab of the bar, and where its box is. A range around the content gives the
-# width the text really takes, whether or not the box that holds it is as wide.
+# The text of every tab of the bar, where its box is, and the words of its label that are drawn
+# on more than one line. A range around the content gives the width the text really takes,
+# whether or not the box that holds it is as wide; a range around one word has one rectangle per
+# line it is drawn on.
 TABS_JS = """() => [...document.querySelectorAll('.tabs .tab')].map((tab) => {
   const range = document.createRange();
   range.selectNodeContents(tab);
   const text = range.getBoundingClientRect();
   const box = tab.getBoundingClientRect();
+  const cut = [];
+  const walker = document.createTreeWalker(tab, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    for (const word of node.data.matchAll(/\\S+/g)) {
+      const part = document.createRange();
+      part.setStart(node, word.index);
+      part.setEnd(node, word.index + word[0].length);
+      const lines = new Set([...part.getClientRects()].map((r) => Math.round(r.top / 4)));
+      if (lines.size > 1) cut.push(word[0]);
+    }
+  }
   return {
     label: tab.textContent.trim(),
     box: [box.left, box.right],
     text: [text.left, text.right],
+    cut,
   };
 })"""
 
@@ -750,6 +765,11 @@ def instance_tabs(browser: Browser, base: str) -> None:
                         tab["box"][0] - 1 <= tab["text"][0] and tab["text"][1] <= tab["box"][1] + 1
                     )
                     check(inside, f"{label}: '{tab['label']}' stays in its own box {tab['box']}")
+                    # Hyphenation needs a dictionary the headless browser may not have: a word
+                    # drawn on two lines is a label to shorten, hyphen or not.
+                    check(
+                        not tab["cut"], f"{label}: '{tab['label']}' has no word cut: {tab['cut']}"
+                    )
                 for left, right in pairwise(tabs):
                     check(
                         left["text"][1] <= right["text"][0],
