@@ -59,5 +59,6 @@ from an item guessed the contractor by comparing names. The maintainer decided o
   notes say so.
 - The API loses `contract_provider` on items. The project is before 1.0; the change is
   announced in the upgrade notes rather than kept as a second, read-only name.
-- The integrations that read items from the API (Home Assistant) read an id instead of a
-  name, and read the contractor to show it.
+- The Home Assistant integration does not read items: nothing changes for it. Only the
+  OpenAPI fixture of its tests names `contract_provider`; it is updated in its own
+  repository.

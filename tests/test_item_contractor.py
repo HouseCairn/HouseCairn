@@ -358,6 +358,37 @@ class TestTheApi:
         owner_item.refresh_from_db()
         assert owner_item.contract_contractor is None
 
+    def test_a_contractor_of_another_home_answers_like_an_unknown_id(
+        self,
+        api_client: APIClient,
+        alice: User,
+        bob: User,
+        bob_home: Home,
+        alice_home: Home,
+        owner_item: Item,
+    ) -> None:
+        # The answer must not tell that the id exists in another home.
+        stranger = task_services.create_contractor(bob, bob_home, name="Elsewhere")
+        api_client.force_authenticate(alice)
+        ids = (stranger.id, uuid.uuid4())
+        answers = [
+            api_client.patch(
+                self.url(alice_home, owner_item),
+                {"contract_contractor": str(contractor_id)},
+                format="json",
+            )
+            for contractor_id in ids
+        ]
+        assert [a.status_code for a in answers] == [400, 400]
+        foreign, unknown = (
+            [
+                message.replace(str(contractor_id), "<id>")
+                for message in a.json()["contract_contractor"]
+            ]
+            for a, contractor_id in zip(answers, ids, strict=True)
+        )
+        assert foreign == unknown
+
 
 class TestTheArchive:
     @pytest.fixture

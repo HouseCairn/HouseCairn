@@ -5,8 +5,8 @@ nosearch: true
 
 - **The provider of the maintenance contract of an item is now a contractor.** The update
   changes the data of every home, once, and can be undone (`manage.py migrate rooms 0004`):
-  for each item whose provider was a text, the contractor of the same home with that name
-  (case and extra spaces ignored) becomes its provider; when the home has none, a contractor
+  for each item whose provider was a text, items in the trash included, the contractor of the
+  same home with that name (case and extra spaces ignored) becomes its provider; when the home has none, a contractor
   of that name is created, with the trade **Other** said as **Maintenance** (change it on its
   sheet), and shared by the items that name the same provider. A text longer than 120
   characters, the length of a name, is cut for the name and kept whole in the note of the
