@@ -35,7 +35,11 @@ read-only.
 
 **Notifications** turns reminders on or off for the whole instance (off by default) and sets
 how often the background worker looks for them, from 1 to 60 minutes (see
-[Notifications](../guides/notifications.md)). It shows no channel of anyone.
+[Notifications](../guides/notifications.md)). **Channels on the local network** (off by
+default) lets channels send to private network addresses, for a ntfy or a Gotify next to
+the instance; any person with an account can then make the server call such an address
+(see [Hardening](../administration/hardening.md)). Loopback, link-local and cloud metadata
+addresses stay refused either way. The section shows no channel of anyone.
 
 **Projects** has one switch, **Preview of inspiration links** (off by default). On, the server
 reads the page of a link once, when someone adds it to a project, to find its title and its

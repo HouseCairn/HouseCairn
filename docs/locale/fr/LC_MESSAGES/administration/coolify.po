@@ -1,0 +1,225 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Deploy with Coolify"
+msgstr "Déployer avec Coolify"
+
+msgid "[Coolify](https://coolify.io/docs/) deploys Docker Compose files, but the example `compose.yaml` of the repository is written for plain Docker Compose with a reverse proxy on the host: it reads `deploy/production.env`, publishes port 8000 on the host and fixes the range of its network. Under Coolify, these break the deployment or the trust in Coolify's proxy. The repository therefore has a second file for Coolify, [`deploy/coolify/docker-compose.yaml`](https://github.com/HouseCairn/housecairn/blob/main/deploy/coolify/docker-compose.yaml):"
+msgstr "[Coolify](https://coolify.io/docs/) déploie des fichiers Docker Compose, mais le `compose.yaml` d'exemple du dépôt est écrit pour Docker Compose seul, avec un reverse proxy sur l'hôte : il lit `deploy/production.env`, publie le port 8000 sur l'hôte et fixe la plage de son réseau. Sous Coolify, cela fait échouer le déploiement ou la confiance dans le proxy de Coolify. Le dépôt a donc un second fichier pour Coolify, [`deploy/coolify/docker-compose.yaml`](https://github.com/HouseCairn/housecairn/blob/main/deploy/coolify/docker-compose.yaml) :"
+
+msgid "the same image, version and digest, and the same hardening as `compose.yaml` (a test of the repository fails when they differ);"
+msgstr "la même image, version et condensat, et le même durcissement que `compose.yaml` (un test du dépôt échoue s'ils diffèrent) ;"
+
+msgid "no published port: Coolify's proxy reaches the container over the resource's network;"
+msgstr "aucun port publié : le proxy de Coolify joint le conteneur par le réseau de la ressource ;"
+
+msgid "no `env_file`: every setting is an environment variable that Coolify shows in its interface;"
+msgstr "aucun `env_file` : chaque réglage est une variable d'environnement que Coolify montre dans son interface ;"
+
+msgid "the domain comes from the variables Coolify generates (`SERVICE_URL_HOUSECAIRN`, `SERVICE_FQDN_HOUSECAIRN`), so `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` and `HOUSECAIRN_SITE_URL` follow the domain set in Coolify."
+msgstr "le domaine vient des variables que Coolify génère (`SERVICE_URL_HOUSECAIRN`, `SERVICE_FQDN_HOUSECAIRN`) : `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` et `HOUSECAIRN_SITE_URL` suivent le domaine défini dans Coolify."
+
+msgid "Create the resource"
+msgstr "Créer la ressource"
+
+msgid "From the public repository (the file then follows the repository):"
+msgstr "Depuis le dépôt public (le fichier suit alors le dépôt) :"
+
+msgid "In a project, **+ New**, then **Public Repository**, and paste `https://github.com/HouseCairn/housecairn`. Branch: `main`."
+msgstr "Dans un projet, **+ New**, puis **Public Repository**, et collez `https://github.com/HouseCairn/housecairn`. Branche : `main`."
+
+msgid "**Build Pack**: **Docker Compose**. **Base Directory**: `/deploy/coolify`. **Docker Compose Location**: `/docker-compose.yaml`."
+msgstr "**Build Pack** : **Docker Compose**. **Base Directory** : `/deploy/coolify`. **Docker Compose Location** : `/docker-compose.yaml`."
+
+msgid "Save: Coolify reads the file and lists the `housecairn` service and its variables."
+msgstr "Enregistrez : Coolify lit le fichier et liste le service `housecairn` et ses variables."
+
+msgid "Or without Git: **+ New**, then **Docker Compose Empty**, and paste the content of `deploy/coolify/docker-compose.yaml`. You then update the image yourself (see [Update](#update))."
+msgstr "Ou sans Git : **+ New**, puis **Docker Compose Empty**, et collez le contenu de `deploy/coolify/docker-compose.yaml`. Vous mettez alors l'image à jour vous-même (voyez [Mise à jour](#update))."
+
+msgid "Leave **Raw (deploy file as-is)** off: Coolify must add its proxy labels and its network."
+msgstr "Laissez **Raw (deploy file as-is)** désactivé : Coolify doit ajouter les labels de son proxy et son réseau."
+
+msgid "Domain"
+msgstr "Domaine"
+
+msgid "In **Domains**, give the `housecairn` service one domain, for example `https://housecairn.example.com`. The file declares `SERVICE_URL_HOUSECAIRN_8000`: Coolify routes the domain to port 8000 of the container, gets the certificate, and passes the domain to HouseCairn:"
+msgstr "Dans **Domains**, donnez un domaine au service `housecairn`, par exemple `https://housecairn.example.com`. Le fichier déclare `SERVICE_URL_HOUSECAIRN_8000` : Coolify route le domaine vers le port 8000 du conteneur, obtient le certificat et transmet le domaine à HouseCairn :"
+
+msgid "Variable"
+msgstr "Variable"
+
+msgid "Value"
+msgstr "Valeur"
+
+msgid "`ALLOWED_HOSTS`"
+msgstr "`ALLOWED_HOSTS`"
+
+#, python-brace-format
+msgid "`${SERVICE_FQDN_HOUSECAIRN}`: `housecairn.example.com`"
+msgstr "`${SERVICE_FQDN_HOUSECAIRN}` : `housecairn.example.com`"
+
+msgid "`CSRF_TRUSTED_ORIGINS`"
+msgstr "`CSRF_TRUSTED_ORIGINS`"
+
+#, python-brace-format
+msgid "`${SERVICE_URL_HOUSECAIRN}`: `https://housecairn.example.com`"
+msgstr "`${SERVICE_URL_HOUSECAIRN}` : `https://housecairn.example.com`"
+
+msgid "`HOUSECAIRN_SITE_URL`"
+msgstr "`HOUSECAIRN_SITE_URL`"
+
+#, python-brace-format
+msgid "`${SERVICE_URL_HOUSECAIRN}`: the address in emails and on printed labels"
+msgstr "`${SERVICE_URL_HOUSECAIRN}` : l'adresse des e-mails et des étiquettes imprimées"
+
+msgid "Keep one domain: `HOUSECAIRN_SITE_URL` holds a single address."
+msgstr "Gardez un seul domaine : `HOUSECAIRN_SITE_URL` ne contient qu'une adresse."
+
+msgid "Variables"
+msgstr "Variables"
+
+msgid "The file sets what does not change under Coolify: `DEBUG=false`, `HOUSECAIRN_BEHIND_TLS_PROXY=true` (Coolify's proxy terminates HTTPS and sets `X-Forwarded-Proto`) and `HOUSECAIRN_DATA_DIR=/data`. Coolify lists the others under **Environment Variables**, with the default of the file. None is required: HouseCairn starts with all of them as they are."
+msgstr "Le fichier fixe ce qui ne change pas sous Coolify : `DEBUG=false`, `HOUSECAIRN_BEHIND_TLS_PROXY=true` (le proxy de Coolify termine HTTPS et pose `X-Forwarded-Proto`) et `HOUSECAIRN_DATA_DIR=/data`. Coolify liste les autres sous **Environment Variables**, avec la valeur par défaut du fichier. Aucune n'est obligatoire : HouseCairn démarre avec toutes telles quelles."
+
+msgid "Default in the file"
+msgstr "Valeur par défaut du fichier"
+
+msgid "See"
+msgstr "Voir"
+
+msgid "`HOUSECAIRN_FORWARDED_ALLOW_IPS`"
+msgstr "`HOUSECAIRN_FORWARDED_ALLOW_IPS`"
+
+msgid "`172.16.0.0/12`"
+msgstr "`172.16.0.0/12`"
+
+msgid "[Trusted proxy](#trusted-proxy) below"
+msgstr "[Proxy de confiance](#trusted-proxy) ci-dessous"
+
+msgid "`TIME_ZONE`"
+msgstr "`TIME_ZONE`"
+
+msgid "empty: the setting of the interface"
+msgstr "vide : le réglage de l'interface"
+
+msgid "[Environment variables](variables.md)"
+msgstr "[Variables d'environnement](variables.md)"
+
+msgid "`HOUSECAIRN_SIGNUP_OPEN`"
+msgstr "`HOUSECAIRN_SIGNUP_OPEN`"
+
+msgid "empty: closed"
+msgstr "vide : fermée"
+
+msgid "[Open sign-up](sign-up.md)"
+msgstr "[Inscription ouverte](sign-up.md)"
+
+msgid "`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`"
+msgstr "`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`"
+
+msgid "empty: email off"
+msgstr "vide : e-mail désactivé"
+
+msgid "[Email](email.md)"
+msgstr "[E-mail](email.md)"
+
+msgid "`OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `HOUSECAIRN_OIDC_SIGNUP`, `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`"
+msgstr "`OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `HOUSECAIRN_OIDC_SIGNUP`, `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL`"
+
+msgid "empty: single sign-on off"
+msgstr "vide : authentification unique désactivée"
+
+msgid "[Single sign-on](oidc.md)"
+msgstr "[Authentification unique](oidc.md)"
+
+msgid "`HOUSECAIRN_WEB_WORKERS`, `HOUSECAIRN_TASK_WORKERS`"
+msgstr "`HOUSECAIRN_WEB_WORKERS`, `HOUSECAIRN_TASK_WORKERS`"
+
+msgid "`2`, `2`"
+msgstr "`2`, `2`"
+
+msgid "`LOG_LEVEL`"
+msgstr "`LOG_LEVEL`"
+
+msgid "`INFO`"
+msgstr "`INFO`"
+
+msgid "A setting that the interface can also change (time zone, sign-up, email) stays free in the interface while its variable is empty; once you fill it in Coolify, it locks its field there ([Settings](settings.md)). Leave `SECRET_KEY` out: the container generates the key on first start and keeps it in `/data`."
+msgstr "Un réglage que l'interface peut aussi changer (fuseau horaire, inscription, e-mail) reste libre dans l'interface tant que sa variable est vide ; dès que vous la remplissez dans Coolify, elle y verrouille son champ ([Réglages](settings.md)). Ne mettez pas `SECRET_KEY` : le conteneur génère la clé au premier démarrage et la garde dans `/data`."
+
+#, python-brace-format
+msgid "To set another variable of [Environment variables](variables.md), add it to the `environment:` list of the service, as `NAME=${NAME:-}`: Coolify then lists it. From the repository, the file is the repository's; use a **Docker Compose Empty** resource for that."
+msgstr "Pour poser une autre variable de [Variables d'environnement](variables.md), ajoutez-la à la liste `environment:` du service, sous la forme `NAME=${NAME:-}` : Coolify la liste alors. Depuis le dépôt, le fichier est celui du dépôt ; utilisez pour cela une ressource **Docker Compose Empty**."
+
+msgid "Trusted proxy"
+msgstr "Proxy de confiance"
+
+msgid "HouseCairn trusts the `X-Forwarded-Proto` and `X-Forwarded-For` headers only from the addresses in `HOUSECAIRN_FORWARDED_ALLOW_IPS` ([Reverse proxy](reverse-proxy.md#trusted-proxy-address)). Coolify's proxy connects from its address on the resource's network, which Docker chooses. The default, `172.16.0.0/12`, is the range Docker gives its networks: it covers the proxy on most servers, and the container publishes no port, so only containers on the same network can reach it."
+msgstr "HouseCairn ne fait confiance aux en-têtes `X-Forwarded-Proto` et `X-Forwarded-For` que depuis les adresses de `HOUSECAIRN_FORWARDED_ALLOW_IPS` ([Reverse proxy](reverse-proxy.md#trusted-proxy-address)). Le proxy de Coolify se connecte depuis son adresse sur le réseau de la ressource, que Docker choisit. La valeur par défaut, `172.16.0.0/12`, est la plage que Docker donne à ses réseaux : elle couvre le proxy sur la plupart des serveurs, et le conteneur ne publie aucun port, donc seuls les conteneurs du même réseau peuvent le joindre."
+
+msgid "To narrow it to the network of the resource, on the server:"
+msgstr "Pour la resserrer au réseau de la ressource, sur le serveur :"
+
+msgid "Set `HOUSECAIRN_FORWARDED_ALLOW_IPS` to that subnet, for example `172.18.0.0/16`, then redeploy. If the subnet is outside `172.16.0.0/12` (a server with many networks, or a Docker daemon with its own address pools), the default does not cover the proxy: every request is redirected to HTTPS again and the browser reports too many redirects. Set the variable to the real subnet."
+msgstr "Donnez ce sous-réseau à `HOUSECAIRN_FORWARDED_ALLOW_IPS`, par exemple `172.18.0.0/16`, puis redéployez. Si le sous-réseau est hors de `172.16.0.0/12` (un serveur avec beaucoup de réseaux, ou un démon Docker avec ses propres plages d'adresses), la valeur par défaut ne couvre pas le proxy : chaque requête est redirigée de nouveau vers HTTPS et le navigateur signale trop de redirections. Donnez à la variable le sous-réseau réel."
+
+msgid "Data and backups"
+msgstr "Données et sauvegardes"
+
+msgid "Everything HouseCairn writes is in the `housecairn-data` volume, mounted on `/data`. Coolify prefixes its name with the resource's identifier; **Persistent Storage** shows it. Back it up as described in [Data and backups](backup.md): the commands run in the container from Coolify's **Terminal**, without `docker compose exec housecairn`, for example `python -m housecairn.entrypoint manage backup_instance`."
+msgstr "Tout ce qu'écrit HouseCairn est dans le volume `housecairn-data`, monté sur `/data`. Coolify préfixe son nom par l'identifiant de la ressource ; **Persistent Storage** le montre. Sauvegardez-le comme le décrit [Données et sauvegardes](backup.md) : les commandes se lancent dans le conteneur depuis le **Terminal** de Coolify, sans `docker compose exec housecairn`, par exemple `python -m housecairn.entrypoint manage backup_instance`."
+
+msgid "On first start, HouseCairn writes a one-time code in its log while it has no administrator: read it under **Logs**, then [create the first administrator](../getting-started/first-start.md)."
+msgstr "Au premier démarrage, HouseCairn écrit un code à usage unique dans son journal tant qu'il n'a pas d'administrateur : lisez-le sous **Logs**, puis [créez le premier administrateur](../getting-started/first-start.md)."
+
+msgid "PostgreSQL"
+msgstr "PostgreSQL"
+
+msgid "SQLite in `/data` is the default and is enough for a household. For PostgreSQL, use a **Docker Compose Empty** resource, paste the file, then add a `postgres` service and point HouseCairn at it. Coolify generates the password (`SERVICE_PASSWORD_POSTGRES`, letters and digits only, so it fits in the URL):"
+msgstr "SQLite dans `/data` est le choix par défaut et suffit à un foyer. Pour PostgreSQL, utilisez une ressource **Docker Compose Empty**, collez le fichier, puis ajoutez un service `postgres` et faites-y pointer HouseCairn. Coolify génère le mot de passe (`SERVICE_PASSWORD_POSTGRES`, lettres et chiffres seulement, il tient donc dans l'URL) :"
+
+msgid "Back up the database with `pg_dump` in the `postgres` container, as in [With PostgreSQL](backup.md#with-postgresql)."
+msgstr "Sauvegardez la base avec `pg_dump` dans le conteneur `postgres`, comme dans [Avec PostgreSQL](backup.md#with-postgresql)."
+
+msgid "Update"
+msgstr "Mise à jour"
+
+msgid "The file names the latest released version and its digest, changed together with `compose.yaml`. From the repository, a new deployment in Coolify reads the file again and takes the new image. Read the [release notes](../release-notes.md) and [back up](backup.md) first, as in [Update](update.md). With **Docker Compose Empty**, change the image line yourself, and [verify the image](../security/verify-image.md)."
+msgstr "Le fichier nomme la dernière version publiée et son condensat, changés en même temps que dans `compose.yaml`. Depuis le dépôt, un nouveau déploiement dans Coolify relit le fichier et prend la nouvelle image. Lisez d'abord les [notes de version](../release-notes.md) et [sauvegardez](backup.md), comme dans [Mise à jour](update.md). Avec **Docker Compose Empty**, changez vous-même la ligne de l'image, et [vérifiez l'image](../security/verify-image.md)."
+
+msgid "Pitfalls"
+msgstr "Pièges"
+
+msgid "**`pull_policy: missing`**: the file pins a digest, which cannot move, so Coolify pulls the image only when the server does not have it. If you replace it with a moving tag (`edge`, `latest`, `X.Y`), set `pull_policy: always`, or each deployment keeps the image already on the server."
+msgstr "**`pull_policy: missing`** : le fichier épingle un condensat, qui ne peut pas bouger, donc Coolify ne télécharge l'image que si le serveur ne l'a pas. Si vous la remplacez par une étiquette mobile (`edge`, `latest`, `X.Y`), mettez `pull_policy: always`, sinon chaque déploiement garde l'image déjà présente sur le serveur."
+
+msgid "**Too many redirects**: `HOUSECAIRN_FORWARDED_ALLOW_IPS` does not cover the proxy's address (see [Trusted proxy](#trusted-proxy))."
+msgstr "**Trop de redirections** : `HOUSECAIRN_FORWARDED_ALLOW_IPS` ne couvre pas l'adresse du proxy (voyez [Proxy de confiance](#trusted-proxy))."
+
+msgid "**Bad Request (400)**: the request's host name is not in `ALLOWED_HOSTS`. Set the domain in **Domains**, and redeploy so the variables follow it."
+msgstr "**Bad Request (400)** : le nom d'hôte de la requête n'est pas dans `ALLOWED_HOSTS`. Définissez le domaine dans **Domains**, et redéployez pour que les variables le suivent."
+
+msgid "**No published port**: do not add `ports:` to reach the container directly. A published port bypasses the proxy, and two instances on one server would ask for the same port."
+msgstr "**Aucun port publié** : n'ajoutez pas `ports:` pour joindre le conteneur directement. Un port publié contourne le proxy, et deux instances sur un même serveur demanderaient le même port."
+
+msgid "This page follows Coolify's documentation of Docker Compose. The file is validated by the repository's CI (`docker compose config` with the variables Coolify sets), but not by a deployment on a real Coolify server: try it on a test instance before you rely on it."
+msgstr "Cette page suit la documentation de Coolify sur Docker Compose. Le fichier est validé par la CI du dépôt (`docker compose config` avec les variables que pose Coolify), mais pas par un déploiement sur un vrai serveur Coolify : essayez-le sur une instance de test avant de vous y fier."
+

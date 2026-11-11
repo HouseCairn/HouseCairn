@@ -93,6 +93,13 @@ def spy_refusals(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     return refused
 
 
+def let_loopback_through(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Loopback is refused, rightly: let it through for a test that runs a local server, with
+    private networks allowed, as an administrator would."""
+    monkeypatch.setattr(outbound, "forbidden_address", lambda address: False)
+    monkeypatch.setattr(outbound, "private_networks_allowed", lambda: True)
+
+
 class Drip:
     """What a dripping test server knows: its addresses and its connections still open."""
 
@@ -246,8 +253,15 @@ class TestAddresses:
             except outbound.RefusedError as refused:
                 pytest.fail(f"{example}: {refused}")
 
-    def test_a_private_network_is_allowed(self, alice: User) -> None:
-        added = services.add_channel(alice, name="ntfy", url="ntfy://172.16.5.20/house")
+    @pytest.mark.parametrize("host", ["172.16.5.20", "172.31.0.2", "100.64.0.1", "[fd12::1]"])
+    def test_a_private_network_is_refused_unless_allowed(self, alice: User, host: str) -> None:
+        """Refused by default, with a sentence that says who can allow it (docs/adr/0059)."""
+        with pytest.raises(services.ValidationError, match="private network") as refused:
+            services.add_channel(alice, name="ntfy", url=f"ntfy://{host}/house")
+        assert "administrator" in str(refused.value)
+        assert not Channel.objects.exists()
+        with override_settings(HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS=True):
+            added = services.add_channel(alice, name="ntfy", url=f"ntfy://{host}/house")
         assert (added.scheme, added.service) == ("ntfy", "ntfy")
 
     def test_the_address_is_sealed(self, channel: Channel) -> None:
@@ -339,7 +353,189 @@ class TestOutgoingCalls:
             outbound.send(outbound.seal("ntfys://ntfy.example.com/t"), title="t", body="b") is False
         )
         assert connected == []
-        assert not outbound.refused(ipaddress.ip_address("100.100.100.201"))
+        assert not outbound.refused(ipaddress.ip_address("100.100.100.201"), private_networks=True)
+        assert outbound.refused(ipaddress.ip_address("100.100.100.201"))
+
+    @pytest.mark.parametrize("address", ["172.16.1.20", "172.20.1.3", "100.64.0.9", "fd12::20"])
+    def test_a_name_resolving_to_a_private_address_is_refused_unless_allowed(
+        self, monkeypatch: pytest.MonkeyPatch, address: str
+    ) -> None:
+        """docs/adr/0059: refused by default, as a refusal of its own; allowed by the setting."""
+        family = socket.AF_INET6 if ":" in address else socket.AF_INET
+        monkeypatch.setattr(
+            outbound,
+            "_resolve",
+            lambda *a, **k: [(family, socket.SOCK_STREAM, 6, "", (address, 443))],
+        )
+        connected: list[Any] = []
+        monkeypatch.setattr(socket.socket, "connect", lambda self, a: connected.append(a[0]))
+        sealed = outbound.seal("gotifys://gotify.example.com/token")
+        assert outbound.deliver(sealed, title="t", body="b") is outbound.Outcome.PRIVATE
+        assert outbound.send(sealed, title="t", body="b") is False
+        assert connected == []
+        with override_settings(HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS=True):
+            assert outbound.deliver(sealed, title="t", body="b") is outbound.Outcome.FAILED
+        assert connected == [address]  # called; the fake connection then fails
+
+    def test_the_test_button_says_a_private_address_is_refused(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        alice: User,
+        client: Client,
+        api_client: APIClient,
+    ) -> None:
+        channel = services.add_channel(alice, name="Gotify", url="gotifys://gotify.example.com/t")
+        monkeypatch.setattr(
+            outbound,
+            "_resolve",
+            lambda *a, **k: [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("172.16.1.20", 443))],
+        )
+        with pytest.raises(services.ValidationError, match="private network"):
+            services.test_channel(alice, channel)
+        signed_in(client, alice)
+        page = client.post(reverse("notifications:test", args=[channel.id]), follow=True)
+        assert "private network" in page.text
+        assert "administrator" in page.text
+        api_client.force_authenticate(alice)
+        answer = api_client.post(reverse("api-v1:notification-channel-test", args=[channel.id]))
+        assert answer.status_code == 400
+        assert "private network" in json.dumps(answer.json())
+        assert "172.16.1.20" not in page.text + json.dumps(answer.json())
+
+    @pytest.fixture
+    def listener(self) -> Iterator[socket.socket]:
+        """A server on 127.0.0.1; the tests accept what reached it."""
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.bind(("127.0.0.1", 0))
+        server.listen()
+        server.settimeout(0.2)
+        try:
+            yield server
+        finally:
+            server.close()
+
+    @pytest.mark.parametrize(
+        ("family", "address"),
+        [
+            (socket.AF_INET, ("127.0.0.1", 9)),
+            (socket.AF_INET6, ("::1", 9, 0, 0)),
+            (socket.AF_INET6, ("::ffff:127.0.0.1", 9, 0, 0)),
+            (socket.AF_INET, ("169.254.169.254", 80)),
+            (socket.AF_INET6, ("fd00:ec2::254", 80, 0, 0)),
+            (socket.AF_INET6, ("::ffff:100.100.100.200", 80, 0, 0)),
+            (socket.AF_INET, ("172.16.1.20", 80)),
+            (socket.AF_INET6, ("::ffff:172.16.0.1", 80, 0, 0)),
+            (socket.AF_INET6, ("fe80::1%1", 80, 0, 1)),
+        ],
+    )
+    def test_a_connection_to_a_refused_address_is_refused_without_resolving(
+        self, monkeypatch: pytest.MonkeyPatch, family: int, address: tuple[Any, ...]
+    ) -> None:
+        """docs/adr/0059: `connect` checks its own address, IPv4, IPv6 and IPv4 in IPv6, so a
+        plugin that would skip `getaddrinfo` reaches nothing either."""
+        outbound.install()
+        resolved: list[Any] = []
+        monkeypatch.setattr(outbound, "_resolve", lambda *a, **k: resolved.append(a) or [])
+        with outbound.guarded() as guard:
+            sock = socket.socket(family, socket.SOCK_STREAM)
+            sock.settimeout(0.5)
+            try:
+                with pytest.raises(OSError, match="refused by the instance"):
+                    sock.connect(address)
+                with pytest.raises(OSError, match="refused by the instance"):
+                    sock.connect_ex(address)
+            finally:
+                sock.close()
+        assert resolved == []
+        assert guard.blocked is True
+
+    @pytest.mark.parametrize(
+        ("family", "address"),
+        [
+            (socket.AF_INET, ("127.0.0.1", 9)),
+            (socket.AF_INET6, ("::ffff:127.0.0.1", 9, 0, 0)),
+            (socket.AF_INET, ("100.100.100.200", 80)),
+            (socket.AF_INET6, ("::ffff:100.100.100.200", 80, 0, 0)),
+            (socket.AF_INET6, ("::ffff:192.0.0.192", 80, 0, 0)),
+            (socket.AF_INET6, ("fd00:ec2::254", 80, 0, 0)),
+        ],
+    )
+    def test_loopback_and_metadata_stay_refused_to_connect_with_private_networks_allowed(
+        self, family: int, address: tuple[Any, ...]
+    ) -> None:
+        """The setting lifts the rule of private networks only: the instance itself and the
+        metadata services, also carried by an IPv6 address, stay out of reach."""
+        outbound.install()
+        with outbound.guarded(private_networks=True) as guard:
+            sock = socket.socket(family, socket.SOCK_STREAM)
+            try:
+                with pytest.raises(OSError, match="refused by the instance"):
+                    sock.connect(address)
+            finally:
+                sock.close()
+        assert guard.blocked is True
+        assert guard.private is False
+
+    def test_connect_applies_the_rule_of_private_networks(
+        self, monkeypatch: pytest.MonkeyPatch, listener: socket.socket
+    ) -> None:
+        """Loopback let through as for the local servers of these tests, it is judged as a
+        private address: refused by default, reached once private networks are allowed."""
+        monkeypatch.setattr(outbound, "forbidden_address", lambda address: False)
+        target = listener.getsockname()
+        outbound.install()
+        with (
+            outbound.guarded() as guard,
+            socket.socket() as sock,
+            pytest.raises(OSError, match="refused by the instance"),
+        ):
+            sock.connect(target)
+        assert guard.private is True
+        with outbound.guarded(private_networks=True) as guard, socket.socket() as sock:
+            sock.connect(target)
+        assert guard.blocked is False
+        conn, _ = listener.accept()
+        conn.close()
+
+    def test_a_name_or_a_local_socket_is_refused_to_connect(self, tmp_path: Path) -> None:
+        """A name given to `connect` would be resolved by the C library, out of sight."""
+        outbound.install()
+        with (
+            outbound.guarded(private_networks=True),
+            socket.socket() as sock,
+            pytest.raises(OSError, match="refused by the instance"),
+        ):
+            sock.connect(("localhost", 9))
+        with (
+            outbound.guarded(private_networks=True),
+            socket.socket(socket.AF_UNIX) as local,
+            pytest.raises(OSError, match="refused by the instance"),
+        ):
+            local.connect(str(tmp_path / "socket"))
+
+    def test_a_plugin_that_connects_to_a_literal_reaches_nothing(
+        self, monkeypatch: pytest.MonkeyPatch, listener: socket.socket
+    ) -> None:
+        """A plugin that would open its own socket to a loopback address, without resolving
+        a name first, is refused by `connect`: the send fails and the server sees nothing."""
+        target = listener.getsockname()
+        resolved: list[Any] = []
+        monkeypatch.setattr(outbound, "_resolve", lambda *a, **k: resolved.append(a) or [])
+
+        def raw(self: Any, body: str, title: str = "", **kwargs: Any) -> bool:
+            with socket.socket() as sock:
+                sock.settimeout(0.5)
+                sock.connect(target)
+                sock.sendall(b"POST / HTTP/1.0\r\n\r\n")
+            return True
+
+        monkeypatch.setattr(NotifyGotify, "send", raw)
+        sealed = outbound.seal("gotifys://gotify.example.com/token")
+        with override_settings(HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS=True):
+            assert outbound.send(sealed, title="t", body="b") is False
+        assert resolved == []
+        with pytest.raises(TimeoutError):
+            listener.accept()
 
     def test_the_guard_only_acts_while_sending(self, monkeypatch: pytest.MonkeyPatch) -> None:
         outbound.install()
@@ -379,8 +575,7 @@ class TestOutgoingCalls:
 
         server = http.server.HTTPServer(("127.0.0.1", 0), Redirect)
         threading.Thread(target=server.serve_forever, daemon=True).start()
-        # Loopback is refused, rightly: let it through for this test only.
-        monkeypatch.setattr(outbound, "forbidden_address", lambda address: False)
+        let_loopback_through(monkeypatch)
         try:
             sealed = outbound.seal(f"gotify://127.0.0.1:{server.server_port}/hook/token")
             assert outbound.send(sealed, title="t", body="b") is False
@@ -414,8 +609,7 @@ class TestOutgoingCalls:
         server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Slow)
         server.daemon_threads = True
         threading.Thread(target=server.serve_forever, daemon=True).start()
-        # Loopback is refused, rightly: let it through for this test only.
-        monkeypatch.setattr(outbound, "forbidden_address", lambda address: False)
+        let_loopback_through(monkeypatch)
         monkeypatch.setattr(outbound, "SEND_SECONDS", 1.0, raising=False)
         try:
             yield server.server_port
@@ -484,7 +678,7 @@ class TestOutgoingCalls:
             threading.Thread(target=each.serve_forever, daemon=True).start()
         # The certificate of the test server is the only one trusted (requests reads it).
         monkeypatch.setenv("REQUESTS_CA_BUNDLE", str(certificate))
-        monkeypatch.setattr(outbound, "forbidden_address", lambda address: False)
+        let_loopback_through(monkeypatch)
         monkeypatch.setattr(outbound, "SEND_SECONDS", 1.0, raising=False)
         drip.urls = [
             f"gotify://127.0.0.1:{server.server_port}/token",
@@ -561,8 +755,8 @@ class TestOutgoingCalls:
         plugins: list[Any] = []
         real = outbound._plugin
 
-        def keep(url: str) -> Any:
-            plugins.append(real(url))
+        def keep(url: str, **kwargs: Any) -> Any:
+            plugins.append(real(url, **kwargs))
             return plugins[-1]
 
         monkeypatch.setattr(outbound, "_plugin", keep)

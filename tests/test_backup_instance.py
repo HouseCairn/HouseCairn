@@ -2,7 +2,8 @@
 
 The backup is made while the database is open, then restored elsewhere (`--database-file`,
 `--media-root`, `--data-dir`): the restored database holds the same rows, the files are the
-same bytes, the secret key is back with mode 600, and a changed backup restores nothing.
+same bytes, and a changed backup restores nothing. The secret key is left out unless asked
+for (docs/adr/0060); asked for, it is back with mode 600.
 """
 
 import io
@@ -52,18 +53,42 @@ def instance(
     return data
 
 
-def backup(output: Path) -> Path:
+def backup(output: Path, *options: str, stderr: io.StringIO | None = None) -> Path:
     out = io.StringIO()
-    call_command("backup_instance", "--output", str(output), stdout=out, stderr=io.StringIO())
+    call_command(
+        "backup_instance",
+        "--output",
+        str(output),
+        *options,
+        stdout=out,
+        stderr=stderr or io.StringIO(),
+    )
     return Path(out.getvalue().strip())
+
+
+def restore(archive: Path, target: Path, *options: str) -> str:
+    out = io.StringIO()
+    call_command(
+        "restore_instance",
+        str(archive),
+        "--database-file",
+        str(target / "db.sqlite3"),
+        "--media-root",
+        str(target / "media"),
+        "--data-dir",
+        str(target / "data"),
+        *options,
+        stdout=out,
+    )
+    return out.getvalue()
 
 
 @on_sqlite
 @pytest.mark.django_db(transaction=True)
-def test_a_backup_restores_the_database_the_files_and_the_key(
+def test_a_backup_restores_the_database_the_files_and_the_key_asked_for(
     instance: Path, tmp_path: Path, media_root: Path, alice_home: Home
 ) -> None:
-    archive = backup(tmp_path / "backups")
+    archive = backup(tmp_path / "backups", "--include-secret-key")
     assert archive.stat().st_mode & 0o077 == 0
     with tarfile.open(archive) as tar:
         names = set(tar.getnames())
@@ -114,6 +139,99 @@ def test_a_backup_restores_the_database_the_files_and_the_key(
 
 @on_sqlite
 @pytest.mark.django_db(transaction=True)
+def test_the_secret_key_is_left_out_by_default(instance: Path, tmp_path: Path) -> None:
+    """Whoever gets a copy of the archive must not get the key of the stored secrets with it.
+    The restore leaves the key of the data directory alone, and says what to do."""
+    said = io.StringIO()
+    archive = backup(tmp_path / "backups", stderr=said)
+    with tarfile.open(archive) as tar:
+        names = set(tar.getnames())
+        manifest = json.loads(tar.extractfile("manifest.json").read())  # type: ignore[union-attr]
+    assert "secret_key" not in names
+    assert "secret_key" not in manifest["parts"]
+    assert ("k" * 60).encode() not in archive.read_bytes()
+    assert "secret key is not in the archive" in said.getvalue()
+
+    target = tmp_path / "restored"
+    (target / "data").mkdir(parents=True)
+    (target / "data" / "secret_key").write_text("the-key-of-this-instance\n")
+    out = restore(archive, target, "--yes")
+    assert "Restored: database, " in out
+    assert "secret key" not in out.splitlines()[0]
+    assert "holds no secret key" in out
+    assert "SECRET_KEY" in out
+    # The key in place is kept as it is: nothing set aside, nothing replaced.
+    assert (target / "data" / "secret_key").read_text() == "the-key-of-this-instance\n"
+    assert not list((target / "data").glob("secret_key.before-restore-*"))
+    assert (target / "db.sqlite3").is_file()
+
+
+WITH_ANOTHER_KEY = (
+    "With another key, the stored secrets cannot be read: enter the SMTP password and the "
+    "secrets of the sign-in providers again, and add the notification channels again; everyone "
+    "signs in again. The homes, their files and the accounts are restored either way."
+)
+
+
+@on_sqlite
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("key_from", ["file", "environment"])
+def test_the_backup_names_where_the_key_in_use_is(
+    instance: Path, tmp_path: Path, key_from: str
+) -> None:
+    """The file is named only when it holds the key in use; with the key in SECRET_KEY and
+    no file, or a file that is not used, the message names SECRET_KEY alone."""
+    from django.test.utils import override_settings
+
+    key_file = instance / "secret_key"
+    if key_from == "environment":
+        key_file.unlink()
+    said = io.StringIO()
+    with override_settings(SECRET_KEY="k" * 60):
+        backup(tmp_path / "backups", stderr=said)
+    where = str(key_file) if key_from == "file" else "SECRET_KEY"
+    assert said.getvalue().splitlines()[1:] == [
+        f"The secret key is not in the archive: keep a copy of {where} apart. "
+        "Without it, a restore cannot read the stored secrets."
+    ]
+
+
+@on_sqlite
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("generated", [False, True])
+def test_the_restore_says_whether_the_key_in_place_was_just_generated(
+    instance: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, generated: bool
+) -> None:
+    """On a new data directory without SECRET_KEY, the entrypoint generates a key before the
+    command runs: the restore says that key is not the one of the backup."""
+    from housecairn.entrypoint import KEY_GENERATED
+
+    archive = backup(tmp_path / "backups")
+    target = tmp_path / "restored"
+    (target / "data").mkdir(parents=True)
+    key_file = target / "data" / "secret_key"
+    key_file.write_text("a-key-generated-just-now\n")
+    if generated:
+        monkeypatch.setenv(KEY_GENERATED, str(key_file))
+    else:
+        # A key generated for another data directory says nothing of this one.
+        monkeypatch.setenv(KEY_GENERATED, str(tmp_path / "elsewhere" / "secret_key"))
+    out = restore(archive, target, "--yes")
+    expected = (
+        f"The backup holds no secret key, and {key_file} was generated just now, for this new "
+        "data directory: it is not the key of the instance the backup was made on. Before you "
+        "start the instance, replace it with that key: its secret_key file in place of this "
+        "one, or its value in SECRET_KEY. "
+        if generated
+        else "The backup holds no secret key: start the instance with the key it had when the "
+        "backup was made, in SECRET_KEY (or in secret_key of the data directory). "
+    ) + WITH_ANOTHER_KEY
+    assert out.splitlines()[1:] == [expected]
+    assert key_file.read_text() == "a-key-generated-just-now\n"
+
+
+@on_sqlite
+@pytest.mark.django_db(transaction=True)
 def test_restore_keeps_what_was_there_aside_and_asks_first(instance: Path, tmp_path: Path) -> None:
     archive = backup(tmp_path / "backups")
     target = tmp_path / "restored"
@@ -160,7 +278,8 @@ def _tamper(archive: Path, out: Path, change: Callable[[str, bytes], bytes | Non
 def test_a_changed_backup_restores_nothing(
     instance: Path, tmp_path: Path, change: Any, message: str
 ) -> None:
-    archive = _tamper(backup(tmp_path / "backups"), tmp_path / "changed.tar", change)
+    made = backup(tmp_path / "backups", "--include-secret-key")
+    archive = _tamper(made, tmp_path / "changed.tar", change)
     target = tmp_path / "restored"
     with pytest.raises(CommandError, match=message):
         call_command(

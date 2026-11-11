@@ -2,9 +2,14 @@
 
 The database is copied while the application runs: with SQLite's online backup API (as
 `sqlite3 db.sqlite3 ".backup ..."`), or with `pg_dump` in its custom format for
-PostgreSQL. The files of `MEDIA_ROOT` and the secret key of `<data>/secret_key` go with
-it, and `manifest.json` gives the SHA-256 digest of each part, which `restore_instance`
-checks. The archive holds every home and the secret key: keep it as safe as the server.
+PostgreSQL. The files of `MEDIA_ROOT` go with it, and `manifest.json` gives the SHA-256
+digest of each part, which `restore_instance` checks. The archive holds every home: keep it
+as safe as the server.
+
+The secret key of `<data>/secret_key` is left out unless `--include-secret-key` asks for
+it (docs/adr/0060): the stored secrets (SMTP password, secrets of sign-in providers,
+addresses of notification channels) are encrypted with a key derived from it, so an archive
+that held both would give them all to whoever got a copy. Keep the key apart.
 """
 
 import datetime
@@ -12,6 +17,7 @@ import hashlib
 import io
 import json
 import os
+import secrets
 import shutil
 import sqlite3
 import subprocess
@@ -82,6 +88,15 @@ def dump_database(target: Path) -> str:
     raise CommandError(f"Backups of a {vendor} database are not supported.")  # pragma: no cover
 
 
+def _holds_the_key(key_file: Path) -> bool:
+    """Whether the key in use is the one of `key_file`, not one set by SECRET_KEY."""
+    try:
+        held = key_file.read_text(encoding="utf-8").strip()
+    except OSError:
+        return False
+    return bool(held) and secrets.compare_digest(held, settings.SECRET_KEY)
+
+
 def _app_version() -> str:
     try:
         return metadata.version("housecairn")
@@ -90,7 +105,7 @@ def _app_version() -> str:
 
 
 class Command(BaseCommand):
-    help = "Back up the database, the uploaded files and the secret key, in one archive."
+    help = "Back up the database and the uploaded files, in one archive (not the secret key)."
 
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
@@ -98,6 +113,14 @@ class Command(BaseCommand):
             type=Path,
             default=None,
             help="directory of the archive (default: <data>/backups)",
+        )
+        parser.add_argument(
+            "--include-secret-key",
+            action="store_true",
+            help=(
+                "also put <data>/secret_key in the archive; whoever has the archive can then "
+                "read the stored secrets"
+            ),
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
@@ -119,7 +142,7 @@ class Command(BaseCommand):
             fd = os.open(partial, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             with os.fdopen(fd, "wb") as raw, tarfile.open(fileobj=raw, mode="w") as archive:
                 archive.add(work / "database", arcname="database")
-                if secret.is_file():
+                if options["include_secret_key"] and secret.is_file():
                     archive.add(secret, arcname="secret_key")
                     parts["secret_key"] = sha256(secret)
                 files = 0
@@ -149,3 +172,12 @@ class Command(BaseCommand):
         self.stderr.write(
             f"database ({kind}), {files} files" + (", secret key" if "secret_key" in parts else "")
         )
+        if "secret_key" not in parts:
+            # Where the key in use comes from: its file only if the file holds it.
+            where = secret if _holds_the_key(secret) else "SECRET_KEY"
+            self.stderr.write(
+                f"The secret key is not in the archive: keep a copy of {where} apart. "
+                "Without it, a restore cannot read the stored secrets."
+                if not options["include_secret_key"]
+                else f"No {secret}: the key comes from SECRET_KEY, keep a copy of it apart."
+            )

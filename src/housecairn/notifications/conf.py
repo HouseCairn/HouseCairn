@@ -34,4 +34,19 @@ SETTINGS: tuple[Setting, ...] = (
         minimum=1,
         maximum=60,
     ),
+    Setting(
+        "notifications_private_networks",
+        "HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS",
+        "HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS",
+        Kind.BOOL,
+        Section.NOTIFICATIONS,
+        _("Channels on the local network"),
+        _(
+            "Channels may send to private network addresses (a home or office network, or "
+            "a name that resolves to one), for a ntfy or a Gotify next to the instance. Any "
+            "person with an account can then make the server call such an address. "
+            "Loopback, link-local and cloud metadata addresses stay refused."
+        ),
+        False,
+    ),
 )

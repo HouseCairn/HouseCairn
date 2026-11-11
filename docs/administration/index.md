@@ -9,6 +9,7 @@ single sign-on, backups, updates and hardening.
 variables
 settings
 reverse-proxy
+coolify
 url-prefix
 rate-limits
 oidc

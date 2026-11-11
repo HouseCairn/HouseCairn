@@ -2,6 +2,8 @@
 
 - Status: accepted
 - Date: 2026-11-08
+- Amended by: [0060](0060-secret-key-apart-from-the-backups.md) (`SECRET_KEY_FALLBACKS` is
+  read from the environment)
 
 ## Context
 

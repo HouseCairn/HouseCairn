@@ -35,6 +35,7 @@ def test_view_without_docs_fails() -> None:
         "src/housecairn/templates/homes/home_list.html",
         "src/housecairn/templates/account/login.html",
         "compose.yaml",
+        "deploy/coolify/docker-compose.yaml",
         "deploy/production.env.example",
     ],
 )

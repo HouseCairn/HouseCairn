@@ -31,6 +31,12 @@ msgstr "Chercher les rappels toutes les (minutes)"
 msgid "How often the background worker looks for reminders to send, from 1 to 60."
 msgstr "Fréquence à laquelle la tâche de fond cherche les rappels à envoyer, de 1 à 60."
 
+msgid "Channels on the local network"
+msgstr "Canaux sur le réseau local"
+
+msgid "Channels may send to private network addresses (a home or office network, or a name that resolves to one), for a ntfy or a Gotify next to the instance. Any person with an account can then make the server call such an address. Loopback, link-local and cloud metadata addresses stay refused."
+msgstr "Les canaux peuvent envoyer à des adresses de réseau privé (un réseau domestique ou de bureau, ou un nom qui y mène), pour un ntfy ou un Gotify voisin de l'instance. Toute personne qui a un compte peut alors faire appeler une telle adresse par le serveur. Les adresses de bouclage, de lien local et de métadonnées des fournisseurs de cloud restent refusées."
+
 msgid "Name"
 msgstr "Nom"
 
@@ -134,6 +140,9 @@ msgstr "Les options qui ajoutent des en-têtes ou des champs à la requête (+no
 
 msgid "The instance does not send to this address."
 msgstr "L'instance n'envoie pas à cette adresse."
+
+msgid "This address is on a private network, which this instance does not send to. An administrator of the instance can allow it: Settings, Notifications, Channels on the local network."
+msgstr "Cette adresse est sur un réseau privé, auquel cette instance n'envoie pas. Un administrateur de l'instance peut l'autoriser : Réglages, Notifications, Canaux sur le réseau local."
 
 msgid "The address of a channel cannot change: delete the channel and add another."
 msgstr "L'adresse d'un canal ne peut pas changer : supprimez le canal et ajoutez-en un autre."

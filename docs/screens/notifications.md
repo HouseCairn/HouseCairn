@@ -20,7 +20,9 @@ Opening a channel lets you:
 - rename it, or turn it off without deleting it (**Enabled**);
 - **Send a test message**: a real message to the service. The answer is either "sent" or
   "could not be sent", without the service's own message, after eight seconds at most;
-  five tests a minute;
+  five tests a minute. When the address leads to a private network that the instance does
+  not send to, nothing is sent and the screen says so: an administrator of the instance
+  can allow it in the [settings](instance-settings.md);
 - **Delete the channel**. To change an address, delete the channel and add another.
 
 The link at the top of a channel leads back to **Notifications**.
