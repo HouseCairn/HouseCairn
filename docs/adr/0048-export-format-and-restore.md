@@ -3,7 +3,9 @@
 - Status: accepted
 - Date: 2026-11-10
 - Amended by: [0058](0058-contract-provider-is-a-contractor.md) (format 3: the provider of a
-  contract is a contractor; version 2 archives are still restored)
+  contract is a contractor; version 2 archives are still restored),
+  [0060](0060-secret-key-apart-from-the-backups.md) (the backup of the instance leaves the
+  secret key out)
 
 ## Context
 

@@ -51,6 +51,7 @@ USER_FACING = re.compile(
       | src/housecairn/static/.+
       | src/housecairn/templates/.+\.html
       | compose\.yaml
+      | deploy/coolify/[^/]+\.yaml
       | deploy/[^/]+\.example
       | \.env\.example
     )$""",

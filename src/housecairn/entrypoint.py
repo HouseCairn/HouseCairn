@@ -40,6 +40,8 @@ from typing import NoReturn
 SETTINGS_MODULE = "housecairn.settings"
 DEFAULT_DATA_DIR = "/data"
 SECRET_KEY_FILE = "secret_key"  # noqa: S105 - a file name, not a secret
+# Set by `prepare_environment` to the key file it has just generated; not a setting.
+KEY_GENERATED = "HOUSECAIRN_SECRET_KEY_GENERATED"
 DEFAULT_PORT = 8000
 DEFAULT_WEB_WORKERS = 2
 DEFAULT_STOP_TIMEOUT = 20.0
@@ -173,7 +175,13 @@ def prepare_environment() -> Path:
     os.umask(0o077)
     path = data_dir()
     prepare_data_dir(path)
+    key_file = path / SECRET_KEY_FILE
+    had_a_key = bool(os.environ.get("SECRET_KEY", "").strip()) or key_file.exists()
     os.environ["SECRET_KEY"] = ensure_secret_key(path)
+    # Tells the command run next that the key file is new (restore_instance says so).
+    os.environ.pop(KEY_GENERATED, None)
+    if not had_a_key:
+        os.environ[KEY_GENERATED] = str(key_file)
     return path
 
 

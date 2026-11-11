@@ -9,7 +9,7 @@ from django import forms
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
-from housecairn.core.forms import MoneyField
+from housecairn.core.forms import MoneyField, QuantityField
 from housecairn.tasks import files
 from housecairn.tasks.forms.fields import (
     _DATE,
@@ -43,11 +43,9 @@ class CompletionForm(forms.ModelForm[Occurrence]):
             label = gettext("Used: %(name)s") % {"name": draw.article.name}
             if draw.article.unit_label:
                 label = f"{label} ({draw.article.unit_label})"
-            self.fields[name] = forms.DecimalField(
+            self.fields[name] = QuantityField(
                 label=label,
                 min_value=Decimal("0"),
-                max_digits=10,
-                decimal_places=2,
                 initial=draw.wanted,
                 required=False,
                 help_text=gettext("Taken from the stock when the task was marked done.")

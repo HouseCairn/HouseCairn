@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n navigation l10n projects_extras money budget_extras %}
+{% load i18n navigation l10n projects_extras money budget_extras dates %}
 {% block head_title %}{% translate "Budget" %}{% endblock head_title %}
 {% block content %}
   <h1>{% translate "Budget" %}</h1>
@@ -69,7 +69,7 @@
 
   <h2>{% translate "Last 12 months" %}</h2>
   <section class="card">
-    <p class="small">{% blocktranslate with since=rolling.since|date:"DATE_FORMAT" until=rolling.until|date:"DATE_FORMAT" %}From {{ since }} to {{ until }}, the upkeep that was done. Payments on projects carry no date, so they are not in this figure.{% endblocktranslate %}</p>
+    <p class="small">{% blocktranslate with since=rolling.since|day until=rolling.until|day %}From {{ since }} to {{ until }}, the upkeep that was done. Payments on projects carry no date, so they are not in this figure.{% endblocktranslate %}</p>
     <dl class="facts">
       <div><dt>{% translate "Planned" context "amount" %}</dt><dd>{{ rolling.upkeep.planned|money:home.currency }}</dd></div>
       <div><dt>{% translate "Paid" %}</dt><dd>{{ rolling.upkeep.paid|money:home.currency }}</dd></div>

@@ -133,6 +133,26 @@ jobs:
           docker compose -f compose.yaml --profile postgres config --quiet
           echo "- PASS: compose.yaml is valid, with and without the postgres profile" >>"$GITHUB_STEP_SUMMARY"
 
+      - name: Coolify compose file is valid
+        # The variables Coolify generates from the resource's domain, as it sets
+        # them; the resolved file must publish no port, read no env_file and fix
+        # no network range (docs/administration/coolify.md).
+        env:
+          SERVICE_URL_HOUSECAIRN: https://housecairn.example.com
+          SERVICE_FQDN_HOUSECAIRN: housecairn.example.com
+          SERVICE_URL_HOUSECAIRN_8000: https://housecairn.example.com
+        run: |
+          file=deploy/coolify/docker-compose.yaml
+          docker compose -f "$file" config --format json >"$RUNNER_TEMP/coolify-compose.json"
+          jq -e '
+            (.services | all(has("ports") or has("env_file") | not))
+            and ([.networks[]? | .ipam.config[]? | select(.subnet)] | length == 0)
+            and (.services.housecairn.environment.ALLOWED_HOSTS == "housecairn.example.com")
+            and (.services.housecairn.environment.CSRF_TRUSTED_ORIGINS == "https://housecairn.example.com")
+            and (.services.housecairn.environment.HOUSECAIRN_FORWARDED_ALLOW_IPS == "172.16.0.0/12")
+          ' "$RUNNER_TEMP/coolify-compose.json"
+          echo "- PASS: $file is valid with Coolify's variables, no port, env_file or fixed range" >>"$GITHUB_STEP_SUMMARY"
+
       - name: Wait for the Grype database
         run: .github/scripts/grype-db.sh wait "$RUNNER_TEMP/grype-db"
 

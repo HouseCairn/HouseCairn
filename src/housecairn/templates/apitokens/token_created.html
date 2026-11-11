@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n navigation static %}
+{% load i18n navigation static dates %}
 {% block head_title %}{% translate "Your new API token" %}{% endblock head_title %}
 {% block extra_head %}<script src="{% static 'js/copy-secret.js' %}" defer></script>{% endblock extra_head %}
 {% block content %}
@@ -10,7 +10,7 @@
     <p><label for="token-value">{% translate "Copy it now: it is shown only once and cannot be found again." %}</label>
     <input id="token-value" type="text" readonly value="{{ secret }}" autocomplete="off" spellcheck="false"></p>
     <button type="button" class="button-secondary" data-copy-from="token-value" data-copied="{% translate 'Copied' %}" hidden>{% translate "Copy" %}</button>
-    <p class="small">{% blocktranslate with day=created.expires_at|date:"SHORT_DATE_FORMAT" %}It stops working on {{ day }}. Lost it? Revoke it and create another.{% endblocktranslate %}</p>
+    <p class="small">{% blocktranslate with day=created.expires_at|day %}It stops working on {{ day }}. Lost it? Revoke it and create another.{% endblocktranslate %}</p>
   </section>
   {% back_href parent as back %}
   <a class="button button-block" href="{{ back }}">{% translate "Back to the API tokens" %}</a>

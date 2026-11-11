@@ -48,6 +48,7 @@ needed) and GNU gettext, which compiles the translations.
 uv sync --locked                 # create .venv with the locked dependencies
 uv run python manage.py compilemessages --ignore=.venv --ignore=docs   # build the .mo catalogs
 cp .env.example .env             # DEBUG=true for development
+mkdir -p data                    # the SQLite database and the uploaded files
 uv run python manage.py migrate
 uv run python manage.py createsuperuser
 uv run python manage.py runserver
@@ -55,7 +56,8 @@ uv run python manage.py qcluster # background task worker, in another terminal
 ```
 
 The application is at <http://localhost:8000/>, the API documentation at
-`/api/docs/` once signed in.
+`/api/docs/` once signed in. The tests do not read your `.env`: they set their own
+environment, so `DEBUG=true` there changes nothing for them.
 
 To try the screens with something in them, add a fictional home to your account:
 `uv run python manage.py load_demo_data --owner <your e-mail> --language fr` (or

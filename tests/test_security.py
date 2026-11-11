@@ -1,10 +1,14 @@
 """Security defaults: CSP, no external resource, vendored htmx, deploy checks."""
 
+import atexit
+import functools
 import hashlib
 import os
 import secrets
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -31,12 +35,33 @@ def _env_file(path: Path) -> dict[str, str]:
     return values
 
 
+@functools.cache
+def _isolated_src() -> Path:
+    """A copy of `src/` whose parent holds no `.env`, for the processes that import the settings.
+
+    `housecairn.settings` reads a `.env` next to `src/` (`cp .env.example .env` in the README
+    sets `DEBUG=true`). A test about the defaults must not depend on the file of whoever
+    runs it, so these processes import the settings from a copy of the sources.
+    """
+    root = Path(tempfile.mkdtemp(prefix="housecairn-settings-"))
+    atexit.register(shutil.rmtree, root, ignore_errors=True)
+    shutil.copytree(REPO / "src", root / "src", ignore=shutil.ignore_patterns("__pycache__"))
+    return root / "src"
+
+
 def _run_python(code: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     base = {k: v for k, v in os.environ.items() if not k.startswith(("DJANGO_", "PYTEST"))}
-    for key in ("SECRET_KEY", "DEBUG", "ALLOWED_HOSTS", "DATABASE_URL", "SECURE_SSL_REDIRECT"):
+    for key in (
+        "SECRET_KEY",
+        "SECRET_KEY_FALLBACKS",
+        "DEBUG",
+        "ALLOWED_HOSTS",
+        "DATABASE_URL",
+        "SECURE_SSL_REDIRECT",
+    ):
         base.pop(key, None)
     base.update(env)
-    base["PYTHONPATH"] = str(REPO / "src")
+    base["PYTHONPATH"] = str(_isolated_src())
     return subprocess.run(  # noqa: S603 - fixed interpreter and arguments
         [sys.executable, "-c", code], env=base, capture_output=True, text=True, check=False
     )
@@ -77,6 +102,62 @@ def test_secret_key_is_required_without_debug() -> None:
     result = _run_python("import housecairn.settings", {"DEBUG": "false"})
     assert result.returncode != 0
     assert "SECRET_KEY must be set" in result.stderr
+
+
+def test_settings_processes_do_not_read_the_env_file_of_the_checkout() -> None:
+    src = _isolated_src()
+    assert src.parent != REPO
+    assert not (src.parent / ".env").exists()
+
+
+def test_the_settings_read_an_env_file_next_to_src() -> None:
+    # The control of the test below: where a `.env` is present, DEBUG comes from it.
+    src = _isolated_src()
+    env_file = src.parent / ".env"
+    env_file.write_text("DEBUG=true\n", encoding="utf-8")
+    try:
+        code = "import housecairn.settings as s; print(s.DEBUG)"
+        assert _run_python(code, {}).stdout.split() == ["True"]
+    finally:
+        env_file.unlink()
+
+
+def test_a_rotated_key_still_reads_the_secrets_sealed_with_the_former_one() -> None:
+    """`SECRET_KEY_FALLBACKS` is read from the environment, comma-separated: a secret sealed
+    with the former key is read after the rotation, and sealed again with the new key."""
+    from django.test.utils import override_settings
+
+    from housecairn.instance import crypto
+
+    old, new = secrets.token_urlsafe(50), secrets.token_urlsafe(50)
+    with override_settings(SECRET_KEY=old, SECRET_KEY_FALLBACKS=[]):
+        sealed = crypto.encrypt("smtp-password")
+    code = (
+        "import os, django; os.environ['DJANGO_SETTINGS_MODULE'] = 'housecairn.settings';"
+        "django.setup(); from django.conf import settings; from housecairn.instance import crypto;"
+        "print(len(settings.SECRET_KEY_FALLBACKS)); print(crypto.decrypt(os.environ['SEALED']));"
+        "fresh = crypto.encrypt('x'); settings.SECRET_KEY_FALLBACKS = [];"
+        "crypto._cipher.cache_clear(); print(crypto.decrypt(fresh))"
+    )
+    rotated = {"SECRET_KEY": new, "SEALED": sealed, "DEBUG": "true"}
+    result = _run_python(code, {**rotated, "SECRET_KEY_FALLBACKS": f"another-old-key,{old}"})
+    assert result.stdout.split() == ["2", "smtp-password", "x"], result.stderr
+    # Without the former key, the secret is unreadable: what the rotation would lose.
+    result = _run_python(code, rotated)
+    assert result.returncode != 0
+    assert "SecretUnreadableError" in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("value", "keys"), [("a, b", ["a", "b"]), (" a ,, b ,", ["a", "b"]), ("", [])]
+)
+def test_the_former_keys_are_read_without_the_spaces_around_them(
+    value: str, keys: list[str]
+) -> None:
+    """`"<new>, <old>"`, with a space after the comma, keeps the former key as it is."""
+    code = "import housecairn.settings as s; print(repr(s.SECRET_KEY_FALLBACKS))"
+    result = _run_python(code, {"DEBUG": "true", "SECRET_KEY_FALLBACKS": value})
+    assert result.stdout.strip() == repr(keys), result.stderr
 
 
 def test_debug_is_off_by_default() -> None:

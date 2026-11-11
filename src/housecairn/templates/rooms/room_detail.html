@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tasks_extras stock_extras navigation %}
+{% load i18n tasks_extras stock_extras navigation dates %}
 {% block head_title %}{{ room.name }}{% endblock head_title %}
 {% block content %}
   {% url 'rooms:list' home_id=home.id as parent %}{% back_link parent %}
@@ -90,7 +90,7 @@
           <a class="row" href="{% url_with_next 'rooms:item-detail' home_id=home.id item_id=item.id %}">
             <span class="row-body">
               <span class="row-title">{{ item.name }}</span>
-              <span class="row-text">{{ item.get_kind_display }}{% if item.brand %} · {{ item.brand }}{% endif %}{% if item.warranty_ends_on %} · {% blocktranslate with date=item.warranty_ends_on|date:"SHORT_DATE_FORMAT" %}warranty until {{ date }}{% endblocktranslate %}{% endif %}</span>
+              <span class="row-text">{{ item.get_kind_display }}{% if item.brand %} · {{ item.brand }}{% endif %}{% if item.warranty_ends_on %} · {% blocktranslate with date=item.warranty_ends_on|day %}warranty until {{ date }}{% endblocktranslate %}{% endif %}</span>
             </span>
             {% include "components/icon.html" with name="chevron" class="chevron" %}
           </a>
@@ -112,7 +112,7 @@
           <a class="row" href="{% url_with_next 'tasks:detail' home_id=home.id task_id=occurrence.task_id %}">
             <span class="row-body">
               <span class="row-title">{{ occurrence.task.title }}</span>
-              <span class="row-text">{% if occurrence.due_on %}{{ occurrence.due_on|date:"SHORT_DATE_FORMAT" }}{% else %}{% translate "No date" %}{% endif %}</span>
+              <span class="row-text">{% if occurrence.due_on %}{{ occurrence.due_on|day }}{% else %}{% translate "No date" %}{% endif %}</span>
             </span>
             {% include "components/icon.html" with name="chevron" class="chevron" %}
           </a>

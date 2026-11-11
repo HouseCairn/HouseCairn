@@ -28,11 +28,20 @@ HouseCairn makes no outgoing connection unless you configure one (single
 sign-on, notifications, later the integrations), and sends no telemetry.
 
 Turning [notifications](../guides/notifications.md) on lets every account make the
-server call the addresses it types, your local network included, since a self-hosted
-ntfy or Gotify lives there. The server only speaks the protocols of the services it
-offers (no generic webhook, no header or field added by the address), refuses itself,
-link-local addresses and the metadata services of cloud providers, gives up after eight
-seconds per channel and then cuts the connections of that send, so that a slow server
-holds no thread or connection of the instance, and allows five tests a minute per person;
-each test tells the person only whether the message was sent. If your local network holds services that must not
-receive such calls, leave notifications off, or keep the server out of that network.
+server call the addresses it types. The server only speaks the protocols of the services
+it offers (no generic webhook, no header or field added by the address), refuses itself,
+link-local addresses and the metadata services of cloud providers, and checks the address
+of every connection a send opens, gives up after eight seconds per channel and then cuts
+the connections of that send, so that a slow server holds no thread or connection of the
+instance, and allows five tests a minute per person; each test tells the person only
+whether the message was sent, or that its address is on a private network.
+
+**Private networks are refused by default**: the private networks of RFC 1918, the
+shared address space `100.64.0.0/10`, IPv6 unique local addresses `fc00::/7`, and every
+other address that is not public. A self-hosted ntfy or Gotify on
+your local network needs **Channels on the local network**
+(`HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS=true`). Turned on, every account can make the
+server call a private address, with the requests of one of the services above, and learn
+whether it answered: if your local network holds services that must not receive such
+calls, leave it off, and reach your ntfy or Gotify by a public address, or keep the
+server out of that network ([ADR 0059](../adr/0059-notifications-refuse-private-networks.md)).

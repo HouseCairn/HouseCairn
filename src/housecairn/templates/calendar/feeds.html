@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n navigation %}
+{% load i18n navigation dates %}
 {% block head_title %}{% translate "Calendar feeds" %}{% endblock head_title %}
 {% block content %}
   {% url 'more' as parent %}{% back_link parent %}
@@ -17,7 +17,7 @@
       <li class="task-row">
         <span class="row-body">
           <span class="row-title">{% if home %}{{ home.name }}{% else %}{% translate "All my homes" %}{% endif %}</span>
-          <span class="row-text">{% if feed %}{% blocktranslate with day=feed.created_at|date:"SHORT_DATE_FORMAT" %}Active since {{ day }}{% endblocktranslate %}{% if feed.regenerated_at %} · {% blocktranslate with day=feed.regenerated_at|date:"SHORT_DATE_FORMAT" %}new address on {{ day }}{% endblocktranslate %}{% endif %}{% else %}{% translate "No feed" %}{% endif %}</span>
+          <span class="row-text">{% if feed %}{% blocktranslate with day=feed.created_at|day %}Active since {{ day }}{% endblocktranslate %}{% if feed.regenerated_at %} · {% blocktranslate with day=feed.regenerated_at|day %}new address on {{ day }}{% endblocktranslate %}{% endif %}{% else %}{% translate "No feed" %}{% endif %}</span>
         </span>
         {% if feed %}
           <form method="post" action="{% url 'calendar:regenerate' feed_id=feed.id %}">

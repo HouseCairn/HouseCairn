@@ -82,3 +82,7 @@ uv run python scripts/build_docs.py --update-catalogs
 ```
 
 Then translate the heading of the version in `release-notes.po`.
+
+Pin the new version and its digest in `compose.yaml` and in
+`deploy/coolify/docker-compose.yaml` in the same pull request:
+`tests/test_coolify_compose.py` fails while the two files differ.

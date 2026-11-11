@@ -65,3 +65,7 @@ msgstr "Chaque pull request ajoute sa propre entrée aux notes de version, un fr
 
 msgid "Then translate the heading of the version in `release-notes.po`."
 msgstr "Traduisez ensuite le titre de la version dans `release-notes.po`."
+
+msgid "Pin the new version and its digest in `compose.yaml` and in `deploy/coolify/docker-compose.yaml` in the same pull request: `tests/test_coolify_compose.py` fails while the two files differ."
+msgstr "Épinglez la nouvelle version et son condensat dans `compose.yaml` et dans `deploy/coolify/docker-compose.yaml` dans la même pull request : `tests/test_coolify_compose.py` échoue tant que les deux fichiers diffèrent."
+

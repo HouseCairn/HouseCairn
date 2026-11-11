@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tabs people navigation %}
+{% load i18n tabs people navigation dates %}
 {% block head_title %}{% translate "Household and roles" %}{% endblock head_title %}
 {% block content %}
   {% url 'homes:detail' home_id=home.id as parent %}{% back_link parent home.name %}
@@ -41,7 +41,7 @@
       {% for invitation in invitations %}
         <section class="card">
           <p class="row-title">{{ invitation.email }}</p>
-          <p class="row-text">{{ invitation.get_role_display }} · {% blocktranslate with date=invitation.expires_at|date:"SHORT_DATE_FORMAT" %}until {{ date }}{% endblocktranslate %}</p>
+          <p class="row-text">{{ invitation.get_role_display }} · {% blocktranslate with date=invitation.expires_at|day %}until {{ date }}{% endblocktranslate %}</p>
           <div class="button-row">
             <form method="post" action="{% url 'homes:invitation-resend' home_id=home.id invitation_id=invitation.id %}">
               {% csrf_token %}
