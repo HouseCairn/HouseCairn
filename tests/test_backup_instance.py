@@ -166,6 +166,70 @@ def test_the_secret_key_is_left_out_by_default(instance: Path, tmp_path: Path) -
     assert (target / "db.sqlite3").is_file()
 
 
+WITH_ANOTHER_KEY = (
+    "With another key, the stored secrets cannot be read: enter the SMTP password and the "
+    "secrets of the sign-in providers again, and add the notification channels again; everyone "
+    "signs in again. The homes, their files and the accounts are restored either way."
+)
+
+
+@on_sqlite
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("key_from", ["file", "environment"])
+def test_the_backup_names_where_the_key_in_use_is(
+    instance: Path, tmp_path: Path, key_from: str
+) -> None:
+    """The file is named only when it holds the key in use; with the key in SECRET_KEY and
+    no file, or a file that is not used, the message names SECRET_KEY alone."""
+    from django.test.utils import override_settings
+
+    key_file = instance / "secret_key"
+    if key_from == "environment":
+        key_file.unlink()
+    said = io.StringIO()
+    with override_settings(SECRET_KEY="k" * 60):
+        backup(tmp_path / "backups", stderr=said)
+    where = str(key_file) if key_from == "file" else "SECRET_KEY"
+    assert said.getvalue().splitlines()[1:] == [
+        f"The secret key is not in the archive: keep a copy of {where} apart. "
+        "Without it, a restore cannot read the stored secrets."
+    ]
+
+
+@on_sqlite
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("generated", [False, True])
+def test_the_restore_says_whether_the_key_in_place_was_just_generated(
+    instance: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, generated: bool
+) -> None:
+    """On a new data directory without SECRET_KEY, the entrypoint generates a key before the
+    command runs: the restore says that key is not the one of the backup."""
+    from housecairn.entrypoint import KEY_GENERATED
+
+    archive = backup(tmp_path / "backups")
+    target = tmp_path / "restored"
+    (target / "data").mkdir(parents=True)
+    key_file = target / "data" / "secret_key"
+    key_file.write_text("a-key-generated-just-now\n")
+    if generated:
+        monkeypatch.setenv(KEY_GENERATED, str(key_file))
+    else:
+        # A key generated for another data directory says nothing of this one.
+        monkeypatch.setenv(KEY_GENERATED, str(tmp_path / "elsewhere" / "secret_key"))
+    out = restore(archive, target, "--yes")
+    expected = (
+        f"The backup holds no secret key, and {key_file} was generated just now, for this new "
+        "data directory: it is not the key of the instance the backup was made on. Before you "
+        "start the instance, replace it with that key: its secret_key file in place of this "
+        "one, or its value in SECRET_KEY. "
+        if generated
+        else "The backup holds no secret key: start the instance with the key it had when the "
+        "backup was made, in SECRET_KEY (or in secret_key of the data directory). "
+    ) + WITH_ANOTHER_KEY
+    assert out.splitlines()[1:] == [expected]
+    assert key_file.read_text() == "a-key-generated-just-now\n"
+
+
 @on_sqlite
 @pytest.mark.django_db(transaction=True)
 def test_restore_keeps_what_was_there_aside_and_asks_first(instance: Path, tmp_path: Path) -> None:

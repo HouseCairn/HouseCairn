@@ -121,6 +121,11 @@ but everyone signs in again and the stored secrets cannot be read: the screens
 say so, the SMTP password and the secrets of the sign-in providers are entered
 again, and the notification channels are added again.
 
+On a new data directory without `SECRET_KEY`, `manage` generates a key in
+`/data/secret_key` before the restore runs. The command then says that this key
+was generated just now and is not the one of the backup: replace it with the key
+of the instance the backup comes from before you start the instance.
+
 To check a backup without touching the instance, restore it elsewhere:
 
 ```sh

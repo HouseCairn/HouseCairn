@@ -17,6 +17,7 @@ import hashlib
 import io
 import json
 import os
+import secrets
 import shutil
 import sqlite3
 import subprocess
@@ -85,6 +86,15 @@ def dump_database(target: Path) -> str:
             raise CommandError(f"pg_dump failed: {result.stderr.strip()[:500]}")
         return "postgresql"
     raise CommandError(f"Backups of a {vendor} database are not supported.")  # pragma: no cover
+
+
+def _holds_the_key(key_file: Path) -> bool:
+    """Whether the key in use is the one of `key_file`, not one set by SECRET_KEY."""
+    try:
+        held = key_file.read_text(encoding="utf-8").strip()
+    except OSError:
+        return False
+    return bool(held) and secrets.compare_digest(held, settings.SECRET_KEY)
 
 
 def _app_version() -> str:
@@ -163,9 +173,11 @@ class Command(BaseCommand):
             f"database ({kind}), {files} files" + (", secret key" if "secret_key" in parts else "")
         )
         if "secret_key" not in parts:
+            # Where the key in use comes from: its file only if the file holds it.
+            where = secret if _holds_the_key(secret) else "SECRET_KEY"
             self.stderr.write(
-                "The secret key is not in the archive: keep it apart (SECRET_KEY, or "
-                f"{secret}). Without it, a restore cannot read the stored secrets."
+                f"The secret key is not in the archive: keep a copy of {where} apart. "
+                "Without it, a restore cannot read the stored secrets."
                 if not options["include_secret_key"]
                 else f"No {secret}: the key comes from SECRET_KEY, keep a copy of it apart."
             )

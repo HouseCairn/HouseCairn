@@ -15,6 +15,7 @@ had, or the secrets stored in the database cannot be read and are entered again.
 import datetime
 import hashlib
 import json
+import os
 import shutil
 import sqlite3
 import subprocess
@@ -32,13 +33,29 @@ from housecairn.instance.management.commands.backup_instance import (
     postgres_environment,
 )
 
+WITH_ANOTHER_KEY = (
+    "With another key, the stored secrets cannot be read: enter the SMTP password and the "
+    "secrets of the sign-in providers again, and add the notification channels again; everyone "
+    "signs in again. The homes, their files and the accounts are restored either way."
+)
 KEY_LEFT_OUT = (
     "The backup holds no secret key: start the instance with the key it had when the backup "
-    "was made, in SECRET_KEY (or in secret_key of the data directory). With another key, the "
-    "stored secrets cannot be read: enter the SMTP password and the secrets of the sign-in "
-    "providers again, and add the notification channels again; everyone signs in again. The "
-    "homes, their files and the accounts are restored either way."
+    "was made, in SECRET_KEY (or in secret_key of the data directory). " + WITH_ANOTHER_KEY
 )
+# The data directory was new: the entrypoint generated its key just before this command.
+KEY_JUST_GENERATED = (
+    "The backup holds no secret key, and {key_file} was generated just now, for this new "
+    "data directory: it is not the key of the instance the backup was made on. Before you "
+    "start the instance, replace it with that key: its secret_key file in place of this one, "
+    "or its value in SECRET_KEY. " + WITH_ANOTHER_KEY
+)
+
+
+def _generated_just_now(key_file: Path) -> bool:
+    from housecairn.entrypoint import KEY_GENERATED
+
+    generated = os.environ.get(KEY_GENERATED, "")
+    return bool(generated) and Path(generated).resolve() == key_file.resolve()
 
 
 def _safe_name(name: str) -> bool:
@@ -191,4 +208,9 @@ class Command(BaseCommand):
         key = "secret key, " if "secret_key" in parts else ""
         self.stdout.write(f"Restored: database, {key}{files} files.")
         if "secret_key" not in parts:
-            self.stdout.write(KEY_LEFT_OUT)
+            key_file = target_data / SECRET_KEY_FILE
+            self.stdout.write(
+                KEY_JUST_GENERATED.format(key_file=key_file)
+                if _generated_just_now(key_file)
+                else KEY_LEFT_OUT
+            )
