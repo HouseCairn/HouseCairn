@@ -14,6 +14,7 @@ qr-labels
 projects
 budget
 amounts
+dates
 notifications
 calendar
 ```

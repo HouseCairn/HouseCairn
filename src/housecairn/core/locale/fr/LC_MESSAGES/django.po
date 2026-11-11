@@ -15,6 +15,9 @@ msgstr ""
 msgid "Core"
 msgstr "Cœur"
 
+msgid "Enter a number with a point as the decimal mark, for example 12.5."
+msgstr "Saisissez un nombre avec un point comme séparateur décimal, par exemple 12.5."
+
 msgid "This form was already sent. Nothing was added again."
 msgstr "Ce formulaire a déjà été envoyé. Rien n'a été ajouté une seconde fois."
 

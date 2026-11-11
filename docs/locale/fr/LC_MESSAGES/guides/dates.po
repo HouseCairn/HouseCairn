@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "How dates are shown"
+msgstr "Comment les dates sont affichées"
+
+msgid "Every date on a screen is written the same way, in letters for the month, so that nobody has to guess which number is the day and which is the month:"
+msgstr "Toute date sur un écran est écrite de la même façon, avec le mois en lettres, pour que personne n'ait à deviner quel nombre est le jour et lequel est le mois :"
+
+msgid "English"
+msgstr "Anglais"
+
+msgid "French"
+msgstr "Français"
+
+msgid "A date"
+msgstr "Une date"
+
+msgid "Nov 8, 2026"
+msgstr "Nov 8, 2026"
+
+msgid "8 nov. 2026"
+msgstr "8 nov. 2026"
+
+msgid "A date and the time"
+msgstr "Une date et l'heure"
+
+msgid "Nov 8, 2026, 2:30 PM"
+msgstr "Nov 8, 2026, 2:30 PM"
+
+msgid "8 nov. 2026, 14:30"
+msgstr "8 nov. 2026, 14:30"
+
+msgid "A date without its year"
+msgstr "Une date sans l'année"
+
+msgid "Nov 8"
+msgstr "Nov 8"
+
+msgid "8 nov."
+msgstr "8 nov."
+
+msgid "A day with its weekday"
+msgstr "Un jour avec son jour de la semaine"
+
+msgid "Sun, Nov 8"
+msgstr "Sun, Nov 8"
+
+msgid "dim. 8 nov."
+msgstr "dim. 8 nov."
+
+msgid "The numeric form `02/08/2027` is never shown: it reads as 2 August or as 8 February depending on where you live. The language of your account decides the format, and a time is shown in the time zone of the instance."
+msgstr "La forme numérique `02/08/2027` n'est jamais affichée : elle se lit 2 août ou 8 février selon l'endroit où l'on vit. La langue de votre compte décide du format, et une heure est affichée dans le fuseau horaire de l'instance."
+
+msgid "Boxes where you pick a date (the date of a task, a quote, a stock movement) are those of your browser, which shows them in the habits of your system. The files and the API always use `2027-02-08` (ISO 8601), as the other guides say."
+msgstr "Les champs où vous choisissez une date (celle d'une tâche, d'un devis, d'un mouvement de stock) sont ceux de votre navigateur, qui les montre selon les habitudes de votre système. Les fichiers et l'API utilisent toujours `2027-02-08` (ISO 8601), comme le disent les autres guides."
+

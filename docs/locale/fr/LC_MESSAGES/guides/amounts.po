@@ -30,6 +30,9 @@ msgstr "**Écrivez-le comme vous le dites.** En anglais `1250.50`, en français 
 msgid "**Two decimals at most**, and a decimal mark only once. A form that could be read two ways is refused rather than guessed: `1,250.50` and `1.250,50` are refused, so are letters and a negative sign."
 msgstr "**Deux décimales au plus**, et une seule marque décimale. Une forme qui peut se lire de deux façons est refusée plutôt que devinée : `1,250.50` et `1.250,50` sont refusés, tout comme les lettres et un signe moins."
 
+msgid "**In English the comma is refused, and the message says what to type**: typing `12,5` shows \"Enter a number with a point as the decimal mark, for example 12.5.\" In French the comma is the decimal mark and is accepted."
+msgstr "**En anglais la virgule est refusée, et le message dit quoi saisir** : taper `12,5` affiche « Enter a number with a point as the decimal mark, for example 12.5. » En français la virgule est la marque décimale et elle est acceptée."
+
 msgid "**The currency is the one of the home**, never typed."
 msgstr "**La devise est celle du logement**, jamais saisie."
 
@@ -38,4 +41,10 @@ msgstr "**Le plus grand montant est 9999999999.99**, et le plus petit 0. L'API e
 
 msgid "Screens show amounts with the habits of your language, such as `€1,250.50` or `1 250,50 €`. The symbol is the one your language gives to the currency of the home, and the ISO code (`SEK`) when it has none; what is shown is not always what you type."
 msgstr "Les écrans affichent les montants selon les habitudes de votre langue, comme `€1,250.50` ou `1 250,50 €`. Le symbole est celui que votre langue donne à la devise du logement, et le code ISO (`SEK`) quand elle n'en a pas ; ce qui est affiché n'est pas toujours ce que vous saisissez."
+
+msgid "Quantities"
+msgstr "Quantités"
+
+msgid "The same rule applies to every other decimal number you type: the quantity of a stock movement, of a stock item needed by a task, the quantity really used when a task is marked done, the threshold of a stock item and the last price paid to a supplier. Up to two decimals, the decimal mark of your language (`12.5` in English, `12,5` in French), and the same message when the English form meets a comma."
+msgstr "La même règle s'applique à tout autre nombre décimal que vous saisissez : la quantité d'un mouvement de stock, d'un article de stock nécessaire à une tâche, la quantité réellement utilisée quand une tâche est faite, le seuil d'un article et le dernier prix payé à un fournisseur. Deux décimales au plus, la marque décimale de votre langue (`12.5` en anglais, `12,5` en français), et le même message quand le formulaire anglais rencontre une virgule."
 

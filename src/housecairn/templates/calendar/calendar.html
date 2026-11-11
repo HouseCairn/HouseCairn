@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n tabs %}
+{% load i18n tabs dates %}
 {% block head_title %}{% translate "Calendar" %}{% endblock head_title %}
 {% block extra_head %}{% load static %}<script src="{% static 'js/calendar.js' %}" defer></script>{% endblock extra_head %}
 {% block content %}
@@ -35,7 +35,7 @@
     <nav class="calendar-nav" aria-label="{% translate 'Period' %}">
       <a class="button-secondary button-small" rel="prev" data-calendar="prev" href="{{ prev_url }}">{% translate "Previous" %}</a>
       <h2 id="calendar-title" aria-live="polite">
-        {% if granularity == "week" %}{% blocktranslate with day=days.0.0|date:"j F Y" %}Week of {{ day }}{% endblocktranslate %}
+        {% if granularity == "week" %}{% blocktranslate with day=days.0.0|day %}Week of {{ day }}{% endblocktranslate %}
         {% elif granularity == "month" %}{{ anchor|date:"F Y" }}
         {% else %}{{ anchor|date:"Y" }}{% endif %}
       </h2>
@@ -46,7 +46,7 @@
     {% if granularity == "week" %}
       {% for day, rows in days %}
         <section aria-labelledby="day-{{ day|date:'Y-m-d' }}">
-          <h3 id="day-{{ day|date:'Y-m-d' }}"{% if day == today %} aria-current="date"{% endif %}>{{ day|date:"l j F" }}{% if day == today %} · {% translate "Today" %}{% endif %}</h3>
+          <h3 id="day-{{ day|date:'Y-m-d' }}"{% if day == today %} aria-current="date"{% endif %}>{{ day|weekday_day }}{% if day == today %} · {% translate "Today" %}{% endif %}</h3>
           {% if rows %}
             <ul class="task-list">{% for entry in rows %}{% include "calendar/_entry.html" %}{% endfor %}</ul>
           {% else %}<p class="small">{% translate "Nothing planned." %}</p>{% endif %}
@@ -63,7 +63,7 @@
                 <td class="{% if not cell.in_month %}calendar-outside{% endif %}{% if cell.date == today %} calendar-today{% endif %}">
                   <a href="{{ week_base }}date={{ cell.date|date:'Y-m-d' }}"{% if cell.date == today %} aria-current="date"{% endif %}>
                     <span aria-hidden="true">{{ cell.date.day }}</span>
-                    <span class="visually-hidden">{{ cell.date|date:"l j F" }}, </span>
+                    <span class="visually-hidden">{{ cell.date|weekday_day }}, </span>
                     {% if cell.entries %}<span class="calendar-count">{% blocktranslate count counter=cell.entries|length %}{{ counter }} task{% plural %}{{ counter }} tasks{% endblocktranslate %}</span>{% endif %}
                   </a>
                 </td>
@@ -74,7 +74,7 @@
       </table>
       {% for day, rows in days %}
         <section aria-labelledby="day-{{ day|date:'Y-m-d' }}">
-          <h3 id="day-{{ day|date:'Y-m-d' }}">{{ day|date:"l j F" }}</h3>
+          <h3 id="day-{{ day|date:'Y-m-d' }}">{{ day|weekday_day }}</h3>
           <ul class="task-list">{% for entry in rows %}{% include "calendar/_entry.html" %}{% endfor %}</ul>
         </section>
       {% empty %}<p class="small">{% translate "Nothing planned this month." %}</p>{% endfor %}
