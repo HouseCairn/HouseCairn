@@ -24,6 +24,15 @@ DAY = datetime.date(2026, 11, 8)
 MOMENT = datetime.datetime(2026, 11, 8, 14, 30, tzinfo=datetime.UTC)
 # A day and a month in digits, whatever the separator: `02/08/2027`, `8.2.2027`, `08-02-27`.
 NUMERIC_DATE = re.compile(r"(?<![\d.:/-])\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}(?![\d.:/-])")
+# The other way each language writes a date, the one of Django's own formats: an abbreviated
+# English month followed by a point (`Feb. 8, 2027`), a French month in full where the format of
+# the application abbreviates it (`8 février 2027`, but `1 mars 2027` has no short form).
+SECOND_FORMAT = {
+    "en": re.compile(r"\b(?:Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\. \d{1,2}\b"),
+    "fr": re.compile(
+        r"\b\d{1,2} (?:janvier|février|avril|juillet|septembre|octobre|novembre|décembre) \d{4}"
+    ),
+}
 # What `|date:` may still format in a template: a machine value (an input, an anchor) or a
 # part of a calendar (the month, the year, a weekday name). A date read as such is `|day`.
 DATE_FILTER_ALLOWED = {"Y-m-d", "F Y", "Y", "F", "l", "D"}
@@ -168,3 +177,15 @@ class TestScreens:
         )
         assert response.status_code == 200
         assert NUMERIC_DATE.findall(visible_text(response.content.decode())) == []
+
+    @pytest.mark.parametrize("name", ["detail", "list", "today", "edit"])
+    @pytest.mark.parametrize("language", ["en", "fr"])
+    def test_no_screen_of_a_task_shows_a_second_format(
+        self, signed_in: Client, alice_home: Home, weekly: Task, name: str, language: str
+    ) -> None:
+        response = signed_in.get(
+            self.pages(alice_home, weekly)[name], HTTP_ACCEPT_LANGUAGE=language
+        )
+        assert response.status_code == 200
+        text = visible_text(response.content.decode())
+        assert SECOND_FORMAT[language].findall(text) == []
