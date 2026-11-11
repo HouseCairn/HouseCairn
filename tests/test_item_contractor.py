@@ -1,6 +1,7 @@
 """The provider of the maintenance contract of an item is a contractor of the home (ADR 0058)."""
 
 import csv
+import html
 import io
 import json
 import re
@@ -25,6 +26,7 @@ from housecairn.rooms.models import Item, Room
 from housecairn.tasks import services as task_services
 from housecairn.tasks.models import Contractor
 from tests.data_support import archive_bytes
+from tests.test_back_links_more import back_links
 from tests.test_restore_security import entries, rebuild
 
 pytest_plugins = ("tests.rooms_fixtures",)
@@ -272,6 +274,28 @@ class TestTheScreens:
         services.update_item(alice, owner_item, contract_contractor=acme)
         page = signed_in.get(item_url("detail", alice_home, item_id=owner_item.id)).content.decode()
         assert f"contractors/{acme.id}/" in page
+
+    def test_the_sheet_of_the_contractor_leads_back_to_the_item(
+        self, signed_in: Client, alice: User, alice_home: Home, owner_item: Item, acme: Contractor
+    ) -> None:
+        """Return rule (ADR 0053): the link carries `next`, the back link names the item."""
+        services.update_item(alice, owner_item, contract_contractor=acme)
+        here = item_url("detail", alice_home, item_id=owner_item.id)
+        page = signed_in.get(here).content.decode()
+        link = re.search(rf'<a href="([^"]*contractors/{acme.id}/[^"]*)">Acme Heating</a>', page)
+        assert link
+        sheet = signed_in.get(html.unescape(link.group(1))).content.decode()
+        assert [(href, text) for href, text, _phone in back_links(sheet)] == [
+            (here, owner_item.name)
+        ]
+        # Without `next` the back link leads to the list of contractors.
+        bare = reverse(
+            "tasks:contractor-detail", kwargs={"home_id": alice_home.id, "contractor_id": acme.id}
+        )
+        lists = reverse("tasks:contractors", kwargs={"home_id": alice_home.id})
+        assert [
+            href for href, _text, _phone in back_links(signed_in.get(bare).content.decode())
+        ] == [lists]
 
     def test_the_task_from_the_item_starts_with_its_contractor(
         self, signed_in: Client, alice: User, alice_home: Home, owner_item: Item, acme: Contractor

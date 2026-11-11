@@ -1,5 +1,7 @@
 """The item form: brands suggested from the home, the contract as a contractor and a number."""
 
+import re
+
 import pytest
 from django.test import Client
 from django.urls import reverse
@@ -90,7 +92,7 @@ class TestContract:
         sheet = reverse(
             "tasks:contractor-detail", kwargs={"home_id": alice_home.id, "contractor_id": acme.id}
         )
-        assert f'<a href="{sheet}">Acme Heating</a>' in page
+        assert re.search(rf'<a href="{sheet}\?next=[^"]+">Acme Heating</a>', page)
 
     def test_the_api_reads_and_writes_both(
         self, api_client: APIClient, alice: User, alice_home: Home, owner_room: Room
