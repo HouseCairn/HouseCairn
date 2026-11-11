@@ -16,6 +16,7 @@ from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from housecairn.core import navigation
+from housecairn.core.form_errors import banner_messages
 from housecairn.homes import current
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home
@@ -294,7 +295,8 @@ class MovementAddView(HomeStockMixin, View):
         page = _url("detail", home_id=self.home.id, article_id=article.id)
         back = redirect(navigation.stay(request, page) + "#movement")
         if not form.is_valid():
-            messages.error(request, " ".join(str(m) for e in form.errors.values() for m in e))
+            for message in banner_messages(form):
+                messages.error(request, message)
             return back
         data = form.cleaned_data
         try:

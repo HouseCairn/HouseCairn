@@ -289,6 +289,37 @@ def test_nothing_is_drawn_for_a_form_without_error(signed_in: Client, alice_home
     assert "data-form-errors" not in html
 
 
+BANNER_CASES = [
+    ("movement", "stock:movement-add", lambda c: [c["home"].id, c["article"].id], {"kind": "in"}),
+    (
+        "material",
+        "tasks:material-save",
+        lambda c: [c["home"].id, c["task"].id],
+        {"quantity": "1"},
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    ("name", "view", "args", "data"), BANNER_CASES, ids=[c[0] for c in BANNER_CASES]
+)
+def test_a_banner_form_names_the_field_and_says_it_once(
+    name: str,
+    view: str,
+    args: Callable[[dict[str, Any]], list[Any]],
+    data: dict[str, Any],
+    signed_in: Client,
+    context: dict[str, Any],
+) -> None:
+    """An action in place says why in the banner: the field first, never the bare message."""
+    response = signed_in.post(reverse(view, args=args(context)), data, follow=True)
+    shown = re.findall(r'<li class="message[^"]*">([^<]*)</li>', response.content.decode())
+    assert shown, f"{name}: no message"
+    assert all(": " in text for text in shown), f"{name}: a message without its field: {shown}"
+    assert len(shown) == len(set(shown)), f"{name}: the same message twice: {shown}"
+    assert not any(text.startswith("This field") for text in shown), shown
+
+
 # Forms that report an error in the banner of the page they redirect to (the action is in
 # place, on a page that already shows the record), not in a page of their own.
 BANNER_FORMS = {"stock/article_detail.html", "tasks/_materials.html"}
