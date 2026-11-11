@@ -8,14 +8,14 @@
   <form method="post" class="card">
     {% csrf_token %}
     {% next_field %}
-    {{ form.non_field_errors }}
+    {% include "components/form_errors.html" with form=form only %}
     {{ form.templates.errors }}
     {% for equipment, templates in groups %}
       <fieldset>
         <legend>{{ equipment.name.get }}</legend>
         {% for template in templates %}
           <p>
-            <label><input type="checkbox" name="templates" value="{{ template.id }}"{% if template.id in form.templates.value %} checked{% endif %}> {{ template.title.get }}</label>
+            <label><input type="checkbox" name="templates" value="{{ template.id }}"{% if forloop.first and forloop.parentloop.first %} id="{{ form.templates.auto_id }}_0"{% endif %}{% if form.templates.errors %} aria-invalid="true"{% endif %}{% if template.id in form.templates.value %} checked{% endif %}> {{ template.title.get }}</label>
             <span class="small">{% include "tasks/_template_interval.html" %}{% if template.region %} · {% blocktranslate trimmed with region=template.region %}rule of {{ region }}{% endblocktranslate %}{% endif %} · <a href="{{ template.source_url }}" rel="noopener noreferrer nofollow">{% translate "source" %}</a></span>
           </p>
         {% endfor %}

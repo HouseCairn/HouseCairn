@@ -34,6 +34,7 @@ STYLE_LAYERS = (
     "calendar.css",
     "labels.css",
     "reports.css",
+    "forms.css",
     "utilities.css",
 )
 

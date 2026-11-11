@@ -166,7 +166,8 @@ class HouseholdView(WebHomeScopedMixin, DetailView[Home]):
             invitations=services.pending_invitations(home) if owner else [],
             invite_form=kwargs.get("invite_form") or forms.InviteForm(),
             providers=providers,
-            provider_form=forms.ProviderForm(
+            provider_form=kwargs.get("provider_form")
+            or forms.ProviderForm(
                 providers=providers, initial={"provider": home.required_provider}
             ),
             required_provider=sso.provider_named(home.required_provider, self.request)
@@ -419,6 +420,14 @@ class HomeDeleteView(WebHomeScopedMixin, FormView[forms.DeleteHomeForm]):
         return redirect(navigation.after_delete(self.request, reverse("homes:list"), [home.id]))
 
 
+class FormRefused(Exception):  # noqa: N818 - control flow, not an error
+    """An action of the household refused its form: the page comes back with it, bound."""
+
+    def __init__(self, **forms_by_name: Any) -> None:
+        super().__init__()
+        self.forms = forms_by_name
+
+
 class HomeActionView(WebHomeScopedMixin, View):
     """Base of the household's POST actions: run, then back to the household."""
 
@@ -432,6 +441,8 @@ class HomeActionView(WebHomeScopedMixin, View):
         home = self.get_home(allow_locked=self.locked_ok())
         try:
             response = self.act(home)
+        except FormRefused as refused:
+            return self.refuse(home, **refused.forms)
         except ValidationError as exc:
             for message in exc.messages:
                 messages.error(request, message)
@@ -440,6 +451,19 @@ class HomeActionView(WebHomeScopedMixin, View):
             messages.warning(request, DELIVERY_FAILED)
             return self.household(home)
         return response or self.household(home)
+
+    def refuse(self, home: Home, **bound: Any) -> HttpResponse:
+        """The page of the form itself (422), with the refused form bound and its summary."""
+        page = self.page_of_form(home)
+        page.setup(self.request, *self.args, **self.kwargs)
+        response: HttpResponse = page.render_to_response(page.get_context_data(**bound), status=422)
+        return response
+
+    def page_of_form(self, home: Home) -> Any:
+        """The view that draws the form of this action; the household unless said otherwise."""
+        page = HouseholdView()
+        page.object = home
+        return page
 
     def household(self, home: Home) -> HttpResponse:
         """The household again, still knowing where it was opened from (an action in place)."""
@@ -474,16 +498,21 @@ class InviteView(HomeActionView):
             raise PermissionDenied
         form = forms.InviteForm(self.request.POST)
         if not form.is_valid():
-            raise ValidationError([e for errors in form.errors.values() for e in errors])
+            raise FormRefused(invite_form=form)
         if not allow(self.request, "housecairn_invite"):
-            raise ValidationError(_("Too many invitations in a short time. Try again later."))
-        _invitation, raw = services.invite(
-            self.request.user,
-            home,
-            email=form.cleaned_data["email"],
-            role=form.cleaned_data["role"],
-            delivery=delivery_for(self.request),
-        )
+            form.add_error(None, _("Too many invitations in a short time. Try again later."))
+            raise FormRefused(invite_form=form)
+        try:
+            _invitation, raw = services.invite(
+                self.request.user,
+                home,
+                email=form.cleaned_data["email"],
+                role=form.cleaned_data["role"],
+                delivery=delivery_for(self.request),
+            )
+        except ValidationError as exc:
+            form.add_error(None, exc)
+            raise FormRefused(invite_form=form) from exc
         _share_link(self.request, raw)
         messages.success(
             self.request,
@@ -537,16 +566,21 @@ class MemberView(WebHomeScopedMixin, DetailView[Membership]):
             home=membership.home,
             is_owner=services.is_owner(self.request.user, membership.home),
             is_me=membership.user_id == self.request.user.pk,
-            role_form=forms.RoleForm(initial={"role": membership.role}),
+            role_form=kwargs.get("role_form") or forms.RoleForm(initial={"role": membership.role}),
         )
         return context
 
 
 class MemberRoleView(HomeActionView):
+    def page_of_form(self, home: Home) -> Any:
+        page = MemberView()
+        page.object = self.membership(home)
+        return page
+
     def act(self, home: Home) -> HttpResponse | None:
         form = forms.RoleForm(self.request.POST)
         if not form.is_valid():
-            raise ValidationError(_("Choose a role."))
+            raise FormRefused(role_form=form)
         services.change_role(self.request.user, self.membership(home), form.cleaned_data["role"])
         messages.success(self.request, _("Role changed."))
         return None
@@ -660,7 +694,7 @@ class RequiredProviderView(HomeActionView):
         providers = sso.declared_providers(self.request)
         form = forms.ProviderForm(self.request.POST, providers=providers)
         if not form.is_valid():
-            raise ValidationError(_("Choose a sign-in provider."))
+            raise FormRefused(provider_form=form)
         services.set_required_provider(
             self.request.user,
             home,

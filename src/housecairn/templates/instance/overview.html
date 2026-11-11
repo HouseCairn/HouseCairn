@@ -20,6 +20,7 @@
   {% if email_configured %}
     <form method="post" action="{% url 'instance:invite' %}" class="card">
       {% csrf_token %}
+      {% include "components/form_errors.html" with form=invite_form only %}
       {{ invite_form.as_p }}
       <button type="submit" class="button-block">{% translate "Invite" %}</button>
       <p class="small">{% translate "The person receives a link by email, which works once. They create their account and then their own home." %}</p>

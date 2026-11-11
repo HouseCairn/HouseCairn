@@ -1,0 +1,38 @@
+/* The summary of the errors of a refused form (templates/components/form_errors.html, design guide,
+   Forms). */
+
+.form-errors {
+  margin: 0 0 var(--hc-space-4);
+  padding: var(--hc-space-3) var(--hc-space-4);
+  color: var(--hc-color-danger);
+  background: var(--hc-color-danger-soft);
+  border: 1px solid var(--hc-color-danger);
+  border-radius: var(--hc-radius-sm);
+  font-size: var(--hc-font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.form-errors-title {
+  margin: 0 0 var(--hc-space-2);
+  font-weight: var(--hc-font-weight-bold);
+}
+
+.form-errors ul {
+  margin: 0;
+  padding-left: var(--hc-space-4);
+}
+
+.form-errors a {
+  color: inherit;
+  font-weight: var(--hc-font-weight-medium);
+}
+
+/* A field in error: the border says it too, not only the message. */
+[aria-invalid="true"] {
+  border-color: var(--hc-color-danger);
+}
+
+/* The summary lists the errors that belong to no field: `as_p` draws them again above the fields. */
+form .errorlist.nonfield {
+  display: none;
+}

@@ -8,7 +8,7 @@
   <form method="post" class="card" novalidate>
     {% csrf_token %}
     {% next_field %}
-    {{ form.non_field_errors }}
+    {% include "components/form_errors.html" with form=form only %}
     {% for field in form %}
       {{ field.errors }}
       {% if field.name == "homes" %}

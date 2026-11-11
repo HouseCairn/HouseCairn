@@ -14,7 +14,7 @@
     {% csrf_token %}
     {% next_field %}
     {% if materials.can_add_more %}{# Enter in a field saves the task: this button, first in the form, is the one it presses, not "Add lines" of the materials. #}<button type="submit" class="visually-hidden" tabindex="-1" aria-hidden="true">{% if task %}{% translate "Save" %}{% else %}{% translate "Add the task" %}{% endif %}</button>{% endif %}
-    {{ form.non_field_errors }}
+    {% include "components/form_errors.html" with form=form formset=materials only %}
     <div class="card">
       {% include "tasks/_field.html" with field=form.title %}
       {% include "tasks/_field.html" with field=form.room %}
@@ -33,7 +33,7 @@
       </fieldset>
       {% include "tasks/_field.html" with field=form.due_on %}
     </div>
-    <details class="form-section"{% if form.repeat_interval.errors or form.repeat_start.errors or form.season.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeats.value or not task and form.item.value %} open{% endif %}>
+    <details class="form-section"{% if form.repeat_interval.errors or form.repeat_start.errors or form.season.errors or form.season_start_month.errors or form.hide_days_before.errors or form.repeat_unit.errors or form.repeat_from.errors or form.season_end_month.errors or form.repeats.errors or form.repeats.value or not task and form.item.value %} open{% endif %}>
       <summary>{% translate "Repeat" %}</summary>
       {# One sentence: repeat every N units, counting from the due date or the day it is done. With script, the fields a choice does not use are hidden (static/js/task-form.js) and the summary follows the fields; without it, every field shows and the server ignores the unused ones. #}
       <div id="repeat-fields" hx-get="{% url 'tasks:repeat-summary' home_id=home.id %}" hx-trigger="change, input delay:400ms, change from:#{{ form.due_on.id_for_label }}" hx-include="#repeat-fields input, #repeat-fields select, #{{ form.due_on.id_for_label }}" hx-target="#repeat-summary" hx-swap="innerHTML">
@@ -65,7 +65,7 @@
         <p class="field-summary"><strong>{% translate "In short:" %}</strong> <output id="repeat-summary" aria-live="polite">{{ form.summary }}</output></p>
       </div>
     </details>
-    <details class="form-section"{% if form.assignee.errors or form.contractor.errors or form.new_contractor_name.errors or form.new_contractor_trade_other.errors or not task and form.contractor.value %} open{% endif %}>
+    <details class="form-section"{% if form.priority.errors or form.assignee.errors or form.contractor.errors or form.new_contractor_name.errors or form.new_contractor_trade.errors or form.new_contractor_trade_other.errors or not task and form.contractor.value %} open{% endif %}>
       <summary>{% translate "Who" %}</summary>
       <div>
         {% include "tasks/_field.html" with field=form.priority %}

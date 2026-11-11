@@ -22,6 +22,7 @@
   </section>
   <form method="post" class="card">
     {% csrf_token %}
+    {% include "components/form_errors.html" with form=form only %}
     {{ form.as_p }}
     <button type="submit" class="button-danger button-block"{% if blocking or last_admin %} disabled{% endif %}>{% translate "Delete my account for good" %}</button>
   </form>
