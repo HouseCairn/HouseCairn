@@ -25,6 +25,13 @@ class ApiToken(BaseModel):
     digest = models.CharField(max_length=64, unique=True, editable=False)
     scopes = models.JSONField(_("scopes"), default=list)
     homes = models.ManyToManyField("homes.Home", related_name="+", verbose_name=_("homes"))
+    # The provider the session that created the token had signed in through, kept only when
+    # a home of the token required it (docs/adr/0057). The token then opens the homes that
+    # require this provider, and none that requires another. Empty: no home that requires a
+    # provider.
+    signed_in_provider = models.CharField(
+        _("sign-in provider"), max_length=100, blank=True, default="", editable=False
+    )
     expires_at = models.DateTimeField(_("expires at"), null=True, blank=True)
     revoked_at = models.DateTimeField(_("revoked at"), null=True, blank=True)
     last_used_at = models.DateTimeField(_("last used at"), null=True, blank=True)

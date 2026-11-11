@@ -22,6 +22,8 @@ from housecairn.apitokens import services
 from housecairn.apitokens.forms import TokenForm
 from housecairn.apitokens.models import ApiToken, Scope
 from housecairn.core import navigation
+from housecairn.homes import services as home_services
+from housecairn.homes import sso
 
 
 @method_decorator(never_cache, name="dispatch")
@@ -42,8 +44,10 @@ class TokenListView(LoginRequiredMixin, TemplateView):
             }
             for token in services.tokens_of(user)
         ]
+        # Every person with a home may create a token: a home that requires a provider is
+        # offered on the form, disabled until the session signs in through it.
         return super().get_context_data(
-            rows=rows, has_homes=services.issuable_homes(user).exists(), **kwargs
+            rows=rows, has_homes=services.token_homes(user).exists(), **kwargs
         )
 
 
@@ -56,7 +60,12 @@ class TokenCreateView(LoginRequiredMixin, FormView[TokenForm]):
     request: HttpRequest
 
     def get_form_kwargs(self) -> dict[str, Any]:
-        return {**super().get_form_kwargs(), "user": self.request.user}
+        return {
+            **super().get_form_kwargs(),
+            "user": self.request.user,
+            "signed_in_with": sso.signed_in_providers(self.request),
+            "providers": sso.declared_providers(self.request),
+        }
 
     def form_valid(self, form: TokenForm) -> HttpResponse:
         user: User = self.request.user  # type: ignore[assignment]
@@ -68,9 +77,21 @@ class TokenCreateView(LoginRequiredMixin, FormView[TokenForm]):
                 scopes=data["scopes"],
                 homes=data["homes"],
                 lifetime_days=data["lifetime_days"],
+                signed_in_with=sso.signed_in_providers(self.request),
             )
         except ValidationError as exc:
             form.add_error(None, exc)
+            return self.form_invalid(form)
+        except home_services.SsoRequiredError as exc:
+            provider = sso.provider_named(exc.provider_id, self.request)
+            form.add_error(
+                "homes",
+                _(
+                    "%(home)s opens only after signing in through %(provider)s: continue with "
+                    "it, then create the token."
+                )
+                % {"home": exc.home.name, "provider": provider.name},
+            )
             return self.form_invalid(form)
         response = TemplateResponse(
             self.request, "apitokens/token_created.html", {"created": token, "secret": raw}

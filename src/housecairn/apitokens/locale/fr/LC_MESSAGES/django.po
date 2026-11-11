@@ -90,6 +90,9 @@ msgstr "portées"
 msgid "homes"
 msgstr "logements"
 
+msgid "sign-in provider"
+msgstr "fournisseur de connexion"
+
 msgid "expires at"
 msgstr "expire le"
 
@@ -120,6 +123,13 @@ msgstr "Choisissez l'une des durées proposées."
 msgid "Choose one of your homes."
 msgstr "Choisissez l'un de vos logements."
 
+msgid "These homes require different sign-in providers: create one token for each provider."
+msgstr "Ces logements exigent des fournisseurs de connexion différents : créez un jeton par fournisseur."
+
+#, python-format
+msgid "%(home)s opens only after signing in through %(provider)s: continue with it, then create the token."
+msgstr "%(home)s ne s'ouvre qu'après une connexion par %(provider)s : continuez avec celui-ci, puis créez le jeton."
+
 msgid "Token revoked: it no longer works."
 msgstr "Jeton révoqué : il ne fonctionne plus."
 
@@ -148,6 +158,17 @@ msgstr "Nouveau jeton d'API"
 msgid "The token is shown once, right after you create it."
 msgstr "Le jeton s'affiche une seule fois, juste après sa création."
 
+#, python-format
+msgid "A token opens this home only if you create it after signing in through %(provider)s."
+msgstr "Un jeton n'ouvre ce logement que si vous le créez après vous être connecté par %(provider)s."
+
+#, python-format
+msgid "Continue with %(provider)s"
+msgstr "Continuer avec %(provider)s"
+
+msgid "This home requires a sign-in provider this instance no longer offers: no token can open it until an owner removes the requirement."
+msgstr "Ce logement exige un fournisseur de connexion que cette instance ne propose plus : aucun jeton ne peut l'ouvrir tant qu'un propriétaire n'a pas retiré l'exigence."
+
 msgid "Create the token"
 msgstr "Créer le jeton"
 
@@ -157,8 +178,8 @@ msgstr "Un jeton permet à un autre outil, comme Home Assistant, d'utiliser Hous
 msgid "Create a token"
 msgstr "Créer un jeton"
 
-msgid "You have no home that a token can open yet. A token cannot open a home that requires a sign-in provider."
-msgstr "Vous n'avez encore aucun logement qu'un jeton puisse ouvrir. Un jeton ne peut pas ouvrir un logement qui exige une connexion par fournisseur."
+msgid "You have no home yet: a token opens only homes you belong to."
+msgstr "Vous n'avez encore aucun logement : un jeton n'ouvre que des logements dont vous êtes membre."
 
 msgid "Your API tokens"
 msgstr "Vos jetons d'API"

@@ -155,14 +155,17 @@ class TestCreateThroughTheApi:
         assert mixed.status_code == 400
         assert not ApiToken.objects.exists()
 
-    def test_a_home_that_requires_a_provider_cannot_be_opened_by_a_token(
+    def test_a_home_that_requires_a_provider_is_not_bound_from_a_password_session(
         self, session: APIClient, alice_home: Home
     ) -> None:
+        # Bound from a session signed in through the provider only: tests/test_token_sso.py.
         Home.objects.filter(pk=alice_home.pk).update(required_provider="corp")
         response = session.post(
             reverse(LIST), {"name": "x", "homes": [str(alice_home.id)]}, format="json"
         )
-        assert response.status_code == 400
+        assert response.status_code == 403
+        assert response.json()["code"] == "sso_required"
+        assert not ApiToken.objects.exists()
 
     def test_the_token_made_here_is_accepted_by_the_v1_api(
         self, session: APIClient, alice_home: Home

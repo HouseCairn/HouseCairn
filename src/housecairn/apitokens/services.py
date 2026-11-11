@@ -54,11 +54,13 @@ def issue_token(
     scopes: Iterable[Scope | str],
     homes: Iterable[Home],
     lifetime: timedelta | object | None = _DEFAULT,
+    signed_in_provider: str = "",
 ) -> tuple[ApiToken, str]:
     """Create a token and return it with its secret, which is shown only once.
 
     `lifetime=None` makes a token that never expires; the default is
-    HOUSECAIRN_API_TOKEN_DEFAULT_LIFETIME_DAYS.
+    HOUSECAIRN_API_TOKEN_DEFAULT_LIFETIME_DAYS. `signed_in_provider` is recorded as is:
+    the caller has checked that the session signed in through it (`create_token`).
     """
     scope_values = sorted({Scope(s).value for s in scopes})
     if not scope_values:
@@ -81,6 +83,7 @@ def issue_token(
         digest=hash_token(raw),
         scopes=scope_values,
         expires_at=expires_at,
+        signed_in_provider=signed_in_provider,
     )
     token.homes.set(home_list)
     return token, raw
@@ -135,14 +138,22 @@ def tokens_of(user: User) -> QuerySet[ApiToken]:
     )
 
 
-def issuable_homes(user: User) -> QuerySet[Home]:
-    """The homes a token may be bound to: the person's, minus those that require a provider.
+def token_homes(user: User) -> QuerySet[Home]:
+    """The homes of a person, all offered on the screen, by name.
 
-    A token is not a sign-in through a provider, so it never opens a home that requires
-    one (`homes.sso.signed_in_providers`): binding it to such a home would give a token
-    that opens nothing.
+    Those this session cannot bind are shown too, disabled (`issuable_homes`).
     """
-    return home_services.open_homes(home_services.homes_for(user), frozenset()).order_by("name")
+    return home_services.homes_for(user).order_by("name")
+
+
+def issuable_homes(user: User, signed_in_with: frozenset[str]) -> QuerySet[Home]:
+    """The homes a token may be bound to from a session signed in through `signed_in_with`.
+
+    A home that requires a provider is bound only from a session signed in through it,
+    the check that opens the home on the web (docs/adr/0021, 0057): the token inherits
+    that proof. From a session signed in otherwise, the home is not issuable.
+    """
+    return home_services.open_homes(token_homes(user), signed_in_with)
 
 
 def create_token(
@@ -152,17 +163,32 @@ def create_token(
     scopes: Iterable[Scope | str],
     homes: Iterable[Home],
     lifetime_days: int,
+    signed_in_with: frozenset[str] = frozenset(),
 ) -> tuple[ApiToken, str]:
     """Issue a token for a person from the screen or the API, and note it in the audit log.
 
-    The log keeps the name the person gave, never the secret.
+    `signed_in_with` is what `homes.sso.signed_in_providers` reads from the session. A home
+    of the person that requires a provider the session did not sign in through raises
+    `SsoRequiredError`. The provider the homes of the token require, if any, is recorded on
+    the token (docs/adr/0057): one per token, so homes that require two different providers
+    take two tokens. The log keeps the name the person gave, never the secret.
     """
     if lifetime_days not in LIFETIME_CHOICES:
         raise ValidationError(_("Choose one of the lifetimes offered."))
-    allowed = {home.id for home in issuable_homes(user)}
+    mine = {home.id for home in token_homes(user)}
     home_list = list(homes)
-    if any(home.id not in allowed for home in home_list):
+    if any(home.id not in mine for home in home_list):
         raise ValidationError(_("Choose one of your homes."))
+    for home in home_list:
+        home_services.check_open(home, signed_in_with)
+    required = {home.required_provider for home in home_list if home.required_provider}
+    if len(required) > 1:
+        raise ValidationError(
+            _(
+                "These homes require different sign-in providers: create one token for each "
+                "provider."
+            )
+        )
     with transaction.atomic():
         token, raw = issue_token(
             user,
@@ -170,6 +196,7 @@ def create_token(
             scopes=scopes,
             homes=home_list,
             lifetime=timedelta(days=lifetime_days),
+            signed_in_provider=required.pop() if required else "",
         )
         audit.record("apitoken.created", actor=user, title=_logged_name(name))
     return token, raw

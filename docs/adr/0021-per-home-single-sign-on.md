@@ -1,7 +1,13 @@
 # 0021. Single sign-on required per home
 
-- Status: accepted
+- Status: accepted, partly superseded by [0057](0057-api-tokens-of-a-home-that-requires-a-provider.md)
 - Date: 2026-11-07
+
+> **Note (2026-11-10).** The clause "API tokens never open a home that requires a
+> provider" and the first consequence below are superseded by
+> [ADR 0057](0057-api-tokens-of-a-home-that-requires-a-provider.md): a token created from
+> a session signed in through the provider records it, and opens the home while the home
+> requires that provider or nothing. The rest of this record stands.
 
 ## Context
 
