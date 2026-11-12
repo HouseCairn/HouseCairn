@@ -717,7 +717,7 @@ def item_contract(browser: Browser, base: str) -> None:
 
 
 ADMIN_EMAIL = "admin@example.com"
-TAB_WIDTHS = (360, 375, 768, 1280)
+TAB_WIDTHS = (320, 360, 375, 768, 1280)
 
 # The text of every tab of the bar, where its box is, and the words of its label that are drawn
 # on more than one line. A range around the content gives the width the text really takes,
@@ -761,11 +761,21 @@ def instance_tabs(browser: Browser, base: str) -> None:
             # Signed in once the sign-in page is left: the load state of the sign-in page
             # itself is already reached, and a next page opened too early cancels the post.
             page.wait_for_url(lambda url: "/accounts/login/" not in url)
-            for path in ("/instance/", "/instance/providers/"):
+            # The household bar of the administrator's own home is the longest in French.
+            page.goto(f"{base}/tasks/")
+            home = page.url.split("/h/")[1].split("/")[0]
+            for path, count in (
+                ("/instance/", 4),
+                ("/instance/settings/", 4),
+                ("/instance/providers/", 4),
+                (f"/h/{home}/household/", 3),
+            ):
                 page.goto(f"{base}{path}")
                 tabs = page.evaluate(TABS_JS)
                 label = f"{locale} {width} px {path}"
-                check(len(tabs) == 4, f"{label}: four tabs ({len(tabs)} found at {page.url})")
+                check(
+                    len(tabs) == count, f"{label}: {count} tabs ({len(tabs)} found at {page.url})"
+                )
                 for tab in tabs:
                     inside = (
                         tab["box"][0] - 1 <= tab["text"][0] and tab["text"][1] <= tab["box"][1] + 1

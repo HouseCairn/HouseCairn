@@ -480,3 +480,14 @@
   hyphens: auto;
   line-height: 1.2;
 }
+
+/* Under 360 px (320 px phones) four tabs share about 70 px each: a word such as "Overview" or
+   "providers" is wider than that with the padding of a wider screen. Less padding, then the
+   smallest text size of the scale, so that no word is cut. */
+@media (max-width: 22.4375rem) {
+  .tabs-fit .tab {
+    padding-right: 2px;
+    padding-left: 2px;
+    font-size: var(--hc-font-size-xs);
+  }
+}

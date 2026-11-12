@@ -283,6 +283,10 @@ msgstr "Entretien"
 msgid "Home audit log"
 msgstr "Journal d'audit du logement"
 
+msgctxt "tab"
+msgid "Home audit log"
+msgstr "Journal"
+
 msgid "Overview"
 msgstr "Aperçu"
 
