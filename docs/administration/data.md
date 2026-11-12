@@ -203,7 +203,8 @@ reason when it is not one HouseCairn made, or was changed since:
   no longer than allowed), every reference to an object the archive holds,
   never to an object of another home;
 - no object already on this instance: the home it was made from must be
-  deleted first, or the archive restored on another instance;
+  deleted first, or the archive restored on another instance, or restored as a
+  copy ([below](#restore-as-a-copy));
 - every file decoded again, of the type its object says.
 
 People are never given an account. From the web, the person restoring is
@@ -217,6 +218,38 @@ docker compose exec housecairn python -m housecairn.entrypoint manage \
 
 which attaches again every person of the archive who has an account here with
 the same address, with their role.
+
+### Restore as a copy
+
+**Restore as a copy** on the same page (or `as_copy=true` on
+`POST /api/v1/homes/restore/`, or `--copy` on `restore_home`) makes a new home
+next to the one the archive was made from, which it does not touch: to
+duplicate a home, or to check a backup without deleting the original
+([ADR 0069](../adr/0069-restore-as-a-copy-with-new-identifiers.md)). Archives
+of format 2 and 3 are accepted.
+
+- The archive goes through every check of the restore above, and the copy is
+  written in one transaction: if anything is refused, nothing is created.
+- Every object (rooms, items, tasks and their history, stock, projects, quotes,
+  budget lines, contractors, photos and files, links, labels, reports, events)
+  gets a new identifier, and every link between them follows: the copy shares no
+  row and no file with the original. Each file is stored again, under the copy.
+- QR labels get new codes: the stickers of the original still open the
+  original.
+- The person who restores owns the copy and is its only member. The members and
+  the invitations of the archive are not copied; anyone else the archive names
+  (an assignee, who did a task) is left unattributed.
+- The copy is named after the home, followed by "(copy)" (then "(copy 2)"…),
+  unless another name is given (`name`, or `--name`); it can be renamed later.
+- While the home of the archive is on this instance, only one of its owners may
+  copy it: anyone else is refused (403 from the page and the API). Once that home
+  is gone, whoever holds the archive may restore it or copy it.
+
+```sh
+docker compose exec housecairn python -m housecairn.entrypoint manage \
+  restore_home /data/backups/housecairn-home.zip --owner owner@example.com \
+  --copy --name "Test home"
+```
 
 A home that required a sign-in provider still requires it once restored. On an
 instance that does not declare that provider, it stays locked, for its owner
