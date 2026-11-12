@@ -90,6 +90,11 @@ def reset(*, language: str | None = None, today: datetime.date | None = None) ->
         )
     _remove_files()
     with mode.reset_context(), transaction.atomic():
+        if connection.vendor == "postgresql":
+            # PostgreSQL refuses to TRUNCATE a table with deferred foreign-key checks still
+            # pending in the transaction: run them first.
+            with connection.cursor() as cursor:
+                cursor.execute("SET CONSTRAINTS ALL IMMEDIATE")
         connection.ops.execute_sql_flush(
             connection.ops.sql_flush(no_style(), _tables(), allow_cascade=True)
         )
