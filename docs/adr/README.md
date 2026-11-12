@@ -64,3 +64,4 @@ later record supersedes it.
 | [0062](0062-unit-price-of-stock-items.md) | Unit price of a stock item, planned cost of a task from its materials | 2026-11-12 |
 | [0065](0065-installable-application-and-offline-reading.md) | Installable application and offline reading | 2026-11-11 |
 | [0068](0068-one-date-format-and-decimal-mark-messages.md) | One date format per language, and a decimal field that says what it expects | 2026-11-11 |
+| [0069](0069-slow-network-calls-in-the-background.md) | Reading a link's page and testing a channel run in the background worker | 2026-11-12 |

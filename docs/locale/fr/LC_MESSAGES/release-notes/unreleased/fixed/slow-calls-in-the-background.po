@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Adding a link and testing a channel no longer hold the screen.** Reading the page of an inspiration link and sending the test message of a notification channel are now done by the background worker: the screen answers at once, shows \"Reading the page…\" or \"The test message is being sent.\", then the result (reload the page if it does not change by itself). A task that does not end within 30 seconds is shown as failed ([ADR 0069](../../../adr/0069-slow-network-calls-in-the-background.md))."
+msgstr "**Ajouter un lien et tester un canal ne bloquent plus l'écran.** La lecture de la page d'un lien d'inspiration et l'envoi du message de test d'un canal de notification sont désormais faits par le worker de tâches de fond : l'écran répond tout de suite, affiche « Lecture de la page… » ou « Le message de test est en cours d'envoi. », puis le résultat (rechargez la page si elle ne change pas d'elle-même). Une tâche qui ne se termine pas en 30 secondes est affichée comme échouée ([ADR 0069](../../../adr/0069-slow-network-calls-in-the-background.md))."
+

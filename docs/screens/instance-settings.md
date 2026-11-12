@@ -42,7 +42,7 @@ the instance; any person with an account can then make the server call such an a
 addresses stay refused either way. The section shows no channel of anyone.
 
 **Projects** has one switch, **Preview of inspiration links** (off by default). On, the server
-reads the page of a link once, when someone adds it to a project, to find its title and its
+reads the page of a link once, in the background just after someone adds it to a project, to find its title and its
 picture (see [Projects and quotes](../guides/projects.md)). It only calls public addresses:
 never a private network nor a cloud metadata service.
 

@@ -356,9 +356,11 @@ class ProjectDetailView(HomeProjectsMixin, TemplateView):
                 or forms.TaskAttachForm(tasks=services.attachable_tasks(self.home)),
                 photo_form=kwargs.pop("photo_form", None) or forms.PhotoForm(),
                 max_bytes=conf.photo_max_bytes(),
-                inspiration_links=list(
-                    services.inspiration_links_of(self.home).filter(project=project)
-                ),
+                inspiration_links=[
+                    link_services.expire_preview(link)
+                    for link in services.inspiration_links_of(self.home).filter(project=project)
+                ],
+                polls_max=LINK_POLLS,
                 link_form=kwargs.pop("link_form", None) or forms.LinkForm(auto_id="id_link_%s"),
                 preview_enabled=link_services.preview_enabled(),
             ),
@@ -754,9 +756,13 @@ class FileDeleteView(ConfirmDeleteView):
 
 # ---------- links of inspiration ----------
 
+# The row of a link being read asks for itself again every two seconds, at most this many
+# times; then it says to reload the page (docs/adr/0069).
+LINK_POLLS = 12
+
 
 class LinkAddView(PostView):
-    """Add a link; the page is read once, if the instance allows it, and a failure is silent."""
+    """Add a link; the worker reads its page, if the instance allows it (docs/adr/0069)."""
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         project = self.get_project()
@@ -778,6 +784,33 @@ class LinkAddView(PostView):
             return self.refuse(link_form=form)
         messages.success(request, _("Link added."))
         return self.stay(project)
+
+
+class LinkStatusView(HomeProjectsMixin, TemplateView):
+    """The row of a link as a fragment, that the page asks for again while its page is read."""
+
+    template_name = "projects/_link_row.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        try:
+            polls = max(0, min(int(self.request.GET.get("n", "0")), LINK_POLLS))
+        except ValueError:
+            polls = 0
+        link = link_services.expire_preview(self.get_link())
+        # The fragment is not a page one comes back to: deleting returns to the project.
+        delete_url = navigation.with_next(
+            reverse("projects:link-delete", kwargs={"home_id": self.home.id, "link_id": link.id}),
+            self.project_url(link.project),
+        )
+        return super().get_context_data(
+            **self.page(link=link, polls=polls, polls_max=LINK_POLLS, delete_url=delete_url),
+            **kwargs,
+        )
+
+    def render_to_response(self, context: dict[str, Any], **response_kwargs: Any) -> HttpResponse:
+        response = super().render_to_response(context, **response_kwargs)
+        response["Cache-Control"] = "no-store"
+        return response
 
 
 class LinkDeleteView(ConfirmDeleteView):

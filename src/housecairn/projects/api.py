@@ -759,13 +759,15 @@ class ProjectLinkSerializer(serializers.ModelSerializer[ProjectLink]):
     url = serializers.URLField(
         max_length=500,
         help_text="An http or https address. If the instance reads previews, the page is read "
-        "once, when the link is added; a page that cannot be read leaves the address alone.",
+        "once, by the background worker, just after the link is added; a page that cannot be "
+        "read leaves the address alone.",
     )
     title = serializers.CharField(
         max_length=200,
         required=False,
         allow_blank=True,
-        help_text="Empty: the title of the page when it could be read, else empty.",
+        help_text="Empty: the title of the page when it could be read (see `preview_state`), "
+        "else empty.",
     )
     image_url = serializers.SerializerMethodField(
         help_text="Address of the picture of the page, kept on this server, or null."
@@ -773,10 +775,25 @@ class ProjectLinkSerializer(serializers.ModelSerializer[ProjectLink]):
     thumbnail_url = serializers.SerializerMethodField(
         help_text="Address of the thumbnail of that picture, or null."
     )
+    preview_state = serializers.SerializerMethodField(
+        help_text="Where the reading of the page stands: empty if the instance does not read "
+        "pages, `running` while the worker reads it, `done` or `failed`. A reading that has "
+        "not ended 30 seconds after it started is `failed`. `title` and `image_url` are filled "
+        "when it is `done`."
+    )
 
     class Meta:
         model = ProjectLink
-        fields = ["id", "project", "url", "title", "image_url", "thumbnail_url", "created_at"]
+        fields = [
+            "id",
+            "project",
+            "url",
+            "title",
+            "image_url",
+            "thumbnail_url",
+            "preview_state",
+            "created_at",
+        ]
         read_only_fields = ["id", "created_at"]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -795,6 +812,10 @@ class ProjectLinkSerializer(serializers.ModelSerializer[ProjectLink]):
                 request=self.context["request"],
             )
         )
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_preview_state(self, link: ProjectLink) -> str:
+        return str(links.expire_preview(link).preview_state)
 
     @extend_schema_field(OpenApiTypes.URI)
     def get_image_url(self, link: ProjectLink) -> str | None:
@@ -815,8 +836,9 @@ class ProjectLinkViewSet(
 ):
     """Links of inspiration of the projects of a home. A link is added or removed, not changed.
 
-    When the instance allows previews, adding a link makes the server read the page once to
-    find its title and its picture (Open Graph, else the title of the page), under a guard
+    When the instance allows previews, adding a link queues the reading of the page, once, by
+    the background worker, to find its title and its picture (Open Graph, else the title of
+    the page; `preview_state` says where it stands), under a guard
     that refuses private networks, cloud metadata services and redirects to them, and limits
     size and time. The picture is cleaned like a photo and kept on the server. Whatever goes
     wrong, the link is saved with its address.

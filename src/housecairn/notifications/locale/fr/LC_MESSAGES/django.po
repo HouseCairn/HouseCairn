@@ -49,6 +49,21 @@ msgstr "Par exemple ntfys://ntfy.sh/mon-sujet ou tgram://123456789:jeton-du-bot/
 msgid "Enabled"
 msgstr "Activé"
 
+msgid "Test never sent"
+msgstr "Test jamais envoyé"
+
+msgid "Test being sent"
+msgstr "Test en cours d'envoi"
+
+msgid "Test sent"
+msgstr "Test envoyé"
+
+msgid "Test failed"
+msgstr "Test en échec"
+
+msgid "Test refused: private network"
+msgstr "Test refusé : réseau privé"
+
 msgid "name"
 msgstr "nom"
 
@@ -165,6 +180,9 @@ msgstr "Le message de test a été envoyé."
 msgid "The test message could not be sent: check the address and the service."
 msgstr "Le message de test n'a pas pu être envoyé : vérifiez l'adresse et le service."
 
+msgid "The test message is being sent."
+msgstr "Le message de test est en cours d'envoi."
+
 msgid "Notifications are turned off on this instance."
 msgstr "Les notifications sont désactivées sur cette instance."
 
@@ -189,6 +207,12 @@ msgstr "Indiquez le début et la fin des heures calmes, ou aucun des deux."
 
 msgid "Choose a time zone such as Europe/Paris."
 msgstr "Choisissez un fuseau horaire comme Europe/Paris."
+
+msgid "The result appears here in a few seconds."
+msgstr "Le résultat s'affiche ici dans quelques secondes."
+
+msgid "Reload this page in a moment to see the result."
+msgstr "Rechargez cette page dans un instant pour voir le résultat."
 
 #, python-format
 msgid "%(service)s (%(scheme)s). The address is kept encrypted and is never shown again: to change it, delete this channel and add another."

@@ -42,7 +42,7 @@ from housecairn.audit.models import AuditEvent
 from housecairn.homes.models import Home
 from housecairn.instance import config
 from housecairn.notifications import forms, outbound, reminders, services
-from housecairn.notifications.models import Channel, Delivery
+from housecairn.notifications.models import Channel, Delivery, SendState
 from housecairn.tasks import services as task_services
 from tests.test_instance_settings import recent
 
@@ -276,7 +276,7 @@ class TestAddresses:
             with pytest.raises(services.ValidationError, match="turned off"):
                 services.add_channel(alice, name="x", url=URL)
             with pytest.raises(services.ValidationError, match="turned off"):
-                services.test_channel(alice, channel)
+                services.start_test(alice, channel)
 
 
 class TestOutgoingCalls:
@@ -390,15 +390,15 @@ class TestOutgoingCalls:
             "_resolve",
             lambda *a, **k: [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("172.16.1.20", 443))],
         )
-        with pytest.raises(services.ValidationError, match="private network"):
-            services.test_channel(alice, channel)
+        assert services.start_test(alice, channel).test_state == SendState.PRIVATE
         signed_in(client, alice)
         page = client.post(reverse("notifications:test", args=[channel.id]), follow=True)
         assert "private network" in page.text
         assert "administrator" in page.text
         api_client.force_authenticate(alice)
         answer = api_client.post(reverse("api-v1:notification-channel-test", args=[channel.id]))
-        assert answer.status_code == 400
+        assert answer.status_code == 202
+        assert answer.json()["state"] == "private"
         assert "private network" in json.dumps(answer.json())
         assert "172.16.1.20" not in page.text + json.dumps(answer.json())
 
@@ -631,7 +631,7 @@ class TestOutgoingCalls:
             alice, name="Slow", url=f"gotify://127.0.0.1:{slow_server}/token"
         )
         started = time.monotonic()
-        assert services.test_channel(alice, channel) is False
+        assert services.start_test(alice, channel).test_state == SendState.FAILED
         assert time.monotonic() - started < 3
         task_services.create_task(alice, alice_home, title="Filter", due_on=task_services.today())
         started = time.monotonic()
@@ -907,9 +907,9 @@ class TestSurfaces:
                 api_client.get(reverse("api-v1:notification-export")).text,
                 api_client.get(reverse("api-schema")).text,
             ]
-        assert json.loads(api_tested.text)["ok"] is True
+        assert json.loads(api_tested.text)["state"] == "sent"
         assert json.loads(failed.text) == {
-            "ok": False,
+            "state": "failed",
             "detail": str(services.TEST_RESULTS[False]),
         }
         outputs.append(json.dumps(list(AuditEvent.objects.values()), default=str))
@@ -982,7 +982,7 @@ class TestIsolation:
         """Not only the views: a service called with someone else's channel refuses."""
         for call in (
             lambda: services.update_channel(bob, channel, name="Mine", enabled=False),
-            lambda: services.test_channel(bob, channel),
+            lambda: services.start_test(bob, channel),
             lambda: services.delete_channel(bob, channel),
         ):
             with pytest.raises(PermissionDenied):
@@ -1064,7 +1064,7 @@ class TestIsolation:
             api_client.post(
                 reverse("api-v1:notification-channel-test", args=[channel.id])
             ).status_code
-            == 200
+            == 202
         )
 
 
@@ -1096,15 +1096,23 @@ class TestWebAndApi:
 
     def test_tests_are_limited(self, alice: User, channel: Channel, sent: list[Any]) -> None:
         for _ in range(services.TESTS_PER_MINUTE):
-            assert services.test_channel(alice, channel) is True
+            assert services.start_test(alice, channel).test_state == SendState.SENT
         with pytest.raises(services.ValidationError, match="Too many"):
-            services.test_channel(alice, channel)
+            services.start_test(alice, channel)
 
     def test_api_channels_and_preferences(self, api_client: APIClient, alice: User) -> None:
         api_client.force_authenticate(alice)
         created = api_client.post(reverse(LIST), {"name": "Phone", "url": URL}, format="json")
         assert created.status_code == 201
-        assert set(created.json()) == {"id", "name", "scheme", "service", "enabled", "created_at"}
+        assert set(created.json()) == {
+            "id",
+            "name",
+            "scheme",
+            "service",
+            "enabled",
+            "test_state",
+            "created_at",
+        }
         detail = reverse("api-v1:notification-channel-detail", args=[created.json()["id"]])
         assert (
             api_client.patch(detail, {"enabled": False}, format="json").json()["enabled"] is False

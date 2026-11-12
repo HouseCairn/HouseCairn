@@ -11,12 +11,16 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import TemplateView
 
 from housecairn.notifications import forms, services
-from housecairn.notifications.models import Channel
+from housecairn.notifications.models import Channel, SendState
+
+# The status of a test is asked again every two seconds, at most this many times; then the
+# page says to reload it (docs/adr/0069). Without script, the page is reloaded by hand.
+TEST_POLLS = 12
 
 
 def _errors(form: Any, exc: ValidationError) -> None:
@@ -71,11 +75,13 @@ class ChannelView(ChannelMixin, TemplateView):
     template_name = "notifications/channel.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        channel = self.get_channel()
+        channel = services.expire_test(self.get_channel())
         form = kwargs.pop("form", None) or forms.ChannelEditForm(
             initial={"name": channel.name, "enabled": channel.enabled}
         )
-        return super().get_context_data(channel=channel, form=form, **kwargs)
+        return super().get_context_data(
+            channel=channel, form=form, **_test_context(channel, 0), **kwargs
+        )
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         channel = self.get_channel()
@@ -91,16 +97,44 @@ class ChannelView(ChannelMixin, TemplateView):
         return self.render_to_response(self.get_context_data(form=form), status=422)
 
 
+def _test_context(channel: Channel, polls: int) -> dict[str, Any]:
+    """What the status of the last test shows; `polls` already made by the page."""
+    return {
+        "test_state": channel.test_state,
+        "test_text": services.test_result(channel),
+        "test_polling": channel.test_state == SendState.RUNNING and polls < TEST_POLLS,
+        "test_next": polls + 1,
+    }
+
+
 class TestView(ChannelMixin, View):
+    """Queue the test and go back to the channel: the page shows it running, then its end."""
+
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         channel = self.get_channel()
         try:
-            ok = services.test_channel(request.user, channel)
+            services.start_test(request.user, channel)
         except ValidationError as exc:
             messages.error(request, " ".join(exc.messages))
-        else:
-            (messages.success if ok else messages.error)(request, services.TEST_RESULTS[ok])
         return redirect("notifications:channel", channel_id=channel.id)
+
+
+class TestStatusView(ChannelMixin, View):
+    """The status of the last test, as a fragment that the page asks for again while it runs."""
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        channel = services.expire_test(self.get_channel())
+        try:
+            polls = max(0, min(int(request.GET.get("n", "0")), TEST_POLLS))
+        except ValueError:
+            polls = 0
+        response = render(
+            request,
+            "notifications/_test_status.html",
+            {"channel": channel, **_test_context(channel, polls)},
+        )
+        response["Cache-Control"] = "no-store"
+        return response
 
 
 class DeleteView(ChannelMixin, View):

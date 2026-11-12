@@ -143,6 +143,18 @@ msgstr "L'adresse ne peut pas contenir de nom d'utilisateur ni de mot de passe."
 msgid "At most %(max)d links for a project."
 msgstr "%(max)d liens au plus pour un projet."
 
+msgid "Page not read"
+msgstr "Page non lue"
+
+msgid "Page being read"
+msgstr "Page en cours de lecture"
+
+msgid "Page read"
+msgstr "Page lue"
+
+msgid "Page could not be read"
+msgstr "Page illisible"
+
 msgid "Idea"
 msgstr "Idée"
 
@@ -439,6 +451,18 @@ msgstr "%(amount)s restants"
 msgid "On budget"
 msgstr "Budget respecté"
 
+msgid "Reading the page…"
+msgstr "Lecture de la page…"
+
+msgid "Reading the page… Reload this page in a moment to see the result."
+msgstr "Lecture de la page… Rechargez cette page dans un instant pour voir le résultat."
+
+msgid "The page could not be read: the link stays as you typed it."
+msgstr "La page n'a pas pu être lue : le lien reste tel que vous l'avez saisi."
+
+msgid "Delete"
+msgstr "Supprimer"
+
 msgid "Part of the project"
 msgstr "Fait partie du projet"
 
@@ -480,9 +504,6 @@ msgstr "Priorité"
 
 msgid "Season"
 msgstr "Saison"
-
-msgid "Delete"
-msgstr "Supprimer"
 
 #, python-format
 msgid "Delete %(name)s?"
@@ -621,8 +642,8 @@ msgstr "Inspiration"
 msgid "No link yet."
 msgstr "Aucun lien pour l'instant."
 
-msgid "HouseCairn reads the page once, now, to find its title and its picture. The picture is kept on this server. If the page cannot be read, the link stays as you typed it."
-msgstr "HouseCairn lit la page une seule fois, maintenant, pour trouver son titre et son image. L'image est conservée sur ce serveur. Si la page ne peut pas être lue, le lien reste tel que vous l'avez saisi."
+msgid "HouseCairn reads the page once, in the background, to find its title and its picture. They appear on the link in a few seconds. The picture is kept on this server. If the page cannot be read, the link stays as you typed it."
+msgstr "HouseCairn lit la page une seule fois, en arrière-plan, pour trouver son titre et son image. Ils apparaissent sur le lien dans quelques secondes. L'image est conservée sur ce serveur. Si la page ne peut pas être lue, le lien reste tel que vous l'avez saisi."
 
 msgid "The link is kept as you typed it: this instance does not read the pages."
 msgstr "Le lien est conservé tel que vous l'avez saisi : cette instance ne lit pas les pages."
