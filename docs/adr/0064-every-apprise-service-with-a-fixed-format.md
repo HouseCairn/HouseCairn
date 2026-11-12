@@ -59,6 +59,9 @@ check that the scheme parsed is the one typed now reads the schemes of the class
 
 "Requests" gives the methods the plugin uses and whether the host is fixed (the API of the
 provider, or one of its regions) or typed (the server of the person, under the guard).
+Some services have a fixed host by default and take a typed one in another form of the
+address: Microsoft Teams (workflows), Fluxer, Notifico, PushDeer and Better Stack. They are
+marked typed here, and those forms go through the guard of ADR 0059 like the others.
 
 | Schemes | Service | Verdict | Requests, or why refused |
 | --- | --- | --- | --- |
@@ -69,7 +72,7 @@ provider, or one of its regions) or typed (the server of the person, under the g
 | `mmost`, `mmosts` | Mattermost | admitted | GET/POST, host typed |
 | `rocket`, `rockets` | Rocket.Chat | admitted | POST, host typed |
 | `zulip` | Zulip | admitted | POST, host typed |
-| `workflow`, `workflows` | Microsoft Teams (Power Automate workflow) | admitted | POST, host fixed |
+| `workflow`, `workflows` | Microsoft Teams (Power Automate workflow) | admitted | POST, host typed |
 | `webex`, `wxteams` | Webex | admitted | POST, host fixed |
 | `gchat` | Google Chat | admitted | POST, host fixed |
 | `threema` | Threema Gateway | admitted | POST, host fixed |
@@ -77,8 +80,8 @@ provider, or one of its regions) or typed (the server of the person, under the g
 | `line` | LINE | admitted | POST, host fixed |
 | `viber` | Viber | admitted | POST, host fixed |
 | `revolt` | Revolt | admitted | POST, host fixed |
-| `guilded` | Guilded | admitted | SMTP, host fixed |
-| `fluxer`, `fluxers` | Fluxer | admitted | POST, host fixed |
+| `guilded` | Guilded | admitted | HTTPS POST, host fixed |
+| `fluxer`, `fluxers` | Fluxer | admitted | POST, host typed |
 | `flock` | Flock | admitted | POST, host fixed |
 | `ryver` | Ryver | admitted | POST, host fixed |
 | `twist` | Twist | admitted | GET/POST, host fixed |
@@ -94,7 +97,7 @@ provider, or one of its regions) or typed (the server of the person, under the g
 | `kook` | KOOK | admitted | POST, host fixed |
 | `qq` | QQ (Qmsg) | admitted | POST, host fixed |
 | `zalo` | Zalo | admitted | POST, host fixed |
-| `notifico`, `notificos` | Notifico (IRC) | admitted | GET, host fixed |
+| `notifico`, `notificos` | Notifico (IRC) | admitted | GET, host typed |
 | `ntfy`, `ntfys` | ntfy | admitted | POST, host typed |
 | `pover` | Pushover | admitted | POST, host fixed |
 | `pbul` | Pushbullet | admitted | POST, host fixed |
@@ -105,7 +108,7 @@ provider, or one of its regions) or typed (the server of the person, under the g
 | `join` | Join | admitted | POST, host fixed |
 | `pushed` | Pushed | admitted | POST, host fixed |
 | `pushy` | Pushy | admitted | POST, host fixed |
-| `pushdeer`, `pushdeers` | PushDeer | admitted | POST, host fixed |
+| `pushdeer`, `pushdeers` | PushDeer | admitted | POST, host typed |
 | `pushme` | PushMe | admitted | POST, host fixed |
 | `pushplus`, `wecom` | PushPlus | admitted | POST, host fixed |
 | `schan` | ServerChan | admitted | POST, host fixed |
@@ -186,7 +189,7 @@ provider, or one of its regions) or typed (the server of the person, under the g
 | `pjet`, `pjets` | Pushjet | admitted | POST, host typed |
 | `lametric`, `lametrics` | LaMetric Time | admitted | POST, host typed |
 | `emby`, `embys` | Emby | admitted | GET/POST, host typed |
-| `jellyfin`, `jellyfins` | Jellyfin | admitted | SMTP, host typed |
+| `jellyfin`, `jellyfins` | Jellyfin | admitted | HTTP(S) POST, host typed |
 | `kodi`, `kodis`, `xbmc`, `xbmcs` | Kodi | admitted | POST, host typed |
 | `enigma2`, `enigma2s` | Enigma2 | admitted | GET, host typed |
 | `pagerduty` | PagerDuty | admitted | POST, host fixed |
@@ -197,7 +200,7 @@ provider, or one of its regions) or typed (the server of the person, under the g
 | `signl4` | SIGNL4 | admitted | POST, host fixed |
 | `pagertree` | PagerTree | admitted | POST, host fixed |
 | `spike` | Spike.sh | admitted | POST, host fixed |
-| `betterstack` | Better Stack | admitted | POST, host fixed |
+| `betterstack` | Better Stack | admitted | POST, host typed |
 | `goalert`, `goalerts` | GoAlert | admitted | POST, host typed |
 | `amqp`, `amqps` | AMQP | refused | not HTTP(S) or SMTP: its own protocol over a raw socket (AMQP) |
 | `aprs` | Aprs | refused | not HTTP(S) or SMTP: its own protocol over a raw socket (APRS-IS) |
