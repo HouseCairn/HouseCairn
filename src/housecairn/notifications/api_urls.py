@@ -7,6 +7,7 @@ from housecairn.notifications import api
 
 router = SimpleRouter()
 router.register("me/notification-channels", api.ChannelViewSet, basename="notification-channel")
+router.register("me/push-devices", api.DeviceViewSet, basename="push-device")
 
 urlpatterns = [
     path(

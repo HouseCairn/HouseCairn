@@ -145,3 +145,59 @@ class Delivery(models.Model):
 
     def __str__(self) -> str:
         return f"{self.kind} {self.key}"
+
+
+MAX_DEVICES = 5
+
+
+class PushKey(models.Model):
+    """The VAPID key pair of the instance (docs/adr/0066): one row, made at first use.
+
+    The private key is sealed by `instance.crypto` like every stored secret, so it is not
+    readable from a backup without the secret key (docs/adr/0060). A new key pair makes
+    every device subscribed with the old public key unreachable: they are deleted with it.
+    """
+
+    id = models.PositiveSmallIntegerField(primary_key=True, default=1, editable=False)
+    private_key = models.TextField(editable=False)
+    public_key = models.CharField(max_length=100, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("push key of the instance")
+        verbose_name_plural = _("push keys of the instance")
+
+    def __str__(self) -> str:
+        return self.public_key[:12]
+
+
+class Device(BaseModel):
+    """A browser of a person that receives notifications by Web Push (docs/adr/0066).
+
+    The endpoint is the address of the push service for that browser: whoever has it can
+    push to the device, so it is sealed and never shown. The two keys of the browser are
+    sealed too; `endpoint_hash` finds the device again when the same browser subscribes.
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="push_devices"
+    )
+    name = models.CharField(_("name"), max_length=60)
+    endpoint = models.TextField(editable=False)
+    endpoint_hash = models.CharField(max_length=64, editable=False)
+    p256dh = models.TextField(editable=False)
+    auth = models.TextField(editable=False)
+    # Who carries the messages: the name of the push service, from the host of the endpoint.
+    service = models.CharField(max_length=40, editable=False)
+    last_sent_at = models.DateTimeField(null=True, blank=True, editable=False)
+
+    class Meta:
+        verbose_name = _("device")
+        verbose_name_plural = _("devices")
+        ordering = ["created_at", "id"]
+        constraints = [
+            models.UniqueConstraint(fields=["endpoint_hash"], name="one_device_per_endpoint")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.service})"

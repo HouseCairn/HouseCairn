@@ -38,6 +38,15 @@ Opening a channel lets you:
 
 The link at the top of a channel leads back to **Notifications**.
 
+## On this device
+
+Shown when the instance has [notifications on the device](../guides/notifications.md#on-this-device)
+on. The list shows the name of each device and the push service that carries its messages
+(Google, Mozilla, Apple or Microsoft). **Receive on this device** takes a name, then asks the
+browser for its permission, and only then. Opening a device lets you rename it, **Send a
+test notification** (sent by the background worker, five a minute), or **Stop notifications
+on this device**. The address of the device and its keys are kept encrypted and never shown.
+
 ## Reminders
 
 - **First reminder (days before)**: how many days before the due date the first reminder

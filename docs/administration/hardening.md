@@ -45,3 +45,14 @@ server call a private address, with the requests of one of the services above, a
 whether it answered: if your local network holds services that must not receive such
 calls, leave it off, and reach your ntfy or Gotify by a public address, or keep the
 server out of that network ([ADR 0059](../adr/0059-notifications-refuse-private-networks.md)).
+
+**Notifications on the device** (`HOUSECAIRN_WEBPUSH_ENABLED`, off by default) go through
+the push service of each browser, which the browser chooses: Google (Firebase Cloud
+Messaging, for Chrome, Edge, Brave, Opera, Samsung Internet), Mozilla (Firefox), Apple
+(Safari) or Microsoft. Some of them are outside the EU. Each message is encrypted for the
+device (RFC 8291): the push service sees the address of the device, when a message is sent
+and its size, not what it says. The server only posts to these four services, over HTTPS
+on port 443, to public addresses, and gives up after eight seconds. With **Discreet
+notifications on the device** (`HOUSECAIRN_WEBPUSH_DISCREET`, on by default) a notification
+says only that a task is due or a problem was reported, so nothing of a home shows on a
+locked screen ([ADR 0066](../adr/0066-notifications-on-the-device-by-web-push.md)).

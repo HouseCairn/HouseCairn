@@ -407,3 +407,78 @@ def fetch(
         raise RefusedError("redirects")
     finally:
         session.close()
+
+
+def post(
+    url: str,
+    *,
+    body: bytes,
+    headers: dict[str, str],
+    seconds: float,
+    allowed: Callable[[Address], bool] | None = None,
+) -> int:
+    """POST `body` to an HTTPS address on port 443; the status of the answer.
+
+    For the push services of browsers (docs/adr/0066): the same rules as `fetch` (every
+    address of the name must pass `allowed`, `is_public` by default; the connection goes
+    to an address that passed; `seconds` in all), and stricter ones: `https` only, port 443
+    only, no redirect (a 3xx is returned as a status, never followed). At most a few
+    kilobytes of the answer are read, then dropped.
+    """
+    rule: Callable[[Address], bool] = allowed or is_public
+    try:
+        parts = urlsplit(url)
+        scheme, hostname, port = parts.scheme.lower(), parts.hostname, parts.port
+    except ValueError:
+        raise RefusedError("scheme") from None
+    if scheme != "https" or not hostname:
+        raise RefusedError("scheme")
+    if parts.username is not None or parts.password is not None:
+        raise RefusedError("credentials")
+    if (port or 443) != 443:
+        raise RefusedError("port")
+    try:
+        host = hostname.encode("idna").decode("ascii")
+    except UnicodeError:
+        raise RefusedError("unresolved") from None
+    session = _Session(seconds)
+    try:
+        targets = _addresses(host, 443, rule)
+        path = (parts.path or "/") + (f"?{parts.query}" if parts.query else "")
+        last: RefusedError = RefusedError("connect")
+        for family, address in targets:
+            connection = _Pinned(session, host, 443, address, family, True)
+            try:
+                try:
+                    connection.request(
+                        "POST",
+                        path,
+                        body=body,
+                        headers={
+                            **headers,
+                            "Content-Length": str(len(body)),
+                            "User-Agent": "HouseCairn",
+                            "Connection": "close",
+                        },
+                    )
+                    response = connection.getresponse()
+                    try:
+                        response.read(8192)
+                    finally:
+                        response.close()
+                except ssl.SSLError:
+                    last = RefusedError("tls")
+                    continue
+                except (http.client.HTTPException, OSError, ValueError):
+                    if session.over():
+                        raise RefusedError("timeout") from None
+                    last = RefusedError("connect")
+                    continue
+                if session.over():
+                    raise RefusedError("timeout")
+                return int(response.status)
+            finally:
+                connection.close()
+        raise last
+    finally:
+        session.close()

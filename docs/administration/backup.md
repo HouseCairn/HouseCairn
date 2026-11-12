@@ -35,7 +35,9 @@ it off the machine, and remove old copies from `/data/backups/` yourself.
 ### The secret key
 
 The stored secrets (the SMTP password, the secrets of the sign-in providers added in the
-interface, the addresses of the notification channels) are encrypted in the database with
+interface, the addresses of the notification channels, the addresses and keys of the
+devices that receive notifications, the private push key of the instance) are encrypted in
+the database with
 a key derived from the secret key. An archive that held the key as well would give them
 all to whoever got a copy of it, so `backup_instance` leaves it out
 ([ADR 0060](../adr/0060-secret-key-apart-from-the-backups.md)). Keep the key apart:
@@ -48,6 +50,10 @@ all to whoever got a copy of it, so `backup_instance` leaves it out
 `--include-secret-key` puts `/data/secret_key` in the archive all the same, for a copy
 that must restore alone; it then gives the stored secrets to whoever has it. Without a
 key file (the key comes from `SECRET_KEY`), there is nothing to include.
+
+Restored without its key, an instance cannot read its push key either: it makes a new one
+at the first notification on a device and removes the devices, which people add again
+([ADR 0066](../adr/0066-notifications-on-the-device-by-web-push.md)).
 
 ### With PostgreSQL
 
