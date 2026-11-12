@@ -3,6 +3,8 @@
 import hashlib
 import re
 import secrets
+import smtplib
+import ssl
 import time
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
@@ -397,3 +399,81 @@ class TestOidcOpenSignUpDomains:
             HOUSECAIRN_OIDC_SIGNUP=signup, HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS=domains
         ):
             assert services.oidc_signup_decision(email, True).value == expected
+
+
+class TestMailServerFailure:
+    """A mail server that fails must not turn sign-up into a server error or half an account."""
+
+    FAILURES = [
+        pytest.param(ConnectionRefusedError(111, "Connection refused"), id="unreachable"),
+        pytest.param(TimeoutError("timed out"), id="timeout"),
+        pytest.param(ssl.SSLError("tls handshake failed"), id="tls"),
+        pytest.param(smtplib.SMTPAuthenticationError(535, b"5.7.8 refused"), id="credentials"),
+        pytest.param(smtplib.SMTPSenderRefused(550, b"refused", "a@example.com"), id="message"),
+    ]
+
+    @pytest.mark.parametrize("failure", FAILURES)
+    @pytest.mark.parametrize("verification", ["mandatory", "optional"])
+    def test_the_form_comes_back_and_nothing_is_created(
+        self, client: Client, failure: Exception, verification: str
+    ) -> None:
+        client.raise_request_exception = False
+        with (
+            override_settings(ACCOUNT_EMAIL_VERIFICATION=verification),
+            mock.patch(
+                "django.core.mail.backends.locmem.EmailBackend.send_messages",
+                side_effect=failure,
+            ),
+        ):
+            response = sign_up(client)
+        assert response.status_code == 200
+        assert "could not be sent" in response.text
+        assert not User.objects.exists()
+        assert not EmailAddress.objects.exists()
+        # The session holds no sign-in of the account that was undone.
+        assert "_auth_user_id" not in client.session
+        assert reverse("account_login") in client.get(reverse("homes:list")).headers["Location"]
+
+    def test_the_real_backend_with_a_server_that_refuses_the_connection(
+        self, client: Client
+    ) -> None:
+        client.raise_request_exception = False
+        with override_settings(
+            EMAIL_BACKEND="housecairn.instance.mail.EmailBackend",
+            EMAIL_HOST="127.0.0.1",
+            EMAIL_PORT=1,
+            EMAIL_USE_TLS=False,
+        ):
+            response = sign_up(client)
+        assert response.status_code == 200
+        assert "could not be sent" in response.text
+        assert not User.objects.exists()
+
+    def test_the_page_that_comes_back_carries_a_new_challenge_and_signing_up_works_again(
+        self, client: Client
+    ) -> None:
+        with mock.patch(
+            "django.core.mail.backends.locmem.EmailBackend.send_messages",
+            side_effect=smtplib.SMTPServerDisconnected("gone"),
+        ):
+            failed = sign_up(client)
+        assert failed.status_code == 200
+        assert challenge_of(failed.text)
+        # The administrator fixed the server: the same person signs up with the same address.
+        assert sign_up(client).status_code == 302
+        assert User.objects.filter(email="new@example.com").count() == 1
+        assert [m.to for m in mail.outbox] == [["new@example.com"]]
+
+    def test_the_failure_is_logged_without_the_detail(
+        self, client: Client, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        with (
+            caplog.at_level("WARNING", logger="housecairn.mail"),
+            mock.patch(
+                "django.core.mail.backends.locmem.EmailBackend.send_messages",
+                side_effect=smtplib.SMTPAuthenticationError(535, b"password=hunter2"),
+            ),
+        ):
+            sign_up(client)
+        assert "SMTPAuthenticationError" in caplog.text
+        assert "hunter2" not in caplog.text

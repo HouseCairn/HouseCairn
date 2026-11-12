@@ -1,6 +1,7 @@
 """allauth adapters: sign-up is closed unless the operator opens it (docs/adr/0007)."""
 
 import logging
+import smtplib
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
@@ -23,6 +24,16 @@ from housecairn.core.redirects import has_safe_shape
 from housecairn.instance.config import get_setting, instance_name
 
 logger = logging.getLogger("housecairn.security")
+mail_logger = logging.getLogger("housecairn.mail")
+
+
+class MailDeliveryError(Exception):
+    """The mail server did not take a message that allauth asked to send.
+
+    Raised in place of the transport's own errors (refused connection, timeout, TLS failure,
+    refused credentials, refused message), so that a view can answer the person instead of
+    failing with a server error. The detail stays out of the message: it is in `__cause__`.
+    """
 
 
 # Links that go out in an email and that allauth builds from the request.
@@ -50,7 +61,12 @@ class AccountAdapter(DefaultAccountAdapter):  # type: ignore[misc]
         for key in _EMAIL_LINKS:
             if isinstance(context.get(key), str):
                 context[key] = on_site(context[key])
-        super().send_mail(template_prefix, email, context)
+        try:
+            super().send_mail(template_prefix, email, context)
+        except (smtplib.SMTPException, OSError) as exc:
+            # The type only: a server's reply can quote the address or the credentials.
+            mail_logger.warning("Outgoing mail not delivered (%s)", type(exc).__name__)
+            raise MailDeliveryError(type(exc).__name__) from exc
 
     def render_mail(
         self,
