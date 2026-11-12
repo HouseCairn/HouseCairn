@@ -21,6 +21,7 @@ from django.urls import reverse
 
 from housecairn.accounts import antibot, services
 from housecairn.accounts.models import User
+from tests.test_mail_failure import recipients_refused, server_refusing
 
 pytestmark = pytest.mark.django_db
 
@@ -433,6 +434,30 @@ class TestMailServerFailure:
         # The session holds no sign-in of the account that was undone.
         assert "_auth_user_id" not in client.session
         assert reverse("account_login") in client.get(reverse("homes:list")).headers["Location"]
+
+    @pytest.mark.parametrize(
+        "refusal",
+        [
+            pytest.param(recipients_refused("new@example.com"), id="recipient-refused"),
+            pytest.param(smtplib.SMTPDataError(554, b"5.7.1 transaction failed"), id="data"),
+        ],
+    )
+    @pytest.mark.parametrize("verification", ["mandatory", "optional"])
+    def test_a_refusal_at_sendmail_under_the_real_backend(
+        self, client: Client, refusal: Exception, verification: str
+    ) -> None:
+        """The trace of production: the server takes the connection, then refuses the message."""
+        client.raise_request_exception = False
+        with (
+            override_settings(ACCOUNT_EMAIL_VERIFICATION=verification),
+            server_refusing(refusal) as sendmail,
+        ):
+            response = sign_up(client)
+        assert sendmail.called
+        assert response.status_code == 200
+        assert "could not be sent" in response.text
+        assert not User.objects.exists()
+        assert not EmailAddress.objects.exists()
 
     def test_the_real_backend_with_a_server_that_refuses_the_connection(
         self, client: Client
