@@ -69,14 +69,14 @@ msgstr "Ce que coûte une unité, dans la devise du logement ; facultatif, non n
 msgid "Rooms"
 msgstr "Pièces"
 
-msgid "The rooms where the item is used, besides those of the equipment it fits; only rooms of this home can be chosen."
-msgstr "Les pièces où l'article sert, en plus de celles de l'équipement auquel il convient ; seules les pièces de ce logement peuvent être choisies."
+msgid "The rooms where the item is used, besides those of the equipment it fits; only rooms of this home can be chosen. A search field: type to narrow the list, pick a room, and it becomes a chip you remove with its **Remove** button (or Backspace in the empty field). Without JavaScript, a list where you choose several rooms."
+msgstr "Les pièces où l'article sert, en plus de celles de l'équipement auquel il convient ; seules les pièces de ce logement peuvent être choisies. Un champ de recherche : saisissez pour réduire la liste, choisissez une pièce, et elle devient une puce que vous retirez avec son bouton **Retirer** (ou avec Retour arrière dans le champ vide). Sans JavaScript, une liste où l'on choisit plusieurs pièces."
 
 msgid "Compatible items"
 msgstr "Éléments compatibles"
 
-msgid "The equipment or surfaces of the home this fits; only items of this home can be chosen."
-msgstr "Les équipements ou surfaces du logement auxquels il convient ; seuls les éléments de ce logement peuvent être choisis."
+msgid "The equipment or surfaces of the home this fits; only items of this home can be chosen. The same search field, whose suggestions show each item with its room; without JavaScript, a list of the items grouped by room."
+msgstr "Les équipements ou surfaces du logement auxquels il convient ; seuls les éléments de ce logement peuvent être choisis. Le même champ de recherche, dont les suggestions montrent chaque élément avec sa pièce ; sans JavaScript, une liste des éléments groupés par pièce."
 
 msgid "Photo of the label"
 msgstr "Photo de l'étiquette"

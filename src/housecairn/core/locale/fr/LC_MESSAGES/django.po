@@ -411,6 +411,38 @@ msgstr "Aller au contenu"
 msgid "Breadcrumbs"
 msgstr "Fil d'Ariane"
 
+msgid "Type to search"
+msgstr "Saisissez pour rechercher"
+
+msgid "Selected"
+msgstr "Éléments choisis"
+
+#, python-brace-format
+msgid "Remove {name}"
+msgstr "Retirer {name}"
+
+#, python-brace-format
+msgid "{name} added"
+msgstr "{name} ajouté"
+
+#, python-brace-format
+msgid "{name} removed"
+msgstr "{name} retiré"
+
+msgid "No result"
+msgstr "Aucun résultat"
+
+msgid "1 result"
+msgstr "1 résultat"
+
+#, python-brace-format
+msgid "{count} results"
+msgstr "{count} résultats"
+
+#, python-brace-format
+msgid "{count} results, showing the first {shown}"
+msgstr "{count} résultats, les {shown} premiers sont affichés"
+
 #, python-format
 msgid "There is %(counter)s error:"
 msgid_plural "There are %(counter)s errors:"

@@ -7,6 +7,7 @@ from django.utils.dates import MONTHS
 from django.utils.translation import gettext_lazy as _
 
 from housecairn.core.forms import MoneyField
+from housecairn.core.widgets import ChipSelectMultiple
 from housecairn.projects.models import (
     ENVELOPE_YEARS,
     MAX_PROJECT_MINUTES,
@@ -30,7 +31,7 @@ class ProjectForm(forms.ModelForm[Project]):
         label=_("Rooms concerned"),
         queryset=Room.objects.none(),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
+        widget=ChipSelectMultiple,
     )
     season = forms.ChoiceField(
         label=_("Preferred season"),

@@ -17,7 +17,8 @@ where you write your own (bag, pallet). Quantities are then written with it: *1 
 *2 litres*.
 
 Choose the **compatible items** when the part is made for a given piece of
-equipment, such as the boiler a filter fits, and the **rooms** where it is used. The
+equipment, such as the boiler a filter fits, and the **rooms** where it is used: type in
+the field to narrow the list, pick one, and it becomes a chip you can remove. The
 links are shown on the page of the stock item, and the page of a room lists the stock
 items that concern it (listed on the room, compatible with one of its items, or its
 paint left over).
