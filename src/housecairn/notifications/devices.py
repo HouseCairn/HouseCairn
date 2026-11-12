@@ -314,8 +314,15 @@ def message_for(kind: str, title: str, body: str) -> tuple[str, str]:
 
 
 def send_all(devices: list[Device], *, kind: str, title: str, body: str, path: str) -> list[bool]:
-    shown_title, shown_body = message_for(kind, title, body)
-    return [send(d, title=shown_title, body=shown_body, path=path) for d in devices]
+    """Send to each device; a fixed sentence is worded in the language of the person of the
+    device (as the emails and the channels are), not in that of the worker. `title` and
+    `body` come already worded by the caller in the language of the person."""
+    results: list[bool] = []
+    for device in devices:
+        with translation.override(services.preferences_of(device.user).language):
+            shown_title, shown_body = message_for(kind, title, body)
+        results.append(send(device, title=shown_title, body=shown_body, path=path))
+    return results
 
 
 def reachable() -> dict[Any, list[Device]]:
