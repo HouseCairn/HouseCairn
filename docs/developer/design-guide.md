@@ -639,6 +639,17 @@ is checked against all of them at once.
   `tests/test_form_errors.py` posts an invalid form to each form of the templates (the table
   `TEMPLATE_CASES` names its case) and scans the templates form by form: a `<form>` added without
   the component, or without a case, fails it.
+- **Choosing several records of the home** (the equipment a part fits, the rooms of a project)
+  **must** be the search field with chips (`core.widgets.ChipSelectMultiple`,
+  [ADR 0063](../adr/0063-search-field-with-chips-for-multiple-choices.md)), never a list of boxes,
+  which grows with the home. The person types, a list of suggestions narrows, a choice becomes a
+  chip with a "Remove ..." button. The field posts the values of a `<select multiple>`, so the
+  form and the services do not change. The form page **must** load `static/js/chip-select.js`
+  (`{% block extra_head %}`); without script the select shows, its options grouped by
+  `group_by` when the records belong to something (the items, to their room). The component is a
+  combobox with a listbox popup (arrows, Enter, Escape, Backspace on the last chip), with
+  targets of 44 px at least. Boxes stay for a short, fixed list (the permissions of a token,
+  the options on or off) and for a list of rows to act on, which carry their own links.
 - **Adding to a list in place**: a form field that picks a record of the home the person
   may not have created yet (the contractor, the room, the item or the stock item of a task,
   the provider of the maintenance contract of an item) **must** be a list of the home's
@@ -820,6 +831,7 @@ holds. The review checks the same list.
 - [ ] One-tap actions stay in place with HTMX, with the undo banner, and work without
   JavaScript.
 - [ ] The screen shows the current home and only data of the person's homes.
+- [ ] A choice of several records of the home is the search field with chips, not boxes.
 - [ ] Amounts through the `money` filter; people by their display name; generic lists
   with "Other".
 - [ ] A secret is shown once, in the answer to its `POST`, with `Cache-Control: no-store`
