@@ -62,8 +62,11 @@ class TestHomeAndInstanceTabs:
         assert tab_labels(html) == [
             "Réglages du logement",
             "Foyer et rôles",
-            "Journal d'audit du logement",
+            "Journal",
         ]
+        # The tab is short to fit in 320 px; the title of the page stays whole.
+        page = fr(reverse("homes:audit", kwargs={"home_id": alice_home.id}), signed_in)
+        assert "<h1>Journal d'audit du logement</h1>" in page
         with translation.override("fr"):
             assert gettext("Instance audit log") == "Journal d'audit de l'instance"
 
