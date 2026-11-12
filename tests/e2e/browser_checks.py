@@ -49,7 +49,7 @@ import sys
 from itertools import pairwise
 from typing import Any
 
-from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
+from playwright.sync_api import Browser, BrowserContext, Locator, Page, sync_playwright
 
 EMAIL = "demo@example.com"
 PASSWORD = "correct-horse-battery-staple"  # throwaway account of the CI instance
@@ -728,12 +728,12 @@ BACKGROUND_TEXTS = {
 }
 
 
-def _fits(page: Page, selector: str, width: int, label: str) -> None:
+def _fits(page: Page, element: Locator, width: int, label: str) -> None:
     """The element is on screen, inside the width, with a readable text and no sideways scroll."""
-    box = _box(page, selector)
-    size = page.evaluate(
-        "(s) => parseFloat(getComputedStyle(document.querySelector(s)).fontSize)", selector
-    )
+    box = element.bounding_box()
+    check(box is not None, f"{label}: shown")
+    assert box is not None
+    size = element.evaluate("(e) => parseFloat(getComputedStyle(e).fontSize)")
     scroll = page.evaluate("document.documentElement.scrollWidth")
     say(f"{label}: box {box['x']:.0f}..{box['x'] + box['width']:.0f} px, text {size:.0f} px")
     check(box["x"] >= 0 and box["x"] + box["width"] <= width, f"{label}: inside the width")
@@ -765,25 +765,26 @@ def background_calls(browser: Browser, base: str) -> None:
                 page = context.new_page()
                 sign_in(page, base)
                 page.goto(f"{base}/projects/")
-                page.locator("main a.row[href*='/projects/']").first.click()
+                page.goto(f"{page.url}?view=ideas")
+                page.locator("main a.row-body[href*='/projects/']").first.click()
                 page.wait_for_selector("h1")
                 project = page.url
                 # A link being read, and one that could not be, seeded by the setup of the check.
                 running = page.locator("li.row", has_text=reading).first
                 check(running.count() == 1, f"{label}: a link is being read")
-                _fits(page, "li.row:has-text('" + reading + "')", width, f"{label}, being read")
+                _fits(page, running, width, f"{label}, being read")
                 broken = page.locator("li.row", has_text=unread).first
                 check(broken.count() == 1, f"{label}: a link could not be read")
-                _fits(page, "li.row:has-text('" + unread + "')", width, f"{label}, not read")
+                _fits(page, broken, width, f"{label}, not read")
                 # The test of the channel.
-                page.goto(f"{base}/notifications/")
+                page.goto(f"{base}/me/notifications/")
                 page.locator("main a.row", has_text="Phone").first.click()
-                page.wait_for_selector("#channel-test")
+                page.wait_for_selector("#channel-test", state="attached")
                 page.locator("form[action$='/test/'] button[type=submit]").click()
                 page.wait_for_selector("#channel-test p")
                 text = page.inner_text("#channel-test")
                 check(sending in text or failed in text, f"{label}: in progress or done: {text}")
-                _fits(page, "#channel-test", width, f"{label}, test")
+                _fits(page, page.locator("#channel-test"), width, f"{label}, test")
                 if script:
                     page.wait_for_function(
                         "(t) => document.querySelector('#channel-test').innerText.includes(t)",
@@ -798,7 +799,7 @@ def background_calls(browser: Browser, base: str) -> None:
                     page.wait_for_timeout(12000)
                     page.reload()
                     check(failed in page.inner_text("#channel-test"), f"{label}: reload shows it")
-                _fits(page, "#channel-test", width, f"{label}, test done")
+                _fits(page, page.locator("#channel-test"), width, f"{label}, test done")
                 page.goto(project)
                 context.close()
 
