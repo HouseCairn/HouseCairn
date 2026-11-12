@@ -18,8 +18,8 @@ from django.utils import timezone
 from housecairn.accounts.models import User
 from housecairn.homes.models import Home, Membership, Role
 from housecairn.instance import config
-from housecairn.notifications import outbound, reminders, services, tasks
-from housecairn.notifications.models import MAX_CHANNELS, Delivery, Preference
+from housecairn.notifications import outbound, reminders, services, tasks, webpush
+from housecairn.notifications.models import MAX_CHANNELS, MAX_DEVICES, Delivery, Preference
 from housecairn.tasks import services as task_services
 from housecairn.tasks.models import Occurrence, Task
 
@@ -348,7 +348,9 @@ class TestOnceOnly:
     def test_the_longest_run_fits_the_timeout_of_the_worker(self) -> None:
         assert reminders.RUN_SECONDS < 300
         assert reminders.LONGEST_RUN_SECONDS == (
-            reminders.RUN_SECONDS + MAX_CHANNELS * (outbound.SEND_SECONDS + 1)
+            reminders.RUN_SECONDS
+            + MAX_CHANNELS * (outbound.SEND_SECONDS + 1)
+            + MAX_DEVICES * (webpush.SEND_SECONDS + 1)
         )
         assert settings.Q_CLUSTER["timeout"] > reminders.LONGEST_RUN_SECONDS
 

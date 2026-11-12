@@ -95,6 +95,38 @@ Some services are not offered, each for a reason given in the
 public post (Mastodon, Bluesky, X...), and services that need a file on the server or that
 do not speak HTTP or SMTP.
 
+## On this device
+
+Reminders and problem reports can also appear on your phone or computer as notifications,
+with no other application: HouseCairn sends them through the push service of your browser
+(Web Push). An instance administrator turns this on with **Notifications on the device**
+(**Instance administration, Settings, Notifications**, or
+`HOUSECAIRN_WEBPUSH_ENABLED=true`), on top of notifications themselves.
+
+1. Open [Notifications](../screens/notifications.md) on the device, give it a name (*My
+   phone*) and select **Receive on this device**.
+2. The browser asks whether the site may show notifications: allow it. It asks only then,
+   never on its own.
+3. Open the device in the list and **Send a test notification**.
+
+On an iPhone or an iPad (iOS 16.4 or later), install the application first: in Safari,
+**Share**, then **Add to Home Screen**, then open it from the home screen. Android and
+computers need no installation.
+
+Who carries the message depends on the browser: Google for Chrome, Edge, Brave, Opera and
+Samsung Internet, Mozilla for Firefox, Apple for Safari, Microsoft for the former Edge.
+Some of these services are outside the EU. The message is encrypted for your device: the
+push service sees when a message is sent and its size, not what it says. A notification
+holds a title, a line of text and the screen it opens. When the instance asks for
+**discreet** notifications (the default), the line says only that a task is due, that tasks
+are due, or that a problem was reported: no title of a task and no name of a home, so
+nothing shows on a locked screen.
+
+To stop, open the device and select **Stop notifications on this device**. A device the
+browser no longer knows (notifications blocked, data cleared) is removed at the next
+message. Signing out does not stop them: on a shared computer, stop them first. Deleting
+your account removes your devices.
+
 ## Choose when
 
 A reminder says the title of the task, the home, the due date and a link: nothing else of

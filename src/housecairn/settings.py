@@ -525,6 +525,9 @@ HOUSECAIRN_EXPORT_KEEP_HOURS = 24
 HOUSECAIRN_NOTIFICATIONS_ENABLED: bool = _ENV.values["notifications_enabled"]
 HOUSECAIRN_NOTIFICATIONS_INTERVAL: int = _ENV.values["notifications_interval"]
 HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS: bool = _ENV.values["notifications_private_networks"]
+# Notifications on the device, by Web Push (docs/adr/0066).
+HOUSECAIRN_WEBPUSH_ENABLED: bool = _ENV.values["webpush_enabled"]
+HOUSECAIRN_WEBPUSH_DISCREET: bool = _ENV.values["webpush_discreet"]
 # Preview of the links of projects (docs/adr/0050).
 HOUSECAIRN_LINK_PREVIEW_ENABLED: bool = _ENV.values["link_preview_enabled"]
 

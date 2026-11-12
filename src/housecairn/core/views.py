@@ -217,6 +217,8 @@ def service_worker(request: HttpRequest) -> HttpResponse:
         "static": scope + STATIC_PATH,
         "header": offline.HEADER,
         "purge": offline.PURGE,
+        # Shown with a notification on the device (docs/adr/0066).
+        "icon": static("img/brand/icon-192.png"),
     }
     body = render_to_string(SERVICE_WORKER_TEMPLATE, {"config": json.dumps(config)})
     response = HttpResponse(body, content_type="text/javascript; charset=utf-8")

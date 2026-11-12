@@ -39,8 +39,16 @@ from housecairn.core import dates
 from housecairn.core.links import external_url
 from housecairn.homes.models import WRITE_ROLES, Membership
 from housecairn.instance.config import get_setting, instance_zone
-from housecairn.notifications import outbound, services
-from housecairn.notifications.models import MAX_CHANNELS, Channel, Delivery, Kind, Preference
+from housecairn.notifications import devices, outbound, services, webpush
+from housecairn.notifications.models import (
+    MAX_CHANNELS,
+    MAX_DEVICES,
+    Channel,
+    Delivery,
+    Device,
+    Kind,
+    Preference,
+)
 from housecairn.tasks.models import OPEN_STATUSES, Occurrence
 
 logger = logging.getLogger("housecairn.notifications")
@@ -51,9 +59,14 @@ KEEP_DELIVERIES_DAYS = 90
 DIGEST_LIMIT = 30
 # No new message after this many seconds of a run (see the docstring of the module).
 RUN_SECONDS = 120.0
-# The longest a run can last, then: the last message started, to every channel of a person,
-# with a second per send for the grace of Apprise and the closing of its connections.
-LONGEST_RUN_SECONDS = RUN_SECONDS + MAX_CHANNELS * (outbound.SEND_SECONDS + 1)
+# The longest a run can last, then: the last message started, to every channel and every
+# device of a person, with a second per send for the grace of Apprise and the closing of
+# its connections.
+LONGEST_RUN_SECONDS = (
+    RUN_SECONDS
+    + MAX_CHANNELS * (outbound.SEND_SECONDS + 1)
+    + MAX_DEVICES * (webpush.SEND_SECONDS + 1)
+)
 _clock = time.monotonic
 
 
@@ -143,6 +156,15 @@ def digest_message(rows: list[Occurrence], prefs: Preference) -> tuple[str, str]
         return _("HouseCairn: tasks to do"), "\n\n".join(lines)
 
 
+def _push_path(occurrence: Occurrence | None, user: User) -> str:
+    """The screen a notification on a device opens: the task, or Today for a summary."""
+    if occurrence is not None:
+        return reverse(
+            "tasks:detail", kwargs={"home_id": occurrence.home_id, "task_id": occurrence.task_id}
+        )
+    return reverse("index")
+
+
 def _deliver(
     user: User,
     kind: Kind,
@@ -150,8 +172,10 @@ def _deliver(
     message: tuple[str, str],
     channels: list[Channel],
     occurrence: Occurrence | None = None,
+    pushed: list[Device] | None = None,
 ) -> bool:
-    """Claim the message, then send it to each channel on. False if already claimed."""
+    """Claim the message, then send it to each channel on and each device. False if
+    already claimed."""
     try:
         with transaction.atomic():
             delivery = Delivery.objects.create(user=user, kind=kind, key=key, occurrence=occurrence)
@@ -159,6 +183,12 @@ def _deliver(
         return False
     title, body = message
     results = [outbound.send(c.url, title=title, body=body) for c in channels]
+    if pushed:
+        # The link is the screen to open, not a line of the text.
+        text = body if occurrence is None else body.rsplit("\n", 1)[0]
+        results += devices.send_all(
+            pushed, kind=str(kind), title=title, body=text, path=_push_path(occurrence, user)
+        )
     if any(results):
         Delivery.objects.filter(pk=delivery.pk).update(sent=True)
     return True
@@ -196,6 +226,9 @@ def dispatch(now: datetime.datetime | None = None) -> int:
     for channel in Channel.objects.filter(enabled=True).select_related("user"):
         if channel.user.is_active:
             channels[channel.user_id].append(channel)
+    pushed = devices.reachable()
+    for user_id in pushed:
+        channels[user_id]  # a device is a way to reach the person, as a channel is
     if not channels:
         return 0
     writers: dict[Any, set[Any]] = defaultdict(set)
@@ -251,7 +284,13 @@ def dispatch(now: datetime.datetime | None = None) -> int:
                 break
             message = reminder_message(occurrence, pref)
             claimed += _deliver(
-                users[user_id], Kind.REMINDER, key, message, channels[user_id], occurrence
+                users[user_id],
+                Kind.REMINDER,
+                key,
+                message,
+                channels[user_id],
+                occurrence,
+                pushed.get(user_id),
             )
     for user_id, found in digests.items():
         pref = prefs_of(user_id)
@@ -263,6 +302,11 @@ def dispatch(now: datetime.datetime | None = None) -> int:
         day = digest_day(pref, local)
         message = digest_message(found, pref)
         claimed += _deliver(
-            users[user_id], Kind.DIGEST, day.isoformat(), message, channels[user_id]
+            users[user_id],
+            Kind.DIGEST,
+            day.isoformat(),
+            message,
+            channels[user_id],
+            pushed=pushed.get(user_id),
         )
     return claimed

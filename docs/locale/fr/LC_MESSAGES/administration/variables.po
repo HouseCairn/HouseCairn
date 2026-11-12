@@ -300,6 +300,18 @@ msgstr "`HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS`"
 msgid "Let channels send to private network addresses, for a ntfy or a Gotify of the local network. Off, they are refused. Also in the interface. See [Hardening](hardening.md)."
 msgstr "Permet aux canaux d'envoyer à des adresses de réseau privé, pour un ntfy ou un Gotify du réseau local. Désactivé, elles sont refusées. Aussi dans l'interface. Voir [Durcissement](hardening.md)."
 
+msgid "`HOUSECAIRN_WEBPUSH_ENABLED`"
+msgstr "`HOUSECAIRN_WEBPUSH_ENABLED`"
+
+msgid "Notifications on the device, by Web Push through the push service of each browser (Google, Mozilla, Apple, Microsoft). Also in the interface. See [Notifications](../guides/notifications.md#on-this-device)."
+msgstr "Notifications sur l'appareil, par Web Push via le service push de chaque navigateur (Google, Mozilla, Apple, Microsoft). Aussi dans l'interface. Voir [Notifications](../guides/notifications.md#on-this-device)."
+
+msgid "`HOUSECAIRN_WEBPUSH_DISCREET`"
+msgstr "`HOUSECAIRN_WEBPUSH_DISCREET`"
+
+msgid "A notification on the device says only what kind of message it is, with a link: no title of a task, no name of a home. Also in the interface."
+msgstr "Une notification sur l'appareil dit seulement de quel message il s'agit, avec un lien : ni titre de tâche, ni nom de logement. Aussi dans l'interface."
+
 msgid "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
 msgstr "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
 

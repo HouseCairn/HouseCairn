@@ -181,3 +181,57 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(staticFile(request));
   }
 });
+
+/* Notifications on the device (docs/adr/0066). The server sends JSON, encrypted for this
+   browser: a title, a text and the path of the screen to open. The text is shown as text
+   (a notification has no markup); the path opens only under the scope of this worker,
+   anything else opens the start address. */
+
+// The address a notification opens: a path of this application, never another origin.
+function target(path) {
+  let text = typeof path === "string" ? path : "";
+  if (!text.startsWith("/")) {
+    return new URL(CONFIG.start, self.location.origin).href;
+  }
+  if (!text.startsWith(CONFIG.scope)) {
+    text = CONFIG.scope.replace(/\/$/, "") + text;
+  }
+  const url = new URL(text, self.location.origin);
+  if (url.origin !== self.location.origin || !url.pathname.startsWith(CONFIG.scope)) {
+    return new URL(CONFIG.start, self.location.origin).href;
+  }
+  return url.href;
+}
+
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (error) {
+    data = {};
+  }
+  const title = typeof data.title === "string" && data.title ? data.title : "HouseCairn";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: typeof data.body === "string" ? data.body : "",
+      icon: CONFIG.icon,
+      badge: CONFIG.icon,
+      data: { url: target(data.url) },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || target(CONFIG.start);
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+      for (const client of windows) {
+        if (client.url === url && "focus" in client) {
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(url);
+    }),
+  );
+});
