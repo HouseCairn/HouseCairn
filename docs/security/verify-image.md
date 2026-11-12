@@ -22,6 +22,12 @@ gh attestation verify oci://ghcr.io/housecairn/housecairn@sha256:<amd64 digest> 
   --repo HouseCairn/housecairn --predicate-type https://spdx.dev/Document/v2.3
 ```
 
+`compose.yaml` and the [Coolify](../administration/coolify.md) file pin a
+version by its digest: verify that digest
+(`oci://ghcr.io/housecairn/housecairn@sha256:<digest>`) rather than the tag,
+which the registry can point to another image. The provenance of a release
+names its tag (`refs/tags/vX.Y.Z`) and its commit.
+
 Write the repository as `HouseCairn/housecairn`, the exact name recorded in
 the signing certificate. A successful verification ends with
 `✓ Verification succeeded!`. The

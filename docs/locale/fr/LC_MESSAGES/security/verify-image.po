@@ -33,6 +33,9 @@ msgstr "**SBOM** (SPDX), sur l'image de chaque plateforme : chaque paquet qu'ell
 msgid "Verify them with the GitHub CLI before you deploy:"
 msgstr "Vérifiez-les avec la CLI GitHub avant de déployer :"
 
+msgid "`compose.yaml` and the [Coolify](../administration/coolify.md) file pin a version by its digest: verify that digest (`oci://ghcr.io/housecairn/housecairn@sha256:<digest>`) rather than the tag, which the registry can point to another image. The provenance of a release names its tag (`refs/tags/vX.Y.Z`) and its commit."
+msgstr "`compose.yaml` et le fichier pour [Coolify](../administration/coolify.md) épinglent une version par son condensat : vérifiez ce condensat (`oci://ghcr.io/housecairn/housecairn@sha256:<digest>`) plutôt que l'étiquette, que le registre peut faire pointer vers une autre image. La provenance d'une version publiée indique son étiquette (`refs/tags/vX.Y.Z`) et son commit."
+
 msgid "Write the repository as `HouseCairn/housecairn`, the exact name recorded in the signing certificate. A successful verification ends with `✓ Verification succeeded!`. The attestations are also stored in the registry next to the image."
 msgstr "Écrivez le dépôt sous la forme `HouseCairn/housecairn`, le nom exact inscrit dans le certificat de signature. Une vérification réussie se termine par `✓ Verification succeeded!`. Les attestations sont aussi stockées dans le registre, à côté de l'image."
 
