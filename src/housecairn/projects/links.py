@@ -110,6 +110,8 @@ def add_link(actor: AnyUser, project: Project, *, url: str, title: str = "") -> 
             "housecairn.projects.links.read_preview",
             str(link.pk),
             timeout=PREVIEW_TASK_SECONDS,
+            # A task stopped at its timeout is not given again: the deadline ends the reading.
+            ack_failure=True,
         )
         link.refresh_from_db()
     return link
@@ -161,12 +163,13 @@ def read_preview(link_id: str) -> None:
     redirect checked, size and time limited. The task runs outside any transaction; the
     link is read again before it is changed, since the person may have deleted it meanwhile.
     """
-    link = (
-        ProjectLink.objects.select_related("project")
-        .filter(pk=link_id, preview_state=PreviewState.RUNNING)
-        .first()
-    )
+    link = ProjectLink.objects.filter(pk=link_id, preview_state=PreviewState.RUNNING).first()
     if link is None:
+        return
+    # A task can come late: the worker gives it again after `retry` if it was stopped at its
+    # timeout (django-q2 does not acknowledge that failure unless asked). The deadline applies
+    # to the row as it is now, and a reading past it reads nothing.
+    if expire_preview(link).preview_state != PreviewState.RUNNING:
         return
     started = link.preview_started_at
     state = PreviewState.DONE

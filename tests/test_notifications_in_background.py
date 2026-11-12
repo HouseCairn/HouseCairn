@@ -108,6 +108,8 @@ class TestTheRequestDoesNotWait:
         assert args[1] == str(channel.pk)
         # The worker stops the task before the deadline after which the test counts as failed.
         assert kwargs["timeout"] == services.TEST_TASK_SECONDS < services.TEST_DEADLINE_SECONDS
+        # A task stopped at its timeout is not given again by django-q2 after its `retry`.
+        assert kwargs["ack_failure"] is True
 
     def test_the_api_answers_202_and_sends_nothing(
         self,
@@ -315,6 +317,28 @@ class TestAlwaysAnEnd:
         channel.refresh_from_db()
         assert channel.test_state == SendState.RUNNING
         assert len(queued) == 1  # the second test is still waiting for its worker
+
+    def test_a_task_given_again_after_the_deadline_sends_nothing_and_leaves_it_failed(
+        self, alice: User, channel: Channel, queued: Queued, delivered: list[tuple[str, str]]
+    ) -> None:
+        # django-q2 gives back a task stopped at its timeout once `retry` has passed.
+        services.start_test(alice, channel)
+        age(channel, services.TEST_DEADLINE_SECONDS + 400)  # nobody read the state meanwhile
+        run_worker(queued)
+        assert delivered == []
+        channel.refresh_from_db()
+        assert channel.test_state == SendState.FAILED
+        assert channel.test_finished_at is not None
+
+    def test_a_task_given_again_after_a_result_sends_nothing_more(
+        self, alice: User, channel: Channel, queued: Queued, delivered: list[tuple[str, str]]
+    ) -> None:
+        services.start_test(alice, channel)
+        [(args, _kwargs)] = queued
+        run_worker(queued)
+        assert len(delivered) == 1
+        tasks.send_test(*args[1:])
+        assert len(delivered) == 1
 
     def test_a_test_asked_again_after_a_lost_task_starts_again(
         self, alice: User, channel: Channel, queued: Queued

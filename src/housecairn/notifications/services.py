@@ -221,6 +221,8 @@ def start_test(actor: AnyUser, channel: Channel) -> Channel:
         str(channel.pk),
         preferences_of(user).language,
         timeout=TEST_TASK_SECONDS,
+        # A task stopped at its timeout is not given again: the deadline ends the test.
+        ack_failure=True,
     )
     channel.refresh_from_db()
     return channel
@@ -230,6 +232,10 @@ def send_test(channel_id: str, language: str) -> None:
     """Task of the worker: send the test message, then record how it ended."""
     channel = Channel.objects.filter(pk=channel_id, test_state=SendState.RUNNING).first()
     if channel is None:
+        return
+    # A task can come late: the worker gives it again after `retry` if it was stopped at its
+    # timeout. The deadline applies to the row as it is now, and a test past it sends nothing.
+    if expire_test(channel).test_state != SendState.RUNNING:
         return
     started = channel.test_started_at
     try:

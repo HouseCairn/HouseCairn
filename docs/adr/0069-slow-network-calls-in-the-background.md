@@ -29,13 +29,22 @@ the maintainer decided that both go to the background worker that already exists
 - **The state is in the row.** `ProjectLink.preview_state` (`""`, `running`, `done`,
   `failed`) and `Channel.test_state` (`""`, `running`, `sent`, `failed`, `private`) with the
   time they started; no new table. The task changes the row only where it is still the same
-  `running` (same start time): a task that comes late, or a second delivery of the same
-  task, finds nothing to do and reads or sends nothing.
+  `running` (same start time). A task that comes late, or is given again, applies the
+  deadline to the row as it is when it starts and leaves if the row is no longer `running`:
+  it reads or sends nothing. The same holds for a reading started on an instance whose
+  administrator has turned the preview off since: the row goes back to empty and the page
+  is not read.
 - **A task never stays "running".** The worker stops a task after 25 seconds
   (`timeout` of the task, under the 300 seconds of the cluster), and every read of a state
   (page, status fragment, API) first marks as `failed` a `running` that started more than 30
   seconds ago (`expire_preview`, `expire_test`), whatever became of the worker: stopped,
-  restarted, queue lost. An error in the task is `failed`, and logged without the address.
+  restarted, queue lost. django-q2 gives a task back after its `retry` delay when the worker
+  stopped it at its timeout (its `TimeoutException` is a `SystemExit`, and a failure is not
+  acknowledged by default): the tasks are queued with `ack_failure=True`, so that the
+  failure ends the task, and a task that comes anyway after the deadline does nothing, as
+  above. An error in the task is `failed`, and logged without the address. So is a page that
+  cannot be read (refused by the guard, unreachable, a network error, not a web page): the
+  row says `failed` and the screen says so, it does not end as `done`.
 - **The guard is the same code.** The task calls `projects.preview.read`
   (`core.netguard`: public addresses only, pinned address, every redirect checked, size and
   time limited) and `notifications.outbound.deliver` (the guard of ADR 0043 and 0059)

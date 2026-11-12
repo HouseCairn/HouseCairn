@@ -118,6 +118,8 @@ class TestTheRequestDoesNotWait:
         assert args == ("housecairn.projects.links.read_preview", str(link.pk))
         # The worker stops the task before the deadline after which the reading counts as failed.
         assert kwargs["timeout"] == links.PREVIEW_TASK_SECONDS < links.PREVIEW_DEADLINE_SECONDS
+        # A task stopped at its timeout is not given again by django-q2 after its `retry`.
+        assert kwargs["ack_failure"] is True
         assert "Reading the page…" in shown
         assert f'hx-get="{status_url(alice_home, link)}?n=1"' in shown
 
@@ -421,6 +423,33 @@ class TestAlwaysAnEnd:
         link.refresh_from_db()
         assert (link.title, link.image, link.preview_state) == ("", None, PreviewState.FAILED)
         assert site.requests == []  # a task that comes late reads nothing
+
+
+class TestATaskGivenAgainAfterTheDeadline:
+    """django-q2 gives back a task stopped at its timeout once `retry` has passed."""
+
+    def test_a_task_that_comes_after_the_deadline_reads_nothing_and_leaves_it_failed(
+        self, alice: User, living_room_project: Project, site: Server, queued: Queued
+    ) -> None:
+        link = links.add_link(alice, living_room_project, url=serve_page(site))
+        age(link, links.PREVIEW_DEADLINE_SECONDS + 400)  # nobody read the state meanwhile
+        site.requests.clear()
+        run_worker(queued)
+        link.refresh_from_db()
+        assert site.requests == []
+        assert (link.title, link.image, link.preview_state) == ("", None, PreviewState.FAILED)
+
+    def test_a_task_given_again_after_a_result_does_nothing(
+        self, alice: User, living_room_project: Project, site: Server, queued: Queued
+    ) -> None:
+        link = links.add_link(alice, living_room_project, url=serve_page(site))
+        [(args, _kwargs)] = queued
+        run_worker(queued)
+        site.requests.clear()
+        links.read_preview(*args[1:])
+        assert site.requests == []
+        link.refresh_from_db()
+        assert link.preview_state == PreviewState.DONE
 
 
 class TestALateResult:
