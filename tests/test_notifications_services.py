@@ -116,10 +116,32 @@ def _ids(service: Service) -> str:
     return service.example.split("://")[0]
 
 
-# Services whose host is the one typed in the address (email has its own test).
+# Services whose request goes to the host typed in the address, listed by hand (email has its
+# own test). A new service with a typed host is added here, never found by a filter.
 TYPED = [
-    s for s in SERVICES if _ids(s) != "mailtos" and EXPECTED[_ids(s)][1].endswith(".example.com")
-]
+    "matrixs", "mmosts", "rockets", "ntfys", "barks", "gotifys", "signals", "apprises",
+    "nclouds", "nctalks", "synologys", "humhubs", "smseagles", "evolutions", "onebots",
+    "gorushs", "parseps", "pjets", "lametrics", "embys", "jellyfins", "kodis", "enigma2s",
+    "goalerts", "zulip", "workflows", "fluxer", "notifico", "pushdeer", "betterstack",
+]  # fmt: skip
+# The form of the address that names the host, where the example names the provider.
+TYPED_FORMS = {
+    "fluxer": "fluxers://{host}/1234567890/webhook-token-0123456789",
+    "notifico": "notificos://{host}/1234/abcdef0123456789abcdef0123456789",
+    "pushdeer": "pushdeers://{host}/abcdef0123456789abcdef0123456789",
+    "betterstack": "betterstack://api-token-0123456789@{host}",
+}
+
+
+def _typed_service(name: str) -> Service:
+    return next(s for s in SERVICES if _ids(s) == name)
+
+
+def _typed_url(name: str, host: str) -> str:
+    """The address of the service with the host typed in it."""
+    if name in TYPED_FORMS:
+        return TYPED_FORMS[name].format(host=host)
+    return _typed_service(name).example.replace(EXPECTED[name][1], host)
 
 
 def _all_schemes() -> set[str]:
@@ -266,20 +288,28 @@ class TestEachService:
                 assert part.lower() not in output.lower()
 
 
-@pytest.mark.parametrize("service", TYPED, ids=_ids)
+@pytest.mark.parametrize("name", TYPED)
 class TestTypedHosts:
     """The guard of docs/adr/0059 holds for every service whose host is typed."""
 
-    def test_a_private_address_typed_as_is_is_refused(self, service: Service) -> None:
-        host = EXPECTED[_ids(service)][1]
-        url = service.example.replace(host, "100.64.20.30")
+    def test_the_request_goes_to_the_host_typed(
+        self, monkeypatch: pytest.MonkeyPatch, name: str
+    ) -> None:
+        url = _typed_url(name, "typed.example.org")
+        answer = _Answer(monkeypatch)
+        outbound.deliver(outbound.seal(url), title="Fixed", body="Body")
+        assert answer.calls
+        assert answer.calls[0][1] == "typed.example.org"
+
+    def test_a_private_address_typed_as_is_is_refused(self, name: str) -> None:
+        url = _typed_url(name, "100.64.20.30")
         with pytest.raises(outbound.RefusedError, match=r"^private$"):
             outbound.parse(url)
         with override_settings(HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS=True):
-            assert outbound.parse(url).scheme in service.schemes
+            assert outbound.parse(url).scheme in _typed_service(name).schemes
 
     def test_a_name_that_leads_to_a_private_address_is_not_called(
-        self, monkeypatch: pytest.MonkeyPatch, service: Service
+        self, monkeypatch: pytest.MonkeyPatch, name: str
     ) -> None:
         monkeypatch.setattr(
             outbound,
@@ -288,6 +318,35 @@ class TestTypedHosts:
         )
         connected: list[Any] = []
         monkeypatch.setattr(socket.socket, "connect", lambda self, a: connected.append(a))
-        sealed = outbound.seal(service.example)
+        sealed = outbound.seal(_typed_url(name, "typed.example.org"))
+        assert outbound.deliver(sealed, title="t", body="b") is outbound.Outcome.PRIVATE
+        assert connected == []
+
+
+class TestMailServerOption:
+    """`?smtp=` of an email address changes the server that is called: same guard."""
+
+    URL = "mailtos://user:password@mail.example.com/?to=you@example.com&smtp={host}"
+
+    def test_a_private_address_in_the_option_is_not_called(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        connected: list[Any] = []
+        monkeypatch.setattr(socket.socket, "connect", lambda self, a: connected.append(a))
+        sealed = outbound.seal(self.URL.format(host="100.64.20.30"))
+        assert outbound.deliver(sealed, title="t", body="b") is outbound.Outcome.PRIVATE
+        assert connected == []
+
+    def test_a_name_in_the_option_that_leads_to_a_private_address_is_not_called(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(
+            outbound,
+            "_resolve",
+            lambda *a, **k: [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("100.64.20.30", 587))],
+        )
+        connected: list[Any] = []
+        monkeypatch.setattr(socket.socket, "connect", lambda self, a: connected.append(a))
+        sealed = outbound.seal(self.URL.format(host="relay.example.org"))
         assert outbound.deliver(sealed, title="t", body="b") is outbound.Outcome.PRIVATE
         assert connected == []
