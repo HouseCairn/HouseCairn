@@ -3,7 +3,8 @@
 - Status: accepted
 - Date: 2026-11-08
 - Amended by: [0059](0059-notifications-refuse-private-networks.md) (private networks refused
-  unless an administrator allows them; `connect` checks its address)
+  unless an administrator allows them; `connect` checks its address), [0064](0064-every-apprise-service-with-a-fixed-format.md)
+  (every Apprise service with a fixed format, each one reviewed, replaces the list of schemes)
 
 ## Context
 

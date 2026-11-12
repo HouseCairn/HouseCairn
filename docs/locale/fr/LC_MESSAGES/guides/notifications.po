@@ -21,8 +21,8 @@ msgstr ""
 msgid "Notifications"
 msgstr "Notifications"
 
-msgid "HouseCairn reminds you of your tasks through the service you already read: ntfy, Telegram, Signal, Matrix, Gotify, email, Discord, Slack, Pushover, Mattermost, or an [Apprise](https://github.com/caronc/apprise) API server."
-msgstr "HouseCairn vous rappelle vos tâches par le service que vous lisez déjà : ntfy, Telegram, Signal, Matrix, Gotify, e-mail, Discord, Slack, Pushover, Mattermost, ou un serveur d'API [Apprise](https://github.com/caronc/apprise)."
+msgid "HouseCairn reminds you of your tasks through the service you already read, among more than a hundred that [Apprise](https://github.com/caronc/apprise) can reach: messaging (Telegram, Signal, Matrix, Microsoft Teams, Rocket.Chat, Zulip...), push notifications (ntfy, Gotify, Pushover, Pushbullet, Bark...), text messages (Free Mobile, SFR, Twilio...), email, and services you host yourself."
+msgstr "HouseCairn vous rappelle vos tâches par le service que vous lisez déjà, parmi plus d'une centaine qu'[Apprise](https://github.com/caronc/apprise) sait joindre : messageries (Telegram, Signal, Matrix, Microsoft Teams, Rocket.Chat, Zulip…), notifications push (ntfy, Gotify, Pushover, Pushbullet, Bark…), SMS (Free Mobile, SFR, Twilio…), e-mail, et services que vous hébergez vous-même."
 
 msgid "Before you start"
 msgstr "Avant de commencer"
@@ -93,6 +93,36 @@ msgstr "L'adresse est chiffrée, n'est plus jamais affichée ni exportée. Certa
 msgid "Addresses of a private network, such as a ntfy or a Gotify on your local network, are refused too, unless an instance administrator turns on **Channels on the local network** (**Instance administration, Settings, Notifications**; see [Hardening](../administration/hardening.md)). An address that gives the IP address of such a server is refused when you add the channel; a name that leads to one is refused when a message is sent, and **Send a test message** then says so."
 msgstr "Les adresses d'un réseau privé, comme un ntfy ou un Gotify de votre réseau local, sont refusées aussi, sauf si un administrateur de l'instance active **Canaux sur le réseau local** (**Administration de l'instance, Réglages, Notifications** ; voir [Durcissement](../administration/hardening.md)). Une adresse qui donne l'adresse IP d'un tel serveur est refusée à l'ajout du canal ; un nom qui mène à l'une d'elles est refusé à l'envoi d'un message, et **Envoyer un message de test** le dit alors."
 
+msgid "Services"
+msgstr "Services"
+
+msgid "The [Notifications](../screens/notifications.md) screen lists every service accepted, by family, with an example address and a link to its page in the Apprise documentation:"
+msgstr "L'écran [Notifications](../screens/notifications.md) liste chaque service accepté, par famille, avec un exemple d'adresse et un lien vers sa page dans la documentation d'Apprise :"
+
+msgid "**Messaging**: DingTalk, Discord, Feishu, Flock, Fluxer, Google Chat, GroupMe, Guilded, KOOK, Lark, LINE, Matrix, Mattermost, Microsoft Teams (through a Power Automate workflow), Notifico (IRC), QQ, Revolt, Rocket.Chat, Ryver, Slack, Stackfield, Telegram, Threema Gateway, Twist, Viber, Webex, WeChat Work, WeCom bot, WhatsApp Business, Zalo, Zoho Cliq, Zoom Team Chat, Zulip."
+msgstr "**Messageries** : DingTalk, Discord, Feishu, Flock, Fluxer, Google Chat, GroupMe, Guilded, KOOK, Lark, LINE, Matrix, Mattermost, Microsoft Teams (par un flux Power Automate), Notifico (IRC), QQ, Revolt, Rocket.Chat, Ryver, Slack, Stackfield, Telegram, Threema Gateway, Twist, Viber, Webex, WeChat Work, robot WeCom, WhatsApp Business, Zalo, Zoho Cliq, Zoom Team Chat, Zulip."
+
+msgid "**Push notifications**: Bark, Chanify, Dot., IFTTT, Join, Kumulos, Lauther, LFG Alarm, Notifiarr, ntfy, OneSignal, Pingram, Prowl, Pushbullet, PushDeer, Pushed, PushMe, Pushover, PushPlus, Pushsafer, PushWard, Pushy, ServerChan, Signalgrid, Simplepush, Spug Push, Streamlabs, Techulus Push, Trigv, WPush, WxPusher, YouLMK."
+msgstr "**Notifications push** : Bark, Chanify, Dot., IFTTT, Join, Kumulos, Lauther, LFG Alarm, Notifiarr, ntfy, OneSignal, Pingram, Prowl, Pushbullet, PushDeer, Pushed, PushMe, Pushover, PushPlus, Pushsafer, PushWard, Pushy, ServerChan, Signalgrid, Simplepush, Spug Push, Streamlabs, Techulus Push, Trigv, WPush, WxPusher, YouLMK."
+
+msgid "**Text messages (SMS)**: 46elks, 800.com, Africa's Talking, Amazon SNS, BulkSMS, BulkVS, Burst SMS, Clickatell, ClickSend, D7 Networks, DAPNET, Exotel, Free Mobile, httpSMS, Kavenegar, MessageBird, Mobile Message, MSG91, Notifyre, Octopush, Plivo, RingCentral, SerwerSMS, seven, SFR, Sinch, SMS Manager, SMSC, Telnyx, Twilio, VoIP.ms, Vonage."
+msgstr "**SMS** : 46elks, 800.com, Africa's Talking, Amazon SNS, BulkSMS, BulkVS, Burst SMS, Clickatell, ClickSend, D7 Networks, DAPNET, Exotel, Free Mobile, httpSMS, Kavenegar, MessageBird, Mobile Message, MSG91, Notifyre, Octopush, Plivo, RingCentral, SerwerSMS, seven, SFR, Sinch, SMS Manager, SMSC, Telnyx, Twilio, VoIP.ms, Vonage."
+
+msgid "**Email**: your own mail server (SMTP), Amazon SES, Brevo, MailerSend, Mailgun, Microsoft 365, Postmark, Resend, SendGrid, SendPulse, SMTP2GO, SparkPost."
+msgstr "**E-mail** : votre propre serveur de messagerie (SMTP), Amazon SES, Brevo, MailerSend, Mailgun, Microsoft 365, Postmark, Resend, SendGrid, SendPulse, SMTP2GO, SparkPost."
+
+msgid "**Self-hosted**: Apprise API, Emby, Enigma2, Evolution API, Gorush, Gotify, HumHub, Jellyfin, Kodi, LaMetric Time, Nextcloud, Nextcloud Talk, OneBot, Parse Platform, Pushjet, Signal (signal-cli REST API), SMSEagle, Synology Chat."
+msgstr "**Auto-hébergés** : Apprise API, Emby, Enigma2, Evolution API, Gorush, Gotify, HumHub, Jellyfin, Kodi, LaMetric Time, Nextcloud, Nextcloud Talk, OneBot, Parse Platform, Pushjet, Signal (API REST de signal-cli), SMSEagle, Synology Chat."
+
+msgid "**On-call and alerting**: Better Stack, GoAlert, ilert, incident.io, PagerDuty, PagerTree, SIGNL4, Spike.sh, Splunk On-Call, Squadcast."
+msgstr "**Astreinte et alertes** : Better Stack, GoAlert, ilert, incident.io, PagerDuty, PagerTree, SIGNL4, Spike.sh, Splunk On-Call, Squadcast."
+
+msgid "**Where your reminders go.** A self-hosted service, or one whose address names its server (ntfy, Matrix, Mattermost...), sends to that server. Amazon SNS and SES, Mailgun, SparkPost and PagerDuty send to the region that the address chooses. Stackfield, Pushsafer, Free Mobile, SFR, Octopush, seven, 46elks, SerwerSMS, SMS Manager, DAPNET, Brevo and ilert are providers in the European Union. Every other service sends your reminders to its provider, outside the European Union or without saying where. The screen says the same for each service."
+msgstr "**Où vont vos rappels.** Un service auto-hébergé, ou dont l'adresse nomme le serveur (ntfy, Matrix, Mattermost…), envoie à ce serveur. Amazon SNS et SES, Mailgun, SparkPost et PagerDuty envoient dans la région que choisit l'adresse. Stackfield, Pushsafer, Free Mobile, SFR, Octopush, seven, 46elks, SerwerSMS, SMS Manager, DAPNET, Brevo et ilert sont des fournisseurs de l'Union européenne. Tout autre service envoie vos rappels à son fournisseur, hors de l'Union européenne ou sans dire où. L'écran le dit aussi pour chaque service."
+
+msgid "Some services are not offered, each for a reason given in the [decision record](../adr/0064-every-apprise-service-with-a-fixed-format.md): Home Assistant (it would need a Home Assistant token), generic webhooks, social networks that publish a public post (Mastodon, Bluesky, X...), and services that need a file on the server or that do not speak HTTP or SMTP."
+msgstr "Certains services ne sont pas proposés, chacun pour une raison donnée dans l'[enregistrement de décision](../adr/0064-every-apprise-service-with-a-fixed-format.md) : Home Assistant (il demanderait un jeton Home Assistant), les webhooks génériques, les réseaux sociaux qui publient un message public (Mastodon, Bluesky, X…), et les services qui demandent un fichier sur le serveur ou qui ne parlent ni HTTP ni SMTP."
+
 msgid "Choose when"
 msgstr "Choisir quand"
 
@@ -113,7 +143,4 @@ msgstr "**Résumé quotidien** : un seul message par jour avec toutes les tâche
 
 msgid "Each reminder is sent once, even if the worker runs twice at the same time. When a service fails, the reminder is not sent again; the next follow-up is."
 msgstr "Chaque rappel n'est envoyé qu'une fois, même si la tâche de fond tourne deux fois en même temps. Quand un service échoue, le rappel n'est pas renvoyé ; la relance suivante l'est."
-
-#~ msgid "`signals://signal.example.com/from-number/to-number`"
-#~ msgstr "`signals://signal.example.com/numero-emetteur/numero-destinataire`"
 

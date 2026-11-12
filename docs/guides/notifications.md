@@ -1,8 +1,10 @@
 # Notifications
 
-HouseCairn reminds you of your tasks through the service you already read: ntfy, Telegram,
-Signal, Matrix, Gotify, email, Discord, Slack, Pushover, Mattermost, or an
-[Apprise](https://github.com/caronc/apprise) API server.
+HouseCairn reminds you of your tasks through the service you already read, among more than a
+hundred that [Apprise](https://github.com/caronc/apprise) can reach: messaging (Telegram,
+Signal, Matrix, Microsoft Teams, Rocket.Chat, Zulip...), push notifications (ntfy, Gotify,
+Pushover, Pushbullet, Bark...), text messages (Free Mobile, SFR, Twilio...), email, and
+services you host yourself.
 
 ## Before you start
 
@@ -50,6 +52,46 @@ refused too, unless an instance administrator turns on **Channels on the local n
 [Hardening](../administration/hardening.md)). An address that gives the IP address of such
 a server is refused when you add the channel; a name that leads to one is refused when a
 message is sent, and **Send a test message** then says so.
+
+## Services
+
+The [Notifications](../screens/notifications.md) screen lists every service accepted, by
+family, with an example address and a link to its page in the Apprise documentation:
+
+- **Messaging**: DingTalk, Discord, Feishu, Flock, Fluxer, Google Chat, GroupMe, Guilded,
+  KOOK, Lark, LINE, Matrix, Mattermost, Microsoft Teams (through a Power Automate
+  workflow), Notifico (IRC), QQ, Revolt, Rocket.Chat, Ryver, Slack, Stackfield, Telegram,
+  Threema Gateway, Twist, Viber, Webex, WeChat Work, WeCom bot, WhatsApp Business, Zalo,
+  Zoho Cliq, Zoom Team Chat, Zulip.
+- **Push notifications**: Bark, Chanify, Dot., IFTTT, Join, Kumulos, Lauther, LFG Alarm,
+  Notifiarr, ntfy, OneSignal, Pingram, Prowl, Pushbullet, PushDeer, Pushed, PushMe,
+  Pushover, PushPlus, Pushsafer, PushWard, Pushy, ServerChan, Signalgrid, Simplepush, Spug
+  Push, Streamlabs, Techulus Push, Trigv, WPush, WxPusher, YouLMK.
+- **Text messages (SMS)**: 46elks, 800.com, Africa's Talking, Amazon SNS, BulkSMS, BulkVS,
+  Burst SMS, Clickatell, ClickSend, D7 Networks, DAPNET, Exotel, Free Mobile, httpSMS,
+  Kavenegar, MessageBird, Mobile Message, MSG91, Notifyre, Octopush, Plivo, RingCentral,
+  SerwerSMS, seven, SFR, Sinch, SMS Manager, SMSC, Telnyx, Twilio, VoIP.ms, Vonage.
+- **Email**: your own mail server (SMTP), Amazon SES, Brevo, MailerSend, Mailgun,
+  Microsoft 365, Postmark, Resend, SendGrid, SendPulse, SMTP2GO, SparkPost.
+- **Self-hosted**: Apprise API, Emby, Enigma2, Evolution API, Gorush, Gotify, HumHub,
+  Jellyfin, Kodi, LaMetric Time, Nextcloud, Nextcloud Talk, OneBot, Parse Platform,
+  Pushjet, Signal (signal-cli REST API), SMSEagle, Synology Chat.
+- **On-call and alerting**: Better Stack, GoAlert, ilert, incident.io, PagerDuty,
+  PagerTree, SIGNL4, Spike.sh, Splunk On-Call, Squadcast.
+
+**Where your reminders go.** A self-hosted service, or one whose address names its server
+(ntfy, Matrix, Mattermost...), sends to that server. Amazon SNS and SES, Mailgun, SparkPost
+and PagerDuty send to the region that the address chooses. Stackfield, Pushsafer, Free
+Mobile, SFR, Octopush, seven, 46elks, SerwerSMS, SMS Manager, DAPNET, Brevo and ilert are
+providers in the European Union. Every other service sends your reminders to its provider,
+outside the European Union or without saying where. The screen says the same for each
+service.
+
+Some services are not offered, each for a reason given in the
+[decision record](../adr/0064-every-apprise-service-with-a-fixed-format.md): Home Assistant
+(it would need a Home Assistant token), generic webhooks, social networks that publish a
+public post (Mastodon, Bluesky, X...), and services that need a file on the server or that
+do not speak HTTP or SMTP.
 
 ## Choose when
 

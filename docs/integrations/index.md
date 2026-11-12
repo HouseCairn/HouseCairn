@@ -11,4 +11,9 @@ rather than HouseCairn holding its token.
   installed with HACS, shows the tasks of a home as sensors and a to-do list and
   marks a task done. It uses a HouseCairn API token; HouseCairn never holds a
   Home Assistant token.
+- **Notifications**: reminders go to the services people already read, through
+  [Apprise](https://github.com/caronc/apprise): more than a hundred services, each one
+  reviewed, from Telegram, Signal and Matrix to ntfy, SMS gateways and email (see
+  [Notifications](../guides/notifications.md)). Home Assistant is not one of them: it would
+  need a Home Assistant token.
 - **Paperless-ngx** (documents) and **Sure** (actual spending): planned.

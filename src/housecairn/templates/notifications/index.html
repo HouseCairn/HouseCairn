@@ -32,6 +32,18 @@
       {{ add_form.as_p }}
       <button type="submit" class="button-block">{% translate "Add the channel" %}</button>
     </form>
+    <h3>{% translate "Services" %}</h3>
+    <p class="small">{% translate "The address starts with the scheme of its service. Here is an example for each service, where its messages go, and a link to its page in the Apprise documentation, which lists its options." %}</p>
+    {% for family, label, services in families %}
+      <details class="card">
+        <summary>{{ label }} ({{ services|length }})</summary>
+        <ul>
+          {% for service in services %}
+            <li><a href="{{ service.link }}" rel="noopener noreferrer nofollow">{{ service.name }}</a> · <span class="small">{{ service.where_label }}</span><br><code>{{ service.example }}</code></li>
+          {% endfor %}
+        </ul>
+      </details>
+    {% endfor %}
   {% endif %}
   <h2>{% translate "Reminders" %}</h2>
   <form method="post" action="{% url 'notifications:preferences' %}" class="card" novalidate>

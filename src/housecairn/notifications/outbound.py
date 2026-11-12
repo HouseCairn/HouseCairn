@@ -1,10 +1,11 @@
-"""Sending through Apprise, kept narrow (docs/adr/0043, 0059).
+"""Sending through Apprise, kept narrow (docs/adr/0043, 0059, 0064).
 
 A channel makes the server call an address that a person typed. Apprise has no hook for
 that: each plugin opens its own connections. So:
 
-- only the schemes of `ALLOWED_SCHEMES` are accepted: services reached over HTTP(S) or
-  SMTP whose plugin fixes the method, the path and the format of each request; nothing
+- only the schemes of `ALLOWED_SCHEMES` are accepted (`catalog`, docs/adr/0064): services
+  reached over HTTP(S) or SMTP whose plugin fixes the method and the format of each
+  request, and the path or its end (a typed prefix at most); nothing
   that runs a program, reads a local file or opens a raw socket, and no generic webhook
   (`json`, `xml`, `form`), whose URL chooses the method, the headers and the fields;
 - a URL whose options make Apprise read a file (a template, a PGP key) is refused, and so
@@ -49,18 +50,14 @@ from housecairn.core.netguard import METADATA_ADDRESSES, forbidden_address, is_p
 from housecairn.core.netguard import embedded_ipv4 as _embedded_ipv4
 from housecairn.instance import crypto
 from housecairn.instance.config import get_setting
+from housecairn.notifications import catalog
 
 logger = logging.getLogger("housecairn.notifications")
 
-# Services reached over HTTP(S) or SMTP, each in its plain and its TLS form, whose plugin
-# fixes the method, the path and the format of every request (docs/adr/0043 lists them).
-ALLOWED_SCHEMES = frozenset(
-    {
-        "ntfy", "ntfys", "gotify", "gotifys", "tgram", "signal", "signals", "matrix",
-        "matrixs", "mailto", "mailtos", "discord", "slack", "pover", "apprise", "apprises",
-        "mmost", "mmosts",
-    }
-)  # fmt: skip
+# Services reached over HTTP(S) or SMTP whose plugin fixes the method and the format of
+# every request, and lets no option choose the method, the path, the headers or the fields
+# (docs/adr/0064 reviews every plugin; `catalog` lists the ones accepted).
+ALLOWED_SCHEMES = catalog.ALLOWED_SCHEMES
 # Query options that Apprise turns into extra headers (+), removed fields (-) or added
 # fields (:) of the request.
 EXTRA_PREFIXES = ("qsd+", "qsd-", "qsd:")
@@ -321,10 +318,12 @@ def _plugin(url: str, *, private_networks: bool = False) -> Any:
     plugin = apprise.Apprise.instantiate(url, asset=_asset())
     if plugin is None:
         raise RefusedError("invalid")
+    # The schemes of the class: an instance may use the same names for something else (the
+    # Kodi plugin keeps the version of its protocol in `protocol`).
     protocols = {
         p.lower()
         for attr in ("protocol", "secure_protocol")
-        for p in _as_tuple(getattr(plugin, attr, None))
+        for p in _as_tuple(getattr(type(plugin), attr, None))
     }
     if scheme not in protocols:
         raise RefusedError("scheme")
@@ -356,7 +355,9 @@ def _plugin(url: str, *, private_networks: bool = False) -> Any:
 def _as_tuple(value: Any) -> tuple[str, ...]:
     if isinstance(value, str):
         return (value,)
-    return tuple(v for v in value or () if isinstance(v, str))
+    if not isinstance(value, (tuple, list, set, frozenset)):
+        return ()
+    return tuple(v for v in value if isinstance(v, str))
 
 
 def parse(url: Any) -> Parsed:
