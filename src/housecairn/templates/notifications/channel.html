@@ -15,6 +15,7 @@
     {% csrf_token %}
     <button type="submit" class="button-secondary button-block">{% translate "Send a test message" %}</button>
   </form>
+  {% include "notifications/_test_status.html" %}
   <form method="post" action="{% url 'notifications:delete' channel_id=channel.id %}">
     {% csrf_token %}
     <button type="submit" class="button-danger button-block">{% translate "Delete the channel" %}</button>

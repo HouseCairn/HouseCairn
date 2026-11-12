@@ -24,8 +24,11 @@ One [project](projects.md), at `/h/<home id>/projects/<project id>/`.
   **Edit the quote** open the [quote form](quote-form.md).
 - **Inspiration** lists the links added to the project, each with the title and the picture
   of the page when the instance reads previews (the picture is a copy kept by HouseCairn,
-  never the remote one). **Add the link** takes an address and an optional title and
-  reads the page once; if it cannot be read, the link keeps its address. **Delete** removes
+  never the remote one). **Add the link** takes an address and an optional title, saves the link at
+  once and has the page read once in the background: the row says "Reading the page…" and,
+  in a few seconds, shows the title and the picture (reload the page if it does not change
+  by itself, as it does not without JavaScript). If the page cannot be read, or has not
+  been read after 30 seconds, the link keeps its address and says so. **Delete** removes
   the link and its picture.
 - **Photos** are pictures of the project, as the photos of a room: HouseCairn keeps the
   picture and nothing else, the location and every other piece of information hidden in the

@@ -57,10 +57,12 @@ is in [Entering an amount](amounts.md).
 **Add the link** of a page that gave you an idea (a bathroom, a paint colour) on the page of the
 project. Say a title if you wish. If the administrator of the instance turned on the preview
 (*Preview of inspiration links* in the [settings](../administration/settings.md); off by
-default), HouseCairn reads the page once, when you add the link, to find its title and its
-picture, and keeps the picture on its own server: the page of the project never loads
-anything from the other site. If the page cannot be read, for any reason, the link stays as
-you typed it and nothing is said: this is not an error. Only the address of a public web
+default), HouseCairn reads the page once, in the background, just after you add the link, to find
+its title and its picture, and keeps the picture on its own server: the page of the project
+never loads anything from the other site. The link appears at once with its address and
+"Reading the page…"; the title (unless you gave one) and the picture show up a few seconds
+later, by themselves or when you reload the page. If the page cannot be read, for any
+reason, the link stays as you typed it and says so: this is not an error. Only the address of a public web
 page is read; the server never calls a private network. A link is never read again: delete
 it and add it again to refresh the preview. At most 30 links per project. While the preview
 is on, each addition reads a page, so it is limited ([Rate limits](../administration/rate-limits.md)):

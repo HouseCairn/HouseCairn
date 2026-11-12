@@ -169,14 +169,8 @@
   {% if inspiration_links %}
     <ul class="card-list">
       {% for link in inspiration_links %}
-        <li class="row">
-          {% if link.image %}<img class="row-thumb" src="{% url 'projects:file-thumbnail' home_id=home.id file_id=link.image_id %}" alt="" loading="lazy" decoding="async" width="64" height="64">{% endif %}
-          <a class="row-body" href="{{ link.url }}" rel="noopener noreferrer nofollow" target="_blank">
-            <span class="row-title">{{ link.title|default:link.url }}</span>
-            {% if link.title %}<span class="row-text">{{ link.url }}</span>{% endif %}
-          </a>
-          {% if can_write %}<a class="small" href="{% url_with_next 'projects:link-delete' home_id=home.id link_id=link.id %}">{% translate "Delete" %}<span class="visually-hidden"> {{ link.title|default:link.url }}</span></a>{% endif %}
-        </li>
+        {% url_with_next 'projects:link-delete' home_id=home.id link_id=link.id as delete_url %}
+        {% include "projects/_link_row.html" with polls=0 %}
       {% endfor %}
     </ul>
   {% else %}
@@ -188,7 +182,7 @@
       {% next_field %}
       {% include "components/form_errors.html" with form=link_form only %}
       {{ link_form.as_p }}
-      <p class="small">{% if preview_enabled %}{% translate "HouseCairn reads the page once, now, to find its title and its picture. The picture is kept on this server. If the page cannot be read, the link stays as you typed it." %}{% else %}{% translate "The link is kept as you typed it: this instance does not read the pages." %}{% endif %}</p>
+      <p class="small">{% if preview_enabled %}{% translate "HouseCairn reads the page once, in the background, to find its title and its picture. They appear on the link in a few seconds. The picture is kept on this server. If the page cannot be read, the link stays as you typed it." %}{% else %}{% translate "The link is kept as you typed it: this instance does not read the pages." %}{% endif %}</p>
       <button type="submit" class="button-secondary button-block">{% translate "Add the link" %}</button>
     </form>
   {% endif %}

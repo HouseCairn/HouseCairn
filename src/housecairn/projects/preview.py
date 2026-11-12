@@ -5,9 +5,10 @@ The address is one a person typed, so the server reads it under the guard of
 limit, nothing left open. The HTML is parsed, never run, and no resource it names is loaded
 except the one picture it designates as its own (`og:image`), fetched under the same guard.
 
-A page that cannot be read gives no preview and no error: the link stays an address. The
-reason goes to the log as a short code; the address does not (a link of inspiration says
-what a household is planning).
+A page that cannot be read gives no preview and no exception: the link stays an address, and
+the `Preview` returned says it failed (`failed`), so that the person is told. The reason goes
+to the log as a short code; the address does not (a link of inspiration says what a
+household is planning).
 """
 
 import logging
@@ -123,19 +124,25 @@ def parse(body: bytes, charset: str | None, base_url: str) -> PageInfo:
 
 @dataclass(frozen=True)
 class Preview:
+    """What a page gave. `failed`: the page itself could not be read (refused by the guard,
+    network error, not HTML); a page that gave no title is read, not failed. A picture that
+    cannot be fetched leaves the page read."""
+
     title: str = ""
     image: bytes | None = None
+    failed: bool = False
 
 
 def read(url: str) -> Preview:
     """The preview of a page: its title and the bytes of its picture, if any.
 
-    Everything fails soft. The whole of it, page and picture, shares one time limit.
+    Nothing raises: a page that cannot be read comes back as `Preview(failed=True)`. The
+    whole of it, page and picture, shares one time limit.
     """
     started = time.monotonic()
     page = _fetch_page(url)
     if page is None:
-        return Preview()
+        return Preview(failed=True)
     info = parse(page.body, page.charset, page.url)
     left = PREVIEW_SECONDS - (time.monotonic() - started)
     image = None

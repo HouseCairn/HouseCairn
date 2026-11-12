@@ -1,0 +1,8 @@
+{% load i18n dates %}{# The last test message of a channel (docs/adr/0070). While it runs, with script the fragment asks for itself again every two seconds, a few times at most; without script, or once those are used up, reloading the page shows the result. #}
+<div id="channel-test" class="small" role="status"{% if test_polling %} hx-get="{% url 'notifications:test-status' channel_id=channel.id %}?n={{ test_next }}" hx-trigger="load delay:2s" hx-swap="outerHTML"{% endif %}>
+  {% if test_state == "running" %}
+    <p>{{ test_text }} {% if test_polling %}{% translate "The result appears here in a few seconds." %}{% else %}{% translate "Reload this page in a moment to see the result." %}{% endif %}</p>
+  {% elif test_state %}
+    <p>{{ test_text }}{% if channel.test_finished_at %} ({{ channel.test_finished_at|moment }}){% endif %}</p>
+  {% endif %}
+</div>
