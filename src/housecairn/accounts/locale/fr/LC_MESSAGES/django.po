@@ -72,6 +72,9 @@ msgstr "Ce champ est obligatoire."
 msgid "The two passwords differ."
 msgstr "Les deux mots de passe diffèrent."
 
+msgid "The email could not be sent. Try again later, or ask the administrator to check the outgoing mail settings."
+msgstr "L'e-mail n'a pas pu être envoyé. Réessayez plus tard, ou demandez à l'administrateur de vérifier les réglages du courrier sortant."
+
 msgid "sign-in provider"
 msgstr "fournisseur de connexion"
 

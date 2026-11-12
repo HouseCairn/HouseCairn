@@ -6,6 +6,7 @@ from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.core import ratelimit
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.socialaccount.models import SocialLogin
@@ -67,6 +68,40 @@ class AccountAdapter(DefaultAccountAdapter):  # type: ignore[misc]
             # The type only: a server's reply can quote the address or the credentials.
             mail_logger.warning("Outgoing mail not delivered (%s)", type(exc).__name__)
             raise MailDeliveryError(type(exc).__name__) from exc
+
+    def send_confirmation_mail(
+        self, request: HttpRequest, emailconfirmation: Any, signup: bool
+    ) -> None:
+        """allauth's verification message; a failure gives the address its turn back.
+
+        allauth spends the address's one verification message per cooldown before it
+        sends. If the mail server then fails, the person would wait out a cooldown for a
+        message that never left: the next try must be able to send it.
+        """
+        try:
+            super().send_confirmation_mail(request, emailconfirmation, signup)
+        except MailDeliveryError:
+            address = emailconfirmation.email_address.email
+            ratelimit.clear(request, action="confirm_email", key=address.lower())
+            raise
+
+    def send_notification_mail(
+        self,
+        template_prefix: str,
+        user: Any,
+        context: dict[str, Any] | None = None,
+        email: str | None = None,
+    ) -> None:
+        """A security notice (password changed, primary address changed...) is best effort.
+
+        The change it reports has been made: a mail server that fails must not undo it,
+        nor answer the person with an error. The failure is already in the log
+        (`send_mail`).
+        """
+        try:
+            super().send_notification_mail(template_prefix, user, context, email)
+        except MailDeliveryError:
+            mail_logger.warning("Security notice not sent (%s)", template_prefix)
 
     def render_mail(
         self,
