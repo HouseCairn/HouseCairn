@@ -758,12 +758,14 @@ def instance_tabs(browser: Browser, base: str) -> None:
             page.fill("input[name=login]", ADMIN_EMAIL)
             page.fill("input[name=password]", PASSWORD)
             page.click("main form:has(input[name=login]) button[type=submit]")
-            page.wait_for_load_state()
+            # Signed in once the sign-in page is left: the load state of the sign-in page
+            # itself is already reached, and a next page opened too early cancels the post.
+            page.wait_for_url(lambda url: "/accounts/login/" not in url)
             for path in ("/instance/", "/instance/providers/"):
                 page.goto(f"{base}{path}")
                 tabs = page.evaluate(TABS_JS)
                 label = f"{locale} {width} px {path}"
-                check(len(tabs) == 4, f"{label}: four tabs")
+                check(len(tabs) == 4, f"{label}: four tabs ({len(tabs)} found at {page.url})")
                 for tab in tabs:
                     inside = (
                         tab["box"][0] - 1 <= tab["text"][0] and tab["text"][1] <= tab["box"][1] + 1

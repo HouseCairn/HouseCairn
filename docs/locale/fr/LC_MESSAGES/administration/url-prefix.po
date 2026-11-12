@@ -90,6 +90,12 @@ msgstr "Les en-têtes deviennent `X-Frame-Options: SAMEORIGIN` et `frame-ancesto
 msgid "Behind Ingress, HouseCairn keeps its own sign-in: it does not sign anyone in from the Home Assistant user that the Supervisor names in its headers."
 msgstr "Derrière Ingress, HouseCairn garde sa propre connexion : il ne connecte personne à partir de l'utilisateur Home Assistant que le Supervisor nomme dans ses en-têtes."
 
+msgid "Installed application"
+msgstr "Application installée"
+
+msgid "The manifest and the service worker follow the prefix: the installed application opens `/housecairn/`, and its service worker serves and keeps only addresses under it. Its caches are named after the prefix, so two applications under two prefixes of the same host never share nor delete each other's data. Nothing is to configure."
+msgstr "Le manifeste et le service worker suivent le préfixe : l'application installée ouvre `/housecairn/`, et son service worker ne sert et ne garde que des adresses sous ce préfixe. Ses caches portent le nom du préfixe : deux applications sous deux préfixes d'un même hôte ne partagent ni ne suppriment jamais les données l'une de l'autre. Rien n'est à configurer."
+
 msgid "What stays the same"
 msgstr "Ce qui ne change pas"
 

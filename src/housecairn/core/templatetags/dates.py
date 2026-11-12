@@ -27,3 +27,11 @@ def moment(value: datetime.datetime | None) -> str:
 @register.filter
 def weekday_day(value: datetime.date | None) -> str:
     return dates.weekday_day(value or None)
+
+
+@register.simple_tag
+def moment_now() -> str:
+    """The present moment in the format of `|moment`: when a page was rendered (docs/adr/0065)."""
+    from django.utils import timezone
+
+    return dates.moment(timezone.localtime())

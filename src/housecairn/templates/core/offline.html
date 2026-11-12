@@ -1,0 +1,29 @@
+{% load static i18n %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{# The page the service worker shows offline for a page it did not keep (docs/adr/0065). Rendered without the request: kept for anyone who uses the browser, it holds nothing of a person. #}
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F7F5F1">
+  <title>{% translate "Offline" %} · {% instance_name %}</title>
+  <link rel="icon" href="{% static 'img/brand/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="no-nav">
+  <div class="shell">
+    <header class="appbar">
+      <a class="brand" href="{{ start_url }}">
+        <img class="brand-icon" src="{% static 'img/brand/housecairn-icon.svg' %}" alt="" width="40" height="40">
+        <span class="brand-name">{% instance_name %}</span>
+      </a>
+    </header>
+    <main id="main" class="content">
+      <h1>{% translate "Offline" %}</h1>
+      <p>{% translate "This page was not saved on this device. Today and the task list of your home can be read offline once you have opened them with a connection." %}</p>
+      <p><a class="button" href="{{ start_url }}">{% translate "Try again" %}</a></p>
+    </main>
+  </div>
+</body>
+</html>
