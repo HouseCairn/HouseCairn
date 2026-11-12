@@ -6,6 +6,7 @@ with what it must leave untouched. `HOUSECAIRN_DEMO` false changes nothing.
 
 import datetime
 import io
+import re
 import time
 from collections.abc import Iterator
 from pathlib import Path
@@ -820,3 +821,21 @@ class TestBanner:
         page = client.get(reverse("account_login")).content.decode()
         for text in (mode.ADMIN_EMAIL, mode.USER_EMAIL, mode.PASSWORD):
             assert text in page
+
+    def test_addresses_and_password_are_in_elements_that_never_break(
+        self, demo: None, client: Client
+    ) -> None:
+        """The visitor types them: each is a `<code>` of the box, and that element cannot be cut."""
+        page = client.get(reverse("account_login")).content.decode()
+        box = page.split('class="alert alert-info demo-accounts"', 1)[1].split("</div>", 1)[0]
+        assert re.findall(r"<code>([^<]*)</code>", box) == [
+            mode.ADMIN_EMAIL,
+            mode.USER_EMAIL,
+            mode.PASSWORD,
+        ]
+        assert "style=" not in box
+        sheet = Path(__file__).parents[1] / "src/housecairn/static/css/components.css"
+        css = sheet.read_text()
+        rule = re.search(r"\.demo-accounts code \{([^}]*)\}", css)
+        assert rule is not None
+        assert re.search(r"white-space:\s*nowrap\s*;", rule.group(1))

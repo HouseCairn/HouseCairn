@@ -597,6 +597,39 @@ form p > a,
   background: var(--hc-color-danger-soft);
 }
 
+/* The public accounts of a demonstration instance (sign-in page): the sentence, one line for
+   each account, then the password, stacked at every width. An address and the password are
+   typed by the visitor: they never break; a line too narrow for both moves the value under
+   its label instead. */
+.demo-accounts {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--hc-space-2);
+}
+
+.demo-accounts p,
+.demo-accounts ul {
+  margin: 0;
+}
+
+.demo-accounts ul {
+  display: grid;
+  gap: var(--hc-space-1);
+  padding: 0;
+  list-style: none;
+}
+
+.demo-accounts li,
+.demo-accounts p:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--hc-space-2);
+}
+
+.demo-accounts code {
+  white-space: nowrap;
+}
+
 /* ---------- segmented control and chips (tabs inside a screen) ---------- */
 
 .seg {

@@ -40,6 +40,13 @@ neighbour and no word of a label is cut over two lines. `form-errors` signs in a
 `forms@example.com`, `instance-tabs` as the administrator `admin@example.com`: both are accounts
 of the CI instance.
 
+`demo-accounts` needs an instance with `HOUSECAIRN_DEMO` on. It measures the box of the public
+accounts on the sign-in page at 320, 375 and 1280 px, in English and French: the sentence, the
+accounts and the password are stacked, and each address and the password are drawn on one line,
+inside the box.
+
+    python tests/e2e/browser_checks.py demo-accounts --base http://localhost:8005
+
 `background-calls` (local only) measures the link being read and the test of a channel at 320,
 360, 375 and 1280 px, in English and French, with and without script (docs/adr/0070).
 """
@@ -886,6 +893,62 @@ def instance_tabs(browser: Browser, base: str) -> None:
             context.close()
 
 
+DEMO_WIDTHS = (320, 375, 1280)
+DEMO_BOX_JS = """() => {
+  const box = document.querySelector('.demo-accounts');
+  if (!box) return null;
+  const rect = (e) => {
+    const r = e.getBoundingClientRect();
+    return [r.left, r.top, r.right, r.bottom];
+  };
+  return {
+    box: rect(box),
+    parts: [...box.children].map((e) => rect(e)),
+    codes: [...box.querySelectorAll('code')].map((e) => ({
+      text: e.textContent,
+      lines: e.getClientRects().length,
+      rect: rect(e),
+      nowrap: getComputedStyle(e).whiteSpace,
+    })),
+  };
+}"""
+
+
+def demo_accounts(browser: Browser, base: str) -> None:
+    """The public accounts of a demonstration instance: stacked, and never cut."""
+    for locale in ("en", "fr"):
+        for width in DEMO_WIDTHS:
+            context = browser.new_context(viewport={"width": width, "height": 800}, locale=locale)
+            page = context.new_page()
+            page.goto(f"{base}/accounts/login/")
+            label = f"{locale} {width} px"
+            found = page.evaluate(DEMO_BOX_JS)
+            check(found is not None, f"{label}: the box of the demonstration accounts is there")
+            left, _top, right, _bottom = found["box"]
+            say(f"{label}: box {left:.0f}..{right:.0f} px")
+            check(left >= 0 and right <= width, f"{label}: the box is inside the width")
+            check(len(found["parts"]) == 3, f"{label}: a sentence, the accounts, the password")
+            tops = [part[1] for part in found["parts"]]
+            check(
+                tops == sorted(tops) and len(set(tops)) == 3,
+                f"{label}: the three parts are stacked",
+            )
+            check(len(found["codes"]) == 3, f"{label}: two addresses and the password")
+            for code in found["codes"]:
+                inside = left <= code["rect"][0] and code["rect"][2] <= right
+                check(code["lines"] == 1, f"{label}: '{code['text']}' is drawn on one line")
+                check(code["nowrap"] == "nowrap", f"{label}: '{code['text']}' cannot be cut")
+                check(inside, f"{label}: '{code['text']}' stays in the box {code['rect']}")
+            check(
+                found["codes"][-1]["text"] == "housecairn-demo", f"{label}: the password is whole"
+            )
+            check(
+                page.evaluate("document.documentElement.scrollWidth") <= width,
+                f"{label}: the page does not scroll sideways",
+            )
+            context.close()
+
+
 # The task form of the CI instance: an empty title and an amount that is not one, the amount
 # sitting in the folded section "Time and budget".
 SUMMARY = "[data-form-errors]"
@@ -1014,6 +1077,7 @@ def main() -> None:
             "form-errors",
             "instance-tabs",
             "background-calls",
+            "demo-accounts",
         ],
     )
     parser.add_argument("--base", required=True, help="address of the running instance")
@@ -1038,6 +1102,8 @@ def main() -> None:
             instance_tabs(browser, base)
         elif args.mode == "background-calls":
             background_calls(browser, base)
+        elif args.mode == "demo-accounts":
+            demo_accounts(browser, base)
         else:
             passkey(browser, base)
         browser.close()

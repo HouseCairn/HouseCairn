@@ -126,6 +126,19 @@ jobs:
       - name: The tabs of the instance administration do not run into each other
         run: |
           uv run python tests/e2e/browser_checks.py instance-tabs --base http://localhost:8001
+      - name: The public accounts of a demonstration instance stack and are never cut, at 320, 375 and 1280 px
+        env:
+          HOUSECAIRN_DEMO: "true"
+          DEBUG: "true"
+          HOUSECAIRN_DATA_DIR: ${{ runner.temp }}/demo-data
+        run: |
+          mkdir -p "$HOUSECAIRN_DATA_DIR"
+          uv run python manage.py migrate --noinput
+          nohup uv run python manage.py runserver 127.0.0.1:8005 --noreload > "$RUNNER_TEMP/demo-server.log" 2>&1 &
+          # The last try decides: a server that never answers fails here, with its log.
+          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8005/healthz && break; sleep 1; done
+          curl -fsS http://127.0.0.1:8005/healthz >/dev/null || { cat "$RUNNER_TEMP/demo-server.log"; exit 1; }
+          uv run python tests/e2e/browser_checks.py demo-accounts --base http://localhost:8005
 
   offline:
     # The installable application and offline reading (docs/adr/0065): the manifest, the
