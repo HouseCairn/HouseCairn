@@ -120,7 +120,7 @@ SERVICES: tuple[Service, ...] = (
         "messaging",
         ("workflow", "workflows"),
         "workflows://prod-01.westeurope.logic.azure.com/abcdef0123456789abcdef0123456789/signature0123456789",
-        "elsewhere",
+        "self",
         "workflows",
     ),
     _S(
@@ -192,7 +192,7 @@ SERVICES: tuple[Service, ...] = (
         "messaging",
         ("fluxer", "fluxers"),
         "fluxer://1234567890/webhook-token-0123456789",
-        "elsewhere",
+        "self",
         "fluxer",
     ),
     _S(
@@ -320,7 +320,7 @@ SERVICES: tuple[Service, ...] = (
         "messaging",
         ("notifico", "notificos"),
         "notifico://1234/abcdef0123456789abcdef0123456789",
-        "elsewhere",
+        "self",
         "notifico",
     ),
     # Push notifications
@@ -397,7 +397,7 @@ SERVICES: tuple[Service, ...] = (
         "push",
         ("pushdeer", "pushdeers"),
         "pushdeer://abcdef0123456789abcdef0123456789",
-        "elsewhere",
+        "self",
         "pushdeer",
     ),
     _S("PushMe", "push", ("pushme",), "pushme://push-key-0123456789", "elsewhere", "pushme"),
@@ -497,7 +497,7 @@ SERVICES: tuple[Service, ...] = (
         "push",
         ("pingram",),
         "pingram://pingram_sk_abcdef0123456789/me@example.com",
-        "elsewhere",
+        "region",
         "pingram",
     ),
     _S(
@@ -613,7 +613,7 @@ SERVICES: tuple[Service, ...] = (
         "sms",
         ("sinch",),
         f"sinch://abcdef0123456789:abcdef0123456789@{PHONE}/{PHONE2}",
-        "elsewhere",
+        "region",
         "sinch",
     ),
     _S(
@@ -709,7 +709,7 @@ SERVICES: tuple[Service, ...] = (
         "sms",
         ("exotel",),
         f"exotel://sid0123:token0123@{PHONE}/{PHONE2}",
-        "elsewhere",
+        "region",
         "exotel",
     ),
     _S(
@@ -1049,7 +1049,7 @@ SERVICES: tuple[Service, ...] = (
         "alerting",
         ("squadcast",),
         "squadcast://abcdef0123456789abcdef0123456789",
-        "elsewhere",
+        "region",
         "squadcast",
     ),
     _S("ilert", "alerting", ("ilert",), "ilert://abcdef0123456789abcdef0123456789", "eu", "ilert"),
@@ -1083,7 +1083,7 @@ SERVICES: tuple[Service, ...] = (
         "alerting",
         ("betterstack",),
         "betterstack://api-token-0123456789",
-        "elsewhere",
+        "self",
         "betterstack",
     ),
     _S(
