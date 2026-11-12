@@ -72,6 +72,9 @@ msgstr "Ce champ est obligatoire."
 msgid "The two passwords differ."
 msgstr "Les deux mots de passe diffèrent."
 
+msgid "The email could not be sent. Try again later, or ask the administrator to check the outgoing mail settings."
+msgstr "L'e-mail n'a pas pu être envoyé. Réessayez plus tard, ou demandez à l'administrateur de vérifier les réglages du courrier sortant."
+
 msgid "sign-in provider"
 msgstr "fournisseur de connexion"
 
@@ -162,6 +165,9 @@ msgstr "Votre nom d'affichage sera repris de votre fournisseur à votre prochain
 
 msgid "Profile saved."
 msgstr "Profil enregistré."
+
+msgid "The confirmation email could not be sent, so the account was not created. Try again later, or ask the administrator to check the outgoing mail settings."
+msgstr "L'e-mail de confirmation n'a pas pu être envoyé, donc le compte n'a pas été créé. Réessayez plus tard, ou demandez à l'administrateur de vérifier les réglages du courrier sortant."
 
 msgid "This code is not valid: it is wrong, it has expired or it was used. Restart HouseCairn, or run “manage setup_code”, to get a new one."
 msgstr "Ce code n'est pas valable : il est faux, expiré ou déjà utilisé. Redémarrez HouseCairn, ou lancez « manage setup_code », pour en obtenir un nouveau."

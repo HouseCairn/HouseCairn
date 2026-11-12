@@ -6,11 +6,13 @@ from typing import Any
 
 from allauth.account import views as allauth_views
 from allauth.account.adapter import get_adapter
+from allauth.core import ratelimit
 from django.contrib import messages
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -19,6 +21,7 @@ from django.utils.translation import gettext as _
 from django.views.generic import FormView, View
 
 from housecairn.accounts import forms, provider_names, services, setup
+from housecairn.accounts.adapters import MailDeliveryError
 from housecairn.accounts.models import DisplayNameSource, User
 from housecairn.homes.scoping import allow
 
@@ -165,6 +168,37 @@ class SignupView(allauth_views.SignupView):  # type: ignore[misc]
 
     def get_form_kwargs(self) -> dict[str, Any]:
         return {**super().get_form_kwargs(), "request": self.request}
+
+    def form_valid(self, form: forms.SignupForm) -> HttpResponse:
+        """Create the account and send its verification, or neither.
+
+        allauth saves the account, then sends the message. A mail server that does not answer,
+        or refuses, must not leave an account without its message (nor a server error): the
+        whole sign-up is undone, the session with it (it may already hold the sign-in or the
+        pending verification of an account that no longer exists), and the form comes back
+        with the reason, and the address free to be tried again.
+        """
+        try:
+            with transaction.atomic():
+                response: HttpResponse = super().form_valid(form)
+                return response
+        except MailDeliveryError:
+            # allauth spends the address's one verification message per cooldown before it
+            # sends: without this, signing up again would create the account and skip the mail.
+            ratelimit.clear(
+                self.request, action="confirm_email", key=form.cleaned_data["email"].lower()
+            )
+            self.request.session.flush()
+            form.renew_challenge()
+            form.add_error(
+                None,
+                _(
+                    "The confirmation email could not be sent, so the account was not "
+                    "created. Try again later, or ask the administrator to check the "
+                    "outgoing mail settings."
+                ),
+            )
+            return self.form_invalid(form)  # type: ignore[no-any-return]
 
 
 class SetupView(View):
