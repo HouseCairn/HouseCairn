@@ -167,6 +167,12 @@ msgstr "Nom de la copie"
 msgid "Left empty: the name of the home followed by \"(copy)\"."
 msgstr "Laissé vide : le nom du logement suivi de « (copie) »."
 
+msgid "This is a demonstration instance: one export at a time for a home. Try again later."
+msgstr "Ceci est une instance de démonstration : un seul export à la fois pour un logement. Réessayez plus tard."
+
+msgid "This is a demonstration instance: too many exports are being kept. Try again later."
+msgstr "Ceci est une instance de démonstration : trop d'exports sont conservés. Réessayez plus tard."
+
 msgid "Owner"
 msgstr "Propriétaire"
 

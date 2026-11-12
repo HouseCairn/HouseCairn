@@ -50,6 +50,10 @@ HOME_MAX_FILES = 50
 INSTANCE_STORAGE_BYTES = 200 * MB
 # The data document of a restored archive (homes.restore), apart from its files.
 DOCUMENT_MAX_BYTES = 4 * MB
+# Archives of an export (homes.jobs): kept one hour, and at most one for each home and this
+# many for the whole instance, so that they cannot fill the disk (20 MB each at most).
+EXPORT_KEEP_HOURS = 1
+EXPORT_MAX_ACTIVE = 5
 FORCED: dict[str, Any] = {
     "signup_open": False,
     "oidc_signup": "closed",

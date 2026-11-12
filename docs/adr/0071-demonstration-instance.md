@@ -39,6 +39,10 @@ second factor), or fill its disk.
   closed, sign-up through a provider closed, no mail server, no preview of links, 2 MB per file,
   20 MB and 50 files per home. A quota of 200 MB for all homes together is added, since anyone
   can create homes. The API gives these settings the source `demo`.
+- **Exports bounded.** The archives of the background export (ADR 0048) are outside the quota
+  of files, so on a demonstration instance: one archive at a time for a home, at most five for
+  the whole instance (20 MB each at most), and an archive is kept one hour instead of a day.
+  Refused with the same message as the other refusals. With the mode off, nothing changes.
 - **Nothing leaves the server**, by the last step of each way out: the mail backend sends
   nothing, `outbound.deliver` sends no notification, `devices.send` pushes nothing to a device,
   the reminder worker does nothing, the sign-in providers of the variables and of the interface

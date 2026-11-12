@@ -29,9 +29,9 @@ from housecairn.accounts import services as account_services
 from housecairn.accounts import setup
 from housecairn.accounts.models import User
 from housecairn.demo import mode, reset, tasks
-from housecairn.homes import quotas, restore
+from housecairn.homes import jobs, quotas, restore
 from housecairn.homes import services as home_services
-from housecairn.homes.models import Home, Membership, Role
+from housecairn.homes.models import ExportJob, ExportStatus, Home, Membership, Role
 from housecairn.instance import config, mail, providers, ratelimits, settings_services
 from housecairn.instance import services as instance_services
 from housecairn.instance.models import InstanceInvitation, OidcProvider, SettingValue
@@ -46,7 +46,6 @@ from tests.conftest import PASSWORD
 pytestmark = pytest.mark.django_db
 
 URL = "tgram://123456789:AAbbCCddEEffGGhhIIjjKKllMMnnOOppQQrr/987654321"
-from tests.conftest import PASSWORD
 
 
 @pytest.fixture
@@ -490,9 +489,7 @@ class TestEachRefusalIsTested:
         # By link, nothing leaves the server: allowed.
         home_services.resend_invitation(admin(), invitation, delivery=home_services.Delivery())
 
-    def test_a_document_over_four_megabytes_is_refused(
-        self, demo: None, settings: Any
-    ) -> None:
+    def test_a_document_over_four_megabytes_is_refused(self, demo: None, settings: Any) -> None:
         archive_bytes = padded_archive(Home.objects.get(), mode.DOCUMENT_MAX_BYTES + 1)
         with pytest.raises(restore.ArchiveRefusedError, match="too large"):
             restore.read_archive(io.BytesIO(archive_bytes))
@@ -536,7 +533,7 @@ class TestEachRefusalIsTested:
 
 
 class TestPublicAccountsCannotBeLockedOut:
-    """The failures of a sign-in are counted by address on a demonstration instance, not by account."""
+    """Sign-in failures are counted by address on a demonstration instance, not by account."""
 
     @pytest.fixture(autouse=True)
     def _clean_cache(self) -> Iterator[None]:
@@ -580,6 +577,63 @@ class TestPublicAccountsCannotBeLockedOut:
         answer = self.sign_in(Client(), user.email, PASSWORD, "192.0.2.20")
         assert answer.status_code == 200
         assert "Too many failed login attempts" in answer.content.decode()
+
+
+class TestExports:
+    """The archives of exports are kept on disk, outside the quota of files (ADR 0071)."""
+
+    def test_one_export_at_a_time_for_a_home(self, demo: None) -> None:
+        home = Home.objects.get()
+        jobs.start_export(admin(), home)
+        with pytest.raises(mode.DemoRefusedError):
+            jobs.start_export(admin(), home)
+        assert ExportJob.objects.filter(home=home).count() == 1
+
+    def test_a_few_exports_for_the_whole_instance(self, demo: None) -> None:
+        jobs.start_export(admin(), Home.objects.get())
+        for number in range(mode.EXPORT_MAX_ACTIVE - 1):
+            other = home_services.create_home(member(), name=f"Visitor's house {number}")
+            jobs.start_export(member(), other)
+        assert ExportJob.objects.count() == mode.EXPORT_MAX_ACTIVE
+        last = home_services.create_home(member(), name="One home too many")
+        with pytest.raises(mode.DemoRefusedError):
+            jobs.start_export(member(), last)
+        assert not ExportJob.objects.filter(home=last).exists()
+
+    def test_a_failed_export_does_not_count(self, demo: None) -> None:
+        home = Home.objects.get()
+        job = jobs.start_export(admin(), home)
+        ExportJob.objects.filter(pk=job.pk).update(status=ExportStatus.FAILED)
+        jobs.start_export(admin(), home)
+
+    def test_an_archive_is_kept_one_hour(self, demo: None) -> None:
+        job = jobs.start_export(admin(), Home.objects.get())
+        kept = job.expires_at - timezone.now()
+        assert (
+            datetime.timedelta(minutes=55)
+            < kept
+            <= datetime.timedelta(hours=mode.EXPORT_KEEP_HOURS)
+        )
+
+    def test_the_api_refuses_a_second_export(
+        self, demo: None, api_client: APIClient, settings: Any
+    ) -> None:
+        settings.HOUSECAIRN_EXPORT_INLINE_MAX_BYTES = -1
+        home = Home.objects.get()
+        signed_in(api_client, admin())
+        url = reverse("api-v1:home-export", kwargs={"home_id": home.id})
+        assert api_client.post(url).status_code == 202
+        answer = api_client.post(url)
+        assert answer.status_code == 403
+        assert answer.json()["code"] == "demo"
+
+    def test_off_nothing_is_bounded(self, settings: Any, alice: User) -> None:
+        home = home_services.create_home(alice, name="Home")
+        first = jobs.start_export(alice, home)
+        second = jobs.start_export(alice, home)
+        assert first.pk != second.pk
+        kept = first.expires_at - timezone.now()
+        assert kept > datetime.timedelta(hours=settings.HOUSECAIRN_EXPORT_KEEP_HOURS - 1)
 
 
 class TestAccounts:

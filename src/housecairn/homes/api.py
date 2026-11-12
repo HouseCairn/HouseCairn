@@ -23,6 +23,7 @@ from housecairn.accounts.names import person_name
 from housecairn.apitokens.models import ApiToken
 from housecairn.audit import services as audit_services
 from housecairn.audit.api import AuditEventSerializer
+from housecairn.demo.mode import DemoRefusedError
 from housecairn.homes import csv_export, csv_import, exports, jobs, restore, services, sso
 from housecairn.homes.models import ExportJob, Home, Invitation, Membership, Role
 from housecairn.homes.scoping import (
@@ -255,6 +256,8 @@ class HomeViewSet(
                     status=status.HTTP_202_ACCEPTED,
                 )
             archive, name = exports.export_home(request.user, home)
+        except DemoRefusedError:
+            raise
         except PermissionDenied as exc:
             raise exceptions.PermissionDenied() from exc
         return FileResponse(
