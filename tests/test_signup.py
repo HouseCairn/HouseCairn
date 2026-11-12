@@ -3,6 +3,8 @@
 import hashlib
 import re
 import secrets
+import smtplib
+import ssl
 import time
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
@@ -19,6 +21,7 @@ from django.urls import reverse
 
 from housecairn.accounts import antibot, services
 from housecairn.accounts.models import User
+from tests.test_mail_failure import recipients_refused, server_refusing
 
 pytestmark = pytest.mark.django_db
 
@@ -397,3 +400,144 @@ class TestOidcOpenSignUpDomains:
             HOUSECAIRN_OIDC_SIGNUP=signup, HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS=domains
         ):
             assert services.oidc_signup_decision(email, True).value == expected
+
+
+class TestMailServerFailure:
+    """A mail server that fails must not turn sign-up into a server error or half an account."""
+
+    FAILURES = [
+        pytest.param(ConnectionRefusedError(111, "Connection refused"), id="unreachable"),
+        pytest.param(TimeoutError("timed out"), id="timeout"),
+        pytest.param(ssl.SSLError("tls handshake failed"), id="tls"),
+        pytest.param(smtplib.SMTPAuthenticationError(535, b"5.7.8 refused"), id="credentials"),
+        pytest.param(smtplib.SMTPSenderRefused(550, b"refused", "a@example.com"), id="message"),
+    ]
+
+    @pytest.mark.parametrize("failure", FAILURES)
+    @pytest.mark.parametrize("verification", ["mandatory", "optional"])
+    def test_the_form_comes_back_and_nothing_is_created(
+        self, client: Client, failure: Exception, verification: str
+    ) -> None:
+        client.raise_request_exception = False
+        with (
+            override_settings(ACCOUNT_EMAIL_VERIFICATION=verification),
+            mock.patch(
+                "django.core.mail.backends.locmem.EmailBackend.send_messages",
+                side_effect=failure,
+            ),
+        ):
+            response = sign_up(client)
+        assert response.status_code == 200
+        assert "could not be sent" in response.text
+        assert not User.objects.exists()
+        assert not EmailAddress.objects.exists()
+        # The session holds no sign-in of the account that was undone.
+        assert "_auth_user_id" not in client.session
+        assert reverse("account_login") in client.get(reverse("homes:list")).headers["Location"]
+
+    @pytest.mark.parametrize(
+        "refusal",
+        [
+            pytest.param(recipients_refused("new@example.com"), id="recipient-refused"),
+            pytest.param(smtplib.SMTPDataError(554, b"5.7.1 transaction failed"), id="data"),
+        ],
+    )
+    @pytest.mark.parametrize("verification", ["mandatory", "optional"])
+    def test_a_refusal_at_sendmail_under_the_real_backend(
+        self, client: Client, refusal: Exception, verification: str
+    ) -> None:
+        """The trace of production: the server takes the connection, then refuses the message."""
+        client.raise_request_exception = False
+        with (
+            override_settings(ACCOUNT_EMAIL_VERIFICATION=verification),
+            server_refusing(refusal) as sendmail,
+        ):
+            response = sign_up(client)
+        assert sendmail.called
+        assert response.status_code == 200
+        assert "could not be sent" in response.text
+        assert not User.objects.exists()
+        assert not EmailAddress.objects.exists()
+
+    def test_the_real_backend_with_a_server_that_refuses_the_connection(
+        self, client: Client
+    ) -> None:
+        client.raise_request_exception = False
+        with override_settings(
+            EMAIL_BACKEND="housecairn.instance.mail.EmailBackend",
+            EMAIL_HOST="127.0.0.1",
+            EMAIL_PORT=1,
+            EMAIL_USE_TLS=False,
+        ):
+            response = sign_up(client)
+        assert response.status_code == 200
+        assert "could not be sent" in response.text
+        assert not User.objects.exists()
+
+    def test_the_page_that_comes_back_carries_a_challenge_that_can_be_solved(
+        self, client: Client
+    ) -> None:
+        offered = challenge_of(client.get(reverse("account_signup")).text)
+        with mock.patch(
+            "django.core.mail.backends.locmem.EmailBackend.send_messages",
+            side_effect=smtplib.SMTPServerDisconnected("gone"),
+        ):
+            failed = sign_up(client)
+        assert failed.status_code == 200
+        # The session was replaced: the challenge that was offered is gone, and the page
+        # shows a new one, the one the session now holds.
+        challenge, bits = challenge_of(failed.text)
+        assert (challenge, bits) != offered
+        # The administrator fixed the server: the same person sends the form of that page.
+        retry = client.post(
+            reverse("account_signup"),
+            {
+                "email": "new@example.com",
+                "password1": PASSWORD,
+                "password2": PASSWORD,
+                "pow_solution": antibot.solve(challenge, bits),
+            },
+        )
+        assert retry.status_code == 302
+        assert User.objects.filter(email="new@example.com").count() == 1
+        assert [m.to for m in mail.outbox] == [["new@example.com"]]
+
+    def test_the_failure_is_logged_without_the_detail(
+        self, client: Client, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        with (
+            caplog.at_level("WARNING", logger="housecairn.mail"),
+            mock.patch(
+                "django.core.mail.backends.locmem.EmailBackend.send_messages",
+                side_effect=smtplib.SMTPAuthenticationError(535, b"password=hunter2"),
+            ),
+        ):
+            sign_up(client)
+        assert "SMTPAuthenticationError" in caplog.text
+        assert "hunter2" not in caplog.text
+
+    @pytest.mark.parametrize("verification", ["mandatory", "optional"])
+    def test_the_session_keeps_nothing_of_the_undone_sign_up(
+        self, client: Client, verification: str
+    ) -> None:
+        with (
+            override_settings(ACCOUNT_EMAIL_VERIFICATION=verification),
+            server_refusing(recipients_refused("new@example.com")),
+        ):
+            sign_up(client)
+        # allauth stashes the address it verified before it sends; no trace of it stays.
+        assert set(client.session.keys()) <= {"housecairn_signup_challenge"}
+
+    def test_the_address_is_not_in_the_log_when_the_server_quotes_it(
+        self, client: Client, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """SMTPRecipientsRefused carries the address in its argument: only its type is logged."""
+        with (
+            caplog.at_level("DEBUG"),
+            server_refusing(recipients_refused("new@example.com")) as sendmail,
+        ):
+            sign_up(client)
+        assert sendmail.called
+        assert "SMTPRecipientsRefused" in caplog.text
+        assert "new@example.com" not in caplog.text
+        assert "user unknown" not in caplog.text

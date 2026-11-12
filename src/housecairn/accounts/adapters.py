@@ -1,14 +1,18 @@
 """allauth adapters: sign-up is closed unless the operator opens it (docs/adr/0007)."""
 
 import logging
+import smtplib
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.core import context as allauth_context
+from allauth.core import ratelimit
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.socialaccount.models import SocialLogin
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.http import HttpRequest
 from django.template.loader import render_to_string
@@ -23,6 +27,16 @@ from housecairn.core.redirects import has_safe_shape
 from housecairn.instance.config import get_setting, instance_name
 
 logger = logging.getLogger("housecairn.security")
+mail_logger = logging.getLogger("housecairn.mail")
+
+
+class MailDeliveryError(Exception):
+    """The mail server did not take a message that allauth asked to send.
+
+    Raised in place of the transport's own errors (refused connection, timeout, TLS failure,
+    refused credentials, refused message), so that a view can answer the person instead of
+    failing with a server error. The detail stays out of the message: it is in `__cause__`.
+    """
 
 
 # Links that go out in an email and that allauth builds from the request.
@@ -50,7 +64,56 @@ class AccountAdapter(DefaultAccountAdapter):  # type: ignore[misc]
         for key in _EMAIL_LINKS:
             if isinstance(context.get(key), str):
                 context[key] = on_site(context[key])
-        super().send_mail(template_prefix, email, context)
+        # allauth's own steps, but for the send: a template that cannot be read is a defect
+        # to see as one, not a mail server that failed.
+        request = allauth_context.request
+        rendered = {
+            "request": request,
+            "email": email,
+            "current_site": get_current_site(request),
+            **context,
+        }
+        message = self.render_mail(template_prefix, email, rendered)
+        try:
+            message.send()
+        except (smtplib.SMTPException, OSError) as exc:
+            # The type only: a server's reply can quote the address or the credentials.
+            mail_logger.warning("Outgoing mail not delivered (%s)", type(exc).__name__)
+            raise MailDeliveryError(type(exc).__name__) from exc
+
+    def send_confirmation_mail(
+        self, request: HttpRequest, emailconfirmation: Any, signup: bool
+    ) -> None:
+        """allauth's verification message; a failure gives the address its turn back.
+
+        allauth spends the address's one verification message per cooldown before it
+        sends. If the mail server then fails, the person would wait out a cooldown for a
+        message that never left: the next try must be able to send it.
+        """
+        try:
+            super().send_confirmation_mail(request, emailconfirmation, signup)
+        except MailDeliveryError:
+            address = emailconfirmation.email_address.email
+            ratelimit.clear(request, action="confirm_email", key=address.lower())
+            raise
+
+    def send_notification_mail(
+        self,
+        template_prefix: str,
+        user: Any,
+        context: dict[str, Any] | None = None,
+        email: str | None = None,
+    ) -> None:
+        """A security notice (password changed, primary address changed...) is best effort.
+
+        The change it reports has been made: a mail server that fails must not undo it,
+        nor answer the person with an error. The failure is already in the log
+        (`send_mail`).
+        """
+        try:
+            super().send_notification_mail(template_prefix, user, context, email)
+        except MailDeliveryError:
+            mail_logger.warning("Security notice not sent (%s)", template_prefix)
 
     def render_mail(
         self,

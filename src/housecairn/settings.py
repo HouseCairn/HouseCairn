@@ -130,6 +130,7 @@ MIDDLEWARE = [
     # may keep for reading offline, and when it must forget it (docs/adr/0065).
     "housecairn.core.offline.OfflinePagesMiddleware",
     "housecairn.accounts.middleware.DeviceCookieMiddleware",
+    "housecairn.accounts.middleware.MailDeliveryMiddleware",
     # After authentication: a person's saved language wins over the browser's (docs/adr/0042).
     "housecairn.tasks.middleware.PersonLanguageMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",

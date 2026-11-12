@@ -117,6 +117,11 @@ class SignupForm(AllauthSignupForm):  # type: ignore[misc]
         if request is not None and not self.is_bound:
             self._arm(antibot.issue(request))
 
+    def renew_challenge(self) -> None:
+        """A new proof of work for the page that comes back, the session having changed."""
+        if self.request is not None:
+            self._arm(antibot.issue(self.request))
+
     def _arm(self, challenge: dict[str, Any]) -> None:
         """Hand the challenge to the script that solves it, through the hidden field."""
         self.fields["pow_solution"].widget.attrs.update(
