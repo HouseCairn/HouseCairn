@@ -502,3 +502,17 @@ class TestMailServerFailure:
             sign_up(client)
         assert "SMTPAuthenticationError" in caplog.text
         assert "hunter2" not in caplog.text
+
+    def test_the_address_is_not_in_the_log_when_the_server_quotes_it(
+        self, client: Client, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """SMTPRecipientsRefused carries the address in its argument: only its type is logged."""
+        with (
+            caplog.at_level("DEBUG"),
+            server_refusing(recipients_refused("new@example.com")) as sendmail,
+        ):
+            sign_up(client)
+        assert sendmail.called
+        assert "SMTPRecipientsRefused" in caplog.text
+        assert "new@example.com" not in caplog.text
+        assert "user unknown" not in caplog.text

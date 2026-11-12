@@ -140,6 +140,19 @@ class TestViewsAnswerThePerson:
             client.post(reverse("account_email"), post)
         assert [m.to for m in mail.outbox] == [["other@example.com"]]
 
+    def test_the_address_is_not_in_the_log(
+        self, client: Client, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        person()
+        with (
+            caplog.at_level("DEBUG"),
+            server_refusing(recipients_refused()) as sendmail,
+        ):
+            client.post(reverse("account_reset_password"), {"email": ADDRESS})
+        assert sendmail.called
+        assert "SMTPRecipientsRefused" in caplog.text
+        assert ADDRESS not in caplog.text
+
 
 class TestSecurityNoticesAreBestEffort:
     """What the person did succeeds; the notice that fails is in the log, not in a 500."""
