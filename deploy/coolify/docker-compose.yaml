@@ -19,7 +19,7 @@
 services:
   housecairn:
     # A released version pinned by its digest, the same as in compose.yaml.
-    image: ghcr.io/housecairn/housecairn:0.1.0@sha256:bda44926c8fe1f063e2651ea64fac47ad86e59e0420a678caea0384b30e889e4
+    image: ghcr.io/housecairn/housecairn:0.2.0@sha256:bc9889c9a8eebbe8cd919e80a05c511025c60f90e9f6cdd3cde34b501aeb3f21
     # The digest cannot move: pull only when the image is missing. With a moving
     # tag (`edge`, `latest`) instead, set `always`, or Coolify keeps the image
     # it already has.
