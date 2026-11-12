@@ -62,22 +62,40 @@ HouseCairn starts with all of them as they are.
 | Variable | Default in the file | See |
 | --- | --- | --- |
 | `HOUSECAIRN_FORWARDED_ALLOW_IPS` | `172.16.0.0/12` | [Trusted proxy](#trusted-proxy) below |
-| `TIME_ZONE` | empty: the setting of the interface | [Environment variables](variables.md) |
+| `TIME_ZONE`, `HOUSECAIRN_DEFAULT_LANGUAGE`, `HOUSECAIRN_INSTANCE_NAME` | empty: the setting of the interface | [Environment variables](variables.md) |
+| `HOUSECAIRN_PHOTO_MAX_BYTES`, `HOUSECAIRN_HOME_STORAGE_MB`, `HOUSECAIRN_HOME_MAX_FILES` | empty: the setting of the interface | [Environment variables](variables.md) |
 | `HOUSECAIRN_SIGNUP_OPEN` | empty: closed | [Open sign-up](sign-up.md) |
-| `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` | empty: email off | [Email](email.md) |
+| `HOUSECAIRN_SIGNUP_POW_BITS`, `HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS`, `HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS`, `ACCOUNT_EMAIL_VERIFICATION`, `HOUSECAIRN_INVITATION_LIFETIME_DAYS` | empty: the default of the application | [Open sign-up](sign-up.md) |
+| `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_TIMEOUT` | empty: email off | [Email](email.md) |
 | `OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `HOUSECAIRN_OIDC_SIGNUP`, `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL` | empty: single sign-on off | [Single sign-on](oidc.md) |
+| `HOUSECAIRN_SETUP_SCREEN` | `true`: the first-account screen is on | [First start](../getting-started/first-start.md) |
+| `HOUSECAIRN_NOTIFICATIONS_ENABLED`, `HOUSECAIRN_NOTIFICATIONS_INTERVAL`, `HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS`, `HOUSECAIRN_WEBPUSH_ENABLED`, `HOUSECAIRN_WEBPUSH_DISCREET` | empty: notifications off | [Notifications](../guides/notifications.md) |
+| `HOUSECAIRN_LINK_PREVIEW_ENABLED` | empty: off | [Projects](../guides/projects.md) |
+| `HOUSECAIRN_DEMO` | empty: a normal instance | [Demonstration instance](demo.md) |
+| `HOUSECAIRN_RATELIMIT_*` (eleven variables) | empty: the default limits | [Rate limits](rate-limits.md) |
+| `HOUSECAIRN_CACHE_URL` | `locmemcache://housecairn` | [Rate limits](rate-limits.md) |
+| `HOUSECAIRN_URL_PREFIX`, `HOUSECAIRN_URL_PREFIX_HEADER`, `HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING` | empty: off | [Serving under a path prefix](url-prefix.md) |
+| `HOUSECAIRN_DISALLOWED_HOST_HINT` | empty: no sentence | [Settings](settings.md#the-page-of-a-refused-host-name) |
+| `HOUSECAIRN_DOCS_URL` | `https://docs.housecairn.app` | [Environment variables](variables.md) |
 | `HOUSECAIRN_WEB_WORKERS`, `HOUSECAIRN_TASK_WORKERS` | `2`, `2` | [Environment variables](variables.md) |
+| `HOUSECAIRN_STOP_TIMEOUT` | empty: 20 seconds | [Environment variables](variables.md) |
 | `LOG_LEVEL` | `INFO` | [Environment variables](variables.md) |
 
-A setting that the interface can also change (time zone, sign-up, email) stays
-free in the interface while its variable is empty; once you fill it in Coolify,
-it locks its field there ([Settings](settings.md)). Leave `SECRET_KEY` out: the
-container generates the key on first start and keeps it in `/data`.
+Four variables of [Environment variables](variables.md) are not in the file. `SECRET_KEY`
+and `SECRET_KEY_FALLBACKS` are secrets: leave them out, and the container generates the
+key on first start and keeps it in `/data`. `DATABASE_URL` is set in the
+[PostgreSQL](#postgresql) section, with the password Coolify generates.
+`HOUSECAIRN_PORT` stays at 8000, the port Coolify routes the domain to. A test of the
+repository fails when a variable of that page is in neither the file nor this list.
 
-To set another variable of [Environment variables](variables.md), add it to the
-`environment:` list of the service, as `NAME=${NAME:-}`: Coolify then lists it.
-From the repository, the file is the repository's; use a **Docker Compose Empty**
-resource for that.
+For a demonstration instance, set `HOUSECAIRN_DEMO` to `true` and leave
+`HOUSECAIRN_SIGNUP_OPEN` empty: two public accounts, settings read only, nothing sent,
+everything erased every night. Never on an instance with real data
+([Demonstration instance](demo.md)).
+
+A setting that the interface can also change (time zone, sign-up, email, limits) stays
+free in the interface while its variable is empty; once you fill it in Coolify,
+it locks its field there ([Settings](settings.md)).
 
 ## Trusted proxy
 

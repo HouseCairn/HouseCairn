@@ -114,14 +114,17 @@ msgstr "`172.16.0.0/12`"
 msgid "[Trusted proxy](#trusted-proxy) below"
 msgstr "[Proxy de confiance](#trusted-proxy) ci-dessous"
 
-msgid "`TIME_ZONE`"
-msgstr "`TIME_ZONE`"
+msgid "`TIME_ZONE`, `HOUSECAIRN_DEFAULT_LANGUAGE`, `HOUSECAIRN_INSTANCE_NAME`"
+msgstr "`TIME_ZONE`, `HOUSECAIRN_DEFAULT_LANGUAGE`, `HOUSECAIRN_INSTANCE_NAME`"
 
 msgid "empty: the setting of the interface"
 msgstr "vide : le réglage de l'interface"
 
 msgid "[Environment variables](variables.md)"
 msgstr "[Variables d'environnement](variables.md)"
+
+msgid "`HOUSECAIRN_PHOTO_MAX_BYTES`, `HOUSECAIRN_HOME_STORAGE_MB`, `HOUSECAIRN_HOME_MAX_FILES`"
+msgstr "`HOUSECAIRN_PHOTO_MAX_BYTES`, `HOUSECAIRN_HOME_STORAGE_MB`, `HOUSECAIRN_HOME_MAX_FILES`"
 
 msgid "`HOUSECAIRN_SIGNUP_OPEN`"
 msgstr "`HOUSECAIRN_SIGNUP_OPEN`"
@@ -132,8 +135,14 @@ msgstr "vide : fermée"
 msgid "[Open sign-up](sign-up.md)"
 msgstr "[Inscription ouverte](sign-up.md)"
 
-msgid "`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`"
-msgstr "`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`"
+msgid "`HOUSECAIRN_SIGNUP_POW_BITS`, `HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS`, `HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS`, `ACCOUNT_EMAIL_VERIFICATION`, `HOUSECAIRN_INVITATION_LIFETIME_DAYS`"
+msgstr "`HOUSECAIRN_SIGNUP_POW_BITS`, `HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS`, `HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS`, `ACCOUNT_EMAIL_VERIFICATION`, `HOUSECAIRN_INVITATION_LIFETIME_DAYS`"
+
+msgid "empty: the default of the application"
+msgstr "vide : la valeur par défaut de l'application"
+
+msgid "`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_TIMEOUT`"
+msgstr "`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_TIMEOUT`"
 
 msgid "empty: email off"
 msgstr "vide : e-mail désactivé"
@@ -150,11 +159,89 @@ msgstr "vide : authentification unique désactivée"
 msgid "[Single sign-on](oidc.md)"
 msgstr "[Authentification unique](oidc.md)"
 
+msgid "`HOUSECAIRN_SETUP_SCREEN`"
+msgstr "`HOUSECAIRN_SETUP_SCREEN`"
+
+msgid "`true`: the first-account screen is on"
+msgstr "`true` : l'écran du premier compte est actif"
+
+msgid "[First start](../getting-started/first-start.md)"
+msgstr "[Premier démarrage](../getting-started/first-start.md)"
+
+msgid "`HOUSECAIRN_NOTIFICATIONS_ENABLED`, `HOUSECAIRN_NOTIFICATIONS_INTERVAL`, `HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS`, `HOUSECAIRN_WEBPUSH_ENABLED`, `HOUSECAIRN_WEBPUSH_DISCREET`"
+msgstr "`HOUSECAIRN_NOTIFICATIONS_ENABLED`, `HOUSECAIRN_NOTIFICATIONS_INTERVAL`, `HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS`, `HOUSECAIRN_WEBPUSH_ENABLED`, `HOUSECAIRN_WEBPUSH_DISCREET`"
+
+msgid "empty: notifications off"
+msgstr "vide : notifications désactivées"
+
+msgid "[Notifications](../guides/notifications.md)"
+msgstr "[Notifications](../guides/notifications.md)"
+
+msgid "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
+msgstr "`HOUSECAIRN_LINK_PREVIEW_ENABLED`"
+
+msgid "empty: off"
+msgstr "vide : désactivé"
+
+msgid "[Projects](../guides/projects.md)"
+msgstr "[Projets et devis](../guides/projects.md)"
+
+msgid "`HOUSECAIRN_DEMO`"
+msgstr "`HOUSECAIRN_DEMO`"
+
+msgid "empty: a normal instance"
+msgstr "vide : une instance ordinaire"
+
+msgid "[Demonstration instance](demo.md)"
+msgstr "[Instance de démonstration](demo.md)"
+
+msgid "`HOUSECAIRN_RATELIMIT_*` (eleven variables)"
+msgstr "`HOUSECAIRN_RATELIMIT_*` (onze variables)"
+
+msgid "empty: the default limits"
+msgstr "vide : les limites par défaut"
+
+msgid "[Rate limits](rate-limits.md)"
+msgstr "[Limites de débit](rate-limits.md)"
+
+msgid "`HOUSECAIRN_CACHE_URL`"
+msgstr "`HOUSECAIRN_CACHE_URL`"
+
+msgid "`locmemcache://housecairn`"
+msgstr "`locmemcache://housecairn`"
+
+msgid "`HOUSECAIRN_URL_PREFIX`, `HOUSECAIRN_URL_PREFIX_HEADER`, `HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING`"
+msgstr "`HOUSECAIRN_URL_PREFIX`, `HOUSECAIRN_URL_PREFIX_HEADER`, `HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING`"
+
+msgid "[Serving under a path prefix](url-prefix.md)"
+msgstr "[Servir sous un préfixe d'adresse](url-prefix.md)"
+
+msgid "`HOUSECAIRN_DISALLOWED_HOST_HINT`"
+msgstr "`HOUSECAIRN_DISALLOWED_HOST_HINT`"
+
+msgid "empty: no sentence"
+msgstr "vide : aucune phrase"
+
+msgid "[Settings](settings.md#the-page-of-a-refused-host-name)"
+msgstr "[Réglages](settings.md#the-page-of-a-refused-host-name)"
+
+msgid "`HOUSECAIRN_DOCS_URL`"
+msgstr "`HOUSECAIRN_DOCS_URL`"
+
+msgid "`https://docs.housecairn.app`"
+msgstr "`https://docs.housecairn.app`"
+
 msgid "`HOUSECAIRN_WEB_WORKERS`, `HOUSECAIRN_TASK_WORKERS`"
 msgstr "`HOUSECAIRN_WEB_WORKERS`, `HOUSECAIRN_TASK_WORKERS`"
 
 msgid "`2`, `2`"
 msgstr "`2`, `2`"
+
+msgid "`HOUSECAIRN_STOP_TIMEOUT`"
+msgstr "`HOUSECAIRN_STOP_TIMEOUT`"
+
+msgid "empty: 20 seconds"
+msgstr "vide : 20 secondes"
 
 msgid "`LOG_LEVEL`"
 msgstr "`LOG_LEVEL`"
@@ -162,12 +249,14 @@ msgstr "`LOG_LEVEL`"
 msgid "`INFO`"
 msgstr "`INFO`"
 
-msgid "A setting that the interface can also change (time zone, sign-up, email) stays free in the interface while its variable is empty; once you fill it in Coolify, it locks its field there ([Settings](settings.md)). Leave `SECRET_KEY` out: the container generates the key on first start and keeps it in `/data`."
-msgstr "Un réglage que l'interface peut aussi changer (fuseau horaire, inscription, e-mail) reste libre dans l'interface tant que sa variable est vide ; dès que vous la remplissez dans Coolify, elle y verrouille son champ ([Réglages](settings.md)). Ne mettez pas `SECRET_KEY` : le conteneur génère la clé au premier démarrage et la garde dans `/data`."
+msgid "Four variables of [Environment variables](variables.md) are not in the file. `SECRET_KEY` and `SECRET_KEY_FALLBACKS` are secrets: leave them out, and the container generates the key on first start and keeps it in `/data`. `DATABASE_URL` is set in the [PostgreSQL](#postgresql) section, with the password Coolify generates. `HOUSECAIRN_PORT` stays at 8000, the port Coolify routes the domain to. A test of the repository fails when a variable of that page is in neither the file nor this list."
+msgstr "Quatre variables de [Variables d'environnement](variables.md) ne sont pas dans le fichier. `SECRET_KEY` et `SECRET_KEY_FALLBACKS` sont des secrets : ne les mettez pas, le conteneur génère la clé au premier démarrage et la garde dans `/data`. `DATABASE_URL` se pose dans la section [PostgreSQL](#postgresql), avec le mot de passe que Coolify génère. `HOUSECAIRN_PORT` reste à 8000, le port vers lequel Coolify route le domaine. Un test du dépôt échoue si une variable de cette page n'est ni dans le fichier ni dans cette liste."
 
-#, python-brace-format
-msgid "To set another variable of [Environment variables](variables.md), add it to the `environment:` list of the service, as `NAME=${NAME:-}`: Coolify then lists it. From the repository, the file is the repository's; use a **Docker Compose Empty** resource for that."
-msgstr "Pour poser une autre variable de [Variables d'environnement](variables.md), ajoutez-la à la liste `environment:` du service, sous la forme `NAME=${NAME:-}` : Coolify la liste alors. Depuis le dépôt, le fichier est celui du dépôt ; utilisez pour cela une ressource **Docker Compose Empty**."
+msgid "For a demonstration instance, set `HOUSECAIRN_DEMO` to `true` and leave `HOUSECAIRN_SIGNUP_OPEN` empty: two public accounts, settings read only, nothing sent, everything erased every night. Never on an instance with real data ([Demonstration instance](demo.md))."
+msgstr "Pour une instance de démonstration, mettez `HOUSECAIRN_DEMO` à `true` et laissez `HOUSECAIRN_SIGNUP_OPEN` vide : deux comptes publics, réglages en lecture seule, rien d'envoyé, tout effacé chaque nuit. Jamais sur une instance qui contient de vraies données ([Instance de démonstration](demo.md))."
+
+msgid "A setting that the interface can also change (time zone, sign-up, email, limits) stays free in the interface while its variable is empty; once you fill it in Coolify, it locks its field there ([Settings](settings.md))."
+msgstr "Un réglage que l'interface peut aussi changer (fuseau horaire, inscription, e-mail, limites) reste libre dans l'interface tant que sa variable est vide ; dès que vous la remplissez dans Coolify, elle y verrouille son champ ([Réglages](settings.md))."
 
 msgid "Trusted proxy"
 msgstr "Proxy de confiance"
