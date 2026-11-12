@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n navigation %}
+{% block head_title %}{{ device.name }}{% endblock head_title %}
+{% block content %}
+  {% url 'notifications:index' as parent %}{% translate "Notifications" as label %}{% back_link parent label %}
+  <h1>{{ device.name }}</h1>
+  <p class="small">{% blocktranslate with service=device.service %}Notifications reach this device through the push service of {{ service }}. They are encrypted for the device: {{ service }} sees when one is sent and its size, not what it says.{% endblocktranslate %}</p>
+  <form method="post" class="card" novalidate>
+    {% csrf_token %}
+    {% include "components/form_errors.html" with form=form only %}
+    {{ form.as_p }}
+    <button type="submit" class="button-block">{% translate "Save" %}</button>
+  </form>
+  <form method="post" action="{% url 'notifications:device-test' device_id=device.id %}">
+    {% csrf_token %}
+    <button type="submit" class="button-secondary button-block">{% translate "Send a test notification" %}</button>
+  </form>
+  <form method="post" action="{% url 'notifications:device-delete' device_id=device.id %}">
+    {% csrf_token %}
+    <button type="submit" class="button-danger button-block">{% translate "Stop notifications on this device" %}</button>
+  </form>
+{% endblock content %}

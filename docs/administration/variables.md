@@ -39,6 +39,8 @@ changed in the interface; a variable that is set locks its field there. The full
 | `HOUSECAIRN_NOTIFICATIONS_ENABLED` | `false` | Reminders through Apprise channels; off, nothing is sent. See [Notifications](../guides/notifications.md). |
 | `HOUSECAIRN_NOTIFICATIONS_INTERVAL` | `5` | Minutes between two looks for reminders to send, from 1 to 60. |
 | `HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS` | `false` | Let channels send to private network addresses, for a ntfy or a Gotify of the local network. Off, they are refused. Also in the interface. See [Hardening](hardening.md). |
+| `HOUSECAIRN_WEBPUSH_ENABLED` | `false` | Notifications on the device, by Web Push through the push service of each browser (Google, Mozilla, Apple, Microsoft). Also in the interface. See [Notifications](../guides/notifications.md#on-this-device). |
+| `HOUSECAIRN_WEBPUSH_DISCREET` | `true` | A notification on the device says only what kind of message it is, with a link: no title of a task, no name of a home. Also in the interface. |
 | `HOUSECAIRN_LINK_PREVIEW_ENABLED` | `false` | Read the title and the picture of a page when a link is added to a project. Off, nothing is read. The server only calls public addresses. Also in the interface. See [Projects](../guides/projects.md). |
 | `HOUSECAIRN_DOCS_URL` | `https://docs.housecairn.app` | Address of this documentation, used by the help link of each screen. |
 | `HOUSECAIRN_WEB_WORKERS` | `2` | Web server processes. |

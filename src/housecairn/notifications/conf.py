@@ -49,4 +49,33 @@ SETTINGS: tuple[Setting, ...] = (
         ),
         False,
     ),
+    Setting(
+        "webpush_enabled",
+        "HOUSECAIRN_WEBPUSH_ENABLED",
+        "HOUSECAIRN_WEBPUSH_ENABLED",
+        Kind.BOOL,
+        Section.NOTIFICATIONS,
+        _("Notifications on the device"),
+        _(
+            "People may receive their notifications on a phone or a computer, through the "
+            "push service of their browser: Google for Chrome, Edge and most others, "
+            "Mozilla for Firefox, Apple for Safari. The message is encrypted for the "
+            "device; the push service sees when it is sent, its size and the device."
+        ),
+        False,
+    ),
+    Setting(
+        "webpush_discreet",
+        "HOUSECAIRN_WEBPUSH_DISCREET",
+        "HOUSECAIRN_WEBPUSH_DISCREET",
+        Kind.BOOL,
+        Section.NOTIFICATIONS,
+        _("Discreet notifications on the device"),
+        _(
+            "A notification on the device says only that a task is due or a problem was "
+            "reported, with a link: no title of a task, no name of a home, on a locked "
+            "screen either."
+        ),
+        True,
+    ),
 )

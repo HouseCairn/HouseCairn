@@ -352,6 +352,18 @@ msgstr "Canaux sur le réseau local"
 msgid "`HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS`"
 msgstr "`HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS`"
 
+msgid "Notifications on the device"
+msgstr "Notifications sur l'appareil"
+
+msgid "`HOUSECAIRN_WEBPUSH_ENABLED`"
+msgstr "`HOUSECAIRN_WEBPUSH_ENABLED`"
+
+msgid "Discreet notifications on the device"
+msgstr "Notifications discrètes sur l'appareil"
+
+msgid "`HOUSECAIRN_WEBPUSH_DISCREET`"
+msgstr "`HOUSECAIRN_WEBPUSH_DISCREET`"
+
 msgid "Preview of inspiration links"
 msgstr "Aperçu des liens d'inspiration"
 
@@ -373,8 +385,8 @@ msgstr "Secrets"
 msgid "The SMTP password is write-only. The interface and the API say whether one is set, never what it is; it is absent from the audit log, the exports and the logs. A secret stored from the interface is encrypted in the database with a key derived from the instance's `SECRET_KEY`. If `SECRET_KEY` changes, the stored secret can no longer be read: the instance treats it as not set, the screen says so, and you enter it again. A password set by `EMAIL_HOST_PASSWORD` is shown as \"set\", without its value."
 msgstr "Le mot de passe SMTP est en écriture seule. L'interface et l'API disent si un mot de passe est défini, jamais lequel ; il est absent du journal d'audit, des exports et des journaux. Un secret enregistré depuis l'interface est chiffré en base de données avec une clé dérivée de la `SECRET_KEY` de l'instance. Si `SECRET_KEY` change, le secret enregistré n'est plus lisible : l'instance le considère comme non défini, l'écran le dit, et vous le saisissez de nouveau. Un mot de passe posé par `EMAIL_HOST_PASSWORD` s'affiche « défini », sans sa valeur."
 
-msgid "The same key encrypts the secrets of the [sign-in providers](oidc.md) added in the interface and the addresses of the [notification channels](../guides/notifications.md). Keep it apart from the data: set `SECRET_KEY` in the environment (`deploy/production.env`) rather than leave it generated in `/data/secret_key`, and keep a copy of it somewhere else than your backups. [Backups](backup.md) leave it out."
-msgstr "La même clé chiffre les secrets des [fournisseurs de connexion](oidc.md) ajoutés dans l'interface et les adresses des [canaux de notification](../guides/notifications.md). Gardez-la à part des données : définissez `SECRET_KEY` dans l'environnement (`deploy/production.env`) plutôt que de la laisser générer dans `/data/secret_key`, et gardez-en une copie ailleurs qu'avec vos sauvegardes. Les [sauvegardes](backup.md) la laissent de côté."
+msgid "The same key encrypts the secrets of the [sign-in providers](oidc.md) added in the interface, the addresses of the [notification channels](../guides/notifications.md) and the private key the instance signs [notifications on the device](../guides/notifications.md#on-this-device) with. Keep it apart from the data: set `SECRET_KEY` in the environment (`deploy/production.env`) rather than leave it generated in `/data/secret_key`, and keep a copy of it somewhere else than your backups. [Backups](backup.md) leave it out."
+msgstr "La même clé chiffre les secrets des [fournisseurs de connexion](oidc.md) ajoutés dans l'interface, les adresses des [canaux de notification](../guides/notifications.md) et la clé privée avec laquelle l'instance signe les [notifications sur l'appareil](../guides/notifications.md#on-this-device). Gardez-la à part des données : définissez `SECRET_KEY` dans l'environnement (`deploy/production.env`) plutôt que de la laisser générer dans `/data/secret_key`, et gardez-en une copie ailleurs qu'avec vos sauvegardes. Les [sauvegardes](backup.md) la laissent de côté."
 
 msgid "Rotate the key"
 msgstr "Changer la clé"

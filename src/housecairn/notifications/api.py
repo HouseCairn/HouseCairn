@@ -20,8 +20,8 @@ from rest_framework.views import APIView
 from housecairn.accounts.api import PersonOnlyToChange
 from housecairn.apitokens.models import ApiToken, Scope
 from housecairn.apitokens.permissions import TokenScopePermission
-from housecairn.notifications import services
-from housecairn.notifications.models import Channel, Preference
+from housecairn.notifications import devices, services
+from housecairn.notifications.models import Channel, Device, Preference
 
 
 class WriteTokenOnly(permissions.BasePermission):
@@ -155,6 +155,9 @@ class PreferencesView(PersonOnlyToChange, APIView):
 
 
 class ExportSerializer(serializers.Serializer[Any]):
+    devices = serializers.ListField(
+        child=serializers.DictField(), help_text="Name and push service: never the endpoint."
+    )
     channels = serializers.ListField(
         child=serializers.DictField(), help_text="Name, scheme, service: never the address."
     )
@@ -169,3 +172,98 @@ class ExportView(APIView):
     @extend_schema(responses=ExportSerializer)
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return Response(services.export_of(request.user))
+
+
+class DeviceSerializer(serializers.ModelSerializer[Device]):
+    """A device that receives notifications by Web Push (docs/adr/0066).
+
+    The subscription of the browser is written once and never returned: the endpoint is a
+    capability, and the keys are the device's.
+    """
+
+    endpoint = serializers.CharField(
+        write_only=True, max_length=1024, help_text="`PushSubscription.endpoint`. Never returned."
+    )
+    p256dh = serializers.CharField(
+        write_only=True, max_length=200, help_text="`keys.p256dh` of the subscription."
+    )
+    auth = serializers.CharField(
+        write_only=True, max_length=200, help_text="`keys.auth` of the subscription."
+    )
+
+    class Meta:
+        model = Device
+        fields = [
+            "id",
+            "name",
+            "service",
+            "endpoint",
+            "p256dh",
+            "auth",
+            "created_at",
+            "last_sent_at",
+        ]
+        read_only_fields = ["id", "service", "created_at", "last_sent_at"]
+
+
+class DeviceTestSerializer(serializers.Serializer[Any]):
+    detail = serializers.CharField()
+
+
+class DeviceUpdateSerializer(serializers.Serializer[Any]):
+    name = serializers.CharField(max_length=60)
+
+
+class DeviceViewSet(
+    PersonOnlyToChange,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet[Device],
+):
+    """The caller's devices. Adding, renaming and removing one belong to the person with
+    the session (a token gets a 403); a token with `write` may read the list."""
+
+    serializer_class = DeviceSerializer
+    pagination_class = None
+    permission_classes = PERMISSIONS
+
+    def get_queryset(self) -> Any:
+        return devices.devices_of(self.request.user)
+
+    def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        serializer = DeviceSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            device = devices.subscribe(request.user, **serializer.validated_data)
+        except DjangoValidationError as exc:
+            raise _invalid(exc) from None
+        return Response(DeviceSerializer(device).data, status=201)
+
+    @extend_schema(request=DeviceUpdateSerializer, responses=DeviceSerializer)
+    def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        device = self.get_object()
+        serializer = DeviceUpdateSerializer(data=request.data)
+        fixed = sorted(set(request.data) - set(serializer.fields))
+        if fixed:
+            raise exceptions.ValidationError({f: [str(services.FIELD_FIXED)] for f in fixed})
+        serializer.is_valid(raise_exception=True)
+        try:
+            devices.rename(request.user, device, name=serializer.validated_data["name"])
+        except DjangoValidationError as exc:
+            raise _invalid(exc) from None
+        return Response(DeviceSerializer(device).data)
+
+    def perform_destroy(self, instance: Device) -> None:
+        devices.revoke(self.request.user, instance)
+
+    @extend_schema(request=None, responses=DeviceTestSerializer)
+    @action(detail=True, methods=["post"])
+    def test(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        """Queue a test notification; the background worker sends it."""
+        device = self.get_object()
+        try:
+            devices.test(request.user, device)
+        except DjangoValidationError as exc:
+            raise _invalid(exc) from None
+        return Response({"detail": str(devices.TEST_QUEUED)}, status=202)

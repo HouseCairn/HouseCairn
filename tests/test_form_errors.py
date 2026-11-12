@@ -20,6 +20,7 @@ from housecairn.accounts import setup
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership
 from housecairn.instance import services as instance_services
+from housecairn.notifications.models import Device
 from housecairn.notifications.services import add_channel
 from housecairn.projects.models import BudgetLine, Project, Quote
 from housecairn.rooms.models import Item, Room
@@ -262,6 +263,11 @@ CASES: list[Case] = [
         {"name": ""},
     ),
     (
+        "notification-device-edit",
+        lambda c: reverse("notifications:device", args=[c["device"].id]),
+        {"name": ""},
+    ),
+    (
         "notification-preferences",
         lambda c: reverse("notifications:preferences"),
         {"days_before": "-4", "send_at": "x"},
@@ -314,6 +320,15 @@ def context(
             alice,
             name="Phone",
             url="tgram://123456789:AAAA-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/987654",
+        ),
+        "device": Device.objects.create(
+            user=alice,
+            name="Phone",
+            endpoint="sealed",
+            endpoint_hash="0" * 64,
+            p256dh="sealed",
+            auth="sealed",
+            service="Google",
         ),
         "alice": alice,
     }
@@ -466,6 +481,7 @@ TEMPLATE_CASES: dict[str, list[str]] = {
     "instance/overview.html": ["instance-invite"],
     "instance/settings_section.html": ["instance-settings"],
     "notifications/channel.html": ["notification-channel-edit"],
+    "notifications/device.html": ["notification-device-edit"],
     "notifications/index.html": ["notification-channel", "notification-preferences"],
     "projects/envelope_form.html": ["envelope"],
     "projects/line_form.html": ["line-create"],
