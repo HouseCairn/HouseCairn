@@ -51,8 +51,9 @@ holds the rest.
 - A section **must** have four tabs at most, all visible at 360 px. A tab hidden by
   a horizontal scroll is a screen nobody finds. A label longer than its share of the width
   wraps between words inside its tab (`tabs-fit`), never over the next one; a word that does
-  not fit in a tab at 360 px is a label to shorten, in the catalog if needed (the instance
-  tabs are "Aperçu" and "SSO" in French).
+  not fit in a tab at 320 px is a label to shorten, in the catalog if needed (the instance
+  tabs are "Aperçu" and "SSO" in French, the home audit log tab is "Journal"). Under 360 px
+  the padding of a tab is 2 px and its text 13 px. `instance-tabs` measures 320 px and up.
 - Tabs **must** switch between sister views of the same content, never lead to
   another section or a setting. Tabs used as a menu hide what they announce.
 - A page **must** show one row of tabs at most. Two rows on a phone take half of the

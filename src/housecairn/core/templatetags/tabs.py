@@ -158,7 +158,12 @@ def _home(context: template.Context, request: HttpRequest, view: str) -> list[Ta
     ]
     if context.get("is_owner") or context.get("role") == "owner":
         tabs.append(
-            Tab(_("Home audit log"), reverse("homes:audit", kwargs=kwargs), view == "homes:audit")
+            Tab(
+                # Its own entry: the French label is shorter than the title of the page.
+                pgettext_lazy("tab", "Home audit log"),
+                reverse("homes:audit", kwargs=kwargs),
+                view == "homes:audit",
+            )
         )
     return tabs
 

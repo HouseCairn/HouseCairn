@@ -103,7 +103,8 @@ jobs:
           rooms.create_item(forms, kitchen, name='Oven')
           rooms.create_item(forms, kitchen, name='Hob')
           rooms.create_item(forms, cellar, name='Boiler')
-          User.objects.create_superuser(email='admin@example.com', password='correct-horse-battery-staple')
+          admin = User.objects.create_superuser(email='admin@example.com', password='correct-horse-battery-staple')
+          services.create_home(admin, name='Main house')
           "
           nohup uv run python manage.py runserver 127.0.0.1:8001 --noreload > "$RUNNER_TEMP/passkey-server.log" 2>&1 &
           # The last try decides: a server that never answers fails here, with its log.

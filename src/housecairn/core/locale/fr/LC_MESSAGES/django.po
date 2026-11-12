@@ -280,8 +280,9 @@ msgstr "Projets"
 msgid "Upkeep"
 msgstr "Entretien"
 
+msgctxt "tab"
 msgid "Home audit log"
-msgstr "Journal d'audit du logement"
+msgstr "Journal"
 
 msgid "Overview"
 msgstr "Aperçu"
