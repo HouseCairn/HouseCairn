@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Restore as a copy.** The archive of a home can now be restored as a copy, next to the home it was made from: everything it holds gets new identifiers and its own files, and the original is not touched. Use it to duplicate a home or to check a backup without deleting anything. You own the copy and are its only member; its members and invitations are not copied. Also from the API (`as_copy`) and from `manage.py restore_home --copy` ([Export and deletion](../../../administration/data.md#restore-as-a-copy))."
+msgstr "**Restaurer comme copie.** L'archive d'un logement peut désormais être restaurée comme copie, à côté du logement dont elle est issue : tout ce qu'elle contient reçoit de nouveaux identifiants et ses propres fichiers, et l'original n'est pas modifié. Pour dupliquer un logement ou vérifier une sauvegarde sans rien supprimer. Vous êtes propriétaire de la copie et son seul membre ; ses membres et ses invitations ne sont pas copiés. Aussi depuis l'API (`as_copy`) et par `manage.py restore_home --copy` ([Export et suppression](../../../administration/data.md#restore-as-a-copy))."
+

@@ -2,7 +2,9 @@
 
 The code of an active label is exported, so that the stickers already stuck on the walls
 still open the right page once the home is restored; the code of a revoked label is not,
-it opens nothing, and a restore gives the revoked label a new random code.
+it opens nothing, and a restore gives the revoked label a new random code. A copy of the
+home gives every label a new code: the stickers keep opening the home they were printed
+for (docs/adr/0069).
 """
 
 from typing import Any
@@ -25,6 +27,11 @@ def _code_for_revoked(data: dict[str, Any], home: Any) -> dict[str, Any]:
     return data
 
 
+def _new_code(data: dict[str, Any], home: Any) -> dict[str, Any]:
+    data["code"] = new_code()
+    return data
+
+
 def register() -> None:
     exports.register(
         "labels",
@@ -33,6 +40,7 @@ def register() -> None:
             Label,
             on_export=_hide_revoked_code,
             on_restore=_code_for_revoked,
+            on_copy=_new_code,
             nulls=("code",),
         ),
     )

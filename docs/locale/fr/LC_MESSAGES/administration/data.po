@@ -247,8 +247,8 @@ msgstr "un format et une version que cette instance connaît, et chaque fichier 
 msgid "every value accepted by its field (a choice of the list, a valid date, a text no longer than allowed), every reference to an object the archive holds, never to an object of another home;"
 msgstr "chaque valeur acceptée par son champ (un choix de la liste, une date valide, un texte pas plus long que permis), chaque référence vers un objet que contient l'archive, jamais vers un objet d'un autre logement ;"
 
-msgid "no object already on this instance: the home it was made from must be deleted first, or the archive restored on another instance;"
-msgstr "aucun objet déjà présent sur cette instance : le logement d'origine doit d'abord être supprimé, ou l'archive restaurée sur une autre instance ;"
+msgid "no object already on this instance: the home it was made from must be deleted first, or the archive restored on another instance, or restored as a copy ([below](#restore-as-a-copy));"
+msgstr "aucun objet déjà présent sur cette instance : le logement d'origine doit d'abord être supprimé, ou l'archive restaurée sur une autre instance, ou restaurée comme copie ([ci-dessous](#restore-as-a-copy)) ;"
 
 msgid "every file decoded again, of the type its object says."
 msgstr "chaque fichier décodé de nouveau, du type qu'indique son objet."
@@ -258,6 +258,30 @@ msgstr "Personne ne reçoit de compte. Depuis le web, la personne qui restaure e
 
 msgid "which attaches again every person of the archive who has an account here with the same address, with their role."
 msgstr "qui rattache chaque personne de l'archive ayant ici un compte à la même adresse, avec son rôle."
+
+msgid "Restore as a copy"
+msgstr "Restauration comme copie"
+
+msgid "**Restore as a copy** on the same page (or `as_copy=true` on `POST /api/v1/homes/restore/`, or `--copy` on `restore_home`) makes a new home next to the one the archive was made from, which it does not touch: to duplicate a home, or to check a backup without deleting the original ([ADR 0069](../adr/0069-restore-as-a-copy-with-new-identifiers.md)). Archives of format 2 and 3 are accepted."
+msgstr "**Restaurer comme copie**, sur la même page (ou `as_copy=true` sur `POST /api/v1/homes/restore/`, ou `--copy` sur `restore_home`), crée un nouveau logement à côté de celui dont l'archive est issue, sans le modifier : pour dupliquer un logement, ou vérifier une sauvegarde sans supprimer l'original ([ADR 0069](../adr/0069-restore-as-a-copy-with-new-identifiers.md)). Les archives aux formats 2 et 3 sont acceptées."
+
+msgid "The archive goes through every check of the restore above, and the copy is written in one transaction: if anything is refused, nothing is created."
+msgstr "L'archive passe par toutes les vérifications de la restauration ci-dessus, et la copie est écrite en une seule transaction : si quoi que ce soit est refusé, rien n'est créé."
+
+msgid "Every object (rooms, items, tasks and their history, stock, projects, quotes, budget lines, contractors, photos and files, links, labels, reports, events) gets a new identifier, and every link between them follows: the copy shares no row and no file with the original. Each file is stored again, under the copy."
+msgstr "Chaque objet (pièces, éléments, tâches et leur historique, stock, projets, devis, lignes de budget, intervenants, photos et fichiers, liens, étiquettes, signalements, événements) reçoit un nouvel identifiant, et chaque lien entre eux suit : la copie ne partage aucune ligne ni aucun fichier avec l'original. Chaque fichier est enregistré de nouveau, sous la copie."
+
+msgid "QR labels get new codes: the stickers of the original still open the original."
+msgstr "Les étiquettes QR reçoivent de nouveaux codes : les autocollants de l'original ouvrent toujours l'original."
+
+msgid "The person who restores owns the copy and is its only member. The members and the invitations of the archive are not copied; anyone else the archive names (an assignee, who did a task) is left unattributed."
+msgstr "La personne qui restaure est propriétaire de la copie et en est le seul membre. Les membres et les invitations de l'archive ne sont pas copiés ; toute autre personne que nomme l'archive (une personne assignée, qui a réalisé une tâche) reste non attribuée."
+
+msgid "The copy is named after the home, followed by \"(copy)\" (then \"(copy 2)\"…), unless another name is given (`name`, or `--name`); it can be renamed later."
+msgstr "La copie porte le nom du logement suivi de « (copie) » (puis « (copie 2) »…), sauf si un autre nom est donné (`name`, ou `--name`) ; elle peut être renommée ensuite."
+
+msgid "While the home of the archive is on this instance, only one of its owners may copy it: anyone else is refused (403 from the page and the API). Once that home is gone, whoever holds the archive may restore it or copy it."
+msgstr "Tant que le logement de l'archive est sur cette instance, seul l'un de ses propriétaires peut le copier : toute autre personne est refusée (403 depuis la page et l'API). Une fois ce logement supprimé, quiconque détient l'archive peut la restaurer ou la copier."
 
 msgid "A home that required a sign-in provider still requires it once restored. On an instance that does not declare that provider, it stays locked, for its owner too, until the rule is lifted: the owner opens the locked page and chooses **Remove the sign-in requirement**, or the administrator uses **Remove these requirements** on the instance page ([Requiring single sign-on for a home](oidc.md#requiring-single-sign-on-for-a-home))."
 msgstr "Un logement qui exigeait un fournisseur de connexion l'exige encore une fois restauré. Sur une instance qui ne déclare pas ce fournisseur, il reste verrouillé, pour son propriétaire aussi, jusqu'à la levée de la règle : le propriétaire ouvre la page verrouillée et choisit **Retirer l'exigence de connexion**, ou l'administrateur utilise **Retirer ces exigences** sur la page de l'instance ([Exiger l'authentification unique pour un logement](oidc.md#requiring-single-sign-on-for-a-home))."

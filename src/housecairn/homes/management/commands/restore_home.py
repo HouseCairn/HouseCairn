@@ -4,6 +4,10 @@ For the administrator moving homes from one instance to another: unlike the web 
 every person of the archive who has an account here, with the same e-mail address, is
 attached again (memberships, assignees, who did a task). Nobody gets an account they did
 not have; the others are listed, left unattributed.
+
+With `--copy`, a copy with new identifiers that may sit next to the original
+(docs/adr/0069): the owner given is its only member, and must be an owner of the home of
+the archive when that home is on this instance.
 """
 
 from pathlib import Path
@@ -24,6 +28,15 @@ class Command(BaseCommand):
         parser.add_argument(
             "--owner", required=True, help="e-mail address of the account that will own the home"
         )
+        parser.add_argument(
+            "--copy",
+            action="store_true",
+            help="restore as a copy, with new identifiers, next to the original; "
+            "only the owner is a member of it",
+        )
+        parser.add_argument(
+            "--name", default="", help='name of the copy (default: the name and "(copy)")'
+        )
 
     def handle(self, *args: Any, **options: Any) -> None:
         owner = (
@@ -31,14 +44,27 @@ class Command(BaseCommand):
         )
         if owner is None:
             raise CommandError("No active account has this address; create it first.")
+        if options["name"] and not options["copy"]:
+            raise CommandError("--name names a copy: add --copy.")
         try:
             with options["archive"].open("rb") as handle:
-                result = restore.restore_home(owner, handle, match_people=True)
+                result = restore.restore_home(
+                    owner,
+                    handle,
+                    match_people=True,
+                    as_copy=options["copy"],
+                    name=options["name"],
+                )
         except OSError as exc:
             raise CommandError(f"Cannot read the archive: {exc.strerror}") from None
+        except restore.CopyNotAllowedError as exc:
+            raise CommandError(str(exc.message)) from None
         except ValidationError as exc:
             raise CommandError(" ".join(exc.messages)) from None
-        self.stdout.write(f"Restored home {result.home.id}.")
+        if options["copy"]:
+            self.stdout.write(f"Restored home {result.home.id} as a copy: {result.home.name}.")
+        else:
+            self.stdout.write(f"Restored home {result.home.id}.")
         for name in result.matched:
             self.stdout.write(f"Attached again: {name}")
         for name in result.unattributed:

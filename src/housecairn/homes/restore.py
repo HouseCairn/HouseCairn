@@ -19,6 +19,11 @@ written is removed if anything fails. Identifiers are kept. People are matched b
 address on existing accounts, never created: from the web, only the person restoring is
 matched; from `manage.py restore_home`, run by the administrator of the instance, every
 person of the archive with an account (docs/adr/0048).
+
+A restore *as a copy* (docs/adr/0069) goes through the same checks, then gives every
+object of the archive a new identifier, the links between them following, so that it can
+sit next to the home it was made from. Only the person restoring is matched, and is its
+only member; when that home is on this instance, only one of its owners may copy it.
 """
 
 import contextlib
@@ -36,12 +41,14 @@ from decimal import Decimal, InvalidOperation
 from typing import IO, Any
 
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.files.base import ContentFile
 from django.db import IntegrityError, models, transaction
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from housecairn.homes import exports, quotas
+from housecairn.core.text import without_control_characters
+from housecairn.homes import exports, quotas, services
 from housecairn.homes.exports import FileSpec, Section
 from housecairn.homes.models import Home, Membership, Role
 
@@ -59,6 +66,16 @@ _NAME = re.compile(
 
 class ArchiveRefusedError(ValidationError):
     """The archive is not restored, and nothing was written; the message says why."""
+
+
+class CopyNotAllowedError(PermissionDenied):
+    """The home of the archive is on this instance and the person is not one of its owners."""
+
+    def __init__(self) -> None:
+        self.message = _(
+            "The home of this archive is on this instance: only one of its owners may copy it."
+        )
+        super().__init__(self.message)
 
 
 def _refuse(message: str, **params: Any) -> ArchiveRefusedError:
@@ -394,13 +411,24 @@ def _upgrade_v2(objects: dict[str, list[dict[str, Any]]]) -> None:
         row["contract_contractor"] = by_name[key]
 
 
+# Old identifier -> new identifier, per model: what a copy gives each object of the archive.
+Fresh = dict[type[models.Model], dict[uuid.UUID, uuid.UUID]]
+
+
 def _prepare(
     home: Home,
     objects: dict[str, list[dict[str, Any]]],
     people: dict[uuid.UUID, Any],
     archive: Archive,
+    *,
+    as_copy: bool = False,
 ) -> list[Prepared]:
-    """Every row to write, parsed and checked, its references inside the archive."""
+    """Every row to write, parsed and checked, its references inside the archive.
+
+    With `as_copy`, every identifier is replaced by a new one, drawn here, and every
+    reference and link by the new identifier of the object it names; the checks are made
+    on the identifiers of the archive, before any is replaced.
+    """
     sections = [s for _app, s in exports.all_sections() if s.restore]
     ids: dict[type[models.Model], set[uuid.UUID]] = {}
     for section in sections:
@@ -415,6 +443,9 @@ def _prepare(
                 _("The archive holds the same object twice (%(section)s)."), section=section.name
             )
         ids[section.model] = seen
+    fresh: Fresh = {}
+    if as_copy:
+        fresh = {model: {old: uuid.uuid4() for old in seen} for model, seen in ids.items()}
     prepared: list[Prepared] = []
     entries = archive.manifest["entries"]
     for section in sections:
@@ -423,6 +454,8 @@ def _prepare(
             row = dict(raw_row)
             if section.on_restore is not None:
                 row = section.on_restore(row, home)
+            if as_copy and section.on_copy is not None:
+                row = section.on_copy(row, home)
             values: dict[str, Any] = {"home": home}
             files: dict[str, str] = {}
             stamps: dict[str, Any] = {}
@@ -466,8 +499,12 @@ def _prepare(
                             index=str(index + 1),
                             field=f.name,
                         )
+                    if as_copy and value is not None:
+                        value = fresh[target][value]
                     values[f.attname] = value
                     continue
+                if as_copy and f.primary_key:
+                    value = fresh[section.model][value]
                 if isinstance(f, models.DateTimeField) and (f.auto_now or f.auto_now_add):
                     stamps[f.attname] = value
                 values[f.attname] = value
@@ -490,6 +527,9 @@ def _prepare(
                         index=str(index + 1),
                         field=relation.name,
                     )
+                if as_copy:
+                    related: Any = relation.related_model
+                    targets = [fresh[related][pk] for pk in targets]
                 m2m[relation.name] = targets
             prepared.append(Prepared(section, section.model(**values), m2m, files, stamps))
     return prepared
@@ -514,8 +554,8 @@ def _check_free(home_id: uuid.UUID, prepared: list[Prepared]) -> None:
         raise _refuse(
             _(
                 "This instance already holds the objects of this archive: the home it was made "
-                "from is still here, or the archive was restored already. Delete that home "
-                "first, or restore on another instance."
+                "from is still here, or the archive was restored already. Restore it as a "
+                "copy, delete that home first, or restore on another instance."
             )
         )
 
@@ -639,9 +679,12 @@ def _memberships(
     )
 
 
-def _write(home: Home, prepared: list[Prepared], archive: Archive) -> list[Any]:
-    """Insert the rows and write the files; returns the stored files, for clean-up."""
-    written: list[Any] = []
+def _write(home: Home, prepared: list[Prepared], archive: Archive, written: list[Any]) -> None:
+    """Insert the rows and write the files, each stored file added to `written` as it is.
+
+    Added at once, not returned at the end: a file refused after others were stored leaves
+    them in `written`, which the caller removes.
+    """
     by_section: dict[str, list[Prepared]] = {}
     for p in prepared:
         by_section.setdefault(p.section.name, []).append(p)
@@ -682,11 +725,62 @@ def _write(home: Home, prepared: list[Prepared], archive: Archive) -> list[Any]:
                 batch_size=500,
             )
         del name
-    return written
 
 
-def restore_home(actor: Any, source: IO[bytes], *, match_people: bool = False) -> RestoreResult:
-    """Restore an archive as a new home owned by `actor`. ArchiveRefusedError when it cannot be."""
+NAME_MAX = Home._meta.get_field("name").max_length or 120
+
+
+def copy_name(actor: Any, name: str) -> str:
+    """The name a copy is given by default: the name of the home, said to be a copy.
+
+    "Home (copy)", then "Home (copy 2)" and so on when the person already has a home of
+    that name; the name of the home is shortened so that the whole fits the field.
+    """
+    taken = {_name_key(n) for n in services.homes_for(actor).values_list("name", flat=True)}
+    number = 1
+    while True:
+        suffix = _(" (copy)") if number == 1 else _(" (copy %(number)s)") % {"number": number}
+        candidate = name[: max(NAME_MAX - len(suffix), 1)].rstrip() + suffix
+        if _name_key(candidate) not in taken:
+            return candidate
+        number += 1
+
+
+def _copy_name_value(actor: Any, name: str, archived: str) -> str:
+    """The name chosen for the copy, on one line, or the default one when it is left empty."""
+    chosen = " ".join(without_control_characters(" ".join(str(name).split())).split())
+    if not chosen:
+        return copy_name(actor, archived)
+    if len(chosen) > NAME_MAX:
+        raise _refuse(
+            _("The name of the copy is too long (at most %(max)s characters)."),
+            max=str(NAME_MAX),
+        )
+    return chosen
+
+
+def _check_may_copy(actor: Any, archive: Archive) -> None:
+    """Only an owner of the home of the archive copies it, when that home is on this instance."""
+    original = Home.objects.filter(pk=_manifest_home(archive)).first()
+    if original is not None and not services.is_owner(actor, original):
+        raise CopyNotAllowedError
+
+
+def restore_home(
+    actor: Any,
+    source: IO[bytes],
+    *,
+    match_people: bool = False,
+    as_copy: bool = False,
+    name: str = "",
+) -> RestoreResult:
+    """Restore an archive as a new home owned by `actor`. ArchiveRefusedError when it cannot be.
+
+    `as_copy` makes it a copy, with new identifiers (docs/adr/0069): `name` is its name,
+    by default that of `copy_name`; only `actor` is matched and becomes a member, whatever
+    `match_people` says. CopyNotAllowedError when the home of the archive is on this
+    instance and `actor` is not one of its owners.
+    """
     from housecairn.audit import services as audit
 
     archive = read_archive(source)
@@ -694,12 +788,18 @@ def restore_home(actor: Any, source: IO[bytes], *, match_people: bool = False) -
     home_id, home_values = _home_values(homes_doc)
     if home_id != _manifest_home(archive):
         raise _refuse(_("The manifest of the archive is incomplete."))
+    if as_copy:
+        _check_may_copy(actor, archive)
+        match_people = False
+        home_id = uuid.uuid4()
+        home_values["name"] = _copy_name_value(actor, name, home_values["name"])
+        home_values["created_at"] = home_values["updated_at"] = timezone.now()
     people, matched, unattributed = _people(homes_doc, actor, match_people)
     home = Home(id=home_id, **home_values)
     objects = _objects(archive)
     if archive.manifest["version"] == 2:
         _upgrade_v2(objects)
-    prepared = _prepare(home, objects, people, archive)
+    prepared = _prepare(home, objects, people, archive, as_copy=as_copy)
     _check_free(home_id, prepared)
     size = sum(
         archive.manifest["entries"][path]["size"] for p in prepared for path in p.files.values()
@@ -713,10 +813,11 @@ def restore_home(actor: Any, source: IO[bytes], *, match_people: bool = False) -
                 created_at=home_values["created_at"], updated_at=home_values["updated_at"]
             )
             quotas.check(home, size=size, new_files=count)
-            _memberships(home, homes_doc, people, actor)
-            written = _write(home, prepared, archive)
+            # A copy has no member of the archive: only whoever makes it (docs/adr/0069).
+            _memberships(home, {} if as_copy else homes_doc, people, actor)
+            _write(home, prepared, archive, written)
             audit.record(
-                "home.restored",
+                "home.copied" if as_copy else "home.restored",
                 actor=actor,
                 home_id=home.id,
                 format=f"v{archive.manifest['version']}",
