@@ -431,7 +431,11 @@ class TestAccounts:
         with pytest.raises(mode.DemoRefusedError):
             account_services.delete_account(member(), by_admin=admin())
         with pytest.raises(mode.DemoRefusedError):
+            account_services.delete_account(member())
+        with pytest.raises(mode.DemoRefusedError):
             member().delete()
+        # Refused inside the erasure's transaction: nothing of the accounts went.
+        assert Membership.objects.filter(user__email__in=mode.ACCOUNTS).count() == 2
 
     def test_no_account_creation(self, demo: None, make_user: Any) -> None:
         with pytest.raises(mode.DemoRefusedError):
