@@ -301,6 +301,24 @@ class TestEstimateOfADoneOccurrence:
         assert "Estimated at" not in self.page(signed_in, alice_home, task)
 
 
+class TestPaidByNature:
+    def test_the_real_cost_is_shared_as_the_estimate_with_the_stock_in_the_materials(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        # Estimate 40 = 10 typed + 20 of stock (materials, 30) + 10 of labour.
+        task = make_task(alice, alice_home, material_budget=D("10"), labour_budget=D("10"))
+        materials.add_material(alice, task, make_article(alice, alice_home, "Paint", "20"), D("1"))
+        done_once(alice, task, "80")
+        natures = {
+            line.label: line.amounts
+            for line in budget.by_nature(budget.load(alice_home, TODAY), 2026)
+        }
+        # 80 paid, shared 30/40 and 10/40: 60 in materials, 20 in labour, none in other.
+        assert natures["material"].paid == D("60.00")
+        assert natures["labour"].paid == D("20.00")
+        assert natures["other"].paid == D("0")
+
+
 class TestOnTheScreens:
     def test_the_page_of_a_task_shows_the_stock_apart_and_the_items_without_price(
         self, signed_in: Client, alice: User, alice_home: Home
