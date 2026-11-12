@@ -209,6 +209,8 @@ EXEMPT: dict[str, str] = {
     "api-schema": "API description itself",
     "api-docs": "API documentation page",
     "manifest": "web app manifest read by browsers",
+    "service-worker": "script of the installed application, read by browsers (docs/adr/0065)",
+    "offline": "page shown offline for a page that was not kept, holds no data",
     "more": "navigation page that links to other screens",
     "homes:current": "choice of the home a section opens on, kept in the web session only",
     "more-security": "navigation page that links to the account security screens",

@@ -1,0 +1,47 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Install on a phone"
+msgstr "Installer sur un téléphone"
+
+msgid "HouseCairn installs on a phone's home screen like an app: it opens in its own window, without the address bar, and Today and the task list of your home stay readable without a connection. The instance must be served over HTTPS."
+msgstr "HouseCairn s'installe sur l'écran d'accueil d'un téléphone comme une application : il s'ouvre dans sa propre fenêtre, sans barre d'adresse, et Aujourd'hui et la liste des tâches de votre logement restent lisibles sans connexion. L'instance doit être servie en HTTPS."
+
+msgid "Android"
+msgstr "Android"
+
+msgid "In Chrome, Edge or Firefox, open the address of your instance and sign in. The browser offers **Install app** (Chrome and Edge, at the bottom of the screen or in the ⋮ menu) or **Install** (Firefox, in the ⋮ menu). HouseCairn then appears with the other apps."
+msgstr "Dans Chrome, Edge ou Firefox, ouvrez l'adresse de votre instance et connectez-vous. Le navigateur propose **Installer l'application** (Chrome et Edge, en bas de l'écran ou dans le menu ⋮) ou **Installer** (Firefox, dans le menu ⋮). HouseCairn apparaît alors avec les autres applications."
+
+msgid "iPhone and iPad"
+msgstr "iPhone et iPad"
+
+msgid "In Safari, open the address of your instance and sign in. Tap **Share**, then **Add to Home Screen**, then **Add**. The name under the icon is the name of the instance."
+msgstr "Dans Safari, ouvrez l'adresse de votre instance et connectez-vous. Touchez **Partager**, puis **Sur l'écran d'accueil**, puis **Ajouter**. Le nom sous l'icône est celui de l'instance."
+
+msgid "Without a connection"
+msgstr "Sans connexion"
+
+msgid "Today and the task list of your home are kept on the phone each time you open them with a connection. Without one, they show as they were then, under the banner **Offline: data from** followed by the date and time; the buttons that change something, **Done** and the forms, are off until the connection is back. Nothing is saved for later. Any other page shows that it was not saved."
+msgstr "Aujourd'hui et la liste des tâches de votre logement sont gardées sur le téléphone chaque fois que vous les ouvrez avec une connexion. Sans connexion, elles s'affichent telles qu'elles étaient alors, sous le bandeau **Hors ligne : données du** suivi de la date et de l'heure ; les boutons qui modifient quelque chose, **Fait** et les formulaires, sont désactivés jusqu'au retour de la connexion. Rien n'est mis de côté pour plus tard. Toute autre page indique qu'elle n'a pas été enregistrée."
+
+msgid "What is kept belongs to you alone: signing out deletes it, and so does another person signing in on the same phone. The other homes are never kept, only the one you opened last."
+msgstr "Ce qui est gardé n'appartient qu'à vous : la déconnexion le supprime, tout comme la connexion d'une autre personne sur le même téléphone. Les autres logements ne sont jamais gardés, seulement le dernier que vous avez ouvert."
+

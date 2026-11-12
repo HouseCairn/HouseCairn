@@ -1,0 +1,6 @@
+{% load static %}{# Installed application and offline reading (docs/adr/0065): iOS reads these, the others read the manifest. #}
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="{% instance_name %}">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script src="{% static 'js/offline.js' %}" data-worker="{% url 'service-worker' %}" data-scope="{% url 'index' %}" data-signed-in="{% if user.is_authenticated %}true{% else %}false{% endif %}" defer></script>

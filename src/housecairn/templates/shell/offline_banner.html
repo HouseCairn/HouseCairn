@@ -1,0 +1,3 @@
+{% load i18n dates %}{% if user.is_authenticated %}{% moment_now as rendered_at %}{# Shown by static/js/offline.js (docs/adr/0065). #}
+<p id="offline-banner" class="alert alert-warning offline-banner" role="status" data-served="network" hidden><span><strong>{% blocktranslate with when=rendered_at %}Offline: data from {{ when }}{% endblocktranslate %}</strong> {% translate "Changes are off until the connection is back." %}</span></p>
+{% endif %}
