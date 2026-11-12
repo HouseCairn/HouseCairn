@@ -41,10 +41,12 @@ from housecairn.notifications.models import Channel, Device
 from housecairn.projects.models import Project
 from housecairn.rooms.models import Room
 from housecairn.tasks.models import Task
+from tests.conftest import PASSWORD
 
 pytestmark = pytest.mark.django_db
 
 URL = "tgram://123456789:AAbbCCddEEffGGhhIIjjKKllMMnnOOppQQrr/987654321"
+from tests.conftest import PASSWORD
 
 
 @pytest.fixture
@@ -158,6 +160,9 @@ class TestOff:
 
         tasks.schedule()
         assert not Schedule.objects.filter(name=tasks.SCHEDULE).exists()
+
+    def test_login_failures_are_still_counted_per_account(self) -> None:
+        assert ratelimits.rates()["login_failed"] == "10/m/ip,5/300s/key"
 
     def test_the_settings_screen_has_no_fieldset(self, client: Client, admin_user: User) -> None:
         """The disabled fieldset of the demonstration would change the look of the form."""
@@ -528,6 +533,53 @@ class TestEachRefusalIsTested:
         settings.HOUSECAIRN_DEMO = False
         assert reminders.dispatch() >= 1
         assert sent
+
+
+class TestPublicAccountsCannotBeLockedOut:
+    """The failures of a sign-in are counted by address on a demonstration instance, not by account."""
+
+    @pytest.fixture(autouse=True)
+    def _clean_cache(self) -> Iterator[None]:
+        from django.core.cache import cache
+
+        cache.clear()
+        yield
+        cache.clear()
+
+    def sign_in(self, client: Client, email: str, password: str, address: str) -> Any:
+        return client.post(
+            reverse("account_login"),
+            {"login": email, "password": password},
+            REMOTE_ADDR=address,
+        )
+
+    def six_failures(self, address: str) -> None:
+        for _ in range(6):
+            self.sign_in(Client(), mode.ADMIN_EMAIL, "wrong-password", address)
+
+    def test_the_rate_is_by_address_only(self, demo: None) -> None:
+        assert ratelimits.rates()["login_failed"] == "10/m/ip"
+
+    def test_six_failures_from_one_address_do_not_lock_the_account(self, demo: None) -> None:
+        self.six_failures("192.0.2.10")
+        answer = self.sign_in(Client(), mode.ADMIN_EMAIL, mode.PASSWORD, "192.0.2.20")
+        assert answer.status_code == 302
+        assert reverse("account_login") not in answer["Location"]
+
+    def test_the_address_is_still_limited(self, demo: None) -> None:
+        for _ in range(10):
+            self.sign_in(Client(), mode.ADMIN_EMAIL, "wrong-password", "192.0.2.10")
+        answer = self.sign_in(Client(), mode.ADMIN_EMAIL, mode.PASSWORD, "192.0.2.10")
+        assert answer.status_code == 200
+        assert "Too many failed login attempts" in answer.content.decode()
+
+    def test_off_the_account_is_still_locked(self, make_user: Any) -> None:
+        user = make_user("owner@example.com")
+        for _ in range(6):
+            self.sign_in(Client(), user.email, "wrong-password", "192.0.2.10")
+        answer = self.sign_in(Client(), user.email, PASSWORD, "192.0.2.20")
+        assert answer.status_code == 200
+        assert "Too many failed login attempts" in answer.content.decode()
 
 
 class TestAccounts:

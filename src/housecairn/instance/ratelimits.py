@@ -11,16 +11,20 @@ from collections.abc import Iterator, Mapping
 
 def rates() -> dict[str, str]:
     """The rate of each action, in allauth's format (amount/period/key)."""
+    from housecairn.demo import mode
     from housecairn.instance.config import get_setting
 
     def n(key: str) -> int:
         return int(get_setting(f"ratelimit_{key}"))
 
+    # On a demonstration instance the failures are counted by address only: the accounts are
+    # public, and a count by account would let anyone lock every visitor out (ADR 0071).
+    failed = "10/m/ip" if mode.is_on() else f"10/m/ip,{n('login_failures')}/300s/key"
     invite = f"{n('invitations')}/m/user,{n('invitations_day')}/d/user"
     return {
         # allauth's own actions; the defaults are those of allauth or of ADR 0024.
         "login": f"{n('login')}/m/ip",
-        "login_failed": f"10/m/ip,{n('login_failures')}/300s/key",
+        "login_failed": failed,
         "signup": f"{n('signup')}/m/ip,{n('signup_day')}/d/ip",
         "reset_password": f"{n('password_reset')}/m/ip,5/m/key",
         # HouseCairn's (ADR 0020, 0022, 0023, 0035, 0041).

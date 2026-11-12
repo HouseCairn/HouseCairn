@@ -48,6 +48,11 @@ second factor), or fill its disk.
   a public account keeps its address, password, rights and active state and is not deleted; no
   address, second factor or linked identity is added to or removed from it. A sign-in that
   hashes the same public password again is allowed. The first-account screen is closed.
+- **Sign-in failures counted by address only.** The limit of failed sign-ins per account
+  (`ratelimit_login_failures`, ADR 0042) does not apply: the two accounts are public, and five
+  wrong passwords for `admin@example.com` would lock every visitor out, again and again. The
+  limit per address (ten a minute) stays. With the demonstration mode off, both limits apply
+  as before.
 - **A banner** on every page, and the two accounts on the sign-in screen.
 
 ## Consequences
