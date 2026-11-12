@@ -5,6 +5,7 @@ with what it must leave untouched. `HOUSECAIRN_DEMO` false changes nothing.
 """
 
 import datetime
+import io
 import time
 from collections.abc import Iterator
 from pathlib import Path
@@ -21,13 +22,14 @@ from django.core.management import CommandError, call_command
 from django.db import transaction
 from django.test import Client
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from housecairn.accounts import services as account_services
 from housecairn.accounts import setup
 from housecairn.accounts.models import User
 from housecairn.demo import mode, reset, tasks
-from housecairn.homes import quotas
+from housecairn.homes import quotas, restore
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership, Role
 from housecairn.instance import config, mail, providers, ratelimits, settings_services
@@ -94,6 +96,23 @@ def state() -> dict[str, Any]:
         "projects": sorted(Project.objects.filter(home=home).values_list("title", flat=True)),
         "settings": list(SettingValue.objects.values_list("key", flat=True)),
     }
+
+
+def padded_archive(home: Home, size: int) -> bytes:
+    """The archive of the home with a manifest of `size` bytes: blanks after the JSON."""
+    import zipfile
+
+    from housecairn.homes import exports
+
+    source, _name = exports.build_archive(home)
+    out = io.BytesIO()
+    with zipfile.ZipFile(source) as read, zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as write:
+        for info in read.infolist():
+            data = read.read(info)
+            if info.filename == exports.MANIFEST:
+                data = data + b" " * (size - len(data))
+            write.writestr(info.filename, data)
+    return out.getvalue()
 
 
 class TestOff:
@@ -409,6 +428,106 @@ class TestNothingSent:
 
     def test_no_link_preview(self, demo: None) -> None:
         assert config.get_setting("link_preview_enabled") is False
+
+
+class TestEachRefusalIsTested:
+    """One test for each refusal that no other test pins: it falls when its check is removed."""
+
+    def provider(self) -> OidcProvider:
+        return OidcProvider.objects.create(
+            slug="sso", name="SSO", issuer="https://id.example.com", client_id="x", enabled=True
+        )
+
+    def test_a_provider_is_not_changed(self, demo: None) -> None:
+        provider = self.provider()
+        with pytest.raises(mode.DemoRefusedError):
+            providers.update(admin(), provider, {"name": "Defaced"})
+        provider.refresh_from_db()
+        assert provider.name == "SSO"
+
+    def test_a_provider_is_not_deleted(self, demo: None) -> None:
+        provider = self.provider()
+        with pytest.raises(mode.DemoRefusedError):
+            providers.delete(admin(), provider)
+        assert OidcProvider.objects.filter(pk=provider.pk).exists()
+
+    def test_an_instance_invitation_is_not_sent_again(self, demo: None) -> None:
+        now = timezone.now()
+        invitation = InstanceInvitation.objects.create(
+            email="new@example.com",
+            invited_by=admin(),
+            digest="0" * 64,
+            expires_at=now + datetime.timedelta(days=1),
+            sent_at=now,
+        )
+        with pytest.raises(mode.DemoRefusedError):
+            instance_services.resend(admin(), invitation, send=lambda *a: pytest.fail("sent"))
+        invitation.refresh_from_db()
+        assert invitation.digest == "0" * 64
+
+    def test_a_home_invitation_is_not_sent_again_by_email(self, demo: None) -> None:
+        invitation, _link = home_services.invite(
+            admin(),
+            Home.objects.get(),
+            email="n@example.com",
+            role="member",
+            delivery=home_services.Delivery(),
+        )
+        digest = invitation.digest
+        with pytest.raises(mode.DemoRefusedError):
+            home_services.resend_invitation(
+                admin(),
+                invitation,
+                delivery=home_services.Delivery(send=lambda *a: pytest.fail("sent")),
+            )
+        invitation.refresh_from_db()
+        assert invitation.digest == digest
+        # By link, nothing leaves the server: allowed.
+        home_services.resend_invitation(admin(), invitation, delivery=home_services.Delivery())
+
+    def test_a_document_over_four_megabytes_is_refused(
+        self, demo: None, settings: Any
+    ) -> None:
+        archive_bytes = padded_archive(Home.objects.get(), mode.DOCUMENT_MAX_BYTES + 1)
+        with pytest.raises(restore.ArchiveRefusedError, match="too large"):
+            restore.read_archive(io.BytesIO(archive_bytes))
+        settings.HOUSECAIRN_DEMO = False
+        restore.read_archive(io.BytesIO(archive_bytes))
+
+    def test_no_linked_identity(self, demo: None) -> None:
+        from allauth.socialaccount.models import SocialAccount
+
+        for user in (admin(), member()):
+            with pytest.raises(mode.DemoRefusedError), transaction.atomic():
+                SocialAccount.objects.create(user=user, provider="sso", uid=f"uid-{user.pk}")
+        with mode.reset_context():
+            linked = SocialAccount.objects.create(user=admin(), provider="sso", uid="kept")
+        with pytest.raises(mode.DemoRefusedError), transaction.atomic():
+            linked.delete()
+        assert SocialAccount.objects.filter(pk=linked.pk).exists()
+
+    def test_a_due_reminder_is_not_sent(
+        self, demo: None, settings: Any, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from housecairn.notifications import reminders
+        from housecairn.tasks import services as task_services
+
+        settings.HOUSECAIRN_NOTIFICATIONS_ENABLED = True
+        config.invalidate()
+        notifications.add_channel(member(), name="Phone", url=URL)
+        task_services.create_task(
+            member(), Home.objects.get(), title="Change the filter", due_on=task_services.today()
+        )
+        sent: list[str] = []
+        monkeypatch.setattr(
+            reminders.outbound, "send", lambda sealed, *, title, body: sent.append(title) or True
+        )
+        assert reminders.dispatch() == 0
+        assert sent == []
+        # The same reminder is due: off, the very same call sends it.
+        settings.HOUSECAIRN_DEMO = False
+        assert reminders.dispatch() >= 1
+        assert sent
 
 
 class TestAccounts:
