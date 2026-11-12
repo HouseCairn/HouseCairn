@@ -67,6 +67,61 @@ msgstr "Canaux sur le réseau local"
 msgid "Channels may send to private network addresses (a home or office network, or a name that resolves to one), for a ntfy or a Gotify next to the instance. Any person with an account can then make the server call such an address. Loopback, link-local and cloud metadata addresses stay refused."
 msgstr "Les canaux peuvent envoyer à des adresses de réseau privé (un réseau domestique ou de bureau, ou un nom qui y mène), pour un ntfy ou un Gotify voisin de l'instance. Toute personne qui a un compte peut alors faire appeler une telle adresse par le serveur. Les adresses de bouclage, de lien local et de métadonnées des fournisseurs de cloud restent refusées."
 
+msgid "Notifications on the device"
+msgstr "Notifications sur l'appareil"
+
+msgid "People may receive their notifications on a phone or a computer, through the push service of their browser: Google for Chrome, Edge and most others, Mozilla for Firefox, Apple for Safari. The message is encrypted for the device; the push service sees when it is sent, its size and the device."
+msgstr "Chacun peut recevoir ses notifications sur un téléphone ou un ordinateur, par le service push de son navigateur : Google pour Chrome, Edge et la plupart des autres, Mozilla pour Firefox, Apple pour Safari. Le message est chiffré pour l'appareil ; le service push voit quand il part, sa taille et l'appareil."
+
+msgid "Discreet notifications on the device"
+msgstr "Notifications discrètes sur l'appareil"
+
+msgid "A notification on the device says only that a task is due or a problem was reported, with a link: no title of a task, no name of a home, on a locked screen either."
+msgstr "Une notification sur l'appareil dit seulement qu'une tâche est à faire ou qu'un problème a été signalé, avec un lien : ni titre de tâche, ni nom de logement, écran verrouillé compris."
+
+msgid "This device receives your notifications."
+msgstr "Cet appareil reçoit vos notifications."
+
+msgid "This device no longer receives your notifications."
+msgstr "Cet appareil ne reçoit plus vos notifications."
+
+msgid "A test notification is on its way to this device."
+msgstr "Une notification de test part vers cet appareil."
+
+msgid "Notifications on the device are turned off on this instance."
+msgstr "Les notifications sur l'appareil sont désactivées sur cette instance."
+
+msgid "The push service of this browser is not one this instance sends to: use Chrome, Edge, Firefox or Safari."
+msgstr "Cette instance n'envoie pas au service push de ce navigateur : utilisez Chrome, Edge, Firefox ou Safari."
+
+msgid "This key is not valid."
+msgstr "Cette clé n'est pas valide."
+
+msgid "Give a name of 1 to 60 characters."
+msgstr "Donnez un nom de 1 à 60 caractères."
+
+#, python-format
+msgid "At most %(n)d devices."
+msgstr "%(n)d appareils au plus."
+
+msgid "A task is due."
+msgstr "Une tâche est à faire."
+
+msgid "Tasks are due."
+msgstr "Des tâches sont à faire."
+
+msgid "A problem was reported."
+msgstr "Un problème a été signalé."
+
+msgid "Too many tests: wait a minute."
+msgstr "Trop de tests : attendez une minute."
+
+msgid "HouseCairn test"
+msgstr "Test HouseCairn"
+
+msgid "This device receives the reminders of your tasks."
+msgstr "Cet appareil reçoit les rappels de vos tâches."
+
 msgid "Name"
 msgstr "Nom"
 
@@ -142,6 +197,18 @@ msgstr "notification envoyée"
 msgid "notifications sent"
 msgstr "notifications envoyées"
 
+msgid "push key of the instance"
+msgstr "clé push de l'instance"
+
+msgid "push keys of the instance"
+msgstr "clés push de l'instance"
+
+msgid "device"
+msgstr "appareil"
+
+msgid "devices"
+msgstr "appareils"
+
 #, python-format
 msgid "%(title)s, %(home)s, due %(date)s"
 msgstr "%(title)s, %(home)s, pour le %(date)s"
@@ -198,18 +265,9 @@ msgstr "Le message de test n'a pas pu être envoyé : vérifiez l'adresse et le 
 msgid "Notifications are turned off on this instance."
 msgstr "Les notifications sont désactivées sur cette instance."
 
-msgid "Give a name of 1 to 60 characters."
-msgstr "Donnez un nom de 1 à 60 caractères."
-
 #, python-format
 msgid "At most %(n)d channels."
 msgstr "%(n)d canaux au plus."
-
-msgid "Too many tests: wait a minute."
-msgstr "Trop de tests : attendez une minute."
-
-msgid "HouseCairn test"
-msgstr "Test HouseCairn"
 
 msgid "This channel receives the reminders of your tasks."
 msgstr "Ce canal reçoit les rappels de vos tâches."
@@ -232,6 +290,16 @@ msgstr "Envoyer un message de test"
 
 msgid "Delete the channel"
 msgstr "Supprimer le canal"
+
+#, python-format
+msgid "Notifications reach this device through the push service of %(service)s. They are encrypted for the device: %(service)s sees when one is sent and its size, not what it says."
+msgstr "Les notifications arrivent sur cet appareil par le service push de %(service)s. Elles sont chiffrées pour l'appareil : %(service)s voit quand l'une part et sa taille, pas ce qu'elle dit."
+
+msgid "Send a test notification"
+msgstr "Envoyer une notification de test"
+
+msgid "Stop notifications on this device"
+msgstr "Arrêter les notifications sur cet appareil"
 
 msgid "Notifications are turned off on this instance: its administrator can turn them on."
 msgstr "Les notifications sont désactivées sur cette instance : son administrateur peut les activer."
@@ -260,6 +328,30 @@ msgstr "Services"
 
 msgid "The address starts with the scheme of its service. Here is an example for each service, where its messages go, and a link to its page in the Apprise documentation, which lists its options."
 msgstr "L'adresse commence par le schéma de son service. Voici un exemple pour chaque service, où vont ses messages, et un lien vers sa page dans la documentation d'Apprise, qui en liste les options."
+
+msgid "On this device"
+msgstr "Sur cet appareil"
+
+msgid "Notifications on your phone or computer, through the push service of the browser: Google for Chrome and Edge, Mozilla for Firefox, Apple for Safari. On an iPhone, install the application first (Share, Add to Home Screen)."
+msgstr "Des notifications sur votre téléphone ou votre ordinateur, par le service push du navigateur : Google pour Chrome et Edge, Mozilla pour Firefox, Apple pour Safari. Sur un iPhone, installez d'abord l'application (Partager, Sur l'écran d'accueil)."
+
+msgid "Name of this device"
+msgstr "Nom de cet appareil"
+
+msgid "My phone"
+msgstr "Mon téléphone"
+
+msgid "This browser cannot receive notifications. On an iPhone or an iPad, install the application first, then open it from the home screen."
+msgstr "Ce navigateur ne peut pas recevoir de notifications. Sur un iPhone ou un iPad, installez d'abord l'application, puis ouvrez-la depuis l'écran d'accueil."
+
+msgid "Notifications are blocked for this site in the browser: allow them in its settings, then try again."
+msgstr "Les notifications de ce site sont bloquées dans le navigateur : autorisez-les dans ses réglages, puis réessayez."
+
+msgid "This device could not be added. Try again later."
+msgstr "Cet appareil n'a pas pu être ajouté. Réessayez plus tard."
+
+msgid "Receive on this device"
+msgstr "Recevoir sur cet appareil"
 
 msgid "Reminders"
 msgstr "Rappels"

@@ -218,7 +218,10 @@ def export_of(actor: AnyUser) -> dict[str, Any]:
     """What the account keeps for notifications: never the address of a channel."""
     user = _person(actor)
     prefs = preferences_of(user)
+    from housecairn.notifications import devices  # it imports this module
+
     return {
+        "devices": devices.export_of(user),
         "channels": [
             {
                 "id": str(c.id),

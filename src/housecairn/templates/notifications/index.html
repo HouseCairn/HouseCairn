@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-{% load i18n navigation %}
+{% load i18n navigation static %}
 {% block head_title %}{% translate "Notifications" %}{% endblock head_title %}
+{% block extra_head %}<script src="{% static 'js/webpush.js' %}" defer></script>{% endblock extra_head %}
 {% block content %}
   {% url 'more' as parent %}{% back_link parent %}
   <h1>{% translate "Notifications" %}</h1>
@@ -44,6 +45,33 @@
         </ul>
       </details>
     {% endfor %}
+  {% endif %}
+  {% if enabled and push_enabled %}
+    <h2>{% translate "On this device" %}</h2>
+    <p class="small">{% translate "Notifications on your phone or computer, through the push service of the browser: Google for Chrome and Edge, Mozilla for Firefox, Apple for Safari. On an iPhone, install the application first (Share, Add to Home Screen)." %}</p>
+    {% if devices %}
+      <div class="list">
+        {% for device in devices %}
+          <a class="row" href="{% url 'notifications:device' device_id=device.id %}">
+            <span class="row-body">
+              <span class="row-title">{{ device.name }}</span>
+              <span class="row-text">{{ device.service }}</span>
+            </span>
+            {% include "components/icon.html" with name="chevron" class="chevron" %}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <form class="card" data-webpush data-key="{{ push_key }}" data-endpoint="{% url 'api-v1:push-device-list' %}" novalidate>
+      <p>
+        <label for="webpush-name">{% translate "Name of this device" %}</label>
+        <input type="text" id="webpush-name" name="name" maxlength="60" required placeholder="{% translate "My phone" %}">
+      </p>
+      <p class="small" data-webpush-unsupported hidden>{% translate "This browser cannot receive notifications. On an iPhone or an iPad, install the application first, then open it from the home screen." %}</p>
+      <p class="small" data-webpush-denied hidden>{% translate "Notifications are blocked for this site in the browser: allow them in its settings, then try again." %}</p>
+      <p class="small" data-webpush-failed hidden>{% translate "This device could not be added. Try again later." %}</p>
+      <button type="submit" class="button-block">{% translate "Receive on this device" %}</button>
+    </form>
   {% endif %}
   <h2>{% translate "Reminders" %}</h2>
   <form method="post" action="{% url 'notifications:preferences' %}" class="card" novalidate>

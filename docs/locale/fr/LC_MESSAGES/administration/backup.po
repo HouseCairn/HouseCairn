@@ -72,8 +72,8 @@ msgstr "**La clé secrète n'est pas dans l'archive**, sauf si vous ajoutez `--i
 msgid "The secret key"
 msgstr "La clé secrète"
 
-msgid "The stored secrets (the SMTP password, the secrets of the sign-in providers added in the interface, the addresses of the notification channels) are encrypted in the database with a key derived from the secret key. An archive that held the key as well would give them all to whoever got a copy of it, so `backup_instance` leaves it out ([ADR 0060](../adr/0060-secret-key-apart-from-the-backups.md)). Keep the key apart:"
-msgstr "Les secrets enregistrés (le mot de passe SMTP, les secrets des fournisseurs de connexion ajoutés dans l'interface, les adresses des canaux de notification) sont chiffrés dans la base de données avec une clé dérivée de la clé secrète. Une archive qui contiendrait aussi la clé les livrerait tous à quiconque en obtient une copie : `backup_instance` la laisse donc de côté ([ADR 0060](../adr/0060-secret-key-apart-from-the-backups.md)). Gardez la clé à part :"
+msgid "The stored secrets (the SMTP password, the secrets of the sign-in providers added in the interface, the addresses of the notification channels, the addresses and keys of the devices that receive notifications, the private push key of the instance) are encrypted in the database with a key derived from the secret key. An archive that held the key as well would give them all to whoever got a copy of it, so `backup_instance` leaves it out ([ADR 0060](../adr/0060-secret-key-apart-from-the-backups.md)). Keep the key apart:"
+msgstr "Les secrets enregistrés (le mot de passe SMTP, les secrets des fournisseurs de connexion ajoutés dans l'interface, les adresses des canaux de notification, les adresses et les clés des appareils qui reçoivent les notifications, la clé push privée de l'instance) sont chiffrés dans la base de données avec une clé dérivée de la clé secrète. Une archive qui contiendrait aussi la clé les livrerait tous à quiconque en obtient une copie : `backup_instance` la laisse donc de côté ([ADR 0060](../adr/0060-secret-key-apart-from-the-backups.md)). Gardez la clé à part :"
 
 msgid "best, set `SECRET_KEY` in `deploy/production.env` (see [Secrets](settings.md#secrets)), and keep a copy of that file, or of the key, somewhere else than your backups, such as a password manager;"
 msgstr "le mieux : définissez `SECRET_KEY` dans `deploy/production.env` (voir [Secrets](settings.md#secrets)), et gardez une copie de ce fichier, ou de la clé, ailleurs qu'avec vos sauvegardes, par exemple dans un gestionnaire de mots de passe ;"
@@ -83,6 +83,9 @@ msgstr "si la clé a été générée dans `/data/secret_key`, gardez une copie 
 
 msgid "`--include-secret-key` puts `/data/secret_key` in the archive all the same, for a copy that must restore alone; it then gives the stored secrets to whoever has it. Without a key file (the key comes from `SECRET_KEY`), there is nothing to include."
 msgstr "`--include-secret-key` met tout de même `/data/secret_key` dans l'archive, pour une copie qui doit se restaurer seule ; elle livre alors les secrets enregistrés à qui la détient. Sans fichier de clé (la clé vient de `SECRET_KEY`), il n'y a rien à inclure."
+
+msgid "Restored without its key, an instance cannot read its push key either: it makes a new one at the first notification on a device and removes the devices, which people add again ([ADR 0066](../adr/0066-notifications-on-the-device-by-web-push.md))."
+msgstr "Restaurée sans sa clé, une instance ne peut pas lire non plus sa clé push : elle en crée une nouvelle à la première notification sur un appareil et retire les appareils, que chacun ajoute de nouveau ([ADR 0066](../adr/0066-notifications-on-the-device-by-web-push.md))."
 
 msgid "With PostgreSQL"
 msgstr "Avec PostgreSQL"

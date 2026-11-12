@@ -15,8 +15,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import TemplateView
 
-from housecairn.notifications import catalog, forms, services
-from housecairn.notifications.models import Channel
+from housecairn.notifications import catalog, devices, forms, services
+from housecairn.notifications.models import Channel, Device
 
 
 def _errors(form: Any, exc: ValidationError) -> None:
@@ -38,7 +38,11 @@ class IndexView(LoginRequiredMixin, TemplateView):
             "add_form": forms.ChannelForm(),
             "families": catalog.by_family(),
             "preference_form": forms.PreferenceForm(instance=prefs),
+            "push_enabled": devices.is_enabled(),
+            "devices": devices.devices_of(self.request.user),
         }
+        if context["push_enabled"]:
+            context["push_key"] = devices.public_key()
         return super().get_context_data(**{**context, **kwargs})
 
 
@@ -135,3 +139,60 @@ class ExportView(LoginRequiredMixin, View):
         response = HttpResponse(body, content_type="application/json")
         response["Content-Disposition"] = 'attachment; filename="notifications.json"'
         return response
+
+
+# ---------- devices (docs/adr/0066) ----------
+# A device is added by static/js/webpush.js through the API (`me/push-devices/`), with the
+# session: the browser must give its subscription, which only a script can read.
+
+
+class DeviceMixin(LoginRequiredMixin):
+    request: HttpRequest
+    kwargs: dict[str, Any]
+
+    def get_device(self) -> Device:
+        device: Device = get_object_or_404(
+            devices.devices_of(self.request.user), id=self.kwargs["device_id"]
+        )
+        return device
+
+
+class DeviceView(DeviceMixin, TemplateView):
+    template_name = "notifications/device.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        device = self.get_device()
+        form = kwargs.pop("form", None) or forms.DeviceForm(initial={"name": device.name})
+        return super().get_context_data(device=device, form=form, **kwargs)
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        device = self.get_device()
+        form = forms.DeviceForm(request.POST)
+        if form.is_valid():
+            try:
+                devices.rename(request.user, device, name=form.cleaned_data["name"])
+            except ValidationError as exc:
+                _errors(form, exc)
+            else:
+                messages.success(request, services.SAVED)
+                return redirect("notifications:index")
+        return self.render_to_response(self.get_context_data(form=form), status=422)
+
+
+class DeviceTestView(DeviceMixin, View):
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        device = self.get_device()
+        try:
+            devices.test(request.user, device)
+        except ValidationError as exc:
+            messages.error(request, " ".join(exc.messages))
+        else:
+            messages.success(request, devices.TEST_QUEUED)
+        return redirect("notifications:device", device_id=device.id)
+
+
+class DeviceDeleteView(DeviceMixin, View):
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        devices.revoke(request.user, self.get_device())
+        messages.success(request, devices.DELETED)
+        return redirect("notifications:index")

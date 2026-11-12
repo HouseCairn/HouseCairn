@@ -18,7 +18,7 @@ from django.utils.translation import gettext as _
 from housecairn.core.links import external_url
 from housecairn.homes.models import WRITE_ROLES, Membership
 from housecairn.instance.config import get_setting
-from housecairn.notifications import outbound, reminders, services
+from housecairn.notifications import devices, outbound, reminders, services
 from housecairn.notifications.models import Channel, Preference
 
 logger = logging.getLogger("housecairn.notifications")
@@ -49,13 +49,18 @@ def report_created(report_id: str) -> int:
         "user"
     ):
         channels[channel.user_id].append(channel)
+    allowed = set(people)
+    pushed = {k: v for k, v in devices.reachable().items() if k in allowed}
+    for user_id in pushed:
+        channels[user_id]  # a device is a way to reach the person, as a channel is
     if not channels:
         return 0
     prefs = {p.user_id: p for p in Preference.objects.filter(user_id__in=list(channels))}
     now = timezone.now()
     sent = 0
     for user_id, user_channels in channels.items():
-        pref = prefs.get(user_id) or Preference(user=user_channels[0].user)
+        person = user_channels[0].user if user_channels else pushed[user_id][0].user
+        pref = prefs.get(user_id) or Preference(user=person)
         if reminders.is_quiet(pref, now.astimezone(reminders.zone_of(pref))):
             continue
         with translation.override(pref.language):
@@ -64,10 +69,18 @@ def report_created(report_id: str) -> int:
                 "title": reminders.one_line(report.title),
                 "home": reminders.one_line(report.home.name),
             }
+        text = body
         link = _link(report.home_id, report.id)
         if link:
             body = f"{body}\n{link}"
         results = [outbound.send(c.url, title=title, body=body) for c in user_channels]
+        if user_id in pushed:
+            path = reverse(
+                "reports:detail", kwargs={"home_id": report.home_id, "report_id": report.id}
+            )
+            results += devices.send_all(
+                pushed[user_id], kind="report", title=title, body=text, path=path
+            )
         if any(results):  # every channel is tried, whatever the first said
             sent += 1
     return sent

@@ -65,6 +65,8 @@ time zone and the name of the instance included.
 | Notifications | `HOUSECAIRN_NOTIFICATIONS_ENABLED` | Notifications | `false` | At once |
 | Check for reminders every (minutes) | `HOUSECAIRN_NOTIFICATIONS_INTERVAL` | Notifications | `5` | At once |
 | Channels on the local network | `HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS` | Notifications | `false` | At once |
+| Notifications on the device | `HOUSECAIRN_WEBPUSH_ENABLED` | Notifications | `false` | At once |
+| Discreet notifications on the device | `HOUSECAIRN_WEBPUSH_DISCREET` | Notifications | `true` | At once |
 | Preview of inspiration links | `HOUSECAIRN_LINK_PREVIEW_ENABLED` | Projects | `false` | At once |
 % settings-table:end
 
@@ -88,7 +90,9 @@ treats it as not set, the screen says so, and you enter it again. A password set
 `EMAIL_HOST_PASSWORD` is shown as "set", without its value.
 
 The same key encrypts the secrets of the [sign-in providers](oidc.md) added in the
-interface and the addresses of the [notification channels](../guides/notifications.md).
+interface, the addresses of the [notification channels](../guides/notifications.md) and the
+private key the instance signs [notifications on the device](../guides/notifications.md#on-this-device)
+with.
 Keep it apart from the data: set `SECRET_KEY` in the environment (`deploy/production.env`)
 rather than leave it generated in `/data/secret_key`, and keep a copy of it somewhere else
 than your backups. [Backups](backup.md) leave it out.
