@@ -58,6 +58,9 @@ msgstr "Logement exporté"
 msgid "Home restored from an archive"
 msgstr "Logement restauré depuis une archive"
 
+msgid "Home restored as a copy of an archive"
+msgstr "Logement restauré comme copie d'une archive"
+
 msgid "Tables imported from CSV files"
 msgstr "Tableaux importés depuis des fichiers CSV"
 

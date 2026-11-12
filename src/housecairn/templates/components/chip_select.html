@@ -1,0 +1,18 @@
+{% load i18n %}{# Widget of `core.widgets.ChipSelectMultiple` (design guide, "Choosing several records"). Without script, the select shows as it is; static/js/chip-select.js hides it and builds the search field and the chips. The `{name}` and `{count}` marks are filled in by the script. #}
+<div class="chip-select" data-chip-select
+     data-text-placeholder="{% translate 'Type to search' %}"
+     data-text-selected="{% translate 'Selected' %}"
+     data-text-remove="{% translate 'Remove {name}' %}"
+     data-text-added="{% translate '{name} added' %}"
+     data-text-removed="{% translate '{name} removed' %}"
+     data-text-none="{% translate 'No result' %}"
+     data-text-one="{% translate '1 result' %}"
+     data-text-many="{% translate '{count} results' %}"
+     data-text-capped="{% translate '{count} results, showing the first {shown}' %}">
+  <select name="{{ widget.name }}"{% for name, value in widget.attrs.items %}{% if value is not False %} {{ name }}{% if value is not True %}="{{ value|stringformat:'s' }}"{% endif %}{% endif %}{% endfor %}>
+    {% for group_name, group_choices, group_index in widget.optgroups %}{% if group_name %}<optgroup label="{{ group_name }}">{% endif %}
+      {% for option in group_choices %}<option value="{{ option.value|stringformat:'s' }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
+      {% endfor %}{% if group_name %}</optgroup>{% endif %}
+    {% endfor %}
+  </select>
+</div>

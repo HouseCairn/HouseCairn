@@ -15,11 +15,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import TemplateView
 
-from housecairn.notifications import forms, services
+from housecairn.notifications import catalog, forms, services
 from housecairn.notifications.models import Channel, SendState
 
 # The status of a test is asked again every two seconds, at most this many times; then the
-# page says to reload it (docs/adr/0069). Without script, the page is reloaded by hand.
+# page says to reload it (docs/adr/0070). Without script, the page is reloaded by hand.
 TEST_POLLS = 12
 
 
@@ -40,6 +40,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
             "enabled": services.is_enabled(),
             "channels": services.channels_of(self.request.user),
             "add_form": forms.ChannelForm(),
+            "families": catalog.by_family(),
             "preference_form": forms.PreferenceForm(instance=prefs),
         }
         return super().get_context_data(**{**context, **kwargs})

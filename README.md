@@ -10,6 +10,7 @@ how much.
 [![Image](https://github.com/HouseCairn/housecairn/actions/workflows/image.yml/badge.svg?branch=main)](https://github.com/HouseCairn/housecairn/actions/workflows/image.yml?query=branch%3Amain)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/HouseCairn/housecairn/badge)](https://securityscorecards.dev/viewer/?uri=github.com/HouseCairn/housecairn)
 [![License: AGPL-3.0-only](docs/assets/license-badge.svg)](LICENSE)
+![status: alpha](https://img.shields.io/badge/status-alpha-orange.svg)
 [![Release](https://img.shields.io/github/v/release/HouseCairn/housecairn)](https://github.com/HouseCairn/housecairn/releases)
 [![Container image](https://img.shields.io/badge/image-ghcr.io-2496ED?logo=docker&logoColor=white)](https://github.com/HouseCairn/housecairn/pkgs/container/housecairn)
 [![Docs](https://img.shields.io/badge/docs-docs.housecairn.app-41BDF5)](https://docs.housecairn.app/)
@@ -17,6 +18,10 @@ how much.
 ![Django 5.2](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)
 [![Home Assistant add-on](https://img.shields.io/badge/Home%20Assistant-add--on-41BDF5?logo=homeassistant&logoColor=white)](https://github.com/HouseCairn/home-assistant-addons)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/HouseCairn/home-assistant-housecairn)
+
+> [!WARNING]
+> HouseCairn is alpha software. Expect bugs and breaking changes between versions.
+> Back up your data before every upgrade.
 
 <p align="center">
   <img src="docs/assets/readme-today-desktop.png" width="600"
@@ -95,7 +100,7 @@ default.
 
 ## Project status
 
-**Beta: [v0.2.0](https://github.com/HouseCairn/housecairn/releases/tag/v0.2.0).**
+**Alpha: [v0.2.0](https://github.com/HouseCairn/housecairn/releases/tag/v0.2.0).**
 It has not been used in a real home for any length of time yet, and what it
 stores can still change shape between 0.x versions: try it, and keep a backup
 of what you enter. Released images are tagged `X.Y.Z`, `X.Y` and `latest`;

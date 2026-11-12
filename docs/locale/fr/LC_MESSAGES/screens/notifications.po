@@ -33,6 +33,9 @@ msgstr "Canaux"
 msgid "The list shows the name of each channel and the kind of service (`ntfy`, `tgram`, `mailto`...). **Add a channel** takes a name and an Apprise address, such as `ntfys://ntfy.sh/my-topic` or `tgram://123456789:bot-token/111222333`: see the [guide](../guides/notifications.md) for the address of each service. The address is kept encrypted and never shown again, on this screen or anywhere else."
 msgstr "La liste montre le nom de chaque canal et le type de service (`ntfy`, `tgram`, `mailto`...). **Ajouter un canal** prend un nom et une adresse Apprise, comme `ntfys://ntfy.sh/mon-sujet` ou `tgram://123456789:jeton-du-bot/111222333` : voir le [guide](../guides/notifications.md) pour l'adresse de chaque service. L'adresse est conservée chiffrée et n'est plus jamais affichée, ni sur cet écran ni ailleurs."
 
+msgid "Under the form, **Services** lists every service accepted, by family (messaging, push notifications, text messages, email, self-hosted, on-call and alerting). Each one has an example address, where its messages go (your server, the provider in the EU, the provider in the region you choose, or the provider outside the EU or without saying), and a link to its page in the Apprise documentation."
+msgstr "Sous le formulaire, **Services** liste chaque service accepté, par famille (messageries, notifications push, SMS, e-mail, auto-hébergés, astreinte et alertes). Chacun a un exemple d'adresse, l'endroit où vont ses messages (votre serveur, le fournisseur dans l'UE, le fournisseur dans la région que vous choisissez, ou le fournisseur hors de l'UE ou sans le dire), et un lien vers sa page dans la documentation d'Apprise."
+
 msgid "Opening a channel lets you:"
 msgstr "Ouvrir un canal permet de :"
 

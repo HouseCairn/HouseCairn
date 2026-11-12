@@ -35,6 +35,7 @@ STYLE_LAYERS = (
     "labels.css",
     "reports.css",
     "forms.css",
+    "chip-select.css",
     "utilities.css",
 )
 
