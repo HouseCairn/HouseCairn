@@ -102,15 +102,29 @@ class TestPagesKeptOffline:
             response = client.get(address)
             assert _key(response) is None, address
 
-    def test_a_home_of_someone_else_is_not_kept_and_says_purge(
+    def test_a_home_of_someone_else_is_not_kept(
         self, client: Client, alice: User, bob_home: Home
     ) -> None:
+        """The home of another person is a 404 (it does not say it exists): nothing to keep."""
         client.force_login(alice)
         response = client.get(reverse("tasks:today", kwargs={"home_id": bob_home.pk}))
-        assert response.status_code in (403, 404)
-        assert _key(response) in (None, offline.PURGE)
-        if response.status_code == 403:
-            assert _key(response) == offline.PURGE
+        assert response.status_code == 404
+        assert _key(response) is None
+
+    def test_a_403_says_purge(self, alice: User, alice_home: Home) -> None:
+        """A signed-in person whose request is refused (here a missing CSRF token)."""
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(alice)
+        response = client.post(reverse("tasks:today", kwargs={"home_id": alice_home.pk}))
+        assert response.status_code == 403
+        assert _key(response) == offline.PURGE
+
+    def test_a_401_says_purge(self, client: Client, alice: User, alice_home: Home) -> None:
+        """The API answers 401 (JSON, not a page) to a bad token, and the pages are dropped."""
+        response = client.get("/api/v1/homes/", headers={"Authorization": "Bearer unknown"})
+        assert response.status_code == 401
+        assert response["Content-Type"].startswith("application/json")
+        assert _key(response) == offline.PURGE
 
     def test_a_no_store_page_is_not_kept(
         self, client: Client, alice: User, alice_home: Home, monkeypatch: pytest.MonkeyPatch
