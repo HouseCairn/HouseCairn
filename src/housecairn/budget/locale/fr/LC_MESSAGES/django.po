@@ -64,6 +64,12 @@ msgstr "Estimation par fois"
 msgid "Cost a year"
 msgstr "Coût par an"
 
+msgid "Of which stock"
+msgstr "Dont articles en stock"
+
+msgid "Stock items without a price"
+msgstr "Articles sans prix"
+
 msgid "Paid in all"
 msgstr "Payé au total"
 
@@ -120,6 +126,12 @@ msgstr "Coût"
 
 msgid "Paid so far"
 msgstr "Payé jusqu'ici"
+
+#, python-format
+msgid "%(counter)s stock item without a price is not counted: give it a unit price on its page."
+msgid_plural "%(counter)s stock items without a price are not counted: give them a unit price on their page."
+msgstr[0] "%(counter)s article sans prix n'est pas compté : indiquez son prix unitaire sur sa page."
+msgstr[1] "%(counter)s articles sans prix ne sont pas comptés : indiquez leur prix unitaire sur leur page."
 
 #, python-format
 msgid "%(counter)s time done without a cost: add it in the details of what was done."
@@ -303,6 +315,16 @@ msgstr "Les tâches qui ne sont dans aucun projet, avec les occurrences de %(yea
 
 msgid "Estimate, cost a year and what was paid, task by task"
 msgstr "Estimation, coût par an et ce qui a été payé, tâche par tâche"
+
+#, python-format
+msgid "of which stock: %(amount)s"
+msgstr "dont articles en stock : %(amount)s"
+
+#, python-format
+msgid "%(counter)s stock item without a price"
+msgid_plural "%(counter)s stock items without a price"
+msgstr[0] "%(counter)s article sans prix"
+msgstr[1] "%(counter)s articles sans prix"
 
 #, python-format
 msgid "%(counter)s done without a cost"

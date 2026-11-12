@@ -35,9 +35,12 @@ def task_cost(task: Task, home: Any) -> dict[str, Any]:
 def occurrence_cost(occurrence: Occurrence, home: Any) -> dict[str, Any]:
     """On the page of what was done: the estimate, next to the field of the real cost."""
     task = occurrence.task
+    plan = services.stock_plan_of(task)
     parts = [task.labour_budget, task.material_budget]
     estimate = (
-        None if all(part is None for part in parts) else sum((p or ZERO for p in parts), ZERO)
+        None
+        if all(part is None for part in parts) and plan.priced == 0
+        else sum((p or ZERO for p in parts), plan.amount)
     )
     return {"estimate": estimate, "home": home}
 

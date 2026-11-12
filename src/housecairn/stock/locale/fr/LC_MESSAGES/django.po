@@ -123,6 +123,12 @@ msgstr "seuil"
 msgid "The stock is flagged when it falls to this quantity or below."
 msgstr "Le stock est signalé quand il descend à cette quantité ou en dessous."
 
+msgid "unit price"
+msgstr "prix unitaire"
+
+msgid "What one unit costs, to plan the cost of the tasks that use it."
+msgstr "Ce que coûte une unité, pour prévoir le coût des tâches qui l'utilisent."
+
 msgid "compatible items"
 msgstr "éléments compatibles"
 
@@ -250,6 +256,9 @@ msgstr "Stock bas"
 
 msgid "Threshold"
 msgstr "Seuil"
+
+msgid "Unit price"
+msgstr "Prix unitaire"
 
 msgid "Manufacturer reference"
 msgstr "Référence fabricant"

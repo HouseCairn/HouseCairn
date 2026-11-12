@@ -36,6 +36,12 @@ msgstr "Quand la tâche est **faite**, son coût réel, dans **Détails** de ce 
 msgid "On a **project**, budget lines with a planned and a paid amount, and quotes accepted on them."
 msgstr "Sur un **projet**, des lignes de budget avec un montant prévu et un montant payé, et les devis acceptés dessus."
 
+msgid "The stock in the cost of a task"
+msgstr "Le matériel dans le coût d'une tâche"
+
+msgid "The stock items a task lists add to its estimate: for each one, its quantity times its [unit price](stock.md#give-an-item-a-unit-price), added to the material budget you typed. The part that comes from the stock is shown apart, as **Of which stock** on the page of the task and in the budget of the upkeep, and never mixed into the amount you typed. An item with no unit price counts for nothing, and the screen says how many: \"2 stock items without a price are not counted\". It is a plan, like the rest of the estimate: what was really spent is the cost typed when the task is done, and in your accounts."
+msgstr "Les articles du matériel que liste une tâche s'ajoutent à son estimation : pour chacun, sa quantité multipliée par son [prix unitaire](stock.md#give-an-item-a-unit-price), ajoutée au budget matériel que vous avez saisi. La part qui vient des articles en stock est affichée à part, sous **Dont articles en stock** sur la page de la tâche et dans le budget de l'entretien, et n'est jamais mêlée au montant que vous avez saisi. Un article sans prix unitaire ne compte pour rien, et l'écran dit combien : « 2 articles sans prix ne sont pas comptés ». C'est un prévu, comme le reste de l'estimation : ce qui a vraiment été dépensé est le coût saisi quand la tâche est faite, et se trouve dans vos comptes."
+
 msgid "The money of a task that is in a project is the project's: its lines hold it, and the task is left out of the upkeep so that nothing is counted twice."
 msgstr "L'argent d'une tâche qui est dans un projet est celui du projet : ses lignes le portent, et la tâche est laissée hors de l'entretien pour que rien ne soit compté deux fois."
 

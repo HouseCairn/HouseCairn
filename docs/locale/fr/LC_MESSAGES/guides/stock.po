@@ -54,6 +54,15 @@ msgstr "Laisser les tâches utiliser le matériel"
 msgid "A task lists the stock items it needs, with a quantity, in the **Materials** section of its form or on its page (see [Tasks and recurrence](tasks-and-recurrence.md)). Marking the task **Done** takes those quantities from the stock, in one gesture; **Undo** puts them back. The exits and entries this writes name the task on the page of the stock item. If the stock holds less than the task needs, **Done** is not refused: the stock goes down to zero and a message tells how much was missing."
 msgstr "Une tâche liste les articles dont elle a besoin, avec une quantité, dans la section **Fournitures** de son formulaire ou sur sa page (voir [Tâches et récurrence](tasks-and-recurrence.md)). Marquer la tâche **Fait** prend ces quantités dans le stock, en un seul geste ; **Annuler** les remet. Les sorties et les entrées ainsi écrites nomment la tâche sur la page de l'article. Si le stock en contient moins que la tâche n'en demande, **Fait** n'est pas refusé : le stock descend à zéro et un message dit combien il manquait."
 
+msgid "Give an item a unit price"
+msgstr "Donner un prix unitaire à un article"
+
+msgid "An item can have a **unit price**: what one unit of it costs, in the currency of the home. It is optional and never negative. It is not what you paid last time (a supplier keeps its own last price); it is the price HouseCairn uses to plan the cost of the tasks that use the item ([Budget](budget.md#the-stock-in-the-cost-of-a-task)). When an item has no unit price and you give a supplier a last price paid, that price becomes the unit price of the item, once; correct it in the form of the item if it is not the one you want. A unit price that is already there is never replaced. An item added from the form of a task has no price until you give it one on its own page."
+msgstr "Un article peut avoir un **prix unitaire** : ce que coûte une unité, dans la devise du logement. Il est facultatif et jamais négatif. Ce n'est pas ce que vous avez payé la dernière fois (un fournisseur garde son propre dernier prix) ; c'est le prix que HouseCairn utilise pour prévoir le coût des tâches qui utilisent l'article ([Budget](budget.md#the-stock-in-the-cost-of-a-task)). Quand un article n'a pas de prix unitaire et que vous donnez à un fournisseur un dernier prix payé, ce prix devient, une fois, le prix unitaire de l'article ; corrigez-le dans le formulaire de l'article s'il n'est pas celui que vous voulez. Un prix unitaire déjà présent n'est jamais remplacé. Un article ajouté depuis le formulaire d'une tâche n'a pas de prix tant que vous ne lui en donnez pas un sur sa propre page."
+
+msgid "An item added from the form of a task is linked to the equipment of that task, when the task has one: it appears in the **Compatible items** of the item, even when the equipment is added by the same form."
+msgstr "Un article ajouté depuis le formulaire d'une tâche est lié à l'équipement de cette tâche, quand elle en a un : il apparaît dans les **Éléments compatibles** de l'article, même quand l'équipement est ajouté par le même formulaire."
+
 msgid "Note where to buy"
 msgstr "Noter où acheter"
 

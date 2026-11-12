@@ -24,8 +24,8 @@ msgstr "Article"
 msgid "One item of the [stock](stock.md), at `/h/<home id>/stock/<item id>/`."
 msgstr "Un article du [matériel](stock.md), à `/h/<id du logement>/stock/<id de l'article>/`."
 
-msgid "**The quantity** at the top is the sum of the movements below; it is stored nowhere else. A **Low stock** label shows when it is at or below the threshold."
-msgstr "**La quantité**, en haut, est la somme des mouvements ci-dessous ; elle n'est stockée nulle part ailleurs. La mention **Stock bas** s'affiche quand elle est au seuil ou en dessous."
+msgid "**The quantity** at the top is the sum of the movements below; it is stored nowhere else. A **Low stock** label shows when it is at or below the threshold. The **Unit price** is shown with the threshold when there is one."
+msgstr "**La quantité**, en haut, est la somme des mouvements ci-dessous ; elle n'est stockée nulle part ailleurs. La mention **Stock bas** s'affiche quand elle est au seuil ou en dessous. Le **Prix unitaire** est affiché avec le seuil quand il y en a un."
 
 msgid "**Record a movement** takes a quantity, a date (today by default) and a note, then one button: **Add to stock** (an entry), **Take from stock** (an exit) or **Set the count** (an inventory: you state what you counted on the shelf and the stock is corrected to it). Taking more than what is in stock is refused (a task marked done is the exception: the stock stops at zero). A movement is never changed or deleted: a mistake is corrected by a new movement."
 msgstr "**Enregistrer un mouvement** prend une quantité, une date (aujourd'hui par défaut) et une note, puis un bouton : **Ajouter au stock** (une entrée), **Sortir du stock** (une sortie) ou **Fixer le compte** (un inventaire : vous dites ce que vous avez compté sur l'étagère et le stock est corrigé en conséquence). Sortir plus que ce qu'il y a en stock est refusé (une tâche marquée faite fait exception : le stock s'arrête à zéro). Un mouvement n'est jamais modifié ni supprimé : une erreur se corrige par un nouveau mouvement."
@@ -56,3 +56,4 @@ msgstr "Les membres en lecture seule voient tout et aucun des boutons qui modifi
 
 msgid "The link at the top leads back to the screen the stock item was opened from (a room, an item, a task, the stock), and to the stock otherwise. Recording a movement brings you back to the same place on the page, and the link at the top still leads to that screen. Deleting the stock item leads back to that screen too, or to the stock when it was the stock item itself."
 msgstr "Le lien du haut ramène à l'écran d'où l'article a été ouvert (une pièce, un élément, une tâche, le stock), et au stock sinon. Enregistrer un mouvement vous ramène au même endroit de la page, et le lien du haut mène toujours à cet écran. Supprimer l'article ramène aussi à cet écran, ou au stock quand c'était l'article lui-même."
+

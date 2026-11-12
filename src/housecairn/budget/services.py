@@ -34,7 +34,7 @@ from housecairn.projects.services import Amounts
 from housecairn.rooms.models import Room
 from housecairn.tasks import recurrence
 from housecairn.tasks import services as task_services
-from housecairn.tasks.models import Occurrence, Status, Task
+from housecairn.tasks.models import Occurrence, Status, Task, TaskMaterial
 
 CENT = Decimal("0.01")
 # A year is 12 months, 52 weeks or 365 days (docs/adr/0051).
@@ -58,6 +58,38 @@ class ProjectRow:
     year: int
     rooms: tuple[Room, ...]
     by_nature: dict[str, Amounts]
+
+
+@dataclass(frozen=True)
+class StockPlan:
+    """What the stock items of a task are planned to cost (docs/adr/0062).
+
+    The quantity of each item times its unit price, added and rounded once to the cent.
+    An item with no unit price counts for nothing and is counted in `unpriced`: the screen
+    says so, it never guesses a price. A plan, never a payment: the real cost is in Sure.
+    """
+
+    amount: Decimal = ZERO
+    priced: int = 0
+    unpriced: int = 0
+
+
+def stock_plan(lines: Iterable[tuple[Decimal, Decimal | None]]) -> StockPlan:
+    """The plan of the material lines of one task: (quantity, unit price of the item)."""
+    total, priced, unpriced = ZERO, 0, 0
+    for quantity, price in lines:
+        if price is None:
+            unpriced += 1
+        else:
+            priced += 1
+            total += quantity * price
+    return StockPlan(cents(total), priced, unpriced)
+
+
+def _stock_lines(**filters: Any) -> Iterable[tuple[UUID, Decimal, Decimal | None]]:
+    return TaskMaterial.objects.filter(
+        task__deleted_at__isnull=True, article__deleted_at__isnull=True, **filters
+    ).values_list("task_id", "quantity", "article__unit_price")
 
 
 @dataclass(frozen=True)
@@ -88,12 +120,20 @@ class TaskRow:
     done: tuple[tuple[datetime.date | None, Decimal | None], ...]
     open: tuple[datetime.date | None, ...]
     today: datetime.date
+    # The stock items of the task, at their unit prices; apart from `material`, which is
+    # the amount typed on the task (docs/adr/0062).
+    stock: StockPlan = field(default_factory=StockPlan)
     # Projections already worked out, by year: a row is read several times in a page.
     memo: dict[int, int] = field(default_factory=dict, compare=False, repr=False)
 
     @property
+    def material_planned(self) -> Decimal:
+        """The materials of one time: the amount typed and the stock items at their prices."""
+        return self.material + self.stock.amount
+
+    @property
     def estimate(self) -> Decimal:
-        return self.material + self.labour
+        return self.material_planned + self.labour
 
     def counted_on(self, day: datetime.date | None) -> datetime.date | None:
         """The day an open occurrence is counted on: an occurrence late from a year already
@@ -149,7 +189,7 @@ class TaskRow:
         count = len(done) + len(coming) + projected
         return TaskFigures(
             count,
-            self.material * count,
+            self.material_planned * count,
             self.labour * count,
             sum((cost for _day, cost in done if cost is not None), ZERO),
             sum(1 for _day, cost in done if cost is None),
@@ -232,6 +272,7 @@ def _task_row(
     room: Room | None,
     found: Iterable[tuple[str, Any, Any, Any]],
     today: datetime.date,
+    stock: StockPlan,
 ) -> TaskRow:
     """A task with its occurrences: (status, due, completed, cost) of each."""
     occurrences = list(found)
@@ -246,11 +287,17 @@ def _task_row(
         room,
         task.material_budget or ZERO,
         task.labour_budget or ZERO,
-        task.material_budget is not None or task.labour_budget is not None,
+        task.material_budget is not None or task.labour_budget is not None or stock.priced > 0,
         done,
         coming,
         today,
+        stock,
     )
+
+
+def stock_plan_of(task: Task) -> StockPlan:
+    """The plan of the stock items of one task, whether or not it is in a project."""
+    return stock_plan((q, p) for _t, q, p in _stock_lines(task=task))
 
 
 def task_row(task: Task, today: datetime.date | None = None) -> TaskRow | None:
@@ -260,7 +307,7 @@ def task_row(task: Task, today: datetime.date | None = None) -> TaskRow | None:
     found = Occurrence.objects.filter(task=task, status__in=[*_OPEN, Status.DONE]).values_list(
         "status", "due_on", "completed_on", "actual_cost"
     )
-    return _task_row(task, None, found, today or task_services.today())
+    return _task_row(task, None, found, today or task_services.today(), stock_plan_of(task))
 
 
 def load(home: Home, today: datetime.date | None = None) -> Ledger:
@@ -289,6 +336,9 @@ def load(home: Home, today: datetime.date | None = None) -> Ledger:
         home=home, status__in=[*_OPEN, Status.DONE]
     ).values_list("task_id", "status", "due_on", "completed_on", "actual_cost"):
         occurrences[task_id].append((status, due, completed, cost))
+    stock_lines: dict[UUID, list[tuple[Decimal, Decimal | None]]] = defaultdict(list)
+    for task_id, quantity, price in _stock_lines(home=home):
+        stock_lines[task_id].append((quantity, price))
 
     # Projects: lines first (each is spent for the more of its quotes and its payments).
     committed: dict[UUID, Decimal] = defaultdict(lambda: ZERO)
@@ -327,7 +377,8 @@ def load(home: Home, today: datetime.date | None = None) -> Ledger:
         if task.id in in_project:
             continue
         room = room_of.get(task.room_id) if task.room_id else None
-        maintenance.append(_task_row(task, room, occurrences.get(task.id, ()), today))
+        plan = stock_plan(stock_lines.get(task.id, ()))
+        maintenance.append(_task_row(task, room, occurrences.get(task.id, ()), today, plan))
     envelopes = {e.year: e.amount for e in project_services.envelopes_of(home)}
     return Ledger(home, today, rows, maintenance, envelopes, rooms)
 
@@ -490,6 +541,8 @@ def by_task(ledger: Ledger, year: int) -> Report:
                     "room": row.room.name if row.room else "",
                     "estimate": row.estimate if row.has_estimate else None,
                     "annual_cost": row.annual_cost,
+                    "stock_estimate": row.stock.amount,
+                    "unpriced_materials": row.stock.unpriced,
                     "total_paid": total.paid,
                     "missing_costs": this_year.missing,
                 },
@@ -535,7 +588,7 @@ def by_nature(ledger: Ledger, year: int) -> list[Line]:
     window = in_year(year)
     for task in ledger.tasks:
         figures = task.figures(window, year=year)
-        in_materials, in_labour = real_cost_split(figures, task.material, task.labour)
+        in_materials, in_labour = real_cost_split(figures, task.material_planned, task.labour)
         shared = in_materials + in_labour
         found[BudgetNature.MATERIAL] += Amounts(figures.material, ZERO, in_materials)
         found[BudgetNature.LABOUR] += Amounts(figures.labour, ZERO, in_labour)

@@ -1188,6 +1188,13 @@
                       ],
                       "pattern": "^-?\\d+(\\.\\d+)?$"
                     },
+                    "unit_price": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^-?\\d+(\\.\\d+)?$"
+                    },
                     "notes": {
                       "type": "string"
                     },
@@ -1236,6 +1243,7 @@
                     "threshold",
                     "unit",
                     "unit_other",
+                    "unit_price",
                     "updated_at"
                   ],
                   "additionalProperties": false

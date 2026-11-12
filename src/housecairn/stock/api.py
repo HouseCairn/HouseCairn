@@ -111,6 +111,7 @@ class ArticleSerializer(serializers.ModelSerializer[Article]):
             "unit_other",
             "unit_label",
             "threshold",
+            "unit_price",
             "quantity",
             "low",
             "compatible_items",

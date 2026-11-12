@@ -951,6 +951,10 @@ msgstr "Retirer cette ligne"
 msgid "needs %(needed)s · %(stocked)s in stock"
 msgstr "demande %(needed)s · %(stocked)s en stock"
 
+#, python-format
+msgid "%(price)s each"
+msgstr "%(price)s l'unité"
+
 msgid "Not enough in stock"
 msgstr "Stock insuffisant"
 

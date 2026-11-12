@@ -46,6 +46,21 @@ exits and entries this writes name the task on the page of the stock item. If th
 holds less than the task needs, **Done** is not refused: the stock goes down to zero and a
 message tells how much was missing.
 
+## Give an item a unit price
+
+An item can have a **unit price**: what one unit of it costs, in the currency of the home.
+It is optional and never negative. It is not what you paid last time (a supplier keeps its
+own last price); it is the price HouseCairn uses to plan the cost of the tasks that use the
+item ([Budget](budget.md#the-stock-in-the-cost-of-a-task)). When an item has no unit price
+and you give a supplier a last price paid, that price becomes the unit price of the item, once;
+correct it in the form of the item if it is not the one you want. A unit price that is already
+there is never replaced. An item added from the form of a task has no price until you give
+it one on its own page.
+
+An item added from the form of a task is linked to the equipment of that task, when the task
+has one: it appears in the **Compatible items** of the item, even when the equipment is added
+by the same form.
+
 ## Note where to buy
 
 Add one or more suppliers to an item: name, their reference, the purchase link and the

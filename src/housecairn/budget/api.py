@@ -83,6 +83,16 @@ class TaskLineSerializer(LineSerializer):
     room = serializers.CharField(source="extra.room", read_only=True)
     estimate = MoneyOut(source="extra.estimate", allow_null=True, help_text="Each time.")
     annual_cost = MoneyOut(source="extra.annual_cost", allow_null=True)
+    stock_estimate = MoneyOut(
+        source="extra.stock_estimate",
+        help_text="Each time: the part of the estimate that comes from the stock items "
+        "of the task (quantity times unit price). A plan, not a payment.",
+    )
+    unpriced_materials = serializers.IntegerField(
+        source="extra.unpriced_materials",
+        read_only=True,
+        help_text="Stock items of the task with no unit price: they count for nothing.",
+    )
     total_paid = MoneyOut(source="extra.total_paid")
     missing_costs = serializers.IntegerField(
         source="extra.missing_costs", read_only=True, help_text="Done this year, no cost typed."

@@ -94,6 +94,16 @@ class Article(HomeOwnedModel):
         validators=[NON_NEGATIVE],
         help_text=_("The stock is flagged when it falls to this quantity or below."),
     )
+    # What one unit costs, in the currency of the home: the planned cost of a task that
+    # lists the article is worked out from it (docs/adr/0062). The real price paid stays in
+    # Sure; a supplier keeps its own last price.
+    unit_price = quantity_field(
+        _("unit price"),
+        null=True,
+        blank=True,
+        validators=[NON_NEGATIVE],
+        help_text=_("What one unit costs, to plan the cost of the tasks that use it."),
+    )
     compatible_items = models.ManyToManyField(
         Item, blank=True, related_name="+", verbose_name=_("compatible items")
     )

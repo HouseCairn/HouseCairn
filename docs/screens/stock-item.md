@@ -3,7 +3,8 @@
 One item of the [stock](stock.md), at `/h/<home id>/stock/<item id>/`.
 
 - **The quantity** at the top is the sum of the movements below; it is stored
-  nowhere else. A **Low stock** label shows when it is at or below the threshold.
+  nowhere else. A **Low stock** label shows when it is at or below the threshold. The
+  **Unit price** is shown with the threshold when there is one.
 - **Record a movement** takes a quantity, a date (today by default) and a note, then
   one button: **Add to stock** (an entry), **Take from stock** (an exit) or **Set the
   count** (an inventory: you state what you counted on the shelf and the stock is

@@ -128,7 +128,7 @@ web interface: every request only sees the homes of its user
 - **Stock** of a home: `/api/v1/homes/<home id>/articles/`, `.../suppliers/` and
   `.../movements/` ([ADR 0038](../adr/0038-stock-suppliers-and-movements.md)). Only
   `name` is required to create an article; its `quantity` is read-only, the sum of its
-  movements, and `low` tells whether it is at or below its `threshold`. A movement is
+  movements, `unit_price` is optional (a string with two decimals, or `null`), and `low` tells whether it is at or below its `threshold`. A movement is
   created with `POST` (`kind` is `entry`, `exit` or `inventory`, with a `quantity`) and
   never changed or deleted. `compatible_items` takes item identifiers of the same home;
   `label` (multipart) sets the photo of the label and `GET .../articles/<id>/label/`
@@ -172,7 +172,10 @@ web interface: every request only sees the homes of its user
   figures as a file. Every amount is a string with two decimals; a row gives `planned`,
   `committed`, `paid`, `engaged` (shown as *Used*: the more of committed and paid, line by
   line), `gap` (negative when exceeded), `to_pay` and `budget_state`. `sure_budget` of the
-  envelope is always `null`. A home that is not yours, or that your token is not bound to, is
+  envelope is always `null`. A line of `.../budget/tasks/` gives `estimate` (each time, the
+  stock items at their unit price included), `stock_estimate` (the part of it that comes from
+  the stock) and `unpriced_materials` (the stock items of the task with no unit price, which
+  count for nothing; [ADR 0062](../adr/0062-unit-price-of-stock-items.md)). A home that is not yours, or that your token is not bound to, is
   a 404.
 - **Notifications** of the caller
   ([ADR 0043](../adr/0043-notifications-through-apprise.md)):

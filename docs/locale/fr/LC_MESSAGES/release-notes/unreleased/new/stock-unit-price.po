@@ -1,0 +1,26 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**A unit price for stock items, and the stock in the planned cost of a task.** A stock item can have a unit price (a supplier's last price paid fills it when it is empty). The cost a task is planned at now adds, to the material budget you typed, the quantity of each stock item it lists times its unit price. The part from the stock is shown apart (\"of which stock\") on the page of the task and in the budget of the upkeep, with the number of stock items that have no price and count for nothing ([stock](../../../guides/stock.md#give-an-item-a-unit-price), [budget](../../../guides/budget.md#the-stock-in-the-cost-of-a-task))."
+msgstr "**Un prix unitaire pour les articles, et le matériel dans le coût prévu d'une tâche.** Un article peut avoir un prix unitaire (le dernier prix payé d'un fournisseur le remplit quand il est vide). Le coût prévu d'une tâche ajoute désormais au budget matériel que vous avez saisi la quantité de chaque article qu'elle liste multipliée par son prix unitaire. La part qui vient des articles en stock est affichée à part (« dont articles en stock ») sur la page de la tâche et dans le budget de l'entretien, avec le nombre d'articles sans prix, qui ne comptent pour rien ([matériel](../../../guides/stock.md#give-an-item-a-unit-price), [budget](../../../guides/budget.md#the-stock-in-the-cost-of-a-task))."
+
+msgid "**A stock item added from the form of a task fits its equipment.** It is now listed as compatible with the equipment of the task, including equipment added by the same form."
+msgstr "**Un article ajouté depuis le formulaire d'une tâche convient à son équipement.** Il est désormais listé comme compatible avec l'équipement de la tâche, y compris un équipement ajouté par le même formulaire."
+
