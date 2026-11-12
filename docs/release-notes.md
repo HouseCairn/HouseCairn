@@ -20,6 +20,20 @@ The notes of each version are also published with it on the project's
 ```{release-fragments} upgrade
 ```
 
+## 0.3.1
+
+HouseCairn is still alpha software. This version only fixes the demonstration instance: the box listing the public accounts no longer cuts the password, and the public accounts and their place in the demonstration home are protected, with the Django administration site read only. Nothing changes outside the demonstration mode: no migration runs and no setting is new.
+
+### Fixed
+
+- **The demonstration accounts box on the sign-in page no longer breaks the password across lines.** On a demonstration instance, the box that lists the public accounts set its three parts side by side, so that the password `housecairn-demo` could be cut after the hyphen and a visitor could type `housecairndemo`. The box now stacks the sentence, one line for each account and the password, at every width, and an address or the password is never cut.
+
+- **Demonstration instance: the public accounts stay whole.** On a demonstration instance,
+  the Django administration site is now read only, and the two public accounts keep their
+  place in the demonstration home: nobody can leave it or be removed from it, no role changes,
+  and the home cannot be deleted. Off the demonstration mode nothing changes
+  ([Demonstration instance](administration/demo.md)).
+
 ## 0.3.0
 
 HouseCairn is still alpha software. This version makes it an application to install on a
