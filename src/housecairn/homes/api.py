@@ -122,6 +122,21 @@ class ImportSerializer(serializers.Serializer[Any]):
 
 class RestoreSerializer(serializers.Serializer[Any]):
     archive = serializers.FileField(help_text="The zip file made by the export, as it is.")
+    as_copy = serializers.BooleanField(
+        required=False,
+        default=False,
+        help_text=(
+            "False (the default): the home comes back with its identifiers. True: a copy, "
+            "with new identifiers, next to the original; only you are its member."
+        ),
+    )
+    name = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+        max_length=restore.NAME_MAX,
+        help_text='Name of the copy; empty, the name of the home followed by "(copy)".',
+    )
 
 
 class HomeViewSet(
@@ -351,7 +366,10 @@ class HomeViewSet(
         description=(
             "Restore the archive of a home (made by `export`) as a new home owned by the "
             "person signed in. Refused with 400 and the reason when the archive is altered, "
-            "of an unknown version, or already on this instance. An API token cannot."
+            "of an unknown version, or already on this instance. With `as_copy`, a copy with "
+            "new identifiers, which may sit next to the original; refused with 403 when the "
+            "home of the archive is on this instance and you are not one of its owners. "
+            "An API token cannot."
         ),
     )
     @action(detail=False, methods=["post"], parser_classes=[MultiPartParser])
@@ -363,8 +381,16 @@ class HomeViewSet(
             raise exceptions.ValidationError({"archive": ["This file is too large."]})
         serializer = RestoreSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        as_copy = serializer.validated_data["as_copy"]
         try:
-            result = restore.restore_home(request.user, serializer.validated_data["archive"])
+            result = restore.restore_home(
+                request.user,
+                serializer.validated_data["archive"],
+                as_copy=as_copy,
+                name=serializer.validated_data["name"] if as_copy else "",
+            )
+        except restore.CopyNotAllowedError as exc:
+            raise exceptions.PermissionDenied(exc.message) from exc
         except DjangoValidationError as exc:
             raise serializers.ValidationError({"archive": exc.messages}) from exc
         data = dict(self.get_serializer(result.home).data)

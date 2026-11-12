@@ -134,7 +134,27 @@ class ImportForm(forms.Form):
 class RestoreForm(forms.Form):
     """The archive of a home, made by Export all data (docs/adr/0048)."""
 
+    RESTORE = "restore"
+    COPY = "copy"
+
     archive = forms.FileField(
         label=_("Archive of a home"),
         help_text=_("The zip file that Export all data gave, as it is."),
     )
+    mode = forms.ChoiceField(
+        label=_("How"),
+        choices=[(RESTORE, _("Restore")), (COPY, _("Restore as a copy"))],
+        initial=RESTORE,
+        widget=forms.RadioSelect,
+        required=False,
+    )
+    name = forms.CharField(
+        label=_("Name of the copy"),
+        help_text=_('Left empty: the name of the home followed by "(copy)".'),
+        max_length=Home._meta.get_field("name").max_length or 120,
+        required=False,
+    )
+
+    def clean_mode(self) -> str:
+        """Left out, as by a form of before: the restore it always was."""
+        return str(self.cleaned_data.get("mode") or self.RESTORE)

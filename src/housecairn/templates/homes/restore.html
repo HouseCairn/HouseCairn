@@ -1,15 +1,29 @@
 {% extends "base.html" %}
-{% load i18n navigation %}
+{% load i18n navigation static %}
+{% block extra_head %}<script src="{% static 'js/task-form.js' %}" defer></script>{% endblock extra_head %}
 {% block head_title %}{% translate "Restore a home" %}{% endblock head_title %}
 {% block content %}
   {% url 'homes:list' as parent %}{% back_link parent %}
   <h1>{% translate "Restore a home" %}</h1>
   <p class="small">{% translate "The archive becomes a new home, with its rooms, tasks, history, stock, projects and files. You will be its owner. The people of the archive are not added: invite them again." %}</p>
-  <form method="post" enctype="multipart/form-data" class="card">
+  {# With script, the name of the copy shows with "Restore as a copy" only (static/js/task-form.js); without it, it always shows and a restore ignores it. #}
+  <form method="post" enctype="multipart/form-data" class="card" data-in-place-form>
     {% csrf_token %}
     {% next_field %}
     {% include "components/form_errors.html" with form=form only %}
-    {{ form.as_p }}
+    <p>{{ form.archive.errors }}<label for="{{ form.archive.id_for_label }}">{{ form.archive.label }}</label>{{ form.archive }}<span class="helptext" id="{{ form.archive.auto_id }}_helptext">{{ form.archive.help_text }}</span></p>
+    <fieldset class="choice-group">
+      <legend>{{ form.mode.label }}</legend>
+      {{ form.mode.errors }}
+      {% for choice in form.mode %}<p><label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>{{ choice.tag }}</p>{% endfor %}
+    </fieldset>
+    <ul class="helptext">
+      <li>{% translate "Restore: the home comes back as it was, with the same identifiers, so that its QR labels and links still lead to it. Refused while the home it was made from is on this instance." %}</li>
+      <li>{% translate "Restore as a copy: a new home next to the original, with new identifiers for everything it holds and its own copy of every file. The original is not touched. Its members and invitations are not copied: you are the only member of the copy. Its QR labels get new codes. Only an owner of the original may copy it while it is on this instance." %}</li>
+    </ul>
+    <div data-shown-when="mode=copy">
+      <p>{{ form.name.errors }}<label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>{{ form.name }}<span class="helptext" id="{{ form.name.auto_id }}_helptext">{{ form.name.help_text }}</span></p>
+    </div>
     <button type="submit" class="button-block">{% translate "Restore" %}</button>
   </form>
 {% endblock content %}
