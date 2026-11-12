@@ -13,6 +13,7 @@ from typing import Any
 import pytest
 from allauth.account.internal.userkit import user_id_to_str
 from allauth.account.models import EmailAddress
+from cryptography.hazmat.primitives.asymmetric import ec
 from django.core import mail as django_mail
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
@@ -32,9 +33,9 @@ from housecairn.homes.models import Home, Membership, Role
 from housecairn.instance import config, mail, providers, settings_services
 from housecairn.instance import services as instance_services
 from housecairn.instance.models import InstanceInvitation, OidcProvider, SettingValue
-from housecairn.notifications import outbound
+from housecairn.notifications import devices, outbound, webpush
 from housecairn.notifications import services as notifications
-from housecairn.notifications.models import Channel
+from housecairn.notifications.models import Channel, Device
 from housecairn.projects.models import Project
 from housecairn.rooms.models import Room
 from housecairn.tasks.models import Task
@@ -358,6 +359,42 @@ class TestNothingSent:
 
         monkeypatch.setattr(reminders, "_deliver", lambda *a, **k: pytest.fail("sent"))
         assert reminders.dispatch() == 0
+
+    @pytest.fixture
+    def device(self, demo: None, settings: Any) -> Device:
+        settings.HOUSECAIRN_NOTIFICATIONS_ENABLED = True
+        settings.HOUSECAIRN_WEBPUSH_ENABLED = True
+        config.invalidate()
+        browser = ec.generate_private_key(ec.SECP256R1())
+        return devices.subscribe(
+            member(),
+            name="Phone",
+            endpoint="https://fcm.googleapis.com/fcm/send/fixture-not-an-endpoint",
+            p256dh=webpush.b64url(webpush.public_bytes(browser.public_key())),
+            auth=webpush.b64url(b"0123456789abcdef"),
+        )
+
+    def test_a_device_can_be_added_not_tested(
+        self, device: Device, client: Client, api_client: APIClient, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr("django_q.tasks.async_task", lambda *a: pytest.fail("queued"))
+        signed_in(client, member())
+        page = reverse("notifications:device", kwargs={"device_id": device.pk})
+        answer = client.post(
+            reverse("notifications:device-test", kwargs={"device_id": device.pk}),
+            follow=True,
+            headers={"referer": f"http://testserver{page}"},
+        )
+        assert mode.nothing_sent() in answer.content.decode()
+        signed_in(api_client, member())
+        refused = api_client.post(reverse("api-v1:push-device-test", args=[device.pk]))
+        assert refused.status_code == 403
+        assert refused.json()["code"] == "demo"
+
+    def test_nothing_is_pushed(self, device: Device, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(webpush, "post", lambda *a, **k: pytest.fail("network"))
+        assert devices.send(device, title="t", body="b", path="/") is False
+        assert devices.send_test(str(device.pk)) is False
 
     def test_no_link_preview(self, demo: None) -> None:
         assert config.get_setting("link_preview_enabled") is False

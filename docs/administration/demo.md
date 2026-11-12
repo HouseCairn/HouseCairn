@@ -40,9 +40,9 @@ refuses to run while `HOUSECAIRN_DEMO` is not true.
 - **Settings read only.** The administrator sees the settings and the sign-in providers of the
   instance, but cannot change them, on the screen or through the API (a `403` with the code
   `demo`).
-- **Nothing sent.** No email, no notification (a channel can be added, not tested), no preview
-  of a link, no sign-in through a provider: the instance makes no outgoing connection.
-  Invitations are by link only.
+- **Nothing sent.** No email, no notification (a channel or a device can be added, not
+  tested), no preview of a link, no sign-in through a provider: the instance makes no outgoing
+  connection. Invitations are by link only.
 - **Accounts kept.** No account can be created: sign-up and the first-account screen are
   closed. The two public accounts keep their password, their address, their rights and their
   existence; no second factor can be added to them.

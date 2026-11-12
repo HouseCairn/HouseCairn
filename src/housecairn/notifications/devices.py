@@ -28,6 +28,7 @@ from django.utils.translation import gettext_lazy
 
 from housecairn.accounts.models import User
 from housecairn.core import netguard
+from housecairn.demo import mode as demo_mode
 from housecairn.instance import crypto
 from housecairn.instance.config import get_setting
 from housecairn.notifications import services, webpush
@@ -269,8 +270,12 @@ def send(device: Device, *, title: str, body: str, path: str) -> bool:
     """Push one message to one device; True when the push service took it. Never raises.
 
     A device the push service says is gone (404, 410) is deleted. Nothing is logged of
-    the endpoint, the keys or the message.
+    the endpoint, the keys or the message. Nothing leaves a demonstration instance
+    (docs/adr/0071).
     """
+    if demo_mode.is_on():
+        logger.info("Demonstration instance: a notification to a device was not sent.")
+        return False
     try:
         key = instance_key()
         endpoint = crypto.decrypt(device.endpoint)
@@ -349,6 +354,7 @@ def test(actor: AnyUser, device: Device) -> None:
     """Queue a test message to the device: the background worker sends it."""
     user = _require_owner(actor, device)
     _require_enabled()
+    demo_mode.refuse(demo_mode.nothing_sent())
     if not _consume_test(user):
         raise ValidationError(_("Too many tests: wait a minute."))
     from django_q.tasks import async_task

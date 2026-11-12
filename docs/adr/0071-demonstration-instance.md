@@ -32,16 +32,17 @@ second factor), or fill its disk.
 - **Refusals in the services, not the screens.** Every refusal raises `DemoRefusedError`, a
   `PermissionDenied`, in the service that the screen and the API share: changing or resetting
   a setting, adding, changing, deleting or testing a sign-in provider, testing the mail server,
-  instance invitations, home invitations by email, the test of a notification channel. The API
-  answers a 403 with the code `demo`; a screen shows the message on the page it came from
-  (`demo.middleware`). The settings screens show their fields disabled.
+  instance invitations, home invitations by email, the test of a notification channel or of a
+  device. The API answers a 403 with the code `demo`; a screen shows the message on the page it
+  came from (`demo.middleware`). The settings screens show their fields disabled.
 - **Values imposed on the settings** (`demo.mode.FORCED`), above variables and database: sign-up
   closed, sign-up through a provider closed, no mail server, no preview of links, 2 MB per file,
   20 MB and 50 files per home. A quota of 200 MB for all homes together is added, since anyone
   can create homes. The API gives these settings the source `demo`.
 - **Nothing leaves the server**, by the last step of each way out: the mail backend sends
-  nothing, `outbound.deliver` sends no notification, the reminder worker does nothing, the
-  sign-in providers of the variables and of the interface are not offered.
+  nothing, `outbound.deliver` sends no notification, `devices.send` pushes nothing to a device,
+  the reminder worker does nothing, the sign-in providers of the variables and of the interface
+  are not offered.
 - **Accounts guarded on their models**, so that every path is covered (screens, API, Django's
   administration site, allauth's forms, commands): outside `reset_demo`, no account is created;
   a public account keeps its address, password, rights and active state and is not deleted; no

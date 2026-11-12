@@ -75,8 +75,8 @@ msgstr "Ce qui change sur une instance de démonstration"
 msgid "**Settings read only.** The administrator sees the settings and the sign-in providers of the instance, but cannot change them, on the screen or through the API (a `403` with the code `demo`)."
 msgstr "**Réglages en lecture seule.** L'administrateur voit les réglages et les fournisseurs de connexion de l'instance, mais ne peut pas les modifier, ni à l'écran ni par l'API (un `403` avec le code `demo`)."
 
-msgid "**Nothing sent.** No email, no notification (a channel can be added, not tested), no preview of a link, no sign-in through a provider: the instance makes no outgoing connection. Invitations are by link only."
-msgstr "**Rien n'est envoyé.** Aucun courriel, aucune notification (un canal peut être ajouté, pas testé), aucun aperçu de lien, aucune connexion par un fournisseur : l'instance n'ouvre aucune connexion sortante. Les invitations se font par lien seulement."
+msgid "**Nothing sent.** No email, no notification (a channel or a device can be added, not tested), no preview of a link, no sign-in through a provider: the instance makes no outgoing connection. Invitations are by link only."
+msgstr "**Rien n'est envoyé.** Aucun courriel, aucune notification (un canal ou un appareil peut être ajouté, pas testé), aucun aperçu de lien, aucune connexion par un fournisseur : l'instance n'ouvre aucune connexion sortante. Les invitations se font par lien seulement."
 
 msgid "**Accounts kept.** No account can be created: sign-up and the first-account screen are closed. The two public accounts keep their password, their address, their rights and their existence; no second factor can be added to them."
 msgstr "**Comptes préservés.** Aucun compte ne peut être créé : l'inscription et l'écran du premier compte sont fermés. Les deux comptes publics gardent leur mot de passe, leur adresse, leurs droits et leur existence ; aucun second facteur ne peut leur être ajouté."
