@@ -378,12 +378,28 @@ class HomeRestoreView(LoginRequiredMixin, FormView[forms.RestoreForm]):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form: forms.RestoreForm) -> HttpResponse:
+        as_copy = form.cleaned_data["mode"] == forms.RestoreForm.COPY
         try:
-            result = restore.restore_home(self.request.user, form.cleaned_data["archive"])
+            result = restore.restore_home(
+                self.request.user,
+                form.cleaned_data["archive"],
+                as_copy=as_copy,
+                name=form.cleaned_data["name"] if as_copy else "",
+            )
+        except restore.CopyNotAllowedError as exc:
+            form.add_error("mode", exc.message)
+            response = self.form_invalid(form)
+            response.status_code = 403
+            return response
         except ValidationError as exc:
             form.add_error("archive", exc.messages)
             return self.form_invalid(form)
-        message = _("Home restored: %(name)s.") % {"name": result.home.name}
+        if as_copy:
+            message = _("Home restored as a copy: %(name)s. You are its only member.") % {
+                "name": result.home.name
+            }
+        else:
+            message = _("Home restored: %(name)s.") % {"name": result.home.name}
         if result.unattributed:
             message += " " + _(
                 "Left unattributed, with no account here: %(names)s. Invite them again."
