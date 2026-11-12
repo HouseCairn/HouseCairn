@@ -172,6 +172,13 @@ def read_preview(link_id: str) -> None:
     if expire_preview(link).preview_state != PreviewState.RUNNING:
         return
     started = link.preview_started_at
+    if not preview_enabled():
+        # The administrator turned the preview off after the link was queued: nothing leaves
+        # the server any more, so the page is not read and the row goes back to "not read".
+        ProjectLink.objects.filter(
+            pk=link.pk, preview_state=PreviewState.RUNNING, preview_started_at=started
+        ).update(preview_state=PreviewState.NONE)
+        return
     state = PreviewState.DONE
     try:
         found = preview.read(link.url)

@@ -470,6 +470,26 @@ class TestATaskGivenAgainAfterTheDeadline:
         assert link.preview_state == PreviewState.DONE
 
 
+class TestAPreviewTurnedOffMeanwhile:
+    def test_the_page_is_not_read_when_the_instance_stopped_reading_pages(
+        self,
+        alice: User,
+        living_room_project: Project,
+        site: Server,
+        queued: Queued,
+        settings: Any,
+    ) -> None:
+        link = links.add_link(alice, living_room_project, url=serve_page(site))
+        assert link.preview_state == PreviewState.RUNNING
+        settings.HOUSECAIRN_LINK_PREVIEW_ENABLED = False
+        site.requests.clear()
+        run_worker(queued)
+        assert site.requests == []
+        assert site.connections == 0
+        link.refresh_from_db()
+        assert (link.title, link.image, link.preview_state) == ("", None, PreviewState.NONE)
+
+
 class TestALateResult:
     def test_a_reading_that_ends_after_the_delay_changes_nothing(
         self,
