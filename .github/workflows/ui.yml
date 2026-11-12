@@ -1,6 +1,7 @@
 # Interface checks in a real browser (docs/adr/0018): an end-to-end passkey sign-in
 # with Chromium's virtual authenticator, the one-click single sign-on button, the summary of
-# the errors of a refused form and the tabs of the instance administration; the
+# the errors of a refused form, the tabs of the instance administration and the choice of several
+# rooms or items by search and chips (docs/adr/0063); the
 # installable application and offline reading (docs/adr/0065).
 # No screenshots until the dedicated lot before the public release (docs/adr/0017).
 # Not a required check. Playwright comes from the
@@ -93,7 +94,15 @@ jobs:
           # The passkey check registers a passkey on the account above, which then asks for it
           # at every sign-in: the form checks sign in as an account of their own.
           forms = User.objects.create_user(email='forms@example.com', password='correct-horse-battery-staple')
-          services.create_home(forms, name='Main house')
+          forms_home = services.create_home(forms, name='Main house')
+          # The rooms and items that the multiple-choice check picks from (docs/adr/0063).
+          from housecairn.rooms import services as rooms
+          kitchen = rooms.create_room(forms, forms_home, name='Kitchen')
+          cellar = rooms.create_room(forms, forms_home, name='Cellar')
+          rooms.create_room(forms, forms_home, name='Attic')
+          rooms.create_item(forms, kitchen, name='Oven')
+          rooms.create_item(forms, kitchen, name='Hob')
+          rooms.create_item(forms, cellar, name='Boiler')
           admin = User.objects.create_superuser(email='admin@example.com', password='correct-horse-battery-staple')
           services.create_home(admin, name='Main house')
           "
@@ -111,6 +120,9 @@ jobs:
       - name: A refused form puts its summary of errors on screen, with and without HTMX or script
         run: |
           uv run python tests/e2e/browser_checks.py form-errors --base http://localhost:8001
+      - name: Several rooms or items chosen by search and chips, by keyboard, at 375 px and without script
+        run: |
+          uv run python tests/e2e/chip_select_checks.py --base http://localhost:8001
       - name: The tabs of the instance administration do not run into each other
         run: |
           uv run python tests/e2e/browser_checks.py instance-tabs --base http://localhost:8001
