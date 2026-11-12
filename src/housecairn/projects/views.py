@@ -757,12 +757,12 @@ class FileDeleteView(ConfirmDeleteView):
 # ---------- links of inspiration ----------
 
 # The row of a link being read asks for itself again every two seconds, at most this many
-# times; then it says to reload the page (docs/adr/0069).
+# times; then it says to reload the page (docs/adr/0070).
 LINK_POLLS = 12
 
 
 class LinkAddView(PostView):
-    """Add a link; the worker reads its page, if the instance allows it (docs/adr/0069)."""
+    """Add a link; the worker reads its page, if the instance allows it (docs/adr/0070)."""
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         project = self.get_project()

@@ -1,4 +1,4 @@
-{% load i18n %}{# A link of inspiration (docs/adr/0069). While its page is being read, with script the row asks for itself again every two seconds, a few times at most; without script, or once those are used up, reloading the page shows the result. #}
+{% load i18n %}{# A link of inspiration (docs/adr/0070). While its page is being read, with script the row asks for itself again every two seconds, a few times at most; without script, or once those are used up, reloading the page shows the result. #}
 <li id="link-{{ link.id }}" class="row"{% if link.preview_state == "running" and polls < polls_max %} hx-get="{% url 'projects:link-status' home_id=home.id link_id=link.id %}?n={{ polls|add:1 }}" hx-trigger="load delay:2s" hx-swap="outerHTML"{% endif %}>
   {% if link.image %}<img class="row-thumb" src="{% url 'projects:file-thumbnail' home_id=home.id file_id=link.image_id %}" alt="" loading="lazy" decoding="async" width="64" height="64">{% endif %}
   <a class="row-body" href="{{ link.url }}" rel="noopener noreferrer nofollow" target="_blank">

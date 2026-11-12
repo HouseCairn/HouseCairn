@@ -1,4 +1,4 @@
-"""The test message of a channel is sent by the worker, not during the request (docs/adr/0069).
+"""The test message of a channel is sent by the worker, not during the request (docs/adr/0070).
 
 The tasks run at once in the tests (`HOUSECAIRN_TASKS_SYNC`). Here the queue is replaced by
 a list, so that a test decides when, and whether, the worker gets to the task.

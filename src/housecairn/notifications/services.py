@@ -34,7 +34,7 @@ PREFERENCE_FIELDS = frozenset(
 CHANNEL_FIELDS = frozenset({"name", "enabled"})
 TESTS_PER_MINUTE = 5
 # A test that has not ended this long after it started is a failure, whatever became of the
-# worker (docs/adr/0069). The send itself gives up after `outbound.SEND_SECONDS`.
+# worker (docs/adr/0070). The send itself gives up after `outbound.SEND_SECONDS`.
 TEST_DEADLINE_SECONDS = 30
 # The task is stopped by the worker a little before the deadline.
 TEST_TASK_SECONDS = 25

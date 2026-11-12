@@ -28,7 +28,7 @@ LINK_TITLE_MAX_LENGTH = 200
 
 
 class PreviewState(models.TextChoices):
-    """Where the reading of the page of a link stands (docs/adr/0069).
+    """Where the reading of the page of a link stands (docs/adr/0070).
 
     Empty: the page is not read (previews off on the instance, when the link was added or
     before the worker got to it). `running` ends in `done` (the page was read, whatever
@@ -304,7 +304,7 @@ class ProjectLink(HomeOwnedModel):
     """A link of inspiration: an address, and the title and picture the page gave (adr 0050).
 
     Title and picture are read once, by the worker, just after the link is added, if the
-    instance allows it (docs/adr/0069). The picture is a `ProjectFile` of the project, stored
+    instance allows it (docs/adr/0070). The picture is a `ProjectFile` of the project, stored
     here like a photo and never fetched again; a page never points to the remote one.
     """
 

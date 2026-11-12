@@ -41,7 +41,7 @@ neighbour and no word of a label is cut over two lines. `form-errors` signs in a
 of the CI instance.
 
 `background-calls` (local only) measures the link being read and the test of a channel at 320,
-360, 375 and 1280 px, in English and French, with and without script (docs/adr/0069).
+360, 375 and 1280 px, in English and French, with and without script (docs/adr/0070).
 """
 
 import argparse
@@ -721,7 +721,7 @@ def item_contract(browser: Browser, base: str) -> None:
 
 BACKGROUND_WIDTHS = (320, 360, 375, 1280)
 # Words of the screens, per language: the link being read, a link that could not be read, the
-# test being sent, the test that failed (docs/adr/0069).
+# test being sent, the test that failed (docs/adr/0070).
 BACKGROUND_TEXTS = {
     "en": ("Reading the page", "could not be read", "is being sent", "could not be sent"),
     "fr": ("Lecture de la page", "n'a pas pu être lue", "en cours d'envoi", "pas pu être envoyé"),
@@ -742,7 +742,7 @@ def _fits(page: Page, element: Locator, width: int, label: str) -> None:
 
 
 def background_calls(browser: Browser, base: str) -> None:
-    """Reading a link and testing a channel, in the background. Local only (docs/adr/0069).
+    """Reading a link and testing a channel, in the background. Local only (docs/adr/0070).
 
     Needs an instance with its worker (`qcluster`), the preview of links on, notifications on,
     and the account `demo@example.com` with a project (the first of the list) and a channel

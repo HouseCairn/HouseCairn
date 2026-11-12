@@ -9,7 +9,7 @@ SCHEDULE = "housecairn.notifications.dispatch"
 
 
 def send_test(channel_id: str, language: str) -> None:
-    """Send the test message of a channel (queued by `services.start_test`, docs/adr/0069)."""
+    """Send the test message of a channel (queued by `services.start_test`, docs/adr/0070)."""
     from housecairn.notifications import services
 
     services.send_test(channel_id, language)

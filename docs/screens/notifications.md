@@ -25,7 +25,7 @@ Opening a channel lets you:
 
 - rename it, or turn it off without deleting it (**Enabled**);
 - **Send a test message**: a real message to the service, sent in the background so that
-  the screen never waits for it ([ADR 0069](../adr/0069-slow-network-calls-in-the-background.md)).
+  the screen never waits for it ([ADR 0070](../adr/0070-slow-network-calls-in-the-background.md)).
   Under the button the screen says "The test message is being sent." and, in a few seconds,
   the answer: "sent" or "could not be sent", without the service's own message, with the
   time. The service is given eight seconds; a test that has not ended after 30 seconds

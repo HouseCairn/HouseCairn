@@ -1,4 +1,4 @@
-# 0069. Reading a link's page and testing a channel run in the background worker
+# 0070. Reading a link's page and testing a channel run in the background worker
 
 - Status: accepted
 - Date: 2026-11-12

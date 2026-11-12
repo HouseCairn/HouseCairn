@@ -47,7 +47,7 @@ def register() -> None:
         exports.Section(
             "project_links",
             ProjectLink,
-            # Where the reading of the page stands is not data of the home (docs/adr/0069).
+            # Where the reading of the page stands is not data of the home (docs/adr/0070).
             exclude=("preview_state", "preview_started_at"),
         ),
         exports.Section("project_tasks", ProjectTask),

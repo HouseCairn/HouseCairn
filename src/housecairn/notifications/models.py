@@ -18,7 +18,7 @@ MAX_CHANNELS = 10
 
 
 class SendState(models.TextChoices):
-    """Where the last test message of a channel stands (docs/adr/0069)."""
+    """Where the last test message of a channel stands (docs/adr/0070)."""
 
     NONE = "", _("Test never sent")
     RUNNING = "running", _("Test being sent")
@@ -41,7 +41,7 @@ class Channel(BaseModel):
     scheme = models.CharField(max_length=16, editable=False)
     service = models.CharField(max_length=60, editable=False)
     enabled = models.BooleanField(_("enabled"), default=True)
-    # The last test message, sent by the worker (docs/adr/0069). `running` ends in one of the
+    # The last test message, sent by the worker (docs/adr/0070). `running` ends in one of the
     # others, at the latest `services.TEST_DEADLINE_SECONDS` after `test_started_at`.
     test_state = models.CharField(
         max_length=8, choices=SendState.choices, default=SendState.NONE, blank=True, editable=False

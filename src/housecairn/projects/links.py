@@ -2,7 +2,7 @@
 
 A link is an address, a title and, when the page gave one, a picture stored like a photo of
 the project. Adding a link saves it at once with its address. Reading the page, which can
-take seconds, is a task of the background worker queued just after (docs/adr/0069), and only
+take seconds, is a task of the background worker queued just after (docs/adr/0070), and only
 if the instance allows it (`link_preview_enabled`, docs/adr/0035): the request never waits
 for another server. The worker fills the title (unless the person typed one) and the picture
 when it is done. Any failure leaves the plain address: adding a link never fails because a
