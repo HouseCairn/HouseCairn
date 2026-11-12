@@ -22,6 +22,36 @@ msgstr "%(title)s, %(home)s"
 msgid "Notifications"
 msgstr "Notifications"
 
+msgid "Messaging"
+msgstr "Messageries"
+
+msgid "Push notifications"
+msgstr "Notifications push"
+
+msgid "Text messages (SMS)"
+msgstr "SMS"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Self-hosted"
+msgstr "Auto-hébergés"
+
+msgid "On-call and alerting"
+msgstr "Astreinte et alertes"
+
+msgid "Your server, or the one you choose"
+msgstr "Votre serveur, ou celui que vous choisissez"
+
+msgid "The provider, in the region you choose"
+msgstr "Le fournisseur, dans la région que vous choisissez"
+
+msgid "The provider, in the EU"
+msgstr "Le fournisseur, dans l'UE"
+
+msgid "The provider, outside the EU or not said"
+msgstr "Le fournisseur, hors de l'UE ou sans le dire"
+
 msgid "People may add channels (ntfy, Telegram, email...) and receive reminders. Off: nothing is sent and no channel can be added or tested."
 msgstr "Chacun peut ajouter des canaux (ntfy, Telegram, e-mail…) et recevoir des rappels. Désactivé : rien n'est envoyé et aucun canal ne peut être ajouté ni testé."
 
@@ -224,6 +254,12 @@ msgstr "Ajouter un canal"
 
 msgid "Add the channel"
 msgstr "Ajouter le canal"
+
+msgid "Services"
+msgstr "Services"
+
+msgid "The address starts with the scheme of its service. Here is an example for each service, where its messages go, and a link to its page in the Apprise documentation, which lists its options."
+msgstr "L'adresse commence par le schéma de son service. Voici un exemple pour chaque service, où vont ses messages, et un lien vers sa page dans la documentation d'Apprise, qui en liste les options."
 
 msgid "Reminders"
 msgstr "Rappels"

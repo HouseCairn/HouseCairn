@@ -1,0 +1,23 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**More notification services.** A channel may now use any of 137 services reached through Apprise, each one reviewed: Microsoft Teams, Rocket.Chat, Zulip, Pushbullet, Bark, Free Mobile, SFR and many more. The Notifications screen lists them by family, with an example address, where the messages go and a link to the Apprise page of each service ([guide](../../../guides/notifications.md))."
+msgstr "**Plus de services de notification.** Un canal peut désormais utiliser l'un des 137 services joints par Apprise, chacun examiné : Microsoft Teams, Rocket.Chat, Zulip, Pushbullet, Bark, Free Mobile, SFR et bien d'autres. L'écran Notifications les liste par famille, avec un exemple d'adresse, l'endroit où vont les messages et un lien vers la page Apprise de chaque service ([guide](../../../guides/notifications.md))."
+

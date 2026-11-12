@@ -15,6 +15,12 @@ The list shows the name of each channel and the kind of service (`ntfy`, `tgram`
 [guide](../guides/notifications.md) for the address of each service. The address is
 kept encrypted and never shown again, on this screen or anywhere else.
 
+Under the form, **Services** lists every service accepted, by family (messaging, push
+notifications, text messages, email, self-hosted, on-call and alerting). Each one has an
+example address, where its messages go (your server, the provider in the EU, the provider
+in the region you choose, or the provider outside the EU or without saying), and a link to
+its page in the Apprise documentation.
+
 Opening a channel lets you:
 
 - rename it, or turn it off without deleting it (**Enabled**);

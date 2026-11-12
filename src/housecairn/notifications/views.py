@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import TemplateView
 
-from housecairn.notifications import forms, services
+from housecairn.notifications import catalog, forms, services
 from housecairn.notifications.models import Channel
 
 
@@ -36,6 +36,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
             "enabled": services.is_enabled(),
             "channels": services.channels_of(self.request.user),
             "add_form": forms.ChannelForm(),
+            "families": catalog.by_family(),
             "preference_form": forms.PreferenceForm(instance=prefs),
         }
         return super().get_context_data(**{**context, **kwargs})
