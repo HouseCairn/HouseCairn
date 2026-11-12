@@ -24,7 +24,7 @@ from housecairn.stock import services
 from housecairn.stock.models import Article
 from housecairn.tasks import materials
 from housecairn.tasks import services as task_services
-from housecairn.tasks.models import Task
+from housecairn.tasks.models import Occurrence, Task
 from tests.data_support import archive_bytes, export_data, fill_home
 from tests.test_restore_security import edit, entries, rebuild
 
@@ -258,6 +258,47 @@ class TestPlannedCostOfATask:
             task = make_task(alice, alice_home)
             self.listed(alice, task, (make_article(alice, alice_home, f"B{number}", "1"), "1"))
         assert count() == before
+
+
+def done_once(alice: User, task: Task, cost: str | None = None) -> None:
+    occurrence = Occurrence.objects.get(task=task, status="planned")
+    task_services.complete(
+        alice, occurrence, on=TODAY, actual_cost=None if cost is None else D(cost)
+    )
+
+
+class TestEstimateOfADoneOccurrence:
+    def page(self, signed_in: Client, home: Home, task: Task) -> str:
+        occurrence = Occurrence.objects.get(task=task, status="done")
+        url = reverse(
+            "tasks:occurrence-edit",
+            kwargs={"home_id": home.id, "task_id": task.id, "occurrence_id": occurrence.id},
+        )
+        return signed_in.get(url).content.decode()
+
+    def test_the_estimate_is_the_typed_materials_plus_the_stock(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        task = make_task(alice, alice_home, material_budget=D("10"))
+        materials.add_material(alice, task, make_article(alice, alice_home, "Paint", "20"), D("2"))
+        done_once(alice, task)
+        assert "Estimated at €50.00 each time" in self.page(signed_in, alice_home, task)
+
+    def test_the_stock_alone_is_an_estimate(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        task = make_task(alice, alice_home)
+        materials.add_material(alice, task, make_article(alice, alice_home, "Paint", "20"), D("2"))
+        done_once(alice, task)
+        assert "Estimated at €40.00 each time" in self.page(signed_in, alice_home, task)
+
+    def test_nothing_typed_and_nothing_priced_says_no_estimate(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        task = make_task(alice, alice_home)
+        materials.add_material(alice, task, make_article(alice, alice_home, "Brush"), D("1"))
+        done_once(alice, task)
+        assert "Estimated at" not in self.page(signed_in, alice_home, task)
 
 
 class TestOnTheScreens:
