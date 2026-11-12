@@ -1,7 +1,7 @@
 """The unit price of a stock item and the planned cost of a task (docs/adr/0062)."""
 
 import datetime
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -12,6 +12,7 @@ from django.db import connection
 from django.test import Client
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
+from django.utils import translation
 from rest_framework.test import APIClient
 
 from housecairn.accounts.models import User
@@ -508,3 +509,30 @@ class TestArchive:
         make_article(alice, alice_home, "Paint", "5")
         data_services.erase_home(alice_home)
         assert not Article.all_objects.filter(home_id=alice_home.id).exists()
+
+
+class TestTheCommaInFrench:
+    @pytest.fixture(autouse=True)
+    def _restore_the_language(self) -> Iterator[None]:
+        """A request in French activates it for the thread: put the language back after."""
+        with translation.override("en"):
+            yield
+
+    def test_the_form_takes_a_comma_in_french_and_says_the_format_in_english(
+        self, signed_in: Client, alice_home: Home
+    ) -> None:
+        french = signed_in.post(
+            stock_url("create", alice_home),
+            {"name": "Peinture", "unit_price": "21,5"},
+            headers={"Accept-Language": "fr"},
+        )
+        assert french.status_code == 302
+        assert Article.objects.get(name="Peinture").unit_price == D("21.5")
+        english = signed_in.post(
+            stock_url("create", alice_home),
+            {"name": "Paint", "unit_price": "21,5"},
+            headers={"Accept-Language": "en"},
+        )
+        assert english.status_code == 200
+        assert "decimal mark" in english.content.decode()
+        assert not Article.objects.filter(name="Paint").exists()

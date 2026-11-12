@@ -56,7 +56,7 @@ class ArticleForm(forms.ModelForm[Article]):
             "notes",
         ]
         widgets = {"notes": forms.Textarea(attrs={"rows": 4})}
-        field_classes = {"threshold": QuantityField}
+        field_classes = {"threshold": QuantityField, "unit_price": MoneyField}
 
     def __init__(self, *args: Any, items: Any, rooms: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)

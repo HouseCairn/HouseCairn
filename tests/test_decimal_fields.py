@@ -45,6 +45,7 @@ FIELDS: list[tuple[str, forms.Field]] = [
     ("money", MoneyField()),
     ("movement", stock_forms.MovementForm.base_fields["quantity"]),
     ("threshold", stock_forms.ArticleForm.base_fields["threshold"]),
+    ("unit price", stock_forms.ArticleForm.base_fields["unit_price"]),
     ("last price", stock_forms.SupplierForm.base_fields["last_price"]),
     ("material line", material_forms.MaterialLineForm.base_fields["quantity"]),
     ("material", material_forms.MaterialSaveForm.base_fields["quantity"]),
