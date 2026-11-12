@@ -65,4 +65,5 @@ later record supersedes it.
 | [0063](0063-search-field-with-chips-for-multiple-choices.md) | A search field with chips for multiple choices among the records of a home | 2026-11-12 |
 | [0064](0064-every-apprise-service-with-a-fixed-format.md) | Every Apprise service with a fixed format, each one reviewed | 2026-11-12 |
 | [0065](0065-installable-application-and-offline-reading.md) | Installable application and offline reading | 2026-11-11 |
+| [0066](0066-notifications-on-the-device-by-web-push.md) | Notifications on the device by Web Push, on `cryptography` alone | 2026-11-12 |
 | [0068](0068-one-date-format-and-decimal-mark-messages.md) | One date format per language, and a decimal field that says what it expects | 2026-11-11 |

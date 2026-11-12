@@ -35,3 +35,7 @@ class PreferenceForm(forms.ModelForm[Preference]):
             "time_zone",
         ]
         widgets = {"send_at": _TIME, "quiet_start": _TIME, "quiet_end": _TIME}
+
+
+class DeviceForm(forms.Form):
+    name = forms.CharField(label=_("Name"), max_length=60)

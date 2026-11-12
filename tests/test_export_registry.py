@@ -62,6 +62,8 @@ NOT_OF_A_HOME = {
     "tasks.DisplayPreference": "how a person lays out the Today screen",
     "notifications.Channel": "where a person receives reminders",
     "notifications.Preference": "when a person wants reminders",
+    "notifications.Device": "a browser of a person that receives notifications (docs/adr/0066)",
+    "notifications.PushKey": "the push key pair of the instance (docs/adr/0066)",
 }
 
 
@@ -222,6 +224,8 @@ def test_no_section_exports_a_secret() -> None:
         "accounts.KnownDevice",
         "instance.OidcProvider",
         "notifications.Channel",
+        "notifications.Device",
+        "notifications.PushKey",
         "instance.SettingValue",
     ):
         assert label not in labels
