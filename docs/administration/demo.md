@@ -2,7 +2,7 @@
 
 A demonstration instance lets anyone try HouseCairn without installing it: two accounts
 whose address and password are public, a fictional home, and everything back to that state
-every night. It is the instance at <https://demo.housecairn.app>.
+every night. It is the instance at `demo.housecairn.app`.
 
 ```{warning}
 `HOUSECAIRN_DEMO=true` erases **every** account, home and file of the instance every night.

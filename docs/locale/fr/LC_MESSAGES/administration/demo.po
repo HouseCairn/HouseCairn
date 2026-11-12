@@ -21,8 +21,8 @@ msgstr ""
 msgid "Demonstration instance"
 msgstr "Instance de démonstration"
 
-msgid "A demonstration instance lets anyone try HouseCairn without installing it: two accounts whose address and password are public, a fictional home, and everything back to that state every night. It is the instance at <https://demo.housecairn.app>."
-msgstr "Une instance de démonstration permet à chacun d'essayer HouseCairn sans l'installer : deux comptes dont l'adresse et le mot de passe sont publics, un logement fictif, et tout revient à cet état chaque nuit. C'est l'instance <https://demo.housecairn.app>."
+msgid "A demonstration instance lets anyone try HouseCairn without installing it: two accounts whose address and password are public, a fictional home, and everything back to that state every night. It is the instance at `demo.housecairn.app`."
+msgstr "Une instance de démonstration permet à chacun d'essayer HouseCairn sans l'installer : deux comptes dont l'adresse et le mot de passe sont publics, un logement fictif, et tout revient à cet état chaque nuit. C'est l'instance `demo.housecairn.app`."
 
 msgid "`HOUSECAIRN_DEMO=true` erases **every** account, home and file of the instance every night. Never set it on an instance that holds real data."
 msgstr "`HOUSECAIRN_DEMO=true` efface **chaque** compte, logement et fichier de l'instance chaque nuit. Ne le posez jamais sur une instance qui contient des données réelles."
