@@ -7,6 +7,7 @@ a published port, an `env_file`, a fixed network range, a project name. The
 `docker compose config` on it.
 """
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +29,16 @@ SHARED_KEYS = (
     "stop_grace_period",
     "volumes",
 )
+VARIABLES_PAGE = REPO / "docs" / "administration" / "variables.md"
+RATE_LIMITS_PAGE = REPO / "docs" / "administration" / "rate-limits.md"
+PRODUCTION_ENV = REPO / "deploy" / "production.env.example"
+# Documented variables that the Coolify file leaves out (docs/administration/coolify.md says why).
+NOT_IN_COOLIFY = {
+    "SECRET_KEY",  # a secret: the container generates one in /data
+    "SECRET_KEY_FALLBACKS",  # a secret
+    "DATABASE_URL",  # holds a password: set with the PostgreSQL service of the documentation
+    "HOUSECAIRN_PORT",  # Coolify routes the domain to port 8000
+}
 # Keys of a Coolify service template header (templates/compose/*.yaml in Coolify).
 HEADER_KEYS = ("documentation", "slogan", "category", "tags", "port")
 
@@ -191,3 +202,66 @@ def test_kept_up_to_date_by_dependabot() -> None:
     compose_updates = [u for u in config["updates"] if u["package-ecosystem"] == "docker-compose"]
     assert len(compose_updates) == 1
     assert "/deploy/coolify" in compose_updates[0]["directories"]
+
+
+def documented_variables() -> set[str]:
+    """The variables of docs/administration/variables.md, the rate limits expanded."""
+    text = VARIABLES_PAGE.read_text()
+    table = [line for line in text.splitlines() if line.startswith("| `")]
+    names: set[str] = set()
+    for line in table:
+        first_cell = line.split("|")[1]
+        names.update(re.findall(r"`([A-Z][A-Z0-9_]+\*?)`", first_cell))
+    names.update(re.findall(r"`((?:EMAIL|DEFAULT_FROM)_[A-Z_]+)`", text))
+    wildcard = {name for name in names if name.endswith("*")}
+    names -= wildcard
+    assert wildcard == {"HOUSECAIRN_RATELIMIT_*"}
+    names.update(re.findall(r"`(HOUSECAIRN_RATELIMIT_[A-Z_]+)`", RATE_LIMITS_PAGE.read_text()))
+    return names
+
+
+def test_documented_variables_are_found() -> None:
+    names = documented_variables()
+    assert {"HOUSECAIRN_WEBPUSH_ENABLED", "HOUSECAIRN_RATELIMIT_LOGIN", "EMAIL_PORT"} <= names
+    assert len(names) > 40
+
+
+def test_every_documented_variable_is_in_the_coolify_file(coolify: dict[str, Any]) -> None:
+    """A variable the documentation lists must be one Coolify shows, or be left out on purpose."""
+    environment = _environment(_service(coolify))
+    missing = documented_variables() - set(environment) - NOT_IN_COOLIFY
+    assert missing == set()
+    assert not NOT_IN_COOLIFY & set(environment)
+
+
+def test_every_documented_variable_is_in_the_example_environment() -> None:
+    """The example environment of compose.yaml names them too, commented out when optional."""
+    text = PRODUCTION_ENV.read_text()
+    names = set(re.findall(r"^#? ?([A-Z][A-Z0-9_]+)=", text, flags=re.MULTILINE))
+    assert documented_variables() - names == set()
+
+
+def test_a_missing_variable_is_caught(coolify: dict[str, Any]) -> None:
+    mutant = yaml.safe_load(yaml.safe_dump(coolify))
+    service = _service(mutant)
+    service["environment"] = [
+        item for item in service["environment"] if not item.startswith("HOUSECAIRN_WEBPUSH_")
+    ]
+    missing = documented_variables() - set(_environment(service)) - NOT_IN_COOLIFY
+    assert missing == {"HOUSECAIRN_WEBPUSH_ENABLED", "HOUSECAIRN_WEBPUSH_DISCREET"}
+
+
+def test_new_variables_do_not_change_behaviour_when_empty(coolify: dict[str, Any]) -> None:
+    """Empty means the application's default, except where an empty value would not parse."""
+    environment = _environment(_service(coolify))
+    written_out = {
+        name: value
+        for name, value in environment.items()
+        if value and value.startswith(f"${{{name}:-") and not value.endswith(":-}")
+    }
+    assert written_out["HOUSECAIRN_SETUP_SCREEN"] == "${HOUSECAIRN_SETUP_SCREEN:-true}"
+    assert (
+        written_out["HOUSECAIRN_DOCS_URL"] == "${HOUSECAIRN_DOCS_URL:-https://docs.housecairn.app}"
+    )
+    assert environment["HOUSECAIRN_DEMO"] == "${HOUSECAIRN_DEMO:-}"
+    assert environment["HOUSECAIRN_WEBPUSH_ENABLED"] == "${HOUSECAIRN_WEBPUSH_ENABLED:-}"

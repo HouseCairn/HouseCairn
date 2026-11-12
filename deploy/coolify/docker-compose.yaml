@@ -44,11 +44,33 @@ services:
       # free in the interface; set, it locks it (docs/administration/settings.md).
       - TIME_ZONE=${TIME_ZONE:-}
       - HOUSECAIRN_SIGNUP_OPEN=${HOUSECAIRN_SIGNUP_OPEN:-}
+      - HOUSECAIRN_SIGNUP_POW_BITS=${HOUSECAIRN_SIGNUP_POW_BITS:-}
+      - HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS=${HOUSECAIRN_SIGNUP_ALLOWED_DOMAINS:-}
+      - HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS=${HOUSECAIRN_SIGNUP_BLOCKED_DOMAINS:-}
+      - ACCOUNT_EMAIL_VERIFICATION=${ACCOUNT_EMAIL_VERIFICATION:-}
+      - HOUSECAIRN_INVITATION_LIFETIME_DAYS=${HOUSECAIRN_INVITATION_LIFETIME_DAYS:-}
+      - HOUSECAIRN_DEFAULT_LANGUAGE=${HOUSECAIRN_DEFAULT_LANGUAGE:-}
+      - HOUSECAIRN_INSTANCE_NAME=${HOUSECAIRN_INSTANCE_NAME:-}
+      - HOUSECAIRN_PHOTO_MAX_BYTES=${HOUSECAIRN_PHOTO_MAX_BYTES:-}
+      - HOUSECAIRN_HOME_STORAGE_MB=${HOUSECAIRN_HOME_STORAGE_MB:-}
+      - HOUSECAIRN_HOME_MAX_FILES=${HOUSECAIRN_HOME_MAX_FILES:-}
       - EMAIL_HOST=${EMAIL_HOST:-}
       - EMAIL_PORT=${EMAIL_PORT:-}
       - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
       - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS:-}
+      - EMAIL_USE_SSL=${EMAIL_USE_SSL:-}
+      - EMAIL_TIMEOUT=${EMAIL_TIMEOUT:-}
+      # Reminders (Apprise channels) and notifications on the device (Web Push): off while
+      # empty (docs/guides/notifications.md).
+      - HOUSECAIRN_NOTIFICATIONS_ENABLED=${HOUSECAIRN_NOTIFICATIONS_ENABLED:-}
+      - HOUSECAIRN_NOTIFICATIONS_INTERVAL=${HOUSECAIRN_NOTIFICATIONS_INTERVAL:-}
+      - HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS=${HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS:-}
+      - HOUSECAIRN_WEBPUSH_ENABLED=${HOUSECAIRN_WEBPUSH_ENABLED:-}
+      - HOUSECAIRN_WEBPUSH_DISCREET=${HOUSECAIRN_WEBPUSH_DISCREET:-}
+      # Read the title and the picture of a page when a link is added to a project.
+      - HOUSECAIRN_LINK_PREVIEW_ENABLED=${HOUSECAIRN_LINK_PREVIEW_ENABLED:-}
       # Single sign-on through any OpenID Connect provider: off while
       # OIDC_SERVER_URL is empty (docs/administration/oidc.md).
       - OIDC_SERVER_URL=${OIDC_SERVER_URL:-}
@@ -56,12 +78,38 @@ services:
       - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET:-}
       - HOUSECAIRN_OIDC_SIGNUP=${HOUSECAIRN_OIDC_SIGNUP:-}
       - HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL=${HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL:-}
+      # First-account screen (/setup/): `true` is its default, since an empty value would
+      # read as false (docs/getting-started/first-start.md).
+      - HOUSECAIRN_SETUP_SCREEN=${HOUSECAIRN_SETUP_SCREEN:-true}
       # true only for a public demonstration instance: two public accounts, everything
       # erased every night (docs/administration/demo.md).
       - HOUSECAIRN_DEMO=${HOUSECAIRN_DEMO:-}
+      # Rate limits, one variable each (docs/administration/rate-limits.md).
+      - HOUSECAIRN_RATELIMIT_LOGIN=${HOUSECAIRN_RATELIMIT_LOGIN:-}
+      - HOUSECAIRN_RATELIMIT_LOGIN_FAILURES=${HOUSECAIRN_RATELIMIT_LOGIN_FAILURES:-}
+      - HOUSECAIRN_RATELIMIT_SIGNUP=${HOUSECAIRN_RATELIMIT_SIGNUP:-}
+      - HOUSECAIRN_RATELIMIT_SIGNUP_DAY=${HOUSECAIRN_RATELIMIT_SIGNUP_DAY:-}
+      - HOUSECAIRN_RATELIMIT_PASSWORD_RESET=${HOUSECAIRN_RATELIMIT_PASSWORD_RESET:-}
+      - HOUSECAIRN_RATELIMIT_INVITATIONS=${HOUSECAIRN_RATELIMIT_INVITATIONS:-}
+      - HOUSECAIRN_RATELIMIT_INVITATIONS_DAY=${HOUSECAIRN_RATELIMIT_INVITATIONS_DAY:-}
+      - HOUSECAIRN_RATELIMIT_INVITATION_LINKS=${HOUSECAIRN_RATELIMIT_INVITATION_LINKS:-}
+      - HOUSECAIRN_RATELIMIT_TESTS=${HOUSECAIRN_RATELIMIT_TESTS:-}
+      - HOUSECAIRN_RATELIMIT_LINK_PREVIEWS=${HOUSECAIRN_RATELIMIT_LINK_PREVIEWS:-}
+      - HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME=${HOUSECAIRN_RATELIMIT_LINK_PREVIEWS_HOME:-}
+      # The cache of the rate-limit counters. Its default is written out: empty is not valid.
+      - HOUSECAIRN_CACHE_URL=${HOUSECAIRN_CACHE_URL:-locmemcache://housecairn}
+      # Path prefix and framing (docs/administration/url-prefix.md), and the sentence of the
+      # 400 page of a refused host name (docs/administration/settings.md).
+      - HOUSECAIRN_URL_PREFIX=${HOUSECAIRN_URL_PREFIX:-}
+      - HOUSECAIRN_URL_PREFIX_HEADER=${HOUSECAIRN_URL_PREFIX_HEADER:-}
+      - HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING=${HOUSECAIRN_ALLOW_SAME_ORIGIN_FRAMING:-}
+      - HOUSECAIRN_DISALLOWED_HOST_HINT=${HOUSECAIRN_DISALLOWED_HOST_HINT:-}
+      # Documentation address of the help links. Its default is written out: empty is not valid.
+      - HOUSECAIRN_DOCS_URL=${HOUSECAIRN_DOCS_URL:-https://docs.housecairn.app}
       # Web server and task worker processes, and the application log level.
       - HOUSECAIRN_WEB_WORKERS=${HOUSECAIRN_WEB_WORKERS:-2}
       - HOUSECAIRN_TASK_WORKERS=${HOUSECAIRN_TASK_WORKERS:-2}
+      - HOUSECAIRN_STOP_TIMEOUT=${HOUSECAIRN_STOP_TIMEOUT:-}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     volumes:
       # Database, uploaded files and the generated secret key: back this up.
