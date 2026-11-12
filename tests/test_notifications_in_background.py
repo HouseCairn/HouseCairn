@@ -318,6 +318,22 @@ class TestAlwaysAnEnd:
         assert channel.test_state == SendState.RUNNING
         assert len(queued) == 1  # the second test is still waiting for its worker
 
+    def test_the_documented_deadlines_are_the_ones_in_force(self) -> None:
+        # Pinned: the guides, the screens and the API name 30 seconds.
+        assert services.TEST_DEADLINE_SECONDS == 30
+        assert services.TEST_TASK_SECONDS == 25
+
+    def test_a_test_is_running_at_29_seconds_and_failed_at_31(
+        self, alice: User, channel: Channel, queued: Queued
+    ) -> None:
+        services.start_test(alice, channel)
+        age(channel, 29)
+        channel.refresh_from_db()
+        assert services.expire_test(channel).test_state == SendState.RUNNING
+        age(channel, 31)
+        channel.refresh_from_db()
+        assert services.expire_test(channel).test_state == SendState.FAILED
+
     def test_a_task_given_again_after_the_deadline_sends_nothing_and_leaves_it_failed(
         self, alice: User, channel: Channel, queued: Queued, delivered: list[tuple[str, str]]
     ) -> None:

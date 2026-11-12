@@ -425,6 +425,24 @@ class TestAlwaysAnEnd:
         assert site.requests == []  # a task that comes late reads nothing
 
 
+class TestTheDeadlines:
+    def test_the_documented_deadlines_are_the_ones_in_force(self) -> None:
+        # Pinned: the guides, the screens and the API name 30 seconds.
+        assert links.PREVIEW_DEADLINE_SECONDS == 30
+        assert links.PREVIEW_TASK_SECONDS == 25
+
+    def test_a_reading_is_running_at_29_seconds_and_failed_at_31(
+        self, alice: User, living_room_project: Project, site: Server, queued: Queued
+    ) -> None:
+        link = links.add_link(alice, living_room_project, url=serve_page(site))
+        age(link, 29)
+        link.refresh_from_db()
+        assert links.expire_preview(link).preview_state == PreviewState.RUNNING
+        age(link, 31)
+        link.refresh_from_db()
+        assert links.expire_preview(link).preview_state == PreviewState.FAILED
+
+
 class TestATaskGivenAgainAfterTheDeadline:
     """django-q2 gives back a task stopped at its timeout once `retry` has passed."""
 
