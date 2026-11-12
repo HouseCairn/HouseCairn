@@ -765,7 +765,7 @@ def instance_tabs(browser: Browser, base: str) -> None:
                 page.goto(f"{base}{path}")
                 tabs = page.evaluate(TABS_JS)
                 label = f"{locale} {width} px {path}"
-                check(len(tabs) == 4, f"{label}: four tabs")
+                check(len(tabs) == 4, f"{label}: four tabs ({len(tabs)} found at {page.url})")
                 for tab in tabs:
                     inside = (
                         tab["box"][0] - 1 <= tab["text"][0] and tab["text"][1] <= tab["box"][1] + 1
