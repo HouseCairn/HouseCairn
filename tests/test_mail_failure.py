@@ -196,3 +196,17 @@ class TestSecurityNoticesAreBestEffort:
         second.refresh_from_db()
         assert second.primary
         assert "Security notice not sent" in caplog.text
+
+
+class TestOnlyTheSendIsTheMailServer:
+    def test_a_template_that_cannot_be_read_is_a_defect_not_a_mail_failure(self) -> None:
+        person()
+        with (
+            server_refusing(recipients_refused()),
+            mock.patch(
+                "housecairn.accounts.adapters.AccountAdapter.render_mail",
+                side_effect=OSError("template unreadable"),
+            ),
+            pytest.raises(OSError, match="template unreadable"),
+        ):
+            Client().post(reverse("account_reset_password"), {"email": ADDRESS})

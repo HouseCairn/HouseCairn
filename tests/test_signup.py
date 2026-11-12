@@ -474,18 +474,31 @@ class TestMailServerFailure:
         assert "could not be sent" in response.text
         assert not User.objects.exists()
 
-    def test_the_page_that_comes_back_carries_a_new_challenge_and_signing_up_works_again(
+    def test_the_page_that_comes_back_carries_a_challenge_that_can_be_solved(
         self, client: Client
     ) -> None:
+        offered = challenge_of(client.get(reverse("account_signup")).text)
         with mock.patch(
             "django.core.mail.backends.locmem.EmailBackend.send_messages",
             side_effect=smtplib.SMTPServerDisconnected("gone"),
         ):
             failed = sign_up(client)
         assert failed.status_code == 200
-        assert challenge_of(failed.text)
-        # The administrator fixed the server: the same person signs up with the same address.
-        assert sign_up(client).status_code == 302
+        # The session was replaced: the challenge that was offered is gone, and the page
+        # shows a new one, the one the session now holds.
+        challenge, bits = challenge_of(failed.text)
+        assert (challenge, bits) != offered
+        # The administrator fixed the server: the same person sends the form of that page.
+        retry = client.post(
+            reverse("account_signup"),
+            {
+                "email": "new@example.com",
+                "password1": PASSWORD,
+                "password2": PASSWORD,
+                "pow_solution": antibot.solve(challenge, bits),
+            },
+        )
+        assert retry.status_code == 302
         assert User.objects.filter(email="new@example.com").count() == 1
         assert [m.to for m in mail.outbox] == [["new@example.com"]]
 
@@ -502,6 +515,18 @@ class TestMailServerFailure:
             sign_up(client)
         assert "SMTPAuthenticationError" in caplog.text
         assert "hunter2" not in caplog.text
+
+    @pytest.mark.parametrize("verification", ["mandatory", "optional"])
+    def test_the_session_keeps_nothing_of_the_undone_sign_up(
+        self, client: Client, verification: str
+    ) -> None:
+        with (
+            override_settings(ACCOUNT_EMAIL_VERIFICATION=verification),
+            server_refusing(recipients_refused("new@example.com")),
+        ):
+            sign_up(client)
+        # allauth stashes the address it verified before it sends; no trace of it stays.
+        assert set(client.session.keys()) <= {"housecairn_signup_challenge"}
 
     def test_the_address_is_not_in_the_log_when_the_server_quotes_it(
         self, client: Client, caplog: pytest.LogCaptureFixture

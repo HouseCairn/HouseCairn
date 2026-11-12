@@ -6,11 +6,13 @@ from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.core import context as allauth_context
 from allauth.core import ratelimit
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.socialaccount.models import SocialLogin
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.http import HttpRequest
 from django.template.loader import render_to_string
@@ -62,8 +64,18 @@ class AccountAdapter(DefaultAccountAdapter):  # type: ignore[misc]
         for key in _EMAIL_LINKS:
             if isinstance(context.get(key), str):
                 context[key] = on_site(context[key])
+        # allauth's own steps, but for the send: a template that cannot be read is a defect
+        # to see as one, not a mail server that failed.
+        request = allauth_context.request
+        rendered = {
+            "request": request,
+            "email": email,
+            "current_site": get_current_site(request),
+            **context,
+        }
+        message = self.render_mail(template_prefix, email, rendered)
         try:
-            super().send_mail(template_prefix, email, context)
+            message.send()
         except (smtplib.SMTPException, OSError) as exc:
             # The type only: a server's reply can quote the address or the credentials.
             mail_logger.warning("Outgoing mail not delivered (%s)", type(exc).__name__)
