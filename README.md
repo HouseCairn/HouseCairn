@@ -53,6 +53,20 @@ Documentation, in English and French: <https://docs.housecairn.app>.
   [Apprise](https://github.com/caronc/apprise) services, calendar feeds, CSV
   import and export, a full export of a home, and a REST API.
 
+## Demo
+
+Try it in a browser at <https://demo.housecairn.app>, with one of these public
+accounts:
+
+| Account | Address | Password |
+| --- | --- | --- |
+| Administrator | `admin@example.com` | `housecairn-demo` |
+| User | `user@example.com` | `housecairn-demo` |
+
+What you enter there is public, and everything is erased and loaded again every
+night at 03:00 (Europe/Paris). The demo sends nothing (no email, no
+notification) and its settings are read only.
+
 ## Quick start
 
 Try it on your computer, from the source, with [uv](https://docs.astral.sh/uv/)

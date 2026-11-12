@@ -257,6 +257,10 @@ msgid "There is no room left for this file: the files of this home take %(used)s
 msgstr "Il ne reste pas de place pour ce fichier : les fichiers de ce logement occupent %(used)s sur %(limit)s. Supprimez-en, ou demandez-en davantage à l'administrateur de l'instance."
 
 #, python-format
+msgid "This is a demonstration instance: its files take %(used)s of the %(limit)s it allows. Try again after the nightly reset."
+msgstr "Ceci est une instance de démonstration : ses fichiers occupent %(used)s des %(limit)s qu'elle permet. Réessayez après la remise à zéro de la nuit."
+
+#, python-format
 msgid "The archive was changed after it was made: %(name)s."
 msgstr "L'archive a été modifiée après sa création : %(name)s."
 

@@ -605,6 +605,7 @@ SERVER_VARIABLES: tuple[tuple[str, Promise], ...] = (
     ("HOUSECAIRN_TASK_WORKERS", _("Task worker processes")),
     ("HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL", _("First administrator")),
     ("HOUSECAIRN_SETUP_SCREEN", _("First-account screen")),
+    ("HOUSECAIRN_DEMO", _("Demonstration instance")),
 )
 
 

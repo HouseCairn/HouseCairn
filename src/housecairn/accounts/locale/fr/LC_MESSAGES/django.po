@@ -135,6 +135,9 @@ msgstr "code d'installation"
 msgid "setup codes"
 msgstr "codes d'installation"
 
+msgid "This is a demonstration account: its password, address and access stay as they are."
+msgstr "Ceci est un compte de démonstration : son mot de passe, son adresse et ses accès restent tels quels."
+
 msgid "This is the only administrator of the instance."
 msgstr "C'est le seul administrateur de l'instance."
 

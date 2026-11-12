@@ -66,3 +66,4 @@ later record supersedes it.
 | [0064](0064-every-apprise-service-with-a-fixed-format.md) | Every Apprise service with a fixed format, each one reviewed | 2026-11-12 |
 | [0065](0065-installable-application-and-offline-reading.md) | Installable application and offline reading | 2026-11-11 |
 | [0068](0068-one-date-format-and-decimal-mark-messages.md) | One date format per language, and a decimal field that says what it expects | 2026-11-11 |
+| [0071](0071-demonstration-instance.md) | A demonstration instance: public accounts, nothing sent, reset every night | 2026-11-12 |

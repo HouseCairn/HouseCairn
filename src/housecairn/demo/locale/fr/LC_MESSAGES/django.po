@@ -1,0 +1,53 @@
+# French translation of HouseCairn.
+# This file is distributed under the same license as HouseCairn (AGPL-3.0-only).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Demonstration"
+msgstr "Démonstration"
+
+msgid "This is a demonstration account: its password, address and access stay as they are."
+msgstr "Ceci est un compte de démonstration : son mot de passe, son adresse et ses accès restent tels quels."
+
+msgid "This is a demonstration instance: no account can be created on it."
+msgstr "Ceci est une instance de démonstration : aucun compte ne peut y être créé."
+
+msgid "Not available on the demonstration instance."
+msgstr "Indisponible sur l'instance de démonstration."
+
+msgid "This is a demonstration instance: its settings can be read, not changed."
+msgstr "Ceci est une instance de démonstration : ses réglages se lisent, ils ne se modifient pas."
+
+msgid "This is a demonstration instance: nothing is sent from it."
+msgstr "Ceci est une instance de démonstration : rien n'en part."
+
+msgid "Demo admin"
+msgstr "Admin de démo"
+
+msgid "Demo user"
+msgstr "Utilisateur de démo"
+
+msgid "Sign in with one of the demonstration accounts:"
+msgstr "Connectez-vous avec l'un des comptes de démonstration :"
+
+msgid "Administrator"
+msgstr "Administrateur"
+
+msgid "User"
+msgstr "Utilisateur"
+
+msgid "Password:"
+msgstr "Mot de passe :"
+
+#, python-format
+msgid "Demonstration instance: everything you enter here is public, and the instance is reset every night at %(time)s (%(zone)s)."
+msgstr "Instance de démonstration : tout ce que vous saisissez ici est public, et l'instance est remise à zéro chaque nuit à %(time)s (%(zone)s)."
