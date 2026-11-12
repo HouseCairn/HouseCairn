@@ -9,7 +9,8 @@ class DemoConfig(AppConfig):
     verbose_name = _("Demonstration")
 
     def ready(self) -> None:
-        from housecairn.demo import guards, tasks
+        from housecairn.demo import admin, guards, tasks
 
         guards.connect()
+        admin.read_only()
         post_migrate.connect(tasks.schedule, sender=self)

@@ -8,12 +8,17 @@ django-allauth or a command. Outside `reset_demo`, on a demonstration instance:
   is not deleted;
 - no address is added to or removed from a public account, and no second factor
   (authenticator app, recovery codes, security key) is added to or removed from it, which
-  would lock the other visitors out.
+  would lock the other visitors out;
+- the demonstration home (the home both public accounts belong to) is not deleted, and the
+  places of the public accounts in it stay as they are: no one leaves it or is removed
+  from it, and no role changes, which would leave the other visitors with an empty screen.
+  Deleting the home deletes its memberships, which the guard on them refuses.
 """
 
 from typing import Any
 
 from django.contrib.auth.hashers import check_password
+from django.db.models import Q
 from django.db.models.signals import pre_delete, pre_save
 from django.utils.translation import gettext as _
 
@@ -63,11 +68,67 @@ def _account_row_changing(sender: Any, instance: Any, raw: bool = False, **_kwar
         raise mode.DemoRefusedError(_account_message())
 
 
+def _place_message() -> str:
+    return _(
+        "This is a demonstration instance: the demonstration home and the place of the "
+        "demonstration accounts in it stay as they are."
+    )
+
+
+def is_demo_home(home_id: Any) -> bool:
+    """Whether both public accounts are active members of the home: the demonstration home.
+
+    A home that a visitor made for themselves has one of them at most, unless they invite
+    the other account by link; it is then held like the demonstration home until the reset.
+    """
+    from housecairn.homes.models import Membership
+
+    public = Q()
+    for address in mode.ACCOUNTS:
+        public |= Q(user__email__iexact=address)
+    members = (
+        Membership.all_objects.filter(public, home_id=home_id, deleted_at__isnull=True)
+        .values_list("user_id", flat=True)
+        .distinct()
+    )
+    return len(members) == len(mode.ACCOUNTS)
+
+
+def _place_in_demo_home(instance: Any) -> bool:
+    return _owned_by_demo_account(instance) and is_demo_home(instance.home_id)
+
+
+def _membership_saving(sender: Any, instance: Any, raw: bool = False, **_kwargs: Any) -> None:
+    """The role or the removal (soft deletion) of a public account in the demonstration home."""
+    if not mode.guarded() or raw or instance._state.adding or not _place_in_demo_home(instance):
+        return
+    row = sender.all_objects.filter(pk=instance.pk).values("role", "deleted_at").first()
+    if row is not None and (
+        row["role"] != instance.role or row["deleted_at"] != instance.deleted_at
+    ):
+        raise mode.DemoRefusedError(_place_message())
+
+
+def _membership_deleting(sender: Any, instance: Any, **_kwargs: Any) -> None:
+    if mode.guarded() and _place_in_demo_home(instance):
+        raise mode.DemoRefusedError(_place_message())
+
+
+def _home_saving(sender: Any, instance: Any, raw: bool = False, **_kwargs: Any) -> None:
+    if not mode.guarded() or raw or instance._state.adding:
+        return
+    row = sender.all_objects.filter(pk=instance.pk).values("deleted_at").first()
+    if row is not None and row["deleted_at"] != instance.deleted_at and is_demo_home(instance.pk):
+        raise mode.DemoRefusedError(_place_message())
+
+
 def connect() -> None:
     from allauth.account.models import EmailAddress
     from allauth.mfa.models import Authenticator
     from allauth.socialaccount.models import SocialAccount
     from django.contrib.auth import get_user_model
+
+    from housecairn.homes.models import Home, Membership
 
     user_model = get_user_model()
     pre_save.connect(_user_saving, sender=user_model, dispatch_uid="demo-user-save")
@@ -76,3 +137,8 @@ def connect() -> None:
         uid = f"demo-{model._meta.label_lower}"
         pre_save.connect(_account_row_changing, sender=model, dispatch_uid=f"{uid}-save")
         pre_delete.connect(_account_row_changing, sender=model, dispatch_uid=f"{uid}-delete")
+    pre_save.connect(_membership_saving, sender=Membership, dispatch_uid="demo-membership-save")
+    pre_delete.connect(
+        _membership_deleting, sender=Membership, dispatch_uid="demo-membership-delete"
+    )
+    pre_save.connect(_home_saving, sender=Home, dispatch_uid="demo-home-save")

@@ -16,12 +16,13 @@ import pytest
 from allauth.account.internal.userkit import user_id_to_str
 from allauth.account.models import EmailAddress
 from cryptography.hazmat.primitives.asymmetric import ec
+from django.contrib import admin as admin_site
 from django.core import mail as django_mail
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.core.management import CommandError, call_command
 from django.db import transaction
-from django.test import Client
+from django.test import Client, RequestFactory
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
@@ -140,6 +141,32 @@ class TestOff:
         user.save()
         account_services.delete_account(user)
         assert not User.objects.filter(pk=user.pk).exists()
+
+    def test_the_administration_site_can_change(self, admin_user: User, make_user: Any) -> None:
+        other = make_user("someone@example.com")
+        request = RequestFactory().get("/admin/")
+        request.user = admin_user
+        plain = admin_site.ModelAdmin(User, admin_site.AdminSite())
+        assert plain.has_add_permission(request) is True
+        user_admin = admin_site.site._registry[User]
+        assert user_admin.has_change_permission(request) is True
+        assert user_admin.has_delete_permission(request) is True
+        client = Client()
+        client.force_login(admin_user)
+        answer = client.post(
+            reverse("admin:accounts_user_delete", args=[other.pk]), {"post": "yes"}, follow=True
+        )
+        assert answer.status_code == 200
+        assert not User.objects.filter(pk=other.pk).exists()
+
+    def test_the_demonstration_home_can_be_changed(
+        self, alice: User, bob: User, alice_home: Home, add_member: Any
+    ) -> None:
+        membership = add_member(alice_home, bob, Role.MEMBER)
+        home_services.change_role(alice, membership, Role.READ_ONLY)
+        home_services.remove_member(alice, membership)
+        home_services.delete_home(alice, alice_home, confirmation=alice_home.name)
+        assert not Home.all_objects.filter(pk=alice_home.pk).exists()
 
     def test_settings_are_not_forced(self, admin_user: User) -> None:
         settings_services.update(admin_user, {"link_preview_enabled": True})
@@ -790,6 +817,246 @@ class TestAccounts:
     def test_setup_screen_is_closed(self, demo: None, client: Client) -> None:
         assert setup.screen_enabled() is False
         assert client.get(reverse("setup")).status_code in (302, 404)
+
+
+class TestPublicAccountsStayWhole:
+    """No path of the web removes or changes a public account, or its place in the home.
+
+    Each test below goes through one path as the public administrator would, and checks what
+    must stay (docs/administration/demo.md).
+    """
+
+    def administrator(self, client: Client) -> Client:
+        return signed_in(client, admin())
+
+    def accounts_whole(self) -> None:
+        assert User.objects.filter(email__in=mode.ACCOUNTS, is_active=True).count() == 2
+        assert Membership.objects.count() == 2
+        assert Membership.objects.get(user__email=mode.USER_EMAIL).role == Role.MEMBER
+        assert Membership.objects.get(user__email=mode.ADMIN_EMAIL).role == Role.OWNER
+        assert Home.objects.count() == 1
+
+    def household(self, home: Home) -> str:
+        return reverse("homes:household", kwargs={"home_id": home.id})
+
+    def refused(self, answer: Any) -> None:
+        assert "demonstration" in answer.content.decode()
+
+    # --- the administration site ---
+
+    def test_the_administration_site_has_no_permission_to_change(self, demo: None) -> None:
+        request = RequestFactory().get("/admin/")
+        request.user = admin()
+        assert admin_site.site._registry
+        # A model administration that sets nothing of its own, as one of a new model would be.
+        plain = admin_site.ModelAdmin(User, admin_site.AdminSite())
+        assert plain.has_add_permission(request) is False
+        assert plain.has_change_permission(request) is False
+        assert plain.has_delete_permission(request) is False
+        for model_admin in admin_site.site._registry.values():
+            assert model_admin.has_add_permission(request) is False
+            assert model_admin.has_change_permission(request) is False
+            assert model_admin.has_delete_permission(request) is False
+            assert model_admin.has_view_permission(request) is True
+
+    def test_the_administration_site_can_be_read(self, demo: None, client: Client) -> None:
+        self.administrator(client)
+        assert client.get(reverse("admin:accounts_user_changelist")).status_code == 200
+        assert (
+            client.get(reverse("admin:accounts_user_change", args=[member().pk])).status_code == 200
+        )
+
+    def test_the_delete_page_of_an_account_is_refused(self, demo: None, client: Client) -> None:
+        self.administrator(client)
+        url = reverse("admin:accounts_user_delete", args=[member().pk])
+        self.refused(client.post(url, {"post": "yes"}, follow=True))
+        self.accounts_whole()
+
+    def test_delete_selected_is_refused(self, demo: None, client: Client) -> None:
+        self.administrator(client)
+        answer = client.post(
+            reverse("admin:accounts_user_changelist"),
+            {
+                "action": "delete_selected",
+                "_selected_action": [member().pk, admin().pk],
+                "post": "yes",
+            },
+            follow=True,
+        )
+        self.refused(answer)
+        self.accounts_whole()
+
+    def test_the_change_form_of_an_account_is_refused(self, demo: None, client: Client) -> None:
+        self.administrator(client)
+        url = reverse("admin:accounts_user_change", args=[member().pk])
+        self.refused(client.post(url, {"is_staff": "on", "is_superuser": "on"}, follow=True))
+        user = member()
+        assert user.is_active
+        assert not user.is_staff
+        assert not user.is_superuser
+
+    def test_the_site_refuses_a_change_that_no_other_guard_covers(
+        self, demo: None, client: Client, make_user: Any
+    ) -> None:
+        """An account that is not public is deleted by no one else's guard: the site's alone."""
+        with mode.reset_context():
+            other = make_user("not-public@example.com")
+        self.administrator(client)
+        url = reverse("admin:accounts_user_delete", args=[other.pk])
+        self.refused(client.post(url, {"post": "yes"}, follow=True))
+        assert User.objects.filter(pk=other.pk).exists()
+
+    def test_the_administration_site_still_signs_out(self, demo: None, client: Client) -> None:
+        self.administrator(client)
+        client.post(reverse("admin:logout"))
+        assert client.get(reverse("admin:accounts_user_changelist")).status_code == 302
+
+    # --- the account itself, from every side ---
+
+    def test_a_queryset_deletion_is_refused(self, demo: None) -> None:
+        with pytest.raises(mode.DemoRefusedError), transaction.atomic():
+            User.objects.filter(email__in=mode.ACCOUNTS).delete()
+        self.accounts_whole()
+
+    def test_deactivation_is_refused(self, demo: None) -> None:
+        user = member()
+        user.is_active = False
+        with pytest.raises(mode.DemoRefusedError):
+            user.save()
+        assert member().is_active
+
+    def test_no_second_factor_is_removed(self, demo: None) -> None:
+        from allauth.mfa.models import Authenticator
+
+        with mode.reset_context():
+            factor = Authenticator.objects.create(
+                user=member(), type=Authenticator.Type.TOTP, data={}
+            )
+        with pytest.raises(mode.DemoRefusedError), transaction.atomic():
+            factor.delete()
+        assert Authenticator.objects.filter(pk=factor.pk).exists()
+
+    def test_no_address_is_removed(self, demo: None) -> None:
+        address = EmailAddress.objects.get(email=mode.USER_EMAIL)
+        with pytest.raises(mode.DemoRefusedError), transaction.atomic():
+            address.delete()
+        assert EmailAddress.objects.filter(email=mode.USER_EMAIL).exists()
+
+    # --- the place in the demonstration home ---
+
+    def test_nobody_is_removed_from_the_home_on_the_screen(
+        self, demo: None, client: Client
+    ) -> None:
+        self.administrator(client)
+        home = Home.objects.get()
+        membership = Membership.objects.get(user__email=mode.USER_EMAIL)
+        url = reverse(
+            "homes:member-remove", kwargs={"home_id": home.id, "member_id": membership.id}
+        )
+        self.refused(client.post(url, follow=True, HTTP_REFERER=self.household(home)))
+        self.accounts_whole()
+
+    def test_no_role_changes_on_the_screen(self, demo: None, client: Client) -> None:
+        self.administrator(client)
+        home = Home.objects.get()
+        membership = Membership.objects.get(user__email=mode.USER_EMAIL)
+        url = reverse("homes:member-role", kwargs={"home_id": home.id, "member_id": membership.id})
+        self.refused(
+            client.post(url, {"role": "read_only"}, follow=True, HTTP_REFERER=self.household(home))
+        )
+        self.accounts_whole()
+
+    def test_nobody_is_removed_from_the_home_by_the_api(
+        self, demo: None, api_client: APIClient
+    ) -> None:
+        signed_in(api_client, admin())
+        home = Home.objects.get()
+        membership = Membership.objects.get(user__email=mode.USER_EMAIL)
+        url = reverse(
+            "api-v1:home-member-detail", kwargs={"home_id": home.id, "member_id": membership.id}
+        )
+        answer = api_client.delete(url)
+        assert answer.status_code == 403
+        assert answer.json()["code"] == "demo"
+        self.accounts_whole()
+
+    def test_the_owner_cannot_hand_the_home_over(self, demo: None, api_client: APIClient) -> None:
+        signed_in(api_client, admin())
+        home = Home.objects.get()
+        membership = Membership.objects.get(user__email=mode.USER_EMAIL)
+        url = reverse(
+            "api-v1:home-member-make-owner",
+            kwargs={"home_id": home.id, "member_id": membership.id},
+        )
+        assert api_client.post(url).json()["code"] == "demo"
+        self.accounts_whole()
+
+    def test_the_members_cannot_leave(self, demo: None, api_client: APIClient) -> None:
+        signed_in(api_client, member())
+        home = Home.objects.get()
+        answer = api_client.post(reverse("api-v1:home-leave", kwargs={"home_id": home.id}))
+        assert answer.status_code == 403
+        assert answer.json()["code"] == "demo"
+        self.accounts_whole()
+
+    def test_the_home_is_not_deleted_by_the_api(self, demo: None, api_client: APIClient) -> None:
+        signed_in(api_client, admin())
+        home = Home.objects.get()
+        answer = api_client.post(
+            reverse("api-v1:home-delete-home", kwargs={"home_id": home.id}),
+            {"confirmation": home.name},
+            format="json",
+        )
+        assert answer.status_code == 403
+        assert answer.json()["code"] == "demo"
+        self.accounts_whole()
+
+    def test_the_home_is_not_deleted_on_the_screen(self, demo: None, client: Client) -> None:
+        self.administrator(client)
+        home = Home.objects.get()
+        url = reverse("homes:delete", kwargs={"home_id": home.id})
+        self.refused(client.post(url, {"confirmation": home.name}, follow=True))
+        self.accounts_whole()
+
+    def test_the_home_is_not_deleted_by_the_service(self, demo: None) -> None:
+        home = Home.objects.get()
+        with pytest.raises(mode.DemoRefusedError), transaction.atomic():
+            home_services.delete_home(admin(), home, confirmation=home.name)
+        self.accounts_whole()
+
+    def test_a_membership_is_not_deleted_for_good(self, demo: None) -> None:
+        membership = Membership.objects.get(user__email=mode.USER_EMAIL)
+        with pytest.raises(mode.DemoRefusedError), transaction.atomic():
+            membership.delete()
+        self.accounts_whole()
+
+    def test_the_home_is_not_deleted_for_good(self, demo: None) -> None:
+        with pytest.raises(mode.DemoRefusedError), transaction.atomic():
+            Home.objects.get().delete()
+        self.accounts_whole()
+
+    def test_the_home_is_not_soft_deleted(self, demo: None) -> None:
+        home = Home.objects.get()
+        with pytest.raises(mode.DemoRefusedError), transaction.atomic():
+            home.soft_delete()
+        assert Home.objects.filter(pk=home.pk).exists()
+
+    def test_a_home_of_a_visitor_stays_theirs_to_change(self, demo: None) -> None:
+        """Only the demonstration home is held: a visitor may make, change and delete their own."""
+        mine = home_services.create_home(member(), name="Mine")
+        with mode.reset_context():
+            extra = Membership.objects.create(
+                home=mine, user=User.objects.create_user("x@example.org", password="x" * 12)
+            )
+        home_services.change_role(member(), extra, Role.READ_ONLY)
+        home_services.remove_member(member(), extra)
+        home_services.delete_home(member(), mine, confirmation="Mine")
+        assert not Home.all_objects.filter(pk=mine.pk).exists()
+        self.accounts_whole()
+
+    def test_the_reset_still_replaces_everything(self, demo: None) -> None:
+        reset.reset(language="en", today=datetime.date(2026, 11, 13))
+        self.accounts_whole()
 
 
 class TestUploads:

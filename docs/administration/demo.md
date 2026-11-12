@@ -45,8 +45,13 @@ refuses to run while `HOUSECAIRN_DEMO` is not true.
   connection. Invitations are by link only.
 - **Accounts kept.** No account can be created: sign-up and the first-account screen are
   closed. The two public accounts keep their password, their address, their rights and their
-  existence; no second factor can be added to them. Failed sign-ins are counted by address
-only, not by account, so that nobody can lock the public accounts for the other visitors.
+  existence; no second factor can be added to them. Their place in the demonstration home
+  stays too: nobody leaves it or is removed from it, no role changes, and the home is not
+  deleted. Failed sign-ins are counted by address only, not by account, so that nobody can lock
+  the public accounts for the other visitors.
+- **Administration site read only.** The Django administration site (`/admin/`) shows the
+  accounts and the tokens and changes none of them: no add, no change, no delete (not even
+  "delete selected"). Only signing in and out still work.
 - **Small files.** 2 MB per file, 20 MB and 50 files per home, 200 MB for the whole instance.
   Export archives are bounded too: one at a time for a home, five for the whole instance, kept
   one hour.
