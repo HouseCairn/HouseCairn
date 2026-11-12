@@ -21,6 +21,7 @@ from django.utils.translation import gettext as _
 from housecairn.accounts.models import User
 from housecairn.audit import models as audit_models
 from housecairn.audit import services as audit
+from housecairn.demo import mode
 from housecairn.homes import files
 from housecairn.homes.models import WRITE_ROLES, Hemisphere, Home, Invitation, Membership, Role
 from housecairn.instance.config import get_setting
@@ -394,9 +395,12 @@ def invite(
     (shown once). The answer does not depend on whether an account uses the
     address, so inviting cannot be used to find out who has an account. The
     email goes out after the invitation is saved: if it fails, the invitation
-    stays and `DeliveryFailedError` says so.
+    stays and `DeliveryFailedError` says so. A demonstration instance sends no email: there,
+    only an invitation by link is made (docs/adr/0071).
     """
     _require_owner(actor, home)
+    if delivery.send is not None:
+        mode.refuse(mode.nothing_sent())
     address = email.strip()
     new_role = Role(role)
     with transaction.atomic():
@@ -453,6 +457,8 @@ def resend_invitation(
 ) -> tuple[Invitation, str | None]:
     """A new link and a new expiry; the previous link stops working."""
     _require_owner(actor, invitation.home)
+    if delivery.send is not None:
+        mode.refuse(mode.nothing_sent())
     if invitation.accepted_at is not None or invitation.revoked_at is not None:
         raise ValidationError(_("This invitation was already accepted or revoked."))
     raw, digest = _new_secret()

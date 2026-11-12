@@ -71,9 +71,16 @@ def _file_limit() -> int:
     return conf.photo_max_bytes()
 
 
+def _document_limit() -> int:
+    """The largest data file of an archive; smaller on a demonstration instance (ADR 0071)."""
+    from housecairn.demo import mode
+
+    return mode.DOCUMENT_MAX_BYTES if mode.is_on() else DOCUMENT_MAX_BYTES
+
+
 def max_unpacked_bytes() -> int:
     """What an archive may hold once unpacked: the file quota of a home, plus the data."""
-    return int(quotas.limits().bytes) + DOCUMENT_MAX_BYTES
+    return int(quotas.limits().bytes) + _document_limit()
 
 
 # --- 1 and 2: the zip and its manifest --------------------------------------------------
@@ -150,7 +157,7 @@ _NOT_JSON = (UnicodeDecodeError, json.JSONDecodeError, ValueError, RecursionErro
 
 
 def _json(zipped: zipfile.ZipFile, info: zipfile.ZipInfo) -> Any:
-    if info.file_size > DOCUMENT_MAX_BYTES:
+    if info.file_size > _document_limit():
         raise _refuse(_("A data file of the archive is too large: %(name)s."), name=info.filename)
     try:
         return json.loads(_read_entry(zipped, info).decode("utf-8"))

@@ -18,6 +18,7 @@ from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
 
 from housecairn.accounts.models import User
+from housecairn.demo import mode
 from housecairn.instance.config import get_setting
 from housecairn.notifications import outbound
 from housecairn.notifications.models import MAX_CHANNELS, Channel, Preference
@@ -159,6 +160,7 @@ def test_channel(actor: AnyUser, channel: Channel) -> bool:
     """
     user = _require_owner(actor, channel)
     _require_enabled()
+    mode.refuse(mode.nothing_sent())
     if not _consume_test(user):
         raise ValidationError(_("Too many tests: wait a minute."))
     with translation.override(preferences_of(user).language):

@@ -177,8 +177,11 @@ def _recipients(
 
 
 def dispatch(now: datetime.datetime | None = None) -> int:
-    """Send what is due; the number of messages claimed. Nothing when notifications are off."""
-    if not services.is_enabled():
+    """Send what is due; the number of messages claimed. Nothing when notifications are off,
+    nor on a demonstration instance, which sends nothing (docs/adr/0071)."""
+    from housecairn.demo import mode
+
+    if not services.is_enabled() or mode.is_on():
         return 0
     now = now or timezone.now()
     started = _clock()

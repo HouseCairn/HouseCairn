@@ -1,0 +1,3 @@
+{% load i18n %}{% if demo_mode %}
+<p class="alert alert-info demo-banner" role="note">{% blocktranslate with time=demo_reset_time zone=demo_reset_zone %}Demonstration instance: everything you enter here is public, and the instance is reset every night at {{ time }} ({{ zone }}).{% endblocktranslate %}</p>
+{% endif %}

@@ -281,10 +281,24 @@ def write_setup_code() -> None:
         log(f"could not issue the first-account code (exit code {result.returncode})")
 
 
+def load_demo() -> None:
+    """On a demonstration instance without any account, its accounts and home (ADR 0071).
+
+    Only with HOUSECAIRN_DEMO true; an instance that has accounts is left as it is, until
+    the nightly reset. A failure never stops the start.
+    """
+    result = subprocess.run(django_command("reset_demo", "--if-empty"), check=False)  # noqa: S603
+    if result.returncode != 0:
+        log(f"could not load the demonstration accounts (exit code {result.returncode})")
+
+
 def command_run() -> int:
     prepare_environment()
     migrate()
-    write_setup_code()
+    if env_bool("HOUSECAIRN_DEMO"):
+        load_demo()
+    else:
+        write_setup_code()
     stop_timeout = float(env_int("HOUSECAIRN_STOP_TIMEOUT", int(DEFAULT_STOP_TIMEOUT)))
     supervisor = Supervisor(
         [("web server", web_command()), ("task worker", worker_command())],

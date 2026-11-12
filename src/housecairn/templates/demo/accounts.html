@@ -1,0 +1,11 @@
+{% load i18n %}{% if demo_mode %}
+<div class="alert alert-info demo-accounts" role="note">
+  <p>{% translate "Sign in with one of the demonstration accounts:" %}</p>
+  <ul>
+    {% for account in demo_accounts %}
+      <li>{% if account.role == "admin" %}{% translate "Administrator" %}{% else %}{% translate "User" %}{% endif %}: <code>{{ account.email }}</code></li>
+    {% endfor %}
+  </ul>
+  <p>{% translate "Password:" %} <code>{{ demo_password }}</code></p>
+</div>
+{% endif %}

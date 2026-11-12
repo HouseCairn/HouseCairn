@@ -38,6 +38,7 @@
     {% endif %}
     <main id="main" class="content {% block main_class %}{% endblock main_class %}" tabindex="-1">
       {% include "shell/offline_banner.html" %}
+      {% include "demo/banner.html" %}
       {% if messages %}
         <ul class="messages" role="status">
           {% for message in messages %}<li class="message message-{{ message.tags }}">{{ message }}</li>{% endfor %}
