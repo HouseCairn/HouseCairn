@@ -19,7 +19,7 @@
       {% if demo_mode %}<p class="small demo-read-only">{% translate "This is a demonstration instance: its settings can be read, not changed." %}</p>{% endif %}
       <form method="post" action="">
         {% csrf_token %}
-        <fieldset{% if demo_mode %} disabled{% endif %}>
+        {% if demo_mode %}<fieldset disabled>{% endif %}
         {% include "components/form_errors.html" with form=form only %}
         {% for item in items %}
           {% with key=item.setting.key %}
@@ -59,7 +59,7 @@
           <button type="submit" name="test_email" value="1" formnovalidate class="button-secondary button-block">{% translate "Test the connection to the mail server" %}</button>
           <p class="small">{% translate "Opens a connection with the settings in force and closes it; nothing is sent. You can save without testing." %}</p>
         {% endif %}
-        </fieldset>
+        {% if demo_mode %}</fieldset>{% endif %}
       </form>
     </section>
 

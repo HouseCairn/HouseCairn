@@ -30,7 +30,7 @@ from housecairn.demo import mode, reset, tasks
 from housecairn.homes import quotas
 from housecairn.homes import services as home_services
 from housecairn.homes.models import Home, Membership, Role
-from housecairn.instance import config, mail, providers, settings_services
+from housecairn.instance import config, mail, providers, ratelimits, settings_services
 from housecairn.instance import services as instance_services
 from housecairn.instance.models import InstanceInvitation, OidcProvider, SettingValue
 from housecairn.notifications import devices, outbound, webpush
@@ -139,6 +139,17 @@ class TestOff:
 
         tasks.schedule()
         assert not Schedule.objects.filter(name=tasks.SCHEDULE).exists()
+
+    def test_the_settings_screen_has_no_fieldset(self, client: Client, admin_user: User) -> None:
+        """The disabled fieldset of the demonstration would change the look of the form."""
+        signed_in(client, admin_user)
+        page = client.get(reverse("instance:settings", kwargs={"section": "instance"}))
+        assert page.status_code == 200
+        text = page.content.decode()
+        assert "<form" in text
+        assert "<fieldset" not in text
+        assert "</fieldset>" not in text
+        assert "demo-read-only" not in text
 
 
 @pytest.fixture
