@@ -531,6 +531,64 @@ class TestEachRefusalIsTested:
         assert reminders.dispatch() >= 1
         assert sent
 
+    def test_the_test_message_of_a_channel_is_not_sent_by_the_worker(
+        self, demo: None, settings: Any, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import apprise
+
+        from housecairn.notifications import tasks as notification_tasks
+        from housecairn.notifications.models import SendState
+
+        settings.HOUSECAIRN_NOTIFICATIONS_ENABLED = True
+        config.invalidate()
+        channel = notifications.add_channel(member(), name="Phone", url=URL)
+        Channel.objects.filter(pk=channel.pk).update(
+            test_state=SendState.RUNNING, test_started_at=timezone.now(), test_finished_at=None
+        )
+        reached: list[str] = []
+
+        def reached_network(name: str) -> Any:
+            def fail(*args: Any, **kwargs: Any) -> Any:
+                reached.append(name)
+                raise RuntimeError(f"{name} reached")
+
+            return fail
+
+        monkeypatch.setattr(outbound, "_plugin", reached_network("plugin"))
+        monkeypatch.setattr(apprise, "Apprise", reached_network("apprise"))
+        # The task that `start_test` queues, called as the worker calls it.
+        notification_tasks.send_test(str(channel.pk), "en")
+        assert reached == []
+        channel.refresh_from_db()
+        assert channel.test_state != SendState.SENT
+
+    def test_the_preview_of_a_link_is_not_read_by_the_worker(
+        self, demo: None, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from housecairn.projects import links, preview
+        from housecairn.projects.models import PreviewState, ProjectLink
+
+        project = Project.objects.filter(home=Home.objects.get()).first()
+        assert project is not None
+        link = ProjectLink.objects.create(
+            home=project.home,
+            project=project,
+            url="https://example.com/page",
+            preview_state=PreviewState.RUNNING,
+            preview_started_at=timezone.now(),
+        )
+        read: list[str] = []
+
+        def page_read(url: str, *args: Any, **kwargs: Any) -> Any:
+            read.append(url)
+            raise RuntimeError("page read")
+
+        monkeypatch.setattr(preview, "read", page_read)
+        links.read_preview(str(link.pk))
+        assert read == []
+        link.refresh_from_db()
+        assert link.preview_state == PreviewState.NONE
+
 
 class TestPublicAccountsCannotBeLockedOut:
     """Sign-in failures are counted by address on a demonstration instance, not by account."""
