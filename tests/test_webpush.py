@@ -28,9 +28,9 @@ from rest_framework.test import APIClient
 from housecairn.accounts.models import User
 from housecairn.apitokens import services as token_services
 from housecairn.core import netguard
-from housecairn.homes.models import Home
+from housecairn.homes.models import Home, Role
 from housecairn.instance import crypto
-from housecairn.notifications import devices, reminders, services, webpush
+from housecairn.notifications import alerts, devices, reminders, services, webpush
 from housecairn.notifications.models import Device, Preference, PushKey
 from housecairn.tasks import services as task_services
 from housecairn.tasks.models import Occurrence
@@ -392,6 +392,48 @@ class TestSending:
                 path="/t/",
             )
         assert push.shown == [{"title": "HouseCairn", "body": "A task is due.", "url": "/t/"}]
+
+    def test_discreet_sentences_are_in_the_language_of_the_person(
+        self,
+        alice: User,
+        alice_home: Home,
+        bob: User,
+        add_member: Callable[..., object],
+        push: FakePushService,
+    ) -> None:
+        """The worker speaks English; the person asked for French. A reminder, a summary
+        and a report each say their fixed sentence in French."""
+        from housecairn.reports import services as report_services
+
+        add_device(alice, push)
+        add_member(alice_home, bob, Role.MEMBER)
+        Preference.objects.create(user=alice, language="fr", time_zone="UTC", digest=False)
+        due = task_services.today() + datetime.timedelta(days=1)
+        task_services.create_task(alice, alice_home, title="Change the filter", due_on=due)
+        now = datetime.datetime.combine(due, datetime.time(9), tzinfo=datetime.UTC)
+        with override_settings(HOUSECAIRN_WEBPUSH_DISCREET=True):
+            assert reminders.dispatch(now) == 1
+            Preference.objects.filter(user=alice).update(digest=True)
+            assert reminders.dispatch(now) == 1
+            report = report_services.create_report(bob, alice_home, title="Leak")
+            assert alerts.report_created(str(report.id)) == 1
+        assert [m["body"] for m in push.shown] == [
+            "Une tâche est à faire.",
+            "Des tâches sont à faire.",
+            "Un problème a été signalé.",
+        ]
+        assert {m["title"] for m in push.shown} == {"HouseCairn"}
+
+    def test_the_text_of_a_device_that_is_not_discreet_is_the_text_of_the_caller(
+        self, alice: User, push: FakePushService
+    ) -> None:
+        device = add_device(alice, push)
+        Preference.objects.create(user=alice, language="fr", time_zone="UTC")
+        with override_settings(HOUSECAIRN_WEBPUSH_DISCREET=False):
+            devices.send_all(
+                [device], kind="reminder", title="Rappel", body="Filtre, Maison", path="/t/"
+            )
+        assert push.shown == [{"title": "Rappel", "body": "Filtre, Maison", "url": "/t/"}]
 
     def test_discreet_is_the_default(self) -> None:
         from housecairn.notifications.conf import SETTINGS
