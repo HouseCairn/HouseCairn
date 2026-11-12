@@ -20,6 +20,132 @@ The notes of each version are also published with it on the project's
 ```{release-fragments} upgrade
 ```
 
+## 0.3.0
+
+HouseCairn is still alpha software. This version makes it an application to install on a
+phone, with Today and the task list readable offline. It adds a unit price to the stock,
+counted in the planned cost of a task, a search field with chips to choose several rooms or
+items, every reviewed Apprise service for notifications, and notifications on the device by
+Web Push. Reading the page of a link and testing a channel now run in the background worker.
+The archive of a home can be restored as a copy, and a demonstration mode serves a public
+instance. Fixes cover sign-up and the other emails when the mail server fails, a refused
+restore that left files behind and tabs on a 320 px screen. Read the upgrade notes before
+updating: the test of a channel and the preview of a link change in the API, four
+migrations run and three settings are new.
+
+### New
+
+- **Choose several rooms or items by typing.** On the form of a stock item (compatible items,
+  rooms) and of a project (rooms), the long list of boxes is replaced by a search field: type to
+  narrow the list, pick with the arrows and Enter or with a tap, and each choice becomes a chip
+  that its **Remove** button takes away. The items are shown with their room. Without
+  JavaScript the form shows a list grouped by room and works as before
+  ([stock item form](screens/stock-item-form.md)).
+
+- **Demonstration instance.** `HOUSECAIRN_DEMO=true` makes a public demonstration instance:
+  an administrator and a user whose address and password are public, the fictional home of
+  `load_demo_data`, and everything erased and loaded again every night at 03:00 (Europe/Paris)
+  by the task worker. The settings of the instance are read only, nothing is sent (email,
+  notifications, link previews, single sign-on), no account can be created and the public
+  accounts keep their password and address; files are held to small limits. A banner says so
+  on every page ([Demonstration instance](administration/demo.md)).
+
+- **Install on a phone, read offline.** The browser offers to install HouseCairn (Android)
+  or you add it to the home screen (iPhone). Today and the task list of your home stay
+  readable without a connection, as they were when last opened, with writes off until the
+  connection is back. Signing out deletes what was kept
+  ([Install on a phone](getting-started/phone.md)). Behind an authentication
+  proxy, the manifest is now fetched with the cookie
+  ([reverse proxy](administration/reverse-proxy.md#behind-an-authentication-proxy)).
+
+- **More notification services.** A channel may now use any of 137 services reached
+  through Apprise, each one reviewed: Microsoft Teams, Rocket.Chat, Zulip, Pushbullet,
+  Bark, Free Mobile, SFR and many more. The Notifications screen lists them by family,
+  with an example address, where the messages go and a link to the Apprise page of each
+  service ([guide](guides/notifications.md)).
+
+- **Notifications on the device.** Reminders and problem reports can appear as
+  notifications on a phone or a computer, through the push service of the browser, with
+  no other application (on an iPhone, once the application is installed). Off by default:
+  an administrator turns on **Notifications on the device**; messages are encrypted for
+  the device and discreet by default
+  ([Notifications](guides/notifications.md#on-this-device)).
+
+- **Restore as a copy.** The archive of a home can now be restored as a copy, next to the
+  home it was made from: everything it holds gets new identifiers and its own files, and the
+  original is not touched. Use it to duplicate a home or to check a backup without deleting
+  anything. You own the copy and are its only member; its members and invitations are not
+  copied. Also from the API (`as_copy`) and from `manage.py restore_home --copy`
+  ([Export and deletion](administration/data.md#restore-as-a-copy)).
+
+- **A unit price for stock items, and the stock in the planned cost of a task.** A stock item
+  can have a unit price (a supplier's last price paid fills it when it is empty). The cost a
+  task is planned at now adds, to the material budget you typed, the quantity of each stock item
+  it lists times its unit price. The part from the stock is shown apart ("of which stock") on the
+  page of the task and in the budget of the upkeep, with the number of stock items that have no
+  price and count for nothing ([stock](guides/stock.md#give-an-item-a-unit-price),
+  [budget](guides/budget.md#the-stock-in-the-cost-of-a-task)).
+- **A stock item added from the form of a task fits its equipment.** It is now listed as
+  compatible with the equipment of the task, including equipment added by the same form.
+
+### Fixed
+
+- **A refused restore leaves no file behind.** When a file of an archive was refused after
+  others had been stored, the restore created nothing but left those files on the disk; they
+  are now removed ([Export and deletion](administration/data.md#restore-of-a-home)).
+
+- **Sign-up no longer fails with a server error when the mail server does not answer.** With
+  sign-up open, a mail server that was unreachable, slow, or that refused the credentials or
+  the message made the sign-up page fail with a server error, after the account had been
+  created without its verification message. The sign-up is now undone as a whole and the form
+  comes back with a message that says the confirmation email could not be sent; the same
+  address can try again at once. The other messages of the sign-in flows are covered the same
+  way: a password reset, a sign-in with an unverified address, an added address and a new
+  verification message answer with the reason instead of a server error, and the security
+  notices (password or primary address changed) are sent on a best-effort basis, so that the
+  change itself is never undone by a mail server that fails.
+
+- **Adding a link and testing a channel no longer hold the screen.** Reading the page of an
+  inspiration link and sending the test message of a notification channel are now done by the
+  background worker: the screen answers at once, shows "Reading the page…" or "The test message
+  is being sent.", then the result (reload the page if it does not change by itself). A task
+  that does not end within 30 seconds is shown as failed
+  ([ADR 0070](adr/0070-slow-network-calls-in-the-background.md)).
+
+- **Tabs fit on a 320 px screen.** On the narrowest phones, the tabs of the instance
+  administration cut "Overview" and "providers" in the middle of the word, and the French tab
+  of the audit log of a home was cut by hyphenation. The tabs are tighter under 360 px and the
+  French tab is now named "Journal" ([design guide](developer/design-guide.md)).
+
+### Upgrade notes
+
+- **Migrations and new settings.** The update runs four migrations, all of them reversible
+  and none of them changing existing data: `notifications.0002` (the devices of notifications
+  on the device and the push key of the instance), `notifications.0003` (the state of the test
+  of a channel), `projects.0004` (the state of the preview of a link) and `stock.0005` (the unit
+  price, below). Three settings are new, and none changes what an instance does until it is
+  set: `HOUSECAIRN_WEBPUSH_ENABLED` (`false`) and `HOUSECAIRN_WEBPUSH_DISCREET` (`true`), also
+  in **Instance administration, Settings, Notifications**, and `HOUSECAIRN_DEMO` (`false`),
+  which erases every account, home and file every night and must never be set on an instance
+  with real data. The push key is encrypted with the secret key, like the other stored secrets
+  ([variables](administration/variables.md),
+  [Demonstration instance](administration/demo.md)).
+
+- **API: testing a channel and adding a link answer before the work is done.**
+  `POST /api/v1/me/notification-channels/<id>/test/` answers `202` with `{"state": "running",
+  "detail": ...}` instead of `{"ok": ..., "detail": ...}`; read `test_state` of the channel
+  later (`sent`, `failed` or `private`). A link created with the preview on is returned with
+  `preview_state: "running"`, and its `title` and `image_url` are filled when it is `done`.
+  The queue is the one of the background worker, which must be running (it is, in the
+  container)
+  ([API](api/index.md)).
+
+- **Stock: a unit price, without a new export format.** Migration `stock.0005` adds the optional
+  field `unit_price` to the stock items (reversible; it drops the field). Archives of the home
+  gain the field `unit_price` in `stock_items` and stay in format 3; an archive written before
+  restores with no unit price. The planned cost of the tasks that list stock items with a price
+  goes up by the cost of those items, which may change the figures of the budget.
+
 ## 0.2.0
 
 This version changes two defaults, both for safety: the backup of the instance no longer
