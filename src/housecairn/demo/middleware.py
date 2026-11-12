@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from housecairn.demo import mode
+from housecairn.demo import admin, mode
 
 
 class DemoRefusalMiddleware:
@@ -21,10 +21,32 @@ class DemoRefusalMiddleware:
     def __call__(self, request: HttpRequest) -> HttpResponse:
         return self.get_response(request)
 
+    def process_view(
+        self,
+        request: HttpRequest,
+        view_func: Callable[..., HttpResponse],
+        view_args: tuple[object, ...],
+        view_kwargs: dict[str, object],
+    ) -> HttpResponse | None:
+        """The administration site is read only: anything but a read is refused (demo.admin)."""
+        match = request.resolver_match
+        if (
+            mode.is_on()
+            and request.method not in ("GET", "HEAD", "OPTIONS")
+            and match is not None
+            and "admin" in match.namespaces
+            and match.url_name not in admin.ALLOWED_URL_NAMES
+        ):
+            return self._back(request, admin.admin_message())
+        return None
+
     def process_exception(self, request: HttpRequest, exception: Exception) -> HttpResponse | None:
         if not isinstance(exception, mode.DemoRefusedError) or request.method == "GET":
             return None
-        messages.error(request, exception.message)
+        return self._back(request, exception.message)
+
+    def _back(self, request: HttpRequest, message: str) -> HttpResponse:
+        messages.error(request, message)
         # Back to the screen the form was on: an action address (a test button) has no page.
         referer = request.headers.get("Referer", "")
         safe = url_has_allowed_host_and_scheme(

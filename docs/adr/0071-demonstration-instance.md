@@ -51,7 +51,14 @@ second factor), or fill its disk.
   administration site, allauth's forms, commands): outside `reset_demo`, no account is created;
   a public account keeps its address, password, rights and active state and is not deleted; no
   address, second factor or linked identity is added to or removed from it. A sign-in that
-  hashes the same public password again is allowed. The first-account screen is closed.
+  hashes the same public password again is allowed. The first-account screen is closed. The
+  places of the two accounts in the demonstration home (the home both belong to) are guarded
+  the same way: no role changes, nobody leaves or is removed, and the home is not deleted.
+  A home a visitor made for themselves stays theirs to change.
+- **A read-only administration site.** In `/admin/` every model administration loses its add,
+  change and delete permissions, and any request of the site that is not a read is refused
+  with the message of the demonstration mode (signing in and out stay); the guards on the
+  models stay behind it.
 - **Sign-in failures counted by address only.** The limit of failed sign-ins per account
   (`ratelimit_login_failures`, ADR 0042) does not apply: the two accounts are public, and five
   wrong passwords for `admin@example.com` would lock every visitor out, again and again. The

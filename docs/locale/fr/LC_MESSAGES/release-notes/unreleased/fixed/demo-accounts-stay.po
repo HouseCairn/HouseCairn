@@ -1,0 +1,22 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "**Demonstration instance: the public accounts stay whole.** On a demonstration instance, the Django administration site is now read only, and the two public accounts keep their place in the demonstration home: nobody can leave it or be removed from it, no role changes, and the home cannot be deleted. Off the demonstration mode nothing changes ([Demonstration instance](../../../administration/demo.md))."
+msgstr "**Instance de démonstration : les comptes publics restent intacts.** Sur une instance de démonstration, le site d'administration de Django est désormais en lecture seule, et les deux comptes publics gardent leur place dans le logement de démonstration : personne ne peut le quitter ni en être retiré, aucun rôle ne change, et le logement ne peut pas être supprimé. Hors du mode démonstration, rien ne change ([Instance de démonstration](../../../administration/demo.md))."

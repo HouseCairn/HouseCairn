@@ -24,6 +24,12 @@ msgstr "Ceci est une instance de démonstration : aucun compte ne peut y être c
 msgid "Not available on the demonstration instance."
 msgstr "Indisponible sur l'instance de démonstration."
 
+msgid "This is a demonstration instance: the administration site can be read, not changed."
+msgstr "Ceci est une instance de démonstration : le site d'administration se lit, il ne se modifie pas."
+
+msgid "This is a demonstration instance: the demonstration home and the place of the demonstration accounts in it stay as they are."
+msgstr "Ceci est une instance de démonstration : le logement de démonstration et la place des comptes de démonstration dans ce logement restent tels quels."
+
 msgid "This is a demonstration instance: its settings can be read, not changed."
 msgstr "Ceci est une instance de démonstration : ses réglages se lisent, ils ne se modifient pas."
 
