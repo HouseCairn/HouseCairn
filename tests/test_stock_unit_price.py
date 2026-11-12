@@ -358,6 +358,18 @@ class TestOnTheScreens:
         assert "of which stock: €20.00" in page
         assert "1 stock item without a price" in page
 
+    def test_the_items_without_price_are_said_even_without_an_estimate(
+        self, signed_in: Client, alice: User, alice_home: Home
+    ) -> None:
+        task = make_task(alice, alice_home)
+        materials.add_material(alice, task, make_article(alice, alice_home, "Brush"), D("1"))
+        done_once(alice, task, "12")  # listed for what was paid, with no estimate
+        page = signed_in.get(
+            reverse("budget:tasks", kwargs={"home_id": alice_home.id}) + "?year=2026"
+        ).content.decode()
+        assert "Repaint" in page
+        assert "1 stock item without a price" in page
+
     def test_the_page_of_an_item_shows_its_unit_price(
         self, signed_in: Client, alice: User, alice_home: Home
     ) -> None:
