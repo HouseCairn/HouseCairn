@@ -80,8 +80,10 @@ family, with an example address and a link to its page in the Apprise documentat
   PagerTree, SIGNL4, Spike.sh, Splunk On-Call, Squadcast.
 
 **Where your reminders go.** A self-hosted service, or one whose address names its server
-(ntfy, Matrix, Mattermost...), sends to that server. Amazon SNS and SES, Mailgun, SparkPost
-and PagerDuty send to the region that the address chooses. Stackfield, Pushsafer, Free
+(ntfy, Matrix, Mattermost...), sends to that server. Microsoft Teams workflows, Fluxer,
+Notifico, PushDeer and Better Stack send to their provider unless the address names a server
+of your own. Amazon SNS and SES, Exotel, Mailgun, Pingram, Sinch, SparkPost, PagerDuty and
+Squadcast send to the region that the address chooses. Stackfield, Pushsafer, Free
 Mobile, SFR, Octopush, seven, 46elks, SerwerSMS, SMS Manager, DAPNET, Brevo and ilert are
 providers in the European Union. Every other service sends your reminders to its provider,
 outside the European Union or without saying where. The screen says the same for each
