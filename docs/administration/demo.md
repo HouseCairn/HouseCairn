@@ -45,8 +45,11 @@ refuses to run while `HOUSECAIRN_DEMO` is not true.
   connection. Invitations are by link only.
 - **Accounts kept.** No account can be created: sign-up and the first-account screen are
   closed. The two public accounts keep their password, their address, their rights and their
-  existence; no second factor can be added to them.
+  existence; no second factor can be added to them. Failed sign-ins are counted by address
+only, not by account, so that nobody can lock the public accounts for the other visitors.
 - **Small files.** 2 MB per file, 20 MB and 50 files per home, 200 MB for the whole instance.
+  Export archives are bounded too: one at a time for a home, five for the whole instance, kept
+  one hour.
 - **A banner** on every page says that the instance is a demonstration, that what is entered
   is public and when it is reset; the sign-in screen gives the two accounts.
 
