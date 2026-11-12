@@ -159,8 +159,8 @@ web interface: every request only sees the homes of its user
   `file` (multipart), with `quote` for the file of a quote, and `GET .../content/` and
   `.../thumbnail/` return the file. `project-links` takes a `url` (http or https) and an
   optional `title`; when the instance reads previews, the page is read once, by the background worker,
-  just after creation (`preview_state`: `running`, then `done` or `failed`, `failed` if it
-  has not ended 30 seconds after it started; empty if the instance does not read pages),
+  just after creation (`preview_state`: `running`, then `done` when the page was read, `failed` when it could not be (unreachable, refused, not a
+  web page) or has not ended 30 seconds after it started; empty if the instance does not read pages),
   and `title` (if none was given), `image_url` and `thumbnail_url` are filled when it is
   `done`, else `image_url` and `thumbnail_url` are `null`; a link is created, read or deleted, never changed. `GET` and `PUT .../envelope/` read and set the budget
   envelope of a `year`. Projects are filtered with `status`, `priority`, `season` and

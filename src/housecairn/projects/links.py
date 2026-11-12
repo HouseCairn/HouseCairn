@@ -172,7 +172,10 @@ def read_preview(link_id: str) -> None:
     state = PreviewState.DONE
     try:
         found = preview.read(link.url)
-        _fill(link.pk, started, found)
+        if found.failed:
+            state = PreviewState.FAILED
+        else:
+            _fill(link.pk, started, found)
     except Exception:
         logger.exception("The page of a link could not be read: %s", link.pk)
         state = PreviewState.FAILED

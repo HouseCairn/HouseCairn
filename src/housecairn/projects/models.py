@@ -30,9 +30,11 @@ LINK_TITLE_MAX_LENGTH = 200
 class PreviewState(models.TextChoices):
     """Where the reading of the page of a link stands (docs/adr/0069).
 
-    Empty: the page is not read (previews off on the instance when the link was added).
-    `running` ends in `done` (the page was read, whatever it gave) or `failed`, at the latest
-    `links.PREVIEW_DEADLINE_SECONDS` after `preview_started_at`.
+    Empty: the page is not read (previews off on the instance, when the link was added or
+    before the worker got to it). `running` ends in `done` (the page was read, whatever
+    title or picture it gave) or `failed` (the page could not be read: unreachable, refused
+    by the guard, not a web page, an error; or no end within
+    `links.PREVIEW_DEADLINE_SECONDS` after `preview_started_at`).
     """
 
     NONE = "", _("Page not read")

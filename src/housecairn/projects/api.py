@@ -777,9 +777,10 @@ class ProjectLinkSerializer(serializers.ModelSerializer[ProjectLink]):
     )
     preview_state = serializers.SerializerMethodField(
         help_text="Where the reading of the page stands: empty if the instance does not read "
-        "pages, `running` while the worker reads it, `done` or `failed`. A reading that has "
+        "pages, `running` while the worker reads it, `done` (the page was read) or `failed` (the "
+        "page could not be read: unreachable, refused, not a web page). A reading that has "
         "not ended 30 seconds after it started is `failed`. `title` and `image_url` are filled "
-        "when it is `done`."
+        "when it is `done`, if the page gave them."
     )
 
     class Meta:

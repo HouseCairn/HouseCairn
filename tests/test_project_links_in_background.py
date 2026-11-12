@@ -36,6 +36,10 @@ pytestmark = [
 Queued = list[tuple[tuple[Any, ...], dict[str, Any]]]
 
 
+REAL_IS_PUBLIC = netguard.is_public
+REAL_PUBLIC_PORTS = netguard.PUBLIC_PORTS
+
+
 def only_first_loopback(address: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
     return str(address) == "127.0.0.1"
 
@@ -172,11 +176,28 @@ class TestTheRequestDoesNotWait:
     def test_a_page_that_gives_nothing_is_a_reading_that_ended(
         self, alice: User, living_room_project: Project, site: Server, queued: Queued
     ) -> None:
-        site.serve("/page", 200, b"{}", "application/json")
+        site.serve("/page", 200, b"<html><head></head><body>Hello</body></html>", "text/html")
         link = links.add_link(alice, living_room_project, url=site.url("/page"))
         run_worker(queued)
         link.refresh_from_db()
         assert (link.title, link.image, link.preview_state) == ("", None, PreviewState.DONE)
+
+    def test_an_answer_that_is_not_a_web_page_is_a_failure_and_says_so(
+        self,
+        signed_in: Client,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+        site: Server,
+        queued: Queued,
+    ) -> None:
+        site.serve("/page", 200, b"{}", "application/json")
+        link = links.add_link(alice, living_room_project, url=site.url("/page"))
+        run_worker(queued)
+        link.refresh_from_db()
+        assert (link.title, link.image, link.preview_state) == ("", None, PreviewState.FAILED)
+        shown = signed_in.get(detail(alice_home, living_room_project)).text
+        assert "The page could not be read" in shown
 
     def test_nothing_is_queued_when_the_instance_does_not_read_pages(
         self, alice: User, living_room_project: Project, settings: Any, queued: Queued
@@ -233,7 +254,7 @@ class TestTheProtectionsHoldInTheWorker:
         assert private_site.connections == 0
         run_worker(queued)
         link.refresh_from_db()
-        assert (link.title, link.image, link.preview_state) == ("", None, PreviewState.DONE)
+        assert (link.title, link.image, link.preview_state) == ("", None, PreviewState.FAILED)
         assert private_site.connections == 0
 
     def test_a_picture_on_a_private_address_is_never_called(
@@ -270,8 +291,38 @@ class TestTheProtectionsHoldInTheWorker:
         link = links.add_link(alice, living_room_project, url=site.url("/page"))
         run_worker(queued)
         link.refresh_from_db()
-        assert (link.title, link.image, link.preview_state) == ("", None, PreviewState.DONE)
+        assert (link.title, link.image, link.preview_state) == ("", None, PreviewState.FAILED)
         assert private_site.connections == 0
+
+    @pytest.mark.parametrize(
+        "address",
+        [
+            "http://127.0.0.1:9/page",
+            "http://nonexistent-host.invalid/page",
+            "http://192.0.2.1/page",
+        ],
+        ids=["loopback", "name-that-does-not-resolve", "documentation-range"],
+    )
+    def test_a_page_that_cannot_be_reached_or_is_refused_is_a_failure_and_says_so(
+        self,
+        signed_in: Client,
+        alice: User,
+        alice_home: Home,
+        living_room_project: Project,
+        queued: Queued,
+        monkeypatch: pytest.MonkeyPatch,
+        address: str,
+    ) -> None:
+        # The real guard, not the one of the other tests that lets a loopback address through.
+        monkeypatch.setattr(netguard, "is_public", REAL_IS_PUBLIC)
+        monkeypatch.setattr(netguard, "PUBLIC_PORTS", REAL_PUBLIC_PORTS)
+        link = links.add_link(alice, living_room_project, url=address)
+        run_worker(queued)
+        link.refresh_from_db()
+        assert (link.url, link.title, link.preview_state) == (address, "", PreviewState.FAILED)
+        shown = signed_in.get(detail(alice_home, living_room_project)).text
+        assert "The page could not be read" in shown
+        assert "Reading the page" not in shown
 
     def test_the_time_limit_of_the_reading_is_kept(
         self,
@@ -292,7 +343,7 @@ class TestTheProtectionsHoldInTheWorker:
         run_worker(queued)
         assert time.monotonic() - started < 4.0
         link.refresh_from_db()
-        assert link.preview_state == PreviewState.DONE
+        assert link.preview_state == PreviewState.FAILED
         assert site.wait_idle()
 
     def test_the_limits_of_use_are_taken_before_anything_is_queued(
