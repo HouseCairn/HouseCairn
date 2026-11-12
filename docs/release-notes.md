@@ -20,6 +20,115 @@ The notes of each version are also published with it on the project's
 ```{release-fragments} upgrade
 ```
 
+## 0.2.0
+
+This version changes two defaults, both for safety: the backup of the instance no longer
+holds the secret key, and notification channels on a private network are refused until an
+administrator allows them, with a new setting. It also makes the provider of a maintenance
+contract a contractor of the home, which updates the data once and moves the archive of a
+home to format 3. Read the upgrade notes before updating.
+
+### New
+
+- **A Compose file for Coolify.** `deploy/coolify/docker-compose.yaml` runs the same image,
+  with the same hardening, as `compose.yaml`, without a published port, an environment
+  file or a fixed network range: Coolify's proxy reaches the container, and the domain set
+  in Coolify gives `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` and `HOUSECAIRN_SITE_URL`
+  ([Deploy with Coolify](administration/coolify.md)).
+
+- **The 400 page of a refused host name says what to do.** An address that is not in
+  `ALLOWED_HOSTS` gets a page that tells the administrator to add the name. Whoever hosts
+  HouseCairn for someone else can name the exact option with
+  `HOUSECAIRN_DISALLOWED_HOST_HINT`; the page never repeats the refused name
+  ([settings](administration/settings.md#the-page-of-a-refused-host-name)).
+
+- **A refused form says why, at the top.** When a form is refused, the page opens on a
+  summary of the errors ("There are 2 errors"): one line per field, with its label and the
+  message, each linked to the field, and the errors that belong to no field. The summary is
+  announced by screen readers and holds the focus, a folded section that holds a field in
+  error opens, and the field is marked as invalid. Under it, each message stays next to
+  its field. This holds for the forms of a project page, of the household and of the instance
+  overview too, which used to redirect with the message in the banner. The tabs of the instance
+  administration no longer run into one another when a label is long, on a phone and in French
+  ([design guide](developer/design-guide.md)).
+
+- **The provider of a maintenance contract is a contractor of the home.** In the form of an
+  item, the provider is chosen in the list of the contractors, whose last choice, **Add a
+  contractor…**, adds one without leaving the form. The page of the item links to the sheet of
+  the contractor, and a task added from the item starts with that contractor. Deleting a
+  contractor leaves the contract of the item without a provider, its number and its link kept
+  ([item form](screens/item-form.md), [item](screens/item.md)).
+
+- **Add a room, an item or a stock item from the task form, and as many material lines as
+  needed.** The last choice of the room, item and stock item lists (**Add a room…**,
+  **Add an item…**, **Add a stock item…**) adds one without leaving the form; it is created
+  when the task is saved. The materials are no longer limited to two lines: **+** and **−**
+  add and remove lines up to 50 (without script, **Add lines** shows three more). The page
+  of a task shows the photos of its item or room, and a HEIC photo sent from a phone is
+  refused with a clear message ([task form](screens/task-form.md),
+  [task](screens/task.md)).
+
+### Fixed
+
+- **One way to write a date.** An English screen could show `Nov. 8, 2026` beside
+  `02/08/2027`, which reads as 2 August or as 8 February. Every date now has its month in
+  letters, in one format per language: `Nov 8, 2026` in English, `8 nov. 2026` in French
+  ([how dates are shown](guides/dates.md)).
+- **A comma in a number tells what to type.** In English `12,5` is still refused, but the
+  message now says "Enter a number with a point as the decimal mark, for example 12.5." instead
+  of "Enter a number." The quantities of stock and of materials, the quantity used when a task
+  is marked done, the threshold of a stock item and the last price paid to a supplier follow
+  the rule of the amounts, which was only that of money fields: in French they accept the
+  comma (`12,5`) ([entering an amount](guides/amounts.md)).
+- **The tests no longer read your `.env`.** Following the quick start, `cp .env.example .env`
+  sets `DEBUG=true`, which made `test_debug_is_off_by_default` fail. The tests that import the
+  settings do it from a copy of the sources, without any `.env`, and the contributor guide
+  lists the `data` folder the quick start needed.
+
+- **Rotating the secret key keeps the stored secrets.** `SECRET_KEY_FALLBACKS`, which the
+  documentation advised for a rotation, was not read: the SMTP password, the secrets of
+  the sign-in providers and the notification channels became unreadable with the new key.
+  It is now read, comma-separated, and the steps are in
+  [Rotate the key](administration/settings.md#rotate-the-key).
+- **Every connection of a notification is checked.** While a message is sent, the address
+  of each connection is checked as the names were, IPv4, IPv6 and IPv4 in IPv6, so a
+  service that would skip name resolution reaches no refused address either
+  ([ADR 0059](adr/0059-notifications-refuse-private-networks.md)).
+
+### Upgrade notes
+
+- **The provider of the maintenance contract of an item is now a contractor.** The update
+  changes the data of every home, once, and can be undone (`manage.py migrate rooms 0004`):
+  for each item whose provider was a text, items in the trash included, the contractor of the
+  same home with that name (case and extra spaces ignored) becomes its provider; when the home has none, a contractor
+  of that name is created, with the trade **Other** said as **Maintenance** (change it on its
+  sheet), and shared by the items that name the same provider. A text longer than 120
+  characters, the length of a name, is cut for the name and kept whole in the note of the
+  contractor. Going back puts the name of the contractor into the text again; the contractors
+  made by the update stay. Nothing is asked and nothing is lost.
+- **Export format 3.** The archive of a home and the table of items name the provider of a
+  contract by the id of its contractor (`contract_contractor`) in place of the text
+  (`contract_provider`), and the archive says version 3. A version 2 archive, and a table of
+  items with the old column, are still restored and imported, by the rule above. API
+  clients that read or write `contract_provider` on an item use `contract_contractor`, the id
+  of a contractor of the home, instead
+  ([export](administration/data.md), [API](api/index.md),
+  [ADR 0058](adr/0058-contract-provider-is-a-contractor.md)).
+
+- **The backup of the instance leaves the secret key out.** `backup_instance` no longer puts
+  `/data/secret_key` in the archive: with the key, a copy of the archive gave every stored
+  secret. Keep the key apart, best as `SECRET_KEY` in `deploy/production.env`, and add
+  `--include-secret-key` if a backup must restore alone. A restore without the key says what
+  to do ([Data and backups](administration/backup.md#the-secret-key),
+  [ADR 0060](adr/0060-secret-key-apart-from-the-backups.md)).
+- **Notification channels on a private network are refused unless allowed.** Addresses of
+  private networks (such as a ntfy or a Gotify on the local network) are no longer sent to
+  by default, and their test says why. If your people use one, turn on **Channels on the
+  local network** in **Instance administration, Settings, Notifications**, or set
+  `HOUSECAIRN_NOTIFICATIONS_PRIVATE_NETWORKS=true`
+  ([Hardening](administration/hardening.md),
+  [ADR 0059](adr/0059-notifications-refuse-private-networks.md)).
+
 ## 0.1.0
 
 The first version of HouseCairn. It is a test version: it has not been used in a
