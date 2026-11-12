@@ -396,10 +396,11 @@ def create_supplier(actor: AnyUser, article: Article, **fields: Any) -> Supplier
 @transaction.atomic
 def update_supplier(actor: AnyUser, supplier: Supplier, **changes: Any) -> Supplier:
     _require_write(actor, supplier.home)
+    before: Decimal | None = supplier.last_price
     _apply(supplier, SUPPLIER_FIELDS, changes)
     supplier.full_clean()
     supplier.save()
-    if "last_price" in changes:
+    if supplier.last_price != before:  # only a last price that really changed prefills
         _prefill_unit_price(supplier.article, supplier)
     audit.record_object(
         "supplier.updated",

@@ -112,6 +112,17 @@ class TestPrefilledBySuppliers:
         services.update_supplier(alice, supplier, last_price=D("7"))
         assert Article.objects.get(id=article.id).unit_price == D("7")
 
+    def test_a_supplier_saved_with_the_same_price_does_not_fill_it_again(
+        self, alice: User, alice_home: Home
+    ) -> None:
+        article = make_article(alice, alice_home, "Paint")
+        supplier = services.create_supplier(alice, article, name="Shop", last_price=D("19.90"))
+        services.update_article(alice, article, unit_price=None)  # emptied on purpose
+        services.update_supplier(alice, supplier, name="Big shop", last_price=D("19.90"))
+        assert Article.objects.get(id=article.id).unit_price is None
+        services.update_supplier(alice, supplier, last_price=D("21"))
+        assert Article.objects.get(id=article.id).unit_price == D("21")
+
     def test_the_supplier_keeps_its_own_price_and_the_unit_price_can_be_corrected(
         self, alice: User, alice_home: Home
     ) -> None:
