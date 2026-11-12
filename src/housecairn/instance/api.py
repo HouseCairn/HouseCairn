@@ -223,7 +223,10 @@ SettingSerializer = inline_serializer(
             allow_null=True, help_text="Null for a secret, which is never returned."
         ),
         "default": serializers.JSONField(allow_null=True),
-        "source": serializers.ChoiceField(choices=["environment", "database", "default"]),
+        "source": serializers.ChoiceField(
+            choices=["environment", "database", "default", "demo"],
+            help_text="`demo`: a demonstration instance imposes the value (docs/adr/0071).",
+        ),
         "locked": serializers.BooleanField(
             help_text="True when an environment variable sets it: it cannot be changed here."
         ),

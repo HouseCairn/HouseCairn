@@ -486,6 +486,9 @@ msgstr "Premier administrateur"
 msgid "First-account screen"
 msgstr "Écran du premier compte"
 
+msgid "Demonstration instance"
+msgstr "Instance de démonstration"
+
 msgid "An invitation to this address is already pending; send it again instead."
 msgstr "Une invitation à cette adresse est déjà en attente : renvoyez-la plutôt."
 
@@ -785,6 +788,9 @@ msgstr[1] "%(counter)s comptes liés"
 msgid "No provider yet: people sign in with a password or a passkey."
 msgstr "Aucun fournisseur pour l'instant : on se connecte par mot de passe ou par clé d'accès."
 
+msgid "This is a demonstration instance: its settings can be read, not changed."
+msgstr "Ceci est une instance de démonstration : ses réglages se lisent, ils ne se modifient pas."
+
 msgid "Add a provider"
 msgstr "Ajouter un fournisseur"
 
@@ -831,6 +837,10 @@ msgstr "Défaut : %(value)s."
 
 msgid "Restore the default"
 msgstr "Rétablir le défaut"
+
+#, python-format
+msgid "Set by the demonstration mode. Value in force: %(value)s."
+msgstr "Imposé par le mode démonstration. Valeur en vigueur : %(value)s."
 
 #, python-format
 msgid "Set by the variable <code>%(env)s</code>. Value in force: %(value)s."

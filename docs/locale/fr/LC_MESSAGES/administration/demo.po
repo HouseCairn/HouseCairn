@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Robvred
+# This file is distributed under the same license as the HouseCairn package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HouseCairn \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Demonstration instance"
+msgstr "Instance de démonstration"
+
+msgid "A demonstration instance lets anyone try HouseCairn without installing it: two accounts whose address and password are public, a fictional home, and everything back to that state every night. It is the instance at `demo.housecairn.app`."
+msgstr "Une instance de démonstration permet à chacun d'essayer HouseCairn sans l'installer : deux comptes dont l'adresse et le mot de passe sont publics, un logement fictif, et tout revient à cet état chaque nuit. C'est l'instance `demo.housecairn.app`."
+
+msgid "`HOUSECAIRN_DEMO=true` erases **every** account, home and file of the instance every night. Never set it on an instance that holds real data."
+msgstr "`HOUSECAIRN_DEMO=true` efface **chaque** compte, logement et fichier de l'instance chaque nuit. Ne le posez jamais sur une instance qui contient des données réelles."
+
+msgid "Turn it on"
+msgstr "L'activer"
+
+msgid "Set `HOUSECAIRN_DEMO=true` on a new, empty instance (with Coolify, in the environment variables of the application), then start it. At the first start, on an instance without any account, HouseCairn creates:"
+msgstr "Posez `HOUSECAIRN_DEMO=true` sur une instance neuve et vide (avec Coolify, dans les variables d'environnement de l'application), puis démarrez-la. Au premier démarrage, sur une instance sans aucun compte, HouseCairn crée :"
+
+msgid "Account"
+msgstr "Compte"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Administrator of the instance, owner of the home"
+msgstr "Administrateur de l'instance, propriétaire du logement"
+
+msgid "`admin@example.com`"
+msgstr "`admin@example.com`"
+
+msgid "`housecairn-demo`"
+msgstr "`housecairn-demo`"
+
+msgid "User, member of the home (read and write)"
+msgstr "Utilisateur, membre du logement (lecture et écriture)"
+
+msgid "`user@example.com`"
+msgstr "`user@example.com`"
+
+msgid "and the fictional home of `load_demo_data`, in the default language of the instance (`HOUSECAIRN_DEFAULT_LANGUAGE`, `en` or `fr`). The addresses are in `example.com`, a domain reserved for examples: no mail is ever delivered there."
+msgstr "et le logement fictif de `load_demo_data`, dans la langue par défaut de l'instance (`HOUSECAIRN_DEFAULT_LANGUAGE`, `en` ou `fr`). Les adresses sont dans `example.com`, un domaine réservé aux exemples : aucun courriel n'y est jamais remis."
+
+msgid "Every night"
+msgstr "Chaque nuit"
+
+msgid "At 03:00, Paris time (Europe/Paris, whatever the time zone of the instance), the task worker runs `reset_demo`: it erases the accounts, the homes and what they hold, the settings saved in the interface, the sessions, the audit log and the uploaded files, then creates the two accounts and the home again. The dates of the home are relative to that day, so that Today always has something overdue, due and coming."
+msgstr "À 03:00, heure de Paris (Europe/Paris, quel que soit le fuseau horaire de l'instance), le worker des tâches lance `reset_demo` : il efface les comptes, les logements et leur contenu, les réglages enregistrés dans l'interface, les sessions, le journal d'audit et les fichiers téléversés, puis recrée les deux comptes et le logement. Les dates du logement sont relatives à ce jour, pour qu'Aujourd'hui ait toujours quelque chose en retard, à faire et à venir."
+
+msgid "To reset by hand: `docker compose exec housecairn python -m housecairn.entrypoint manage reset_demo`. The command refuses to run while `HOUSECAIRN_DEMO` is not true."
+msgstr "Pour remettre à zéro à la main : `docker compose exec housecairn python -m housecairn.entrypoint manage reset_demo`. La commande refuse de s'exécuter tant que `HOUSECAIRN_DEMO` n'est pas vrai."
+
+msgid "What changes on a demonstration instance"
+msgstr "Ce qui change sur une instance de démonstration"
+
+msgid "**Settings read only.** The administrator sees the settings and the sign-in providers of the instance, but cannot change them, on the screen or through the API (a `403` with the code `demo`)."
+msgstr "**Réglages en lecture seule.** L'administrateur voit les réglages et les fournisseurs de connexion de l'instance, mais ne peut pas les modifier, ni à l'écran ni par l'API (un `403` avec le code `demo`)."
+
+msgid "**Nothing sent.** No email, no notification (a channel or a device can be added, not tested), no preview of a link, no sign-in through a provider: the instance makes no outgoing connection. Invitations are by link only."
+msgstr "**Rien n'est envoyé.** Aucun courriel, aucune notification (un canal ou un appareil peut être ajouté, pas testé), aucun aperçu de lien, aucune connexion par un fournisseur : l'instance n'ouvre aucune connexion sortante. Les invitations se font par lien seulement."
+
+msgid "**Accounts kept.** No account can be created: sign-up and the first-account screen are closed. The two public accounts keep their password, their address, their rights and their existence; no second factor can be added to them. Failed sign-ins are counted by address only, not by account, so that nobody can lock the public accounts for the other visitors."
+msgstr "**Comptes préservés.** Aucun compte ne peut être créé : l'inscription et l'écran du premier compte sont fermés. Les deux comptes publics gardent leur mot de passe, leur adresse, leurs droits et leur existence ; aucun second facteur ne peut leur être ajouté. Les échecs de connexion sont comptés par adresse seulement, pas par compte, pour que personne ne puisse bloquer les comptes publics aux autres visiteurs."
+
+msgid "**Small files.** 2 MB per file, 20 MB and 50 files per home, 200 MB for the whole instance. Export archives are bounded too: one at a time for a home, five for the whole instance, kept one hour."
+msgstr "**Petits fichiers.** 2 Mo par fichier, 20 Mo et 50 fichiers par logement, 200 Mo pour toute l'instance. Les archives d'export sont bornées aussi : une à la fois pour un logement, cinq pour toute l'instance, conservées une heure."
+
+msgid "**A banner** on every page says that the instance is a demonstration, that what is entered is public and when it is reset; the sign-in screen gives the two accounts."
+msgstr "**Un bandeau** sur chaque page dit que l'instance est une démonstration, que ce qui y est saisi est public et quand elle est remise à zéro ; l'écran de connexion donne les deux comptes."
+
+msgid "The reasons and the limits are in [ADR 0071](../adr/0071-demonstration-instance.md)."
+msgstr "Les raisons et les limites sont dans l'[ADR 0071](../adr/0071-demonstration-instance.md)."
+

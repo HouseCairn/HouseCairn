@@ -37,6 +37,9 @@
     <p class="small card">{% translate "No provider yet: people sign in with a password or a passkey." %}</p>
   {% endif %}
 
+  {% if demo_mode %}
+  <p class="small demo-read-only">{% translate "This is a demonstration instance: its settings can be read, not changed." %}</p>
+  {% else %}
   <h2>{% translate "Add a provider" %}</h2>
   <form method="post" action="{% url 'instance:providers' %}" class="card">
     {% csrf_token %}
@@ -46,4 +49,5 @@
     <button type="submit" name="test" value="1" formnovalidate class="button-secondary button-block">{% translate "Test the issuer" %}</button>
     <p class="small">{% translate "Reads the issuer's OpenID configuration and checks it; nothing is saved. You can save without testing." %}</p>
   </form>
+  {% endif %}
 {% endblock content %}

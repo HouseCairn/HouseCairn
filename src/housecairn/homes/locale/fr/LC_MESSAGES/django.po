@@ -167,6 +167,12 @@ msgstr "Nom de la copie"
 msgid "Left empty: the name of the home followed by \"(copy)\"."
 msgstr "Laissé vide : le nom du logement suivi de « (copie) »."
 
+msgid "This is a demonstration instance: one export at a time for a home. Try again later."
+msgstr "Ceci est une instance de démonstration : un seul export à la fois pour un logement. Réessayez plus tard."
+
+msgid "This is a demonstration instance: too many exports are being kept. Try again later."
+msgstr "Ceci est une instance de démonstration : trop d'exports sont conservés. Réessayez plus tard."
+
 msgid "Owner"
 msgstr "Propriétaire"
 
@@ -270,6 +276,10 @@ msgstr "Ce logement contient déjà %(count)d fichiers, sa limite : supprimez-en
 #, python-format
 msgid "There is no room left for this file: the files of this home take %(used)s of %(limit)s. Delete some, or ask the administrator of the instance for more."
 msgstr "Il ne reste pas de place pour ce fichier : les fichiers de ce logement occupent %(used)s sur %(limit)s. Supprimez-en, ou demandez-en davantage à l'administrateur de l'instance."
+
+#, python-format
+msgid "This is a demonstration instance: its files take %(used)s of the %(limit)s it allows. Try again after the nightly reset."
+msgstr "Ceci est une instance de démonstration : ses fichiers occupent %(used)s des %(limit)s qu'elle permet. Réessayez après la remise à zéro de la nuit."
 
 msgid "The home of this archive is on this instance: only one of its owners may copy it."
 msgstr "Le logement de cette archive est sur cette instance : seul l'un de ses propriétaires peut le copier."

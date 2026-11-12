@@ -41,6 +41,7 @@ from housecairn.accounts.models import User
 from housecairn.accounts.services import is_instance_admin
 from housecairn.audit import services as audit
 from housecairn.core import netguard
+from housecairn.demo import mode
 from housecairn.instance import crypto
 from housecairn.instance.models import OidcProvider
 
@@ -173,11 +174,14 @@ def provider_label(slug: str) -> str:
 def social_apps(provider: str | None = None, client_id: str | None = None) -> list[Any]:
     """The enabled providers of the interface, as the apps django-allauth works with.
 
+    None on a demonstration instance, where no sign-in leaves the server (docs/adr/0071).
     Built in memory and never saved: allauth's own table of apps stays empty, and the
     secret is decrypted only for the request that needs it.
     """
     from allauth.socialaccount.models import SocialApp
 
+    if mode.is_on():
+        return []
     # The variables win: a provider they declare later under the same identifier hides
     # the one of the interface, rather than leaving allauth two apps for one identifier.
     rows = OidcProvider.objects.filter(enabled=True).exclude(slug__in=environment_slugs())
@@ -367,6 +371,7 @@ def _shown(value: Any) -> str:
 
 def create(actor: User, data: dict[str, Any]) -> OidcProvider:
     _require_admin(actor)
+    mode.refuse(mode.settings_read_only())
     errors: dict[str, list[str]] = {}
     clean: dict[str, Any] = {}
     for field in ("slug", "name", "issuer", "client_id", "secret", "pkce", "enabled"):
@@ -397,6 +402,7 @@ def create(actor: User, data: dict[str, Any]) -> OidcProvider:
 def update(actor: User, provider: OidcProvider, changes: dict[str, Any]) -> list[str]:
     """Apply `changes`; returns the fields that changed. A secret is never audited."""
     _require_admin(actor)
+    mode.refuse(mode.settings_read_only())
     errors: dict[str, list[str]] = {}
     clean: dict[str, Any] = {}
     for field, value in changes.items():
@@ -479,6 +485,7 @@ def update(actor: User, provider: OidcProvider, changes: dict[str, Any]) -> list
 def delete(actor: User, provider: OidcProvider) -> None:
     """Remove a provider; its identifier stays reserved. Refused while a home requires it."""
     _require_admin(actor)
+    mode.refuse(mode.settings_read_only())
     with transaction.atomic():
         provider = OidcProvider.objects.select_for_update().get(pk=provider.pk)
         homes = _counts(provider.slug)[1]
@@ -595,5 +602,6 @@ def discover(issuer: str) -> str:
 def check(actor: User, issuer: str) -> tuple[bool, str]:
     """The test button: never required to save, and it says only one of a few words."""
     _require_admin(actor)
+    mode.refuse(mode.nothing_sent())
     code = discover(issuer)
     return code == "ok", str(CHECK_MESSAGES[code])

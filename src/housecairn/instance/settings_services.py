@@ -14,6 +14,7 @@ from django.utils.translation import gettext as _
 from housecairn.accounts.models import User
 from housecairn.accounts.services import is_instance_admin
 from housecairn.audit import services as audit
+from housecairn.demo import mode
 from housecairn.instance import config, crypto, mail, registry
 from housecairn.instance.models import SettingValue
 
@@ -99,6 +100,7 @@ def update(actor: User, changes: dict[str, Any]) -> list[str]:
     default is stored as no value, so that the setting then follows the default.
     """
     _require_admin(actor)
+    mode.refuse(mode.settings_read_only())
     clean = _validate(changes)
     changed: list[str] = []
     with transaction.atomic():
@@ -149,6 +151,7 @@ def reset(actor: User, key: str) -> bool:
     is open (in the database or by variable) is refused with the same message.
     """
     _require_admin(actor)
+    mode.refuse(mode.settings_read_only())
     setting = registry.SETTINGS.get(key)
     if setting is None:
         raise ValidationError({key: [_("Unknown setting.")]})
@@ -179,5 +182,6 @@ EMAIL_TEST_MESSAGES = {
 def check_email(actor: User) -> tuple[bool, str]:
     """Connect to the mail server with the settings in force; nothing is sent."""
     _require_admin(actor)
+    mode.refuse(mode.nothing_sent())
     code = mail.check_connection()
     return code == "ok", str(EMAIL_TEST_MESSAGES[code])

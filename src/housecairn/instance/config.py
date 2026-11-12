@@ -127,8 +127,13 @@ def _stored(setting: Setting, row: tuple[str, bool]) -> Any:
 
 
 def get_setting(key: str) -> Any:
-    """The value in force: variable, else database, else default."""
+    """The value in force: variable, else database, else default.
+
+    On a demonstration instance, the values of `demo.mode.FORCED` win over all three.
+    """
     setting = registry.SETTINGS[key]
+    if (forced := _demo_forced(key)) is not None:
+        return forced[0]
     if is_locked(key):
         return _static(setting)
     row = _current().get(key)
@@ -143,13 +148,26 @@ def get_setting(key: str) -> Any:
     return _static(setting)
 
 
+def _demo_forced(key: str) -> tuple[Any] | None:
+    """The value a demonstration instance imposes on this setting, in a tuple; else None."""
+    from housecairn.demo import mode
+
+    if mode.is_on() and key in mode.FORCED:
+        return (mode.FORCED[key],)
+    return None
+
+
 class Source:
     ENVIRONMENT = "environment"
     DATABASE = "database"
     DEFAULT = "default"
+    # A demonstration instance imposes the value (docs/adr/0071).
+    DEMO = "demo"
 
 
 def source(key: str) -> str:
+    if _demo_forced(key) is not None:
+        return Source.DEMO
     if is_locked(key):
         return Source.ENVIRONMENT
     return Source.DATABASE if key in _current() else Source.DEFAULT
@@ -167,7 +185,7 @@ class State:
 
     @property
     def locked(self) -> bool:
-        return self.source == Source.ENVIRONMENT
+        return self.source in (Source.ENVIRONMENT, Source.DEMO)
 
 
 def describe(key: str) -> State:

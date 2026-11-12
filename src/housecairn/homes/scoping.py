@@ -118,6 +118,11 @@ class SsoRequiredApiError(exceptions.PermissionDenied):
 
 def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response | None:
     """DRF exception handler: `SsoRequiredError` becomes a 403 naming the provider."""
+    from housecairn.demo import mode
+
+    if isinstance(exc, mode.DemoRefusedError):
+        # What the demonstration mode refuses (docs/adr/0071), with its reason.
+        return Response({"detail": exc.message, "code": "demo"}, status=status.HTTP_403_FORBIDDEN)
     if isinstance(exc, services.SsoRequiredError):
         return Response(
             {

@@ -102,6 +102,32 @@ def check(home: Home, *, size: int, new_files: int = 1) -> None:
             params={"used": filesizeformat(held.bytes), "limit": filesizeformat(allowed.bytes)},
             code="quota_bytes",
         )
+    _check_demo_total(size)
+
+
+def _check_demo_total(size: int) -> None:
+    """On a demonstration instance, a quota for all the homes together (docs/adr/0071).
+
+    Anyone may create homes there, each with its own quota: without it, the disk would only
+    be bounded by the number of homes a visitor creates before the nightly reset.
+    """
+    from housecairn.demo import mode
+
+    if not mode.is_on():
+        return
+    held = sum(usage(home_id).bytes for home_id in Home.all_objects.values_list("id", flat=True))
+    if held + size > mode.INSTANCE_STORAGE_BYTES:
+        raise ValidationError(
+            _(
+                "This is a demonstration instance: its files take %(used)s of the %(limit)s "
+                "it allows. Try again after the nightly reset."
+            ),
+            params={
+                "used": filesizeformat(held),
+                "limit": filesizeformat(mode.INSTANCE_STORAGE_BYTES),
+            },
+            code="quota_demo",
+        )
 
 
 @dataclass(frozen=True)

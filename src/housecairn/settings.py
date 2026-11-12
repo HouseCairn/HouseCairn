@@ -65,6 +65,10 @@ HOUSECAIRN_DISALLOWED_HOST_HINT: str = hosthint.parse_hint(
     env.str("HOUSECAIRN_DISALLOWED_HOST_HINT", default="")
 )
 
+# A public demonstration instance (docs/adr/0071): two public accounts, a reset every night,
+# settings read only and nothing sent out. Off by default; off changes nothing.
+HOUSECAIRN_DEMO: bool = registry.boolean_variable("HOUSECAIRN_DEMO", default=False)
+
 DATA_DIR = Path(env.str("HOUSECAIRN_DATA_DIR", default=str(REPO_DIR / "data")))
 
 INSTALLED_APPS = [
@@ -102,6 +106,7 @@ INSTALLED_APPS = [
     "housecairn.calendar",
     "housecairn.labels",
     "housecairn.reports",
+    "housecairn.demo",
 ]
 
 MIDDLEWARE = [
@@ -139,6 +144,8 @@ MIDDLEWARE = [
     "housecairn.core.middleware.CreationFormMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    # A refusal of the demonstration mode becomes a message on the same screen (docs/adr/0071).
+    "housecairn.demo.middleware.DemoRefusalMiddleware",
     # Last: reads the database, so after the checks that need no query (docs/adr/0035).
     "housecairn.instance.middleware.SettingsSnapshotMiddleware",
 ]
@@ -170,6 +177,7 @@ TEMPLATES = [
                 "housecairn.accounts.context_processors.signup",
                 "housecairn.core.context_processors.shell",
                 "housecairn.core.help.help_link",
+                "housecairn.demo.context_processors.demo",
             ],
             # `{% instance_name %}` in every template, emails included (docs/adr/0042).
             "builtins": ["housecairn.core.templatetags.instance"],
@@ -376,6 +384,9 @@ HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL: str = env.str(
 # log, while the instance has no administrator (docs/adr/0056). `false` for an instance
 # whose administrator is created another way.
 HOUSECAIRN_SETUP_SCREEN: bool = env.bool("HOUSECAIRN_SETUP_SCREEN", default=True)
+if HOUSECAIRN_DEMO:
+    # The accounts of a demonstration instance come from `reset_demo` alone.
+    HOUSECAIRN_SETUP_SCREEN = False
 
 # Outgoing email, off until EMAIL_HOST is set. Without a server the console
 # backend only prints messages, so features that need a real mailbox, such as
@@ -409,7 +420,8 @@ MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN = DEBUG
 # provider is named in the code: any compliant identity provider works.
 SOCIALACCOUNT_PROVIDERS: dict[str, Any] = {}
 _oidc_server_url: str = env.str("OIDC_SERVER_URL", default="")
-if _oidc_server_url:
+# No sign-in through a provider on a demonstration instance: it would leave the server.
+if _oidc_server_url and not HOUSECAIRN_DEMO:
     SOCIALACCOUNT_PROVIDERS["openid_connect"] = {
         "OAUTH_PKCE_ENABLED": True,
         "APPS": [

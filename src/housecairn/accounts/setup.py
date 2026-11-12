@@ -46,7 +46,10 @@ class SetupClosedError(Exception):
 
 
 def screen_enabled() -> bool:
-    return bool(settings.HOUSECAIRN_SETUP_SCREEN)
+    from housecairn.demo import mode
+
+    # A demonstration instance gets its accounts from `reset_demo` alone (docs/adr/0071).
+    return bool(settings.HOUSECAIRN_SETUP_SCREEN) and not mode.is_on()
 
 
 def admin_exists() -> bool:

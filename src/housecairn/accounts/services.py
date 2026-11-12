@@ -236,6 +236,8 @@ def delete_account(user: User, *, by_admin: User | None = None) -> None:
     from housecairn.homes.models import Invitation, Membership
     from housecairn.instance.models import InstanceInvitation
 
+    # On a demonstration instance, deleting a public account is refused by the guard of the
+    # model (demo.guards), inside the transaction below: nothing is erased (docs/adr/0071).
     if by_admin is not None and not is_instance_admin(by_admin):
         raise PermissionDenied
     with transaction.atomic():

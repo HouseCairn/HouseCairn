@@ -20,6 +20,7 @@ from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
 
 from housecairn.accounts.models import User
+from housecairn.demo import mode
 from housecairn.instance.config import get_setting
 from housecairn.notifications import outbound
 from housecairn.notifications.models import MAX_CHANNELS, Channel, Preference, SendState
@@ -205,6 +206,7 @@ def start_test(actor: AnyUser, channel: Channel) -> Channel:
 
     user = _require_owner(actor, channel)
     _require_enabled()
+    mode.refuse(mode.nothing_sent())
     # The state in the database, not the one the caller read earlier: a worker may have ended it.
     channel.refresh_from_db(fields=["test_state", "test_started_at", "test_finished_at"])
     expire_test(channel)

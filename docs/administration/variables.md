@@ -32,6 +32,7 @@ changed in the interface; a variable that is set locks its field there. The full
 | `OIDC_SERVER_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` | (none) | Single sign-on through any OpenID Connect provider. |
 | `HOUSECAIRN_OIDC_SIGNUP`, `HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL` | `closed`, (none) | Who may get an account through single sign-on. |
 | `HOUSECAIRN_SETUP_SCREEN` | `true` | The first-account screen (`/setup/`), opened by a one-time code written in the log, while there is no administrator. `false` if you create the administrator another way. See [First start](../getting-started/first-start.md). |
+| `HOUSECAIRN_DEMO` | `false` | `true` makes a public demonstration instance: two public accounts, settings read only, nothing sent, everything erased every night. Never on an instance with real data. See [Demonstration instance](demo.md). |
 | `EMAIL_HOST` | (none) | Outgoing mail server (SMTP); email is off while it is empty. See [Email](email.md). |
 | `EMAIL_USE_SSL`, `EMAIL_TIMEOUT` | `false`, `15` | TLS from the first byte; seconds to wait for the server. See [Email](email.md). |
 | `HOUSECAIRN_SITE_URL` | (none: set it in production) | Public address of the instance, such as `https://home.example.com`, used for links in emails and for the address a printed QR label holds, followed by `HOUSECAIRN_URL_PREFIX`. Empty: the address of the request, checked against `ALLOWED_HOSTS`; `check --deploy` warns when `EMAIL_HOST` is set without it. |

@@ -393,6 +393,12 @@ def deliver(sealed: str, *, title: str, body: str) -> Outcome:
     finishes, and it can open no other socket. Only a name resolution in progress outlasts
     the send, for as long as the resolver of the system allows.
     """
+    from housecairn.demo import mode
+
+    if mode.is_on():
+        # Nothing leaves a demonstration instance (docs/adr/0071).
+        logger.info("Demonstration instance: a notification was not sent.")
+        return Outcome.FAILED
     private = False
     try:
         private_networks = private_networks_allowed()

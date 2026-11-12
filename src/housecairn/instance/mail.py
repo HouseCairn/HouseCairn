@@ -36,6 +36,12 @@ class EmailBackend(SmtpBackend):
         self._console = ConsoleBackend(**kwargs)
 
     def send_messages(self, email_messages: Sequence[EmailMessage]) -> int:
+        from housecairn.demo import mode
+
+        if mode.is_on():
+            # Nothing leaves a demonstration instance, not even to the log (docs/adr/0071).
+            logger.info("Demonstration instance: %d email(s) not sent.", len(email_messages))
+            return 0
         sender = str(get_setting("default_from_email"))
         for message in email_messages:
             if message.from_email == _static_sender():

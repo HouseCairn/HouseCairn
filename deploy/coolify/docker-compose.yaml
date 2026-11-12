@@ -56,6 +56,9 @@ services:
       - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET:-}
       - HOUSECAIRN_OIDC_SIGNUP=${HOUSECAIRN_OIDC_SIGNUP:-}
       - HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL=${HOUSECAIRN_BOOTSTRAP_ADMIN_EMAIL:-}
+      # true only for a public demonstration instance: two public accounts, everything
+      # erased every night (docs/administration/demo.md).
+      - HOUSECAIRN_DEMO=${HOUSECAIRN_DEMO:-}
       # Web server and task worker processes, and the application log level.
       - HOUSECAIRN_WEB_WORKERS=${HOUSECAIRN_WEB_WORKERS:-2}
       - HOUSECAIRN_TASK_WORKERS=${HOUSECAIRN_TASK_WORKERS:-2}

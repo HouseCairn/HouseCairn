@@ -17,6 +17,7 @@ from django.utils.translation import gettext as _
 from housecairn.accounts.models import User
 from housecairn.accounts.services import is_instance_admin
 from housecairn.audit import services as audit
+from housecairn.demo import mode
 from housecairn.homes import services as home_services
 from housecairn.instance.config import get_setting
 from housecairn.instance.models import InstanceInvitation
@@ -49,12 +50,15 @@ def invite(
 ) -> InstanceInvitation:
     """Invite an address to create an account, by email.
 
+    Refused on a demonstration instance: it creates no account and sends no email.
+
     The answer does not depend on whether an account already uses the address:
     an administrator learns nothing about accounts by inviting, and the person
     invited with an account of their own is simply told to sign in when they
     open the link.
     """
     _require_admin(actor)
+    mode.refuse(mode.nothing_sent())
     address = email.strip()
     with transaction.atomic():
         now = timezone.now()
@@ -94,6 +98,7 @@ def resend(
 ) -> InstanceInvitation:
     """A new link and a new expiry; the previous link stops working."""
     _require_admin(actor)
+    mode.refuse(mode.nothing_sent())
     if invitation.accepted_at is not None or invitation.revoked_at is not None:
         raise ValidationError(_("This invitation was already accepted or revoked."))
     raw, digest = _new_secret()

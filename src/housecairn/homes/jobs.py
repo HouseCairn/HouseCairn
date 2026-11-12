@@ -20,7 +20,9 @@ from django.core.exceptions import PermissionDenied
 from django.db import DatabaseError
 from django.db.models import F, Q
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
+from housecairn.demo import mode
 from housecairn.homes import exports
 from housecairn.homes.models import ExportJob, ExportStatus, Home
 
@@ -85,6 +87,23 @@ def schedule_purge(**_kwargs: object) -> None:
         return
 
 
+def _check_demo_exports(home: Home) -> None:
+    """On a demonstration instance, bound the archives kept on disk (docs/adr/0071).
+
+    One archive at a time for a home, and a few for the whole instance, since anyone may
+    create homes there: the archives are not part of the quota of the files (`quotas.usage`).
+    """
+    active = ExportJob.all_objects.exclude(status=ExportStatus.FAILED)
+    if active.filter(home=home).exists():
+        mode.refuse(
+            _("This is a demonstration instance: one export at a time for a home. Try again later.")
+        )
+    if active.count() >= mode.EXPORT_MAX_ACTIVE:
+        mode.refuse(
+            _("This is a demonstration instance: too many exports are being kept. Try again later.")
+        )
+
+
 def start_export(actor: Any, home: Home) -> ExportJob:
     """Record the export of the home for an owner and queue its archive."""
     from django_q.tasks import async_task
@@ -93,11 +112,15 @@ def start_export(actor: Any, home: Home) -> ExportJob:
 
     exports.check_owner(actor, home)
     purge_expired()
+    keep_hours = settings.HOUSECAIRN_EXPORT_KEEP_HOURS
+    if mode.is_on():
+        _check_demo_exports(home)
+        keep_hours = min(keep_hours, mode.EXPORT_KEEP_HOURS)
     job: ExportJob = ExportJob.objects.create(
         home=home,
         requested_by=actor,
         downloads_left=settings.HOUSECAIRN_EXPORT_DOWNLOADS,
-        expires_at=timezone.now() + datetime.timedelta(hours=settings.HOUSECAIRN_EXPORT_KEEP_HOURS),
+        expires_at=timezone.now() + datetime.timedelta(hours=keep_hours),
     )
     audit.record(
         "home.exported",
