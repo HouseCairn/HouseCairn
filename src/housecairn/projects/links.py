@@ -1,17 +1,23 @@
 """Links of inspiration of a project, with a preview read once (docs/adr/0050).
 
 A link is an address, a title and, when the page gave one, a picture stored like a photo of
-the project. Reading the page happens when the link is added, outside any transaction, and
-only if the instance allows it (`link_preview_enabled`, docs/adr/0035). Any failure leaves
-the plain address: adding a link never fails because a page could not be read.
+the project. Adding a link saves it at once with its address. Reading the page, which can
+take seconds, is a task of the background worker queued just after (docs/adr/0070), and only
+if the instance allows it (`link_preview_enabled`, docs/adr/0035): the request never waits
+for another server. The worker fills the title (unless the person typed one) and the picture
+when it is done. Any failure leaves the plain address: adding a link never fails because a
+page could not be read, and a reading that has not ended after `PREVIEW_DEADLINE_SECONDS`
+is marked failed, never left "being read".
 """
 
+import datetime
 import logging
 from urllib.parse import urlsplit
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from rest_framework.request import Request
 
@@ -19,7 +25,13 @@ from housecairn.audit import services as audit
 from housecairn.homes.scoping import allow
 from housecairn.instance.config import get_setting
 from housecairn.projects import preview
-from housecairn.projects.models import MAX_LINKS_PER_PROJECT, Project, ProjectFile, ProjectLink
+from housecairn.projects.models import (
+    MAX_LINKS_PER_PROJECT,
+    PreviewState,
+    Project,
+    ProjectFile,
+    ProjectLink,
+)
 from housecairn.projects.services import (
     AnyUser,
     _erase_files,
@@ -32,6 +44,11 @@ from housecairn.tasks import files as task_files
 logger = logging.getLogger("housecairn.projects")
 
 MAX_URL_LENGTH = 500
+# A reading that has not ended this long after it started is a failure, whatever became of the
+# worker. The reading itself is bounded by `preview.PREVIEW_SECONDS`.
+PREVIEW_DEADLINE_SECONDS = 30
+# The task is stopped by the worker a little before the deadline.
+PREVIEW_TASK_SECONDS = 25
 
 
 def preview_enabled() -> bool:
@@ -72,10 +89,13 @@ def clean_url(raw: str) -> str:
 
 
 def add_link(actor: AnyUser, project: Project, *, url: str, title: str = "") -> ProjectLink:
-    """Add a link. The page is read first (a few seconds at most), then the link is saved.
+    """Add a link and queue the reading of its page; the link is saved with its address.
 
-    A title given by the person is kept; otherwise the one the page gave, if any.
+    A title given by the person is kept; otherwise the worker fills the one the page gave,
+    if any. The link returned says where the reading stands (`preview_state`).
     """
+    from django_q.tasks import async_task
+
     _require_write(actor, project.home)
     address = clean_url(url)
     given = preview.clean_title(title) if isinstance(title, str) else ""
@@ -83,21 +103,32 @@ def add_link(actor: AnyUser, project: Project, *, url: str, title: str = "") -> 
         raise ValidationError(
             _("At most %(max)d links for a project."), params={"max": MAX_LINKS_PER_PROJECT}
         )
-    found = preview.read(address) if preview_enabled() else preview.Preview()
-    return _save(actor, project, address, given or found.title, found.image)
+    reading = preview_enabled()
+    link = _save(actor, project, address, given, reading)
+    if reading:
+        async_task(
+            "housecairn.projects.links.read_preview",
+            str(link.pk),
+            timeout=PREVIEW_TASK_SECONDS,
+            # A task stopped at its timeout is not given again: the deadline ends the reading.
+            ack_failure=True,
+        )
+        link.refresh_from_db()
+    return link
 
 
 @transaction.atomic
-def _save(
-    actor: AnyUser, project: Project, address: str, title: str, picture: bytes | None
-) -> ProjectLink:
-    link = ProjectLink(home=project.home, project=project, url=address, title=title)
+def _save(actor: AnyUser, project: Project, address: str, title: str, reading: bool) -> ProjectLink:
+    link = ProjectLink(
+        home=project.home,
+        project=project,
+        url=address,
+        title=title,
+        preview_state=PreviewState.RUNNING if reading else PreviewState.NONE,
+        preview_started_at=timezone.now() if reading else None,
+    )
     link.full_clean(exclude=["image"])
     link.save()
-    if picture is not None:
-        link.image = _store_picture(project, link, picture)
-        if link.image is not None:
-            link.save(update_fields=["image", "updated_at"])
     audit.record_object(
         "project_link.added",
         actor=actor,
@@ -106,6 +137,83 @@ def _save(
         domain=preview.domain_of(address),
     )
     return link
+
+
+def expire_preview(link: ProjectLink) -> ProjectLink:
+    """Mark a reading that has run past its deadline as failed; the link, up to date.
+
+    The update is conditional, so a result that arrives in the meantime is not overwritten.
+    """
+    started = link.preview_started_at
+    if link.preview_state == PreviewState.RUNNING and (
+        started is None
+        or timezone.now() - started > datetime.timedelta(seconds=PREVIEW_DEADLINE_SECONDS)
+    ):
+        ProjectLink.objects.filter(
+            pk=link.pk, preview_state=PreviewState.RUNNING, preview_started_at=started
+        ).update(preview_state=PreviewState.FAILED)
+        link.refresh_from_db()
+    return link
+
+
+def read_preview(link_id: str) -> None:
+    """Task of the worker: read the page of a link, then fill its title and its picture.
+
+    The same guard as ever (`preview.read`, `core.netguard`): public addresses only, every
+    redirect checked, size and time limited. The task runs outside any transaction; the
+    link is read again before it is changed, since the person may have deleted it meanwhile.
+    """
+    link = ProjectLink.objects.filter(pk=link_id, preview_state=PreviewState.RUNNING).first()
+    if link is None:
+        return
+    # A task can come late: the worker gives it again after `retry` if it was stopped at its
+    # timeout (django-q2 does not acknowledge that failure unless asked). The deadline applies
+    # to the row as it is now, and a reading past it reads nothing.
+    if expire_preview(link).preview_state != PreviewState.RUNNING:
+        return
+    started = link.preview_started_at
+    if not preview_enabled():
+        # The administrator turned the preview off after the link was queued: nothing leaves
+        # the server any more, so the page is not read and the row goes back to "not read".
+        ProjectLink.objects.filter(
+            pk=link.pk, preview_state=PreviewState.RUNNING, preview_started_at=started
+        ).update(preview_state=PreviewState.NONE)
+        return
+    state = PreviewState.DONE
+    try:
+        found = preview.read(link.url)
+        if found.failed:
+            state = PreviewState.FAILED
+        else:
+            _fill(link.pk, started, found)
+    except Exception:
+        logger.exception("The page of a link could not be read: %s", link.pk)
+        state = PreviewState.FAILED
+    ProjectLink.objects.filter(
+        pk=link.pk, preview_state=PreviewState.RUNNING, preview_started_at=started
+    ).update(preview_state=state)
+
+
+@transaction.atomic
+def _fill(link_id: object, started: datetime.datetime | None, found: preview.Preview) -> None:
+    """Keep what the page gave: its title if the person typed none, and its picture."""
+    link = (
+        ProjectLink.objects.select_related("project", "home")
+        .filter(pk=link_id, preview_state=PreviewState.RUNNING, preview_started_at=started)
+        .first()
+    )
+    if link is None:  # deleted, or already ended past its deadline
+        return
+    changed = []
+    if found.title and not link.title:
+        link.title = found.title
+        changed.append("title")
+    if found.image is not None:
+        link.image = _store_picture(link.project, link, found.image)
+        if link.image is not None:
+            changed.append("image")
+    if changed:
+        link.save(update_fields=[*changed, "updated_at"])
 
 
 def _store_picture(project: Project, link: ProjectLink, data: bytes) -> ProjectFile | None:

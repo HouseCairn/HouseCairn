@@ -5,6 +5,8 @@ only: the views look it up among `channels_of(request.user)`, so anyone else, an
 administrator of the instance included, gets the same 404.
 """
 
+import datetime
+import logging
 import time
 import zoneinfo
 from typing import Any
@@ -13,14 +15,16 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models, transaction
-from django.utils import translation
+from django.utils import timezone, translation
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
 
 from housecairn.accounts.models import User
 from housecairn.instance.config import get_setting
 from housecairn.notifications import outbound
-from housecairn.notifications.models import MAX_CHANNELS, Channel, Preference
+from housecairn.notifications.models import MAX_CHANNELS, Channel, Preference, SendState
+
+logger = logging.getLogger("housecairn.notifications")
 
 AnyUser = User | AnonymousUser
 
@@ -29,6 +33,11 @@ PREFERENCE_FIELDS = frozenset(
 )
 CHANNEL_FIELDS = frozenset({"name", "enabled"})
 TESTS_PER_MINUTE = 5
+# A test that has not ended this long after it started is a failure, whatever became of the
+# worker (docs/adr/0070). The send itself gives up after `outbound.SEND_SECONDS`.
+TEST_DEADLINE_SECONDS = 30
+# The task is stopped by the worker a little before the deadline.
+TEST_TASK_SECONDS = 25
 
 REFUSALS = {
     "invalid": gettext_lazy("This is not an Apprise address, such as ntfys://ntfy.sh/topic."),
@@ -59,6 +68,7 @@ TEST_RESULTS = {
     True: gettext_lazy("The test message was sent."),
     False: gettext_lazy("The test message could not be sent: check the address and the service."),
 }
+TEST_RUNNING = gettext_lazy("The test message is being sent.")
 
 
 def is_enabled() -> bool:
@@ -151,23 +161,98 @@ def _consume_test(user: User) -> bool:
         return False
 
 
-def test_channel(actor: AnyUser, channel: Channel) -> bool:
-    """Send a real message; the answer is one of two fixed sentences, never the service's.
+def expire_test(channel: Channel) -> Channel:
+    """Mark a test that has run past its deadline as failed; the channel, up to date.
 
-    An address on a private network that the instance does not allow is a `ValidationError`
-    that says so (docs/adr/0059): nothing was sent, and the person can do something about it.
+    A test is never left "running": the worker may have stopped, restarted or lost the task.
+    The update is conditional, so a result that arrives in the meantime is not overwritten.
     """
+    started = channel.test_started_at
+    if channel.test_state == SendState.RUNNING and (
+        started is None
+        or timezone.now() - started > datetime.timedelta(seconds=TEST_DEADLINE_SECONDS)
+    ):
+        Channel.objects.filter(
+            pk=channel.pk, test_state=SendState.RUNNING, test_started_at=started
+        ).update(test_state=SendState.FAILED, test_finished_at=timezone.now())
+        channel.refresh_from_db()
+    return channel
+
+
+def test_result(channel: Channel) -> str:
+    """The sentence that says where the last test stands; empty when there was none."""
+    if channel.test_state == SendState.RUNNING:
+        return str(TEST_RUNNING)
+    if channel.test_state == SendState.SENT:
+        return str(TEST_RESULTS[True])
+    if channel.test_state == SendState.FAILED:
+        return str(TEST_RESULTS[False])
+    if channel.test_state == SendState.PRIVATE:
+        return str(REFUSALS["private"])
+    return ""
+
+
+def start_test(actor: AnyUser, channel: Channel) -> Channel:
+    """Queue a real test message for the worker; the request does not wait for the service.
+
+    The answer is read later from `test_state` (`expire_test` first): one of fixed sentences,
+    never the service's own (`test_result`). A test already running is not started twice and
+    does not count against the limit. An address on a private network that the instance does
+    not allow ends as `private` (docs/adr/0059): nothing was sent, and the person can do
+    something about it.
+    """
+    from django_q.tasks import async_task
+
     user = _require_owner(actor, channel)
     _require_enabled()
+    # The state in the database, not the one the caller read earlier: a worker may have ended it.
+    channel.refresh_from_db(fields=["test_state", "test_started_at", "test_finished_at"])
+    expire_test(channel)
+    if channel.test_state == SendState.RUNNING:
+        return channel
     if not _consume_test(user):
         raise ValidationError(_("Too many tests: wait a minute."))
-    with translation.override(preferences_of(user).language):
-        title = _("HouseCairn test")
-        body = _("This channel receives the reminders of your tasks.")
-    outcome = outbound.deliver(channel.url, title=title, body=body)
-    if outcome is outbound.Outcome.PRIVATE:
-        raise ValidationError(REFUSALS["private"])
-    return outcome is outbound.Outcome.SENT
+    now = timezone.now()
+    Channel.objects.filter(pk=channel.pk).update(
+        test_state=SendState.RUNNING, test_started_at=now, test_finished_at=None
+    )
+    async_task(
+        "housecairn.notifications.tasks.send_test",
+        str(channel.pk),
+        preferences_of(user).language,
+        timeout=TEST_TASK_SECONDS,
+        # A task stopped at its timeout is not given again: the deadline ends the test.
+        ack_failure=True,
+    )
+    channel.refresh_from_db()
+    return channel
+
+
+def send_test(channel_id: str, language: str) -> None:
+    """Task of the worker: send the test message, then record how it ended."""
+    channel = Channel.objects.filter(pk=channel_id, test_state=SendState.RUNNING).first()
+    if channel is None:
+        return
+    # A task can come late: the worker gives it again after `retry` if it was stopped at its
+    # timeout. The deadline applies to the row as it is now, and a test past it sends nothing.
+    if expire_test(channel).test_state != SendState.RUNNING:
+        return
+    started = channel.test_started_at
+    try:
+        with translation.override(language):
+            title = _("HouseCairn test")
+            body = _("This channel receives the reminders of your tasks.")
+        outcome = outbound.deliver(channel.url, title=title, body=body)
+        if outcome is outbound.Outcome.PRIVATE:
+            state = SendState.PRIVATE
+        else:
+            state = SendState.SENT if outcome is outbound.Outcome.SENT else SendState.FAILED
+    except Exception:
+        logger.exception("A test message could not be sent: %s", channel_id)
+        state = SendState.FAILED
+    Channel.objects.filter(
+        pk=channel.pk, test_state=SendState.RUNNING, test_started_at=started
+    ).update(test_state=state, test_finished_at=timezone.now())
 
 
 # ---------- preferences ----------

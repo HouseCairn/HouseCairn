@@ -39,6 +39,9 @@ administration at 360, 375, 768 and 1280 px, in English and in French: no tab te
 neighbour and no word of a label is cut over two lines. `form-errors` signs in as
 `forms@example.com`, `instance-tabs` as the administrator `admin@example.com`: both are accounts
 of the CI instance.
+
+`background-calls` (local only) measures the link being read and the test of a channel at 320,
+360, 375 and 1280 px, in English and French, with and without script (docs/adr/0070).
 """
 
 import argparse
@@ -46,7 +49,7 @@ import sys
 from itertools import pairwise
 from typing import Any
 
-from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
+from playwright.sync_api import Browser, BrowserContext, Locator, Page, sync_playwright
 
 EMAIL = "demo@example.com"
 PASSWORD = "correct-horse-battery-staple"  # throwaway account of the CI instance
@@ -716,6 +719,91 @@ def item_contract(browser: Browser, base: str) -> None:
                 context.close()
 
 
+BACKGROUND_WIDTHS = (320, 360, 375, 1280)
+# Words of the screens, per language: the link being read, a link that could not be read, the
+# test being sent, the test that failed (docs/adr/0070).
+BACKGROUND_TEXTS = {
+    "en": ("Reading the page", "could not be read", "is being sent", "could not be sent"),
+    "fr": ("Lecture de la page", "n'a pas pu être lue", "en cours d'envoi", "pas pu être envoyé"),
+}
+
+
+def _fits(page: Page, element: Locator, width: int, label: str) -> None:
+    """The element is on screen, inside the width, with a readable text and no sideways scroll."""
+    box = element.bounding_box()
+    check(box is not None, f"{label}: shown")
+    assert box is not None
+    size = element.evaluate("(e) => parseFloat(getComputedStyle(e).fontSize)")
+    scroll = page.evaluate("document.documentElement.scrollWidth")
+    say(f"{label}: box {box['x']:.0f}..{box['x'] + box['width']:.0f} px, text {size:.0f} px")
+    check(box["x"] >= 0 and box["x"] + box["width"] <= width, f"{label}: inside the width")
+    check(size >= 13, f"{label}: readable ({size} px)")
+    check(scroll <= width, f"{label}: no horizontal scroll ({scroll} px)")
+
+
+def background_calls(browser: Browser, base: str) -> None:
+    """Reading a link and testing a channel, in the background. Local only (docs/adr/0070).
+
+    Needs an instance with its worker (`qcluster`), the preview of links on, notifications on,
+    and the account `demo@example.com` with a project (the first of the list) and a channel
+    named `Phone` that fails (an address that does not answer). At 320, 360, 375 and 1280 px,
+    in English and in French, with and without script: a link being read and one that could not
+    be read, then the test of the channel, fit the width; with script the screen moves on
+    by itself (no reload) and never stays "in progress"; without script a reload shows the end.
+    Prints the measures.
+    """
+    for width in BACKGROUND_WIDTHS:
+        for locale in ("en", "fr"):
+            reading, unread, sending, failed = BACKGROUND_TEXTS[locale]
+            for script in (True, False):
+                label = f"{width} px, {locale}{'' if script else ', no script'}"
+                context = browser.new_context(
+                    viewport={"width": width, "height": 900},
+                    locale=locale,
+                    java_script_enabled=script,
+                )
+                page = context.new_page()
+                sign_in(page, base)
+                page.goto(f"{base}/projects/")
+                page.goto(f"{page.url}?view=ideas")
+                page.locator("main a.row-body[href*='/projects/']").first.click()
+                page.wait_for_selector("h1")
+                project = page.url
+                # A link being read, and one that could not be, seeded by the setup of the check.
+                running = page.locator("li.row", has_text=reading).first
+                check(running.count() == 1, f"{label}: a link is being read")
+                _fits(page, running, width, f"{label}, being read")
+                broken = page.locator("li.row", has_text=unread).first
+                check(broken.count() == 1, f"{label}: a link could not be read")
+                _fits(page, broken, width, f"{label}, not read")
+                # The test of the channel.
+                page.goto(f"{base}/me/notifications/")
+                page.locator("main a.row", has_text="Phone").first.click()
+                page.wait_for_selector("#channel-test", state="attached")
+                page.locator("form[action$='/test/'] button[type=submit]").click()
+                page.wait_for_selector("#channel-test p")
+                text = page.inner_text("#channel-test")
+                check(sending in text or failed in text, f"{label}: in progress or done: {text}")
+                _fits(page, page.locator("#channel-test"), width, f"{label}, test")
+                if script:
+                    page.wait_for_function(
+                        "(t) => document.querySelector('#channel-test').innerText.includes(t)",
+                        arg=failed,
+                        timeout=40000,
+                    )
+                    check(
+                        page.locator("#channel-test[hx-get]").count() == 0,
+                        f"{label}: it stops asking once done",
+                    )
+                else:
+                    page.wait_for_timeout(12000)
+                    page.reload()
+                    check(failed in page.inner_text("#channel-test"), f"{label}: reload shows it")
+                _fits(page, page.locator("#channel-test"), width, f"{label}, test done")
+                page.goto(project)
+                context.close()
+
+
 ADMIN_EMAIL = "admin@example.com"
 TAB_WIDTHS = (320, 360, 375, 768, 1280)
 
@@ -925,6 +1013,7 @@ def main() -> None:
             "item-contract",
             "form-errors",
             "instance-tabs",
+            "background-calls",
         ],
     )
     parser.add_argument("--base", required=True, help="address of the running instance")
@@ -947,6 +1036,8 @@ def main() -> None:
             form_errors(browser, base)
         elif args.mode == "instance-tabs":
             instance_tabs(browser, base)
+        elif args.mode == "background-calls":
+            background_calls(browser, base)
         else:
             passkey(browser, base)
         browser.close()

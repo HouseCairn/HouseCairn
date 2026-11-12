@@ -158,9 +158,11 @@ web interface: every request only sees the homes of its user
   in no project); deleting a row takes the task out and keeps it. `project-files` takes
   `file` (multipart), with `quote` for the file of a quote, and `GET .../content/` and
   `.../thumbnail/` return the file. `project-links` takes a `url` (http or https) and an
-  optional `title`; when the instance reads previews, the page is read once, on creation, and
-  `image_url` and `thumbnail_url` point to the picture kept by the server, else they are
-  `null`; a link is created, read or deleted, never changed. `GET` and `PUT .../envelope/` read and set the budget
+  optional `title`; when the instance reads previews, the page is read once, by the background worker,
+  just after creation (`preview_state`: `running`, then `done` when the page was read, `failed` when it could not be (unreachable, refused, not a
+  web page) or has not ended 30 seconds after it started; empty if the instance does not read pages),
+  and `title` (if none was given), `image_url` and `thumbnail_url` are filled when it is
+  `done`, else `image_url` and `thumbnail_url` are `null`; a link is created, read or deleted, never changed. `GET` and `PUT .../envelope/` read and set the budget
   envelope of a `year`. Projects are filtered with `status`, `priority`, `season` and
   `room`, the other lists with `project`. The scopes are the same as for rooms.
 - **Budget** ([ADR 0051](../adr/0051-budget-views-and-annual-envelope.md)), figures only,
@@ -182,8 +184,11 @@ web interface: every request only sees the homes of its user
   `/api/v1/me/notification-channels/` lists, adds (`name` and `url`, an Apprise address),
   renames or turns off (`PATCH` of `name`, `enabled`; any other field, `url` included, is
   a 400) and deletes the caller's channels; `url` is write-only and never returned.
-  `POST .../<id>/test/` sends a real test message and answers
-  `{"ok": true|false, "detail": ...}` with a fixed sentence. `GET` and `PATCH
+  `POST .../<id>/test/` queues a real test message for the background worker and answers
+  `202` with `{"state": "running", "detail": ...}` (a test already running is not started
+  twice); the channel's `test_state` then goes from `running` to `sent`, `failed` or
+  `private` (refused: private network), and is `failed` if the test has not ended 30
+  seconds after it started ([ADR 0070](../adr/0070-slow-network-calls-in-the-background.md)). `GET` and `PATCH
   /api/v1/me/notification-preferences/` the reminders (`days_before`, `send_at`,
   `quiet_start`, `quiet_end`, `digest`, `language`, `time_zone`), and `GET
   /api/v1/me/notifications-export/` both, without any address. A token with the `write`

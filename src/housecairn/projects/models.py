@@ -25,6 +25,24 @@ MAX_PHOTOS_PER_PROJECT = 30
 MAX_FILES_PER_QUOTE = 5
 MAX_LINKS_PER_PROJECT = 30
 LINK_TITLE_MAX_LENGTH = 200
+
+
+class PreviewState(models.TextChoices):
+    """Where the reading of the page of a link stands (docs/adr/0070).
+
+    Empty: the page is not read (previews off on the instance, when the link was added or
+    before the worker got to it). `running` ends in `done` (the page was read, whatever
+    title or picture it gave) or `failed` (the page could not be read: unreachable, refused
+    by the guard, not a web page, an error; or no end within
+    `links.PREVIEW_DEADLINE_SECONDS` after `preview_started_at`).
+    """
+
+    NONE = "", _("Page not read")
+    RUNNING = "running", _("Page being read")
+    DONE = "done", _("Page read")
+    FAILED = "failed", _("Page could not be read")
+
+
 # A project lasts at most a year of elapsed time (a task, thirty days).
 MAX_PROJECT_MINUTES = 365 * 24 * 60
 ENVELOPE_YEARS = (2000, 2200)
@@ -285,9 +303,9 @@ class ProjectFile(HomeOwnedModel):
 class ProjectLink(HomeOwnedModel):
     """A link of inspiration: an address, and the title and picture the page gave (adr 0050).
 
-    Title and picture are read once, when the link is added, if the instance allows it. The
-    picture is a `ProjectFile` of the project, stored here like a photo and never fetched
-    again; a page never points to the remote one.
+    Title and picture are read once, by the worker, just after the link is added, if the
+    instance allows it (docs/adr/0070). The picture is a `ProjectFile` of the project, stored
+    here like a photo and never fetched again; a page never points to the remote one.
     """
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="links")
@@ -301,6 +319,14 @@ class ProjectLink(HomeOwnedModel):
         on_delete=models.SET_NULL,
         related_name="link",
     )
+    preview_state = models.CharField(
+        max_length=8,
+        choices=PreviewState.choices,
+        default=PreviewState.NONE,
+        blank=True,
+        editable=False,
+    )
+    preview_started_at = models.DateTimeField(null=True, blank=True, editable=False)
 
     class Meta:
         verbose_name = _("link")

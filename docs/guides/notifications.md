@@ -36,9 +36,10 @@ number to send to, both in international format.
 
 The Apprise documentation lists the options of each service. Then open the channel and
 **Send a test message**. If it does not arrive, check the address: the screen does not
-repeat the service's error, since it may carry your secrets. HouseCairn waits at most eight
-seconds per channel, for a test as for a reminder: a service slower than that counts as
-not reached.
+repeat the service's error, since it may carry your secrets. The test is sent in the
+background: the page says it is being sent, then shows the answer a few seconds later (reload
+the page if it does not change). HouseCairn waits at most eight seconds per channel, for a
+test as for a reminder: a service slower than that counts as not reached.
 
 The address is encrypted, never shown again and never exported. Some addresses are refused:
 services that would run something on the server, write to its logs or open a raw

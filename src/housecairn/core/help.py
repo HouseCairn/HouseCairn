@@ -118,6 +118,7 @@ HELP_PAGES: dict[str, str] = {
     "projects:quote-delete": "screens/quote-form/",
     "projects:link-add": "screens/project/",
     "projects:link-delete": "screens/project/",
+    "projects:link-status": "screens/project/",
     "projects:file-add": "screens/project/",
     "projects:file": "screens/project/",
     "projects:file-thumbnail": "screens/project/",

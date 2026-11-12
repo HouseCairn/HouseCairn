@@ -24,11 +24,16 @@ its page in the Apprise documentation.
 Opening a channel lets you:
 
 - rename it, or turn it off without deleting it (**Enabled**);
-- **Send a test message**: a real message to the service. The answer is either "sent" or
-  "could not be sent", without the service's own message, after eight seconds at most;
-  five tests a minute. When the address leads to a private network that the instance does
-  not send to, nothing is sent and the screen says so: an administrator of the instance
-  can allow it in the [settings](instance-settings.md);
+- **Send a test message**: a real message to the service, sent in the background so that
+  the screen never waits for it ([ADR 0070](../adr/0070-slow-network-calls-in-the-background.md)).
+  Under the button the screen says "The test message is being sent." and, in a few seconds,
+  the answer: "sent" or "could not be sent", without the service's own message, with the
+  time. The service is given eight seconds; a test that has not ended after 30 seconds
+  counts as not sent. Without JavaScript, or when the answer takes longer than about 25
+  seconds, reload the page to see it. Five tests a minute; asking again while a test is
+  running does not send a second message. When the address leads to a private network that
+  the instance does not send to, nothing is sent and the screen says so: an administrator
+  of the instance can allow it in the [settings](instance-settings.md);
 - **Delete the channel**. To change an address, delete the channel and add another.
 
 The link at the top of a channel leads back to **Notifications**.

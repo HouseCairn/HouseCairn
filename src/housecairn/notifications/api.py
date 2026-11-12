@@ -10,8 +10,9 @@ which stands for an integration tied to homes, gets a 403 there (`PersonOnlyToCh
 from typing import Any
 
 from django.core.exceptions import ValidationError as DjangoValidationError
-from drf_spectacular.utils import extend_schema
-from rest_framework import exceptions, mixins, permissions, serializers, viewsets
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, extend_schema_field
+from rest_framework import exceptions, mixins, permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -49,10 +50,29 @@ class ChannelSerializer(serializers.ModelSerializer[Channel]):
         help_text="Apprise address, such as `ntfys://ntfy.sh/topic`. Never returned.",
     )
 
+    test_state = serializers.SerializerMethodField(
+        help_text="Where the last test message stands: `running`, `sent`, `failed` or "
+        "`private` (refused: private network); empty if the channel was never tested. A test "
+        "that has not ended 30 seconds after it started is `failed`."
+    )
+
     class Meta:
         model = Channel
-        fields = ["id", "name", "url", "scheme", "service", "enabled", "created_at"]
+        fields = [
+            "id",
+            "name",
+            "url",
+            "scheme",
+            "service",
+            "enabled",
+            "test_state",
+            "created_at",
+        ]
         read_only_fields = ["id", "scheme", "service", "created_at"]
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_test_state(self, channel: Channel) -> str:
+        return str(services.expire_test(channel).test_state)
 
 
 class ChannelUpdateSerializer(serializers.Serializer[Any]):
@@ -61,8 +81,11 @@ class ChannelUpdateSerializer(serializers.Serializer[Any]):
 
 
 class TestSerializer(serializers.Serializer[Any]):
-    ok = serializers.BooleanField()
-    detail = serializers.CharField(help_text="One of two fixed sentences.")
+    state = serializers.CharField(
+        help_text="`running`: the worker is sending it; read `test_state` of the channel "
+        "later. A test already running is not started twice."
+    )
+    detail = serializers.CharField(help_text="One of a few fixed sentences.")
 
 
 class ChannelViewSet(
@@ -115,16 +138,22 @@ class ChannelViewSet(
     def perform_destroy(self, instance: Channel) -> None:
         services.delete_channel(self.request.user, instance)
 
-    @extend_schema(request=None, responses=TestSerializer)
+    @extend_schema(request=None, responses={202: TestSerializer})
     @action(detail=True, methods=["post"])
     def test(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        """Send a real test message. The answer never carries the service's own."""
+        """Queue a real test message (202). The worker sends it; read `test_state` later.
+
+        The answer never carries the service's own.
+        """
         channel = self.get_object()
         try:
-            ok = services.test_channel(request.user, channel)
+            channel = services.start_test(request.user, channel)
         except DjangoValidationError as exc:
             raise _invalid(exc) from None
-        return Response({"ok": ok, "detail": str(services.TEST_RESULTS[ok])})
+        return Response(
+            {"state": channel.test_state, "detail": services.test_result(channel)},
+            status=status.HTTP_202_ACCEPTED,
+        )
 
 
 class PreferenceSerializer(serializers.ModelSerializer[Preference]):

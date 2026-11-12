@@ -68,3 +68,4 @@ later record supersedes it.
 | [0066](0066-notifications-on-the-device-by-web-push.md) | Notifications on the device by Web Push, on `cryptography` alone | 2026-11-12 |
 | [0068](0068-one-date-format-and-decimal-mark-messages.md) | One date format per language, and a decimal field that says what it expects | 2026-11-11 |
 | [0069](0069-restore-as-a-copy-with-new-identifiers.md) | Restore as a copy, with new identifiers | 2026-11-12 |
+| [0070](0070-slow-network-calls-in-the-background.md) | Reading a link's page and testing a channel run in the background worker | 2026-11-12 |
