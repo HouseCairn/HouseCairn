@@ -240,6 +240,12 @@ msgstr "`true`"
 msgid "The first-account screen (`/setup/`), opened by a one-time code written in the log, while there is no administrator. `false` if you create the administrator another way. See [First start](../getting-started/first-start.md)."
 msgstr "L'écran du premier compte (`/setup/`), ouvert par un code à usage unique écrit dans le journal, tant qu'il n'y a pas d'administrateur. `false` si vous créez l'administrateur autrement. Voir [Premier démarrage](../getting-started/first-start.md)."
 
+msgid "`HOUSECAIRN_DEMO`"
+msgstr "`HOUSECAIRN_DEMO`"
+
+msgid "`true` makes a public demonstration instance: two public accounts, settings read only, nothing sent, everything erased every night. Never on an instance with real data. See [Demonstration instance](demo.md)."
+msgstr "`true` fait une instance publique de démonstration : deux comptes publics, réglages en lecture seule, rien n'est envoyé, tout est effacé chaque nuit. Jamais sur une instance aux données réelles. Voir [Instance de démonstration](demo.md)."
+
 msgid "`EMAIL_HOST`"
 msgstr "`EMAIL_HOST`"
 

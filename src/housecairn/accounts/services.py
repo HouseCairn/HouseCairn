@@ -232,18 +232,14 @@ def delete_account(user: User, *, by_admin: User | None = None) -> None:
     to the account become empty.
     """
     from housecairn.audit import services as audit
-    from housecairn.demo import mode
     from housecairn.homes import services as home_services
     from housecairn.homes.models import Invitation, Membership
     from housecairn.instance.models import InstanceInvitation
 
+    # On a demonstration instance, deleting a public account is refused by the guard of the
+    # model (demo.guards), inside the transaction below: nothing is erased (docs/adr/0071).
     if by_admin is not None and not is_instance_admin(by_admin):
         raise PermissionDenied
-    if mode.guarded() and mode.is_demo_address(user.email):
-        # Before anything is erased: the public accounts stay (docs/adr/0071).
-        raise mode.DemoRefusedError(
-            _("This is a demonstration account: its password, address and access stay as they are.")
-        )
     with transaction.atomic():
         # Lock the memberships of the account's homes, as `remove_member` and
         # `change_role` do, so that a member leaving at the same moment is seen by the
