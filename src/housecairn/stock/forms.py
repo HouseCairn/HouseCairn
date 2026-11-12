@@ -7,13 +7,18 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from housecairn.core.forms import MoneyField, QuantityField
+from housecairn.core.widgets import ChipSelectMultiple
 from housecairn.rooms.models import Item, Room
 from housecairn.stock.models import Article, MovementKind, Supplier, Unit
 
 
 class ItemChoiceField(forms.ModelMultipleChoiceField[Item]):
+    """The items of the home, grouped by room: the group is the room, the label the item."""
+
+    widget = ChipSelectMultiple(group_by=lambda item: item.room.name)
+
     def label_from_instance(self, obj: Any) -> str:
-        return f"{obj.room.name} · {obj.name}"
+        return str(obj.name)
 
 
 class ArticleForm(forms.ModelForm[Article]):
@@ -23,14 +28,13 @@ class ArticleForm(forms.ModelForm[Article]):
         label=_("Compatible items"),
         queryset=Item.objects.none(),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
         help_text=_("The equipment this fits, such as the boiler a filter is made for."),
     )
     rooms = forms.ModelMultipleChoiceField(
         label=_("Rooms"),
         queryset=Room.objects.none(),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
+        widget=ChipSelectMultiple,
         help_text=_("Where it is used, besides the rooms of the equipment it fits."),
     )
     label = forms.FileField(

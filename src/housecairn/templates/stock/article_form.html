@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-{% load i18n navigation %}
+{% load i18n navigation static %}
 {% block head_title %}{% if article %}{% translate "Edit the stock item" %}{% else %}{% translate "Add a stock item" %}{% endif %}{% endblock head_title %}
+{% block extra_head %}<script src="{% static 'js/chip-select.js' %}" defer></script>{% endblock extra_head %}
 {% block content %}
   {% if article %}
     {% url 'stock:detail' home_id=home.id article_id=article.id as parent %}{% back_link parent article.name %}
