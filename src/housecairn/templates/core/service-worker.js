@@ -59,7 +59,8 @@ function purgePages(keep) {
 }
 
 self.addEventListener("message", (event) => {
-  // Only a page of this application may ask: same origin, under the scope.
+  // Only a page of the same origin may ask (a purge only empties the caches of this
+  // worker, and asking has no other effect).
   if (event.origin !== self.location.origin) {
     return;
   }
