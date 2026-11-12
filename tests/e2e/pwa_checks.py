@@ -167,7 +167,20 @@ def offline_reading(browser: Browser, base: str) -> None:
         "and nothing of the first person's tasks",
     )
     context.set_offline(False)
-    errors = [e for e in errors if "net::ERR_INTERNET_DISCONNECTED" not in e]
+
+    # A session that ends elsewhere (expired, revoked): the cookie is gone and the next
+    # answer of the server is a 401. The API is opened as a page on purpose: unlike the
+    # sign-in page, it runs no script of ours, so only the service worker can drop the pages.
+    check(len(page_caches(page)) == 1, "the second person's pages are kept")
+    context.clear_cookies()
+    page.goto(f"{base}/api/v1/homes/")
+    wait_for_page_caches(page, 0)
+    check(
+        page_caches(page) == [],
+        f"an expired session (a 401) empties the pages kept ({page.url}, {page_caches(page)})",
+    )
+    expected = ("net::ERR_INTERNET_DISCONNECTED", "status of 401")
+    errors = [e for e in errors if not any(text in e for text in expected)]
     check(not errors, f"no error in the console (CSP included): {errors}")
     context.close()
 
