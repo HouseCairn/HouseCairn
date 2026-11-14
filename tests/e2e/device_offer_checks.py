@@ -105,19 +105,20 @@ FAKE = """
       return true;
     },
   });
+  // Notification is simulated for every browser, so that "unsupported" is PushManager alone.
+  class FakeNotification {
+    static get permission() { return state.permission; }
+    static requestPermission() {
+      state.calls.push("request");
+      state.permission = state.result;
+      window.localStorage.setItem("fake:permission", state.result);
+      return Promise.resolve(state.result);
+    }
+  }
+  window.Notification = FakeNotification;
   if (!config.supported) {
     delete window.PushManager;
   } else {
-    class FakeNotification {
-      static get permission() { return state.permission; }
-      static requestPermission() {
-        state.calls.push("request");
-        state.permission = state.result;
-        window.localStorage.setItem("fake:permission", state.result);
-        return Promise.resolve(state.result);
-      }
-    }
-    window.Notification = FakeNotification;
     const manager = {
       getSubscription: async () => (state.sub ? subscription(state.sub) : null),
       subscribe: async () => {
